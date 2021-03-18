@@ -53,14 +53,6 @@ public class ServerNetwork implements BedrockServerEventHandler {
         this.outgoingPacketQueues.clear();
     }
 
-    public void setPacketHandler(BedrockServerSession session, BedrockPacketHandler handler) {
-        this.packetHandlers.put(session, handler);
-    }
-
-    public BedrockPacketHandler getPacketHandler(BedrockServerSession session) {
-        return this.packetHandlers.get(session);
-    }
-
     public void queueClientboundPacket(BedrockServerSession session, BedrockPacket packet) {
         this.outgoingPacketQueues.get(session).queue(packet);
     }
@@ -118,6 +110,14 @@ public class ServerNetwork implements BedrockServerEventHandler {
         }
     }
 
+    public void setPacketHandler(BedrockServerSession session, BedrockPacketHandler handler) {
+        this.packetHandlers.put(session, handler);
+    }
+
+    public BedrockPacketHandler getPacketHandler(BedrockServerSession session) {
+        return this.packetHandlers.get(session);
+    }
+
     @Override
     public boolean onConnectionRequest(InetSocketAddress address, InetSocketAddress realAddress) {
         return true;
@@ -139,7 +139,6 @@ public class ServerNetwork implements BedrockServerEventHandler {
         this.incomingPacketQueues.put(bedrockServerSession, new PacketQueueManager());
         this.outgoingPacketQueues.put(bedrockServerSession, new PacketQueueManager());
         this.setPacketHandler(bedrockServerSession, new PlayerInitializationPacketHandler(bedrockServerSession, this.server));
-        this.packetHandlers.put(bedrockServerSession, new PlayerInitializationPacketHandler(bedrockServerSession, this.server));
         bedrockServerSession.setPacketCodec(Bedrock_v419.V419_CODEC);
         bedrockServerSession.setPacketHandler(new PlayerPacketHandler(bedrockServerSession, this.server));
         bedrockServerSession.addDisconnectHandler(disconnectReason -> {

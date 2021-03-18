@@ -16,9 +16,12 @@ public class PacketQueueManager {
     }
 
     public List<BedrockPacket> clear() {
-        List<BedrockPacket> packets = Collections.unmodifiableList(this.queue);
+        List<BedrockPacket> packets;
+        synchronized (this.queue) {
+            packets = new ArrayList<>(this.queue);
+        }
         this.queue.clear();
-        return packets;
+        return Collections.unmodifiableList(packets);
     }
 
     public void queue(BedrockPacket packet) {
