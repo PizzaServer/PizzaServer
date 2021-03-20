@@ -139,7 +139,7 @@ public class ServerNetwork implements BedrockServerEventHandler {
         this.incomingPacketQueues.put(bedrockServerSession, new PacketQueueManager());
         this.outgoingPacketQueues.put(bedrockServerSession, new PacketQueueManager());
         this.setPacketHandler(bedrockServerSession, new PlayerInitializationPacketHandler(bedrockServerSession, this.server));
-        bedrockServerSession.setPacketCodec(Bedrock_v419.V419_CODEC);
+        // bedrockServerSession.setPacketCodec(Bedrock_v419.V419_CODEC);
         bedrockServerSession.setPacketHandler(new PlayerPacketHandler(bedrockServerSession, this.server));
         bedrockServerSession.addDisconnectHandler(disconnectReason -> {
             this.incomingPacketQueues.remove(bedrockServerSession);
