@@ -29,7 +29,7 @@ public class Skin {
     private final boolean trusted;
 
     // Persona skin
-    public Skin(
+    private Skin(
             String skinId,
             String playFabId,
             String skinResourcePatch,
@@ -68,7 +68,7 @@ public class Skin {
     }
 
     // Base skin
-    public Skin(
+    private Skin(
             String skinId,
             String playFabId,
             String skinResourcePatch,
