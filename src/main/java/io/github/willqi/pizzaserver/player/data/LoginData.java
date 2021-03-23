@@ -249,4 +249,8 @@ public class LoginData {
         return new String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8);
     }
 
+    @Override
+    public String toString() {
+        return "LoginData(protocol=" + this.protocol + ", xuid=" + this.xuid + ", uuid=" + this.uuid + ", gameVersion=" + this.gameVersion + ", device=" + this.device.getName() + ", language=" + this.language + ", authenticated=" + this.authenticated + ")";
+    }
 }
