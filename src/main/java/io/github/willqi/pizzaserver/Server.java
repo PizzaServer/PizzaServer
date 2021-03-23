@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver;
 
 import io.github.willqi.pizzaserver.network.ServerNetwork;
+import io.github.willqi.pizzaserver.plugin.PluginManager;
 import io.github.willqi.pizzaserver.utils.Logger;
 import io.github.willqi.pizzaserver.utils.TimeUtils;
 
@@ -12,6 +13,7 @@ public class Server {
     private final String rootDirectory;
 
     private ServerNetwork network;
+    private PluginManager pluginManager;
     private final Logger logger = new Logger("Server");
 
     public Server(String rootDirectory) {
@@ -19,6 +21,9 @@ public class Server {
         this.network = new ServerNetwork(this);
         this.rootDirectory = rootDirectory;
         this.setup();
+
+        this.pluginManager = new PluginManager();
+
     }
 
     /**
@@ -114,6 +119,10 @@ public class Server {
 
     public int getCurrentTps() {
         return this.currentTps;
+    }
+
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
     }
 
     public String getRootDirectory() {

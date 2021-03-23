@@ -2,12 +2,14 @@ package io.github.willqi.pizzaserver.network.handlers;
 
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
+import com.nukkitx.protocol.bedrock.packet.DisconnectPacket;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import io.github.willqi.pizzaserver.Server;
 import io.github.willqi.pizzaserver.network.ServerProtocol;
 import io.github.willqi.pizzaserver.player.Player;
 import io.github.willqi.pizzaserver.player.data.LoginData;
+import io.github.willqi.pizzaserver.events.player.PreLoginEvent;
 
 /**
  * Handles preparing/authenticating a client to ensure a proper {@link Player}
@@ -28,6 +30,22 @@ public class PlayerInitializationPacketHandler implements BedrockPacketHandler {
             this.session.setPacketCodec(ServerProtocol.SUPPORTED_PROTOCOL_CODEC.get(packet.getProtocolVersion()));
             LoginData loginData = new LoginData(packet.getProtocolVersion(), packet.getChainData(), packet.getSkinData());
             Player player = new Player(this.server, this.session, loginData);
+
+            if (!loginData.isAuthenticated()) {
+                this.session.disconnect("Not Authenticated");
+            } else {
+
+                PreLoginEvent event = new PreLoginEvent(player);
+                this.server.getPluginManager().callEvent(event);
+
+                if (event.isCancelled()) {
+                    this.session.disconnect("Failed to connect to server!");
+                } else {
+
+                }
+
+            }
+
         } else {
             PlayStatusPacket loginFailPacket = new PlayStatusPacket();
             if (packet.getProtocolVersion() > ServerProtocol.LATEST_SUPPORTED_PROTOCOL) {

@@ -250,72 +250,89 @@ public class Skin {
         private boolean premium;
         private boolean trusted;
 
-        public void setSkinId(String skinId) {
+        public Builder setSkinId(String skinId) {
             this.skinId = skinId;
+            return this;
         }
 
-        public void setPlayFabId(String playFabId) {
+        public Builder setPlayFabId(String playFabId) {
             this.playFabId = playFabId;
+            return this;
         }
 
-        public void setSkinResourcePatch(String skinResourcePatch) {
+        public Builder setSkinResourcePatch(String skinResourcePatch) {
             this.skinResourcePatch = skinResourcePatch;
+            return this;
         }
 
-        public void setGeometryData(String geometryData) {
+        public Builder setGeometryData(String geometryData) {
             this.geometryData = geometryData;
+            return this;
         }
 
-        public void setSkinData(ImageData data) {
+        public Builder setSkinData(ImageData data) {
             this.skinData = data;
+            return this;
         }
 
-        public void setCapeId(String capeId) {
+        public Builder setCapeId(String capeId) {
             this.capeId = capeId;
+            return this;
         }
 
-        public void setCapeOnClassic(boolean classic) {
+        public Builder setCapeOnClassic(boolean classic) {
             this.capeOnClassic = classic;
+            return this;
         }
 
-        public void setAnimationData(String animationData) {
+        public Builder setAnimationData(String animationData) {
             this.animationData = animationData;
+            return this;
         }
 
-        public void setArmSize(String armSize) {
+        public Builder setArmSize(String armSize) {
             this.armSize = armSize;
+            return this;
         }
 
-        public void setSkinColor(String skinColor) {
+        public Builder setSkinColor(String skinColor) {
             this.skinColor = skinColor;
+            return this;
         }
 
-        public void setAnimations(List<AnimationData> animations) {
+        public Builder setAnimations(List<AnimationData> animations) {
             this.animations = animations;
+            return this;
         }
 
-        public void setPieces(List<PersonaPieceData> pieces) {
+        public Builder setPieces(List<PersonaPieceData> pieces) {
             this.pieces = pieces;
+            return this;
         }
 
-        public void setTints(List<PersonaPieceTintData> tints) {
+        public Builder setTints(List<PersonaPieceTintData> tints) {
             this.tints = tints;
+            return this;
         }
 
-        public void setCapeData(ImageData data) {
+        public Builder setCapeData(ImageData data) {
             this.capeData = data;
+            return this;
         }
 
-        public void setPremium(boolean premium) {
+        public Builder setPremium(boolean premium) {
             this.premium = premium;
+            return this;
         }
 
-        public void setTrusted(boolean trusted) {
+        public Builder setTrusted(boolean trusted) {
             this.trusted = trusted;
+            return this;
         }
 
-        public void isPersona(boolean persona) {
+        public Builder isPersona(boolean persona) {
             this.isPersona = persona;
+            return this;
         }
 
         public Skin build() {
