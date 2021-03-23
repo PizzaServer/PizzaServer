@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.network;
 import com.nukkitx.protocol.bedrock.*;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.v419.Bedrock_v419;
+import com.nukkitx.protocol.bedrock.v428.Bedrock_v428;
 import io.github.willqi.pizzaserver.Server;
 import io.github.willqi.pizzaserver.network.handlers.PlayerInitializationPacketHandler;
 import io.github.willqi.pizzaserver.network.handlers.PlayerPacketHandler;
@@ -25,11 +26,13 @@ public class ServerNetwork implements BedrockServerEventHandler {
 
     public ServerNetwork(Server server) {
         this.server = server;
-        this.pong.setMotd(server.getMotd());
+        this.pong.setMotd(this.server.getMotd());
         this.pong.setEdition("MCPE");
         this.pong.setPlayerCount(server.getPlayerCount());
         this.pong.setMaximumPlayerCount(server.getMaximumPlayerCount());
-        this.pong.setProtocolVersion(Bedrock_v419.V419_CODEC.getProtocolVersion());
+        this.pong.setIpv4Port(this.server.getPort());
+        this.pong.setIpv6Port(this.server.getPort());
+        this.pong.setProtocolVersion(ServerProtocol.LATEST_SUPPORTED_PROTOCOL);
     }
 
     /**
