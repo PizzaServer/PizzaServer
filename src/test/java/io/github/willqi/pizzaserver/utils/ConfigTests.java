@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 
 public class ConfigTests {
@@ -13,6 +16,20 @@ public class ConfigTests {
     public void shouldParseExampleFileWithoutErrors() {
         assertDoesNotThrow(ConfigTests::getConfig);
     }
+
+    @Test
+    public void shouldCorrectlySaveFile() {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Config currentConfig = getConfig();
+        currentConfig.save(stream);
+
+        InputStream inputStream = new ByteArrayInputStream(stream.toByteArray());
+        Config writtenConfig = new Config();
+        writtenConfig.load(inputStream);
+
+        assertEquals(currentConfig.getProperties(), writtenConfig.getProperties());
+    }
+
 
     @Test
     public void shouldRetrieveGroupProperties() {

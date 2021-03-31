@@ -173,4 +173,17 @@ public class ConfigGroup {
         return Collections.unmodifiableMap(this.properties);
     }
 
+    @Override
+    public int hashCode() {
+        return properties.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ConfigGroup) {
+            return ((ConfigGroup)obj).getProperties().equals(this.getProperties());
+        } else {
+            return false;
+        }
+    }
 }
