@@ -2,8 +2,6 @@ package io.github.willqi.pizzaserver.network;
 
 import com.nukkitx.protocol.bedrock.*;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
-import com.nukkitx.protocol.bedrock.v419.Bedrock_v419;
-import com.nukkitx.protocol.bedrock.v428.Bedrock_v428;
 import io.github.willqi.pizzaserver.Server;
 import io.github.willqi.pizzaserver.network.handlers.PlayerInitializationPacketHandler;
 import io.github.willqi.pizzaserver.network.handlers.PlayerPacketHandler;
@@ -142,7 +140,6 @@ public class ServerNetwork implements BedrockServerEventHandler {
         this.incomingPacketQueues.put(bedrockServerSession, new PacketQueueManager());
         this.outgoingPacketQueues.put(bedrockServerSession, new PacketQueueManager());
         this.setPacketHandler(bedrockServerSession, new PlayerInitializationPacketHandler(bedrockServerSession, this.server));
-        // bedrockServerSession.setPacketCodec(Bedrock_v419.V419_CODEC);
         bedrockServerSession.setPacketHandler(new PlayerPacketHandler(bedrockServerSession, this.server));
         bedrockServerSession.addDisconnectHandler(disconnectReason -> {
             this.incomingPacketQueues.remove(bedrockServerSession);

@@ -1,0 +1,5 @@
+server-ip: 127.0.0.1
+server-port: 19132
+server-motd: PizzaServer - Bedrock v1.16.100
+player-max: -1
+player-force-packs: false

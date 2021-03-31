@@ -257,6 +257,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         return true;
     }
 
+    // Ensure packets are received on the main thread
     private void queuePacket(BedrockPacket packet) {
         this.server.getNetwork().queueServerboundPacket(this.session, packet);
     }

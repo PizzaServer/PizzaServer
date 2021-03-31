@@ -1,0 +1,36 @@
+property: value
+int-property: 42
+long-property: 21474836471337
+boolean-property: true
+decimal-value: 1.23456789012345678901234567890
+
+# This is a comment
+
+string-list:
+  - a
+  - b
+  - c
+
+int-list:
+  - 1
+  - 2
+  - 3
+
+long-list:
+  - 21474836471337
+  - -21474836471337
+
+boolean-list:
+  - true
+  - true
+  - false
+  - true
+
+decimal-list:
+  - 1.23
+  - 1.23456789012345678901234567890
+
+group:
+  inner-property: This is a value
+  inner-group:
+    nested-child: nested child

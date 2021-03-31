@@ -11,7 +11,7 @@ public abstract class Event {
         if (this instanceof Cancellable) {
             this.cancelled = cancelled;
         } else {
-            throw new EventException(this.getClass().getName() + " cannot be cancelled.");
+            throw new AssertionError(this.getClass().getName() + " cannot be cancelled.");
         }
     }
 
