@@ -12,7 +12,7 @@ public class Logger {
     }
 
     public void info(String message) {
-        System.out.printf("[%s] %s%n\n", prefix, message);
+        System.out.printf("[%s] %s\n", this.prefix, message);
     }
 
     public void error(String message) {

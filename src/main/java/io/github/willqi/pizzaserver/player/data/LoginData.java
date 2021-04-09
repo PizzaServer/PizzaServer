@@ -1,14 +1,11 @@
 package io.github.willqi.pizzaserver.player.data;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
 import com.nukkitx.protocol.bedrock.data.skin.*;
-import io.github.willqi.pizzaserver.utils.Logger;
+import io.github.willqi.pizzaserver.Server;
 import io.netty.util.AsciiString;
 
 import java.nio.charset.StandardCharsets;
@@ -39,8 +36,6 @@ public class LoginData {
         }
     }
 
-    private final Logger logger = new Logger("LoginData");
-
     private int protocol;
 
     private String xuid;
@@ -54,7 +49,7 @@ public class LoginData {
 
     private Skin skin;
 
-    public LoginData(int protocol, AsciiString chainData, AsciiString skinData) {
+    public LoginData(int protocol, AsciiString chainData, AsciiString skinData) throws JsonParseException {
         this.protocol = protocol;
 
         this.parseChainData(chainData);
@@ -97,14 +92,12 @@ public class LoginData {
         return this.authenticated;
     }
 
-    private void parseChainData(AsciiString chainData) {
+    private void parseChainData(AsciiString chainData) throws JsonParseException {
         Gson gson = new Gson();
 
         JsonObject chainDataObj = gson.fromJson(chainData.toString(), JsonObject.class);
         JsonArray chain = chainDataObj.get("chain").getAsJsonArray();
-
-        String dataStr = decodeBase64(chain.get(2).getAsString().split("\\.")[1]);
-        JsonObject parsedChainData = gson.fromJson(dataStr, JsonObject.class);
+        JsonObject parsedChainData = decodeChain(chain.get(2).getAsString());
 
         this.xuid = parsedChainData.get("extraData")
                 .getAsJsonObject()
@@ -123,11 +116,9 @@ public class LoginData {
 
     }
 
-    private void parseSkinData(AsciiString skinData) {
+    private void parseSkinData(AsciiString skinData) throws JsonParseException {
 
-        Gson gson = new Gson();
-        String dataStr = decodeBase64(skinData.toString().split("\\.")[1]);
-        JsonObject parsedSkinData = gson.fromJson(dataStr, JsonObject.class);
+        JsonObject parsedSkinData = decodeChain(skinData.toString());
 
         this.device = Device.getPlatformByOS(parsedSkinData.get("DeviceOS").getAsInt());
         this.gameVersion = parsedSkinData.get("GameVersion").getAsString();
@@ -177,7 +168,7 @@ public class LoginData {
 
     // https://github.com/CloudburstMC/Server/blob/master/src/main/java/org/cloudburstmc/server/utils/ClientChainData.java#L310
     private static boolean isAuthenticated(JsonArray data) {
-        // The concept of it appears to be that the first key is used to encode the next part, which has another key that encodes the next part
+        // My understanding of the concept of it is that the first key is used to encode the next part, which has another key that encodes the next part
         // and then at some point, it must be verified by mojang's public key.
         boolean mojangVerified = false;
         try {
@@ -197,8 +188,9 @@ public class LoginData {
                 prevKey = getKey(identityPublicKey);
 
             }
-        } catch (JOSEException | ParseException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-            e.printStackTrace();    // TODO: error logging
+        } catch (JOSEException | ParseException | NoSuchAlgorithmException | InvalidKeySpecException exception) {
+            Server.getInstance().getLogger().error("Error occurred while authenticating login data.");
+            Server.getInstance().getLogger().error(exception);
             return false;
         }
         return mojangVerified;
@@ -247,6 +239,13 @@ public class LoginData {
 
     private static String decodeBase64(String encoded) {
         return new String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8);
+    }
+
+    private static JsonObject decodeChain(String chain) {
+        Gson gson = new Gson();
+        String dataStr = decodeBase64(chain.split("\\.")[1]);
+        JsonObject parsedChainData = gson.fromJson(dataStr, JsonObject.class);
+        return parsedChainData;
     }
 
     @Override

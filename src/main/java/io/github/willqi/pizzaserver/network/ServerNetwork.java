@@ -24,13 +24,6 @@ public class ServerNetwork implements BedrockServerEventHandler {
 
     public ServerNetwork(Server server) {
         this.server = server;
-        this.pong.setMotd(this.server.getMotd());
-        this.pong.setEdition("MCPE");
-        this.pong.setPlayerCount(server.getPlayerCount());
-        this.pong.setMaximumPlayerCount(server.getMaximumPlayerCount());
-        this.pong.setIpv4Port(this.server.getPort());
-        this.pong.setIpv6Port(this.server.getPort());
-        this.pong.setProtocolVersion(ServerProtocol.LATEST_SUPPORTED_PROTOCOL);
     }
 
     /**
@@ -39,6 +32,15 @@ public class ServerNetwork implements BedrockServerEventHandler {
      * @param port
      */
     public void boot(String ip, int port) {
+
+        this.pong.setMotd(this.server.getMotd());
+        this.pong.setEdition("MCPE");
+        this.pong.setPlayerCount(server.getPlayerCount());
+        this.pong.setMaximumPlayerCount(server.getMaximumPlayerCount());
+        this.pong.setIpv4Port(this.server.getPort());
+        this.pong.setIpv6Port(this.server.getPort());
+        this.pong.setProtocolVersion(ServerProtocol.LATEST_SUPPORTED_PROTOCOL);
+
         this.bedrockServer = new BedrockServer(new InetSocketAddress(ip, port));
         this.bedrockServer.setHandler(this);
         this.bedrockServer.bind().join();

@@ -16,27 +16,34 @@ public class Server {
     private boolean running;
     private final String rootDirectory;
 
-    private ServerNetwork network;
-    private Config config;
+    private int maximumPlayersAllowed;
+    private String motd;
 
-    private PluginManager pluginManager;
-    private ResourcePackManager resourcePackManager;
+    private String ip;
+    private int port;
+
+    private final ServerNetwork network;
+    private final PluginManager pluginManager;
+    private final ResourcePackManager resourcePackManager;
+    private final Logger logger;
 
     private static Server instance;
 
-    private final Logger logger = new Logger("Server");
+    private Config config;
 
     public Server(String rootDirectory) {
+        instance = this;
+        this.logger = new Logger("Server");
+        this.getLogger().info("Setting up PizzaServer instance.");
+        this.rootDirectory = rootDirectory;
 
         this.network = new ServerNetwork(this);
-        this.rootDirectory = rootDirectory;
-        this.setup();
-
         this.pluginManager = new PluginManager(this);
         this.resourcePackManager = new ResourcePackManager(this);
 
-        instance = this;
+        this.setup();
 
+        this.getLogger().info("Setup complete.");
     }
 
     /**
@@ -44,6 +51,7 @@ public class Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() {
+        this.getLogger().info("Booting server up on " + this.getIp() + ":" + this.getPort());
 
         this.network.boot(this.getIp(), this.getPort());
 
@@ -99,27 +107,35 @@ public class Server {
     }
 
     public String getIp() {
-        return "0.0.0.0";
+        return this.ip;
     }
 
     public int getPort() {
-        return 19132;
+        return this.port;
     }
 
     public ServerNetwork getNetwork() {
         return this.network;
     }
 
+    public void setMotd(String motd) {
+        this.motd = motd;
+    }
+
     public String getMotd() {
-        return null;
+        return this.motd;
     }
 
     public int getPlayerCount() {
         return 0;
     }
 
+    public void setMaximumPlayerCount(int players) {
+        this.maximumPlayersAllowed = players;
+    }
+
     public int getMaximumPlayerCount() {
-        return -1;
+        return this.maximumPlayersAllowed;
     }
 
     public void setTargetTps(int newTps) {
@@ -186,6 +202,13 @@ public class Server {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+
+        this.ip = this.config.getString("server-ip");
+        this.port = this.config.getInteger("server-port");
+
+        this.setMotd(this.config.getString("server-motd"));
+        this.setMaximumPlayerCount(this.config.getInteger("player-max"));
+        this.resourcePackManager.setPacksRequired(this.config.getBoolean("player-force-packs"));
 
     }
 
