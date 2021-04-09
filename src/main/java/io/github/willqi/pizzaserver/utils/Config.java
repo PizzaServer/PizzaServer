@@ -32,7 +32,8 @@ public class Config extends ConfigGroup {
                 boolean isNewLineCharacter = (c == '\n') || (c == '\r');
                 if (isNewLineCharacter && keyBuilder.length() == 0 && parseType != ConfigParseType.COMMENT) {
                     continue;
-                } else if (isNewLineCharacter) {
+                }
+                if (isNewLineCharacter) {
                     if (parseType == ConfigParseType.COMMENT) {
                         parseType = ConfigParseType.PROPERTY;
                     } else if (keyBuilder.length() > 0) {
