@@ -1,10 +1,12 @@
 package io.github.willqi.pizzaserver.player;
 
+import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import io.github.willqi.pizzaserver.Server;
+import io.github.willqi.pizzaserver.entity.Entity;
 import io.github.willqi.pizzaserver.player.data.LoginData;
 
-public class Player {
+public class Player extends Entity {
 
     protected Server server;
     protected BedrockServerSession session;
@@ -21,6 +23,10 @@ public class Player {
 
     public LoginData getLoginData() {
         return this.loginData;
+    }
+
+    public void sendPacket(BedrockPacket packet) {
+        this.getServer().getNetwork().queueClientboundPacket(this.session, packet);
     }
 
 }
