@@ -18,19 +18,29 @@
             <id>nukkitx-repo-release</id>
             <url>https://repo.nukkitx.com/maven-releases/</url>
         </repository>
-        <repository>
-            <id>nukkitx-repo-snapshot</id>
-            <url>https://repo.nukkitx.com/maven-snapshots/</url>
-        </repository>
     </repositories>
 
     <dependencies>
+
         <dependency>
-            <groupId>com.nukkitx.protocol</groupId>
-            <artifactId>bedrock-v428</artifactId>
-            <version>2.6.3-SNAPSHOT</version>
+            <groupId>com.nukkitx.network</groupId>
+            <artifactId>query</artifactId>
+            <version>1.6.25</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.nukkitx.network</groupId>
+            <artifactId>raknet</artifactId>
+            <version>1.6.25</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.nukkitx.network</groupId>
+            <artifactId>rcon</artifactId>
+            <version>1.6.25</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>

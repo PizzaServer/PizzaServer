@@ -37,7 +37,7 @@ public class Server {
         this.getLogger().info("Setting up PizzaServer instance.");
         this.rootDirectory = rootDirectory;
 
-        this.network = new ServerNetwork(this);
+        this.network = new ServerNetwork();
         this.pluginManager = new PluginManager(this);
         this.resourcePackManager = new ResourcePackManager(this);
 
@@ -52,7 +52,7 @@ public class Server {
      */
     public void boot() {
         this.getLogger().info("Booting server up on " + this.getIp() + ":" + this.getPort());
-        this.network.boot(this.getIp(), this.getPort());
+        //this.network.boot(this.getIp(), this.getPort());
         this.running = true;
         this.targetTps = 20;
 
@@ -64,8 +64,8 @@ public class Server {
         long sleepTime = TimeUtils.nanoSecondsToMilliseconds(nanoSecondsPerTick);
         while (this.running) {
 
-            this.getNetwork().executeServerboundQueue();
-            this.getNetwork().executeClientboundQueue();
+//            this.getNetwork().executeServerboundQueue();
+//            this.getNetwork().executeClientboundQueue();
 
             try {
                 Thread.sleep(sleepTime);
@@ -97,7 +97,7 @@ public class Server {
     public void stop() {
         if (this.running) {
             this.running = false;
-            this.getNetwork().stop();
+            //this.getNetwork().stop();
         } else {
             throw new RuntimeException("Server is not running");
         }
