@@ -25,6 +25,7 @@ import java.util.UUID;
  */
 public class LoginData {
 
+    private static final Gson GSON = new Gson();
     private static final PublicKey MOJANG_KEY;
 
     static {
@@ -93,9 +94,8 @@ public class LoginData {
     }
 
     private void parseChainData(AsciiString chainData) throws JsonParseException {
-        Gson gson = new Gson();
 
-        JsonObject chainDataObj = gson.fromJson(chainData.toString(), JsonObject.class);
+        JsonObject chainDataObj = GSON.fromJson(chainData.toString(), JsonObject.class);
         JsonArray chain = chainDataObj.get("chain").getAsJsonArray();
         JsonObject parsedChainData = decodeChain(chain.get(2).getAsString());
 
@@ -242,9 +242,8 @@ public class LoginData {
     }
 
     private static JsonObject decodeChain(String chain) {
-        Gson gson = new Gson();
         String dataStr = decodeBase64(chain.split("\\.")[1]);
-        JsonObject parsedChainData = gson.fromJson(dataStr, JsonObject.class);
+        JsonObject parsedChainData = GSON.fromJson(dataStr, JsonObject.class);
         return parsedChainData;
     }
 

@@ -186,6 +186,10 @@ public class PlayerInitializationPacketHandler implements BedrockPacketHandler {
         this.player.sendPacket(this.getStartGamePacket());
         this.player.sendPacket(this.getCreativeContentPacket());
         this.player.sendPacket(this.getBiomesPacket());
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
+        this.player.sendPacket(playStatusPacket);
+        // TODO: Switch to next packet handler
     }
 
     private StartGamePacket getStartGamePacket() {

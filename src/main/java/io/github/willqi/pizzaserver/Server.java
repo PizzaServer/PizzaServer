@@ -52,11 +52,8 @@ public class Server {
      */
     public void boot() {
         this.getLogger().info("Booting server up on " + this.getIp() + ":" + this.getPort());
-
         this.network.boot(this.getIp(), this.getPort());
-
         this.running = true;
-
         this.targetTps = 20;
 
         int currentTps = 0;

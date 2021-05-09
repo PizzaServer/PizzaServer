@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public interface ResourcePack {
 
-    // amount of data do we send per ResourcePackChunkData packet (1MB)
+    // amount of data we send per ResourcePackChunkData packet (1MB)
     int CHUNK_LENGTH = 1048576;
 
     UUID getUuid();
