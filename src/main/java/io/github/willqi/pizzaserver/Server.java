@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver;
 
-import io.github.willqi.pizzaserver.network.ServerNetwork;
+import io.github.willqi.pizzaserver.network.BedrockServer;
 import io.github.willqi.pizzaserver.resourcepacks.ResourcePackManager;
 import io.github.willqi.pizzaserver.plugin.PluginManager;
 import io.github.willqi.pizzaserver.utils.Config;
@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.utils.Logger;
 import io.github.willqi.pizzaserver.utils.TimeUtils;
 
 import java.io.*;
+import java.util.concurrent.ExecutionException;
 
 public class Server {
 
@@ -22,10 +23,10 @@ public class Server {
     private String ip;
     private int port;
 
-    private final ServerNetwork network;
-    private final PluginManager pluginManager;
-    private final ResourcePackManager resourcePackManager;
-    private final Logger logger;
+    private final BedrockServer network = new BedrockServer();
+    private final PluginManager pluginManager = new PluginManager(this);
+    private final ResourcePackManager resourcePackManager = new ResourcePackManager(this);
+    private final Logger logger = new Logger("Server");;
 
     private static Server instance;
 
@@ -33,16 +34,10 @@ public class Server {
 
     public Server(String rootDirectory) {
         instance = this;
-        this.logger = new Logger("Server");
         this.getLogger().info("Setting up PizzaServer instance.");
         this.rootDirectory = rootDirectory;
 
-        this.network = new ServerNetwork();
-        this.pluginManager = new PluginManager(this);
-        this.resourcePackManager = new ResourcePackManager(this);
-
         this.setup();
-
         this.getLogger().info("Setup complete.");
     }
 
@@ -51,10 +46,16 @@ public class Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() {
+        this.getResourcePackManager().loadResourcePacks();
+        this.setTargetTps(20);
+
         this.getLogger().info("Booting server up on " + this.getIp() + ":" + this.getPort());
-        //this.network.boot(this.getIp(), this.getPort());
+        try {
+            this.getNetwork().boot(this.getIp(), this.getPort());
+        } catch (InterruptedException | ExecutionException exception) {
+            throw new RuntimeException(exception);
+        }
         this.running = true;
-        this.targetTps = 20;
 
         int currentTps = 0;
         long initNanoTime = System.nanoTime();
@@ -111,7 +112,7 @@ public class Server {
         return this.port;
     }
 
-    public ServerNetwork getNetwork() {
+    public BedrockServer getNetwork() {
         return this.network;
     }
 

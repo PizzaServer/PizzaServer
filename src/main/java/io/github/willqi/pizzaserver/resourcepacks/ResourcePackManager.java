@@ -12,13 +12,12 @@ import java.util.*;
 public class ResourcePackManager {
 
     private final Map<UUID, ResourcePack> packs;
+    private final Server server;
     private boolean required;
-    private Server server;
 
     public ResourcePackManager(Server server) {
         this.packs = new HashMap<>();
         this.server = server;
-        this.loadResourcePacks();
     }
 
     public boolean arePacksRequired() {
@@ -33,7 +32,7 @@ public class ResourcePackManager {
         this.required = required;
     }
 
-    private void loadResourcePacks() {
+    public void loadResourcePacks() {
         try {
             Files.list(Paths.get(this.server.getRootDirectory() + "/resourcepacks"))
                     .map(Path::toFile)
