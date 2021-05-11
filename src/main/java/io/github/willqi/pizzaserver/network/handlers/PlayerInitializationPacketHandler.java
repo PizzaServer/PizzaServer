@@ -1,17 +1,6 @@
 package io.github.willqi.pizzaserver.network.handlers;
 
-import io.github.willqi.pizzaserver.Server;
-import io.github.willqi.pizzaserver.item.ItemPalette;
-import io.github.willqi.pizzaserver.network.ServerProtocol;
 import io.github.willqi.pizzaserver.player.Player;
-import io.github.willqi.pizzaserver.player.data.LoginData;
-import io.github.willqi.pizzaserver.events.player.PreLoginEvent;
-import io.github.willqi.pizzaserver.resourcepacks.ResourcePack;
-import io.github.willqi.pizzaserver.world.WorldPalette;
-
-import java.util.Arrays;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Handles preparing/authenticating a client to ensure a proper {@link Player}

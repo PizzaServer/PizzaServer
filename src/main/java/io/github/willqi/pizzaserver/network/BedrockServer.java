@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.network;
 
 import com.nukkitx.network.raknet.*;
+import io.github.willqi.pizzaserver.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.utils.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
@@ -24,7 +25,7 @@ public class BedrockServer {
                 new BedrockPong.Builder()
                     .setEdition(BedrockPong.Edition.MCPE)
                     .setGamemode(Gamemode.CREATIVE)
-                    .setGameVersion("1.16.100")
+                    .setGameVersion(ServerProtocol.GAME_VERSION)
                     .setMotd("MOTD 1")
                     .setPlayerCount(10)
                     .setPort(19132)
@@ -69,7 +70,8 @@ public class BedrockServer {
 
         @Override
         public void onSessionCreation(RakNetServerSession rakNetServerSession) {
-
+            BedrockClientSession session = new BedrockClientSession(rakNetServerSession);
+            rakNetServerSession.setListener(new BedrockRakNetConnectionListener(session));
         }
 
         // The Bedrock client does not seem to care about this as far as I can tell
