@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.utils;
+package io.github.willqi.pizzaserver.network.utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;

@@ -5,7 +5,7 @@ import com.nukkitx.network.raknet.EncapsulatedPacket;
 import com.nukkitx.network.raknet.RakNetSessionListener;
 import com.nukkitx.network.raknet.RakNetState;
 import com.nukkitx.network.util.DisconnectReason;
-import io.github.willqi.pizzaserver.utils.Zlib;
+import io.github.willqi.pizzaserver.network.utils.Zlib;
 import io.netty.buffer.ByteBuf;
 
 import java.util.zip.DataFormatException;
@@ -41,7 +41,11 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
             }
             ByteBuf packet = inflatedBuffer.readSlice(VarInts.readUnsignedInt(inflatedBuffer));
             int packetId = packet.readUnsignedByte();
-            session.handlePacket(packetId, packet);
+            try {
+                session.handlePacket(packetId, packet);
+            } catch (Exception exception) {
+                throw new RuntimeException("Failed to parse packet (id: " + packetId + ")", exception);
+            }
 
         }
     }
