@@ -1,8 +1,6 @@
 package io.github.willqi.pizzaserver.player;
 
-import io.github.willqi.pizzaserver.Server;
 import io.github.willqi.pizzaserver.entity.Entity;
-import io.github.willqi.pizzaserver.player.data.LoginData;
 
 public class Player extends Entity {
 //

@@ -8,7 +8,8 @@ public class ByteBufUtility {
 
     public static String readString(ByteBuf buffer) {
         int length = buffer.readIntLE();
-        return buffer.readSlice(length).toString(StandardCharsets.UTF_8);
+        String data = buffer.readSlice(length).toString(StandardCharsets.UTF_8);
+        return data;
     }
 
 }
