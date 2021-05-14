@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.network;
 
 import com.nukkitx.network.raknet.*;
+import io.github.willqi.pizzaserver.Server;
 import io.github.willqi.pizzaserver.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.utils.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,13 +9,27 @@ import io.netty.channel.socket.DatagramPacket;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class BedrockServer {
 
-    private RakNetServer rakNetServer;
+    private final Server server;
 
+    private RakNetServer rakNetServer;
+    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private volatile BedrockPong pong;
+
+
+    public BedrockServer(Server server) {
+        this.server = server;
+    }
+
+    public Server getPizzaServer() {
+        return this.server;
+    }
 
     public void boot(String ip, int port) throws ExecutionException, InterruptedException {
         this.rakNetServer = new RakNetServer(new InetSocketAddress(ip, port));
@@ -70,8 +85,9 @@ public class BedrockServer {
 
         @Override
         public void onSessionCreation(RakNetServerSession rakNetServerSession) {
-            BedrockClientSession session = new BedrockClientSession(rakNetServerSession);
+            BedrockClientSession session = new BedrockClientSession(BedrockServer.this, rakNetServerSession);
             rakNetServerSession.setListener(new BedrockRakNetConnectionListener(session));
+            BedrockServer.this.getPizzaServer().registerSession(session);
         }
 
         // The Bedrock client does not seem to care about this as far as I can tell

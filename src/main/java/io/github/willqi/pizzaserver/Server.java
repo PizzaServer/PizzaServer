@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver;
 
+import io.github.willqi.pizzaserver.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.network.BedrockServer;
+import io.github.willqi.pizzaserver.network.handlers.PlayerInitializationPacketHandler;
 import io.github.willqi.pizzaserver.resourcepacks.ResourcePackManager;
 import io.github.willqi.pizzaserver.plugin.PluginManager;
 import io.github.willqi.pizzaserver.utils.Config;
@@ -8,6 +10,9 @@ import io.github.willqi.pizzaserver.utils.Logger;
 import io.github.willqi.pizzaserver.utils.TimeUtils;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class Server {
@@ -23,14 +28,17 @@ public class Server {
     private String ip;
     private int port;
 
-    private final BedrockServer network = new BedrockServer();
+    private final BedrockServer network = new BedrockServer(this);
     private final PluginManager pluginManager = new PluginManager(this);
     private final ResourcePackManager resourcePackManager = new ResourcePackManager(this);
-    private final Logger logger = new Logger("Server");;
+    private final Logger logger = new Logger("Server");
+
+    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     private static Server instance;
 
     private Config config;
+
 
     public Server(String rootDirectory) {
         instance = this;
@@ -65,8 +73,11 @@ public class Server {
         long sleepTime = TimeUtils.nanoSecondsToMilliseconds(nanoSecondsPerTick);
         while (this.running) {
 
-//            this.getNetwork().executeServerboundQueue();
-//            this.getNetwork().executeClientboundQueue();
+            synchronized (this.sessions) {
+                for (BedrockClientSession session : this.sessions) {
+                    session.processPackets();
+                }
+            }
 
             try {
                 Thread.sleep(sleepTime);
@@ -114,6 +125,15 @@ public class Server {
 
     public BedrockServer getNetwork() {
         return this.network;
+    }
+
+    public void registerSession(BedrockClientSession session) {
+        session.setPacketHandler(new PlayerInitializationPacketHandler(this, session));
+        this.sessions.add(session);
+    }
+
+    public void unregisterSession(BedrockClientSession session) {
+        this.sessions.remove(session);
     }
 
     public void setMotd(String motd) {

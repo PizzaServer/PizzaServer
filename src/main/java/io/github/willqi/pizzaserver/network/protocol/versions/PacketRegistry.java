@@ -10,9 +10,9 @@ import java.util.Map;
  */
 public abstract class PacketRegistry {
 
-    private final Map<Integer, PacketHandler<? extends BedrockPacket>> handlers = new HashMap<>();
+    private final Map<Integer, ProtocolPacketHandler<? extends BedrockPacket>> handlers = new HashMap<>();
 
-    public PacketRegistry register(int packetId, PacketHandler<? extends BedrockPacket> handler) {
+    public PacketRegistry register(int packetId, ProtocolPacketHandler<? extends BedrockPacket> handler) {
         this.handlers.put(packetId, handler);
         return this;
     }
@@ -22,7 +22,7 @@ public abstract class PacketRegistry {
         return this;
     }
 
-    public PacketHandler<? extends BedrockPacket> getPacketHandler(int packetId) {
+    public ProtocolPacketHandler<? extends BedrockPacket> getPacketHandler(int packetId) {
         return this.handlers.getOrDefault(packetId, null);
     }
 

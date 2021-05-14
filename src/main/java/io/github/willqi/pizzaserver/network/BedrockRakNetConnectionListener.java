@@ -25,7 +25,7 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
 
     @Override
     public void onDisconnect(DisconnectReason disconnectReason) {
-
+        this.session.getServer().getPizzaServer().unregisterSession(this.session);
     }
 
     @Override

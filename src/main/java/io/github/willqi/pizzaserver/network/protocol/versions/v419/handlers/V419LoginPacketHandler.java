@@ -9,7 +9,7 @@ import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.network.protocol.packets.LoginPacket;
-import io.github.willqi.pizzaserver.network.protocol.versions.PacketHandler;
+import io.github.willqi.pizzaserver.network.protocol.versions.ProtocolPacketHandler;
 import io.github.willqi.pizzaserver.network.utils.ByteBufUtility;
 import io.github.willqi.pizzaserver.player.data.Device;
 import io.github.willqi.pizzaserver.player.data.skin.Skin;
@@ -27,7 +27,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.*;
 
-public class V419LoginPacketHandler extends PacketHandler<LoginPacket> {
+public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
 
     private static final Gson GSON = new Gson();
 

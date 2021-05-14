@@ -1,58 +1,53 @@
 package io.github.willqi.pizzaserver.network.handlers;
 
+import io.github.willqi.pizzaserver.Server;
+import io.github.willqi.pizzaserver.events.player.PreLoginEvent;
+import io.github.willqi.pizzaserver.network.BedrockClientSession;
+import io.github.willqi.pizzaserver.network.BedrockPacketHandler;
+import io.github.willqi.pizzaserver.network.protocol.ServerProtocol;
+import io.github.willqi.pizzaserver.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.player.Player;
 
 /**
- * Handles preparing/authenticating a client to ensure a proper {@link Player}
+ * Handles preparing/authenticating a client to ensure a proper Player
  */
-public class PlayerInitializationPacketHandler {
-//
-//    private Server server;
-//    private BedrockServerSession session;
-//    private Player player;
-//
-//    public PlayerInitializationPacketHandler(BedrockServerSession session, Server server) {
-//        this.session = session;
-//        this.server = server;
-//        this.player = null;
-//    }
-//
-//    @Override
-//    public boolean handle(LoginPacket packet) {
-//
+public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
+
+    private final Server server;
+    private final BedrockClientSession session;
+    private Player player;
+
+
+    public PlayerInitializationPacketHandler(Server server, BedrockClientSession session) {
+        this.server = server;
+        this.session = session;
+    }
+
+    @Override
+    public void onPacket(LoginPacket packet) {
 //        if (this.player != null) {
 //            this.server.getLogger().info("Client tried to login again.");
 //            this.session.disconnect();
-//            return true;
+//            return;
 //        }
 //
-//        if (!ServerProtocol.SUPPORTED_PROTOCOL_CODEC.containsKey(packet.getProtocolVersion())) {
+//        if (!ServerProtocol.PACKET_REGISTRIES.containsKey(packet.getProtocol())) {
 //            PlayStatusPacket loginFailPacket = new PlayStatusPacket();
-//            if (packet.getProtocolVersion() > ServerProtocol.LATEST_SUPPORTED_PROTOCOL) {
+//            if (packet.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
 //                loginFailPacket.setStatus(PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD);
 //            } else {
 //                loginFailPacket.setStatus(PlayStatusPacket.Status.LOGIN_FAILED_CLIENT_OLD);
 //            }
 //            this.server.getNetwork().queueClientboundPacket(this.session, loginFailPacket);
-//            return true;
+//            return;
 //        }
 //
-//        this.session.setPacketCodec(ServerProtocol.SUPPORTED_PROTOCOL_CODEC.get(packet.getProtocolVersion()));
-//        LoginData loginData;
-//        try {
-//            loginData = new LoginData(packet.getProtocolVersion(), packet.getChainData(), packet.getSkinData());
-//        } catch (JsonParseException exception) {
-//            this.server.getLogger().error("Failed to parse LoginData while handling LoginPacket");
-//            this.session.disconnect();
-//            return true;
-//        }
-//
-//        if (!loginData.isAuthenticated()) {
+//        if (!packet.isAuthenticated()) {
 //            this.session.disconnect("Not Authenticated");
-//            return true;
+//            return;
 //        }
 //
-//        Player player = new Player(this.server, this.session, loginData);
+//        Player player = new Player(this.server, this.session, packet);
 //        this.player = player;
 //
 //        PreLoginEvent event = new PreLoginEvent(player);
@@ -75,7 +70,7 @@ public class PlayerInitializationPacketHandler {
 //
 //        player.sendPacket(this.getResourcesPacksInfoPacket());
 //        return true;
-//    }
+    }
 //
 //    // Sent by server on login and after client says it downloaded all the packs
 //    private ResourcePacksInfoPacket getResourcesPacksInfoPacket() {

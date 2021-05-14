@@ -18,6 +18,7 @@ public class ServerProtocol {
     public static final int MINECRAFT_VERSION_1_16_220_PROTOCOL = 431;
 
     public static final String GAME_VERSION = "1.16.220";
+    public static final int LATEST_PROTOCOL_VERISON = MINECRAFT_VERSION_1_16_220_PROTOCOL;
 
     public static final Map<Integer, PacketRegistry> PACKET_REGISTRIES = Collections.unmodifiableMap(new HashMap<Integer, PacketRegistry>(){
         {

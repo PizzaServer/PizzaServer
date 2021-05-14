@@ -20,6 +20,10 @@ public class LoginPacket extends BedrockPacket {
 
     private Skin skin;
 
+    public LoginPacket() {
+        super(ID);
+    }
+
     public int getProtocol() {
         return this.protocol;
     }
