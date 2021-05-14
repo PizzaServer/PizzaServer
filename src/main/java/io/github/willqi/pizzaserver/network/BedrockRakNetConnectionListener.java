@@ -39,7 +39,8 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
             } catch (DataFormatException exception) {
                 throw new RuntimeException(exception);
             }
-            ByteBuf packet = inflatedBuffer.readSlice(VarInts.readUnsignedInt(inflatedBuffer));
+            int packetBytes = VarInts.readUnsignedInt(inflatedBuffer);
+            ByteBuf packet = inflatedBuffer.readSlice(packetBytes);
             int packetId = packet.readUnsignedByte();
             try {
                 session.handlePacket(packetId, packet);

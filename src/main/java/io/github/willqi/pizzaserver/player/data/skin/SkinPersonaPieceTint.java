@@ -8,7 +8,6 @@ public class SkinPersonaPieceTint {
     public SkinPersonaPieceTint(String id, String[] colors) {
         this.id = id;
         this.colors = colors;
-        System.out.println(id + " piece tint id");
     }
 
     public String getId() {

@@ -1,21 +1,21 @@
 package io.github.willqi.pizzaserver.player.data.skin;
 
+import java.util.UUID;
+
 public class SkinPersonaPiece {
 
     private final String id;
     private final String type;
-    private final String packId;
-    private final String productId;
+    private final UUID packId;
+    private final UUID productId;
     private final boolean isDefault;
 
-    private SkinPersonaPiece(String id, String type, String packId, String productId, boolean isDefault) {
+    private SkinPersonaPiece(String id, String type, UUID packId, UUID productId, boolean isDefault) {
         this.id = id;
         this.type = type;
         this.packId = packId;
         this.productId = productId;
         this.isDefault = isDefault;
-        System.out.println(this.packId + " pack id");
-        System.out.println(this.productId + " product id");
     }
 
     public String getId() {
@@ -26,11 +26,11 @@ public class SkinPersonaPiece {
         return this.type;
     }
 
-    public String getPackId() {
+    public UUID getPackId() {
         return this.packId;
     }
 
-    public String getProductId() {
+    public UUID getProductId() {
         return this.productId;
     }
 
@@ -43,8 +43,8 @@ public class SkinPersonaPiece {
 
         private String id;
         private String type;
-        private String packId;
-        private String productId;
+        private UUID packId;
+        private UUID productId;
         private boolean isDefault;
 
         public Builder setId(String id) {
@@ -57,12 +57,12 @@ public class SkinPersonaPiece {
             return this;
         }
 
-        public Builder setPackId(String packId) {
+        public Builder setPackId(UUID packId) {
             this.packId = packId;
             return this;
         }
 
-        public Builder setProductId(String productId) {
+        public Builder setProductId(UUID productId) {
             this.productId = productId;
             return this;
         }

@@ -153,7 +153,7 @@ public class V419LoginPacketHandler extends PacketHandler<LoginPacket> {
 
 
     private static void parseSkinData(LoginPacket packet, String skinDataString) {
-        JsonObject skinData = GSON.fromJson((extractJWTData(skinDataString).getAsString()), JsonObject.class);
+        JsonObject skinData = extractJWTData(skinDataString);
         Device playerDevice = Device.getPlatformByOS(skinData.get("DeviceOS").getAsInt());
         String languageCode = skinData.get("LanguageCode").getAsString();
 
@@ -200,8 +200,8 @@ public class V419LoginPacketHandler extends PacketHandler<LoginPacket> {
                     new SkinPersonaPiece.Builder()
                         .setId(piece.get("PieceId").getAsString())
                         .setType(piece.get("PieceType").getAsString())
-                        .setPackId(piece.get("PackId").getAsString())
-                        .setProductId(piece.get("ProductId").getAsString())
+                        .setPackId(UUID.fromString(piece.get("PackId").getAsString()))
+                        .setProductId(piece.get("ProductId").getAsString().length() > 0 ? UUID.fromString(piece.get("ProductId").getAsString()) : null)
                         .setDefault(piece.get("IsDefault").getAsBoolean())
                         .build()
             );
