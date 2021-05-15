@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.network;
 
+import com.nukkitx.network.VarInts;
 import com.nukkitx.network.raknet.RakNetServerSession;
 import com.nukkitx.network.util.DisconnectReason;
 import io.github.willqi.pizzaserver.Server;
@@ -7,7 +8,10 @@ import io.github.willqi.pizzaserver.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.network.protocol.packets.BedrockPacket;
 import io.github.willqi.pizzaserver.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.network.protocol.versions.PacketRegistry;
+import io.github.willqi.pizzaserver.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.network.utils.Zlib;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,7 +48,20 @@ public class BedrockClientSession {
     }
 
     public void sendPacket(BedrockPacket packet) {
+        ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();
+        rakNetBuffer.writeByte(0xfe); // Game packet
 
+
+        ByteBuf packetBuffer = ByteBufAllocator.DEFAULT.buffer();
+        packetBuffer.writeByte(packet.getPacketId());
+        ((ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId())).encode(packet, packetBuffer);
+
+        ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
+        VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
+        packetWrapperBuffer.writeBytes(packetBuffer);
+
+        rakNetBuffer.writeBytes(Zlib.compressBuffer(packetWrapperBuffer));
+        this.serverSession.send(rakNetBuffer);
     }
 
     public void processPackets() {
@@ -64,6 +81,7 @@ public class BedrockClientSession {
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exception) {
                     Server.getInstance().getLogger().error("Failed to call packet handler for " + packet);
                     Server.getInstance().getLogger().error(exception);
+                    exception.printStackTrace();
                 }
 
             }

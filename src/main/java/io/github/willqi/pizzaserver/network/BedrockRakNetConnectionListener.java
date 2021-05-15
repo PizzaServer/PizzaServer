@@ -35,7 +35,7 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
         if (isGamePacket) {
             ByteBuf inflatedBuffer;
             try {
-                inflatedBuffer = Zlib.inflateBuffer(buffer);
+                inflatedBuffer = Zlib.decompressBuffer(buffer);
             } catch (DataFormatException exception) {
                 throw new RuntimeException(exception);
             }

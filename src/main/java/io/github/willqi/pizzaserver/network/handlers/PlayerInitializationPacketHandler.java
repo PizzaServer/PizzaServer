@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.network.BedrockPacketHandler;
 import io.github.willqi.pizzaserver.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.network.protocol.packets.LoginPacket;
+import io.github.willqi.pizzaserver.network.protocol.packets.PlayStatusPacket;
 import io.github.willqi.pizzaserver.player.Player;
 
 /**
@@ -25,6 +26,10 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
     @Override
     public void onPacket(LoginPacket packet) {
+        PlayStatusPacket test = new PlayStatusPacket();
+        test.setStatus(PlayStatusPacket.Status.OUTDATED_SERVER);
+        this.session.sendPacket(test);
+
 //        if (this.player != null) {
 //            this.server.getLogger().info("Client tried to login again.");
 //            this.session.disconnect();
