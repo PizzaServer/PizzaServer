@@ -12,6 +12,7 @@ import io.github.willqi.pizzaserver.utils.TimeUtils;
 import java.io.*;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -74,8 +75,16 @@ public class Server {
         while (this.running) {
 
             synchronized (this.sessions) {
-                for (BedrockClientSession session : this.sessions) {
-                    session.processPackets();
+                Iterator<BedrockClientSession> sessions = this.sessions.iterator();
+                while (sessions.hasNext()) {
+                    BedrockClientSession session = sessions.next();
+
+                    if (session.isDisconnected()) {
+                        sessions.remove();
+                    } else {
+                        session.processPackets();
+                    }
+
                 }
             }
 
@@ -109,9 +118,9 @@ public class Server {
     public void stop() {
         if (this.running) {
             this.running = false;
-            //this.getNetwork().stop();
+            this.getNetwork().stop();
         } else {
-            throw new RuntimeException("Server is not running");
+            throw new AssertionError("Tried to stop server when server is not running.");
         }
     }
 
@@ -130,10 +139,6 @@ public class Server {
     public void registerSession(BedrockClientSession session) {
         session.setPacketHandler(new PlayerInitializationPacketHandler(this, session));
         this.sessions.add(session);
-    }
-
-    public void unregisterSession(BedrockClientSession session) {
-        this.sessions.remove(session);
     }
 
     public void setMotd(String motd) {

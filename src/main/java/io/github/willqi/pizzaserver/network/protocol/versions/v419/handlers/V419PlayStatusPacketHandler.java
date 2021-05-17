@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.network.protocol.packets.PlayStatusPacket;
 import io.github.willqi.pizzaserver.network.protocol.versions.ProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
-public class V419PlayStatusPacketHandler extends ProtocolPacketHandler<PlayStatusPacket> {
+public class V419PlayStatusPacketHandler implements ProtocolPacketHandler<PlayStatusPacket> {
 
     @Override
     public PlayStatusPacket decode(ByteBuf buffer) {
@@ -13,7 +13,8 @@ public class V419PlayStatusPacketHandler extends ProtocolPacketHandler<PlayStatu
 
     @Override
     public void encode(PlayStatusPacket packet, ByteBuf buffer) {
-        buffer.writeInt(packet.getStatus().ordinal());
+        buffer.writeBoolean(true);
+//        buffer.writeInt(packet.getStatus().ordinal());
     }
 
 }

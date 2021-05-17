@@ -31,6 +31,13 @@ public class BedrockServer {
         return this.server;
     }
 
+    public void stop() {
+        if (this.rakNetServer == null) {
+            throw new AssertionError("Tried to stop BedrockServer when server was not booted.");
+        }
+        this.rakNetServer.close();
+    }
+
     public void boot(String ip, int port) throws ExecutionException, InterruptedException {
         this.rakNetServer = new RakNetServer(new InetSocketAddress(ip, port));
         this.rakNetServer.setListener(new BedrockServerEventListener());

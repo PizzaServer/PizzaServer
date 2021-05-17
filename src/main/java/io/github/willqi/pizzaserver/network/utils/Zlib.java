@@ -41,7 +41,7 @@ public class Zlib {
 
         ByteBuf result = ByteBufAllocator.DEFAULT.buffer();
         try {
-            while (inflater.getRemaining() > 0) {
+            while (!inflater.finished()) {
                 byte[] decompressed = new byte[MAX_CHUNK_SIZE];
                 int uncompressedBytes = inflater.inflate(decompressed);
                 inflater.finished();

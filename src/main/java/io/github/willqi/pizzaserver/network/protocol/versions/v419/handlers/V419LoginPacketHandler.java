@@ -27,7 +27,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.*;
 
-public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
+public class V419LoginPacketHandler implements ProtocolPacketHandler<LoginPacket> {
 
     private static final Gson GSON = new Gson();
 
@@ -50,8 +50,8 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
 
         int chainAndSkinDataLength = VarInts.readUnsignedInt(buffer);
         ByteBuf chainAndSkinData = buffer.readSlice(chainAndSkinDataLength);
-        String chainDataString = ByteBufUtility.readString(chainAndSkinData);
-        String skinDataString = ByteBufUtility.readString(chainAndSkinData);
+        String chainDataString = ByteBufUtility.readLEString(chainAndSkinData);
+        String skinDataString = ByteBufUtility.readLEString(chainAndSkinData);
 
         parseChainData(packet, chainDataString);
         parseSkinData(packet, skinDataString);

@@ -26,55 +26,51 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
     @Override
     public void onPacket(LoginPacket packet) {
-        PlayStatusPacket test = new PlayStatusPacket();
-        test.setStatus(PlayStatusPacket.Status.OUTDATED_SERVER);
-        this.session.sendPacket(test);
 
-//        if (this.player != null) {
-//            this.server.getLogger().info("Client tried to login again.");
-//            this.session.disconnect();
-//            return;
-//        }
-//
-//        if (!ServerProtocol.PACKET_REGISTRIES.containsKey(packet.getProtocol())) {
-//            PlayStatusPacket loginFailPacket = new PlayStatusPacket();
-//            if (packet.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
-//                loginFailPacket.setStatus(PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD);
-//            } else {
-//                loginFailPacket.setStatus(PlayStatusPacket.Status.LOGIN_FAILED_CLIENT_OLD);
-//            }
-//            this.server.getNetwork().queueClientboundPacket(this.session, loginFailPacket);
-//            return;
-//        }
-//
-//        if (!packet.isAuthenticated()) {
-//            this.session.disconnect("Not Authenticated");
-//            return;
-//        }
-//
-//        Player player = new Player(this.server, this.session, packet);
-//        this.player = player;
-//
-//        PreLoginEvent event = new PreLoginEvent(player);
-//        this.server.getPluginManager().callEvent(event);
-//        if (event.isCancelled()) {
-//            this.session.disconnect("Failed to connect to server!");
-//            return true;
-//        }
-//
-//        if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
-//            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-//            playStatusPacket.setStatus(PlayStatusPacket.Status.FAILED_SERVER_FULL_SUB_CLIENT);
-//            player.sendPacket(playStatusPacket);
-//            return true;
-//        }
-//
-//        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-//        playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
-//        player.sendPacket(playStatusPacket);
-//
-//        player.sendPacket(this.getResourcesPacksInfoPacket());
-//        return true;
+        if (this.player != null) {
+            this.server.getLogger().info("Client tried to login again.");
+            this.session.disconnect();
+            return;
+        }
+
+        if (!ServerProtocol.PACKET_REGISTRIES.containsKey(packet.getProtocol())) {
+            PlayStatusPacket loginFailPacket = new PlayStatusPacket();
+            if (packet.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
+                loginFailPacket.setStatus(PlayStatusPacket.Status.OUTDATED_SERVER);
+            } else {
+                loginFailPacket.setStatus(PlayStatusPacket.Status.OUTDATED_CLIENT);
+            }
+            this.session.sendPacket(loginFailPacket);
+            return;
+        }
+
+        if (!packet.isAuthenticated()) {
+            this.session.disconnect();
+            return;
+        }
+
+        Player player = new Player(this.server, this.session, packet);
+        this.player = player;
+
+        PreLoginEvent event = new PreLoginEvent(player);
+        this.server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            this.session.disconnect();
+            return;
+        }
+
+        if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
+            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+            playStatusPacket.setStatus(PlayStatusPacket.Status.SERVER_FULL);
+            player.sendPacket(playStatusPacket);
+            return;
+        }
+
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
+        player.sendPacket(playStatusPacket);
+
+        //player.sendPacket(this.getResourcesPacksInfoPacket());
     }
 //
 //    // Sent by server on login and after client says it downloaded all the packs

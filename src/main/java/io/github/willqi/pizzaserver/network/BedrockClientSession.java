@@ -24,6 +24,7 @@ public class BedrockClientSession {
 
     private final BedrockServer server;
     private final RakNetServerSession serverSession;
+    private volatile boolean disconnected;
 
     private PacketRegistry packetRegistry;
     private volatile BedrockPacketHandler handler;
@@ -47,21 +48,33 @@ public class BedrockClientSession {
         this.handler = packetHandler;
     }
 
+    public void disconnect() {
+        if (!this.disconnected) {
+            this.disconnected = true;
+            this.serverSession.disconnect();
+        }
+    }
+
+    public boolean isDisconnected() {
+        return this.disconnected;
+    }
+
     public void sendPacket(BedrockPacket packet) {
-        ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();
-        rakNetBuffer.writeByte(0xfe); // Game packet
+        if (!this.disconnected) {
+            ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();
+            rakNetBuffer.writeByte(0xfe); // Game packet
 
+            ByteBuf packetBuffer = ByteBufAllocator.DEFAULT.buffer();
+            packetBuffer.writeByte(packet.getPacketId());
+            ((ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId())).encode(packet, packetBuffer);
 
-        ByteBuf packetBuffer = ByteBufAllocator.DEFAULT.buffer();
-        packetBuffer.writeByte(packet.getPacketId());
-        ((ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId())).encode(packet, packetBuffer);
+            ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
+            VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
+            packetWrapperBuffer.writeBytes(packetBuffer);
 
-        ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
-        VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
-        packetWrapperBuffer.writeBytes(packetBuffer);
-
-        rakNetBuffer.writeBytes(Zlib.compressBuffer(packetWrapperBuffer));
-        this.serverSession.send(rakNetBuffer);
+            rakNetBuffer.writeBytes(Zlib.compressBuffer(packetWrapperBuffer));
+            this.serverSession.send(rakNetBuffer);
+        }
     }
 
     public void processPackets() {

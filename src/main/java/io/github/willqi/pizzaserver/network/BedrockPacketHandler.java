@@ -16,4 +16,9 @@ public abstract class BedrockPacketHandler {
 
     }
 
+
+    public void onPacket(ViolationPacket packet) {
+
+    }
+
 }
