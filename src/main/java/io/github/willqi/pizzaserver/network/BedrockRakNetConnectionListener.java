@@ -37,17 +37,22 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
             try {
                 inflatedBuffer = Zlib.decompressBuffer(buffer);
             } catch (DataFormatException exception) {
-                throw new RuntimeException(exception);
+                this.session.disconnect();
+                return;
             }
             int packetBytes = VarInts.readUnsignedInt(inflatedBuffer);
             ByteBuf packet = inflatedBuffer.readSlice(packetBytes);
-            int packetId = packet.readUnsignedByte();
+
+            // https://github.com/CloudburstMC/Protocol/blob/develop/bedrock/bedrock-common/src/main/java/com/nukkitx/protocol/bedrock/wrapper/BedrockWrapperSerializerV9_10.java#L34
+            // Apparently packets start with a header.
+            int packetId = VarInts.readUnsignedInt(packet) & 0x3ff;
             try {
                 session.handlePacket(packetId, packet);
             } catch (Exception exception) {
                 throw new RuntimeException("Failed to parse packet (id: " + packetId + ")", exception);
+            } finally {
+                packet.release();
             }
-
         }
     }
 

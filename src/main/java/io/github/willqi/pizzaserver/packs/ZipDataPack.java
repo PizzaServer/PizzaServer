@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.resourcepacks;
+package io.github.willqi.pizzaserver.packs;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ZipResourcePack implements ResourcePack {
+public class ZipDataPack implements DataPack {
 
     private final byte[] hash;
     private UUID uuid;
@@ -20,7 +20,7 @@ public class ZipResourcePack implements ResourcePack {
     private long dataLength;
     private byte[][] chunks;
 
-    public ZipResourcePack(File file) throws IOException {
+    public ZipDataPack(File file) throws IOException {
         this.parseManifestFile(file);
         this.parsePackData(file);
         try {
@@ -98,18 +98,18 @@ public class ZipResourcePack implements ResourcePack {
     private void parsePackData(File file) throws IOException {
         this.dataLength = file.length();
 
-        int chunksLength = (int)Math.ceil((float)this.dataLength / ResourcePack.CHUNK_LENGTH);
+        int chunksLength = (int)Math.ceil((float)this.dataLength / DataPack.CHUNK_LENGTH);
         this.chunks = new byte[chunksLength][];
 
         InputStream stream = new FileInputStream(file);
         try {
             for (int i = 0; i < chunksLength - 1; i++) {
-                byte[] data = parseDataChunk(stream, new byte[ResourcePack.CHUNK_LENGTH]);
+                byte[] data = parseDataChunk(stream, new byte[DataPack.CHUNK_LENGTH]);
                 this.chunks[i] = data;
             }
 
             // The last data chunk doesn't use as much space
-            byte[] data = parseDataChunk(stream, new byte[(int)(this.dataLength - (chunksLength - 1) * ResourcePack.CHUNK_LENGTH)]);
+            byte[] data = parseDataChunk(stream, new byte[(int)(this.dataLength - (chunksLength - 1) * DataPack.CHUNK_LENGTH)]);
             this.chunks[chunksLength - 1] = data;
 
         } finally {
@@ -118,7 +118,7 @@ public class ZipResourcePack implements ResourcePack {
     }
 
     private static byte[] parseDataChunk(InputStream stream, byte[] data) throws IOException {
-        for (int byteIndex = 0; byteIndex < ResourcePack.CHUNK_LENGTH; byteIndex++) {
+        for (int byteIndex = 0; byteIndex < DataPack.CHUNK_LENGTH; byteIndex++) {
             int currentByte = stream.read();
             if (currentByte == -1) {
                 break;

@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.resourcepacks;
+package io.github.willqi.pizzaserver.packs;
 
 import io.github.willqi.pizzaserver.Server;
 
@@ -9,13 +9,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class ResourcePackManager {
+public class DataPackManager {
 
-    private final Map<UUID, ResourcePack> packs;
+    private final Map<UUID, DataPack> packs;
     private final Server server;
     private boolean required;
 
-    public ResourcePackManager(Server server) {
+    public DataPackManager(Server server) {
         this.packs = new HashMap<>();
         this.server = server;
     }
@@ -24,7 +24,7 @@ public class ResourcePackManager {
         return this.required;
     }
 
-    public Map<UUID, ResourcePack> getPacks() {
+    public Map<UUID, DataPack> getPacks() {
         return Collections.unmodifiableMap(this.packs);
     }
 
@@ -39,7 +39,7 @@ public class ResourcePackManager {
                     .filter(File::isFile)
                     .forEach(file -> {
                         try {
-                            ResourcePack pack = new ZipResourcePack(file);
+                            DataPack pack = new ZipDataPack(file);
                             this.packs.put(pack.getUuid(), pack);
                             Server.getInstance().getLogger().info("Loaded resource pack: " + file.getName());
                         } catch (IOException exception) {
@@ -49,6 +49,27 @@ public class ResourcePackManager {
                     });
         } catch (IOException exception) {
             Server.getInstance().getLogger().error("Failed to read resourcepacks directory");
+            Server.getInstance().getLogger().error(exception);
+        }
+    }
+
+    public void loadBehaviorPacks() {
+        try {
+            Files.list(Paths.get(this.server.getRootDirectory() + "/behaviorpacks"))
+                    .map(Path::toFile)
+                    .filter(File::isFile)
+                    .forEach(file -> {
+                        try {
+                            DataPack pack = new ZipDataPack(file);
+                            this.packs.put(pack.getUuid(), pack);
+                            Server.getInstance().getLogger().info("Loaded behavior pack: " + file.getName());
+                        } catch (IOException exception) {
+                            Server.getInstance().getLogger().error("Failed to load behavior pack: " + file.getName());
+                            Server.getInstance().getLogger().error(exception);
+                        }
+                    });
+        } catch (IOException exception) {
+            Server.getInstance().getLogger().error("Failed to read behaviorpacks directory");
             Server.getInstance().getLogger().error(exception);
         }
     }

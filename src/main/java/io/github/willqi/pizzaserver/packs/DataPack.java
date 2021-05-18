@@ -1,10 +1,10 @@
-package io.github.willqi.pizzaserver.resourcepacks;
+package io.github.willqi.pizzaserver.packs;
 
 import java.util.UUID;
 
-public interface ResourcePack {
+public interface DataPack {
 
-    // amount of data we send per ResourcePackChunkData packet (1MB)
+    // amount of data we send each chunk of data is at max.
     int CHUNK_LENGTH = 1048576;
 
     UUID getUuid();

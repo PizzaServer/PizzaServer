@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.resourcepacks;
+package io.github.willqi.pizzaserver.packs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,11 +10,11 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.UUID;
 
-public class ZipResourcePackTests {
+public class ZipDataPackTests {
 
     @Test
     public void shouldRetrieveManifestInformation(@TempDir Path tempDirPath) {
-        ResourcePack pack = getResourcePack(tempDirPath);
+        DataPack pack = getResourcePack(tempDirPath);
         assertEquals(pack.getUuid(), UUID.fromString("00000000-0000-0000-0000-000000000000"));
         assertEquals(pack.getVersion(), "1.0.0");
     }
@@ -22,7 +22,7 @@ public class ZipResourcePackTests {
     @Test
     public void shouldBeEqualToTheResourcePackFile(@TempDir Path tempDirPath) {
         File resourcePackFile = getResourcePackFile(tempDirPath);
-        ResourcePack pack = getResourcePack(tempDirPath);
+        DataPack pack = getResourcePack(tempDirPath);
 
         InputStream testFileStream = null;
         try {
@@ -51,10 +51,10 @@ public class ZipResourcePackTests {
 
     }
 
-    private static ResourcePack getResourcePack(Path tempDirPath) {
-        ResourcePack pack;
+    private static DataPack getResourcePack(Path tempDirPath) {
+        DataPack pack;
         try {
-            pack = new ZipResourcePack(getResourcePackFile(tempDirPath));
+            pack = new ZipDataPack(getResourcePackFile(tempDirPath));
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
@@ -62,7 +62,7 @@ public class ZipResourcePackTests {
     }
 
     private static InputStream getTestResourcePackStream() {
-        return ZipResourcePackTests.class.getResourceAsStream("/resourcepack.zip");
+        return ZipDataPackTests.class.getResourceAsStream("/resourcepack.zip");
     }
 
     private static File getResourcePackFile(Path tempDirPath) {

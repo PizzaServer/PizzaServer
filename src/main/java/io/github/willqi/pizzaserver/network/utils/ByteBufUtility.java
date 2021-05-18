@@ -13,6 +13,13 @@ public class ByteBufUtility {
         return data;
     }
 
+    public static String readString(ByteBuf buffer) {
+        int length = VarInts.readUnsignedInt(buffer);
+        byte[] data = new byte[length];
+        buffer.readBytes(data);
+        return new String(data, StandardCharsets.UTF_8);
+    }
+
     public static void writeString(String string, ByteBuf buffer) {
         byte[] data = string.getBytes(StandardCharsets.UTF_8);
         VarInts.writeUnsignedInt(buffer, data.length);

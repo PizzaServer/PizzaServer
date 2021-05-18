@@ -13,8 +13,7 @@ public class V419PlayStatusPacketHandler implements ProtocolPacketHandler<PlaySt
 
     @Override
     public void encode(PlayStatusPacket packet, ByteBuf buffer) {
-        buffer.writeBoolean(true);
-//        buffer.writeInt(packet.getStatus().ordinal());
+        buffer.writeInt(packet.getStatus().ordinal());
     }
 
 }

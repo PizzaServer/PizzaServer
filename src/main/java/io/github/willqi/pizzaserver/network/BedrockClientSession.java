@@ -65,26 +65,34 @@ public class BedrockClientSession {
             rakNetBuffer.writeByte(0xfe); // Game packet
 
             ByteBuf packetBuffer = ByteBufAllocator.DEFAULT.buffer();
-            packetBuffer.writeByte(packet.getPacketId());
+
+            // https://github.com/CloudburstMC/Protocol/blob/develop/bedrock/bedrock-common/src/main/java/com/nukkitx/protocol/bedrock/wrapper/BedrockWrapperSerializerV9_10.java#L34
+            // Apparently packets start with a header int rather than just a byte.
+            int header = packet.getPacketId() & 0x3ff;
+            VarInts.writeUnsignedInt(packetBuffer, header);
+
             ((ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId())).encode(packet, packetBuffer);
 
             ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
             VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
             packetWrapperBuffer.writeBytes(packetBuffer);
-
             rakNetBuffer.writeBytes(Zlib.compressBuffer(packetWrapperBuffer));
             this.serverSession.send(rakNetBuffer);
+
+            packetWrapperBuffer.release();
+            packetBuffer.release();
         }
     }
 
     public void processPackets() {
-        List<BedrockPacket> packets;
-        synchronized (this.queuedPackets) {
-            packets = new ArrayList<>(this.queuedPackets);
-            this.queuedPackets.clear();
-        }
-        for (BedrockPacket packet : packets) {
-            if (this.handler != null) {
+        if (this.handler != null) {
+            List<BedrockPacket> packets;
+            synchronized (this.queuedPackets) {
+                packets = new ArrayList<>(this.queuedPackets);
+                this.queuedPackets.clear();
+            }
+            for (BedrockPacket packet : packets) {
+                System.out.println("got packet " + packet + " handler " + this.handler);
                 this.handler.onPacket(packet);
 
                 // Now we call the specific packet handler
@@ -96,7 +104,6 @@ public class BedrockClientSession {
                     Server.getInstance().getLogger().error(exception);
                     exception.printStackTrace();
                 }
-
             }
         }
     }

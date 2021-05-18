@@ -7,6 +7,9 @@ import io.github.willqi.pizzaserver.network.BedrockPacketHandler;
 import io.github.willqi.pizzaserver.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.network.protocol.packets.PlayStatusPacket;
+import io.github.willqi.pizzaserver.network.protocol.packets.ResourcePacksInfoPacket;
+import io.github.willqi.pizzaserver.network.protocol.packets.ViolationPacket;
+import io.github.willqi.pizzaserver.packs.DataPack;
 import io.github.willqi.pizzaserver.player.Player;
 
 /**
@@ -70,23 +73,25 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
         player.sendPacket(playStatusPacket);
 
-        //player.sendPacket(this.getResourcesPacksInfoPacket());
+        player.sendPacket(this.getResourcesPacksInfoPacket());
     }
-//
-//    // Sent by server on login and after client says it downloaded all the packs
-//    private ResourcePacksInfoPacket getResourcesPacksInfoPacket() {
-//        ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
-//        resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
-//        resourcePacksInfoPacket.getResourcePackInfos().addAll(
-//                this.server.getResourcePackManager()
-//                        .getPacks()
-//                        .values()
-//                        .stream()
-//                        .map(pack -> new ResourcePacksInfoPacket.Entry(pack.getUuid().toString(), pack.getVersion(), pack.getDataLength(), "", "", "", false, false))
-//                        .collect(Collectors.toSet())
-//        );
-//        return resourcePacksInfoPacket;
-//    }
+
+    @Override
+    public void onPacket(ViolationPacket packet) {
+        throw new AssertionError("ViolationPacket for packet id " + packet.getPacketId() + " " + packet.getMessage());
+    }
+
+    // Sent by server on login and after client says it downloaded all the packs
+    private ResourcePacksInfoPacket getResourcesPacksInfoPacket() {
+        ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
+        resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
+        resourcePacksInfoPacket.setResourcePacks(
+                this.server.getResourcePackManager()
+                    .getPacks()
+                    .values().toArray(new DataPack[0])
+        );
+        return resourcePacksInfoPacket;
+    }
 //
 //    @Override
 //    public boolean handle(ResourcePackClientResponsePacket packet) {

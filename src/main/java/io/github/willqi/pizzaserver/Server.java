@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver;
 import io.github.willqi.pizzaserver.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.network.BedrockServer;
 import io.github.willqi.pizzaserver.network.handlers.PlayerInitializationPacketHandler;
-import io.github.willqi.pizzaserver.resourcepacks.ResourcePackManager;
+import io.github.willqi.pizzaserver.packs.DataPackManager;
 import io.github.willqi.pizzaserver.plugin.PluginManager;
 import io.github.willqi.pizzaserver.utils.Config;
 import io.github.willqi.pizzaserver.utils.Logger;
@@ -31,7 +31,7 @@ public class Server {
 
     private final BedrockServer network = new BedrockServer(this);
     private final PluginManager pluginManager = new PluginManager(this);
-    private final ResourcePackManager resourcePackManager = new ResourcePackManager(this);
+    private final DataPackManager dataPackManager = new DataPackManager(this);
     private final Logger logger = new Logger("Server");
 
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
@@ -56,6 +56,7 @@ public class Server {
      */
     public void boot() {
         this.getResourcePackManager().loadResourcePacks();
+        this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);
 
         this.getLogger().info("Booting server up on " + this.getIp() + ":" + this.getPort());
@@ -78,11 +79,10 @@ public class Server {
                 Iterator<BedrockClientSession> sessions = this.sessions.iterator();
                 while (sessions.hasNext()) {
                     BedrockClientSession session = sessions.next();
+                    session.processPackets();
 
                     if (session.isDisconnected()) {
                         sessions.remove();
-                    } else {
-                        session.processPackets();
                     }
 
                 }
@@ -177,8 +177,8 @@ public class Server {
         return this.pluginManager;
     }
 
-    public ResourcePackManager getResourcePackManager() {
-        return this.resourcePackManager;
+    public DataPackManager getResourcePackManager() {
+        return this.dataPackManager;
     }
 
     public String getRootDirectory() {
@@ -204,6 +204,7 @@ public class Server {
             new File(this.getRootDirectory() + "/levels").mkdirs();
             new File(this.getRootDirectory() + "/players").mkdirs();
             new File(this.getRootDirectory() + "/resourcepacks").mkdirs();
+            new File(this.getRootDirectory() + "/behaviorpacks").mkdirs();
         } catch (SecurityException exception) {
             throw new RuntimeException(exception);
         }
@@ -231,7 +232,7 @@ public class Server {
 
         this.setMotd(this.config.getString("server-motd"));
         this.setMaximumPlayerCount(this.config.getInteger("player-max"));
-        this.resourcePackManager.setPacksRequired(this.config.getBoolean("player-force-packs"));
+        this.dataPackManager.setPacksRequired(this.config.getBoolean("player-force-packs"));
 
     }
 
