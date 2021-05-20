@@ -5,15 +5,14 @@ import io.github.willqi.pizzaserver.events.player.PreLoginEvent;
 import io.github.willqi.pizzaserver.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.network.BedrockPacketHandler;
 import io.github.willqi.pizzaserver.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.network.protocol.packets.LoginPacket;
-import io.github.willqi.pizzaserver.network.protocol.packets.PlayStatusPacket;
-import io.github.willqi.pizzaserver.network.protocol.packets.ResourcePacksInfoPacket;
-import io.github.willqi.pizzaserver.network.protocol.packets.ViolationPacket;
+import io.github.willqi.pizzaserver.network.protocol.data.PackInfo;
+import io.github.willqi.pizzaserver.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.packs.DataPack;
 import io.github.willqi.pizzaserver.player.Player;
 
 /**
- * Handles preparing/authenticating a client to ensure a proper Player
+ * Handles preparing/authenticating a client to becoming a valid player
+ * Includes Login > Packs > Starting Packets > PlayStatus - Player Spawn
  */
 public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
@@ -39,9 +38,9 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         if (!ServerProtocol.PACKET_REGISTRIES.containsKey(packet.getProtocol())) {
             PlayStatusPacket loginFailPacket = new PlayStatusPacket();
             if (packet.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
-                loginFailPacket.setStatus(PlayStatusPacket.Status.OUTDATED_SERVER);
+                loginFailPacket.setStatus(PlayStatusPacket.PlayStatus.OUTDATED_SERVER);
             } else {
-                loginFailPacket.setStatus(PlayStatusPacket.Status.OUTDATED_CLIENT);
+                loginFailPacket.setStatus(PlayStatusPacket.PlayStatus.OUTDATED_CLIENT);
             }
             this.session.sendPacket(loginFailPacket);
             return;
@@ -64,16 +63,28 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
         if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-            playStatusPacket.setStatus(PlayStatusPacket.Status.SERVER_FULL);
+            playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.SERVER_FULL);
             player.sendPacket(playStatusPacket);
             return;
         }
 
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
+        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.LOGIN_SUCCESS);
         player.sendPacket(playStatusPacket);
 
-        player.sendPacket(this.getResourcesPacksInfoPacket());
+        ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
+        resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
+        resourcePacksInfoPacket.setResourcePacks(
+                this.server.getResourcePackManager()
+                        .getResourcePacks()
+                        .values().toArray(new DataPack[0])
+        );
+        resourcePacksInfoPacket.setBehaviorPacks(
+                this.server.getResourcePackManager()
+                    .getBehaviorPacks()
+                    .values().toArray(new DataPack[0])
+        );
+        player.sendPacket(resourcePacksInfoPacket);
     }
 
     @Override
@@ -81,85 +92,86 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         throw new AssertionError("ViolationPacket for packet id " + packet.getPacketId() + " " + packet.getMessage());
     }
 
-    // Sent by server on login and after client says it downloaded all the packs
-    private ResourcePacksInfoPacket getResourcesPacksInfoPacket() {
-        ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
-        resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
-        resourcePacksInfoPacket.setResourcePacks(
-                this.server.getResourcePackManager()
-                    .getPacks()
-                    .values().toArray(new DataPack[0])
-        );
-        return resourcePacksInfoPacket;
-    }
-//
-//    @Override
-//    public boolean handle(ResourcePackClientResponsePacket packet) {
-//
-//        if (this.player == null) {
-//            this.server.getLogger().error("Client requested resource packs before player object was created.");
-//            this.session.disconnect();
-//            return true;
-//        }
-//
-//        switch (packet.getStatus()) {
-//            case HAVE_ALL_PACKS:
-//                // Send required starting packets to client now that they have all resource packs.
+
+    @Override
+    public void onPacket(ResourcePackResponsePacket packet) {
+
+        if (this.player == null) {
+            this.server.getLogger().error("Client requested packs before player object was created.");
+            this.session.disconnect();
+            return;
+        }
+
+        switch (packet.getStatus()) {
+            case HAVE_ALL_PACKS:
+                // Send required starting packets to client now that they have all resource packs.
 //                this.sendGameLoginPackets();
-//                break;
-//            case SEND_PACKS:
-//                for (String packIdAndVersion : packet.getPackIds()) {
-//
-//                    String[] packIdData = packIdAndVersion.split("_");  // Index 0 is the uuid and 1 is the version
-//                    if (packIdData.length > 0) {
-//                        ResourcePackDataInfoPacket resourcePackDataInfoPacket = this.getResourcePackDataInfoPacket(UUID.fromString(packIdData[0]));
-//                        if (resourcePackDataInfoPacket != null) {
-//                            this.server.getNetwork().queueClientboundPacket(this.session, resourcePackDataInfoPacket);
-//                        } else {
-//                            this.server.getLogger().error("Invalid resource pack UUID specified while sending packs in ResourcePackClientResponsePacket.");
-//                            this.session.disconnect();
-//                            break;
-//                        }
-//                    } else {
-//                        this.server.getLogger().error("Failed to parse resource pack id while sending packs in ResorucePackClientResponsePacket.");
-//                        this.session.disconnect();
-//                        break;
-//                    }
-//
-//                }
-//                break;
-//            case REFUSED:
-//                if (this.server.getResourcePackManager().arePacksRequired()) {
-//                    this.session.disconnect(null, true);
-//                } else {
+                break;
+            case SEND_PACKS:
+                // Send all pack info of the packs the client does not have
+                for (PackInfo packInfo : packet.getPacksRequested()) {
+
+                    if (this.server.getResourcePackManager().getResourcePacks().containsKey(packInfo.getUuid())) {
+                        DataPack pack = this.server.getResourcePackManager().getResourcePacks().get(packInfo.getUuid());
+                        ResourcePackDataInfoPacket resourcePackDataInfoPacket = new ResourcePackDataInfoPacket();
+                        resourcePackDataInfoPacket.setPackId(pack.getUuid());
+                        resourcePackDataInfoPacket.setHash(pack.getHash());
+                        resourcePackDataInfoPacket.setVersion(pack.getVersion());
+                        resourcePackDataInfoPacket.setType(ResourcePackDataInfoPacket.PackType.RESOURCE_PACK);
+                        resourcePackDataInfoPacket.setChunkCount(pack.getChunkCount());
+                        resourcePackDataInfoPacket.setCompressedPackageSize(pack.getDataLength());
+                        resourcePackDataInfoPacket.setMaxChunkSize(DataPack.CHUNK_LENGTH);
+                        this.player.sendPacket(resourcePackDataInfoPacket);
+                    } else {
+                        this.server.getLogger().error("Client requested invalid pack.");
+                        this.session.disconnect();
+                        break;
+                    }
+
+                }
+                break;
+            case REFUSED:
+                if (this.server.getResourcePackManager().arePacksRequired()) {
+                    this.session.disconnect();
+                } else {
 //                    this.sendGameLoginPackets();
-//                }
-//                break;
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * Called by server when ResourcePackClientResponse packet requests some packs to be downloaded
-//     * @param uuid
-//     * @return
-//     */
-//    private ResourcePackDataInfoPacket getResourcePackDataInfoPacket(UUID uuid) {
-//        if (this.server.getResourcePackManager().getPacks().containsKey(uuid)) {
-//            ResourcePack pack = this.server.getResourcePackManager().getPacks().get(uuid);
-//            ResourcePackDataInfoPacket packet = new ResourcePackDataInfoPacket();
-//            packet.setPackId(uuid);
-//            packet.setHash(pack.getHash());
-//            packet.setPackVersion(pack.getVersion());
-//            packet.setType(ResourcePackType.RESOURCE);
-//            packet.setChunkCount(pack.getChunkCount() - 1);
-//            packet.setCompressedPackSize(pack.getDataLength());
-//            packet.setMaxChunkSize(ResourcePack.CHUNK_LENGTH);
-//            return packet;
-//        } else {
-//            return null;
-//        }
-//    }
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onPacket(ResourcePackChunkRequestPacket packet) {
+        if (this.player == null) {
+            this.server.getLogger().error("Client requested resource pack chunk before player object was created.");
+            this.session.disconnect();
+            return;
+        }
+
+        if (!this.server.getResourcePackManager().getResourcePacks().containsKey(packet.getPackInfo().getUuid()) && !this.server.getResourcePackManager().getBehaviorPacks().containsKey(packet.getPackInfo().getUuid())) {
+            this.server.getLogger().error("Invalid resource pack UUID specified while handling ResourcePackChunkRequestPacket.");
+            this.session.disconnect();
+            return;
+        }
+
+        DataPack pack = this.server.getResourcePackManager().getResourcePacks().getOrDefault(
+                packet.getPackInfo().getUuid(),
+                this.server.getResourcePackManager().getBehaviorPacks().get(packet.getPackInfo().getUuid()));
+
+        if (packet.getChunkIndex() < 0 || packet.getChunkIndex() >= pack.getChunkCount()) {
+            this.server.getLogger().error("Invalid chunk requested while handling ResourcePackChunkRequestPacket");
+            this.session.disconnect();
+            return;
+        }
+        
+        ResourcePackChunkDataPacket chunkDataPacket = new ResourcePackChunkDataPacket();
+        chunkDataPacket.setId(pack.getUuid());
+        chunkDataPacket.setVersion(pack.getVersion());
+        chunkDataPacket.setChunkIndex(packet.getChunkIndex());
+        chunkDataPacket.setChunkProgress((long)packet.getChunkIndex() * DataPack.CHUNK_LENGTH);  // Where to continue the download process from
+        chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));
+        this.player.sendPacket(chunkDataPacket);
+    }
 //
 //    /**
 //     * Called when the player has passed the resource packs stage and is ready to start the game login process.
@@ -229,40 +241,4 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 //        return packet;
 //    }
 //
-//    // Sent after we send the ResourcePackDataInfo packet
-//    @Override
-//    public boolean handle(ResourcePackChunkRequestPacket packet) {
-//        if (this.player == null) {
-//            this.server.getLogger().error("Client requested resource pack chunk before player object was created.");
-//            this.session.disconnect();
-//            return true;
-//        }
-//
-//        if (!this.server.getResourcePackManager().getPacks().containsKey(packet.getPackId())) {
-//            this.server.getLogger().error("Invalid resource pack UUID specified while handling ResourcePackChunkRequestPacket.");
-//            this.session.disconnect();
-//            return true;
-//        }
-//
-//        ResourcePack pack = this.server.getResourcePackManager().getPacks().get(packet.getPackId());
-//        if (packet.getChunkIndex() < 0 || packet.getChunkIndex() >= pack.getChunkCount()) {
-//            this.server.getLogger().error("Invalid chunk requested while handling ResourcePackChunkRequestPacket");
-//            this.session.disconnect();
-//            return true;
-//        }
-//
-//        this.player.sendPacket(this.getResourcePackChunkData(pack, packet.getChunkIndex()));
-//        return true;
-//    }
-//
-//    private ResourcePackChunkDataPacket getResourcePackChunkData(ResourcePack pack, int index) {
-//        ResourcePackChunkDataPacket chunkDataPacket = new ResourcePackChunkDataPacket();
-//        chunkDataPacket.setPackId(pack.getUuid());
-//        chunkDataPacket.setPackVersion(pack.getVersion());
-//        chunkDataPacket.setChunkIndex(index);
-//        chunkDataPacket.setProgress((long)index * ResourcePack.CHUNK_LENGTH);  // Where to continue the download process from
-//        chunkDataPacket.setData(pack.getChunk(index));
-//        return chunkDataPacket;
-//    }
-
 }

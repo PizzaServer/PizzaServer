@@ -14,16 +14,25 @@ public class ByteBufUtility {
     }
 
     public static String readString(ByteBuf buffer) {
-        int length = VarInts.readUnsignedInt(buffer);
-        byte[] data = new byte[length];
-        buffer.readBytes(data);
+        byte[] data = readByteArray(buffer);
         return new String(data, StandardCharsets.UTF_8);
     }
 
     public static void writeString(String string, ByteBuf buffer) {
         byte[] data = string.getBytes(StandardCharsets.UTF_8);
-        VarInts.writeUnsignedInt(buffer, data.length);
-        buffer.writeBytes(data);
+        writeByteArray(data, buffer);
+    }
+
+    public static byte[] readByteArray(ByteBuf buffer) {
+        int length = VarInts.readUnsignedInt(buffer);
+        byte[] data = new byte[length];
+        buffer.readBytes(data);
+        return data;
+    }
+
+    public static void writeByteArray(byte[] bytes, ByteBuf buffer) {
+        VarInts.writeUnsignedInt(buffer, bytes.length);
+        buffer.writeBytes(bytes);
     }
 
 }

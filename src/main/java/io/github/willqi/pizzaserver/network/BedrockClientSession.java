@@ -92,7 +92,6 @@ public class BedrockClientSession {
                 this.queuedPackets.clear();
             }
             for (BedrockPacket packet : packets) {
-                System.out.println("got packet " + packet + " handler " + this.handler);
                 this.handler.onPacket(packet);
 
                 // Now we call the specific packet handler

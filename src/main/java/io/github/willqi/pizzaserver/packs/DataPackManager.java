@@ -11,12 +11,12 @@ import java.util.*;
 
 public class DataPackManager {
 
-    private final Map<UUID, DataPack> packs;
+    private final Map<UUID, DataPack> resourcePacks = new HashMap<>();
+    private final Map<UUID, DataPack> behaviorPacks = new HashMap<>();
     private final Server server;
     private boolean required;
 
     public DataPackManager(Server server) {
-        this.packs = new HashMap<>();
         this.server = server;
     }
 
@@ -24,8 +24,12 @@ public class DataPackManager {
         return this.required;
     }
 
-    public Map<UUID, DataPack> getPacks() {
-        return Collections.unmodifiableMap(this.packs);
+    public Map<UUID, DataPack> getResourcePacks() {
+        return Collections.unmodifiableMap(this.resourcePacks);
+    }
+
+    public Map<UUID, DataPack> getBehaviorPacks() {
+        return Collections.unmodifiableMap(this.behaviorPacks);
     }
 
     public void setPacksRequired(boolean required) {
@@ -40,7 +44,7 @@ public class DataPackManager {
                     .forEach(file -> {
                         try {
                             DataPack pack = new ZipDataPack(file);
-                            this.packs.put(pack.getUuid(), pack);
+                            this.resourcePacks.put(pack.getUuid(), pack);
                             Server.getInstance().getLogger().info("Loaded resource pack: " + file.getName());
                         } catch (IOException exception) {
                             Server.getInstance().getLogger().error("Failed to load resource pack: " + file.getName());
@@ -61,7 +65,7 @@ public class DataPackManager {
                     .forEach(file -> {
                         try {
                             DataPack pack = new ZipDataPack(file);
-                            this.packs.put(pack.getUuid(), pack);
+                            this.behaviorPacks.put(pack.getUuid(), pack);
                             Server.getInstance().getLogger().info("Loaded behavior pack: " + file.getName());
                         } catch (IOException exception) {
                             Server.getInstance().getLogger().error("Failed to load behavior pack: " + file.getName());

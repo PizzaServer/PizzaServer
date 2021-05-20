@@ -4,21 +4,21 @@ public class PlayStatusPacket extends BedrockPacket {
 
     public static final int ID = 0x02;
 
-    private Status status;
+    private PlayStatus status;
 
     public PlayStatusPacket() {
         super(ID);
     }
 
-    public Status getStatus() {
+    public PlayStatus getStatus() {
         return this.status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(PlayStatus status) {
         this.status = status;
     }
 
-    public enum Status {
+    public enum PlayStatus {
         LOGIN_SUCCESS,
         OUTDATED_CLIENT,
         OUTDATED_SERVER,

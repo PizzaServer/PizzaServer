@@ -10,8 +10,13 @@ public class V419PacketRegistry extends PacketRegistry {
         this.register(LoginPacket.ID, new V419LoginPacketHandler())
             .register(PlayStatusPacket.ID, new V419PlayStatusPacketHandler())
             .register(DisconnectPacket.ID, new V419DisconnectPacketHandler())
+            .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler())
+            .register(ResourcePackResponsePacket.ID, new V419ResourcePackResponsePacketHandler())
+            .register(ResourcePackDataInfoPacket.ID, new V419ResourcePackDataInfoPacketHandler())
+            .register(ResourcePackChunkDataPacket.ID, new V419ResourcePackChunkDataPacketHandler())
+            .register(ResourcePackChunkRequestPacket.ID, new V419ResourcePackChunkRequestPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
-            .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler());
+            .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler());
     }
 
 }
