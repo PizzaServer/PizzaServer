@@ -11,11 +11,11 @@ public class NBTCompound extends NBTTag {
     private final Map<String, NBTTag> data = new HashMap<>();
 
 
+    public NBTCompound() {}
+
     public NBTCompound(String name) {
         super(name);
     }
-
-    public NBTCompound() {}
 
 
     @Override

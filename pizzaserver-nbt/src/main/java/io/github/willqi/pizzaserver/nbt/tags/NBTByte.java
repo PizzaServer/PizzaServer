@@ -6,12 +6,13 @@ public class NBTByte extends NBTTag {
 
     private final byte b;
 
-    public NBTByte(String name, byte b) {
-        super(name);
+
+    public NBTByte(byte b) {
         this.b = b;
     }
 
-    public NBTByte(byte b) {
+    public NBTByte(String name, byte b) {
+        super(name);
         this.b = b;
     }
 

@@ -1,9 +1,6 @@
 package io.github.willqi.pizzaserver.nbt.serializers.writers;
 
-import io.github.willqi.pizzaserver.nbt.serializers.utils.StreamUtility;
-import io.github.willqi.pizzaserver.nbt.tags.NBTByte;
-import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.nbt.tags.NBTTag;
+import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,6 +14,7 @@ public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
 
     @Override
     public void write(OutputStream stream, NBTCompound tag) throws IOException {
+        super.write(stream, tag);
         writeContents(stream, tag);
         stream.write(NBTTag.END_ID);
     }
@@ -28,6 +26,21 @@ public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
             switch (childTag.getId()) {
                 case NBTByte.ID:
                     NBTByteWriter.INSTANCE.write(stream, (NBTByte)childTag);
+                    break;
+                case NBTShort.ID:
+                    NBTShortWriter.INSTANCE.write(stream, (NBTShort)childTag);
+                    break;
+                case NBTInteger.ID:
+                    NBTIntegerWriter.INSTANCE.write(stream, (NBTInteger)childTag);
+                    break;
+                case NBTLong.ID:
+                    NBTLongWriter.INSTANCE.write(stream, (NBTLong)childTag);
+                    break;
+                case NBTFloat.ID:
+                    NBTFloatWriter.INSTANCE.write(stream, (NBTFloat)childTag);
+                    break;
+                case NBTDouble.ID:
+                    NBTDoubleWriter.INSTANCE.write(stream, (NBTDouble)childTag);
                     break;
                 case NBTCompound.ID:
                     INSTANCE.write(stream, tag);
