@@ -17,6 +17,7 @@ public class NBTOutputStream extends OutputStream {
     private final NBTLongWriter longWriter = new NBTLongWriter(this.stream);
     private final NBTFloatWriter floatWriter = new NBTFloatWriter(this.stream);
     private final NBTDoubleWriter doubleWriter = new NBTDoubleWriter(this.stream);
+    private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
     private final NBTCompoundWriter compoundWriter = new NBTCompoundWriter(this.stream);
 
     @Override
@@ -46,6 +47,10 @@ public class NBTOutputStream extends OutputStream {
 
     public void writeDouble(NBTDouble nbtDouble) throws IOException {
         this.doubleWriter.write(nbtDouble);
+    }
+
+    public void writeByteArray(NBTByteArray nbtByteArray) throws IOException {
+        this.byteArrayWriter.write(nbtByteArray);
     }
 
     public void writeCompound(NBTCompound compound) throws IOException {

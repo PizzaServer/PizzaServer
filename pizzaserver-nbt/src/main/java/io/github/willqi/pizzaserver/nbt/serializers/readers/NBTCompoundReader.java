@@ -13,6 +13,7 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
     private final NBTLongReader longReader = new NBTLongReader(this.stream);
     private final NBTFloatReader floatReader = new NBTFloatReader(this.stream);
     private final NBTDoubleReader doubleReader = new NBTDoubleReader(this.stream);
+    private final NBTByteArrayReader byteArrayReader = new NBTByteArrayReader(this.stream);
 
 
     public NBTCompoundReader(InputStream stream) {
@@ -51,6 +52,10 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
                 case NBTDouble.ID:
                     NBTDouble nbtDouble = this.doubleReader.read();
                     compound.put(nbtDouble.getName(), nbtDouble);
+                    break;
+                case NBTByteArray.ID:
+                    NBTByteArray nbtByteArray = this.byteArrayReader.read();
+                    compound.put(nbtByteArray.getName(), nbtByteArray);
                     break;
                 case NBTCompound.ID:
                     NBTCompound nbtCompound = new NBTCompoundReader(this.stream).read();
