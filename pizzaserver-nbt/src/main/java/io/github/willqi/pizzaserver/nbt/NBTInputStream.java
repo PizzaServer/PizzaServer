@@ -1,9 +1,7 @@
 package io.github.willqi.pizzaserver.nbt;
 
-import io.github.willqi.pizzaserver.nbt.serializers.readers.NBTByteReader;
-import io.github.willqi.pizzaserver.nbt.serializers.readers.NBTCompoundReader;
-import io.github.willqi.pizzaserver.nbt.tags.NBTByte;
-import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
+import io.github.willqi.pizzaserver.nbt.serializers.readers.*;
+import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +10,24 @@ public class NBTInputStream extends InputStream {
 
     private final InputStream stream;
 
+    private final NBTByteReader byteReader;
+    private final NBTShortReader shortReader;
+    private final NBTIntegerReader integerReader;
+    private final NBTLongReader longReader;
+    private final NBTFloatReader floatReader;
+    private final NBTDoubleReader doubleReader;
+    private final NBTCompoundReader compoundReader;
+
+
     public NBTInputStream(InputStream stream) {
         this.stream = stream;
+        this.byteReader = new NBTByteReader(this.stream);
+        this.shortReader = new NBTShortReader(this.stream);
+        this.integerReader = new NBTIntegerReader(this.stream);
+        this.longReader = new NBTLongReader(this.stream);
+        this.floatReader = new NBTFloatReader(this.stream);
+        this.doubleReader = new NBTDoubleReader(this.stream);
+        this.compoundReader = new NBTCompoundReader(this.stream);
     }
 
     @Override
@@ -21,12 +35,32 @@ public class NBTInputStream extends InputStream {
         return this.stream.read();
     }
 
-    public NBTCompound readCompound() throws IOException {
-        return NBTCompoundReader.INSTANCE.read(this.stream);
+    public NBTByte readByte() throws IOException {
+        return this.byteReader.read();
     }
 
-    public NBTByte readByte() throws IOException {
-        return NBTByteReader.INSTANCE.read(this.stream);
+    public NBTShort readShort() throws IOException {
+        return this.shortReader.read();
+    }
+
+    public NBTInteger readInteger() throws IOException {
+        return this.integerReader.read();
+    }
+
+    public NBTLong readLong() throws IOException {
+        return this.longReader.read();
+    }
+
+    public NBTFloat readFloat() throws IOException {
+        return this.floatReader.read();
+    }
+
+    public NBTDouble readDouble() throws IOException {
+        return this.doubleReader.read();
+    }
+
+    public NBTCompound readCompound() throws IOException {
+        return this.compoundReader.read();
     }
 
     @Override

@@ -7,49 +7,50 @@ import java.io.OutputStream;
 
 public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
 
-    public static final NBTCompoundWriter INSTANCE = new NBTCompoundWriter();
-
-
-    private NBTCompoundWriter() {}
-
-    @Override
-    public void write(OutputStream stream, NBTCompound tag) throws IOException {
-        super.write(stream, tag);
-        writeContents(stream, tag);
-        stream.write(NBTTag.END_ID);
+    public NBTCompoundWriter(OutputStream stream) {
+        super(stream);
     }
 
-    private static void writeContents(OutputStream stream, NBTCompound tag) throws IOException {
+    @Override
+    protected void writeTagData(NBTCompound tag) throws IOException {
         for (String name : tag.keySet()) {
 
             NBTTag childTag = tag.get(name);
             switch (childTag.getId()) {
                 case NBTByte.ID:
-                    NBTByteWriter.INSTANCE.write(stream, (NBTByte)childTag);
+                    NBTByteWriter byteWriter = new NBTByteWriter(this.stream);
+                    byteWriter.write((NBTByte)childTag);
                     break;
                 case NBTShort.ID:
-                    NBTShortWriter.INSTANCE.write(stream, (NBTShort)childTag);
+                    NBTShortWriter shortWriter = new NBTShortWriter(this.stream);
+                    shortWriter.write((NBTShort)childTag);
                     break;
                 case NBTInteger.ID:
-                    NBTIntegerWriter.INSTANCE.write(stream, (NBTInteger)childTag);
+                    NBTIntegerWriter integerWriter = new NBTIntegerWriter(this.stream);
+                    integerWriter.write((NBTInteger)childTag);
                     break;
                 case NBTLong.ID:
-                    NBTLongWriter.INSTANCE.write(stream, (NBTLong)childTag);
+                    NBTLongWriter longWriter = new NBTLongWriter(this.stream);
+                    longWriter.write((NBTLong)childTag);
                     break;
                 case NBTFloat.ID:
-                    NBTFloatWriter.INSTANCE.write(stream, (NBTFloat)childTag);
+                    NBTFloatWriter floatWriter = new NBTFloatWriter(this.stream);
+                    floatWriter.write((NBTFloat)childTag);
                     break;
                 case NBTDouble.ID:
-                    NBTDoubleWriter.INSTANCE.write(stream, (NBTDouble)childTag);
+                    NBTDoubleWriter doubleWriter = new NBTDoubleWriter(this.stream);
+                    doubleWriter.write((NBTDouble)childTag);
                     break;
                 case NBTCompound.ID:
-                    INSTANCE.write(stream, tag);
+                    NBTCompoundWriter compoundWriter = new NBTCompoundWriter(this.stream);
+                    compoundWriter.write((NBTCompound)childTag);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported/invalid NBT tag id found when writing contents to NBTCompoundWriter. Id: " + tag.getId());
             }
 
         }
+        stream.write(NBTContainer.END_ID);
     }
 
 }

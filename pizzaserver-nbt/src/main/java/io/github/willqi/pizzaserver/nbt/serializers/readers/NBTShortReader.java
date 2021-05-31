@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.nbt.serializers.readers;
 
-import io.github.willqi.pizzaserver.nbt.serializers.utils.StreamUtility;
 import io.github.willqi.pizzaserver.nbt.tags.NBTShort;
 
 import java.io.IOException;
@@ -8,16 +7,13 @@ import java.io.InputStream;
 
 public class NBTShortReader extends NBTReader<NBTShort> {
 
-    public static final NBTShortReader INSTANCE = new NBTShortReader();
-
-
-    private NBTShortReader() {}
+    public NBTShortReader(InputStream stream) {
+        super(stream);
+    }
 
     @Override
-    public NBTShort read(InputStream stream) throws IOException {
-        stream.skip(1);
-        String tagName = StreamUtility.readName(stream);
-        return new NBTShort(tagName, StreamUtility.readShort(stream));
+    protected NBTShort parse(String tagName) throws IOException {
+        return new NBTShort(tagName, this.stream.readShort());
     }
 
 }

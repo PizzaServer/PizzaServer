@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.nbt.serializers.readers;
 
-import io.github.willqi.pizzaserver.nbt.serializers.utils.StreamUtility;
 import io.github.willqi.pizzaserver.nbt.tags.NBTFloat;
 
 import java.io.IOException;
@@ -8,16 +7,13 @@ import java.io.InputStream;
 
 public class NBTFloatReader extends NBTReader<NBTFloat> {
 
-    public static final NBTFloatReader INSTANCE = new NBTFloatReader();
-
-
-    private NBTFloatReader() {}
+    public NBTFloatReader(InputStream stream) {
+        super(stream);
+    }
 
     @Override
-    public NBTFloat read(InputStream stream) throws IOException {
-        stream.skip(1);
-        String tagName = StreamUtility.readName(stream);
-        return new NBTFloat(tagName, StreamUtility.readFloat(stream));
+    protected NBTFloat parse(String tagName) throws IOException {
+        return new NBTFloat(tagName, this.stream.readFloat());
     }
 
 }

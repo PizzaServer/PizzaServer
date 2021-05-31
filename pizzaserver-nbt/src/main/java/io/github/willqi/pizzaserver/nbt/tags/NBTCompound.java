@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class NBTCompound extends NBTTag {
+public class NBTCompound extends NBTTag implements NBTContainer {
 
     public static final byte ID = 10;
 
@@ -31,10 +31,11 @@ public class NBTCompound extends NBTTag {
     }
 
     public NBTCompound put(String name, NBTTag tag) throws NBTLimitException {
-        if (tag instanceof NBTCompound) {
-            ((NBTCompound)tag).depth = this.depth + 1;
-            if (((NBTCompound)tag).depth > 512) {
-                throw new NBTLimitException("Reached maximum depth of 512 in NBTCompound.");
+        if (tag instanceof NBTContainer) {
+            NBTContainer container = (NBTContainer)tag;
+            container.setDepth(this.getDepth() + 1);
+            if (container.getDepth() > 512) {
+                throw new NBTLimitException("Reached maximum depth of 512.");
             }
         }
         this.data.put(name, tag);
@@ -49,6 +50,14 @@ public class NBTCompound extends NBTTag {
         return this.data.keySet();
     }
 
+    @Override
+    public int getDepth() {
+        return this.depth;
+    }
 
+    @Override
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
 
 }

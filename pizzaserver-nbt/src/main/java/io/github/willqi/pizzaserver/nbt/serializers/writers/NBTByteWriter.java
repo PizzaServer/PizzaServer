@@ -7,14 +7,13 @@ import java.io.OutputStream;
 
 public class NBTByteWriter extends NBTWriter<NBTByte> {
 
-    public static final NBTByteWriter INSTANCE = new NBTByteWriter();
-
-
-    private NBTByteWriter() {}
+    public NBTByteWriter(OutputStream stream) {
+        super(stream);
+    }
 
     @Override
-    public void write(OutputStream stream, NBTByte tag) throws IOException {
-        stream.write(tag.getByte());
+    protected void writeTagData(NBTByte tag) throws IOException {
+        this.stream.write(tag.getId());
     }
 
 }

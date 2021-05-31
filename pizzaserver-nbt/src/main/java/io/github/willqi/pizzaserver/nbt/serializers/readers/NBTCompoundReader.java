@@ -7,13 +7,12 @@ import java.io.InputStream;
 
 public class NBTCompoundReader extends NBTReader<NBTCompound> {
 
-    public static final NBTCompoundReader INSTANCE = new NBTCompoundReader();
-
-
-    private NBTCompoundReader() {}
+    public NBTCompoundReader(InputStream stream) {
+        super(stream);
+    }
 
     @Override
-    public NBTCompound read(InputStream stream) throws IOException {
+    protected NBTCompound parse(String tagName) throws IOException {
         return null;
     }
 
