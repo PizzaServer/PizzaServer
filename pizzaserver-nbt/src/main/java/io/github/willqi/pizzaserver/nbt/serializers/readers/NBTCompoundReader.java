@@ -62,6 +62,10 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
                     NBTString nbtString = this.stringReader.read();
                     compound.put(nbtString.getName(), nbtString);
                     break;
+                case NBTList.ID:
+                    NBTList<? extends NBTTag> nbtList = new NBTListReader<>(this.stream).read();
+                    compound.put(nbtList.getName(), nbtList);
+                    break;
                 case NBTCompound.ID:
                     NBTCompound nbtCompound = new NBTCompoundReader(this.stream).read();
                     compound.put(nbtCompound.getName(), nbtCompound);

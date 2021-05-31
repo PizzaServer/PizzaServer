@@ -55,14 +55,10 @@ public class NBTCompound extends NBTTag implements NBTContainer {
     }
 
     public NBTCompound put(String name, NBTTag tag) throws NBTLimitException {
-        if (tag instanceof NBTContainer) {
-            NBTContainer container = (NBTContainer)tag;
-            container.setDepth(this.getDepth() + 1);
-            if (container.getDepth() > 512) {
-                throw new NBTLimitException("Reached maximum depth of 512.");
-            }
-        }
         this.data.put(name, tag);
+        if (tag instanceof NBTContainer) {
+            ((NBTContainer)tag).setDepth(this.getDepth() + 1);
+        }
         return this;
     }
 
@@ -82,6 +78,14 @@ public class NBTCompound extends NBTTag implements NBTContainer {
     @Override
     public void setDepth(int depth) {
         this.depth = depth;
+        if (this.depth > 512) {
+            throw new NBTLimitException("Reached maximum depth of 512.");
+        }
+        this.data.forEach((name, tag) -> {
+            if (tag instanceof NBTContainer) {
+                ((NBTContainer)tag).setDepth(this.getDepth() + 1);
+            }
+        });
     }
 
 }

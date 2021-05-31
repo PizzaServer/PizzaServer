@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.nbt.tags.*;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
+public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
 
     private final NBTByteWriter byteWriter = new NBTByteWriter(this.stream);
     private final NBTShortWriter shortWriter = new NBTShortWriter(this.stream);
@@ -16,55 +16,57 @@ public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
     private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
     private final NBTStringWriter stringWriter = new NBTStringWriter(this.stream);
 
-
-    public NBTCompoundWriter(OutputStream stream) {
+    public NBTListWriter(OutputStream stream) {
         super(stream);
     }
 
     @Override
-    protected void writeTagData(NBTCompound tag) throws IOException {
-        for (String name : tag.keySet()) {
+    protected void writeTagData(NBTList<T> tag) throws IOException {
+        if (tag.getContents().length == 0) {
+            throw new IOException("Cannot write empty NBT list");
+        }
+        this.stream.writeByte(tag.getContents()[0].getId());
+        this.stream.writeInt(tag.getContents().length);
 
-            NBTTag childTag = tag.get(name);
-            childTag.setName(name);
-            switch (childTag.getId()) {
+        int contentTagId = tag.getContents()[0].getId();
+        for (NBTTag childTag : tag.getContents()) {
+            switch (contentTagId) {
                 case NBTByte.ID:
-                    this.byteWriter.write((NBTByte)childTag);
+                    this.byteWriter.writeTagData((NBTByte)childTag);
                     break;
                 case NBTShort.ID:
-                    this.shortWriter.write((NBTShort)childTag);
+                    this.shortWriter.writeTagData((NBTShort)childTag);
                     break;
                 case NBTInteger.ID:
-                    this.integerWriter.write((NBTInteger)childTag);
+                    this.integerWriter.writeTagData((NBTInteger)childTag);
                     break;
                 case NBTLong.ID:
-                    this.longWriter.write((NBTLong)childTag);
+                    this.longWriter.writeTagData((NBTLong)childTag);
                     break;
                 case NBTFloat.ID:
-                    this.floatWriter.write((NBTFloat)childTag);
+                    this.floatWriter.writeTagData((NBTFloat)childTag);
                     break;
                 case NBTDouble.ID:
-                    this.doubleWriter.write((NBTDouble)childTag);
+                    this.doubleWriter.writeTagData((NBTDouble)childTag);
                     break;
                 case NBTByteArray.ID:
-                    this.byteArrayWriter.write((NBTByteArray)childTag);
+                    this.byteArrayWriter.writeTagData((NBTByteArray)childTag);
                     break;
                 case NBTString.ID:
-                    this.stringWriter.write((NBTString)childTag);
+                    this.stringWriter.writeTagData((NBTString)childTag);
                     break;
                 case NBTList.ID:
-                    NBTListWriter<? extends NBTTag> listWriter = new NBTListWriter<>(this.stream);
-                    listWriter.writeTagData((NBTList)childTag);
+                    this.writeTagData((NBTList)childTag);
                     break;
                 case NBTCompound.ID:
-                    this.write((NBTCompound)childTag);
+                    new NBTCompoundWriter(this.stream).writeTagData((NBTCompound)childTag);
                     break;
                 default:
-                    throw new UnsupportedOperationException("Unsupported/invalid NBT tag id found when writing contents to NBTCompoundWriter. Id: " + tag.getId());
+                    throw new UnsupportedOperationException("Unspported/invalid NBT tag id found when writing contents to NBTListWriter. Id: " + contentTagId);
             }
-
         }
-        stream.write(NBTContainer.END_ID);
+
+
     }
 
 }

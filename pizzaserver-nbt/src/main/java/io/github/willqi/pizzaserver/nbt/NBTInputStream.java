@@ -17,6 +17,8 @@ public class NBTInputStream extends InputStream {
     private final NBTFloatReader floatReader;
     private final NBTDoubleReader doubleReader;
     private final NBTByteArrayReader byteArrayReader;
+    private final NBTStringReader stringReader;
+    private final NBTListReader<? extends NBTTag> listReader;
     private final NBTCompoundReader compoundReader;
 
 
@@ -29,6 +31,8 @@ public class NBTInputStream extends InputStream {
         this.floatReader = new NBTFloatReader(this.stream);
         this.doubleReader = new NBTDoubleReader(this.stream);
         this.byteArrayReader = new NBTByteArrayReader(this.stream);
+        this.stringReader = new NBTStringReader(this.stream);
+        this.listReader = new NBTListReader(this.stream);
         this.compoundReader = new NBTCompoundReader(this.stream);
     }
 
@@ -71,6 +75,17 @@ public class NBTInputStream extends InputStream {
         this.ensureNbtId(NBTByteArray.ID);
         return this.byteArrayReader.read();
     }
+
+    public NBTString readString() throws IOException {
+        this.ensureNbtId(NBTString.ID);
+        return this.stringReader.read();
+    }
+
+    public NBTList<? extends NBTTag> readList() throws IOException {
+        this.ensureNbtId(NBTList.ID);
+        return this.listReader.read();
+    }
+
 
     public NBTCompound readCompound() throws IOException {
         this.ensureNbtId(NBTCompound.ID);
