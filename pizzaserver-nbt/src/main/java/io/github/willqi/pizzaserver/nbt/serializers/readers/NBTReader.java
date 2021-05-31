@@ -16,7 +16,6 @@ public abstract class NBTReader<T extends NBTTag> {
     }
 
     public T read() throws IOException {
-        this.stream.skipBytes(1);   // Tag id
         String name = this.stream.readUTF();
         return this.parse(name);
     }

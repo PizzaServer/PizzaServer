@@ -13,7 +13,7 @@ public class NBTByteWriter extends NBTWriter<NBTByte> {
 
     @Override
     protected void writeTagData(NBTByte tag) throws IOException {
-        this.stream.write(tag.getId());
+        this.stream.write(tag.getValue());
     }
 
 }

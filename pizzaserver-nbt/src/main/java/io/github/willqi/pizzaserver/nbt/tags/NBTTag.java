@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.nbt.tags;
 
 public abstract class NBTTag {
 
-    protected final String name;
+    protected String name;
 
 
     public NBTTag(String name) {
@@ -18,6 +18,10 @@ public abstract class NBTTag {
 
     public String getName() {
         return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

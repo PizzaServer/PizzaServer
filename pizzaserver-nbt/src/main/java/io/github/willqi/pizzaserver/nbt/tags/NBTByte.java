@@ -16,7 +16,7 @@ public class NBTByte extends NBTTag {
         this.b = b;
     }
 
-    public byte getByte() {
+    public byte getValue() {
         return this.b;
     }
 

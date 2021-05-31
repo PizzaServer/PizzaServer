@@ -26,6 +26,30 @@ public class NBTCompound extends NBTTag implements NBTContainer {
         return ID;
     }
 
+    public NBTByte getByte(String name) {
+        return (NBTByte)this.data.get(name);
+    }
+
+    public NBTShort getShort(String name) {
+        return (NBTShort)this.data.get(name);
+    }
+
+    public NBTInteger getInteger(String name) {
+        return (NBTInteger)this.data.get(name);
+    }
+
+    public NBTLong getLong(String name) {
+        return (NBTLong)this.data.get(name);
+    }
+
+    public NBTFloat getFloat(String name) {
+        return (NBTFloat)this.data.get(name);
+    }
+
+    public NBTDouble getDouble(String name) {
+        return (NBTDouble)this.data.get(name);
+    }
+
     public NBTCompound getCompound(String name) {
         return (NBTCompound)this.data.get(name);
     }

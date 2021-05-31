@@ -52,6 +52,10 @@ public class NBTOutputStream extends OutputStream {
         this.compoundWriter.write(compound);
     }
 
+    public byte[] getBytes() {
+        return this.stream.toByteArray();
+    }
+
     @Override
     public void close() throws IOException {
         this.stream.close();

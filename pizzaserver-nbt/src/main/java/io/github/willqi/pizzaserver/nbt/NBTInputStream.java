@@ -36,31 +36,45 @@ public class NBTInputStream extends InputStream {
     }
 
     public NBTByte readByte() throws IOException {
+        this.ensureNbtId(NBTByte.ID);
         return this.byteReader.read();
     }
 
     public NBTShort readShort() throws IOException {
+        this.ensureNbtId(NBTShort.ID);
         return this.shortReader.read();
     }
 
     public NBTInteger readInteger() throws IOException {
+        this.ensureNbtId(NBTInteger.ID);
         return this.integerReader.read();
     }
 
     public NBTLong readLong() throws IOException {
+        this.ensureNbtId(NBTLong.ID);
         return this.longReader.read();
     }
 
     public NBTFloat readFloat() throws IOException {
+        this.ensureNbtId(NBTFloat.ID);
         return this.floatReader.read();
     }
 
     public NBTDouble readDouble() throws IOException {
+        this.ensureNbtId(NBTDouble.ID);
         return this.doubleReader.read();
     }
 
     public NBTCompound readCompound() throws IOException {
+        this.ensureNbtId(NBTCompound.ID);
         return this.compoundReader.read();
+    }
+
+    private void ensureNbtId(int id) throws IOException {
+        int nbtId = this.stream.read();
+        if (nbtId != id) {
+            throw new IOException("Attempted to read NBT type: " + id + " but found " + nbtId + " instead.");
+        }
     }
 
     @Override
