@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.nbt.tags;
 
-public class NBTByteArray extends NBTTag implements NBTContainer {
+public class NBTByteArray extends NBTTag {
 
     public static final int ID = 7;
 
@@ -24,16 +24,6 @@ public class NBTByteArray extends NBTTag implements NBTContainer {
     @Override
     public int getId() {
         return ID;
-    }
-
-    @Override
-    public int getDepth() {
-        return this.depth;
-    }
-
-    @Override
-    public void setDepth(int depth) {
-        this.depth = depth;
     }
 
 }

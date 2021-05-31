@@ -14,6 +14,7 @@ public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
     private final NBTFloatWriter floatWriter = new NBTFloatWriter(this.stream);
     private final NBTDoubleWriter doubleWriter = new NBTDoubleWriter(this.stream);
     private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
+    private final NBTStringWriter stringWriter = new NBTStringWriter(this.stream);
 
 
     public NBTCompoundWriter(OutputStream stream) {
@@ -46,7 +47,10 @@ public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
                     this.doubleWriter.write((NBTDouble)childTag);
                     break;
                 case NBTByteArray.ID:
-                    this.byteArrayWriter.writeTagData((NBTByteArray)childTag);
+                    this.byteArrayWriter.write((NBTByteArray)childTag);
+                    break;
+                case NBTString.ID:
+                    this.stringWriter.write((NBTString)childTag);
                     break;
                 case NBTCompound.ID:
                     new NBTCompoundWriter(this.stream).write((NBTCompound)childTag);
