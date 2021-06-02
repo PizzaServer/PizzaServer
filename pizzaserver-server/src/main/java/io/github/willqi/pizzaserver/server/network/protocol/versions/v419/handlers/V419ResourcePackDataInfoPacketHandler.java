@@ -5,11 +5,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPac
 import io.github.willqi.pizzaserver.server.network.utils.ByteBufUtility;
 import io.netty.buffer.ByteBuf;
 
-public class V419ResourcePackDataInfoPacketHandler implements ProtocolPacketHandler<ResourcePackDataInfoPacket> {
-    @Override
-    public ResourcePackDataInfoPacket decode(ByteBuf buffer) {
-        return null;
-    }
+public class V419ResourcePackDataInfoPacketHandler extends ProtocolPacketHandler<ResourcePackDataInfoPacket> {
 
     @Override
     public void encode(ResourcePackDataInfoPacket packet, ByteBuf buffer) {

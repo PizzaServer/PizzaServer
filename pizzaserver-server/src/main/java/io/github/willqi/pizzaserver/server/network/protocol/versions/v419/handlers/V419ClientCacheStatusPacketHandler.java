@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.ClientCacheS
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
-public class V419ClientCacheStatusPacketHandler implements ProtocolPacketHandler<ClientCacheStatusPacket> {
+public class V419ClientCacheStatusPacketHandler extends ProtocolPacketHandler<ClientCacheStatusPacket> {
 
     @Override
     public ClientCacheStatusPacket decode(ByteBuf buffer) {

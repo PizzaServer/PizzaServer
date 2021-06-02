@@ -5,12 +5,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPac
 import io.github.willqi.pizzaserver.server.network.utils.ByteBufUtility;
 import io.netty.buffer.ByteBuf;
 
-public class V419DisconnectPacketHandler implements ProtocolPacketHandler<DisconnectPacket> {
-
-    @Override
-    public DisconnectPacket decode(ByteBuf buffer) {
-        return null;
-    }
+public class V419DisconnectPacketHandler extends ProtocolPacketHandler<DisconnectPacket> {
 
     @Override
     public void encode(DisconnectPacket packet, ByteBuf buffer) {

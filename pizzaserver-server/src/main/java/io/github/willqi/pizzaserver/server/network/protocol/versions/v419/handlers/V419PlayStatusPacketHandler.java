@@ -4,12 +4,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayStatusPa
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
-public class V419PlayStatusPacketHandler implements ProtocolPacketHandler<PlayStatusPacket> {
-
-    @Override
-    public PlayStatusPacket decode(ByteBuf buffer) {
-        return null;
-    }
+public class V419PlayStatusPacketHandler extends ProtocolPacketHandler<PlayStatusPacket> {
 
     @Override
     public void encode(PlayStatusPacket packet, ByteBuf buffer) {

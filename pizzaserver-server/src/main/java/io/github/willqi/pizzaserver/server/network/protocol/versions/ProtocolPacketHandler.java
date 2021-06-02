@@ -3,9 +3,14 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.BedrockPacket;
 import io.netty.buffer.ByteBuf;
 
-public interface ProtocolPacketHandler<P extends BedrockPacket> {
+public abstract class ProtocolPacketHandler<P extends BedrockPacket> {
 
-    P decode(ByteBuf buffer);
-    void encode(P packet, ByteBuf buffer);
+    public P decode(ByteBuf buffer) {
+        throw new UnsupportedOperationException("This packet is not meant to be decoded server-side.");
+    }
+
+    public void encode(P packet, ByteBuf buffer) {
+        throw new UnsupportedOperationException("This packet is not meant to be sent to the client.");
+    }
 
 }

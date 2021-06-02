@@ -8,7 +8,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 
-public class V419ResourcePackResponsePacketHandler implements ProtocolPacketHandler<ResourcePackResponsePacket> {
+public class V419ResourcePackResponsePacketHandler extends ProtocolPacketHandler<ResourcePackResponsePacket> {
 
     @Override
     public ResourcePackResponsePacket decode(ByteBuf buffer) {
@@ -23,11 +23,6 @@ public class V419ResourcePackResponsePacketHandler implements ProtocolPacketHand
         packet.setPacksRequested(packs);
 
         return packet;
-    }
-
-    @Override
-    public void encode(ResourcePackResponsePacket packet, ByteBuf buffer) {
-
     }
 
 }

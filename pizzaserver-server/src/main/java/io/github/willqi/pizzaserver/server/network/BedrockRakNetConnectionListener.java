@@ -45,6 +45,7 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
 
             // https://github.com/CloudburstMC/Protocol/blob/develop/bedrock/bedrock-common/src/main/java/com/nukkitx/protocol/bedrock/wrapper/BedrockWrapperSerializerV9_10.java#L34
             // Apparently packets start with a header.
+            // The header is used for the packet id and split screen connections. But currently we only support one session.
             int packetId = VarInts.readUnsignedInt(packet) & 0x3ff;
             try {
                 session.handlePacket(packetId, packet);

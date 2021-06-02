@@ -27,7 +27,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.*;
 
-public class V419LoginPacketHandler implements ProtocolPacketHandler<LoginPacket> {
+public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
 
     private static final Gson GSON = new Gson();
 
@@ -58,12 +58,6 @@ public class V419LoginPacketHandler implements ProtocolPacketHandler<LoginPacket
 
         return packet;
     }
-
-    @Override
-    public void encode(LoginPacket packet, ByteBuf buffer) {
-
-    }
-
 
     /**
      * Extract the relevant JWT data from the chain/skin chains

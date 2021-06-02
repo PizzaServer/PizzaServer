@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPac
 import io.github.willqi.pizzaserver.server.network.utils.ByteBufUtility;
 import io.netty.buffer.ByteBuf;
 
-public class V419ViolationPacketHandler implements ProtocolPacketHandler<ViolationPacket> {
+public class V419ViolationPacketHandler extends ProtocolPacketHandler<ViolationPacket> {
 
     @Override
     public ViolationPacket decode(ByteBuf buffer) {
@@ -16,11 +16,6 @@ public class V419ViolationPacketHandler implements ProtocolPacketHandler<Violati
         packet.setPacketId(VarInts.readInt(buffer));
         packet.setMessage(ByteBufUtility.readString(buffer));
         return packet;
-    }
-
-    @Override
-    public void encode(ViolationPacket packet, ByteBuf buffer) {
-
     }
 
 }
