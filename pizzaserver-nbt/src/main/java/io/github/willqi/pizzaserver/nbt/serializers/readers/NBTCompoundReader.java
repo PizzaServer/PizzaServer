@@ -1,9 +1,9 @@
 package io.github.willqi.pizzaserver.nbt.serializers.readers;
 
+import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class NBTCompoundReader extends NBTReader<NBTCompound> {
 
@@ -17,7 +17,7 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
     private final NBTStringReader stringReader = new NBTStringReader(this.stream);
 
 
-    public NBTCompoundReader(InputStream stream) {
+    public NBTCompoundReader(LittleEndianDataInputStream stream) {
         super(stream);
     }
 

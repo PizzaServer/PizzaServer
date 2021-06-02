@@ -1,29 +1,48 @@
 package io.github.willqi.pizzaserver.nbt.streams.nbt;
 
 import io.github.willqi.pizzaserver.nbt.serializers.writers.*;
+import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class NBTOutputStream extends OutputStream {
 
-    private final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    private final LittleEndianDataOutputStream stream;
 
-    private final NBTByteWriter byteWriter = new NBTByteWriter(this.stream);
-    private final NBTShortWriter shortWriter = new NBTShortWriter(this.stream);
-    private final NBTIntegerWriter integerWriter = new NBTIntegerWriter(this.stream);
-    private final NBTLongWriter longWriter = new NBTLongWriter(this.stream);
-    private final NBTFloatWriter floatWriter = new NBTFloatWriter(this.stream);
-    private final NBTDoubleWriter doubleWriter = new NBTDoubleWriter(this.stream);
-    private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
-    private final NBTStringWriter stringWriter = new NBTStringWriter(this.stream);
-    private final NBTListWriter<? extends NBTTag> listWriter = new NBTListWriter<>(this.stream);
-    private final NBTCompoundWriter compoundWriter = new NBTCompoundWriter(this.stream);
+    private final NBTByteWriter byteWriter;
+    private final NBTShortWriter shortWriter;
+    private final NBTIntegerWriter integerWriter;
+    private final NBTLongWriter longWriter;
+    private final NBTFloatWriter floatWriter;
+    private final NBTDoubleWriter doubleWriter;
+    private final NBTByteArrayWriter byteArrayWriter;
+    private final NBTStringWriter stringWriter;
+    private final NBTListWriter<? extends NBTTag> listWriter;
+    private final NBTCompoundWriter compoundWriter;
+
+    public NBTOutputStream(OutputStream stream) {
+        if (stream instanceof LittleEndianDataOutputStream) {
+            this.stream = (LittleEndianDataOutputStream)stream;
+        } else {
+            this.stream = new LittleEndianDataOutputStream(stream);
+        }
+
+        this.byteWriter = new NBTByteWriter(this.stream);
+        this.shortWriter = new NBTShortWriter(this.stream);
+        this.integerWriter = new NBTIntegerWriter(this.stream);
+        this.longWriter = new NBTLongWriter(this.stream);
+        this.floatWriter = new NBTFloatWriter(this.stream);
+        this.doubleWriter = new NBTDoubleWriter(this.stream);
+        this.byteArrayWriter = new NBTByteArrayWriter(this.stream);
+        this.stringWriter = new NBTStringWriter(this.stream);
+        this.listWriter = new NBTListWriter<>(this.stream);
+        this.compoundWriter = new NBTCompoundWriter(this.stream);
+    }
 
     @Override
-    public void write(int b) {
+    public void write(int b) throws IOException {
         this.stream.write(b);
     }
 
@@ -67,13 +86,8 @@ public class NBTOutputStream extends OutputStream {
         this.compoundWriter.write(compound);
     }
 
-    public byte[] getBytes() {
-        return this.stream.toByteArray();
-    }
-
     @Override
     public void close() throws IOException {
-        this.stream.close();
+        super.close();
     }
-
 }

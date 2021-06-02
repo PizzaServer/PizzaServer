@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,9 +33,10 @@ public class NBTCompoundTest {
         testCompound.put("double", new NBTDouble(12d));
         testCompound.put("int", new NBTInteger(2));
 
-        NBTOutputStream outputStream = new NBTOutputStream();
+        ByteArrayOutputStream resultingByteStream = new ByteArrayOutputStream();
+        NBTOutputStream outputStream = new NBTOutputStream(resultingByteStream);
         outputStream.writeCompound(testCompound);
-        NBTInputStream inputStream = new NBTInputStream(new ByteArrayInputStream(outputStream.getBytes()));
+        NBTInputStream inputStream = new NBTInputStream(new ByteArrayInputStream(resultingByteStream.toByteArray()));
 
         NBTCompound rebuiltCompound = inputStream.readCompound();
         NBTDouble nbtDouble = rebuiltCompound.getDouble("double");

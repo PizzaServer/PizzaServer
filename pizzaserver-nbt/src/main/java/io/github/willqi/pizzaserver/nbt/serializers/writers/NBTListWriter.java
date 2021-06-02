@@ -1,9 +1,9 @@
 package io.github.willqi.pizzaserver.nbt.serializers.writers;
 
+import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
 
@@ -16,7 +16,7 @@ public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
     private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
     private final NBTStringWriter stringWriter = new NBTStringWriter(this.stream);
 
-    public NBTListWriter(OutputStream stream) {
+    public NBTListWriter(LittleEndianDataOutputStream stream) {
         super(stream);
     }
 

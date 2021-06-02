@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.nbt.streams.nbt;
 
 import io.github.willqi.pizzaserver.nbt.serializers.readers.*;
+import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.io.InputStream;
 
 public class NBTInputStream extends InputStream {
 
-    private final InputStream stream;
+    private final LittleEndianDataInputStream stream;
 
     private final NBTByteReader byteReader;
     private final NBTShortReader shortReader;
@@ -23,7 +24,12 @@ public class NBTInputStream extends InputStream {
 
 
     public NBTInputStream(InputStream stream) {
-        this.stream = stream;
+        if (stream instanceof LittleEndianDataInputStream) {
+            this.stream = (LittleEndianDataInputStream)stream;
+        } else {
+            this.stream = new LittleEndianDataInputStream(stream);
+        }
+
         this.byteReader = new NBTByteReader(this.stream);
         this.shortReader = new NBTShortReader(this.stream);
         this.integerReader = new NBTIntegerReader(this.stream);

@@ -1,13 +1,13 @@
 package io.github.willqi.pizzaserver.nbt.serializers.readers;
 
+import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTDouble;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class NBTDoubleReader extends NBTReader<NBTDouble> {
 
-    public NBTDoubleReader(InputStream stream) {
+    public NBTDoubleReader(LittleEndianDataInputStream stream) {
         super(stream);
     }
 

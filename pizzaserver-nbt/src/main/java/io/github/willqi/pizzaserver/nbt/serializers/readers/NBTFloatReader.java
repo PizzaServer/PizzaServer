@@ -1,13 +1,13 @@
 package io.github.willqi.pizzaserver.nbt.serializers.readers;
 
+import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTFloat;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class NBTFloatReader extends NBTReader<NBTFloat> {
 
-    public NBTFloatReader(InputStream stream) {
+    public NBTFloatReader(LittleEndianDataInputStream stream) {
         super(stream);
     }
 

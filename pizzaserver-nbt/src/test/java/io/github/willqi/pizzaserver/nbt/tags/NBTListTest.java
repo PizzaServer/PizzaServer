@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,10 +33,11 @@ public class NBTListTest {
         NBTList<NBTInteger> list = new NBTList<>();
         list.setContents(new NBTInteger[]{ new NBTInteger(1), new NBTInteger(2), new NBTInteger(3) });
 
-        NBTOutputStream outputStream = new NBTOutputStream();
+        ByteArrayOutputStream resultingByteStream = new ByteArrayOutputStream();
+        NBTOutputStream outputStream = new NBTOutputStream(resultingByteStream);
         outputStream.writeList(list);
 
-        NBTInputStream inputStream = new NBTInputStream(new ByteArrayInputStream(outputStream.getBytes()));
+        NBTInputStream inputStream = new NBTInputStream(new ByteArrayInputStream(resultingByteStream.toByteArray()));
         NBTList<NBTInteger> rebuiltList =  (NBTList<NBTInteger>)inputStream.readList();
 
         assertEquals(1, rebuiltList.getContents()[0].getValue());
