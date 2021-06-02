@@ -30,9 +30,11 @@ public class NBTListTest {
     @Test
     public void shouldParseCorrectly() throws IOException {
 
+        // Create test input
         NBTList<NBTInteger> list = new NBTList<>();
         list.setContents(new NBTInteger[]{ new NBTInteger(1), new NBTInteger(2), new NBTInteger(3) });
 
+        // Write and read it
         ByteArrayOutputStream resultingByteStream = new ByteArrayOutputStream();
         NBTOutputStream outputStream = new NBTOutputStream(resultingByteStream);
         outputStream.writeList(list);
@@ -40,6 +42,7 @@ public class NBTListTest {
         NBTInputStream inputStream = new NBTInputStream(new ByteArrayInputStream(resultingByteStream.toByteArray()));
         NBTList<NBTInteger> rebuiltList =  (NBTList<NBTInteger>)inputStream.readList();
 
+        // Confirm results
         assertEquals(1, rebuiltList.getContents()[0].getValue());
         assertEquals(2, rebuiltList.getContents()[1].getValue());
         assertEquals(3, rebuiltList.getContents()[2].getValue());
