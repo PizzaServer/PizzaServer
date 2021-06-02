@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class NBTCompoundReader extends NBTReader<NBTCompound> {
 
