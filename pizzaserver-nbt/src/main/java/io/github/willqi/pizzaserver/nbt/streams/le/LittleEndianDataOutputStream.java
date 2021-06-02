@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.nbt.streams.ld;
+package io.github.willqi.pizzaserver.nbt.streams.le;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

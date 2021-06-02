@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.nbt.streams.nbt;
 
 import io.github.willqi.pizzaserver.nbt.serializers.readers.*;
-import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataInputStream;
+import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;

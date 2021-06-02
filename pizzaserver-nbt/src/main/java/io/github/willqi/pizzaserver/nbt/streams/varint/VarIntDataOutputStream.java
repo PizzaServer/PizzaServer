@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.nbt.streams.varint;
 
-import io.github.willqi.pizzaserver.nbt.streams.ld.LittleEndianDataOutputStream;
+import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataOutputStream;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
