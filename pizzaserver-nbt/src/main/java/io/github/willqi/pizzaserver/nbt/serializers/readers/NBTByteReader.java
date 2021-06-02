@@ -13,7 +13,7 @@ public class NBTByteReader extends NBTReader<NBTByte> {
 
     @Override
     public NBTByte parse(String tagName) throws IOException {
-        return new NBTByte(tagName, stream.readByte());
+        return new NBTByte(tagName, this.stream.readByte());
     }
 
 }

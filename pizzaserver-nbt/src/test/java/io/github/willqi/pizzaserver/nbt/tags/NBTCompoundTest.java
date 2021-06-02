@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.nbt.tags;
 
-import io.github.willqi.pizzaserver.nbt.NBTInputStream;
-import io.github.willqi.pizzaserver.nbt.NBTOutputStream;
+import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
+import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 import org.junit.jupiter.api.Test;
 

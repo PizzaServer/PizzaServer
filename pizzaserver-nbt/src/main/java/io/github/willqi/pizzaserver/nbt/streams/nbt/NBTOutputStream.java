@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.nbt;
+package io.github.willqi.pizzaserver.nbt.streams.nbt;
 
 import io.github.willqi.pizzaserver.nbt.serializers.writers.*;
 import io.github.willqi.pizzaserver.nbt.tags.*;
@@ -23,7 +23,7 @@ public class NBTOutputStream extends OutputStream {
     private final NBTCompoundWriter compoundWriter = new NBTCompoundWriter(this.stream);
 
     @Override
-    public void write(int b) throws IOException {
+    public void write(int b) {
         this.stream.write(b);
     }
 

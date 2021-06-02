@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.nbt;
+package io.github.willqi.pizzaserver.nbt.streams.nbt;
 
 import io.github.willqi.pizzaserver.nbt.serializers.readers.*;
 import io.github.willqi.pizzaserver.nbt.tags.*;
