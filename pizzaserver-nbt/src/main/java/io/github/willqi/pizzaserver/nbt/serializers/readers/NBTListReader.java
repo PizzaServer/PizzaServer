@@ -16,6 +16,7 @@ public class NBTListReader<T extends NBTTag> extends NBTReader<NBTList<T>> {
     private final NBTByteArrayReader byteArrayReader = new NBTByteArrayReader(this.stream);
     private final NBTStringReader stringReader = new NBTStringReader(this.stream);
     private final NBTIntegerArrayReader integerArrayReader = new NBTIntegerArrayReader(this.stream);
+    private final NBTLongArrayReader longArrayReader = new NBTLongArrayReader(this.stream);
 
     public NBTListReader(LittleEndianDataInputStream stream) {
         super(stream);
@@ -95,6 +96,12 @@ public class NBTListReader<T extends NBTTag> extends NBTReader<NBTList<T>> {
                 contents = new NBTIntegerArray[length];
                 for (int i = 0; i < length; i++) {
                     contents[i] = this.integerArrayReader.parse();
+                }
+                break;
+            case NBTLongArray.ID:
+                contents = new NBTLongArray[length];
+                for (int i = 0; i < length; i++) {
+                    contents[i] = this.longArrayReader.parse();
                 }
                 break;
             default:
