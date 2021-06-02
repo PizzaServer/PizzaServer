@@ -15,6 +15,7 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
     private final NBTDoubleReader doubleReader = new NBTDoubleReader(this.stream);
     private final NBTByteArrayReader byteArrayReader = new NBTByteArrayReader(this.stream);
     private final NBTStringReader stringReader = new NBTStringReader(this.stream);
+    private final NBTIntegerArrayReader integerArrayReader = new NBTIntegerArrayReader(this.stream);
 
 
     public NBTCompoundReader(LittleEndianDataInputStream stream) {
@@ -72,6 +73,10 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
                     break;
                 case NBTContainer.END_ID:
                     reachedEnd = true;
+                    break;
+                case NBTIntegerArray.ID:
+                    NBTIntegerArray nbtIntegerArray = this.integerArrayReader.read();
+                    compound.put(nbtIntegerArray.getName(), nbtIntegerArray);
                     break;
             }
 

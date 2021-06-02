@@ -21,6 +21,7 @@ public class NBTOutputStream extends OutputStream {
     private final NBTStringWriter stringWriter;
     private final NBTListWriter<? extends NBTTag> listWriter;
     private final NBTCompoundWriter compoundWriter;
+    private final NBTIntegerArrayWriter integerArrayWriter;
 
     public NBTOutputStream(OutputStream stream) {
         if (stream instanceof LittleEndianDataOutputStream) {
@@ -39,6 +40,7 @@ public class NBTOutputStream extends OutputStream {
         this.stringWriter = new NBTStringWriter(this.stream);
         this.listWriter = new NBTListWriter<>(this.stream);
         this.compoundWriter = new NBTCompoundWriter(this.stream);
+        this.integerArrayWriter = new NBTIntegerArrayWriter(this.stream);
     }
 
     @Override
@@ -84,6 +86,10 @@ public class NBTOutputStream extends OutputStream {
 
     public void writeCompound(NBTCompound compound) throws IOException {
         this.compoundWriter.write(compound);
+    }
+
+    public void writeIntegerArray(NBTIntegerArray integerArray) throws IOException {
+        this.integerArrayWriter.write(integerArray);
     }
 
     @Override

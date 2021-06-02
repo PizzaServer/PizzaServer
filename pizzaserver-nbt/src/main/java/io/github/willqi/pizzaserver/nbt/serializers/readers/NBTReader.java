@@ -19,6 +19,10 @@ public abstract class NBTReader<T extends NBTTag> {
         return this.parse(name);
     }
 
+    protected T parse() throws IOException {
+        return this.parse("");
+    }
+
     protected abstract T parse(String tagName) throws IOException;
 
 }

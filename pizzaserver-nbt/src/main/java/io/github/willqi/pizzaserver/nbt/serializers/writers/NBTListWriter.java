@@ -15,6 +15,7 @@ public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
     private final NBTDoubleWriter doubleWriter = new NBTDoubleWriter(this.stream);
     private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
     private final NBTStringWriter stringWriter = new NBTStringWriter(this.stream);
+    private final NBTIntegerArrayWriter integerArrayWriter = new NBTIntegerArrayWriter(this.stream);
 
     public NBTListWriter(LittleEndianDataOutputStream stream) {
         super(stream);
@@ -60,6 +61,9 @@ public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
                     break;
                 case NBTCompound.ID:
                     new NBTCompoundWriter(this.stream).writeTagData((NBTCompound)childTag);
+                    break;
+                case NBTIntegerArray.ID:
+                    this.integerArrayWriter.write((NBTIntegerArray)childTag);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unspported/invalid NBT tag id found when writing contents to NBTListWriter. Id: " + contentTagId);

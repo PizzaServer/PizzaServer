@@ -1,22 +1,22 @@
 package io.github.willqi.pizzaserver.nbt.tags;
 
-public class NBTByteArray extends NBTTag {
+public class NBTIntegerArray extends NBTTag {
 
-    public static final int ID = 7;
+    public static final int ID = 11;
 
-    private final byte[] data;
+    private final int[] data;
 
 
-    public NBTByteArray(byte[] data) {
+    public NBTIntegerArray(int[] data) {
         this.data = data;
     }
 
-    public NBTByteArray(String name, byte[] data) {
+    public NBTIntegerArray(String name, int[] data) {
         super(name);
         this.data = data;
     }
 
-    public byte[] getData() {
+    public int[] getData() {
         return this.data;
     }
 
@@ -24,5 +24,4 @@ public class NBTByteArray extends NBTTag {
     public int getId() {
         return ID;
     }
-
 }
