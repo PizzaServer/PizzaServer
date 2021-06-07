@@ -13,6 +13,8 @@ import io.github.willqi.pizzaserver.server.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.world.data.WorldType;
 import io.github.willqi.pizzaserver.server.world.gamerules.GameRule;
 
+import java.util.UUID;
+
 public class StartGamePacket extends BedrockPacket {
 
     public static final int ID = 0x0b;
@@ -38,31 +40,32 @@ public class StartGamePacket extends BedrockPacket {
     private String gameVersion;
     private boolean isTrial;
     private String serverName;
-    private ServerOrigin serverOrigin;
     private boolean spawnOnlyV1Villagers;
 
     private int movementRewindSize;
     private PlayerMovementType movementType;
     private boolean serverAuthoritativeBlockBreaking;
+    private boolean serverAuthoritativeInventory;
 
     private boolean hasLockedBehaviorPacks;
     private boolean hasLockedResourcePacks;
     private boolean isFromLockedWorldTemplate;
     private boolean isFromWorldTemplate;
     private boolean isWorldTemplateOptionsLocked;
-    private String premiumWorldTemplateId;
+    private String premiumWorldTemplateId = "";
     private boolean resourcePacksRequired;
 
     private boolean eduFeaturesEnabled;
-    private String eduId;
+    private UUID eduUuid;
+    private ServerOrigin serverOrigin;
 
     // TODO: block properties for custom blocks
-    private ItemState[] itemStates;
+    private ItemState[] itemStates = new ItemState[0];
 
     private boolean broadcastToLan;
     private boolean hasPlatformLockedContent;
     private boolean isMultiplayer;
-    private String multiplayerId;
+    private UUID multiplayerId = UUID.randomUUID();
     private int platformBroadcastMode;  // TODO: convert to enum
     private int xboxLiveBroadcastMode;  // TODO: convert to enum
     private boolean useMsaGamerTagsOnly;
@@ -70,7 +73,7 @@ public class StartGamePacket extends BedrockPacket {
     // World
     private boolean bonusChestEnabled;
     private boolean bonusMapEnabled;
-    private GameRule[] gameRules;
+    private GameRule[] gameRules = new GameRule[0];
     private boolean isNetherType;
     private float lightingLevel;
     private int limitedWorldHeight;
@@ -83,7 +86,7 @@ public class StartGamePacket extends BedrockPacket {
     private WorldType worldType;
 
     private short biomeType;            // TODO: convert to class
-    private String customBiomeName;
+    private String customBiomeName = "";
 
 
     public StartGamePacket() {
@@ -235,14 +238,6 @@ public class StartGamePacket extends BedrockPacket {
         this.serverName = serverName;
     }
 
-    public ServerOrigin getServerOrigin() {
-        return this.serverOrigin;
-    }
-
-    public void setServerOrigin(ServerOrigin serverOrigin) {
-        this.serverOrigin = serverOrigin;
-    }
-
     public boolean isSpawningOnlyV1VillagersAllowed() {
         return this.spawnOnlyV1Villagers;
     }
@@ -274,6 +269,14 @@ public class StartGamePacket extends BedrockPacket {
 
     public void setServerAuthoritativeBlockBreaking(boolean enabled) {
         this.serverAuthoritativeBlockBreaking = enabled;
+    }
+
+    public boolean isServerAuthoritativeInventory() {
+        return this.serverAuthoritativeInventory;
+    }
+
+    public void setServerAuthoritativeInventory(boolean enabled) {
+        this.serverAuthoritativeInventory = enabled;
     }
 
 
@@ -321,11 +324,11 @@ public class StartGamePacket extends BedrockPacket {
         return this.premiumWorldTemplateId;
     }
 
-    public void setPremiumWorldTemplateId(String id) {
+    public void setPremiumWorldTemplateId(String premiumWorldTemplateId) {
         this.premiumWorldTemplateId = premiumWorldTemplateId;
     }
 
-    public boolean isResourcePacksRequired() {
+    public boolean areResourcePacksRequired() {
         return this.resourcePacksRequired;
     }
 
@@ -342,12 +345,20 @@ public class StartGamePacket extends BedrockPacket {
         this.eduFeaturesEnabled = enabled;
     }
 
-    public String getEduId() {
-        return this.eduId;
+    public UUID getEduUuid() {
+        return this.eduUuid;
     }
 
-    public void setEduId(String id) {
-        this.eduId = id;
+    public void setEduUuid(UUID id) {
+        this.eduUuid = id;
+    }
+
+    public ServerOrigin getServerOrigin() {
+        return this.serverOrigin;
+    }
+
+    public void setServerOrigin(ServerOrigin serverOrigin) {
+        this.serverOrigin = serverOrigin;
     }
 
 
@@ -384,12 +395,12 @@ public class StartGamePacket extends BedrockPacket {
         this.isMultiplayer = true;
     }
 
-    public String getMultiplayerId() {
+    public UUID getMultiplayerId() {
         return this.multiplayerId;
     }
 
-    public void setMultiplayerId(String id) {
-        this.multiplayerId = id;
+    public void setMultiplayerId(UUID uuid) {
+        this.multiplayerId = uuid;
     }
 
     public int getPlatformBroadcastMode() {

@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.utils;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.server.utils.Vector2;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;

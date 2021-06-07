@@ -1,14 +1,28 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.data.Difficulty;
+import io.github.willqi.pizzaserver.server.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.events.player.PreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
+import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.packs.DataPack;
 import io.github.willqi.pizzaserver.server.player.Player;
+import io.github.willqi.pizzaserver.server.player.data.Gamemode;
+import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
+import io.github.willqi.pizzaserver.server.utils.BlockCoordinates;
+import io.github.willqi.pizzaserver.server.utils.Vector2;
+import io.github.willqi.pizzaserver.server.utils.Vector3;
+import io.github.willqi.pizzaserver.server.world.data.Dimension;
+import io.github.willqi.pizzaserver.server.world.data.WorldType;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.UUID;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -105,7 +119,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         switch (packet.getStatus()) {
             case HAVE_ALL_PACKS:
                 // Send required starting packets to client now that they have all resource packs.
-//                this.sendGameLoginPackets();
+                this.sendGameLoginPackets();
                 break;
             case SEND_PACKS:
                 // Send all pack info of the packs the client does not have
@@ -172,54 +186,47 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));
         this.player.sendPacket(chunkDataPacket);
     }
-//
-//    /**
-//     * Called when the player has passed the resource packs stage and is ready to start the game login process.
-//     */
-//    private void sendGameLoginPackets() {
-//        this.player.sendPacket(this.getStartGamePacket());
-//        this.player.sendPacket(this.getCreativeContentPacket());
-//        this.player.sendPacket(this.getBiomesPacket());
-//        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-//        playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
-//        this.player.sendPacket(playStatusPacket);
-//        // TODO: Switch to next packet handler
-//    }
-//
-//    private StartGamePacket getStartGamePacket() {
-//
-//        SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
-//        movementSettings.setMovementMode(AuthoritativeMovementMode.CLIENT);
-//
-//        StartGamePacket packet = new StartGamePacket();
-//        packet.setUniqueEntityId(this.player.getId());
-//        packet.setRuntimeEntityId(this.player.getId());
-//        packet.setPlayerGameType(GameType.SURVIVAL);
-//        packet.setPlayerPosition(Vector3f.from(0, 0, 0));
-//        packet.setRotation(Vector2f.from(0, 0));
-//        packet.setSeed(0);
-//        packet.setDimensionId(0);
-//        packet.setLevelGameType(GameType.SURVIVAL);
-//        packet.setDifficulty(1);
-//        packet.setDefaultSpawn(Vector3i.from(0, 0, 0));
-//        packet.setAchievementsDisabled(true);
-//        packet.setMultiplayerGame(true);
-//        packet.setCommandsEnabled(true);
-//        packet.setTexturePacksRequired(this.server.getResourcePackManager().arePacksRequired());
-//        packet.setDefaultPlayerPermission(PlayerPermission.MEMBER);
-//        packet.setVanillaVersion(ServerProtocol.GAME_VERSION);
-//        packet.setLevelId("");  // TODO: Does this cause any noticeable impact?
-//        packet.setLevelName(this.server.getMotd());
-//        packet.setPremiumWorldTemplateId("");
-//        packet.setPlayerMovementSettings(movementSettings);
-//        // packet.setEnchantmentSeed(); TODO: Figure out how enchantments are calculated
-//        packet.setBlockPalette(WorldPalette.getBlockPaletteNbt(player.getLoginData().getProtocolVersion()));
-//        packet.setItemEntries(Arrays.asList(ItemPalette.getItemStates(player.getLoginData().getProtocolVersion())));
-//        packet.setMultiplayerCorrelationId(UUID.randomUUID().toString());
-//        packet.setInventoriesServerAuthoritative(true);
-//
-//        return packet;
-//    }
+
+    /**
+     * Called when the player has passed the resource packs stage and is ready to start the game login process.
+     */
+    private void sendGameLoginPackets() {
+
+        StartGamePacket packet = new StartGamePacket();
+
+        // Entity specific
+        packet.setDimension(Dimension.OVERWORLD);
+        packet.setEntityId(this.player.getId());
+        packet.setPlayerGamemode(Gamemode.SURVIVAL);
+        packet.setPlayerPermissionLevel(PermissionLevel.MEMBER);
+        packet.setRuntimeEntityId(this.player.getId());
+        packet.setPlayerRotation(new Vector2(0, 0));
+        packet.setPlayerSpawn(new Vector3(0, 0, 0));
+
+        // Server
+        packet.setChunkTickRange(4);    // TODO: modify once you get chunks ticking
+        packet.setCommandsEnabled(true);
+        // packet.setCurrentTick(0);       // TODO: get actual tick count
+        packet.setDefaultGamemode(Gamemode.SURVIVAL);
+        packet.setDifficulty(Difficulty.PEACEFUL);
+        // packet.setEnchantmentSeed(0);   // TODO: find actual seed
+        packet.setGameVersion(ServerProtocol.GAME_VERSION);
+        packet.setServerName("Testing");
+        packet.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
+        packet.setServerAuthoritativeBlockBreaking(true);
+        packet.setServerAuthoritativeInventory(true);
+        packet.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
+        packet.setServerOrigin(ServerOrigin.NONE);
+
+        // World
+        packet.setWorldSpawn(new BlockCoordinates(0, 0, 0));
+        packet.setWorldId(Base64.getEncoder().encodeToString(packet.getServerName().getBytes(StandardCharsets.UTF_8)));
+        packet.setWorldType(WorldType.INFINITE);
+
+        this.player.sendPacket(packet);
+
+    }
+
 //
 //    /**
 //     * This requires the player to be authenticated before calling the method
