@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.server.item.Item;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;
@@ -8,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Different versions of Minecraft encode packets differently.
  */
-public class PacketHelper {
+public abstract class PacketHelper {
 
     public String readLEString(ByteBuf buffer) {
         int length = buffer.readIntLE();
@@ -37,5 +38,7 @@ public class PacketHelper {
         VarInts.writeUnsignedInt(buffer, bytes.length);
         buffer.writeBytes(bytes);
     }
+
+    public abstract void writeItem(Item item, ByteBuf buffer);
 
 }
