@@ -3,15 +3,15 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.network.utils.ByteBufUtility;
 import io.github.willqi.pizzaserver.server.world.gamerules.GameRule;
 import io.netty.buffer.ByteBuf;
 
 public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGamePacket> {
 
     @Override
-    public void encode(StartGamePacket packet, ByteBuf buffer) {
+    public void encode(StartGamePacket packet, ByteBuf buffer, PacketHelper helper) {
         VarInts.writeLong(buffer, packet.getEntityId());
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
         VarInts.writeInt(buffer, packet.getPlayerGamemode().ordinal());
@@ -25,7 +25,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
 
         VarInts.writeInt(buffer, packet.getSeed());
         buffer.writeShortLE(packet.getBiomeType());
-        ByteBufUtility.writeString(packet.getCustomBiomeName(), buffer);
+        helper.writeString(packet.getCustomBiomeName(), buffer);
         VarInts.writeInt(buffer, packet.getDimension().ordinal());
         VarInts.writeInt(buffer, packet.getWorldType().ordinal());
         VarInts.writeInt(buffer, packet.getDefaultGamemode().ordinal());
@@ -39,7 +39,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         VarInts.writeInt(buffer, packet.getWorldTime());
         VarInts.writeInt(buffer, packet.getServerOrigin().ordinal());
         buffer.writeBoolean(packet.areEduFeaturedEnabled());
-        ByteBufUtility.writeString((packet.getEduUuid() != null ? packet.getEduUuid() : "").toString(), buffer);
+        helper.writeString((packet.getEduUuid() != null ? packet.getEduUuid() : "").toString(), buffer);
         buffer.writeFloatLE(packet.getRainLevel());
         buffer.writeFloatLE(packet.getLightingLevel());
         buffer.writeBoolean(packet.hasPlatformLockedContent());
@@ -53,7 +53,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         // Game rules
         VarInts.writeUnsignedInt(buffer, packet.getGameRules().length);
         for (GameRule<?> rule : packet.getGameRules()) {
-            ByteBufUtility.writeString(rule.getName(), buffer);
+            helper.writeString(rule.getName(), buffer);
             VarInts.writeUnsignedInt(buffer, rule.getType().getId());
             switch (rule.getType()) {
                 case BOOLEAN:
@@ -82,7 +82,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         buffer.writeBoolean(packet.isFromWorldTemplate());
         buffer.writeBoolean(packet.isWorldTemplateOptionsLocked());
         buffer.writeBoolean(packet.isSpawningOnlyV1VillagersAllowed());
-        ByteBufUtility.writeString(packet.getGameVersion(), buffer);
+        helper.writeString(packet.getGameVersion(), buffer);
         buffer.writeIntLE(packet.getLimitedWorldWidth());
         buffer.writeIntLE(packet.getLimitedWorldHeight());
         buffer.writeBoolean(packet.isNetherType());
@@ -91,9 +91,9 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
             buffer.writeBoolean(true);
         }
 
-        ByteBufUtility.writeString(packet.getWorldId(), buffer);
-        ByteBufUtility.writeString(packet.getServerName(), buffer);
-        ByteBufUtility.writeString(packet.getPremiumWorldTemplateId(), buffer);
+        helper.writeString(packet.getWorldId(), buffer);
+        helper.writeString(packet.getServerName(), buffer);
+        helper.writeString(packet.getPremiumWorldTemplateId(), buffer);
         buffer.writeBoolean(packet.isTrial());
         VarInts.writeInt(buffer, packet.getMovementType().ordinal());
         buffer.writeLongLE(packet.getCurrentTick());
@@ -105,12 +105,12 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         // Item states
         VarInts.writeUnsignedInt(buffer, packet.getItemStates().length);
         for (ItemState itemState : packet.getItemStates()) {
-            ByteBufUtility.writeString(itemState.getNameId(), buffer);
+            helper.writeString(itemState.getNameId(), buffer);
             buffer.writeShortLE(itemState.getId());
             buffer.writeBoolean(itemState.isComponentBased());
         }
 
-        ByteBufUtility.writeString(packet.getMultiplayerId().toString(), buffer);
+        helper.writeString(packet.getMultiplayerId().toString(), buffer);
         buffer.writeBoolean(packet.isServerAuthoritativeInventory());
 
     }

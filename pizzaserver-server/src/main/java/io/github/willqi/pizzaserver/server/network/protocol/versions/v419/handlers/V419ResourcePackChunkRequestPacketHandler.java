@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePackChunkRequestPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.network.utils.ByteBufUtility;
 import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
@@ -11,8 +11,8 @@ import java.util.UUID;
 public class V419ResourcePackChunkRequestPacketHandler extends ProtocolPacketHandler<ResourcePackChunkRequestPacket> {
 
     @Override
-    public ResourcePackChunkRequestPacket decode(ByteBuf buffer) {
-        String[] packHeader = ByteBufUtility.readString(buffer).split("_");
+    public ResourcePackChunkRequestPacket decode(ByteBuf buffer, PacketHelper helper) {
+        String[] packHeader = helper.readString(buffer).split("_");
         int index = buffer.readIntLE();
 
         ResourcePackChunkRequestPacket packet = new ResourcePackChunkRequestPacket();

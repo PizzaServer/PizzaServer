@@ -1,30 +1,30 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePacksInfoPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.network.utils.ByteBufUtility;
 import io.github.willqi.pizzaserver.server.packs.DataPack;
 import io.netty.buffer.ByteBuf;
 
 public class V419ResourcePacksInfoPacketHandler extends ProtocolPacketHandler<ResourcePacksInfoPacket> {
 
     @Override
-    public void encode(ResourcePacksInfoPacket packet, ByteBuf buffer) {
+    public void encode(ResourcePacksInfoPacket packet, ByteBuf buffer, PacketHelper helper) {
         buffer.writeBoolean(packet.isForcedToAccept());
         buffer.writeBoolean(packet.isScriptingEnabled());
-        writePacks(packet.getBehaviorPacks(), buffer);
-        writePacks(packet.getResourcePacks(), buffer);
+        writePacks(packet.getBehaviorPacks(), buffer, helper);
+        writePacks(packet.getResourcePacks(), buffer, helper);
     }
 
-    private static void writePacks(DataPack[] packs, ByteBuf buffer) {
+    private static void writePacks(DataPack[] packs, ByteBuf buffer, PacketHelper helper) {
         buffer.writeShortLE(packs.length);
         for (DataPack pack : packs) {
-            ByteBufUtility.writeString(pack.getUuid().toString(), buffer);
-            ByteBufUtility.writeString(pack.getVersion(), buffer);
+            helper.writeString(pack.getUuid().toString(), buffer);
+            helper.writeString(pack.getVersion(), buffer);
             buffer.writeLongLE(pack.getDataLength());
-            ByteBufUtility.writeString("", buffer);
-            ByteBufUtility.writeString("", buffer);
-            ByteBufUtility.writeString("", buffer);
+            helper.writeString("", buffer);
+            helper.writeString("", buffer);
+            helper.writeString("", buffer);
             buffer.writeBoolean(false);
         }
     }

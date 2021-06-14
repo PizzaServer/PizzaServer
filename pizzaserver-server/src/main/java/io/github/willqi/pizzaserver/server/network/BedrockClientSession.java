@@ -67,11 +67,11 @@ public class BedrockClientSession {
             ByteBuf packetBuffer = ByteBufAllocator.DEFAULT.buffer();
 
             // https://github.com/CloudburstMC/Protocol/blob/develop/bedrock/bedrock-common/src/main/java/com/nukkitx/protocol/bedrock/wrapper/BedrockWrapperSerializerV9_10.java#L34
-            // Apparently packets start with a header int rather than just a byte.
+            // Apparently packets start with a header int rather than just a byte. (used fo split screen but we don't support that atm)
             int header = packet.getPacketId() & 0x3ff;
             VarInts.writeUnsignedInt(packetBuffer, header);
 
-            ((ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId())).encode(packet, packetBuffer);
+            ((ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId())).encode(packet, packetBuffer, this.packetRegistry.getPacketHelper());
 
             ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
             VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
@@ -109,7 +109,7 @@ public class BedrockClientSession {
 
     public void handlePacket(int packetId, ByteBuf buffer) {
         if (this.packetRegistry != null) {
-            BedrockPacket bedrockPacket = this.packetRegistry.getPacketHandler(packetId).decode(buffer);
+            BedrockPacket bedrockPacket = this.packetRegistry.getPacketHandler(packetId).decode(buffer, this.packetRegistry.getPacketHelper());
             this.queuedPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
             // Parse the protocol the client uses in order to parse future packets.
@@ -122,7 +122,7 @@ public class BedrockClientSession {
                 this.packetRegistry = ServerProtocol.PACKET_REGISTRIES.get(protocol);
                 BedrockPacket loginPacket;
                 try {
-                    loginPacket = this.packetRegistry.getPacketHandler(packetId).decode(buffer);
+                    loginPacket = this.packetRegistry.getPacketHandler(packetId).decode(buffer, this.packetRegistry.getPacketHelper());
                 } catch (RuntimeException exception) {
                     Server.getInstance().getLogger().error("Error while decoding packet from client.");
                     Server.getInstance().getLogger().error(exception);

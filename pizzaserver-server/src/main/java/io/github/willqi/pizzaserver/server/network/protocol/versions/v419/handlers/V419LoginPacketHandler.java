@@ -9,8 +9,8 @@ import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.network.utils.ByteBufUtility;
 import io.github.willqi.pizzaserver.server.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.data.skin.Skin;
 import io.github.willqi.pizzaserver.server.player.data.skin.SkinAnimation;
@@ -44,14 +44,14 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
     }
 
     @Override
-    public LoginPacket decode(ByteBuf buffer) {
+    public LoginPacket decode(ByteBuf buffer, PacketHelper helper) {
         LoginPacket packet = new LoginPacket();
         packet.setProtocol(buffer.readInt());
 
         int chainAndSkinDataLength = VarInts.readUnsignedInt(buffer);
         ByteBuf chainAndSkinData = buffer.readSlice(chainAndSkinDataLength);
-        String chainDataString = ByteBufUtility.readLEString(chainAndSkinData);
-        String skinDataString = ByteBufUtility.readLEString(chainAndSkinData);
+        String chainDataString = helper.readLEString(chainAndSkinData);
+        String skinDataString = helper.readLEString(chainAndSkinData);
 
         parseChainData(packet, chainDataString);
         parseSkinData(packet, skinDataString);

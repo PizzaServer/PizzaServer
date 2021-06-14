@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.*;
 
@@ -18,6 +19,11 @@ public class V419PacketRegistry extends PacketRegistry {
             .register(StartGamePacket.ID, new V419StartGamePacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler());
+    }
+
+    @Override
+    public PacketHelper getPacketHelper() {
+        return V419PacketHelper.INSTANCE;
     }
 
 }
