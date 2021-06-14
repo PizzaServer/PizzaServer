@@ -192,38 +192,42 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
      */
     private void sendGameLoginPackets() {
 
-        StartGamePacket packet = new StartGamePacket();
+        StartGamePacket startGamePacket = new StartGamePacket();
 
         // Entity specific
-        packet.setDimension(Dimension.OVERWORLD);
-        packet.setEntityId(this.player.getId());
-        packet.setPlayerGamemode(Gamemode.SURVIVAL);
-        packet.setPlayerPermissionLevel(PermissionLevel.MEMBER);
-        packet.setRuntimeEntityId(this.player.getId());
-        packet.setPlayerRotation(new Vector2(0, 0));
-        packet.setPlayerSpawn(new Vector3(0, 0, 0));
+        startGamePacket.setDimension(Dimension.OVERWORLD);
+        startGamePacket.setEntityId(this.player.getId());
+        startGamePacket.setPlayerGamemode(Gamemode.SURVIVAL);
+        startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
+        startGamePacket.setRuntimeEntityId(this.player.getId());
+        startGamePacket.setPlayerRotation(new Vector2(0, 0));
+        startGamePacket.setPlayerSpawn(new Vector3(0, 0, 0));
 
         // Server
-        packet.setChunkTickRange(4);    // TODO: modify once you get chunks ticking
-        packet.setCommandsEnabled(true);
+        startGamePacket.setChunkTickRange(4);    // TODO: modify once you get chunks ticking
+        startGamePacket.setCommandsEnabled(true);
         // packet.setCurrentTick(0);       // TODO: get actual tick count
-        packet.setDefaultGamemode(Gamemode.SURVIVAL);
-        packet.setDifficulty(Difficulty.PEACEFUL);
+        startGamePacket.setDefaultGamemode(Gamemode.SURVIVAL);
+        startGamePacket.setDifficulty(Difficulty.PEACEFUL);
         // packet.setEnchantmentSeed(0);   // TODO: find actual seed
-        packet.setGameVersion(ServerProtocol.GAME_VERSION);
-        packet.setServerName("Testing");
-        packet.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
-        packet.setServerAuthoritativeBlockBreaking(true);
-        packet.setServerAuthoritativeInventory(true);
-        packet.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
-        packet.setServerOrigin(ServerOrigin.NONE);
+        startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
+        startGamePacket.setServerName("Testing");
+        startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
+        startGamePacket.setServerAuthoritativeBlockBreaking(true);
+        startGamePacket.setServerAuthoritativeInventory(true);
+        startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
+        startGamePacket.setServerOrigin(ServerOrigin.NONE);
 
         // World
-        packet.setWorldSpawn(new BlockCoordinates(0, 0, 0));
-        packet.setWorldId(Base64.getEncoder().encodeToString(packet.getServerName().getBytes(StandardCharsets.UTF_8)));
-        packet.setWorldType(WorldType.INFINITE);
+        startGamePacket.setWorldSpawn(new BlockCoordinates(0, 0, 0));
+        startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
+        startGamePacket.setWorldType(WorldType.INFINITE);
 
-        this.player.sendPacket(packet);
+
+        CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
+
+        this.player.sendPacket(startGamePacket);
+        this.player.sendPacket(creativeContentPacket);
 
     }
 
