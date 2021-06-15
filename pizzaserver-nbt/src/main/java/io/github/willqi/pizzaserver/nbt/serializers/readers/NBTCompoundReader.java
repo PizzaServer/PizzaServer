@@ -30,7 +30,7 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
 
         boolean reachedEnd = false; // if we reach this compound's end tag
         while (this.stream.available() > 0) {
-            int nbtTagId = this.stream.read();
+            int nbtTagId = this.stream.readByte();
 
             switch (nbtTagId) {
                 case NBTByte.ID:

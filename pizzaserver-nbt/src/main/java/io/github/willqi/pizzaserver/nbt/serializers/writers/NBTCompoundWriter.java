@@ -56,7 +56,7 @@ public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
                     break;
                 case NBTList.ID:
                     NBTListWriter<? extends NBTTag> listWriter = new NBTListWriter<>(this.stream);
-                    listWriter.writeTagData((NBTList)childTag);
+                    listWriter.write((NBTList)childTag);
                     break;
                 case NBTCompound.ID:
                     this.write((NBTCompound)childTag);
