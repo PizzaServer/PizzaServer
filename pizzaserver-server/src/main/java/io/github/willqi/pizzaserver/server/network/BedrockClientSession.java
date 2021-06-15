@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.BedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketRegistry;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.github.willqi.pizzaserver.server.network.utils.Zlib;
 import io.netty.buffer.ByteBuf;
@@ -26,7 +26,7 @@ public class BedrockClientSession {
     private final RakNetServerSession serverSession;
     private volatile boolean disconnected;
 
-    private PacketRegistry packetRegistry;
+    private MinecraftVersion version;
     private volatile BedrockPacketHandler handler;
 
     private final List<BedrockPacket> queuedPackets = Collections.synchronizedList(new LinkedList<>());
@@ -40,8 +40,12 @@ public class BedrockClientSession {
         return this.server;
     }
 
-    public void setPacketRegistry(PacketRegistry packetRegistry) {
-        this.packetRegistry = packetRegistry;
+    public MinecraftVersion getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(MinecraftVersion version) {
+        this.version = version;
     }
 
     public void setPacketHandler(BedrockPacketHandler packetHandler) {
@@ -70,11 +74,11 @@ public class BedrockClientSession {
             int header = packet.getPacketId() & 0x3ff;
             VarInts.writeUnsignedInt(packetBuffer, header);
 
-            ProtocolPacketHandler<BedrockPacket> hander = (ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId());
+            ProtocolPacketHandler<BedrockPacket> hander = (ProtocolPacketHandler<BedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
             if (handler == null) {
                 throw new AssertionError("Missing packet handler when encoding packet id " + packet.getPacketId());
             }
-            hander.encode(packet, packetBuffer, this.packetRegistry.getPacketHelper());
+            hander.encode(packet, packetBuffer, this.version.getPacketRegistry().getPacketHelper());
 
             // Wrap the packet before sending it off
             ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
@@ -115,12 +119,12 @@ public class BedrockClientSession {
 
     public void handlePacket(int packetId, ByteBuf buffer) {
 
-        if (this.packetRegistry != null) {
-            ProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.packetRegistry.getPacketHandler(packetId);
+        if (this.version != null) {
+            ProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
                 throw new AssertionError("Missing packet handler when decoding packet id " + packetId);
             }
-            BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.packetRegistry.getPacketHelper());
+            BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.version.getPacketRegistry().getPacketHelper());
             this.queuedPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
 
@@ -130,11 +134,12 @@ public class BedrockClientSession {
             buffer.setIndex(index, buffer.writerIndex());
 
             // Parse login packet given protocol if available
-            if (ServerProtocol.PACKET_REGISTRIES.containsKey(protocol)) {
-                this.packetRegistry = ServerProtocol.PACKET_REGISTRIES.get(protocol);
+            if (ServerProtocol.VERSIONS.containsKey(protocol)) {
+                MinecraftVersion version = ServerProtocol.VERSIONS.get(protocol);
+                this.version = version;
                 BedrockPacket loginPacket;
                 try {
-                    loginPacket = this.packetRegistry.getPacketHandler(packetId).decode(buffer, this.packetRegistry.getPacketHelper());
+                    loginPacket = this.version.getPacketRegistry().getPacketHandler(packetId).decode(buffer, this.version.getPacketRegistry().getPacketHelper());
                 } catch (RuntimeException exception) {
                     Server.getInstance().getLogger().error("Error while decoding packet from client.");
                     Server.getInstance().getLogger().error(exception);

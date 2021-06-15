@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.BedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.server.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.data.skin.Skin;
 
@@ -15,7 +16,7 @@ public class Player extends Entity {
     private final Server server;
     private final BedrockClientSession session;
 
-    private final int protocolVerison;
+    private final MinecraftVersion version;
     private final Device device;
     private final String xuid;
     private final UUID uuid;
@@ -30,7 +31,7 @@ public class Player extends Entity {
         this.server = server;
         this.session = session;
 
-        this.protocolVerison = loginPacket.getProtocol();
+        this.version = session.getVersion();
         this.device = loginPacket.getDevice();
         this.xuid = loginPacket.getXuid();
         this.uuid = loginPacket.getUuid();
@@ -39,8 +40,8 @@ public class Player extends Entity {
         this.skin = loginPacket.getSkin();
     }
 
-    public int getProtocolVerison() {
-        return this.protocolVerison;
+    public MinecraftVersion getVersion() {
+        return this.version;
     }
 
     public Device getDevice() {

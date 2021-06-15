@@ -22,7 +22,6 @@ import io.github.willqi.pizzaserver.server.world.data.WorldType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.UUID;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -49,7 +48,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
             return;
         }
 
-        if (!ServerProtocol.PACKET_REGISTRIES.containsKey(packet.getProtocol())) {
+        if (!ServerProtocol.VERSIONS.containsKey(packet.getProtocol())) {
             PlayStatusPacket loginFailPacket = new PlayStatusPacket();
             if (packet.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
                 loginFailPacket.setStatus(PlayStatusPacket.PlayStatus.OUTDATED_SERVER);
@@ -226,8 +225,12 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
         CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
 
+        BiomeDefinitionPacket biomeDefinitionPacket = new BiomeDefinitionPacket();
+        biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
+
         this.player.sendPacket(startGamePacket);
         this.player.sendPacket(creativeContentPacket);
+        this.player.sendPacket(biomeDefinitionPacket);
 
     }
 
