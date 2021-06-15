@@ -24,15 +24,13 @@ public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
 
     @Override
     protected void writeTagData(NBTList<T> tag) throws IOException {
-        if (tag.getContents().length == 0) {
-            throw new IOException("Cannot write empty NBT list");
-        }
-        this.stream.writeByte(tag.getContents()[0].getId());
+        int childrenTagId = tag.getChildrenTypeId();
+
+        this.stream.writeByte(childrenTagId);
         this.stream.writeInt(tag.getContents().length);
 
-        int contentTagId = tag.getContents()[0].getId();
         for (NBTTag childTag : tag.getContents()) {
-            switch (contentTagId) {
+            switch (childrenTagId) {
                 case NBTByte.ID:
                     this.byteWriter.writeTagData((NBTByte)childTag);
                     break;
@@ -70,7 +68,7 @@ public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
                     this.longArrayWriter.writeTagData((NBTLongArray)childTag);
                     break;
                 default:
-                    throw new UnsupportedOperationException("Unspported/invalid NBT tag id found when writing contents to NBTListWriter. Id: " + contentTagId);
+                    throw new UnsupportedOperationException("Unspported/invalid NBT tag id found when writing contents to NBTListWriter. Id: " + childrenTagId);
             }
         }
 

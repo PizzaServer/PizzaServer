@@ -7,6 +7,8 @@ public class V419MinecraftVersion extends MinecraftVersion {
 
     public static final int PROTOCOL = 419;
 
+    private final PacketRegistry packetRegistry = new V419PacketRegistry();
+
 
     @Override
     public int getProtocol() {
@@ -15,7 +17,7 @@ public class V419MinecraftVersion extends MinecraftVersion {
 
     @Override
     public PacketRegistry getPacketRegistry() {
-        return null;
+        return this.packetRegistry;
     }
 
 }

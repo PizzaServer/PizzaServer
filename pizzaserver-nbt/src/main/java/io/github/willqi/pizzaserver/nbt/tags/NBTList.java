@@ -7,15 +7,17 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer {
     public static final int ID = 9;
 
     private T[] list = (T[])new NBTTag[0];
+    private final int childrenTypeId;
     private int depth;
 
 
-    public NBTList() {
-
+    public NBTList(int childrenTypeId) {
+        this.childrenTypeId = childrenTypeId;
     }
 
-    public NBTList(String name) {
+    public NBTList(String name, int childrenTypeId) {
         super(name);
+        this.childrenTypeId = childrenTypeId;
     }
 
     public void setContents(T[] list) {
@@ -34,6 +36,10 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer {
     @Override
     public int getId() {
         return ID;
+    }
+
+    public int getChildrenTypeId() {
+        return this.childrenTypeId;
     }
 
     @Override

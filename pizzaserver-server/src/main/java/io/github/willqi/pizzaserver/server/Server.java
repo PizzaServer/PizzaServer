@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
 import io.github.willqi.pizzaserver.server.network.handlers.PlayerInitializationPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.DataPackManager;
 import io.github.willqi.pizzaserver.server.plugin.PluginManager;
 import io.github.willqi.pizzaserver.server.utils.Config;
@@ -17,6 +18,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class Server {
+
+    private static Server INSTANCE;
+
 
     private int targetTps;
     private int currentTps;
@@ -36,18 +40,21 @@ public class Server {
 
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
-    private static Server instance;
-
     private Config config;
 
 
     public Server(String rootDirectory) {
-        instance = this;
+        INSTANCE = this;
         this.getLogger().info("Setting up PizzaServer instance.");
         this.rootDirectory = rootDirectory;
 
-        this.setup();
-        this.getLogger().info("Setup complete.");
+        // Load required data/files
+        ServerProtocol.loadVersions();
+        this.setupFiles();
+
+        this.getLogger().info("Internal setup complete.");
+
+        // TODO: load plugins
     }
 
     /**
@@ -194,10 +201,13 @@ public class Server {
     }
 
     public static Server getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
-    private void setup() {
+    /**
+     * Called to load and setup required files/classes.
+     */
+    private void setupFiles() {
 
         try {
             new File(this.getRootDirectory() + "/plugins").mkdirs();

@@ -14,7 +14,7 @@ public abstract class NBTWriter<T extends NBTTag> {
     }
 
     public void write(T tag) throws IOException {
-        this.stream.write(tag.getId());
+        this.stream.writeByte(tag.getId());
         this.stream.writeUTF(tag.getName());
         this.writeTagData(tag);
     }

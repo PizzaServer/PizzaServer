@@ -16,22 +16,22 @@ public class NBTListTest {
 
     @Test
     public void cannotGoDeeperThan512() {
-        NBTList<NBTList<? extends NBTTag>> list = new NBTList<>();
+        NBTList<NBTList<? extends NBTTag>> list = new NBTList<>(NBTList.ID);
         for (int i = 0; i < 512; i++) {
-            NBTList<NBTList<? extends NBTTag>> innerList = new NBTList<>();
+            NBTList<NBTList<? extends NBTTag>> innerList = new NBTList<>(NBTList.ID);
             list.setContents(new NBTList[]{ innerList });
             list = innerList;
         }
 
         NBTList<NBTList<? extends NBTTag>> finalList = list;
-        assertThrows(NBTLimitException.class, () -> finalList.setContents(new NBTList[]{ new NBTList<>() }));
+        assertThrows(NBTLimitException.class, () -> finalList.setContents(new NBTList[]{ new NBTList<>(NBTList.ID) }));
     }
 
     @Test
     public void shouldParseCorrectly() throws IOException {
 
         // Create test input
-        NBTList<NBTInteger> list = new NBTList<>();
+        NBTList<NBTInteger> list = new NBTList<>(NBTInteger.ID);
         list.setContents(new NBTInteger[]{ new NBTInteger(1), new NBTInteger(2), new NBTInteger(3) });
 
         // Write and read it

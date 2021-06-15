@@ -143,6 +143,9 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
                 }
                 break;
+            case COMPLETED:
+                System.out.println("completed resource packs");
+                break;
             case REFUSED:
                 if (this.server.getResourcePackManager().arePacksRequired()) {
                     this.session.disconnect();
