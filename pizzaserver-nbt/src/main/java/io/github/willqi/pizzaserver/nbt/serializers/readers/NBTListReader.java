@@ -25,7 +25,7 @@ public class NBTListReader<T extends NBTTag> extends NBTReader<NBTList<T>> {
     @Override
     protected NBTList<T> parse(String tagName) throws IOException {
         int nbtId = this.stream.readByte();
-        NBTList<T> list = new NBTList<>(nbtId);
+        NBTList<T> list = new NBTList<>(tagName, nbtId);
 
         NBTTag[] contents;
         int length = this.stream.readInt();
@@ -105,6 +105,7 @@ public class NBTListReader<T extends NBTTag> extends NBTReader<NBTList<T>> {
                 }
                 break;
             case NBTContainer.END_ID:
+
                 contents = new NBTTag[0];
                 break;
             default:
