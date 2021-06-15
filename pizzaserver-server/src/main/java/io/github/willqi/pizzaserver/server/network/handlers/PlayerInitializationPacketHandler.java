@@ -143,9 +143,6 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
                 }
                 break;
-            case COMPLETED:
-                System.out.println("completed resource packs");
-                break;
             case REFUSED:
                 if (this.server.getResourcePackManager().arePacksRequired()) {
                     this.session.disconnect();
@@ -227,6 +224,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
 
         CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
+        // TODO: Add creative contents to prevent mobile clients from crashing
 
         BiomeDefinitionPacket biomeDefinitionPacket = new BiomeDefinitionPacket();
         biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
@@ -235,27 +233,20 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         this.player.sendPacket(creativeContentPacket);
         this.player.sendPacket(biomeDefinitionPacket);
 
+
+        // Temporary to see if the game loads
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
+                levelChunkPacket.setX(x);
+                levelChunkPacket.setZ(z);
+                this.player.sendPacket(levelChunkPacket);
+            }
+        }
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+        this.player.sendPacket(playStatusPacket);
+
     }
 
-//
-//    /**
-//     * This requires the player to be authenticated before calling the method
-//     * @return CreativeContentPacket for the player's target protocol version
-//     */
-//    private CreativeContentPacket getCreativeContentPacket() {
-//        CreativeContentPacket packet = new CreativeContentPacket();
-//        packet.setContents(ItemPalette.getCreativeContents(this.player.getLoginData().getProtocolVersion()));
-//        return packet;
-//    }
-//
-//    /**
-//     * This requires the player to be authenticated before calling the method
-//     * @return BiomeDefinitionListPacket for the player's target protocol version
-//     */
-//    private BiomeDefinitionListPacket getBiomesPacket() {
-//        BiomeDefinitionListPacket packet = new BiomeDefinitionListPacket();
-//        packet.setDefinitions(WorldPalette.getBiomesPaletteNbt(this.player.getLoginData().getProtocolVersion()));
-//        return packet;
-//    }
-//
 }
