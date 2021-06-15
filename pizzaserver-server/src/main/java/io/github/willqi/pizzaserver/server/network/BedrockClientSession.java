@@ -65,14 +65,18 @@ public class BedrockClientSession {
             rakNetBuffer.writeByte(0xfe); // Game packet
 
             ByteBuf packetBuffer = ByteBufAllocator.DEFAULT.buffer();
-
             // https://github.com/CloudburstMC/Protocol/blob/develop/bedrock/bedrock-common/src/main/java/com/nukkitx/protocol/bedrock/wrapper/BedrockWrapperSerializerV9_10.java#L34
-            // Apparently packets start with a header int rather than just a byte. (used fo split screen but we don't support that atm)
+            // Packets start with a header int rather than just a byte. (used fo split screen but we don't support that atm)
             int header = packet.getPacketId() & 0x3ff;
             VarInts.writeUnsignedInt(packetBuffer, header);
 
-            ((ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId())).encode(packet, packetBuffer, this.packetRegistry.getPacketHelper());
+            ProtocolPacketHandler<BedrockPacket> hander = (ProtocolPacketHandler<BedrockPacket>)this.packetRegistry.getPacketHandler(packet.getPacketId());
+            if (handler == null) {
+                throw new AssertionError("Missing packet handler when encoding packet id " + packet.getPacketId());
+            }
+            hander.encode(packet, packetBuffer, this.packetRegistry.getPacketHelper());
 
+            // Wrap the packet before sending it off
             ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
             VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
             packetWrapperBuffer.writeBytes(packetBuffer);
@@ -98,21 +102,29 @@ public class BedrockClientSession {
                 try {
                     Method method = this.handler.getClass().getMethod("onPacket", packet.getClass());
                     method.invoke(this.handler, packet);
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exception) {
-                    Server.getInstance().getLogger().error("Failed to call packet handler for " + packet);
+                } catch (NoSuchMethodException exception) {
+                    Server.getInstance().getLogger().error("Missing onPacket callback for " + packet.getPacketId());
                     Server.getInstance().getLogger().error(exception);
-                    exception.printStackTrace();
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    Server.getInstance().getLogger().error("Failed to call packet handler for " + packet.getPacketId());
+                    Server.getInstance().getLogger().error(exception);
                 }
             }
         }
     }
 
     public void handlePacket(int packetId, ByteBuf buffer) {
+
         if (this.packetRegistry != null) {
-            BedrockPacket bedrockPacket = this.packetRegistry.getPacketHandler(packetId).decode(buffer, this.packetRegistry.getPacketHelper());
+            ProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.packetRegistry.getPacketHandler(packetId);
+            if (packetHandler == null) {
+                throw new AssertionError("Missing packet handler when decoding packet id " + packetId);
+            }
+            BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.packetRegistry.getPacketHelper());
             this.queuedPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
-            // Parse the protocol the client uses in order to parse future packets.
+
+            // First packet, we need to find their protocol to find the correct packet handler.
             int index = buffer.readerIndex();
             int protocol = buffer.readInt();
             buffer.setIndex(index, buffer.writerIndex());
@@ -130,11 +142,14 @@ public class BedrockClientSession {
                     return;
                 }
                 this.queuedPackets.add(loginPacket);
+
             } else {
+                // Unable to find packet handler.
                 LoginPacket loginPacket = new LoginPacket();
                 loginPacket.setProtocol(protocol);
                 this.queuedPackets.add(loginPacket);
             }
+
         } else {
             // Client tried to send us a packet without sending the login packet first.
             this.serverSession.disconnect(DisconnectReason.BAD_PACKET);
