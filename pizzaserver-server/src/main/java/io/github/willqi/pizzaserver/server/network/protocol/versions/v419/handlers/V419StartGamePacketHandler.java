@@ -71,6 +71,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         }
 
         buffer.writeIntLE(0);   // Experiments - we have no real need for this.
+        buffer.writeBoolean(false); // Not needed
         buffer.writeBoolean(packet.isBonusChestEnabled());
         buffer.writeBoolean(packet.isBonusMapEnabled());
         VarInts.writeInt(buffer, packet.getPlayerPermissionLevel().ordinal());
