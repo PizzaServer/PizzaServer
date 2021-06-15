@@ -18,6 +18,7 @@ public class V419PacketRegistry extends PacketRegistry {
             .register(ResourcePackChunkRequestPacket.ID, new V419ResourcePackChunkRequestPacketHandler())
             .register(StartGamePacket.ID, new V419StartGamePacketHandler())
             .register(CreativeContentPacket.ID, new V419CreativeContentPacketHandler())
+            .register(RequestChunkRadiusPacket.ID, new V419RequestChunkRadiusPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler());
     }

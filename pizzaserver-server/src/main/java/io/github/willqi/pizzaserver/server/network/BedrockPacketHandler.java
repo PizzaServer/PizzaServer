@@ -16,6 +16,7 @@ public abstract class BedrockPacketHandler {
     public void onPacket(ResourcePackChunkRequestPacket packet) {}
 
     public void onPacket(ClientCacheStatusPacket packet) {}
+    public void onPacket(RequestChunkRadiusPacket packet) {}
 
     public void onPacket(ViolationPacket packet) {}
 

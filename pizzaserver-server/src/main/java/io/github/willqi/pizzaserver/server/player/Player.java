@@ -23,6 +23,8 @@ public class Player extends Entity {
     private final String languageCode;
     private Skin skin;
 
+    private int chunkRadius;
+
 
     public Player(Server server, BedrockClientSession session, LoginPacket loginPacket) {
         this.server = server;
@@ -68,6 +70,14 @@ public class Player extends Entity {
     public void setSkin(Skin newSkin) {
         // TODO: packet level stuff for player skin updates
         this.skin = newSkin;
+    }
+
+    public int getChunkRadiusRequested() {
+        return this.chunkRadius;
+    }
+
+    public void setChunkRadiusRequested(int radius) {
+        this.chunkRadius = radius;
     }
 
     public Server getServer() {
