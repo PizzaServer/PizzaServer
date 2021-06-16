@@ -216,7 +216,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(new Vector2(0, 0));
-        startGamePacket.setPlayerSpawn(new Vector3(0, 0, 0));
+        startGamePacket.setPlayerSpawn(new Vector3(0, 100, 0));
 
         // Server
         startGamePacket.setChunkTickRange(4);    // TODO: modify once you get chunks ticking

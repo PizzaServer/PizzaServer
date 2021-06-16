@@ -18,6 +18,8 @@ public abstract class BedrockPacketHandler {
     public void onPacket(ClientCacheStatusPacket packet) {}
     public void onPacket(RequestChunkRadiusPacket packet) {}
 
+    public void onPacket(MovePlayerPacket packet) {}
+
     public void onPacket(ViolationPacket packet) {}
 
 }
