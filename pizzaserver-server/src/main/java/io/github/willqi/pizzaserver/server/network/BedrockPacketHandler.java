@@ -11,13 +11,16 @@ public abstract class BedrockPacketHandler {
     public void onPacket(BedrockPacket packet) {}
 
     public void onPacket(LoginPacket packet) {}
+    public void onPacket(SetLocalPlayerAsInitializedPacket packet) {}
 
     public void onPacket(ResourcePackResponsePacket packet) {}
     public void onPacket(ResourcePackChunkRequestPacket packet) {}
 
+    // chunk related
     public void onPacket(ClientCacheStatusPacket packet) {}
     public void onPacket(RequestChunkRadiusPacket packet) {}
 
+    // player movement actions
     public void onPacket(MovePlayerPacket packet) {}
 
     public void onPacket(ViolationPacket packet) {}

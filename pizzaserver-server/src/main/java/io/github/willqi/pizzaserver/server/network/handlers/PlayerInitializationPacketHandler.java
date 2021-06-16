@@ -142,7 +142,6 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
             case HAVE_ALL_PACKS:
                 // Confirm resource packs
-                Server.getInstance().getLogger().info("SENDING STACK");
                 this.sendResourcePackStackPacket();
                 break;
             case REFUSED:
@@ -154,7 +153,6 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
                 }
                 break;
             case COMPLETED:
-                Server.getInstance().getLogger().info("COMPLETED");
                 this.sendGameLoginPackets();
                 break;
         }
@@ -250,16 +248,6 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         this.player.sendPacket(creativeContentPacket);
         this.player.sendPacket(biomeDefinitionPacket);
 
-
-        // Temporary to see if the game loads
-        for (int x = -1; x <= 1; x++) {
-            for (int z = -1; z <= 1; z++) {
-                LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
-                levelChunkPacket.setX(x);
-                levelChunkPacket.setZ(z);
-                this.player.sendPacket(levelChunkPacket);
-            }
-        }
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
         this.player.sendPacket(playStatusPacket);

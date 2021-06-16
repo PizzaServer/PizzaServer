@@ -9,6 +9,7 @@ public class V419PacketRegistry extends PacketRegistry {
 
     public V419PacketRegistry() {
         this.register(LoginPacket.ID, new V419LoginPacketHandler())
+            .register(SetLocalPlayerAsInitializedPacket.ID, new V419SetLocalPlayerAsInitializedPacketHandler())
             .register(PlayStatusPacket.ID, new V419PlayStatusPacketHandler())
             .register(DisconnectPacket.ID, new V419DisconnectPacketHandler())
             .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler())
