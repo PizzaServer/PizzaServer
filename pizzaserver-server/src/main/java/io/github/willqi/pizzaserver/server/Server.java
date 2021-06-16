@@ -21,10 +21,18 @@ public class Server {
 
     private static Server INSTANCE;
 
+    private final BedrockServer network = new BedrockServer(this);
+    private final PluginManager pluginManager = new PluginManager(this);
+    private final DataPackManager dataPackManager = new DataPackManager(this);
+    private final Logger logger = new Logger("Server");
+
+    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
+
+    private final Thread serverExitListener = new ServerExitListener();
 
     private int targetTps;
     private int currentTps;
-    private boolean running;
+    private volatile boolean running;
     private final String rootDirectory;
 
     private int maximumPlayersAllowed;
@@ -32,13 +40,6 @@ public class Server {
 
     private String ip;
     private int port;
-
-    private final BedrockServer network = new BedrockServer(this);
-    private final PluginManager pluginManager = new PluginManager(this);
-    private final DataPackManager dataPackManager = new DataPackManager(this);
-    private final Logger logger = new Logger("Server");
-
-    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     private Config config;
 
@@ -62,6 +63,9 @@ public class Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() {
+
+        Runtime.getRuntime().addShutdownHook(serverExitListener);
+
         this.getResourcePackManager().loadResourcePacks();
         this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);
@@ -117,17 +121,19 @@ public class Server {
             sleepTime = TimeUtils.nanoSecondsToMilliseconds(Math.max(nanoSecondsPerTick + diff, 0));
 
         }
+        this.stop();
     }
 
     /**
      * The server will stop after the current tick finishes.
      */
     public void stop() {
-        if (this.running) {
-            this.running = false;
-            this.getNetwork().stop();
-        } else {
-            throw new AssertionError("Tried to stop server when server is not running.");
+        this.getLogger().info("Stopping server...");
+        this.getNetwork().stop();
+
+        // We're done stop operations. Exit program.
+        synchronized (this.serverExitListener) {
+            this.serverExitListener.notify();
         }
     }
 
@@ -244,6 +250,25 @@ public class Server {
         this.setMaximumPlayerCount(this.config.getInteger("player-max"));
         this.dataPackManager.setPacksRequired(this.config.getBoolean("player-force-packs"));
 
+    }
+
+
+    private class ServerExitListener extends Thread {
+
+        @Override
+        public void run() {
+            if (Server.this.running) {
+                Server.this.running = false;
+                try {
+                    synchronized (this) {
+                        Thread.currentThread().wait();
+                    }
+                } catch (InterruptedException exception) {
+                    Server.getInstance().getLogger().error("Exit listener exception");
+                    Server.getInstance().getLogger().error(exception);
+                }
+            }
+        }
     }
 
 }

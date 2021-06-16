@@ -76,7 +76,8 @@ public class BedrockClientSession {
 
             ProtocolPacketHandler<BedrockPacket> hander = (ProtocolPacketHandler<BedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
             if (handler == null) {
-                throw new AssertionError("Missing packet handler when encoding packet id " + packet.getPacketId());
+                this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
+                return;
             }
             hander.encode(packet, packetBuffer, this.version.getPacketRegistry().getPacketHelper());
 
@@ -109,11 +110,9 @@ public class BedrockClientSession {
                     Method method = this.handler.getClass().getMethod("onPacket", packet.getClass());
                     method.invoke(this.handler, packet);
                 } catch (NoSuchMethodException exception) {
-                    Server.getInstance().getLogger().error("Missing onPacket callback for " + packet.getPacketId());
-                    Server.getInstance().getLogger().error(exception);
+                    this.server.getPizzaServer().getLogger().error("Missing onPacket callback for " + packet.getPacketId(), exception);
                 } catch (IllegalAccessException | InvocationTargetException exception) {
-                    Server.getInstance().getLogger().error("Failed to call packet handler for " + packet.getPacketId());
-                    Server.getInstance().getLogger().error(exception);
+                    this.server.getPizzaServer().getLogger().error("Failed to call packet handler for " + packet.getPacketId(), exception);
                 }
             }
         }
@@ -124,7 +123,8 @@ public class BedrockClientSession {
         if (this.version != null) {
             ProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
-                throw new AssertionError("Missing packet handler when decoding packet id " + packetId);
+                this.server.getPizzaServer().getLogger().error("Missing packet handler when decoding packet id " + packetId);
+                return;
             }
             BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.version.getPacketRegistry().getPacketHelper());
             this.queuedPackets.add(bedrockPacket);
@@ -143,8 +143,7 @@ public class BedrockClientSession {
                 try {
                     loginPacket = this.version.getPacketRegistry().getPacketHandler(packetId).decode(buffer, this.version.getPacketRegistry().getPacketHelper());
                 } catch (RuntimeException exception) {
-                    Server.getInstance().getLogger().error("Error while decoding packet from client.");
-                    Server.getInstance().getLogger().error(exception);
+                    this.server.getPizzaServer().getLogger().error("Error while decoding packet from client.", exception);
                     this.serverSession.disconnect(DisconnectReason.BAD_PACKET);
                     return;
                 }

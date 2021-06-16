@@ -1,30 +1,37 @@
 package io.github.willqi.pizzaserver.server.utils;
 
+import org.apache.logging.log4j.LogManager;
+
 public class Logger {
 
-    private static final String RED_CONSOLE_CHAR = "\033[0;31m";
-    private static final String YELLOW_CONSOLE_CHAR = "\033[0;33m";
-
-    private final String prefix;
+    private final org.apache.logging.log4j.Logger logger;
 
     public Logger(String prefix) {
-        this.prefix = prefix;
+        this.logger = LogManager.getLogger(prefix);
     }
 
     public void info(String message) {
-        System.out.printf("[%s] %s\n", this.prefix, message);
+        this.logger.info(message);
     }
 
     public void error(String message) {
-        System.out.printf("%s[%s] %s%n\n", RED_CONSOLE_CHAR, prefix, message);
+        this.logger.error(message);
     }
 
-    public void error(Exception exception) {
-        this.error(exception.toString());
+    public void error(Throwable exception) {
+        this.logger.error(exception);
+    }
+
+    public void error(String message, Throwable exception) {
+        this.logger.error(message, exception);
     }
 
     public void warn(String message) {
-        System.out.printf("%s[%s] %s%n\n", YELLOW_CONSOLE_CHAR, prefix, message);
+        this.logger.warn(message);
+    }
+
+    public void debug(String message) {
+        this.logger.debug(message);
     }
 
 }
