@@ -13,6 +13,7 @@ public class V419PacketRegistry extends PacketRegistry {
             .register(DisconnectPacket.ID, new V419DisconnectPacketHandler())
             .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler())
             .register(ResourcePackResponsePacket.ID, new V419ResourcePackResponsePacketHandler())
+            .register(ResourcePackStackPacket.ID, new V419ResourcePackStackPacketHandler())
             .register(ResourcePackDataInfoPacket.ID, new V419ResourcePackDataInfoPacketHandler())
             .register(ResourcePackChunkDataPacket.ID, new V419ResourcePackChunkDataPacketHandler())
             .register(ResourcePackChunkRequestPacket.ID, new V419ResourcePackChunkRequestPacketHandler())

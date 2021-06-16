@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketRegis
 public class V419MinecraftVersion extends MinecraftVersion {
 
     public static final int PROTOCOL = 419;
+    public static final String VERSION = "1.16.100";
 
     private final PacketRegistry packetRegistry = new V419PacketRegistry();
 
@@ -13,6 +14,11 @@ public class V419MinecraftVersion extends MinecraftVersion {
     @Override
     public int getProtocol() {
         return PROTOCOL;
+    }
+
+    @Override
+    public String getVersionString() {
+        return VERSION;
     }
 
     @Override

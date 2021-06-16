@@ -84,9 +84,11 @@ public class BedrockClientSession {
             ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
             VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
             packetWrapperBuffer.writeBytes(packetBuffer);
-            rakNetBuffer.writeBytes(Zlib.compressBuffer(packetWrapperBuffer));
+            ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer);
+            rakNetBuffer.writeBytes(compressedBuffer);
             this.serverSession.send(rakNetBuffer);
 
+            compressedBuffer.release();
             packetWrapperBuffer.release();
             packetBuffer.release();
         }

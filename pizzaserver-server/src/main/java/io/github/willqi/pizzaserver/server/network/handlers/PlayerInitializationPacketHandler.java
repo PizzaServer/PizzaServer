@@ -116,10 +116,6 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         }
 
         switch (packet.getStatus()) {
-            case HAVE_ALL_PACKS:
-                // Send required starting packets to client now that they have all resource packs.
-                this.sendGameLoginPackets();
-                break;
             case SEND_PACKS:
                 // Send all pack info of the packs the client does not have
                 for (PackInfo packInfo : packet.getPacksRequested()) {
@@ -143,12 +139,23 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
 
                 }
                 break;
+
+            case HAVE_ALL_PACKS:
+                // Confirm resource packs
+                Server.getInstance().getLogger().info("SENDING STACK");
+                this.sendResourcePackStackPacket();
+                break;
             case REFUSED:
                 if (this.server.getResourcePackManager().arePacksRequired()) {
                     this.session.disconnect();
                 } else {
-//                    this.sendGameLoginPackets();
+                    // Confirm resource packs
+                    this.sendResourcePackStackPacket();
                 }
+                break;
+            case COMPLETED:
+                Server.getInstance().getLogger().info("COMPLETED");
+                this.sendGameLoginPackets();
                 break;
         }
     }
@@ -186,6 +193,15 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         this.player.sendPacket(chunkDataPacket);
     }
 
+    private void sendResourcePackStackPacket() {
+        ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
+        stackPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
+        stackPacket.setResourcePacks(this.server.getResourcePackManager().getResourcePacks().values().toArray(new DataPack[0]));
+        stackPacket.setBehaviourPacks(this.server.getResourcePackManager().getBehaviorPacks().values().toArray(new DataPack[0]));
+        stackPacket.setGameVersion(this.player.getVersion().getVersionString());
+        this.player.sendPacket(stackPacket);
+    }
+
     /**
      * Called when the player has passed the resource packs stage and is ready to start the game login process.
      */
@@ -216,6 +232,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         startGamePacket.setServerAuthoritativeInventory(true);
         startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
         startGamePacket.setServerOrigin(ServerOrigin.NONE);
+        startGamePacket.setItemStates(this.player.getVersion().getItemStates());
 
         // World
         startGamePacket.setWorldSpawn(new BlockCoordinates(0, 0, 0));
