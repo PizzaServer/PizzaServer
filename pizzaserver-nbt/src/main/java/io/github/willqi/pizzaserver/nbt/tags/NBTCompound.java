@@ -50,9 +50,31 @@ public class NBTCompound extends NBTTag implements NBTContainer {
         return (NBTDouble)this.data.get(name);
     }
 
+    public NBTString getString(String name) {
+        return (NBTString)this.data.get(name);
+    }
+
+    public NBTList getList(String name) {
+        return (NBTList)this.data.get(name);
+    }
+
     public NBTCompound getCompound(String name) {
         return (NBTCompound)this.data.get(name);
     }
+
+    public NBTByteArray getByteArray(String name) {
+        return (NBTByteArray)this.data.get(name);
+    }
+
+    public NBTIntegerArray getIntegerArray(String name) {
+        return (NBTIntegerArray)this.data.get(name);
+    }
+
+    public NBTLongArray getLongArray(String name) {
+        return (NBTLongArray)this.data.get(name);
+    }
+
+
 
     public NBTCompound put(String name, NBTTag tag) throws NBTLimitException {
         this.data.put(name, tag);

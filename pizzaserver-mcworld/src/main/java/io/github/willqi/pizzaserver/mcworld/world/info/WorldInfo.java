@@ -38,7 +38,7 @@ public class WorldInfo implements Cloneable {
     private int serverChunkTickRange;
     private boolean spawnOnlyV1Villagers;
     private int storageVersion;
-    private PlayerPermissions playerPermissions = new PlayerPermissions();
+    private PlayerAbilities playerAbilities = new PlayerAbilities();
     private boolean texturePacksRequired;
     private boolean useMsaGamerTagsOnly;
     private String worldName;
@@ -289,6 +289,15 @@ public class WorldInfo implements Cloneable {
         return this;
     }
 
+    public PlayerAbilities getPlayerAbilities() {
+        return this.playerAbilities;
+    }
+
+    public WorldInfo setPlayerAbilities(PlayerAbilities abilities) {
+        this.playerAbilities = abilities;
+        return this;
+    }
+
     public boolean isTexturePacksRequired() {
         return this.texturePacksRequired;
     }
@@ -412,7 +421,7 @@ public class WorldInfo implements Cloneable {
         return this.flatWorldLayers;
     }
 
-    public WorldInfo setFloatWorldLayers(String layers) {
+    public WorldInfo setFlatWorldLayers(String layers) {
         this.flatWorldLayers = flatWorldLayers;
         return this;
     }
