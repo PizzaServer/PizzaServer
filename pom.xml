@@ -11,6 +11,7 @@
     <modules>
         <module>pizzaserver-nbt</module>
         <module>pizzaserver-server</module>
+        <module>pizzaserver-mcworld</module>
     </modules>
 
     <properties>
