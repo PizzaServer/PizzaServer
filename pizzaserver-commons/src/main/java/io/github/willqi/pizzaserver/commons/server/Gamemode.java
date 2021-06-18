@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.player.data;
+package io.github.willqi.pizzaserver.commons.server;
 
 public enum Gamemode {
 

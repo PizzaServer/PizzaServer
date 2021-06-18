@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.data.TeleportationCause;
-import io.github.willqi.pizzaserver.server.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 public class MovePlayerPacket extends BedrockPacket {
 

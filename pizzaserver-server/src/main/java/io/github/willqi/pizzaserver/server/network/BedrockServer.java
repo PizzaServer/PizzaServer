@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network;
 import com.nukkitx.network.raknet.*;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.player.data.Gamemode;
+import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 

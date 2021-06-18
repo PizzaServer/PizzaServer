@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.server.Server;
-import io.github.willqi.pizzaserver.server.data.Difficulty;
+import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.events.player.PreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -12,13 +12,13 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementT
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.packs.DataPack;
 import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.player.data.Gamemode;
+import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
-import io.github.willqi.pizzaserver.server.utils.BlockCoordinates;
-import io.github.willqi.pizzaserver.server.utils.Vector2;
-import io.github.willqi.pizzaserver.server.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.commons.utils.Vector2;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.world.data.Dimension;
-import io.github.willqi.pizzaserver.server.world.data.WorldType;
+import io.github.willqi.pizzaserver.commons.world.WorldType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -233,7 +233,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         startGamePacket.setItemStates(this.player.getVersion().getItemStates());
 
         // World
-        startGamePacket.setWorldSpawn(new BlockCoordinates(0, 0, 0));
+        startGamePacket.setWorldSpawn(new Vector3i(0, 0, 0));
         startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
         startGamePacket.setWorldType(WorldType.INFINITE);
 

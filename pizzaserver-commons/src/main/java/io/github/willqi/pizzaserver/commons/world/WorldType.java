@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.world.data;
+package io.github.willqi.pizzaserver.commons.world;
 
 public enum WorldType {
 

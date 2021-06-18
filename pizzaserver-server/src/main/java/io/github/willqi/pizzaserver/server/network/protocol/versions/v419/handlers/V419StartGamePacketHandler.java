@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 import io.netty.buffer.ByteBuf;
 
 public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGamePacket> {

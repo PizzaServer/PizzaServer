@@ -1,17 +1,17 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.server.data.Difficulty;
+import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
-import io.github.willqi.pizzaserver.server.player.data.Gamemode;
+import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
-import io.github.willqi.pizzaserver.server.utils.Vector2;
-import io.github.willqi.pizzaserver.server.utils.BlockCoordinates;
-import io.github.willqi.pizzaserver.server.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector2;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.world.data.Dimension;
 import io.github.willqi.pizzaserver.server.data.ServerOrigin;
-import io.github.willqi.pizzaserver.server.world.data.WorldType;
-import io.github.willqi.pizzaserver.server.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.commons.world.WorldType;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
 import java.util.UUID;
 
@@ -80,7 +80,7 @@ public class StartGamePacket extends BedrockPacket {
     private int limitedWorldWidth;
     private float rainLevel;
     private int seed;
-    private BlockCoordinates worldSpawn;
+    private Vector3i worldSpawn;
     private String worldId;
     private int worldTime;
     private WorldType worldType;
@@ -500,11 +500,11 @@ public class StartGamePacket extends BedrockPacket {
         this.seed = seed;
     }
 
-    public BlockCoordinates getWorldSpawn() {
+    public Vector3i getWorldSpawn() {
         return this.worldSpawn;
     }
 
-    public void setWorldSpawn(BlockCoordinates worldSpawn) {
+    public void setWorldSpawn(Vector3i worldSpawn) {
         this.worldSpawn = worldSpawn;
     }
 

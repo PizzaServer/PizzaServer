@@ -25,17 +25,23 @@
     </repositories>
 
     <dependencies>
-        <!-- LevelDB in Java that supports MCPE format -->
-        <dependency>
-            <groupId>com.github.tinfoiled.leveldb</groupId>
-            <artifactId>leveldb</artifactId>
-            <version>0.7</version>
-        </dependency>
 
         <dependency>
             <groupId>io.github.willqi.pizzaserver.server.nbt</groupId>
             <artifactId>PizzaServer-NBT</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.willqi.pizzaserver.commons</groupId>
+            <artifactId>PizzaServer-Commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- LevelDB in Java that supports MCPE format -->
+        <dependency>
+            <groupId>com.github.tinfoiled.leveldb</groupId>
+            <artifactId>leveldb</artifactId>
+            <version>0.7</version>
         </dependency>
 
     </dependencies>

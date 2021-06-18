@@ -1,13 +1,13 @@
-package io.github.willqi.pizzaserver.server.utils;
+package io.github.willqi.pizzaserver.commons.utils;
 
-public class BlockCoordinates {
+public class Vector3i {
 
     private final int x;
     private final int y;
     private final int z;
 
 
-    public BlockCoordinates(int x, int y, int z) {
+    public Vector3i(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
