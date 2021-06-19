@@ -53,7 +53,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         // Game rules
         VarInts.writeUnsignedInt(buffer, packet.getGameRules().length);
         for (GameRule<?> rule : packet.getGameRules()) {
-            helper.writeString(rule.getName(), buffer);
+            helper.writeString(rule.getId().getName(), buffer);
             VarInts.writeUnsignedInt(buffer, rule.getType().getId());
             switch (rule.getType()) {
                 case BOOLEAN:
