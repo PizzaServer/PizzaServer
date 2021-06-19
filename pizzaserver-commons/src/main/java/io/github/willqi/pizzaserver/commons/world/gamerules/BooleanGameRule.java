@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.commons.world.gamerules;
 
 public class BooleanGameRule extends GameRule<Boolean> {
 
-    public BooleanGameRule(String name, Boolean value) {
-        super(name, value);
+    public BooleanGameRule(GameRuleId id, Boolean value) {
+        super(id, value);
     }
 
     @Override

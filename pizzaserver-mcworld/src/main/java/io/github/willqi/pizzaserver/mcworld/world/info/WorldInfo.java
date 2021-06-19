@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRuleId;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class WorldInfo implements Cloneable {
     private Gamemode defaultGamemode;
     private Difficulty difficulty;
     private String flatWorldLayers;
-    private Map<String, GameRule> gameRules = new HashMap<>();
+    private Map<GameRuleId, GameRule> gameRules = new HashMap<>();
     private float lightningLevel;
     private int lightningTime;
     private Vector3i limitedWorldCoordinates;
@@ -426,11 +427,11 @@ public class WorldInfo implements Cloneable {
         return this;
     }
 
-    public Map<String, GameRule> getGameRules() {
+    public Map<GameRuleId, GameRule> getGameRules() {
         return this.gameRules;
     }
 
-    public WorldInfo setGameRules(Map<String, GameRule> gameRules) {
+    public WorldInfo setGameRules(Map<GameRuleId, GameRule> gameRules) {
         this.gameRules = gameRules;
         return this;
     }

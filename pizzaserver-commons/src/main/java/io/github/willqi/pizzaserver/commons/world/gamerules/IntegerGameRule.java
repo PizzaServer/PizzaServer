@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.commons.world.gamerules;
 
 public class IntegerGameRule extends GameRule<Integer> {
 
-    public IntegerGameRule(String name, Integer value) {
-        super(name, value);
+    public IntegerGameRule(GameRuleId id, Integer value) {
+        super(id, value);
     }
 
     @Override

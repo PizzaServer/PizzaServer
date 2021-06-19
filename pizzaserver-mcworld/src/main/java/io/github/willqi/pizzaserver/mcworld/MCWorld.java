@@ -4,6 +4,10 @@ import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
+import io.github.willqi.pizzaserver.commons.world.gamerules.BooleanGameRule;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRuleId;
+import io.github.willqi.pizzaserver.commons.world.gamerules.IntegerGameRule;
 import io.github.willqi.pizzaserver.mcworld.world.info.PlayerAbilities;
 import io.github.willqi.pizzaserver.mcworld.world.info.WorldInfo;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
@@ -16,6 +20,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Represents a Bedrock world file
@@ -193,7 +198,36 @@ W      * Ensures all files required exist in the directory.
                     .setWalkSpeed(abilities.getFloat("walkSpeed").getValue())
             );
 
-            // TODO: gameRules
+            this.worldInfo.setGameRules(new HashMap<GameRuleId, GameRule>(){
+                {
+                    put(GameRuleId.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleId.COMMAND_BLOCK_OUTPUT, compound.getByte("commandblockoutput").getValue() == 0x01));
+                    put(GameRuleId.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleId.COMMAND_BLOCKS_ENABLED, compound.getByte("commandblocksenabled").getValue() == 0x01));
+                    put(GameRuleId.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleId.DO_DAYLIGHT_CYCLE, compound.getByte("dodaylightcycle").getValue() == 0x01));
+                    put(GameRuleId.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleId.DO_ENTITY_DROPS, compound.getByte("doentitydrops").getValue() == 0x01));
+                    put(GameRuleId.DO_FIRE_TICK, new BooleanGameRule(GameRuleId.DO_FIRE_TICK, compound.getByte("dofiretick").getValue() == 0x01));
+                    put(GameRuleId.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleId.DO_IMMEDIATE_RESPAWN, compound.getByte("doimmediaterespawn").getValue() == 0x01));
+                    put(GameRuleId.DO_INSOMNIA, new BooleanGameRule(GameRuleId.DO_INSOMNIA, compound.getByte("doinsomnia").getValue() == 0x01));
+                    put(GameRuleId.DO_MOB_LOOT, new BooleanGameRule(GameRuleId.DO_MOB_LOOT, compound.getByte("domobloot").getValue() == 0x01));
+                    put(GameRuleId.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleId.DO_MOB_SPAWNING, compound.getByte("domobspawning").getValue() == 0x01));
+                    put(GameRuleId.DO_TILE_DROPS, new BooleanGameRule(GameRuleId.DO_TILE_DROPS, compound.getByte("dotiledrops").getValue() == 0x01));
+                    put(GameRuleId.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleId.DO_WEATHER_CYCLE, compound.getByte("doweathercycle").getValue() == 0x01));
+                    put(GameRuleId.DROWNING_DAMAGE, new BooleanGameRule(GameRuleId.DROWNING_DAMAGE, compound.getByte("drowningdamage").getValue() == 0x01));
+                    put(GameRuleId.FALL_DAMAGE, new BooleanGameRule(GameRuleId.FALL_DAMAGE, compound.getByte("falldamage").getValue() == 0x01));
+                    put(GameRuleId.FIRE_DAMAGE, new BooleanGameRule(GameRuleId.FIRE_DAMAGE, compound.getByte("firedamage").getValue() == 0x01));
+                    put(GameRuleId.KEEP_INVENTORY, new BooleanGameRule(GameRuleId.KEEP_INVENTORY, compound.getByte("keepinventory").getValue() == 0x01));
+                    put(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, new IntegerGameRule(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, compound.getInteger("maxcommandchainlength").getValue()));
+                    put(GameRuleId.MOB_GRIEFING, new BooleanGameRule(GameRuleId.MOB_GRIEFING, compound.getByte("mobgriefing").getValue() == 0x01));
+                    put(GameRuleId.NATURAL_REGENERATION, new BooleanGameRule(GameRuleId.NATURAL_REGENERATION, compound.getByte("naturalregeneration").getValue() == 0x01));
+                    put(GameRuleId.PVP, new BooleanGameRule(GameRuleId.PVP, compound.getByte("pvp").getValue() == 0x01));
+                    put(GameRuleId.RANDOM_TICK_SPEED, new IntegerGameRule(GameRuleId.RANDOM_TICK_SPEED, compound.getInteger("randomtickspeed").getValue()));
+                    put(GameRuleId.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleId.SEND_COMMAND_FEEDBACK, compound.getByte("sendcommandfeedback").getValue() == 0x01));
+                    put(GameRuleId.SHOW_COORDINATES, new BooleanGameRule(GameRuleId.SHOW_COORDINATES, compound.getByte("showcoordinates").getValue() == 0x01));
+                    put(GameRuleId.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleId.SHOW_DEATH_MESSAGES, compound.getByte("showdeathmessages").getValue() == 0x01));
+                    put(GameRuleId.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleId.SHOW_ITEM_TAGS, compound.getByte("showtags").getValue() == 0x01));
+                    put(GameRuleId.SPAWN_RADIUS, new IntegerGameRule(GameRuleId.SPAWN_RADIUS, compound.getInteger("spawnradius").getValue()));
+                    put(GameRuleId.TNT_EXPLODES, new BooleanGameRule(GameRuleId.TNT_EXPLODES, compound.getByte("tntexplodes").getValue() == 0x01));
+                }
+            });
 
         }
     }
