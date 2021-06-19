@@ -16,8 +16,8 @@ public class PlayerAbilities {
     private boolean isInvulnerable;
     private boolean isOp;
     private boolean lightning;  // TODO: what is this?
-    private int permissionLevel;
-    private int playersPermissionLevel; // TODO: what is this and isn't it the same as permissionLevel?
+    private int permissionsLevel;
+    private int playerPermissionsLevel; // TODO: what is this and isn't it the same as permissionLevel?
     private float walkSpeed;
 
 
@@ -147,21 +147,21 @@ public class PlayerAbilities {
         return this;
     }
 
-    public int getPermissionLevel() {
-        return this.permissionLevel;
+    public int getPermissionsLevel() {
+        return this.permissionsLevel;
     }
 
-    public PlayerAbilities setPermissionLevel(int level) {
-        this.permissionLevel = level;
+    public PlayerAbilities setPermissionsLevel(int level) {
+        this.permissionsLevel = level;
         return this;
     }
 
-    public int getPlayersPermissionLevel() {
-        return this.playersPermissionLevel;
+    public int getPlayerPermissionsLevel() {
+        return this.playerPermissionsLevel;
     }
 
-    public PlayerAbilities setPlayersPermissionLevel(int level) {
-        this.playersPermissionLevel = level;
+    public PlayerAbilities setPlayerPermissionsLevel(int level) {
+        this.playerPermissionsLevel = level;
         return this;
     }
 

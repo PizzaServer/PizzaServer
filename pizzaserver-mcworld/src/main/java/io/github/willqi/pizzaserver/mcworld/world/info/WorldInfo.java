@@ -62,11 +62,11 @@ public class WorldInfo implements Cloneable {
     private float lightningLevel;
     private int lightningTime;
     private Vector3i limitedWorldCoordinates;
-    private Vector3i limitedWorldDimensions;
+    private int limitedWorldWidth;
     private int netherScale;
     private float rainLevel;
     private int rainTime;
-    private int seed;
+    private long seed;
     private Vector3i spawnCoordinates;
     private boolean startWithMapEnabled;
     private long time;
@@ -463,12 +463,12 @@ public class WorldInfo implements Cloneable {
         return this;
     }
 
-    public Vector3i getLimitedWorldDimensions() {
-        return this.limitedWorldDimensions;
+    public int getLimitedWorldWidth() {
+        return this.limitedWorldWidth;
     }
 
-    public WorldInfo setLimitedWorldDimensions(Vector3i dimensions) {
-        this.limitedWorldDimensions = dimensions;
+    public WorldInfo setLimitedWorldWidth(int width) {
+        this.limitedWorldWidth = width;
         return this;
     }
 
@@ -499,11 +499,11 @@ public class WorldInfo implements Cloneable {
         return this;
     }
 
-    public int getSeed() {
+    public long getSeed() {
         return this.seed;
     }
 
-    public WorldInfo setSeed(int seed) {
+    public WorldInfo setSeed(long seed) {
         this.seed = seed;
         return this;
     }

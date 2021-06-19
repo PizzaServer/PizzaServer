@@ -142,15 +142,11 @@ W      * Ensures all files required exist in the directory.
                             compound.getInteger("LimitedWorldOriginY").getValue(),
                             compound.getInteger("LimitedWorldOriginZ").getValue()
                     ))
-                    .setLimitedWorldDimensions(new Vector3i(
-                            compound.getInteger("limitedWorldWidth").getValue(),
-                            compound.getInteger("limitedWorldHeight").getValue(),
-                            compound.getInteger("limitedWorldDepth").getValue()
-                    ))
+                    .setLimitedWorldWidth(compound.getInteger("limitedWorldWidth").getValue())
                     .setNetherScale(compound.getInteger("NetherScale").getValue())
                     .setRainLevel(compound.getFloat("rainLevel").getValue())
                     .setRainTime(compound.getInteger("rainTime").getValue())
-                    .setSeed(compound.getInteger("RandomSeed").getValue())
+                    .setSeed(compound.getLong("RandomSeed").getValue())
                     .setSpawnCoordinates(new Vector3i(
                             compound.getInteger("SpawnX").getValue(),
                             compound.getInteger("SpawnY").getValue(),
@@ -193,8 +189,8 @@ W      * Ensures all files required exist in the directory.
                     .setIsInvulnerable(abilities.getByte("invulnerable").getValue() == 0x01)
                     .setIsOp(abilities.getByte("op").getValue() == 0x01)
                     .setIsLightning(abilities.getByte("lightning").getValue() == 0x01)
-                    .setPermissionLevel(abilities.getInteger("permissionLevel").getValue())
-                    .setPlayersPermissionLevel(abilities.getInteger("playerPermissionLevel").getValue())
+                    .setPermissionsLevel(abilities.getInteger("permissionsLevel").getValue())
+                    .setPlayerPermissionsLevel(abilities.getInteger("playerPermissionsLevel").getValue())
                     .setWalkSpeed(abilities.getFloat("walkSpeed").getValue())
             );
 
