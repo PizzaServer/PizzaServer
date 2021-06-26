@@ -8,15 +8,18 @@ import io.github.willqi.pizzaserver.commons.world.gamerules.BooleanGameRule;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRuleId;
 import io.github.willqi.pizzaserver.commons.world.gamerules.IntegerGameRule;
+import io.github.willqi.pizzaserver.mcworld.exceptions.world.chunks.ChunkParseException;
+import io.github.willqi.pizzaserver.mcworld.world.chunks.BedrockChunk;
+import io.github.willqi.pizzaserver.mcworld.world.chunks.ChunkKey;
 import io.github.willqi.pizzaserver.mcworld.world.info.PlayerAbilities;
 import io.github.willqi.pizzaserver.mcworld.world.info.WorldInfo;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTInteger;
+import net.daporkchop.ldbjni.LevelDB;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import java.io.*;
 import java.util.Arrays;
@@ -48,11 +51,56 @@ public class MCWorld implements Closeable {
         this.mcWorldDirectory = mcWorldDirectory;
         this.ensureDirectoryIntegrity();
 
-        this.database = Iq80DBFactory.factory.open(
-                new File(this.mcWorldDirectory.getAbsolutePath(), DB_PATH),
-                new Options());
-
+        this.database = LevelDB.PROVIDER.open(new File(this.mcWorldDirectory.getAbsolutePath(), DB_PATH), new Options().blockSize(64 * 1024));
         this.parseWorldInfoFile();
+
+    }
+
+    public BedrockChunk getChunk(int x, int z) throws IOException {
+
+        // First extract the chunk version
+        byte[] versionData = this.database.get(ChunkKey.VERSION.getLevelDBKey(x, z));
+        if (versionData == null) {
+            versionData = this.database.get(ChunkKey.OLD_VERSION.getLevelDBKey(x, z));
+            if (versionData == null) {
+                throw new ChunkParseException("Failed to find version for chunk (" + x + ", " + z + ")");
+            }
+        }
+        int chunkVersion = versionData[0];
+
+        // Extract height map and biome data
+        byte[] heightAndBiomeData = this.database.get(ChunkKey.DATA_2D.getLevelDBKey(x, z));
+
+        // Extract block entities within this chunk
+        byte[] blockEntityData = this.database.get(ChunkKey.BLOCK_ENTITIES.getLevelDBKey(x, z));
+        if (blockEntityData == null) {
+            blockEntityData = new byte[0];  // Not all chunks will have block entities.
+        }
+
+        // Extract entities within this chunk
+        byte[] entityData = this.database.get(ChunkKey.ENTITIES.getLevelDBKey(x, z));
+        if (entityData == null) {
+            entityData = new byte[0];   // Not all chunks have entities.
+        }
+
+        // Extract subchunks
+        byte[][] subChunks = new byte[16][];
+        for (int y = 0; y < 16; y++) {
+            subChunks[y] = this.database.get(ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(x, z, y));
+        }
+
+        return new BedrockChunk.Builder()
+                .setX(x)
+                .setZ(z)
+                .setChunkVersion(chunkVersion)
+                .setHeightAndBiomeData(heightAndBiomeData)
+                .setBlockEntityData(blockEntityData)
+                .setEntityData(entityData)
+                .setSubChunks(subChunks)
+                .build();
+    }
+
+    public void saveChunk(BedrockChunk bedrockChunk) {
 
     }
 

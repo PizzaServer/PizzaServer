@@ -19,8 +19,8 @@
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>opencollab-repo-snapshot</id>
+            <url>https://repo.opencollab.dev/maven-snapshots/</url>
         </repository>
     </repositories>
 
@@ -39,9 +39,9 @@
 
         <!-- LevelDB in Java that supports MCPE format -->
         <dependency>
-            <groupId>com.github.tinfoiled.leveldb</groupId>
-            <artifactId>leveldb</artifactId>
-            <version>0.7</version>
+            <groupId>net.daporkchop</groupId>
+            <artifactId>leveldb-mcpe-jni</artifactId>
+            <version>0.0.7-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
