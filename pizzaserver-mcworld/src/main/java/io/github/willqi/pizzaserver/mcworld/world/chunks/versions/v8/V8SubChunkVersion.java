@@ -8,9 +8,7 @@ import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 
 public class V8SubChunkVersion extends SubChunkVersion {
@@ -18,6 +16,7 @@ public class V8SubChunkVersion extends SubChunkVersion {
     public static final SubChunkVersion INSTANCE = new V8SubChunkVersion();
 
 
+    // Dragonfly was a huge help with figuring out how Bedrock chunks can be read.
     @Override
     public BedrockSubChunk parse(ByteBuf buffer) {
 
@@ -25,22 +24,22 @@ public class V8SubChunkVersion extends SubChunkVersion {
 
         for (int layer = 0; layer < chunkLayers; layer++) {
             int blockSize = buffer.readByte() >> 1;
-            int blocksPerInt = 32 / blockSize;
-            int intsToStoreBlocks = 4096 / blocksPerInt;
+            boolean padded = blockSize == 3 || blockSize == 5 || blockSize == 6;
+            int intsToStoreBlocks = (4096 / (32 / blockSize)) + (padded ? 1 : 0);
 
             int[] blocks = new int[intsToStoreBlocks];
             for (int blockI = 0; blockI < blocks.length; blockI++) {
                 blocks[blockI] = buffer.readIntLE();
+                System.out.println(blocks[blockI]);
             }
 
             int paletteLength = buffer.readIntLE();
-            buffer.skipBytes(4);    // Most likely a varint that has the byte length
 
             NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
             try {
                 for (int i = 0; i < paletteLength; i++) {
                     NBTCompound compound = inputStream.readCompound();
-                    System.out.println(compound.getString("name").getValue());
+                    System.out.println(compound.getString("name").getValue() + " " + compound.getInteger("version").getValue());
                 }
             } catch (IOException exception) {
                 exception.printStackTrace();
