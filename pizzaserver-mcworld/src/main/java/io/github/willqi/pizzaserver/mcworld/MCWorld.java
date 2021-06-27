@@ -22,8 +22,10 @@ import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Represents a Bedrock world file
@@ -84,10 +86,15 @@ public class MCWorld implements Closeable {
         }
 
         // Extract subchunks
-        byte[][] subChunks = new byte[16][];
+        List<byte[]> subChunkList = new ArrayList<>();
         for (int y = 0; y < 16; y++) {
-            subChunks[y] = this.database.get(ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(x, z, y));
+            byte[] subChunk = this.database.get(ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(x, z, y));
+            if (subChunk == null) {
+                break;
+            }
+            subChunkList.add(subChunk);
         }
+        byte[][] subChunks = subChunkList.toArray(new byte[subChunkList.size()][]);
 
         return new BedrockChunk.Builder()
                 .setX(x)

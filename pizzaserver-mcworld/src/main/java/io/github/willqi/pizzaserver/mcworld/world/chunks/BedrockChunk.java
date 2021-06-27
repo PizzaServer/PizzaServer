@@ -1,11 +1,15 @@
 package io.github.willqi.pizzaserver.mcworld.world.chunks;
 
+import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.v8.V8SubChunkVersion;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,11 +17,11 @@ public class BedrockChunk {
 
     private final int x;
     private final int z;
-
     private final int chunkVersion;
 
     private final byte[] heightMap;
     private final byte[] biomeData;
+    private BedrockSubChunk[] subChunks;
 
     private final Set<NBTCompound> entityNBTs = new HashSet<>();
     private final Set<NBTCompound> blockEntityNBTs = new HashSet<>();
@@ -48,6 +52,28 @@ public class BedrockChunk {
         NBTInputStream entityNBTInputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteArrayInputStream(entityData)));
         while (entityNBTInputStream.available() > 0) {
             this.entityNBTs.add(entityNBTInputStream.readCompound());
+        }
+
+
+        this.subChunks = new BedrockSubChunk[subChunks.length];
+        for (int i = 0; i < this.subChunks.length; i++) {
+            byte[] subChunkBytes = subChunks[i];
+
+            ByteBuf subChunkBuffer = ByteBufAllocator.DEFAULT.buffer(subChunkBytes.length);
+            subChunkBuffer.writeBytes(subChunkBytes);
+            int subChunkVersion = subChunkBuffer.readByte();
+
+            BedrockSubChunk subChunk;
+            switch (subChunkVersion) {
+                case 8:
+                    subChunk = V8SubChunkVersion.INSTANCE.parse(subChunkBuffer);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Cannot parse sub chunk data because there is no sub chunk version handler for v" + subChunkBytes);
+            }
+
+            subChunkBuffer.release();
+            this.subChunks[i] = subChunk;
         }
 
     }
