@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.mcworld.world.chunks;
 
+import io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.v8.V8SubChunkVersion;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
@@ -9,7 +10,6 @@ import io.netty.buffer.ByteBufAllocator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,6 +96,14 @@ public class BedrockChunk {
 
     public Set<NBTCompound> getBlockEntityNBTs() {
         return this.blockEntityNBTs;
+    }
+
+    public BedrockSubChunk getSubChunk(int index) {
+        if (index < this.subChunks.length) {
+            return this.subChunks[index];
+        } else {
+            return null;
+        }
     }
 
 
