@@ -16,16 +16,24 @@ public class BedrockSubChunk {
         return this.layers[layer];
     }
 
+    public Layer[] getLayers() {
+        return this.layers;
+    }
+
 
     public static class Layer {
 
         // x y z
-        private final BlockPalette.BlockPaletteData[][][] data = new BlockPalette.BlockPaletteData[16][16][16];
+        private final BlockPalette.BlockPaletteData[] data;
+
+        private final BlockPalette palette;
 
 
         public Layer(RawBlock[] blocks, BlockPalette palette) {
-            for (RawBlock block : blocks) {
-                this.data[block.getPosition().getX()][block.getPosition().getY()][block.getPosition().getZ()] = palette.getPaletteData(block.getPaletteId());
+            this.data = new BlockPalette.BlockPaletteData[blocks.length];
+            this.palette = palette;
+            for (int i = 0; i < blocks.length; i++) {
+                this.data[i] = palette.getPaletteData(blocks[i].getPaletteId());
             }
         }
 
@@ -34,7 +42,15 @@ public class BedrockSubChunk {
         }
 
         public BlockPalette.BlockPaletteData getBlock(int x, int y, int z) {
-            return this.data[x][y][z];
+            return this.data[(x << 8) + (z << 4) | y];
+        }
+
+        public BlockPalette.BlockPaletteData[] getBlocks() {
+            return this.data;
+        }
+
+        public BlockPalette getPalette() {
+            return this.palette;
         }
 
     }

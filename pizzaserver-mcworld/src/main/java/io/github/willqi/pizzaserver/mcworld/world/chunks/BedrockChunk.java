@@ -71,6 +71,7 @@ public class BedrockChunk {
             switch (subChunkVersion) {
                 case 8:
                     subChunk = V8SubChunkVersion.INSTANCE.parse(subChunkBuffer);
+                    V8SubChunkVersion.INSTANCE.serialize(subChunk);
                     break;
                 default:
                     throw new UnsupportedOperationException("Cannot parse sub chunk data because there is no sub chunk version handler for v" + subChunkBytes);

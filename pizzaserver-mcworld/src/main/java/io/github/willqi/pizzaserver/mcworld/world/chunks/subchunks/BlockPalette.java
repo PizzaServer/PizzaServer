@@ -12,7 +12,7 @@ public class BlockPalette {
 
 
     public void add(NBTCompound data) {
-        this.paletteData.add(new BlockPaletteData(data));
+        this.paletteData.add(new BlockPaletteData(data, this.paletteData.size()));
     }
 
     public List<BlockPaletteData> getAllPaletteData() {
@@ -27,18 +27,24 @@ public class BlockPalette {
     public static class BlockPaletteData {
 
         private final String name;
+        private final int id;
         private final int version;
         private final NBTCompound state;
 
 
-        public BlockPaletteData(NBTCompound data) {
+        public BlockPaletteData(NBTCompound data, int id) {
             this.name = data.getString("name").getValue();
             this.version = data.getInteger("version").getValue();
             this.state = data.getCompound("states");
+            this.id = id;
         }
 
         public String getName() {
             return this.name;
+        }
+
+        public int getId() {
+            return this.id;
         }
 
         public int getVersion() {
