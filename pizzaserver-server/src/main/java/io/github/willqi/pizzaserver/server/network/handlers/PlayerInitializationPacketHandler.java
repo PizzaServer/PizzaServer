@@ -55,7 +55,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
             } else {
                 loginFailPacket.setStatus(PlayStatusPacket.PlayStatus.OUTDATED_CLIENT);
             }
-            this.session.sendPacket(loginFailPacket);
+            this.session.queueSendPacket(loginFailPacket);
             return;
         }
 

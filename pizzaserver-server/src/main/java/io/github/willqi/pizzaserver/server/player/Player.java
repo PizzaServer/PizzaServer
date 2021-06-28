@@ -86,7 +86,7 @@ public class Player extends Entity {
     }
 
     public void sendPacket(BedrockPacket packet) {
-        this.session.sendPacket(packet);
+        this.session.queueSendPacket(packet);
     }
 
 }

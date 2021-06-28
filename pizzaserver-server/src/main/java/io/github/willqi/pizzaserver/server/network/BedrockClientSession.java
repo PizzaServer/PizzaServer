@@ -3,7 +3,6 @@ package io.github.willqi.pizzaserver.server.network;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.network.raknet.RakNetServerSession;
 import com.nukkitx.network.util.DisconnectReason;
-import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.BedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
@@ -29,7 +28,8 @@ public class BedrockClientSession {
     private MinecraftVersion version;
     private volatile BedrockPacketHandler handler;
 
-    private final List<BedrockPacket> queuedPackets = Collections.synchronizedList(new LinkedList<>());
+    private final List<BedrockPacket> queuedIncomingPackets = Collections.synchronizedList(new LinkedList<>());
+    private final List<BedrockPacket> queuedOutgoingPackets = Collections.synchronizedList(new LinkedList<>());
 
     public BedrockClientSession(BedrockServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
@@ -61,6 +61,10 @@ public class BedrockClientSession {
 
     public boolean isDisconnected() {
         return this.disconnected;
+    }
+
+    public void queueSendPacket(BedrockPacket packet) {
+        this.queuedOutgoingPackets.add(packet);
     }
 
     public void sendPacket(BedrockPacket packet) {
@@ -96,11 +100,12 @@ public class BedrockClientSession {
     }
 
     public void processPackets() {
+        // Incoming
         if (this.handler != null) {
             List<BedrockPacket> packets;
-            synchronized (this.queuedPackets) {
-                packets = new ArrayList<>(this.queuedPackets);
-                this.queuedPackets.clear();
+            synchronized (this.queuedIncomingPackets) {
+                packets = new ArrayList<>(this.queuedIncomingPackets);
+                this.queuedIncomingPackets.clear();
             }
             for (BedrockPacket packet : packets) {
                 this.handler.onPacket(packet);
@@ -116,6 +121,16 @@ public class BedrockClientSession {
                 }
             }
         }
+
+        // Outgoing
+        List<BedrockPacket> packets;
+        synchronized (this.queuedOutgoingPackets) {
+            packets = new ArrayList<>(this.queuedIncomingPackets);
+            this.queuedOutgoingPackets.clear();
+        }
+        for (BedrockPacket packet : packets) {
+            this.sendPacket(packet);
+        }
     }
 
     public void handlePacket(int packetId, ByteBuf buffer) {
@@ -127,7 +142,7 @@ public class BedrockClientSession {
                 return;
             }
             BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.version.getPacketRegistry().getPacketHelper());
-            this.queuedPackets.add(bedrockPacket);
+            this.queuedIncomingPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
 
             // First packet, we need to find their protocol to find the correct packet handler.
@@ -147,13 +162,13 @@ public class BedrockClientSession {
                     this.serverSession.disconnect(DisconnectReason.BAD_PACKET);
                     return;
                 }
-                this.queuedPackets.add(loginPacket);
+                this.queuedIncomingPackets.add(loginPacket);
 
             } else {
                 // Unable to find packet handler.
                 LoginPacket loginPacket = new LoginPacket();
                 loginPacket.setProtocol(protocol);
-                this.queuedPackets.add(loginPacket);
+                this.queuedIncomingPackets.add(loginPacket);
             }
 
         } else {
