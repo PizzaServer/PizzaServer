@@ -54,7 +54,7 @@ public class V8SubChunkVersion extends SubChunkVersion {
             buffer.setIndex(endPaletteIndex, buffer.writerIndex());
         }
 
-        return new BedrockSubChunk(layers);
+        return new BedrockSubChunk(8, layers);
     }
 
     @Override

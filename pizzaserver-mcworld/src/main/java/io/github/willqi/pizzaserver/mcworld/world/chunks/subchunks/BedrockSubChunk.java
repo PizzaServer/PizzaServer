@@ -1,15 +1,26 @@
 package io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.SubChunkVersion;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+
+import java.io.IOException;
 
 
 public class BedrockSubChunk {
 
+    private final int subChunkVersion;
     private final Layer[] layers;
 
 
-    public BedrockSubChunk(Layer[] layers) {
+    public BedrockSubChunk(int subChunkVersion, Layer[] layers) {
+        this.subChunkVersion = subChunkVersion;
         this.layers = layers;
+    }
+
+    public int getSubChunkVersion() {
+        return this.subChunkVersion;
     }
 
     public Layer getLayer(int layer) {
@@ -18,6 +29,18 @@ public class BedrockSubChunk {
 
     public Layer[] getLayers() {
         return this.layers;
+    }
+
+    public byte[] serialize() throws IOException {
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+        buffer.writeByte(this.subChunkVersion);
+        buffer.writeBytes(SubChunkVersion.getSubChunkVersion(this.subChunkVersion).serialize(this));
+
+        byte[] serialized = new byte[buffer.readableBytes()];
+        buffer.readBytes(serialized);
+
+        buffer.release();
+        return serialized;
     }
 
 

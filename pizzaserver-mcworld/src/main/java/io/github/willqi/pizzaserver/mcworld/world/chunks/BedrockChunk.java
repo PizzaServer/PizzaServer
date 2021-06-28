@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.mcworld.world.chunks;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks.BedrockSubChunk;
+import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.SubChunkVersion;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.v8.V8SubChunkVersion;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
@@ -67,15 +68,7 @@ public class BedrockChunk {
             subChunkBuffer.writeBytes(subChunkBytes);
             int subChunkVersion = subChunkBuffer.readByte();
 
-            BedrockSubChunk subChunk;
-            switch (subChunkVersion) {
-                case 8:
-                    subChunk = V8SubChunkVersion.INSTANCE.parse(subChunkBuffer);
-                    V8SubChunkVersion.INSTANCE.serialize(subChunk);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Cannot parse sub chunk data because there is no sub chunk version handler for v" + subChunkBytes);
-            }
+            BedrockSubChunk subChunk = SubChunkVersion.getSubChunkVersion(subChunkVersion).parse(subChunkBuffer);
 
             subChunkBuffer.release();
             this.subChunks[i] = subChunk;
