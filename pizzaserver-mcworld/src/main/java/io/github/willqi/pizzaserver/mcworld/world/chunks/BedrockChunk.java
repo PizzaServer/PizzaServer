@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.mcworld.world.chunks;
 
+import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.v8.V8SubChunkVersion;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
@@ -19,8 +20,8 @@ public class BedrockChunk {
     private final int z;
     private final int chunkVersion;
 
-    private final byte[] heightMap;
-    private final byte[] biomeData;
+    private final int[] heightMap = new int[256];
+    private final byte[] biomeData = new byte[256];
     private BedrockSubChunk[] subChunks;
 
     private final Set<NBTCompound> entityNBTs = new HashSet<>();
@@ -35,14 +36,17 @@ public class BedrockChunk {
             byte[] entityData,
             byte[][] subChunks
     ) throws IOException {
-
+        this.chunkVersion = chunkVersion;
         this.x = x;
         this.z = z;
 
-        this.heightMap = new byte[0];
-        this.biomeData = new byte[0];
-
-        this.chunkVersion = chunkVersion;
+        ByteBuf heightAndBiomeBuf = ByteBufAllocator.DEFAULT.buffer(512);
+        heightAndBiomeBuf.writeBytes(heightAndBiomeData);
+        for (int i = 0; i < this.heightMap.length; i++) {
+            this.heightMap[i] = heightAndBiomeBuf.readUnsignedShortLE();
+        }
+        heightAndBiomeBuf.readBytes(this.biomeData);
+        heightAndBiomeBuf.release();
 
         NBTInputStream blockEntityNBTInputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteArrayInputStream(blockEntityData)));
         while (blockEntityNBTInputStream.available() > 0) {
@@ -96,6 +100,30 @@ public class BedrockChunk {
 
     public Set<NBTCompound> getBlockEntityNBTs() {
         return this.blockEntityNBTs;
+    }
+
+    public int[] getHeightMap() {
+        return this.heightMap;
+    }
+
+    public int getHeightAt(Vector2i position) {
+        return this.getHeightAt(position.getX(), position.getY());
+    }
+
+    public int getHeightAt(int x, int y) {
+        return this.heightMap[y * 16 + x];
+    }
+
+    public byte[] getBiomeData() {
+        return this.biomeData;
+    }
+
+    public byte getBiomeAt(Vector2i position) {
+        return this.getBiomeAt(position.getX(), position.getY());
+    }
+
+    public byte getBiomeAt(int x, int y) {
+        return this.biomeData[y * 16 + x];
     }
 
     public BedrockSubChunk getSubChunk(int index) {
