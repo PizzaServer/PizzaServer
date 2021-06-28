@@ -1,14 +1,10 @@
 package io.github.willqi.pizzaserver.mcworld.world.chunks.versions.v8;
 
+import io.github.willqi.pizzaserver.mcworld.exceptions.world.chunks.ChunkParseException;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.BedrockSubChunk;
+import io.github.willqi.pizzaserver.mcworld.world.chunks.BlockPalette;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.SubChunkVersion;
-import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
-import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
-import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-
-import java.io.IOException;
 
 
 public class V8SubChunkVersion extends SubChunkVersion {
@@ -18,32 +14,39 @@ public class V8SubChunkVersion extends SubChunkVersion {
 
     // Dragonfly was a huge help with figuring out how Bedrock chunks can be read.
     @Override
-    public BedrockSubChunk parse(ByteBuf buffer) {
+    public BedrockSubChunk parse(ByteBuf buffer) throws ChunkParseException {
 
         int chunkLayers = buffer.readByte(); // Verison 8 allows up to 256 layers. I'm assuming this is for things like waterlogging.
 
         for (int layer = 0; layer < chunkLayers; layer++) {
             int blockSize = buffer.readByte() >> 1;
+            int blocksPerWord = 32 / blockSize;
             boolean padded = blockSize == 3 || blockSize == 5 || blockSize == 6;
-            int intsToStoreBlocks = (4096 / (32 / blockSize)) + (padded ? 1 : 0);
+            int intsToStoreBlocks = (4096 / blocksPerWord) + (padded ? 1 : 0);
 
-            int[] blocks = new int[intsToStoreBlocks];
-            for (int blockI = 0; blockI < blocks.length; blockI++) {
-                blocks[blockI] = buffer.readIntLE();
-                System.out.println(blocks[blockI]);
-            }
+            // We want to read the palette first so we can translate what blocks are immediately.
+            int chunkBlocksReaderIndex = buffer.readerIndex();
+            buffer.setIndex(chunkBlocksReaderIndex + (intsToStoreBlocks * 4), buffer.writerIndex());
 
-            int paletteLength = buffer.readIntLE();
+            BlockPalette blockPalette = new BlockPalette(buffer);
+            int endPaletteIndex = buffer.readerIndex();
 
-            NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
-            try {
-                for (int i = 0; i < paletteLength; i++) {
-                    NBTCompound compound = inputStream.readCompound();
-                    System.out.println(compound.getString("name").getValue() + " " + compound.getInteger("version").getValue());
+            // Parse the blocks within the chunk.
+            // https://github.com/JSPrismarine/JSPrismarine/blob/df616663ae436475e0939326641270a8e04b7e3f/packages/prismarine/src/world/chunk/BlockStorage.ts#L108
+            // Useful for determining how to parse the chunk blocks.
+            buffer.setIndex(chunkBlocksReaderIndex, buffer.writerIndex());
+            int[] blocks = new int[intsToStoreBlocks * blocksPerWord];
+            int chunkBlockIndex = 0;
+            for (int blockIntI = 0; blockIntI < intsToStoreBlocks; blockIntI++) {
+                int word = buffer.readIntLE();  // This integer can store multiple blocks.
+                for (int blockI = 0; blockI < blocksPerWord; blockI++) {
+                    int paletteType = (word >> (chunkBlockIndex % blocksPerWord) * blockSize) & ((1 << blockSize) - 1);
+                    blocks[chunkBlockIndex] = paletteType;
+                    chunkBlockIndex++;
                 }
-            } catch (IOException exception) {
-                exception.printStackTrace();
             }
+
+            buffer.setIndex(endPaletteIndex, buffer.writerIndex());
         }
 
         return new BedrockSubChunk();
