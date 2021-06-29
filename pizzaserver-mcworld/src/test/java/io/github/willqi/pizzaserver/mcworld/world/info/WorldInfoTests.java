@@ -15,10 +15,9 @@ public class WorldInfoTests {
     @Test
     public void shouldParseTestWorldInfo(@TempDir Path temporaryDir) throws IOException {
         ResourceUtils.copyTestWorld(temporaryDir);
-        WorldInfo info;
-        try (MCWorld world = new MCWorld(temporaryDir.toFile())) {
-            info = world.getWorldInfo();
-        }
+        MCWorld world = new MCWorld(temporaryDir.toFile());
+        MCWorldInfo info = world.getWorldInfo();
+
         ResourceUtils.deleteDirectoryContents(temporaryDir);
 
         assertEquals("1.16.100 World Test", info.getWorldName());
