@@ -31,6 +31,7 @@ public class Server {
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     private final Thread serverExitListener = new ServerExitListener();
+    private volatile boolean stopByConsoleExit;
 
     private int targetTps;
     private int currentTps;
@@ -49,6 +50,8 @@ public class Server {
     public Server(String rootDirectory) {
         INSTANCE = this;
         this.getLogger().info("Setting up PizzaServer instance.");
+        Runtime.getRuntime().addShutdownHook(serverExitListener);
+
         this.rootDirectory = rootDirectory;
 
         // Load required data/files
@@ -66,8 +69,7 @@ public class Server {
      */
     public void boot() {
 
-        Runtime.getRuntime().addShutdownHook(serverExitListener);
-
+        this.stopByConsoleExit = false;
         this.getResourcePackManager().loadResourcePacks();
         this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);
@@ -88,7 +90,6 @@ public class Server {
         long nextPredictedNanoTimeTick = initNanoTime + nanoSecondsPerTick;         // Used to determine how behind/ahead we are
         long sleepTime = TimeUtils.nanoSecondsToMilliseconds(nanoSecondsPerTick);
         while (this.running) {
-
             synchronized (this.sessions) {
                 Iterator<BedrockClientSession> sessions = this.sessions.iterator();
                 while (sessions.hasNext()) {
@@ -129,12 +130,15 @@ public class Server {
     /**
      * The server will stop after the current tick finishes.
      */
-    public void stop() {
-        this.getLogger().info("Stopping server...");
+    private void stop() {
         this.getNetwork().stop();
         this.getWorldManager().unloadWorlds();
 
+        this.getLogger().info("Stopping server...");
         // We're done stop operations. Exit program.
+        if (this.stopByConsoleExit) {   // Ensure that the notify is called AFTER the thread is in the waiting state.
+            while (this.serverExitListener.getState() != Thread.State.WAITING) {}
+        }
         synchronized (this.serverExitListener) {
             this.serverExitListener.notify();
         }
@@ -265,6 +269,7 @@ public class Server {
         @Override
         public void run() {
             if (Server.this.running) {
+                Server.this.stopByConsoleExit = true;
                 Server.this.running = false;
                 try {
                     synchronized (this) {
