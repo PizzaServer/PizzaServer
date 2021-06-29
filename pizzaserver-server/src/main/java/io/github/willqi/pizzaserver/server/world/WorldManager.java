@@ -89,7 +89,7 @@ public class WorldManager {
         while (loadedWorldNamesIterator.hasNext()) {
             String worldName = loadedWorldNamesIterator.next();
 
-            this.server.getLogger().info("Unloading " + worldName);
+            this.server.getLogger().info("Unloading world " + worldName);
             try {
                 this.unloadWorld(worldName).get();
             } catch (ExecutionException exception) {
@@ -99,7 +99,7 @@ public class WorldManager {
                 this.server.getLogger().error("Failed to unload world " + worldName, exception);
                 continue;
             }
-            this.server.getLogger().info("Successfully unloaded " + worldName);
+            this.server.getLogger().info("Successfully unloaded world " + worldName);
         }
     }
 
