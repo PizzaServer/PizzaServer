@@ -39,6 +39,7 @@ public class BedrockServer {
     }
 
     public void boot(String ip, int port) throws ExecutionException, InterruptedException {
+        this.getPizzaServer().getLogger().info("Booting server up on " + ip + ":" + port);
         this.rakNetServer = new RakNetServer(new InetSocketAddress(ip, port));
         this.rakNetServer.setListener(new BedrockServerEventListener());
         this.rakNetServer.bind().get();

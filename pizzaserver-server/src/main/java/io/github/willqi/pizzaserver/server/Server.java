@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.server.plugin.PluginManager;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.Logger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
+import io.github.willqi.pizzaserver.server.world.WorldManager;
 
 import java.io.*;
 import java.util.Collections;
@@ -24,6 +25,7 @@ public class Server {
     private final BedrockServer network = new BedrockServer(this);
     private final PluginManager pluginManager = new PluginManager(this);
     private final DataPackManager dataPackManager = new DataPackManager(this);
+    private final WorldManager worldManager = new WorldManager(this);
     private final Logger logger = new Logger("Server");
 
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
@@ -70,7 +72,8 @@ public class Server {
         this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);
 
-        this.getLogger().info("Booting server up on " + this.getIp() + ":" + this.getPort());
+        this.getWorldManager().loadWorlds();
+
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
         } catch (InterruptedException | ExecutionException exception) {
@@ -95,7 +98,6 @@ public class Server {
                     if (session.isDisconnected()) {
                         sessions.remove();
                     }
-
                 }
             }
 
@@ -130,6 +132,7 @@ public class Server {
     public void stop() {
         this.getLogger().info("Stopping server...");
         this.getNetwork().stop();
+        this.getWorldManager().unloadWorlds();
 
         // We're done stop operations. Exit program.
         synchronized (this.serverExitListener) {
@@ -194,6 +197,10 @@ public class Server {
         return this.dataPackManager;
     }
 
+    public WorldManager getWorldManager() {
+        return this.worldManager;
+    }
+
     public String getRootDirectory() {
         return this.rootDirectory;
     }
@@ -217,7 +224,7 @@ public class Server {
 
         try {
             new File(this.getRootDirectory() + "/plugins").mkdirs();
-            new File(this.getRootDirectory() + "/levels").mkdirs();
+            new File(this.getRootDirectory() + "/worlds").mkdirs();
             new File(this.getRootDirectory() + "/players").mkdirs();
             new File(this.getRootDirectory() + "/resourcepacks").mkdirs();
             new File(this.getRootDirectory() + "/behaviorpacks").mkdirs();
@@ -264,8 +271,7 @@ public class Server {
                         Thread.currentThread().wait();
                     }
                 } catch (InterruptedException exception) {
-                    Server.getInstance().getLogger().error("Exit listener exception");
-                    Server.getInstance().getLogger().error(exception);
+                    Server.getInstance().getLogger().error("Exit listener exception", exception);
                 }
             }
         }
