@@ -25,6 +25,8 @@ public class World implements Closeable {
         this.mcWorld = new MCWorld(worldDirectory);
         this.worldInfo = this.mcWorld.getWorldInfo();
         this.server = server;
+
+        this.chunkManager.start();  // Start the ChunkThread
     }
 
     public String getWorldFileName() {

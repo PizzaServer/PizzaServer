@@ -19,9 +19,18 @@ public class ChunkManager {
 
     public ChunkManager(World world) {
         this.world = world;
+    }
+
+    /**
+     * Start chunk processing
+     */
+    public void start() {
         this.serializer.start();
     }
 
+    /**
+     * Stop chunk processing
+     */
     public void stop() {
         this.serializer.interrupt();
     }

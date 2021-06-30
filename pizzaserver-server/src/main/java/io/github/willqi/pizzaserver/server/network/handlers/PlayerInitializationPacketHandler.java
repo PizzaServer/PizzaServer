@@ -17,6 +17,7 @@ import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.server.world.World;
 import io.github.willqi.pizzaserver.server.world.data.Dimension;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 
@@ -214,7 +215,7 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(new Vector2(0, 0));
-        startGamePacket.setPlayerSpawn(new Vector3(0, 100, 0));
+        startGamePacket.setPlayerSpawn(new Vector3(3344, 70, 28));
 
         // Server
         startGamePacket.setChunkTickRange(4);    // TODO: modify once you get chunks ticking
@@ -247,6 +248,27 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         this.player.sendPacket(startGamePacket);
         this.player.sendPacket(creativeContentPacket);
         this.player.sendPacket(biomeDefinitionPacket);
+
+        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+        chunkPublisherUpdatePacket.setCoordinates(new Vector3i(
+                (int)startGamePacket.getPlayerSpawn().getX(),
+                (int)startGamePacket.getPlayerSpawn().getY(),
+                (int)startGamePacket.getPlayerSpawn().getZ()
+        ));
+        chunkPublisherUpdatePacket.setRadius(5);
+
+        this.player.sendPacket(chunkPublisherUpdatePacket);
+
+        World world = this.server.getWorldManager().getWorld("testworld");
+        for (int chunkX = 3344 / 16 - 1; chunkX <= 3344 / 16 + 1; chunkX++) {
+            for (int chunkZ = 28 / 16 - 1; chunkZ < 28 / 16 + 1; chunkZ++) {
+                world.getChunkManager().fetchChunk(chunkX, chunkZ).whenComplete((chunk, exception) -> {
+                    if (chunk != null) {
+                        world.getChunkManager().addChunkToPlayerQueue(this.player, chunk);
+                    }
+                });
+            }
+        }
 
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);

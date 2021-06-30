@@ -14,10 +14,8 @@ import io.netty.buffer.ByteBufAllocator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BedrockClientSession {
 
@@ -28,8 +26,8 @@ public class BedrockClientSession {
     private MinecraftVersion version;
     private volatile BedrockPacketHandler handler;
 
-    private final List<BedrockPacket> queuedIncomingPackets = Collections.synchronizedList(new LinkedList<>());
-    private final List<BedrockPacket> queuedOutgoingPackets = Collections.synchronizedList(new LinkedList<>());
+    private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
+    private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
 
     public BedrockClientSession(BedrockServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
@@ -102,12 +100,9 @@ public class BedrockClientSession {
     public void processPackets() {
         // Incoming
         if (this.handler != null) {
-            List<BedrockPacket> packets;
-            synchronized (this.queuedIncomingPackets) {
-                packets = new ArrayList<>(this.queuedIncomingPackets);
-                this.queuedIncomingPackets.clear();
-            }
-            for (BedrockPacket packet : packets) {
+            while (this.queuedIncomingPackets.peek() != null) {
+                BedrockPacket packet = this.queuedIncomingPackets.poll();
+
                 this.handler.onPacket(packet);
 
                 // Now we call the specific packet handler
@@ -123,12 +118,8 @@ public class BedrockClientSession {
         }
 
         // Outgoing
-        List<BedrockPacket> packets;
-        synchronized (this.queuedOutgoingPackets) {
-            packets = new ArrayList<>(this.queuedIncomingPackets);
-            this.queuedOutgoingPackets.clear();
-        }
-        for (BedrockPacket packet : packets) {
+        while (this.queuedOutgoingPackets.peek() != null) {
+            BedrockPacket packet = this.queuedOutgoingPackets.poll();
             this.sendPacket(packet);
         }
     }

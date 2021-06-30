@@ -56,11 +56,7 @@ public class WorldManager {
         return CompletableFuture.supplyAsync(() -> {
             World world = this.worlds.get(name);
             if (world != null) {
-                try {
-                    world.close();
-                } catch (IOException exception) {
-                    throw new CompletionException(exception);
-                }
+                world.close();
                 this.worlds.remove(name);
             }
             return null;

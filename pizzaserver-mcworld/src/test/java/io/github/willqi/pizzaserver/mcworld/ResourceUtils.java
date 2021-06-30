@@ -20,22 +20,23 @@ public class ResourceUtils {
         Files.copy(ResourceUtils.class.getResourceAsStream("/testworld.zip"), tempZipFile.toPath());
 
         // Extract contents
-        ZipFile zipFile = new ZipFile(tempZipFile);
-        try (ZipInputStream zipStream = new ZipInputStream(new FileInputStream(tempZipFile))) {
+        try (ZipFile zipFile = new ZipFile(tempZipFile)) {
+            try (ZipInputStream zipStream = new ZipInputStream(new FileInputStream(tempZipFile))) {
 
-            ZipEntry entry = zipStream.getNextEntry();
-            while (entry != null) {
-                if (entry.isDirectory()) {
-                    targetDirectory.toPath().resolve(entry.getName()).toFile().mkdirs();
-                } else {
-                    try (InputStream inputStream = zipFile.getInputStream(entry)) {
-                        Files.copy(inputStream, targetDirectory.toPath().resolve(entry.getName()));
+                ZipEntry entry = zipStream.getNextEntry();
+                while (entry != null) {
+                    if (entry.isDirectory()) {
+                        targetDirectory.toPath().resolve(entry.getName()).toFile().mkdirs();
+                    } else {
+                        try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                            Files.copy(inputStream, targetDirectory.toPath().resolve(entry.getName()));
+                        }
                     }
+
+                    entry = zipStream.getNextEntry();
                 }
 
-                entry = zipStream.getNextEntry();
             }
-
         }
     }
 

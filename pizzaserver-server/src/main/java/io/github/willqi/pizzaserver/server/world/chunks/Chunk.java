@@ -26,10 +26,10 @@ public class Chunk {
     public void sendTo(Player player) {
 
         ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
-        int breakingEmptySubChunkIndex = 15;
-        for (; breakingEmptySubChunkIndex >= 0; breakingEmptySubChunkIndex--) {
+        int breakingEmptySubChunkIndex = 0;
+        for (; breakingEmptySubChunkIndex < 16; breakingEmptySubChunkIndex++) {
             BedrockSubChunk subChunk = this.internalChunk.getSubChunk(breakingEmptySubChunkIndex);
-            if (subChunk != null) {
+            if (subChunk == null) {
                 break;
             }
             try {
