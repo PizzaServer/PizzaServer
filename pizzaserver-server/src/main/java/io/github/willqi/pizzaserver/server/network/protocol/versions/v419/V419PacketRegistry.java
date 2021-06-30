@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
+import com.google.common.graph.Network;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketRegistry;
@@ -23,6 +24,7 @@ public class V419PacketRegistry extends PacketRegistry {
             .register(BiomeDefinitionPacket.ID, new V419BiomeDefinitionPacketHandler())
             .register(RequestChunkRadiusPacket.ID, new V419RequestChunkRadiusPacketHandler())
             .register(LevelChunkPacket.ID, new V419LevelChunkPacketHandler())
+            .register(NetworkChunkPublisherUpdatePacket.ID, new V419NetworkChunkPublisherUpdatePacketHandler())
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler());
