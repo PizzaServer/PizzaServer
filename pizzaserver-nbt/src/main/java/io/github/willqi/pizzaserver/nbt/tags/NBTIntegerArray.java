@@ -1,6 +1,9 @@
 package io.github.willqi.pizzaserver.nbt.tags;
 
-public class NBTIntegerArray extends NBTTag {
+import java.util.Arrays;
+import java.util.Iterator;
+
+public class NBTIntegerArray extends NBTTag implements Iterable<Integer> {
 
     public static final int ID = 11;
 
@@ -24,4 +27,24 @@ public class NBTIntegerArray extends NBTTag {
     public int getId() {
         return ID;
     }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return Arrays.stream(this.data).iterator();
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * Arrays.hashCode(this.data) * this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTIntegerArray) {
+            NBTIntegerArray nbtIntegerArray = (NBTIntegerArray)obj;
+            return Arrays.equals(nbtIntegerArray.getData(), this.getData()) && nbtIntegerArray.getName().equals(this.getName());
+        }
+        return false;
+    }
+
 }

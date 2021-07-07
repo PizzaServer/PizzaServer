@@ -25,4 +25,17 @@ public class NBTShort extends NBTTag {
         return ID;
     }
 
+    @Override
+    public int hashCode() {
+        return 31 * this.value * this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTShort) {
+            NBTShort nbtShort = (NBTShort)obj;
+            return nbtShort.getValue() == this.getValue() && nbtShort.getName().equals(this.getName());
+        }
+        return false;
+    }
 }

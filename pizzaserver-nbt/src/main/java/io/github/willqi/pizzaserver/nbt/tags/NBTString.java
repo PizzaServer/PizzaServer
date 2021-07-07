@@ -25,4 +25,17 @@ public class NBTString extends NBTTag {
         return ID;
     }
 
+    @Override
+    public int hashCode() {
+        return 31 * this.value.hashCode() * this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTString) {
+            NBTString nbtString = (NBTString)obj;
+            return nbtString.getValue().equals(this.getValue()) && nbtString.getName().equals(this.getName());
+        }
+        return false;
+    }
 }

@@ -25,5 +25,17 @@ public class NBTDouble extends NBTTag {
         return ID;
     }
 
+    @Override
+    public int hashCode() {
+        return 31 * (int)this.value * this.name.hashCode();
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTDouble) {
+            NBTDouble nbtDouble = (NBTDouble)obj;
+            return nbtDouble.getValue() == this.getValue() && nbtDouble.getName().equals(this.getName());
+        }
+        return false;
+    }
 }

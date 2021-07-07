@@ -2,7 +2,10 @@ package io.github.willqi.pizzaserver.nbt.tags;
 
 import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 
-public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer {
+import java.util.Arrays;
+import java.util.Iterator;
+
+public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer, Iterable<NBTTag> {
 
     public static final int ID = 9;
 
@@ -59,4 +62,26 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer {
             }
         }
     }
+
+    @Override
+    public int hashCode() {
+        return 31 * Arrays.hashCode(this.list) * this.getName().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTList) {
+            NBTList<?> nbtList = (NBTList<?>)obj;
+            return Arrays.equals(nbtList.getContents(), this.getContents()) &&
+                    nbtList.getName().equals(this.getName()) &&
+                    nbtList.getChildrenTypeId() == this.getChildrenTypeId();
+        }
+        return false;
+    }
+
+    @Override
+    public Iterator<NBTTag> iterator() {
+        return (Iterator<NBTTag>)Arrays.stream(this.list).iterator();
+    }
+
 }

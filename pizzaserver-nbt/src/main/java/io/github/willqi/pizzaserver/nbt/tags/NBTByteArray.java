@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.nbt.tags;
 
+import java.util.Arrays;
+
 public class NBTByteArray extends NBTTag {
 
     public static final int ID = 7;
@@ -25,4 +27,17 @@ public class NBTByteArray extends NBTTag {
         return ID;
     }
 
+    @Override
+    public int hashCode() {
+        return 31 * Arrays.hashCode(this.data) * this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTByteArray) {
+            NBTByteArray nbtByteArray = (NBTByteArray)obj;
+            return Arrays.equals(nbtByteArray.getData(), this.getData()) && nbtByteArray.getName().equals(this.getName());
+        }
+        return false;
+    }
 }

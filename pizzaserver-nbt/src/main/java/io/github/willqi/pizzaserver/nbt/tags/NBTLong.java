@@ -25,4 +25,17 @@ public class NBTLong extends NBTTag {
         return ID;
     }
 
+    @Override
+    public int hashCode() {
+        return 31 * (int)this.value * this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTLong) {
+            NBTLong nbtLong = (NBTLong)obj;
+            return nbtLong.getValue() == this.getValue() && nbtLong.getName().equals(this.getName());
+        }
+        return false;
+    }
 }

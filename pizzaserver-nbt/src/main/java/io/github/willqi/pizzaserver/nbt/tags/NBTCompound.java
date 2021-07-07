@@ -2,11 +2,9 @@ package io.github.willqi.pizzaserver.nbt.tags;
 
 import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class NBTCompound extends NBTTag implements NBTContainer {
+public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String> {
 
     public static final byte ID = 10;
 
@@ -108,6 +106,38 @@ public class NBTCompound extends NBTTag implements NBTContainer {
                 ((NBTContainer)tag).setDepth(this.getDepth() + 1);
             }
         });
+    }
+
+    public int size() {
+        return this.data.size();
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return this.data.keySet().iterator();
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * this.depth * this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTCompound) {
+            NBTCompound nbtCompound = (NBTCompound)obj;
+            if ((nbtCompound.size() != this.size()) || !(nbtCompound.getName().equals(this.getName()))) {
+                return false;
+            }
+
+            for (String key : nbtCompound) {
+                if (!this.get(key).equals(nbtCompound.get(key))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 }
