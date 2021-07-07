@@ -2,8 +2,6 @@ package io.github.willqi.pizzaserver.mcworld.world.chunks;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks.BedrockSubChunk;
-import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.SubChunkVersion;
-import io.github.willqi.pizzaserver.mcworld.world.chunks.versions.v8.V8SubChunkVersion;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
@@ -32,7 +30,7 @@ public class BedrockChunk {
             int x,
             int z,
             int chunkVersion,
-            byte[] heightAndBiomeData,
+            byte[] data2d,
             byte[] blockEntityData,
             byte[] entityData,
             byte[][] subChunks
@@ -41,14 +39,33 @@ public class BedrockChunk {
         this.x = x;
         this.z = z;
 
-        ByteBuf heightAndBiomeBuf = ByteBufAllocator.DEFAULT.buffer(512);
-        heightAndBiomeBuf.writeBytes(heightAndBiomeData);
-        for (int i = 0; i < this.heightMap.length; i++) {
-            this.heightMap[i] = heightAndBiomeBuf.readUnsignedShortLE();
-        }
-        heightAndBiomeBuf.readBytes(this.biomeData);
-        heightAndBiomeBuf.release();
+        this.parseData2d(data2d);
+        this.parseEntityNBT(blockEntityData, entityData);
+        this.parseSubChunks(subChunks);
+    }
 
+    /**
+     * Parses height maps and biome data of a chunk
+     * @param data2d
+     */
+    private void parseData2d(byte[] data2d) {
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(512);
+        buffer.writeBytes(data2d);
+
+        for (int i = 0; i < this.heightMap.length; i++) {
+            this.heightMap[i] = buffer.readUnsignedShortLE();
+        }
+        buffer.readBytes(this.biomeData);
+        buffer.release();
+    }
+
+    /**
+     * Parses block entities and regular entities of a chunk
+     * @param blockEntityData
+     * @param entityData
+     * @throws IOException
+     */
+    private void parseEntityNBT(byte[] blockEntityData, byte[] entityData) throws IOException {
         NBTInputStream blockEntityNBTInputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteArrayInputStream(blockEntityData)));
         while (blockEntityNBTInputStream.available() > 0) {
             this.blockEntityNBTs.add(blockEntityNBTInputStream.readCompound());
@@ -58,22 +75,20 @@ public class BedrockChunk {
         while (entityNBTInputStream.available() > 0) {
             this.entityNBTs.add(entityNBTInputStream.readCompound());
         }
+    }
 
-
+    private void parseSubChunks(byte[][] subChunks) throws IOException {
         this.subChunks = new BedrockSubChunk[subChunks.length];
         for (int i = 0; i < this.subChunks.length; i++) {
             byte[] subChunkBytes = subChunks[i];
+            ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(subChunkBytes.length);
+            buffer.writeBytes(subChunkBytes);
 
-            ByteBuf subChunkBuffer = ByteBufAllocator.DEFAULT.buffer(subChunkBytes.length);
-            subChunkBuffer.writeBytes(subChunkBytes);
-            int subChunkVersion = subChunkBuffer.readByte();
-
-            BedrockSubChunk subChunk = SubChunkVersion.getSubChunkVersion(subChunkVersion).parse(subChunkBuffer);
-
-            subChunkBuffer.release();
+            BedrockSubChunk subChunk = new BedrockSubChunk();
+            subChunk.parse(buffer);
+            buffer.release();
             this.subChunks[i] = subChunk;
         }
-
     }
 
     public int getX() {

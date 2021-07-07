@@ -160,6 +160,14 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
     }
 
     @Override
+    public void onPacket(RequestChunkRadiusPacket packet) {
+        ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
+        chunkRadiusUpdatedPacket.setRadius(packet.getChunkRadiusRequested());
+        this.player.sendPacket(chunkRadiusUpdatedPacket);
+        // TODO: Send proper chunk radius
+    }
+
+    @Override
     public void onPacket(ResourcePackChunkRequestPacket packet) {
         if (this.player == null) {
             this.server.getLogger().error("Client requested resource pack chunk before player object was created.");
@@ -255,17 +263,14 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
                 (int)startGamePacket.getPlayerSpawn().getY(),
                 (int)startGamePacket.getPlayerSpawn().getZ()
         ));
-        chunkPublisherUpdatePacket.setRadius(5);
-
+        chunkPublisherUpdatePacket.setRadius(5 * 16);
         this.player.sendPacket(chunkPublisherUpdatePacket);
 
         World world = this.server.getWorldManager().getWorld("testworld");
-        for (int chunkX = 3344 / 16 - 1; chunkX <= 3344 / 16 + 1; chunkX++) {
-            for (int chunkZ = 28 / 16 - 1; chunkZ < 28 / 16 + 1; chunkZ++) {
+        for (int chunkX = 3344 / 16 - 3; chunkX <= 3344 / 16 + 3; chunkX++) {
+            for (int chunkZ = 28 / 16 - 3; chunkZ <= 28 / 16 + 3; chunkZ++) {
                 world.getChunkManager().fetchChunk(chunkX, chunkZ).whenComplete((chunk, exception) -> {
-                    if (chunk != null) {
-                        world.getChunkManager().addChunkToPlayerQueue(this.player, chunk);
-                    }
+                    world.getChunkManager().addChunkToPlayerQueue(this.player, chunk);
                 });
             }
         }

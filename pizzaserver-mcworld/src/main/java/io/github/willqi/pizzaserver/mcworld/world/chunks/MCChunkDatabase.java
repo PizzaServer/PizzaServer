@@ -5,8 +5,6 @@ import org.iq80.leveldb.DB;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MCChunkDatabase implements Closeable {
 
@@ -45,15 +43,15 @@ public class MCChunkDatabase implements Closeable {
         }
 
         // Extract subchunks
-        List<byte[]> subChunkList = new ArrayList<>();
+        byte[][] subChunks = new byte[16][];
         for (int y = 0; y < 16; y++) {
             byte[] subChunk = this.database.get(ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(x, z, y));
             if (subChunk == null) {
-                break;
+                subChunks[y] = new byte[]{8, 0};    // empty v8 chunk
+            } else {
+                subChunks[y] = subChunk;
             }
-            subChunkList.add(subChunk);
         }
-        byte[][] subChunks = subChunkList.toArray(new byte[subChunkList.size()][]);
 
         return new BedrockChunk.Builder()
                 .setX(x)

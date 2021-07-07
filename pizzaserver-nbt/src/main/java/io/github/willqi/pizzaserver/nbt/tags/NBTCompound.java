@@ -119,7 +119,7 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
 
     @Override
     public int hashCode() {
-        return 31 * this.depth * this.name.hashCode();
+        return 31 * this.name.hashCode();
     }
 
     @Override
@@ -131,7 +131,7 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
             }
 
             for (String key : nbtCompound) {
-                if (!this.get(key).equals(nbtCompound.get(key))) {
+                if (!this.data.containsKey(key) || !this.get(key).equals(nbtCompound.get(key))) {
                     return false;
                 }
             }

@@ -1,7 +1,5 @@
 package io.github.willqi.pizzaserver.commons.utils;
 
-import java.util.Objects;
-
 public class Tuple<A, B> {
 
     private final A objectA;
@@ -23,16 +21,15 @@ public class Tuple<A, B> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.objectA, this.objectB);
+        return 31 * this.objectB.hashCode() * this.objectA.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Tuple) {
             Tuple<?, ?> tuple = (Tuple<?, ?>)obj;
-            return tuple.getObjectA().equals(this.objectA) && tuple.getObjectB().equals(this.objectB);
-        } else {
-            return false;
+            return tuple.getObjectA().equals(this.getObjectA()) && tuple.getObjectB().equals(this.getObjectB());
         }
+        return false;
     }
 }
