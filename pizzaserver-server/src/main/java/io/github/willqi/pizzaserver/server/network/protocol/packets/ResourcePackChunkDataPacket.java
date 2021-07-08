@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import java.util.UUID;
 
+/**
+ * Contains a portion of the data of a resource pack
+ */
 public class ResourcePackChunkDataPacket extends BedrockPacket {
 
     public static final int ID = 0x53;

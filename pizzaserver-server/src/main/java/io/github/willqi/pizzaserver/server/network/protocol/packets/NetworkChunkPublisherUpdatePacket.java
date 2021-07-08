@@ -2,6 +2,11 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
+/**
+ * Should be sent when the player's chunk coordinates update. (failing to update this will render no new chunks)
+ *
+ * Contrary to the name of the packet, the radius represents blocks rather than chunks
+ */
 public class NetworkChunkPublisherUpdatePacket extends BedrockPacket {
 
     public static final int ID = 0x79;

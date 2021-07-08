@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.server.packs.DataPack;
 
+/**
+ * Sent to inform the client of all packs the server has
+ */
 public class ResourcePacksInfoPacket extends BedrockPacket {
 
     public static final int ID = 0x06;
