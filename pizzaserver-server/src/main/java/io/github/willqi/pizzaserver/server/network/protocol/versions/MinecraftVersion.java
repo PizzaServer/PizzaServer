@@ -12,6 +12,7 @@ import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
@@ -21,29 +22,35 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
 
     private final static Gson GSON = new Gson();
 
-
-    private final NBTCompound biomesDefinitions;
+    private NBTCompound biomesDefinitions;
     private final Map<Tuple<String, NBTCompound>, Integer> blockStates = new HashMap<>();
-    private final ItemState[] itemStates;
+    private ItemState[] itemStates;
 
-    public MinecraftVersion() {
 
-        // Parse biome_definitions.nbt
+    public MinecraftVersion() throws IOException {
+        this.loadBiomeDefinitions();
+        this.loadBlockStates();
+        this.loadRuntimeItems();
+    }
+
+    public abstract int getProtocol();
+
+    public abstract String getVersionString();
+
+    public abstract PacketRegistry getPacketRegistry();
+
+    public void loadBiomeDefinitions() throws IOException {
         try (NBTInputStream biomesNBTStream = new NBTInputStream(
-                new VarIntDataInputStream(
-                        Server.getInstance().getClass().getResourceAsStream("/protocol/v" + this.getProtocol() + "/biome_definitions.nbt")
-                )
+                new VarIntDataInputStream(this.getProtocolResourceStream("biome_definitions.nbt"))
         )) {
             this.biomesDefinitions = biomesNBTStream.readCompound();
-        } catch (IOException exception) {
-            throw new RuntimeException("Failed to read v" + this.getProtocol() + "'s biome_definitions.nbt file", exception);
         }
+    }
 
-        // Parse block_states.nbt
+    public void loadBlockStates() throws IOException {
+        this.blockStates.clear();
         try (NBTInputStream blockStatesNBTStream = new NBTInputStream(
-                new VarIntDataInputStream(
-                        Server.getInstance().getClass().getResourceAsStream("/protocol/v" + this.getProtocol() + "/block_states.nbt")
-                )
+                new VarIntDataInputStream(this.getProtocolResourceStream("block_states.nbt"))
         )) {
             int runtimeId = 0;
             while (blockStatesNBTStream.available() > 0) {
@@ -54,14 +61,11 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
 
                 this.blockStates.put(new Tuple<>(name, states), runtimeId++);
             }
-        } catch (IOException exception) {
-            throw new RuntimeException("Failed to read v" + this.getProtocol() + "'s block_states.nbt file", exception);
         }
+    }
 
-        // Parse runtime_item_states.json
-        try (Reader itemStatesReader = new InputStreamReader(
-                Server.getInstance().getClass().getResourceAsStream("/protocol/v" + this.getProtocol() + "/runtime_item_states.json")
-        )) {
+    public void loadRuntimeItems() throws IOException {
+        try (Reader itemStatesReader = new InputStreamReader(this.getProtocolResourceStream("runtime_item_states.json"))) {
             JsonArray jsonItemStates = GSON.fromJson(itemStatesReader, JsonArray.class);
 
             ItemState[] itemStates = new ItemState[jsonItemStates.size()];
@@ -74,18 +78,12 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
                         false);
             }
             this.itemStates = itemStates;
-        } catch (IOException exception) {
-            throw new RuntimeException("Failed to read v" + this.getProtocol() + "'s runtime_item_states.json file", exception);
         }
-
     }
 
-
-    public abstract int getProtocol();
-
-    public abstract String getVersionString();
-
-    public abstract PacketRegistry getPacketRegistry();
+    protected InputStream getProtocolResourceStream(String fileName) {
+        return Server.getInstance().getClass().getResourceAsStream("/protocol/v" + this.getProtocol() + "/" + fileName);
+    }
 
     @Override
     public int getBlockRuntimeId(String name, NBTCompound state) {
@@ -103,5 +101,4 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
     public NBTCompound getBiomeDefinitions() {
         return this.biomesDefinitions;
     }
-
 }

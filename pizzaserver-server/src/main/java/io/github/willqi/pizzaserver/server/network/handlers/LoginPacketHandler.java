@@ -28,20 +28,20 @@ import java.util.Base64;
  * Handles preparing/authenticating a client to becoming a valid player
  * Includes Login > Packs > Starting Packets > PlayStatus - Player Spawn
  */
-public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
+public class LoginPacketHandler extends BedrockPacketHandler {
 
     private final Server server;
     private final BedrockClientSession session;
     private Player player;
 
 
-    public PlayerInitializationPacketHandler(Server server, BedrockClientSession session) {
+    public LoginPacketHandler(Server server, BedrockClientSession session) {
         this.server = server;
         this.session = session;
     }
 
     @Override
-    public void onPacket(LoginPacket packet) {
+    public void onPacket(LoginPacket loginPacket) {
 
         if (this.player != null) {
             this.server.getLogger().info("Client tried to login again.");
@@ -49,9 +49,10 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
             return;
         }
 
-        if (!ServerProtocol.VERSIONS.containsKey(packet.getProtocol())) {
+        // Do we support the version
+        if (!ServerProtocol.VERSIONS.containsKey(loginPacket.getProtocol())) {
             PlayStatusPacket loginFailPacket = new PlayStatusPacket();
-            if (packet.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
+            if (loginPacket.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
                 loginFailPacket.setStatus(PlayStatusPacket.PlayStatus.OUTDATED_SERVER);
             } else {
                 loginFailPacket.setStatus(PlayStatusPacket.PlayStatus.OUTDATED_CLIENT);
@@ -60,12 +61,12 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
             return;
         }
 
-        if (!packet.isAuthenticated()) {
+        if (!loginPacket.isAuthenticated()) {
             this.session.disconnect();
             return;
         }
 
-        Player player = new Player(this.server, this.session, packet);
+        Player player = new Player(this.server, this.session, loginPacket);
         this.player = player;
 
         PreLoginEvent event = new PreLoginEvent(player);
@@ -190,7 +191,8 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
             this.session.disconnect();
             return;
         }
-        
+
+        // Send the resource pack chunk requested
         ResourcePackChunkDataPacket chunkDataPacket = new ResourcePackChunkDataPacket();
         chunkDataPacket.setId(pack.getUuid());
         chunkDataPacket.setVersion(pack.getVersion());
@@ -200,6 +202,9 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         this.player.sendPacket(chunkDataPacket);
     }
 
+    /**
+     * Called when the client confirms they have all the packs
+     */
     private void sendResourcePackStackPacket() {
         ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
         stackPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
@@ -256,24 +261,6 @@ public class PlayerInitializationPacketHandler extends BedrockPacketHandler {
         this.player.sendPacket(startGamePacket);
         this.player.sendPacket(creativeContentPacket);
         this.player.sendPacket(biomeDefinitionPacket);
-
-        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-        chunkPublisherUpdatePacket.setCoordinates(new Vector3i(
-                (int)startGamePacket.getPlayerSpawn().getX(),
-                (int)startGamePacket.getPlayerSpawn().getY(),
-                (int)startGamePacket.getPlayerSpawn().getZ()
-        ));
-        chunkPublisherUpdatePacket.setRadius(5 * 16);
-        this.player.sendPacket(chunkPublisherUpdatePacket);
-
-        World world = this.server.getWorldManager().getWorld("testworld");
-        for (int chunkX = 3344 / 16 - 3; chunkX <= 3344 / 16 + 3; chunkX++) {
-            for (int chunkZ = 28 / 16 - 3; chunkZ <= 28 / 16 + 3; chunkZ++) {
-                world.getChunkManager().fetchChunk(chunkX, chunkZ).whenComplete((chunk, exception) -> {
-                    world.getChunkManager().addChunkToPlayerQueue(this.player, chunk);
-                });
-            }
-        }
 
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);

@@ -3,12 +3,16 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketRegistry;
 
+import java.io.IOException;
+
 public class V419MinecraftVersion extends MinecraftVersion {
 
     public static final int PROTOCOL = 419;
     public static final String VERSION = "1.16.100";
 
     private final PacketRegistry packetRegistry = new V419PacketRegistry();
+
+    public V419MinecraftVersion() throws IOException {}
 
 
     @Override

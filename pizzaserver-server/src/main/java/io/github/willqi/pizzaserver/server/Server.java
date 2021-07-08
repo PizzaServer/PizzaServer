@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
-import io.github.willqi.pizzaserver.server.network.handlers.PlayerInitializationPacketHandler;
+import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.DataPackManager;
 import io.github.willqi.pizzaserver.server.plugin.PluginManager;
@@ -157,7 +157,7 @@ public class Server {
     }
 
     public void registerSession(BedrockClientSession session) {
-        session.setPacketHandler(new PlayerInitializationPacketHandler(this, session));
+        session.setPacketHandler(new LoginPacketHandler(this, session));
         this.sessions.add(session);
     }
 
