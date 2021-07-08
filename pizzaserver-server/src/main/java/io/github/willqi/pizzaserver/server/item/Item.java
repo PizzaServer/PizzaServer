@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.server.item;
 
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public abstract class Item {
 
     private int damage;
@@ -9,7 +12,7 @@ public abstract class Item {
 
     private NBTCompound tag;
 
-    private ItemID[] canBreak = new ItemID[0];
+    private Collection<ItemID> canBreak = new HashSet<>();
 
 
     public abstract ItemID getId();
@@ -38,11 +41,11 @@ public abstract class Item {
         this.tag = tag;
     }
 
-    public ItemID[] getBlocksCanBreak() {
+    public Collection<ItemID> getBlocksCanBreak() {
         return this.canBreak;
     }
 
-    public void setBlocksCanBreak(ItemID[] blocks) {
+    public void setBlocksCanBreak(Collection<ItemID> blocks) {
         this.canBreak = blocks;
     }
 

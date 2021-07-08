@@ -2,12 +2,15 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public class ResourcePackResponsePacket extends BedrockPacket {
 
     public static final int ID = 0x08;
 
     private ResourcePackStatus status;
-    private PackInfo[] packs;
+    private Collection<PackInfo> packs = new HashSet<>();
 
     public ResourcePackResponsePacket() {
         super(ID);
@@ -21,11 +24,11 @@ public class ResourcePackResponsePacket extends BedrockPacket {
         this.status = status;
     }
 
-    public PackInfo[] getPacksRequested() {
+    public Collection<PackInfo> getPacksRequested() {
         return this.packs;
     }
 
-    public void setPacksRequested(PackInfo[] packs) {
+    public void setPacksRequested(Collection<PackInfo> packs) {
         this.packs = packs;
     }
 

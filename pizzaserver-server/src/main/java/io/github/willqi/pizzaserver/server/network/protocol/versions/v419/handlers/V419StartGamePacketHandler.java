@@ -51,7 +51,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         buffer.writeBoolean(packet.areResourcePacksRequired());
 
         // Game rules
-        VarInts.writeUnsignedInt(buffer, packet.getGameRules().length);
+        VarInts.writeUnsignedInt(buffer, packet.getGameRules().size());
         for (GameRule<?> rule : packet.getGameRules()) {
             helper.writeString(rule.getId().getName(), buffer);
             VarInts.writeUnsignedInt(buffer, rule.getType().getId());
@@ -104,7 +104,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         VarInts.writeUnsignedInt(buffer, 0);    // TODO: Investigate custom blocks
 
         // Item states
-        VarInts.writeUnsignedInt(buffer, packet.getItemStates().length);
+        VarInts.writeUnsignedInt(buffer, packet.getItemStates().size());
         for (ItemState itemState : packet.getItemStates()) {
             helper.writeString(itemState.getNameId(), buffer);
             buffer.writeShortLE(itemState.getId());

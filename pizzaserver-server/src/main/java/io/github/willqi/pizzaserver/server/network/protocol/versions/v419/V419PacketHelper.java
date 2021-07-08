@@ -46,7 +46,7 @@ public class V419PacketHelper extends PacketHelper {
         // Blocks this item can be placed on
         if (item instanceof ItemBlock) {
             ItemBlock blockItem = (ItemBlock)item;
-            VarInts.writeInt(buffer, blockItem.getBlocksCanBePlacedOn().length);
+            VarInts.writeInt(buffer, blockItem.getBlocksCanBePlacedOn().size());
             for (ItemID itemId : blockItem.getBlocksCanBePlacedOn()) {
                 this.writeString(itemId.getNameId(), buffer);
             }
@@ -55,7 +55,7 @@ public class V419PacketHelper extends PacketHelper {
         }
 
         // Blocks this item can break
-        VarInts.writeInt(buffer, item.getBlocksCanBreak().length);
+        VarInts.writeInt(buffer, item.getBlocksCanBreak().size());
         for (ItemID itemId : item.getBlocksCanBreak()) {
             this.writeString(itemId.getNameId(), buffer);
         }

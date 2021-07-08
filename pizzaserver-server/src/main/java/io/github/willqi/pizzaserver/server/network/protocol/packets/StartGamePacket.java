@@ -13,6 +13,8 @@ import io.github.willqi.pizzaserver.server.data.ServerOrigin;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class StartGamePacket extends BedrockPacket {
@@ -60,7 +62,7 @@ public class StartGamePacket extends BedrockPacket {
     private ServerOrigin serverOrigin;
 
     // TODO: block properties for custom blocks
-    private ItemState[] itemStates = new ItemState[0];
+    private Collection<ItemState> itemStates = new HashSet<>();
 
     private boolean broadcastToLan;
     private boolean hasPlatformLockedContent;
@@ -73,7 +75,7 @@ public class StartGamePacket extends BedrockPacket {
     // World
     private boolean bonusChestEnabled;
     private boolean bonusMapEnabled;
-    private GameRule[] gameRules = new GameRule[0];
+    private Collection<GameRule<?>> gameRules = new HashSet<>();
     private boolean isNetherType;
     private float lightingLevel;
     private int limitedWorldHeight;
@@ -362,11 +364,11 @@ public class StartGamePacket extends BedrockPacket {
     }
 
 
-    public ItemState[] getItemStates() {
+    public Collection<ItemState> getItemStates() {
         return this.itemStates;
     }
 
-    public void setItemStates(ItemState[] itemStates) {
+    public void setItemStates(Collection<ItemState> itemStates) {
         this.itemStates = itemStates;
     }
 
@@ -444,11 +446,11 @@ public class StartGamePacket extends BedrockPacket {
         this.bonusMapEnabled = enabled;
     }
 
-    public GameRule[] getGameRules() {
+    public Collection<GameRule<?>> getGameRules() {
         return this.gameRules;
     }
 
-    public void setGameRules(GameRule[] gameRules) {
+    public void setGameRules(Collection<GameRule<?>> gameRules) {
         this.gameRules = gameRules;
     }
 

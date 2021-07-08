@@ -21,6 +21,7 @@ public class MovePlayerPacket extends BedrockPacket {
 
     private long tick;
 
+
     public MovePlayerPacket() {
         super(ID);
     }

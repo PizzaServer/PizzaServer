@@ -91,12 +91,12 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         resourcePacksInfoPacket.setResourcePacks(
                 this.server.getResourcePackManager()
                         .getResourcePacks()
-                        .values().toArray(new DataPack[0])
+                        .values()
         );
         resourcePacksInfoPacket.setBehaviorPacks(
                 this.server.getResourcePackManager()
                     .getBehaviorPacks()
-                    .values().toArray(new DataPack[0])
+                    .values()
         );
         player.sendPacket(resourcePacksInfoPacket);
     }
@@ -207,8 +207,8 @@ public class LoginPacketHandler extends BedrockPacketHandler {
     private void sendResourcePackStackPacket() {
         ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
         stackPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
-        stackPacket.setResourcePacks(this.server.getResourcePackManager().getResourcePacks().values().toArray(new DataPack[0]));
-        stackPacket.setBehaviourPacks(this.server.getResourcePackManager().getBehaviorPacks().values().toArray(new DataPack[0]));
+        stackPacket.setResourcePacks(this.server.getResourcePackManager().getResourcePacks().values());
+        stackPacket.setBehaviourPacks(this.server.getResourcePackManager().getBehaviorPacks().values());
         stackPacket.setGameVersion(this.player.getVersion().getVersionString());
         this.player.sendPacket(stackPacket);
     }

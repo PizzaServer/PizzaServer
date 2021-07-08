@@ -19,7 +19,6 @@ public class BedrockServer {
     private final Server server;
 
     private RakNetServer rakNetServer;
-    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private volatile BedrockPong pong;
 
 

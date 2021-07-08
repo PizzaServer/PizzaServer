@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public abstract class MinecraftVersion implements BlockRuntimeMapper {
@@ -24,7 +26,7 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
 
     private NBTCompound biomesDefinitions;
     private final Map<Tuple<String, NBTCompound>, Integer> blockStates = new HashMap<>();
-    private ItemState[] itemStates;
+    private Collection<ItemState> itemStates;
 
 
     public MinecraftVersion() throws IOException {
@@ -68,14 +70,14 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
         try (Reader itemStatesReader = new InputStreamReader(this.getProtocolResourceStream("runtime_item_states.json"))) {
             JsonArray jsonItemStates = GSON.fromJson(itemStatesReader, JsonArray.class);
 
-            ItemState[] itemStates = new ItemState[jsonItemStates.size()];
-            for (int i = 0; i < itemStates.length; i++) {
+            Collection<ItemState> itemStates = new HashSet<>(jsonItemStates.size());
+            for (int i = 0; i < jsonItemStates.size(); i++) {
                 JsonObject jsonItemState = jsonItemStates.get(i).getAsJsonObject();
 
-                itemStates[i] = new ItemState(
+                itemStates.add(new ItemState(
                         jsonItemState.get("name").getAsString(),
                         jsonItemState.get("id").getAsInt(),
-                        false);
+                        false));
             }
             this.itemStates = itemStates;
         }
@@ -94,7 +96,7 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
         }
     }
 
-    public ItemState[] getItemStates() {
+    public Collection<ItemState> getItemStates() {
         return this.itemStates;
     }
 
