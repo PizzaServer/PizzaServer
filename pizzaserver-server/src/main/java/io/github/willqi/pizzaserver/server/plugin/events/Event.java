@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.events;
+package io.github.willqi.pizzaserver.server.plugin.events;
 public abstract class Event {
 
     private boolean cancelled;

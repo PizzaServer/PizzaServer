@@ -1,6 +1,6 @@
-package io.github.willqi.pizzaserver.server.events.generic;
+package io.github.willqi.pizzaserver.server.plugin.events.generic;
 
-import io.github.willqi.pizzaserver.server.events.Event;
+import io.github.willqi.pizzaserver.server.plugin.events.Event;
 import io.github.willqi.pizzaserver.server.player.Player;
 
 public abstract class PlayerEvent extends Event {
