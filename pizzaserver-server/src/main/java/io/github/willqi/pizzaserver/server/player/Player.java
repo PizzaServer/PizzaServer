@@ -73,8 +73,8 @@ public class Player extends Entity {
         this.skin = newSkin;
     }
 
-    public int getChunkRadiusRequested() {
-        return this.chunkRadius;
+    public int getChunkRadius() {
+        return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
     }
 
     public void setChunkRadiusRequested(int radius) {

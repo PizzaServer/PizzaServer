@@ -102,6 +102,16 @@ public class LoginPacketHandler extends BedrockPacketHandler {
     }
 
     @Override
+    public void onPacket(SetLocalPlayerAsInitializedPacket packet) {
+        if (this.player == null) {
+            this.server.getLogger().error("Client said they were ready before player object was created.");
+            this.session.disconnect();
+            return;
+        }
+        this.session.setPacketHandler(new FullGamePacketHandler(this.player));
+    }
+
+    @Override
     public void onPacket(ViolationPacket packet) {
         throw new AssertionError("ViolationPacket for packet id " + packet.getPacketId() + " " + packet.getMessage());
     }
@@ -157,14 +167,6 @@ public class LoginPacketHandler extends BedrockPacketHandler {
                 this.sendGameLoginPackets();
                 break;
         }
-    }
-
-    @Override
-    public void onPacket(RequestChunkRadiusPacket packet) {
-        ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
-        chunkRadiusUpdatedPacket.setRadius(packet.getChunkRadiusRequested());
-        this.player.sendPacket(chunkRadiusUpdatedPacket);
-        // TODO: Send proper chunk radius
     }
 
     @Override
@@ -264,7 +266,6 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
         this.player.sendPacket(playStatusPacket);
-
     }
 
 }

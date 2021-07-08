@@ -44,7 +44,7 @@ public class Server {
     private String ip;
     private int port;
 
-    private Config config;
+    private ServerConfig config;
 
 
     public Server(String rootDirectory) {
@@ -137,7 +137,11 @@ public class Server {
         this.getLogger().info("Stopping server...");
         // We're done stop operations. Exit program.
         if (this.stopByConsoleExit) {   // Ensure that the notify is called AFTER the thread is in the waiting state.
-            while (this.serverExitListener.getState() != Thread.State.WAITING) {}
+            while (this.serverExitListener.getState() != Thread.State.WAITING) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {}
+            }
         }
         synchronized (this.serverExitListener) {
             this.serverExitListener.notify();
@@ -209,7 +213,7 @@ public class Server {
         return this.rootDirectory;
     }
 
-    public Config getConfig() {
+    public ServerConfig getConfig() {
         return this.config;
     }
 
@@ -237,7 +241,7 @@ public class Server {
         }
 
         File propertiesFile = new File(this.getRootDirectory() + "/server.yml");
-        this.config = new Config();
+        Config config = new Config();
 
         try {
             InputStream propertiesStream;
@@ -246,20 +250,22 @@ public class Server {
             } else {
                 propertiesStream = this.getClass().getResourceAsStream("/server.yml");
             }
-            this.config.load(propertiesStream);
+            config.load(propertiesStream);
             if (!propertiesFile.exists()) {
-                this.config.save(new FileOutputStream(propertiesFile));
+                config.save(new FileOutputStream(propertiesFile));
             }
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
 
-        this.ip = this.config.getString("server-ip");
-        this.port = this.config.getInteger("server-port");
+        this.config = new ServerConfig(config);
 
-        this.setMotd(this.config.getString("server-motd"));
-        this.setMaximumPlayerCount(this.config.getInteger("player-max"));
-        this.dataPackManager.setPacksRequired(this.config.getBoolean("player-force-packs"));
+        this.ip = this.config.getIp();
+        this.port = this.config.getPort();
+
+        this.setMotd(this.config.getMotd());
+        this.setMaximumPlayerCount(this.config.getMaximumPlayers());
+        this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
     }
 
