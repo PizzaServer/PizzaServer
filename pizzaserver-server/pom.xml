@@ -27,8 +27,18 @@
     <dependencies>
 
         <dependency>
+            <groupId>io.github.willqi.pizzaserver.commons</groupId>
+            <artifactId>PizzaServer-Commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>io.github.willqi.pizzaserver.server.nbt</groupId>
             <artifactId>PizzaServer-NBT</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.willqi.pizzaserver.mcworld</groupId>
+            <artifactId>PizzaServer-MCWorld</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

@@ -1,15 +1,18 @@
 package io.github.willqi.pizzaserver.server.item;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public abstract class ItemBlock extends Item {
 
-    private ItemID[] canPlaceOn = new ItemID[0];
+    private Collection<ItemID> canPlaceOn = new HashSet<>();
 
 
-    public ItemID[] getBlocksCanBePlacedOn() {
+    public Collection<ItemID> getBlocksCanBePlacedOn() {
         return this.canPlaceOn;
     }
 
-    public void setBlocksCanBePlacedOn(ItemID[] blocks) {
+    public void setBlocksCanBePlacedOn(Collection<ItemID> blocks) {
         this.canPlaceOn = blocks;
     }
 

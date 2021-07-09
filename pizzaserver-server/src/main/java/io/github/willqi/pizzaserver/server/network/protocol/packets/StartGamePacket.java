@@ -1,18 +1,20 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.server.data.Difficulty;
+import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
-import io.github.willqi.pizzaserver.server.player.data.Gamemode;
+import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
-import io.github.willqi.pizzaserver.server.utils.Vector2;
-import io.github.willqi.pizzaserver.server.utils.BlockCoordinates;
-import io.github.willqi.pizzaserver.server.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector2;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.world.data.Dimension;
 import io.github.willqi.pizzaserver.server.data.ServerOrigin;
-import io.github.willqi.pizzaserver.server.world.data.WorldType;
-import io.github.willqi.pizzaserver.server.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.commons.world.WorldType;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class StartGamePacket extends BedrockPacket {
@@ -60,7 +62,7 @@ public class StartGamePacket extends BedrockPacket {
     private ServerOrigin serverOrigin;
 
     // TODO: block properties for custom blocks
-    private ItemState[] itemStates = new ItemState[0];
+    private Collection<ItemState> itemStates = new HashSet<>();
 
     private boolean broadcastToLan;
     private boolean hasPlatformLockedContent;
@@ -73,14 +75,14 @@ public class StartGamePacket extends BedrockPacket {
     // World
     private boolean bonusChestEnabled;
     private boolean bonusMapEnabled;
-    private GameRule[] gameRules = new GameRule[0];
+    private Collection<GameRule<?>> gameRules = new HashSet<>();
     private boolean isNetherType;
     private float lightingLevel;
     private int limitedWorldHeight;
     private int limitedWorldWidth;
     private float rainLevel;
     private int seed;
-    private BlockCoordinates worldSpawn;
+    private Vector3i worldSpawn;
     private String worldId;
     private int worldTime;
     private WorldType worldType;
@@ -362,11 +364,11 @@ public class StartGamePacket extends BedrockPacket {
     }
 
 
-    public ItemState[] getItemStates() {
+    public Collection<ItemState> getItemStates() {
         return this.itemStates;
     }
 
-    public void setItemStates(ItemState[] itemStates) {
+    public void setItemStates(Collection<ItemState> itemStates) {
         this.itemStates = itemStates;
     }
 
@@ -444,11 +446,11 @@ public class StartGamePacket extends BedrockPacket {
         this.bonusMapEnabled = enabled;
     }
 
-    public GameRule[] getGameRules() {
+    public Collection<GameRule<?>> getGameRules() {
         return this.gameRules;
     }
 
-    public void setGameRules(GameRule[] gameRules) {
+    public void setGameRules(Collection<GameRule<?>> gameRules) {
         this.gameRules = gameRules;
     }
 
@@ -500,11 +502,11 @@ public class StartGamePacket extends BedrockPacket {
         this.seed = seed;
     }
 
-    public BlockCoordinates getWorldSpawn() {
+    public Vector3i getWorldSpawn() {
         return this.worldSpawn;
     }
 
-    public void setWorldSpawn(BlockCoordinates worldSpawn) {
+    public void setWorldSpawn(Vector3i worldSpawn) {
         this.worldSpawn = worldSpawn;
     }
 

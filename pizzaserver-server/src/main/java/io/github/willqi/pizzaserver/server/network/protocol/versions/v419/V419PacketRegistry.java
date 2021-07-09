@@ -22,7 +22,9 @@ public class V419PacketRegistry extends PacketRegistry {
             .register(CreativeContentPacket.ID, new V419CreativeContentPacketHandler())
             .register(BiomeDefinitionPacket.ID, new V419BiomeDefinitionPacketHandler())
             .register(RequestChunkRadiusPacket.ID, new V419RequestChunkRadiusPacketHandler())
+            .register(ChunkRadiusUpdatedPacket.ID, new V419ChunkRadiusUpdatedPacketHandler())
             .register(LevelChunkPacket.ID, new V419LevelChunkPacketHandler())
+            .register(NetworkChunkPublisherUpdatePacket.ID, new V419NetworkChunkPublisherUpdatePacketHandler())
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler());

@@ -2,13 +2,15 @@ package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
-import io.github.willqi.pizzaserver.server.network.handlers.PlayerInitializationPacketHandler;
+import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.DataPackManager;
+import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.plugin.PluginManager;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.Logger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
+import io.github.willqi.pizzaserver.server.world.WorldManager;
 
 import java.io.*;
 import java.util.Collections;
@@ -24,11 +26,13 @@ public class Server {
     private final BedrockServer network = new BedrockServer(this);
     private final PluginManager pluginManager = new PluginManager(this);
     private final DataPackManager dataPackManager = new DataPackManager(this);
+    private final WorldManager worldManager = new WorldManager(this);
     private final Logger logger = new Logger("Server");
 
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     private final Thread serverExitListener = new ServerExitListener();
+    private volatile boolean stopByConsoleExit;
 
     private int targetTps;
     private int currentTps;
@@ -41,12 +45,14 @@ public class Server {
     private String ip;
     private int port;
 
-    private Config config;
+    private ServerConfig config;
 
 
     public Server(String rootDirectory) {
         INSTANCE = this;
         this.getLogger().info("Setting up PizzaServer instance.");
+        Runtime.getRuntime().addShutdownHook(serverExitListener);
+
         this.rootDirectory = rootDirectory;
 
         // Load required data/files
@@ -64,13 +70,13 @@ public class Server {
      */
     public void boot() {
 
-        Runtime.getRuntime().addShutdownHook(serverExitListener);
-
+        this.stopByConsoleExit = false;
         this.getResourcePackManager().loadResourcePacks();
         this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);
 
-        this.getLogger().info("Booting server up on " + this.getIp() + ":" + this.getPort());
+        this.getWorldManager().loadWorlds();
+
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
         } catch (InterruptedException | ExecutionException exception) {
@@ -85,7 +91,6 @@ public class Server {
         long nextPredictedNanoTimeTick = initNanoTime + nanoSecondsPerTick;         // Used to determine how behind/ahead we are
         long sleepTime = TimeUtils.nanoSecondsToMilliseconds(nanoSecondsPerTick);
         while (this.running) {
-
             synchronized (this.sessions) {
                 Iterator<BedrockClientSession> sessions = this.sessions.iterator();
                 while (sessions.hasNext()) {
@@ -93,9 +98,12 @@ public class Server {
                     session.processPackets();
 
                     if (session.isDisconnected()) {
+                        Player player = session.getPlayer();
+                        if (player != null) {
+                            player.onDisconnect();
+                        }
                         sessions.remove();
                     }
-
                 }
             }
 
@@ -127,11 +135,19 @@ public class Server {
     /**
      * The server will stop after the current tick finishes.
      */
-    public void stop() {
-        this.getLogger().info("Stopping server...");
+    private void stop() {
         this.getNetwork().stop();
+        this.getWorldManager().unloadWorlds();
 
+        this.getLogger().info("Stopping server...");
         // We're done stop operations. Exit program.
+        if (this.stopByConsoleExit) {   // Ensure that the notify is called AFTER the thread is in the waiting state.
+            while (this.serverExitListener.getState() != Thread.State.WAITING) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {}
+            }
+        }
         synchronized (this.serverExitListener) {
             this.serverExitListener.notify();
         }
@@ -150,7 +166,7 @@ public class Server {
     }
 
     public void registerSession(BedrockClientSession session) {
-        session.setPacketHandler(new PlayerInitializationPacketHandler(this, session));
+        session.setPacketHandler(new LoginPacketHandler(this, session));
         this.sessions.add(session);
     }
 
@@ -194,11 +210,15 @@ public class Server {
         return this.dataPackManager;
     }
 
+    public WorldManager getWorldManager() {
+        return this.worldManager;
+    }
+
     public String getRootDirectory() {
         return this.rootDirectory;
     }
 
-    public Config getConfig() {
+    public ServerConfig getConfig() {
         return this.config;
     }
 
@@ -217,7 +237,7 @@ public class Server {
 
         try {
             new File(this.getRootDirectory() + "/plugins").mkdirs();
-            new File(this.getRootDirectory() + "/levels").mkdirs();
+            new File(this.getRootDirectory() + "/worlds").mkdirs();
             new File(this.getRootDirectory() + "/players").mkdirs();
             new File(this.getRootDirectory() + "/resourcepacks").mkdirs();
             new File(this.getRootDirectory() + "/behaviorpacks").mkdirs();
@@ -226,7 +246,7 @@ public class Server {
         }
 
         File propertiesFile = new File(this.getRootDirectory() + "/server.yml");
-        this.config = new Config();
+        Config config = new Config();
 
         try {
             InputStream propertiesStream;
@@ -235,20 +255,22 @@ public class Server {
             } else {
                 propertiesStream = this.getClass().getResourceAsStream("/server.yml");
             }
-            this.config.load(propertiesStream);
+            config.load(propertiesStream);
             if (!propertiesFile.exists()) {
-                this.config.save(new FileOutputStream(propertiesFile));
+                config.save(new FileOutputStream(propertiesFile));
             }
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
 
-        this.ip = this.config.getString("server-ip");
-        this.port = this.config.getInteger("server-port");
+        this.config = new ServerConfig(config);
 
-        this.setMotd(this.config.getString("server-motd"));
-        this.setMaximumPlayerCount(this.config.getInteger("player-max"));
-        this.dataPackManager.setPacksRequired(this.config.getBoolean("player-force-packs"));
+        this.ip = this.config.getIp();
+        this.port = this.config.getPort();
+
+        this.setMotd(this.config.getMotd());
+        this.setMaximumPlayerCount(this.config.getMaximumPlayers());
+        this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
     }
 
@@ -258,14 +280,14 @@ public class Server {
         @Override
         public void run() {
             if (Server.this.running) {
+                Server.this.stopByConsoleExit = true;
                 Server.this.running = false;
                 try {
                     synchronized (this) {
                         Thread.currentThread().wait();
                     }
                 } catch (InterruptedException exception) {
-                    Server.getInstance().getLogger().error("Exit listener exception");
-                    Server.getInstance().getLogger().error(exception);
+                    Server.getInstance().getLogger().error("Exit listener exception", exception);
                 }
             }
         }

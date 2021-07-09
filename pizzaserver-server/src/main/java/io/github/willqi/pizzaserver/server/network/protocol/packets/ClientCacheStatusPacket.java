@@ -1,5 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+/**
+ * Whether or not the client supports chunk caching
+ */
 public class ClientCacheStatusPacket extends BedrockPacket {
 
     public static final int ID = 0x81;

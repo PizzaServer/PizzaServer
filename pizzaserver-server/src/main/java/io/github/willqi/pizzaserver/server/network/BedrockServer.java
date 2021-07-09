@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network;
 import com.nukkitx.network.raknet.*;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.player.data.Gamemode;
+import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 
@@ -19,7 +19,6 @@ public class BedrockServer {
     private final Server server;
 
     private RakNetServer rakNetServer;
-    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private volatile BedrockPong pong;
 
 
@@ -39,6 +38,7 @@ public class BedrockServer {
     }
 
     public void boot(String ip, int port) throws ExecutionException, InterruptedException {
+        this.getPizzaServer().getLogger().info("Booting server up on " + ip + ":" + port);
         this.rakNetServer = new RakNetServer(new InetSocketAddress(ip, port));
         this.rakNetServer.setListener(new BedrockServerEventListener());
         this.rakNetServer.bind().get();

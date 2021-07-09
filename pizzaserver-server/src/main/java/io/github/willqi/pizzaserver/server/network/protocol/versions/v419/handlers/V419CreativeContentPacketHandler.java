@@ -11,7 +11,7 @@ public class V419CreativeContentPacketHandler extends ProtocolPacketHandler<Crea
 
     @Override
     public void encode(CreativeContentPacket packet, ByteBuf buffer, PacketHelper helper) {
-        VarInts.writeUnsignedInt(buffer, packet.getItems().length);
+        VarInts.writeUnsignedInt(buffer, packet.getItems().size());
         for (Item item : packet.getItems()) {
             VarInts.writeUnsignedInt(buffer, item.getId().ordinal());
             helper.writeItem(item, buffer);

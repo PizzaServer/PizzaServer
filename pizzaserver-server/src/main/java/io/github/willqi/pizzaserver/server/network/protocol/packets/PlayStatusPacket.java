@@ -6,6 +6,7 @@ public class PlayStatusPacket extends BedrockPacket {
 
     private PlayStatus status;
 
+
     public PlayStatusPacket() {
         super(ID);
     }

@@ -2,14 +2,20 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.server.packs.DataPack;
 
+import java.util.Collection;
+import java.util.HashSet;
+
+/**
+ * Sent to inform the client of all packs the server has
+ */
 public class ResourcePacksInfoPacket extends BedrockPacket {
 
     public static final int ID = 0x06;
 
     private boolean forcedToAccept;
     private boolean scriptingEnabled;
-    private DataPack[] resourcePacks = new DataPack[0];
-    private DataPack[] behaviorPacks = new DataPack[0];
+    private Collection<DataPack> resourcePacks = new HashSet<>();
+    private Collection<DataPack> behaviorPacks = new HashSet<>();
 
     public ResourcePacksInfoPacket() {
         super(ID);
@@ -31,19 +37,19 @@ public class ResourcePacksInfoPacket extends BedrockPacket {
         this.scriptingEnabled = enabled;
     }
 
-    public DataPack[] getBehaviorPacks() {
+    public Collection<DataPack> getBehaviorPacks() {
         return this.behaviorPacks;
     }
 
-    public void setBehaviorPacks(DataPack[] behaviorPacks) {
+    public void setBehaviorPacks(Collection<DataPack> behaviorPacks) {
         this.behaviorPacks = behaviorPacks;
     }
 
-    public DataPack[] getResourcePacks() {
+    public Collection<DataPack> getResourcePacks() {
         return this.resourcePacks;
     }
 
-    public void setResourcePacks(DataPack[] resourcePacks) {
+    public void setResourcePacks(Collection<DataPack> resourcePacks) {
         this.resourcePacks = resourcePacks;
     }
 

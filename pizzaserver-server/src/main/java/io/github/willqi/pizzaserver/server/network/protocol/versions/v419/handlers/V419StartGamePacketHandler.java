@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 import io.netty.buffer.ByteBuf;
 
 public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGamePacket> {
@@ -51,9 +51,9 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         buffer.writeBoolean(packet.areResourcePacksRequired());
 
         // Game rules
-        VarInts.writeUnsignedInt(buffer, packet.getGameRules().length);
+        VarInts.writeUnsignedInt(buffer, packet.getGameRules().size());
         for (GameRule<?> rule : packet.getGameRules()) {
-            helper.writeString(rule.getName(), buffer);
+            helper.writeString(rule.getId().getName(), buffer);
             VarInts.writeUnsignedInt(buffer, rule.getType().getId());
             switch (rule.getType()) {
                 case BOOLEAN:
@@ -104,7 +104,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         VarInts.writeUnsignedInt(buffer, 0);    // TODO: Investigate custom blocks
 
         // Item states
-        VarInts.writeUnsignedInt(buffer, packet.getItemStates().length);
+        VarInts.writeUnsignedInt(buffer, packet.getItemStates().size());
         for (ItemState itemState : packet.getItemStates()) {
             helper.writeString(itemState.getNameId(), buffer);
             buffer.writeShortLE(itemState.getId());

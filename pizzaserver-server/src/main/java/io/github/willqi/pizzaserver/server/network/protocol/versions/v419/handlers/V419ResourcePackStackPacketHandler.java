@@ -13,14 +13,14 @@ public class V419ResourcePackStackPacketHandler extends ProtocolPacketHandler<Re
     public void encode(ResourcePackStackPacket packet, ByteBuf buffer, PacketHelper helper) {
         buffer.writeBoolean(packet.isForcedToAccept());
 
-        VarInts.writeUnsignedInt(buffer, packet.getBehaviourPacks().length);
+        VarInts.writeUnsignedInt(buffer, packet.getBehaviourPacks().size());
         for (DataPack behaviourPack : packet.getBehaviourPacks()) {
             helper.writeString(behaviourPack.getUuid().toString(), buffer);
             helper.writeString(behaviourPack.getVersion(), buffer);
             helper.writeString("", buffer); // subpack name but it doesn't look like it effects anything?
         }
 
-        VarInts.writeUnsignedInt(buffer, packet.getResourcePacks().length);
+        VarInts.writeUnsignedInt(buffer, packet.getResourcePacks().size());
         for (DataPack resourcePack : packet.getResourcePacks()) {
             helper.writeString(resourcePack.getUuid().toString(), buffer);
             helper.writeString(resourcePack.getVersion(), buffer);

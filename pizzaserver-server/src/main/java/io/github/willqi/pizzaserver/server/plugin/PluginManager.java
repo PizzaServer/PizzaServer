@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.plugin;
 
 import io.github.willqi.pizzaserver.server.Server;
-import io.github.willqi.pizzaserver.server.events.Event;
+import io.github.willqi.pizzaserver.server.plugin.events.Event;
 
 public class PluginManager {
 

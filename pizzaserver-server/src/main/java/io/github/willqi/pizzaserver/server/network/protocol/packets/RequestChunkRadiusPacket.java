@@ -6,6 +6,7 @@ public class RequestChunkRadiusPacket extends BedrockPacket {
 
     private int chunkRadiusRequested;
 
+
     public RequestChunkRadiusPacket() {
         super(ID);
     }

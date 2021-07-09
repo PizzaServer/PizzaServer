@@ -47,6 +47,11 @@ public class NBTInputStream extends InputStream {
     }
 
     @Override
+    public int available() throws IOException {
+        return this.stream.available();
+    }
+
+    @Override
     public int read() throws IOException {
         return this.stream.read();
     }

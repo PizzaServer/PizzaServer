@@ -2,11 +2,9 @@ package io.github.willqi.pizzaserver.nbt.tags;
 
 import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class NBTCompound extends NBTTag implements NBTContainer {
+public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String> {
 
     public static final byte ID = 10;
 
@@ -50,9 +48,31 @@ public class NBTCompound extends NBTTag implements NBTContainer {
         return (NBTDouble)this.data.get(name);
     }
 
+    public NBTString getString(String name) {
+        return (NBTString)this.data.get(name);
+    }
+
+    public NBTList getList(String name) {
+        return (NBTList)this.data.get(name);
+    }
+
     public NBTCompound getCompound(String name) {
         return (NBTCompound)this.data.get(name);
     }
+
+    public NBTByteArray getByteArray(String name) {
+        return (NBTByteArray)this.data.get(name);
+    }
+
+    public NBTIntegerArray getIntegerArray(String name) {
+        return (NBTIntegerArray)this.data.get(name);
+    }
+
+    public NBTLongArray getLongArray(String name) {
+        return (NBTLongArray)this.data.get(name);
+    }
+
+
 
     public NBTCompound put(String name, NBTTag tag) throws NBTLimitException {
         this.data.put(name, tag);
@@ -86,6 +106,38 @@ public class NBTCompound extends NBTTag implements NBTContainer {
                 ((NBTContainer)tag).setDepth(this.getDepth() + 1);
             }
         });
+    }
+
+    public int size() {
+        return this.data.size();
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return this.data.keySet().iterator();
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NBTCompound) {
+            NBTCompound nbtCompound = (NBTCompound)obj;
+            if ((nbtCompound.size() != this.size()) || !(nbtCompound.getName().equals(this.getName()))) {
+                return false;
+            }
+
+            for (String key : nbtCompound) {
+                if (!this.data.containsKey(key) || !this.get(key).equals(nbtCompound.get(key))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 }

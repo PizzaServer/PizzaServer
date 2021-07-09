@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.TeleportationCa
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MovePlayerPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.netty.buffer.ByteBuf;
 
 public class V419MovePlayerPacketHandler extends ProtocolPacketHandler<MovePlayerPacket> {
