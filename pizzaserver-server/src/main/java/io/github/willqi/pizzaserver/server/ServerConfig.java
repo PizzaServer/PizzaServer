@@ -35,4 +35,8 @@ public class ServerConfig {
         return this.config.getInteger("world-chunk-radius");
     }
 
+    public String getDefaultWorldName() {
+        return this.config.getString("world-default");
+    }
+
 }

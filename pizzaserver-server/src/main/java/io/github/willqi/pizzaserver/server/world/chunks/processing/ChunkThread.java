@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.world.chunks.processing;
 
+import io.github.willqi.pizzaserver.mcworld.exceptions.world.chunks.NoChunkFoundException;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.MCChunkDatabase;
 import io.github.willqi.pizzaserver.server.Server;
@@ -85,8 +86,23 @@ public class ChunkThread extends Thread {
 
     private void handleChunkRequestAction(RequestChunkProcessingAction processingAction) {
         try {
-            BedrockChunk internalChunk = this.database.getChunk(processingAction.getX(), processingAction.getZ());
-            Chunk chunk = new Chunk(internalChunk);
+            BedrockChunk internalChunk;
+            try {
+                internalChunk = this.database.getChunk(processingAction.getX(), processingAction.getZ());
+            } catch (NoChunkFoundException exception) {
+                // Empty chunk. Create the empty chunk data.
+                byte[][] subChunks = new byte[16][];
+                for (int i = 0; i < subChunks.length; i++) {
+                    subChunks[i] = new byte[]{ 8, 0 };
+                }
+
+                internalChunk = new BedrockChunk.Builder()
+                    .setX(processingAction.getX())
+                    .setZ(processingAction.getZ())
+                    .setSubChunks(subChunks)
+                    .build();
+            }
+            Chunk chunk = new Chunk(this.chunkManager.getWorld(), internalChunk);
             processingAction.getResponseFuture().complete(chunk);
         } catch (IOException exception) {
             processingAction.getResponseFuture().completeExceptionally(exception);
@@ -94,7 +110,7 @@ public class ChunkThread extends Thread {
     }
 
     private void handleSendChunkRequestAction(SendChunkToPlayerProcessingAction sendChunkAction) {
-        sendChunkAction.getChunk().sendTo(sendChunkAction.getPlayer());
+        sendChunkAction.getChunk().spawnTo(sendChunkAction.getPlayer());
     }
 
 

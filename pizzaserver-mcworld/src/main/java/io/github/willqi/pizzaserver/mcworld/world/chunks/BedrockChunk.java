@@ -151,7 +151,7 @@ public class BedrockChunk {
 
         private int chunkVersion;
 
-        private byte[] heightAndBiomeData = new byte[0];
+        private byte[] heightAndBiomeData = new byte[768];
         private byte[][] subChunks = new byte[0][];
 
         private byte[] blockEntityData = new byte[0];

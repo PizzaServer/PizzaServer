@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.server.network.BedrockServer;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.DataPackManager;
+import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.plugin.PluginManager;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.Logger;
@@ -97,6 +98,10 @@ public class Server {
                     session.processPackets();
 
                     if (session.isDisconnected()) {
+                        Player player = session.getPlayer();
+                        if (player != null) {
+                            player.onDisconnect();
+                        }
                         sessions.remove();
                     }
                 }

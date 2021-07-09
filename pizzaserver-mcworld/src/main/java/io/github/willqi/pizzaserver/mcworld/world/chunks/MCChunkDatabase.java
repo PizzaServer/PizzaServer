@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.mcworld.world.chunks;
 
 import io.github.willqi.pizzaserver.mcworld.exceptions.world.chunks.ChunkParseException;
+import io.github.willqi.pizzaserver.mcworld.exceptions.world.chunks.NoChunkFoundException;
 import org.iq80.leveldb.DB;
 
 import java.io.Closeable;
@@ -22,7 +23,7 @@ public class MCChunkDatabase implements Closeable {
         if (versionData == null) {
             versionData = this.database.get(ChunkKey.OLD_VERSION.getLevelDBKey(x, z));
             if (versionData == null) {
-                throw new ChunkParseException("Failed to find version for chunk (" + x + ", " + z + ")");
+                throw new NoChunkFoundException("Could not find a chunk at (" + x + ", " + z + ")");
             }
         }
         int chunkVersion = versionData[0];

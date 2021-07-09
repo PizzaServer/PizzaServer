@@ -3,26 +3,55 @@ package io.github.willqi.pizzaserver.server.world.chunks;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
+import io.github.willqi.pizzaserver.server.world.World;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Chunk {
 
     private final BedrockChunk internalChunk;
+    private final World world;
 
-    public Chunk(BedrockChunk chunk) {
+    private final Set<Entity> entities = new HashSet<>();
+    private final Set<Player> spawnedTo = new HashSet<>();
+
+    public Chunk(World world, BedrockChunk chunk) {
+        this.world = world;
         this.internalChunk = chunk;
     }
 
+    public World getWorld() {
+        return this.world;
+    }
+
+    public int getX() {
+        return this.internalChunk.getX();
+    }
+
+    public int getZ() {
+        return this.internalChunk.getZ();
+    }
+
+    public void addEntity(Entity entity) {
+        this.entities.add(entity);
+    }
+
+    public void removeEntity(Entity entity) {
+        this.entities.remove(entity);
+    }
+
     /**
-     * Serialize and send this chunk to a player
+     * Send this chunk to a player
      * @param player
      */
-    public void sendTo(Player player) {
+    public void spawnTo(Player player) {
         // Find the lowest from the top empty subchunk
         int subChunkCount = 15;
         for (; subChunkCount >= 0; subChunkCount--) {
@@ -54,11 +83,38 @@ public class Chunk {
 
         // TODO: Supposedly tile entities are also packaged here
         LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
-        levelChunkPacket.setX(this.internalChunk.getX());
-        levelChunkPacket.setZ(this.internalChunk.getZ());
+        levelChunkPacket.setX(this.getX());
+        levelChunkPacket.setZ(this.getZ());
         levelChunkPacket.setSubChunkCount(subChunkCount);
         levelChunkPacket.setData(data);
         player.sendPacket(levelChunkPacket);
+
+        this.spawnedTo.add(player);
     }
 
+    public void despawnFrom(Player player) {
+        // TODO: despawn all entities
+        this.spawnedTo.remove(player);
+
+        // Should we close this chunk
+        if (this.spawnedTo.size() == 0) {
+            this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ());
+        }
+    }
+
+    public void close() {}
+
+    @Override
+    public int hashCode() {
+        return 7 + (37 * this.getX()) + (37 * this.getZ()) + (37 * this.getWorld().hashCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Chunk) {
+            Chunk otherChunk = (Chunk)obj;
+            return (otherChunk.getX() == this.getX()) && (otherChunk.getZ() == this.getZ()) && (otherChunk.getWorld().equals(this.getWorld()));
+        }
+        return false;
+    }
 }

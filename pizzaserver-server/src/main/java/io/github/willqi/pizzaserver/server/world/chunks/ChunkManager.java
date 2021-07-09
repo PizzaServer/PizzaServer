@@ -44,12 +44,15 @@ public class ChunkManager {
     }
 
     public Chunk getChunk(int x, int z) {
-        return this.chunks.getOrDefault(new Tuple<>(x, z), null);
+        return this.chunks.get(new Tuple<>(x, z));
     }
 
     public void unloadChunk(int x, int z) {
-        // TODO: unload chunk
-        this.chunks.remove(new Tuple<>(x, z));
+        Tuple<Integer, Integer> chunkKey = new Tuple<>(x, z);
+        if (this.chunks.containsKey(chunkKey)) {
+            this.chunks.get(chunkKey).close();
+            this.chunks.remove(new Tuple<>(x, z));
+        }
     }
 
     public CompletableFuture<Chunk> fetchChunk(int x, int z) {

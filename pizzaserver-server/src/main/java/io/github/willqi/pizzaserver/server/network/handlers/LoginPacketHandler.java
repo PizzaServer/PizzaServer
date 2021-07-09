@@ -82,6 +82,8 @@ public class LoginPacketHandler extends BedrockPacketHandler {
             return;
         }
 
+        this.session.setPlayer(player);
+
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.LOGIN_SUCCESS);
         player.sendPacket(playStatusPacket);
@@ -99,16 +101,6 @@ public class LoginPacketHandler extends BedrockPacketHandler {
                     .values()
         );
         player.sendPacket(resourcePacksInfoPacket);
-    }
-
-    @Override
-    public void onPacket(SetLocalPlayerAsInitializedPacket packet) {
-        if (this.player == null) {
-            this.server.getLogger().error("Client said they were ready before player object was created.");
-            this.session.disconnect();
-            return;
-        }
-        this.session.setPacketHandler(new FullGamePacketHandler(this.player));
     }
 
     @Override
@@ -229,7 +221,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(new Vector2(0, 0));
-        startGamePacket.setPlayerSpawn(new Vector3(3344, 70, 28));
+        startGamePacket.setPlayerSpawn(new Vector3(3344, 70, 28));  // TODO: get spawn coords/fetch player data
 
         // Server
         startGamePacket.setChunkTickRange(4);    // TODO: modify once you get chunks ticking
@@ -248,7 +240,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         startGamePacket.setItemStates(this.player.getVersion().getItemStates());
 
         // World
-        startGamePacket.setWorldSpawn(new Vector3i(0, 0, 0));
+        startGamePacket.setWorldSpawn(new Vector3i(0, 0, 0));   // TODO: fetch actual player data
         startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
         startGamePacket.setWorldType(WorldType.INFINITE);
 
@@ -263,9 +255,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         this.player.sendPacket(creativeContentPacket);
         this.player.sendPacket(biomeDefinitionPacket);
 
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
-        this.player.sendPacket(playStatusPacket);
+        this.session.setPacketHandler(new FullGamePacketHandler(this.player));
     }
 
 }

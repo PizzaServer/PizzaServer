@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.github.willqi.pizzaserver.server.network.utils.Zlib;
+import io.github.willqi.pizzaserver.server.player.Player;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -24,7 +25,8 @@ public class BedrockClientSession {
     private volatile boolean disconnected;
 
     private MinecraftVersion version;
-    private volatile BedrockPacketHandler handler;
+    private volatile Player player = null;
+    private volatile BedrockPacketHandler handler = null;
 
     private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
     private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
@@ -46,12 +48,22 @@ public class BedrockClientSession {
         this.version = version;
     }
 
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
     public void setPacketHandler(BedrockPacketHandler packetHandler) {
         this.handler = packetHandler;
     }
 
     public void disconnect() {
         if (!this.disconnected) {
+            this.processOutgoingPackets();
+
             this.disconnected = true;
             this.serverSession.disconnect();
         }
@@ -98,11 +110,14 @@ public class BedrockClientSession {
     }
 
     public void processPackets() {
-        // Incoming
+        this.processIncomingPackets();
+        this.processOutgoingPackets();
+    }
+
+    protected void processIncomingPackets() {
         if (this.handler != null) {
             while (this.queuedIncomingPackets.peek() != null) {
                 BedrockPacket packet = this.queuedIncomingPackets.poll();
-
                 this.handler.onPacket(packet);
 
                 // Now we call the specific packet handler
@@ -116,8 +131,9 @@ public class BedrockClientSession {
                 }
             }
         }
+    }
 
-        // Outgoing
+    protected void processOutgoingPackets() {
         while (this.queuedOutgoingPackets.peek() != null) {
             BedrockPacket packet = this.queuedOutgoingPackets.poll();
             this.sendPacket(packet);

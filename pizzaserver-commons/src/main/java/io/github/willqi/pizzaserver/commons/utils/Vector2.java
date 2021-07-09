@@ -19,4 +19,8 @@ public class Vector2 {
         return this.y;
     }
 
+    public Vector2i toVector2i() {
+        return new Vector2i((int)this.x, (int)this.y);
+    }
+
 }

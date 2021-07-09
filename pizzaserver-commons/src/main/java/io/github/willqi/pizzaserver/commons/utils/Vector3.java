@@ -25,4 +25,8 @@ public class Vector3 {
         return this.z;
     }
 
+    public Vector3i toVector3i() {
+        return new Vector3i((int)this.x, (int)this.y, (int)this.z);
+    }
+
 }
