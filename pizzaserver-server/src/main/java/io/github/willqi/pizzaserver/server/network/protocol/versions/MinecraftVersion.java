@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
-import io.github.willqi.pizzaserver.mcworld.BlockRuntimeMapper;
+import io.github.willqi.pizzaserver.format.mcworld.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;

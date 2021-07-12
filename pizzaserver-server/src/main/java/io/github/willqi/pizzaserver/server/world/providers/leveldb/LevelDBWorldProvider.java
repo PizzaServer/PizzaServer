@@ -1,10 +1,10 @@
 package io.github.willqi.pizzaserver.server.world.providers.leveldb;
 
-import io.github.willqi.pizzaserver.mcworld.MCWorld;
-import io.github.willqi.pizzaserver.mcworld.exceptions.world.chunks.NoChunkFoundException;
-import io.github.willqi.pizzaserver.mcworld.world.chunks.BedrockChunk;
-import io.github.willqi.pizzaserver.mcworld.world.chunks.MCChunkDatabase;
-import io.github.willqi.pizzaserver.mcworld.world.info.MCWorldInfo;
+import io.github.willqi.pizzaserver.format.mcworld.MCWorld;
+import io.github.willqi.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
+import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCWorldChunk;
+import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCChunkDatabase;
+import io.github.willqi.pizzaserver.format.mcworld.world.info.MCWorldInfo;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.server.world.providers.actions.RequestChunkProcessingAction;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProvider;
@@ -33,7 +33,7 @@ public class LevelDBWorldProvider extends WorldProvider {
     @Override
     public void onChunkRequest(RequestChunkProcessingAction action) {
         try {
-            BedrockChunk internalChunk;
+            MCWorldChunk internalChunk;
             try {
                 internalChunk = this.chunkDatabase.getChunk(action.getX(), action.getZ());
             } catch (NoChunkFoundException exception) {
@@ -43,7 +43,7 @@ public class LevelDBWorldProvider extends WorldProvider {
                     subChunks[i] = new byte[]{ 8, 0 };
                 }
 
-                internalChunk = new BedrockChunk.Builder()
+                internalChunk = new MCWorldChunk.Builder()
                         .setX(action.getX())
                         .setZ(action.getZ())
                         .setSubChunks(subChunks)

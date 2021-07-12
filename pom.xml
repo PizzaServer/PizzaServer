@@ -10,8 +10,8 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>pizzaserver-nbt</module>
+        <module>pizzaserver-worldfile</module>
         <module>pizzaserver-server</module>
-        <module>pizzaserver-mcworld</module>
         <module>pizzaserver-commons</module>
     </modules>
 
