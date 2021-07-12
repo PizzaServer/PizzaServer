@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.world;
 
 import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.world.providers.ProviderType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,7 +44,7 @@ public class WorldManager {
                     throw new FileNotFoundException("The file provided is not a directory.");
                 }
 
-                world = new World(this.server, worldDirectory);
+                world = new World(this.server, ProviderType.resolveByFile(worldDirectory).create(worldDirectory));
             } catch (IOException exception) {
                 throw new CompletionException(exception);
             }
@@ -56,8 +57,12 @@ public class WorldManager {
         return CompletableFuture.supplyAsync(() -> {
             World world = this.worlds.get(name);
             if (world != null) {
-                world.close();
-                this.worlds.remove(name);
+                try {
+                    world.close();
+                    this.worlds.remove(name);
+                } catch (IOException exception) {
+                    throw new CompletionException(exception);
+                }
             }
             return null;
         });

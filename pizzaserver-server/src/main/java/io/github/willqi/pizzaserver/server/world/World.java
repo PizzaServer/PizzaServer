@@ -1,16 +1,15 @@
 package io.github.willqi.pizzaserver.server.world;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.mcworld.MCWorld;
-import io.github.willqi.pizzaserver.mcworld.world.info.MCWorldInfo;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.chunks.ChunkManager;
+import io.github.willqi.pizzaserver.server.world.providers.WorldProvider;
+import io.github.willqi.pizzaserver.server.world.providers.WorldProviderThread;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,22 +19,17 @@ public class World implements Closeable {
 
     private final Server server;
 
-    private final File worldDirectory;
-    private final MCWorld mcWorld;
-    private final MCWorldInfo worldInfo;
+    private final WorldProviderThread worldThread;
 
     private final ChunkManager chunkManager = new ChunkManager(this);
 
     private final Set<Player> players = new HashSet<>();
 
 
-    public World(Server server, File worldDirectory) throws IOException {
-        this.worldDirectory = worldDirectory;
-        this.mcWorld = new MCWorld(worldDirectory);
-        this.worldInfo = this.mcWorld.getWorldInfo();
+    public World(Server server, WorldProvider provider) throws IOException {
         this.server = server;
-
-        this.chunkManager.start();  // Start the ChunkThread
+        this.worldThread = new WorldProviderThread(this, provider);
+        this.worldThread.start();
     }
 
     public void addEntity(Entity entity, Vector3 position) {
@@ -66,12 +60,8 @@ public class World implements Closeable {
         }
     }
 
-    public String getWorldFileName() {
-        return this.worldDirectory.getName();
-    }
-
     public String getName() {
-        return this.worldInfo.getWorldName();
+        return this.worldThread.getProvider().getName();
     }
 
     public Server getServer() {
@@ -86,25 +76,25 @@ public class World implements Closeable {
         return this.chunkManager;
     }
 
-    public MCWorld getInternalMCWorld() {
-        return this.mcWorld;
+    public WorldProviderThread getWorldThread() {
+        return this.worldThread;
     }
 
     @Override
-    public void close() {
-        this.chunkManager.stop();
+    public void close() throws IOException {
+        this.worldThread.close();
     }
 
     @Override
     public int hashCode() {
-        return 43 + (43 * this.getWorldFileName().hashCode());
+        return 43 + (43 * this.getName().hashCode());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof World) {
             World otherWorld = (World)obj;
-            return otherWorld.getWorldFileName().equals(this.getWorldFileName());
+            return otherWorld.getName().equals(this.getName());
         }
         return false;
     }

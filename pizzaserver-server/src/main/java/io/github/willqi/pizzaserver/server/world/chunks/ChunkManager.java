@@ -3,7 +3,6 @@ package io.github.willqi.pizzaserver.server.world.chunks;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.world.World;
-import io.github.willqi.pizzaserver.server.world.chunks.processing.ChunkThread;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,25 +13,9 @@ public class ChunkManager {
     private final World world;
     private final Map<Tuple<Integer, Integer>, Chunk> chunks = new HashMap<>();
 
-    private final ChunkThread serializer = new ChunkThread(this);
-
 
     public ChunkManager(World world) {
         this.world = world;
-    }
-
-    /**
-     * Start chunk processing
-     */
-    public void start() {
-        this.serializer.start();
-    }
-
-    /**
-     * Stop chunk processing
-     */
-    public void stop() {
-        this.serializer.interrupt();
     }
 
     public World getWorld() {
@@ -59,7 +42,7 @@ public class ChunkManager {
         if (this.isChunkLoaded(x, z)) {
             return CompletableFuture.completedFuture(this.getChunk(x, z));
         }
-        CompletableFuture<Chunk> chunkRequest = this.serializer.requestChunk(x, z);
+        CompletableFuture<Chunk> chunkRequest = this.getWorld().getWorldThread().requestChunk(x, z);
         chunkRequest.whenComplete((chunk, exception) -> {
            if (chunk != null) {
                 this.chunks.put(new Tuple<>(x, z), chunk);
@@ -69,7 +52,7 @@ public class ChunkManager {
     }
 
     public void addChunkToPlayerQueue(Player player, Chunk chunk) {
-        this.serializer.addChunkToPlayerQueue(player, chunk);
+        this.getWorld().getWorldThread().addChunkToPlayerQueue(player, chunk);
     }
 
 }

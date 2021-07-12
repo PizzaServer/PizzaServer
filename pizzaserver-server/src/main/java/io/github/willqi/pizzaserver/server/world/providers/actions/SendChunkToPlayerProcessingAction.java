@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.world.chunks.processing.actions;
+package io.github.willqi.pizzaserver.server.world.providers.actions;
 
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;

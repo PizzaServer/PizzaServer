@@ -10,8 +10,7 @@ import io.netty.buffer.ByteBufAllocator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class BedrockChunk {
 
@@ -21,7 +20,7 @@ public class BedrockChunk {
 
     private final int[] heightMap = new int[256];
     private final byte[] biomeData = new byte[256];
-    private BedrockSubChunk[] subChunks;
+    private List<BedrockSubChunk> subChunks;
 
     private final Set<NBTCompound> entityNBTs = new HashSet<>();
     private final Set<NBTCompound> blockEntityNBTs = new HashSet<>();
@@ -78,8 +77,8 @@ public class BedrockChunk {
     }
 
     private void parseSubChunks(byte[][] subChunks) throws IOException {
-        this.subChunks = new BedrockSubChunk[subChunks.length];
-        for (int i = 0; i < this.subChunks.length; i++) {
+        this.subChunks = new ArrayList<>(subChunks.length);
+        for (int i = 0; i < subChunks.length; i++) {
             byte[] subChunkBytes = subChunks[i];
             ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(subChunkBytes.length);
             buffer.writeBytes(subChunkBytes);
@@ -87,7 +86,7 @@ public class BedrockChunk {
             BedrockSubChunk subChunk = new BedrockSubChunk();
             subChunk.parse(buffer);
             buffer.release();
-            this.subChunks[i] = subChunk;
+            this.subChunks.add(subChunk);
         }
     }
 
@@ -131,13 +130,17 @@ public class BedrockChunk {
         return this.getBiomeAt(position.getX(), position.getY());
     }
 
-    public byte getBiomeAt(int x, int y) {
-        return this.biomeData[y * 16 + x];
+    public byte getBiomeAt(int x, int z) {
+        return this.biomeData[z * 16 + x];
+    }
+
+    public List<BedrockSubChunk> getSubChunks() {
+        return Collections.unmodifiableList(this.subChunks);
     }
 
     public BedrockSubChunk getSubChunk(int index) {
-        if (index < this.subChunks.length) {
-            return this.subChunks[index];
+        if (index < this.subChunks.size()) {
+            return this.subChunks.get(index);
         } else {
             return null;
         }

@@ -28,6 +28,10 @@ public class BedrockSubChunk {
         return this.layers;
     }
 
+    public void addLayer(BlockLayer layer) {
+        this.layers.add(layer);
+    }
+
     /**
      * Construct a sub chunk based on data retrieved from the level database.
      * @param buffer

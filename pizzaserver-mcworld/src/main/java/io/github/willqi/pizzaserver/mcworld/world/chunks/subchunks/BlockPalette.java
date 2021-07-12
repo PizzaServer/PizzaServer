@@ -25,6 +25,13 @@ public class BlockPalette {
     private final List<Entry> data = new ArrayList<>();
 
 
+    /**
+     * Entries require the following 3 properties
+     * NBTString property: name
+     * NBTInteger property: version (You can fill this out with zero when serializing to the network)
+     * NBTCompound property: states (the block state)
+     * @param data
+     */
     public void add(NBTCompound data) {
         this.data.add(new Entry(data, this.data.size()));
     }
