@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.server.world.chunks;
 
-import io.github.willqi.pizzaserver.mcworld.world.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
@@ -11,20 +10,29 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Chunk {
 
-    private final BedrockChunk internalChunk;
+    private final List<BedrockSubChunk> subChunks;
+    private final byte[] biomeData;
+
     private final World world;
+    private final int x;
+    private final int z;
 
     private final Set<Entity> entities = new HashSet<>();
     private final Set<Player> spawnedTo = new HashSet<>();
 
-    public Chunk(World world, BedrockChunk chunk) {
+    protected Chunk(World world, int x, int z, List<BedrockSubChunk> subChunks, byte[] biomeData) {
         this.world = world;
-        this.internalChunk = chunk;
+        this.x = x;
+        this.z = z;
+        this.subChunks = subChunks;
+        this.biomeData = biomeData;
     }
 
     public World getWorld() {
@@ -32,11 +40,11 @@ public class Chunk {
     }
 
     public int getX() {
-        return this.internalChunk.getX();
+        return this.x;
     }
 
     public int getZ() {
-        return this.internalChunk.getZ();
+        return this.z;
     }
 
     public void addEntity(Entity entity) {
@@ -47,15 +55,19 @@ public class Chunk {
         this.entities.remove(entity);
     }
 
+    public byte[] getBiomeData() {
+        return this.biomeData;
+    }
+
     /**
      * Send this chunk to a player
      * @param player
      */
     public void spawnTo(Player player) {
         // Find the lowest from the top empty subchunk
-        int subChunkCount = 15;
+        int subChunkCount = this.subChunks.size() - 1;
         for (; subChunkCount >= 0; subChunkCount--) {
-            BedrockSubChunk subChunk = this.internalChunk.getSubChunk(subChunkCount);
+            BedrockSubChunk subChunk = this.subChunks.get(subChunkCount);
             if (subChunk.getLayers().size() > 0) {
                 break;
             }
@@ -65,16 +77,16 @@ public class Chunk {
         // Write all subchunks
         ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
         for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
-            BedrockSubChunk subChunk = this.internalChunk.getSubChunk(subChunkIndex);
+            BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
             try {
                 byte[] subChunkSerialized = subChunk.serializeForNetwork(player.getVersion());
                 packetData.writeBytes(subChunkSerialized);
             } catch (IOException exception) {
-                Server.getInstance().getLogger().error("Failed to serialize subchunk (x: " + this.internalChunk.getX() + " z: " + this.internalChunk.getZ() + " index: " + subChunkCount + ")");
+                Server.getInstance().getLogger().error("Failed to serialize subchunk (x: " + this.getX() + " z: " + this.getZ() + " index: " + subChunkCount + ")");
                 return;
             }
         }
-        packetData.writeBytes(this.internalChunk.getBiomeData());
+        packetData.writeBytes(this.getBiomeData());
         packetData.writeByte(0);    // edu feature or smth
 
         byte[] data = new byte[packetData.readableBytes()];
@@ -117,4 +129,48 @@ public class Chunk {
         }
         return false;
     }
+
+
+    public static class Builder {
+
+        private List<BedrockSubChunk> subChunks = Collections.emptyList();
+        private byte[] biomeData = new byte[256];
+
+        private World world;
+        private int x;
+        private int z;
+
+
+        public Builder setSubChunks(List<BedrockSubChunk> subChunks) {
+            this.subChunks = subChunks;
+            return this;
+        }
+
+        public Builder setBiomeData(byte[] biomeData) {
+            this.biomeData = biomeData;
+            return this;
+        }
+
+        public Builder setWorld(World world) {
+            this.world = world;
+            return this;
+        }
+
+        public Builder setX(int x) {
+            this.x = x;
+            return this;
+        }
+
+        public Builder setZ(int z) {
+            this.z = z;
+            return this;
+        }
+
+        public Chunk build() {
+            return new Chunk(this.world, this.x, this.z, this.subChunks, this.biomeData);
+        }
+
+
+    }
+
 }

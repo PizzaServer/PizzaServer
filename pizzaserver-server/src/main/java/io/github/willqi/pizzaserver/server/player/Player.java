@@ -115,13 +115,15 @@ public class Player extends Entity {
      * It cleans up data for this player
      */
     public void onDisconnect() {
-        this.getLocation().getWorld().removeEntity(this);
+        if (this.hasSpawned()) {
+            this.getLocation().getWorld().removeEntity(this);
 
-        // Remove player from chunks they can observe
-        for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
-            for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                Chunk chunk = this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                chunk.despawnFrom(this);
+            // Remove player from chunks they can observe
+            for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
+                for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
+                    Chunk chunk = this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
+                    chunk.despawnFrom(this);
+                }
             }
         }
     }

@@ -224,7 +224,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         startGamePacket.setPlayerSpawn(new Vector3(3344, 70, 28));  // TODO: get spawn coords/fetch player data
 
         // Server
-        startGamePacket.setChunkTickRange(4);    // TODO: modify once you get chunks ticking
+        startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());    // TODO: modify once you get chunks ticking
         startGamePacket.setCommandsEnabled(true);
         // packet.setCurrentTick(0);       // TODO: get actual tick count
         startGamePacket.setDefaultGamemode(Gamemode.SURVIVAL);
@@ -243,16 +243,15 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         startGamePacket.setWorldSpawn(new Vector3i(0, 0, 0));   // TODO: fetch actual player data
         startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
         startGamePacket.setWorldType(WorldType.INFINITE);
+        this.player.sendPacket(startGamePacket);
 
 
-        CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
         // TODO: Add creative contents to prevent mobile clients from crashing
+        CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
+        this.player.sendPacket(creativeContentPacket);
 
         BiomeDefinitionPacket biomeDefinitionPacket = new BiomeDefinitionPacket();
         biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
-
-        this.player.sendPacket(startGamePacket);
-        this.player.sendPacket(creativeContentPacket);
         this.player.sendPacket(biomeDefinitionPacket);
 
         this.session.setPacketHandler(new FullGamePacketHandler(this.player));
