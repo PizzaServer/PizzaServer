@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.world.chunks;
 
-import io.github.willqi.pizzaserver.mcworld.world.chunks.subchunks.BedrockSubChunk;
+import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
