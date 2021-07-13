@@ -32,7 +32,7 @@ public class V419UpdateAttributesPacketHandler extends ProtocolPacketHandler<Upd
         VarInts.writeUnsignedInt(buffer, packet.getAttributes().size());
         for (Attribute attribute : packet.getAttributes()) {
             if (!this.attributeIds.containsKey(attribute.getType())) {
-                continue;
+                throw new UnsupportedOperationException("This version does not support attribute " + attribute.getType());
             }
 
             buffer.writeFloatLE(attribute.getMinimumValue());
