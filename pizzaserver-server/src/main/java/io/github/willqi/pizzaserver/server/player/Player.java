@@ -1,10 +1,13 @@
 package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.server.Server;
-import io.github.willqi.pizzaserver.server.entity.Entity;
+import io.github.willqi.pizzaserver.server.entity.LivingEntity;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
+import io.github.willqi.pizzaserver.server.player.attributes.Attribute;
+import io.github.willqi.pizzaserver.server.player.attributes.AttributeType;
+import io.github.willqi.pizzaserver.server.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.server.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.skin.Skin;
 import io.github.willqi.pizzaserver.server.utils.Location;
@@ -15,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Player extends Entity {
+public class Player extends LivingEntity {
 
     private final Server server;
     private final BedrockClientSession session;
@@ -29,6 +32,8 @@ public class Player extends Entity {
     private Skin skin;
 
     private int chunkRadius;
+
+    private final PlayerAttributes attributes = new PlayerAttributes(this);
 
 
     public Player(Server server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -128,6 +133,119 @@ public class Player extends Entity {
         }
     }
 
+    public PlayerAttributes getAttributes() {
+        return this.attributes;
+    }
+
+    @Override
+    public float getHealth() {
+        return super.getHealth();
+    }
+
+    @Override
+    public void setHealth(float health) {
+        super.setHealth(health);
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
+        attribute.setCurrentValue(health);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    @Override
+    public float getMaxHealth() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
+        return attribute.getMaximumValue();
+    }
+
+    @Override
+    public void setMaxHealth(float maxHealth) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
+        attribute.setMaximumValue(maxHealth);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    @Override
+    public float getAbsorption() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        return attribute.getCurrentValue();
+    }
+
+    @Override
+    public void setAbsorption(float absorption) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        attribute.setCurrentValue(absorption);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    @Override
+    public float getMaxAbsorption() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        return attribute.getMaximumValue();
+    }
+
+    @Override
+    public void setMaxAbsorption(float maxAbsorption) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        attribute.setMaximumValue(maxAbsorption);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    @Override
+    public float getMovementSpeed() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
+        return attribute.getCurrentValue();
+    }
+
+    @Override
+    public void setMovementSpeed(float movementSpeed) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
+        attribute.setCurrentValue(movementSpeed);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    public float getFoodLevel() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
+        return attribute.getCurrentValue();
+    }
+
+    public void setFoodLevel(float foodLevel) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
+        attribute.setCurrentValue(foodLevel);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    public float getSaturationLevel() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
+        return attribute.getCurrentValue();
+    }
+
+    public void setSaturationLevel(float saturationLevel) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
+        attribute.setCurrentValue(saturationLevel);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    public float getExperience() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
+        return attribute.getCurrentValue();
+    }
+
+    public void setExperience(float experience) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
+        attribute.setCurrentValue(experience);
+        this.getAttributes().setAttribute(attribute);
+    }
+
+    public float getExperienceLevel() {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        return attribute.getCurrentValue();
+    }
+
+    public void setExperienceLevel(int experienceLevel) {
+        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        attribute.setCurrentValue(experienceLevel);
+        this.getAttributes().setAttribute(attribute);
+    }
+
     @Override
     public void setLocation(Location newLocation) {
         Location oldLocation = this.location;
@@ -150,6 +268,8 @@ public class Player extends Entity {
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
         this.sendPacket(playStatusPacket);
+
+        this.getAttributes().sendAttributes();
     }
 
     @Override

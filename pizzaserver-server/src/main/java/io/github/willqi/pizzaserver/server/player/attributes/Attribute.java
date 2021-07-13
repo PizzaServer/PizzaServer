@@ -35,6 +35,8 @@ public class Attribute implements Cloneable {
 
     public void setMaximumValue(float maximumValue) {
         this.maximumValue = maximumValue;
+        this.setDefaultValue(Math.max(this.getMinimumValue(), Math.min(this.getDefaultValue(), this.getMaximumValue())));
+        this.setCurrentValue(Math.max(this.getMinimumValue(), Math.min(this.getCurrentValue(), this.getMaximumValue())));
     }
 
     public float getDefaultValue() {
@@ -42,7 +44,7 @@ public class Attribute implements Cloneable {
     }
 
     public void setDefaultValue(float defaultValue) {
-        this.defaultValue = defaultValue;
+        this.defaultValue = Math.max(this.getMinimumValue(), Math.min(defaultValue, this.getMaximumValue()));
     }
 
     public float getCurrentValue() {
@@ -50,7 +52,19 @@ public class Attribute implements Cloneable {
     }
 
     public void setCurrentValue(float currentValue) {
-        this.currentValue = currentValue;
+        this.currentValue = Math.max(this.getMinimumValue(), Math.min(currentValue, this.getMaximumValue()));
     }
 
+    @Override
+    public int hashCode() {
+        return 37 * this.type.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Attribute) {
+            return ((Attribute) obj).getType().equals(this.getType());
+        }
+        return false;
+    }
 }
