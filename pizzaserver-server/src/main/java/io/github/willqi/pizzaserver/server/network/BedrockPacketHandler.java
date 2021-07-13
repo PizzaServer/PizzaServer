@@ -20,8 +20,9 @@ public abstract class BedrockPacketHandler {
     public void onPacket(ClientCacheStatusPacket packet) {}
     public void onPacket(RequestChunkRadiusPacket packet) {}
 
-    // player movement actions
+    // player actions
     public void onPacket(MovePlayerPacket packet) {}
+    public void onPacket(TextPacket packet) {}
 
     public void onPacket(ViolationPacket packet) {}
 
