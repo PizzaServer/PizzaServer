@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.entity;
 
+import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
@@ -68,4 +69,16 @@ public abstract class Entity {
 
     public abstract void spawnTo(Player player);
 
+    @Override
+    public int hashCode() {
+        return 43 * (int)this.id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Entity) {
+            return NumberUtils.isNearlyEqual(((Entity) obj).getId(), this.getId());
+        }
+        return false;
+    }
 }
