@@ -22,6 +22,7 @@ import io.github.willqi.pizzaserver.commons.world.WorldType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashSet;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -91,14 +92,14 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
         resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
         resourcePacksInfoPacket.setResourcePacks(
-                this.server.getResourcePackManager()
+                new HashSet<>(this.server.getResourcePackManager()
                         .getResourcePacks()
-                        .values()
+                        .values())
         );
         resourcePacksInfoPacket.setBehaviorPacks(
-                this.server.getResourcePackManager()
+                new HashSet<>(this.server.getResourcePackManager()
                     .getBehaviorPacks()
-                    .values()
+                    .values())
         );
         player.sendPacket(resourcePacksInfoPacket);
     }
@@ -201,8 +202,8 @@ public class LoginPacketHandler extends BedrockPacketHandler {
     private void sendResourcePackStackPacket() {
         ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
         stackPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
-        stackPacket.setResourcePacks(this.server.getResourcePackManager().getResourcePacks().values());
-        stackPacket.setBehaviourPacks(this.server.getResourcePackManager().getBehaviorPacks().values());
+        stackPacket.setResourcePacks(new HashSet<>(this.server.getResourcePackManager().getResourcePacks().values()));
+        stackPacket.setBehaviourPacks(new HashSet<>(this.server.getResourcePackManager().getBehaviorPacks().values()));
         stackPacket.setGameVersion(this.player.getVersion().getVersionString());
         this.player.sendPacket(stackPacket);
     }

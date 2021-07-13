@@ -12,10 +12,10 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.github.willqi.pizzaserver.server.player.data.Device;
-import io.github.willqi.pizzaserver.server.player.data.skin.Skin;
-import io.github.willqi.pizzaserver.server.player.data.skin.SkinAnimation;
-import io.github.willqi.pizzaserver.server.player.data.skin.SkinPersonaPiece;
-import io.github.willqi.pizzaserver.server.player.data.skin.SkinPersonaPieceTint;
+import io.github.willqi.pizzaserver.server.player.skin.Skin;
+import io.github.willqi.pizzaserver.server.player.skin.SkinAnimation;
+import io.github.willqi.pizzaserver.server.player.skin.SkinPersonaPiece;
+import io.github.willqi.pizzaserver.server.player.skin.SkinPersonaPieceTint;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;

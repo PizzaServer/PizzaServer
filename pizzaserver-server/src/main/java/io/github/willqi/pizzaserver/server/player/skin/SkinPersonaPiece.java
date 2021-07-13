@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.player.data.skin;
+package io.github.willqi.pizzaserver.server.player.skin;
 
 import java.util.UUID;
 

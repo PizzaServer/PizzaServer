@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.server.player.data.Device;
-import io.github.willqi.pizzaserver.server.player.data.skin.Skin;
+import io.github.willqi.pizzaserver.server.player.skin.Skin;
 
 import java.util.UUID;
 

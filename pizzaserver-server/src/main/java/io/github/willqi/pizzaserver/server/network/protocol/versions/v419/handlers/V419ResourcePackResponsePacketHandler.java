@@ -6,7 +6,9 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelpe
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class V419ResourcePackResponsePacketHandler extends ProtocolPacketHandler<ResourcePackResponsePacket> {
 
@@ -16,7 +18,7 @@ public class V419ResourcePackResponsePacketHandler extends ProtocolPacketHandler
         packet.setStatus(ResourcePackResponsePacket.ResourcePackStatus.values()[buffer.readUnsignedByte()]);
 
         int amountOfPacks = buffer.readShortLE();
-        Collection<PackInfo> packs = new HashSet<>();
+        Set<PackInfo> packs = new HashSet<>();
 
         for (int i = 0; i < amountOfPacks; i++) {
             String[] data = helper.readString(buffer).split("_");

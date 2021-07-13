@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.server.player.data.Device;
-import io.github.willqi.pizzaserver.server.player.data.skin.Skin;
+import io.github.willqi.pizzaserver.server.player.skin.Skin;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ChunkManager;
