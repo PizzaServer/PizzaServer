@@ -13,11 +13,9 @@ import io.github.willqi.pizzaserver.server.utils.TimeUtils;
 import io.github.willqi.pizzaserver.server.world.WorldManager;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class Server {
 
@@ -188,8 +186,19 @@ public class Server {
         return this.motd;
     }
 
+    /**
+     * Return all players who been spawned into the world
+     * @return set of players
+     */
+    public Set<Player> getPlayers() {
+        return this.sessions.stream()
+                .map(BedrockClientSession::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
     public int getPlayerCount() {
-        return 0;
+        return this.getPlayers().size();
     }
 
     public void setMaximumPlayerCount(int players) {

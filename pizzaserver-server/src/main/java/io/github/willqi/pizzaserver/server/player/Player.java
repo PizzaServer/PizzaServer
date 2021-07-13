@@ -348,5 +348,30 @@ public class Player extends LivingEntity {
         }
     }
 
+    /**
+     * Send a raw message
+     * @param message
+     */
+    public void sendMessage(String message) {
+        TextPacket textPacket = new TextPacket();
+        textPacket.setType(TextPacket.TextType.RAW);
+        textPacket.setMessage(message);
+        this.sendPacket(textPacket);
+    }
+
+    /**
+     * Send a message originating from a player
+     * @param sender
+     * @param message
+     */
+    public void sendPlayerMessage(Player sender, String message) {
+        TextPacket textPacket = new TextPacket();
+        textPacket.setType(TextPacket.TextType.CHAT);
+        textPacket.setSourceName(sender.getUsername());
+        textPacket.setMessage(message);
+        textPacket.setXuid(sender.getXuid());
+        this.sendPacket(textPacket);
+    }
+
 
 }
