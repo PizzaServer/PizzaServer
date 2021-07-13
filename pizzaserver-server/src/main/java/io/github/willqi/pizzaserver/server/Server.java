@@ -136,10 +136,19 @@ public class Server {
      * The server will stop after the current tick finishes.
      */
     private void stop() {
+        this.getLogger().info("Stopping server...");
+
+        for (BedrockClientSession session : this.sessions) {
+            if (session.getPlayer() != null) {
+                session.getPlayer().disconnect("Server Stopped");
+            } else {
+                session.disconnect();
+            }
+        }
+
         this.getNetwork().stop();
         this.getWorldManager().unloadWorlds();
 
-        this.getLogger().info("Stopping server...");
         // We're done stop operations. Exit program.
         if (this.stopByConsoleExit) {   // Ensure that the notify is called AFTER the thread is in the waiting state.
             while (this.serverExitListener.getState() != Thread.State.WAITING) {
@@ -148,6 +157,7 @@ public class Server {
                 } catch (InterruptedException ignored) {}
             }
         }
+
         synchronized (this.serverExitListener) {
             this.serverExitListener.notify();
         }
