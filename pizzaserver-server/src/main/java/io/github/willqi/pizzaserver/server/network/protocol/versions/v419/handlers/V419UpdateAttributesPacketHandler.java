@@ -10,6 +10,8 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class V419UpdateAttributesPacketHandler extends ProtocolPacketHandler<UpdateAttributesPacket> {
 
@@ -29,19 +31,18 @@ public class V419UpdateAttributesPacketHandler extends ProtocolPacketHandler<Upd
     public void encode(UpdateAttributesPacket packet, ByteBuf buffer, PacketHelper helper) {
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
 
-        VarInts.writeUnsignedInt(buffer, packet.getAttributes().size());
-        for (Attribute attribute : packet.getAttributes()) {
-            if (!this.attributeIds.containsKey(attribute.getType())) {
-                throw new UnsupportedOperationException("This version does not support attribute " + attribute.getType());
-            }
+        Set<Attribute> validAttributes = packet.getAttributes()
+                .stream().filter(attribute -> this.attributeIds.containsKey(attribute.getType()))
+                .collect(Collectors.toSet());
 
+        VarInts.writeUnsignedInt(buffer, validAttributes.size());
+        for (Attribute attribute : validAttributes) {
             buffer.writeFloatLE(attribute.getMinimumValue());
             buffer.writeFloatLE(attribute.getMaximumValue());
             buffer.writeFloatLE(attribute.getCurrentValue());
             buffer.writeFloatLE(attribute.getDefaultValue());
             helper.writeString(this.attributeIds.get(attribute.getType()), buffer);
         }
-
         VarInts.writeUnsignedLong(buffer, packet.getTick());
     }
 
