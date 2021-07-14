@@ -1,13 +1,8 @@
 package io.github.willqi.pizzaserver.server.player.attributes;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateAttributesPacket;
-import io.github.willqi.pizzaserver.server.player.Player;
-
 import java.util.*;
 
 public class PlayerAttributes {
-
-    private final Player player;
 
     private final Map<AttributeType, Attribute> attributes = new HashMap<AttributeType, Attribute>(){
         {
@@ -22,34 +17,16 @@ public class PlayerAttributes {
     };
 
 
-    public PlayerAttributes(Player player) {
-        this.player = player;
-    }
-
     public Attribute getAttribute(AttributeType attributeType) {
         return this.attributes.get(attributeType);
     }
 
     public void setAttribute(Attribute attribute) {
         this.attributes.put(attribute.getType(), attribute);
-        if (this.player.hasSpawned()) {
-            this.sendAttribute(attribute);
-        }
     }
 
-    private void sendAttribute(Attribute attribute) {
-        this.sendAttributes(Collections.singleton(attribute));
-    }
-
-    private void sendAttributes(Set<Attribute> attributes) {
-        UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
-        updateAttributesPacket.setRuntimeEntityId(this.player.getId());
-        updateAttributesPacket.setAttributes(attributes);
-        this.player.sendPacket(updateAttributesPacket);
-    }
-
-    public void sendAttributes() {
-        this.sendAttributes(new HashSet<>(this.attributes.values()));
+    public Set<Attribute> getAttributes() {
+        return new HashSet<>(this.attributes.values());
     }
 
 }

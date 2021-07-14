@@ -3,6 +3,8 @@ package io.github.willqi.pizzaserver.server.entity.meta;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
+import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlagType;
 import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaProperty;
 import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaPropertyType;
@@ -14,20 +16,35 @@ import java.util.Set;
 
 public class EntityMeta {
 
-    private final Set<EntityMetaFlag> flags = new HashSet<>();
+    private final Map<EntityMetaFlagType, Set<EntityMetaFlag>> flags = new HashMap<>();
     private final Map<EntityMetaPropertyName, EntityMetaProperty<?>> properties = new HashMap<>();
 
 
-    public boolean hasFlag(EntityMetaFlag flag) {
-        return this.flags.contains(flag);
+    public Map<EntityMetaFlagType, Set<EntityMetaFlag>> getFlags() {
+        return this.flags;
     }
 
-    public void setFlag(EntityMetaFlag flag, boolean status) {
-        if (status) {
-            this.flags.add(flag);
-        } else {
-            this.flags.remove(flag);
+    public boolean hasFlag(EntityMetaFlagType flagType, EntityMetaFlag flag) {
+        if (!this.flags.containsKey(flagType)) {
+            return false;
         }
+        return this.flags.get(flagType).contains(flag);
+    }
+
+    public void setFlag(EntityMetaFlagType flagType, EntityMetaFlag flag, boolean status) {
+        if (!this.flags.containsKey(flagType)) {
+            this.flags.put(flagType, new HashSet<>());
+        }
+
+        if (status) {
+            this.flags.get(flagType).add(flag);
+        } else {
+            this.flags.get(flagType).remove(flag);
+        }
+    }
+
+    public Map<EntityMetaPropertyName, EntityMetaProperty<?>> getProperties() {
+        return this.properties;
     }
 
     public boolean hasProperty(EntityMetaPropertyName propertyName) {
