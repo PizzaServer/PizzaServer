@@ -6,7 +6,9 @@ import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ChunkRadiusUpdatedPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MovePlayerPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RequestChunkRadiusPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
+import io.github.willqi.pizzaserver.server.plugin.events.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.World;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
@@ -14,6 +16,7 @@ import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class FullGamePacketHandler extends BedrockPacketHandler {
 
@@ -78,4 +81,18 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
         this.player.setLocation(newLocation);
     }
 
+    @Override
+    public void onPacket(TextPacket packet) {
+        if (packet.getType() == TextPacket.TextType.CHAT) {
+            PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
+
+            this.player.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                for (Player recipient : event.getRecipients()) {
+                    recipient.sendPlayerMessage(this.player, event.getMessage());
+                }
+            }
+
+        }
+    }
 }
