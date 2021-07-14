@@ -1,7 +1,8 @@
 package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
-import io.github.willqi.pizzaserver.server.entity.meta.EntityMeta;
+import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
@@ -19,7 +20,7 @@ public abstract class Entity {
 
     private Location location = null;
 
-    private EntityMeta metaData = new EntityMeta();
+    private EntityMetaData metaData = new EntityMetaData();
 
     public Entity() {
         this.id = ID++;
@@ -37,13 +38,27 @@ public abstract class Entity {
         return this.location.getChunk();
     }
 
+    /**
+     * Change the location of the entity and spawn itself for viewers of the new chunk
+     * If a player cannot see the new location, it will despawn itself from that player
+     * @param newLocation
+     */
     public void setLocation(Location newLocation) {
         if (this.location != null) {
             Chunk oldChunk = this.getChunk();
             Chunk newChunk = newLocation.getChunk();
             if (!oldChunk.equals(newChunk)) {
                 oldChunk.removeEntity(this);
+                for (Player viewer : this.getViewers()) {
+                    if (!viewer.canSeeChunk(newChunk)) {
+                        this.despawnFrom(viewer);
+                    }
+                }
+
                 newChunk.addEntity(this);
+                for (Player player : newChunk.getViewers()) {
+                    this.spawnTo(player);
+                }
             }
         } else {
             newLocation.getChunk().addEntity(this);
@@ -51,13 +66,19 @@ public abstract class Entity {
         this.location = newLocation;
     }
 
-    public EntityMeta getMetaData() {
+    public EntityMetaData getMetaData() {
         return this.metaData;
     }
 
-    public void setMetaData(EntityMeta metaData) {
+    public void setMetaData(EntityMetaData metaData) {
         this.metaData = metaData;
-        // TODO: Send meta data to viewers
+
+        SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
+        entityDataPacket.setRuntimeId(this.getId());
+        entityDataPacket.setData(this.getMetaData());
+        for (Player player : this.getViewers()) {
+            player.sendPacket(entityDataPacket);
+        }
     }
 
     /**

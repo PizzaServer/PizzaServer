@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class EntityMeta {
+public class EntityMetaData {
 
     private final Map<EntityMetaFlagType, Set<EntityMetaFlag>> flags = new HashMap<>();
     private final Map<EntityMetaPropertyName, EntityMetaProperty<?>> properties = new HashMap<>();

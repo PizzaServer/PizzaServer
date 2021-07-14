@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.LivingEntity;
+import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
@@ -85,6 +86,16 @@ public class Player extends LivingEntity {
         this.skin = newSkin;
     }
 
+    @Override
+    public void setMetaData(EntityMetaData metaData) {
+        super.setMetaData(metaData);
+
+        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+        setEntityDataPacket.setRuntimeId(this.getId());
+        setEntityDataPacket.setData(this.getMetaData());
+        this.sendPacket(setEntityDataPacket);
+    }
+
     public int getChunkRadius() {
         return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
     }
@@ -95,6 +106,11 @@ public class Player extends LivingEntity {
         if (this.hasSpawned()) {
             this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
+    }
+
+    public boolean canSeeChunk(Chunk chunk) {
+        return (this.getChunkRadius() + this.getLocation().getChunkX() >= chunk.getX()) && (this.getLocation().getChunkX() - this.getChunkRadius() <= chunk.getX()) &&
+                (this.getChunkRadius() + this.getLocation().getChunkZ() >= chunk.getZ()) && (this.getLocation().getChunkZ() - this.getChunkRadius() <= chunk.getZ());
     }
 
     public Server getServer() {

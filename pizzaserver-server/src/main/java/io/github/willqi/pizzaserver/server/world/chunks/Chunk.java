@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Chunk {
 
@@ -24,8 +25,12 @@ public class Chunk {
     private final int x;
     private final int z;
 
+    // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
-    private final Set<Player> spawnedTo = new HashSet<>();
+
+    // The players who can see this chunk
+    private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
+
 
     protected Chunk(World world, int x, int z, List<BedrockSubChunk> subChunks, byte[] biomeData) {
         this.world = world;
@@ -55,15 +60,20 @@ public class Chunk {
         this.entities.remove(entity);
     }
 
+    public Set<Entity> getEntities() {
+        return this.entities;
+    }
+
     public byte[] getBiomeData() {
         return this.biomeData;
     }
 
     /**
-     * Send this chunk to a player
+     * Send the chunk blocks to a player
+     * It is recommended that this is done async
      * @param player
      */
-    public void spawnTo(Player player) {
+    public void sendBlocksTo(Player player) {
         // Find the lowest from the top empty subchunk
         int subChunkCount = this.subChunks.size() - 1;
         for (; subChunkCount >= 0; subChunkCount--) {
@@ -104,13 +114,37 @@ public class Chunk {
         this.spawnedTo.add(player);
     }
 
-    public void despawnFrom(Player player) {
-        // TODO: despawn all entities
-        this.spawnedTo.remove(player);
+    /**
+     * Send the entities of this chunk to a player
+     * @param player
+     */
+    public void sendEntitiesTo(Player player) {
+        for (Entity entity : this.getEntities()) {
+            entity.spawnTo(player);
+        }
 
-        // Should we close this chunk
-        if (this.spawnedTo.size() == 0) {
-            this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ());
+        this.spawnedTo.add(player);
+    }
+
+    public Set<Player> getViewers() {
+        return new HashSet<>(this.spawnedTo);
+    }
+
+    /**
+     * Called when a player can no longer see a chunk
+     * Despawns all entities in this chunk from the player's view
+     * @param player
+     */
+    public void despawnFrom(Player player) {
+        if (this.spawnedTo.remove(player)) {
+            for (Entity entity : this.getEntities()) {
+                entity.despawnFrom(player);
+            }
+
+            // Should we close this chunk
+            if (this.getViewers().size() == 0) {
+                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ());
+            }
         }
     }
 
