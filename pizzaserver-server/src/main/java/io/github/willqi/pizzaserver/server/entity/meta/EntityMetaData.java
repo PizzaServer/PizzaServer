@@ -52,10 +52,17 @@ public class EntityMetaData {
     }
 
     public void setProperty(EntityMetaPropertyName propertyName, EntityMetaProperty<?> property) {
+        if (property.getType() != propertyName.getType()) {
+            throw new IllegalArgumentException("The property provided was not of the type " + propertyName.getType());
+        }
         this.properties.put(propertyName, property);
     }
 
     public byte getByteProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return (byte)0;
+        }
+
         EntityMetaProperty<Byte> storedProperty = (EntityMetaProperty<Byte>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.BYTE) {
             throw new IllegalArgumentException(property + " was not a byte property.");
@@ -64,6 +71,10 @@ public class EntityMetaData {
     }
 
     public short getShortProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return 0;
+        }
+
         EntityMetaProperty<Short> storedProperty = (EntityMetaProperty<Short>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.SHORT) {
             throw new IllegalArgumentException(property + " was not a short property.");
@@ -72,6 +83,10 @@ public class EntityMetaData {
     }
 
     public int getIntProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return 0;
+        }
+
         EntityMetaProperty<Integer> storedProperty = (EntityMetaProperty<Integer>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.INTEGER) {
             throw new IllegalArgumentException(property + " was not a integer property.");
@@ -80,6 +95,10 @@ public class EntityMetaData {
     }
 
     public float getFloatProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return 0;
+        }
+
         EntityMetaProperty<Float> storedProperty = (EntityMetaProperty<Float>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.FLOAT) {
             throw new IllegalArgumentException(property + " was not a float property.");
@@ -88,6 +107,10 @@ public class EntityMetaData {
     }
 
     public long getLongProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return 0;
+        }
+
         EntityMetaProperty<Long> storedProperty = (EntityMetaProperty<Long>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.LONG) {
             throw new IllegalArgumentException(property + " was not a long property.");
@@ -96,6 +119,10 @@ public class EntityMetaData {
     }
 
     public String getStringProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return null;
+        }
+
         EntityMetaProperty<String> storedProperty = (EntityMetaProperty<String>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.STRING) {
             throw new IllegalArgumentException(property + " was not a string property.");
@@ -104,6 +131,10 @@ public class EntityMetaData {
     }
 
     public NBTCompound getNBTProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return null;
+        }
+
         EntityMetaProperty<NBTCompound> storedProperty = (EntityMetaProperty<NBTCompound>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.NBT) {
             throw new IllegalArgumentException(property + " was not a NBT property.");
@@ -112,6 +143,10 @@ public class EntityMetaData {
     }
 
     public Vector3i getVector3iProperty(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return null;
+        }
+
         EntityMetaProperty<Vector3i> storedProperty = (EntityMetaProperty<Vector3i>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.VECTOR3I) {
             throw new IllegalArgumentException(property + " was not a Vector3i property.");
@@ -120,6 +155,10 @@ public class EntityMetaData {
     }
 
     public Vector3 getVector3Property(EntityMetaPropertyName property) {
+        if (!this.hasProperty(property)) {
+            return null;
+        }
+
         EntityMetaProperty<Vector3> storedProperty = (EntityMetaProperty<Vector3>)this.properties.get(property);
         if (storedProperty.getType() != EntityMetaPropertyType.VECTOR3) {
             throw new IllegalArgumentException(property + " was not a Vector3 property.");

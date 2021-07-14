@@ -9,6 +9,8 @@ public class SetEntityDataPacket extends BedrockPacket {
     private long runtimeId;
     private EntityMetaData data;
 
+    private long tick;
+
 
     public SetEntityDataPacket() {
         super(ID);
@@ -28,6 +30,14 @@ public class SetEntityDataPacket extends BedrockPacket {
 
     public void setData(EntityMetaData data) {
         this.data = data;
+    }
+
+    public long getTick() {
+        return this.tick;
+    }
+
+    public void setTick(long tick) {
+        this.tick = tick;
     }
 
 }
