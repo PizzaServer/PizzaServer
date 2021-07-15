@@ -52,7 +52,7 @@ public class ChunkManager {
     }
 
     public void addChunkToPlayerQueue(Player player, Chunk chunk) {
-        this.getWorld().getWorldThread().addChunkToPlayerQueue(player, chunk);
+        this.getWorld().getWorldThread().requestSendChunkToPlayer(player, chunk).thenRun(() -> chunk.sendEntitiesTo(player));
     }
 
 }

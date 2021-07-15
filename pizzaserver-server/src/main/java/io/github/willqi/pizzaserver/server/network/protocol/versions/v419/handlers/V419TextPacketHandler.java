@@ -72,7 +72,7 @@ public class V419TextPacketHandler extends ProtocolPacketHandler<TextPacket> {
     @Override
     public void encode(TextPacket packet, ByteBuf buffer, PacketHelper helper) {
         if (!this.typeValues.containsKey(packet.getType())) {
-            throw new UnsupportedOperationException("Unsupported text type: " + packet.getType());
+            packet.setType(TextPacket.TextType.RAW);
         }
 
         buffer.writeByte(this.typeValues.get(packet.getType()));

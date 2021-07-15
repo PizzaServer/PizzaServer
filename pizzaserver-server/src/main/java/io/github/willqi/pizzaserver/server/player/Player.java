@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.LivingEntity;
+import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlagType;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
@@ -14,6 +17,7 @@ import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ChunkManager;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -33,7 +37,7 @@ public class Player extends LivingEntity {
 
     private int chunkRadius;
 
-    private final PlayerAttributes attributes = new PlayerAttributes(this);
+    private final PlayerAttributes attributes = new PlayerAttributes();
 
 
     public Player(Server server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -84,6 +88,16 @@ public class Player extends LivingEntity {
         this.skin = newSkin;
     }
 
+    @Override
+    public void setMetaData(EntityMetaData metaData) {
+        super.setMetaData(metaData);
+
+        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+        setEntityDataPacket.setRuntimeId(this.getId());
+        setEntityDataPacket.setData(this.getMetaData());
+        this.sendPacket(setEntityDataPacket);
+    }
+
     public int getChunkRadius() {
         return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
     }
@@ -92,8 +106,13 @@ public class Player extends LivingEntity {
         int oldRadius = this.chunkRadius;
         this.chunkRadius = radius;
         if (this.hasSpawned()) {
-            this.updateVisibleChunks(this.location, oldRadius);
+            this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
+    }
+
+    public boolean canSeeChunk(Chunk chunk) {
+        return (this.getChunkRadius() + this.getLocation().getChunkX() >= chunk.getX()) && (this.getLocation().getChunkX() - this.getChunkRadius() <= chunk.getX()) &&
+                (this.getChunkRadius() + this.getLocation().getChunkZ() >= chunk.getZ()) && (this.getLocation().getChunkZ() - this.getChunkRadius() <= chunk.getZ());
     }
 
     public Server getServer() {
@@ -137,6 +156,21 @@ public class Player extends LivingEntity {
         return this.attributes;
     }
 
+    public void sendAttributes() {
+        this.sendAttributes(this.attributes.getAttributes());
+    }
+
+    private void sendAttribute(Attribute attribute) {
+        this.sendAttributes(Collections.singleton(attribute));
+    }
+
+    private void sendAttributes(Set<Attribute> attributes) {
+        UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
+        updateAttributesPacket.setRuntimeEntityId(this.getId());
+        updateAttributesPacket.setAttributes(attributes);
+        this.sendPacket(updateAttributesPacket);
+    }
+
     @Override
     public float getHealth() {
         return super.getHealth();
@@ -148,6 +182,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
         attribute.setCurrentValue(health);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     @Override
@@ -161,6 +196,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
         attribute.setMaximumValue(maxHealth);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     @Override
@@ -174,6 +210,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
         attribute.setCurrentValue(absorption);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     @Override
@@ -187,6 +224,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
         attribute.setMaximumValue(maxAbsorption);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     @Override
@@ -200,6 +238,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
         attribute.setCurrentValue(movementSpeed);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     public float getFoodLevel() {
@@ -211,6 +250,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
         attribute.setCurrentValue(foodLevel);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     public float getSaturationLevel() {
@@ -222,6 +262,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
         attribute.setCurrentValue(saturationLevel);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     public float getExperience() {
@@ -233,6 +274,7 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
         attribute.setCurrentValue(experience);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     public float getExperienceLevel() {
@@ -244,17 +286,18 @@ public class Player extends LivingEntity {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
         attribute.setCurrentValue(experienceLevel);
         this.getAttributes().setAttribute(attribute);
+        this.sendAttribute(attribute);
     }
 
     @Override
     public void setLocation(Location newLocation) {
-        Location oldLocation = this.location;
+        Location oldLocation = this.getLocation();
         super.setLocation(newLocation);
 
         if (this.hasSpawned()) {    // Do we need to send new chunks?
             boolean shouldUpdateChunks = (oldLocation == null) || (oldLocation.getChunkX() != newLocation.getChunkX()) ||
                                             (oldLocation.getChunkZ() != newLocation.getChunkZ()) ||
-                                            !(oldLocation.getWorld().equals(this.location.getWorld()));
+                                            !(oldLocation.getWorld().equals(this.getLocation().getWorld()));
             if (shouldUpdateChunks) {
                 this.updateVisibleChunks(oldLocation, this.chunkRadius);
             }
@@ -269,7 +312,10 @@ public class Player extends LivingEntity {
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
         this.sendPacket(playStatusPacket);
 
-        this.getAttributes().sendAttributes();
+        this.getMetaData().setFlag(EntityMetaFlagType.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
+        this.getMetaData().setFlag(EntityMetaFlagType.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
+        this.setMetaData(this.getMetaData());
+        this.sendAttributes();
     }
 
     @Override
@@ -327,8 +373,8 @@ public class Player extends LivingEntity {
         boolean requiresChunkPublisher = false;
         for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
             for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                if (this.location.getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-                    Chunk chunk = this.location.getWorld().getChunkManager().getChunk(chunkX, chunkZ);
+                if (this.getLocation().getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
+                    Chunk chunk = this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
                     if (chunksToRemove.remove(chunk)) {
                         continue;   // We don't need to send this chunk
                     }

@@ -32,11 +32,13 @@ public class WorldProviderThread extends Thread implements Closeable {
         return this.provider;
     }
 
-    public void addChunkToPlayerQueue(Player player, Chunk chunk) {
+    public CompletableFuture<Void> requestSendChunkToPlayer(Player player, Chunk chunk) {
+        CompletableFuture<Void> response = new CompletableFuture<>();
         synchronized (this) {
-            this.actionsQueue.add(new SendChunkToPlayerProcessingAction(player, chunk));
+            this.actionsQueue.add(new SendChunkToPlayerProcessingAction(player, chunk, response));
             this.notify();
         }
+        return response;
     }
 
     public CompletableFuture<Chunk> requestChunk(int x, int z) {
@@ -61,7 +63,7 @@ public class WorldProviderThread extends Thread implements Closeable {
                     this.getProvider().onChunkRequest(chunkRequestAction);
                 } else {
                     SendChunkToPlayerProcessingAction chunkSendAction = (SendChunkToPlayerProcessingAction)action;
-                    chunkSendAction.getChunk().spawnTo(chunkSendAction.getPlayer());
+                    chunkSendAction.getChunk().sendBlocksTo(chunkSendAction.getPlayer());
                 }
             }
 

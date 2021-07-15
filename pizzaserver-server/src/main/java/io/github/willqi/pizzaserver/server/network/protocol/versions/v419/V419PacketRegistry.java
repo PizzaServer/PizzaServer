@@ -29,6 +29,7 @@ public class V419PacketRegistry extends PacketRegistry {
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
             .register(UpdateAttributesPacket.ID, new V419UpdateAttributesPacketHandler())
             .register(TextPacket.ID, new V419TextPacketHandler())
+            .register(SetEntityDataPacket.ID, new V419SetEntityDataPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler());
     }
 
