@@ -3,6 +3,8 @@ package io.github.willqi.pizzaserver.server.player;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.LivingEntity;
 import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlagType;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
@@ -310,6 +312,9 @@ public class Player extends LivingEntity {
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
         this.sendPacket(playStatusPacket);
 
+        this.getMetaData().setFlag(EntityMetaFlagType.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
+        this.getMetaData().setFlag(EntityMetaFlagType.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
+        this.setMetaData(this.getMetaData());
         this.sendAttributes();
     }
 
