@@ -129,7 +129,124 @@ public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEnt
 
     protected final Map<EntityMetaPropertyName, Integer> supportedProperties = new HashMap<EntityMetaPropertyName, Integer>(){
         {
-
+            // Commented lines represent properties with unknown types
+            this.put(EntityMetaPropertyName.HEALTH, 1);
+            this.put(EntityMetaPropertyName.VARIANT, 2);
+            this.put(EntityMetaPropertyName.COLOR, 3);
+            this.put(EntityMetaPropertyName.NAMETAG, 4);
+            this.put(EntityMetaPropertyName.OWNER_EID, 5);
+            this.put(EntityMetaPropertyName.TARGET_EID, 6);
+            this.put(EntityMetaPropertyName.AIR, 7);
+            this.put(EntityMetaPropertyName.POTION_COLOR, 8);
+            this.put(EntityMetaPropertyName.POTION_AMBIENT, 9);
+            this.put(EntityMetaPropertyName.JUMP_DURATION, 10);
+            this.put(EntityMetaPropertyName.HURT_TIME, 11);
+            this.put(EntityMetaPropertyName.HURT_DIRECTION, 12);
+            this.put(EntityMetaPropertyName.PADDLE_TIME_LEFT, 13);
+            this.put(EntityMetaPropertyName.PADDLE_TIME_RIGHT, 14);
+            this.put(EntityMetaPropertyName.EXPERIENCE_VALUE, 15);
+            this.put(EntityMetaPropertyName.MINECART_DISPLAY_BLOCK, 16);
+            this.put(EntityMetaPropertyName.MINECART_DISPLAY_OFFSET, 17);
+            this.put(EntityMetaPropertyName.MINECART_HAS_DISPLAY, 18);
+            // swell
+            // old swell
+            // swell dir
+            this.put(EntityMetaPropertyName.CHARGE_AMOUNT, 22);
+            this.put(EntityMetaPropertyName.ENDERMAN_HELD_ITEM_ID, 23);
+            this.put(EntityMetaPropertyName.ENTITY_AGE, 24);
+            // ???
+            // player flags (used for flags)
+            this.put(EntityMetaPropertyName.PLAYER_INDEX, 27);
+            this.put(EntityMetaPropertyName.PLAYER_BED_POSITION, 28);
+            this.put(EntityMetaPropertyName.FIREBALL_POWER_X, 29);
+            this.put(EntityMetaPropertyName.FIREBALL_POWER_Y, 30);
+            this.put(EntityMetaPropertyName.FIREBALL_POWER_Z, 31);
+            // aux power
+            // fish x
+            // fish z
+            // fish angle
+            this.put(EntityMetaPropertyName.POTION_AUX_VALUE, 36);
+            this.put(EntityMetaPropertyName.LEAD_HOLDER_EID, 37);
+            this.put(EntityMetaPropertyName.SCALE, 38);
+            this.put(EntityMetaPropertyName.INTERACTIVE_TAG, 39);
+            this.put(EntityMetaPropertyName.NPC_SKIN_INDEX, 40);
+            // url tag
+            this.put(EntityMetaPropertyName.MAX_AIR_SUPPLY, 42);
+            this.put(EntityMetaPropertyName.MARK_VARIANT, 43);
+            this.put(EntityMetaPropertyName.CONTAINER_TYPE, 44);
+            this.put(EntityMetaPropertyName.CONTAINER_BASE_SIZE, 45);
+            this.put(EntityMetaPropertyName.CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 46);
+            this.put(EntityMetaPropertyName.BLOCK_TARGET, 47);
+            this.put(EntityMetaPropertyName.WITHER_INVULNERABLE_TICKS, 48);
+            this.put(EntityMetaPropertyName.WITHER_TARGET_1, 49);
+            this.put(EntityMetaPropertyName.WITHER_TARGET_2, 50);
+            this.put(EntityMetaPropertyName.WITHER_TARGET_3, 51);
+            this.put(EntityMetaPropertyName.WITHER_AERIAL_ATTACK, 52);
+            this.put(EntityMetaPropertyName.BOUNDING_BOX_WIDTH, 53);
+            this.put(EntityMetaPropertyName.BOUNDING_BOX_HEIGHT, 54);
+            this.put(EntityMetaPropertyName.FUSE_LENGTH, 55);
+            this.put(EntityMetaPropertyName.RIDER_SEAT_POSITION, 56);
+            this.put(EntityMetaPropertyName.RIDER_ROTATION_LOCKED, 57);
+            this.put(EntityMetaPropertyName.RIDER_MAX_ROTATION, 58);
+            this.put(EntityMetaPropertyName.RIDER_MIN_ROTATION, 59);
+            this.put(EntityMetaPropertyName.AREA_EFFECT_CLOUD_RADIUS, 60);
+            this.put(EntityMetaPropertyName.AREA_EFFECT_CLOUD_WAITING, 61);
+            this.put(EntityMetaPropertyName.AREA_EFFECT_CLOUD_PARTICLE_ID, 62);
+            this.put(EntityMetaPropertyName.SHULKER_ATTACH_FACE, 64);
+            this.put(EntityMetaPropertyName.SHULKER_ATTACH_POSITION, 66);
+            this.put(EntityMetaPropertyName.TRADING_TARGET_EID, 67);
+            // trading career
+            this.put(EntityMetaPropertyName.COMMAND_BLOCK_ENABLED, 69);
+            this.put(EntityMetaPropertyName.COMMAND_BLOCK_COMMAND, 70);
+            this.put(EntityMetaPropertyName.COMMAND_BLOCK_LAST_OUTPUT, 71);
+            this.put(EntityMetaPropertyName.COMMAND_BLOCK_TRACK_OUTPUT, 72);
+            this.put(EntityMetaPropertyName.CONTROLLING_RIDER_SEAT_NUMBER, 73);
+            this.put(EntityMetaPropertyName.STRENGTH, 74);
+            this.put(EntityMetaPropertyName.MAX_STRENGTH, 75);
+            this.put(EntityMetaPropertyName.EVOKER_SPELL_COLOR, 76);
+            this.put(EntityMetaPropertyName.LIMITED_LIFE, 77);
+            this.put(EntityMetaPropertyName.ARMOR_STAND_POSE_INDEX, 78);
+            this.put(EntityMetaPropertyName.ENDER_CRYSTAL_TIME_OFFSET, 79);
+            this.put(EntityMetaPropertyName.ALWAYS_SHOW_NAMETAG, 80);
+            this.put(EntityMetaPropertyName.COLOR_2, 81);
+            // name author
+            this.put(EntityMetaPropertyName.SCORE_TAG, 83);
+            this.put(EntityMetaPropertyName.BALLOON_ATTACHED_ENTITY, 84);
+            this.put(EntityMetaPropertyName.PUFFERFISH_SIZE, 85);
+            this.put(EntityMetaPropertyName.BOAT_BUBBLE_TIME, 86);
+            this.put(EntityMetaPropertyName.PLAYER_AGENT_EID, 87);
+            // sitting amount
+            // sitting amount previous
+            this.put(EntityMetaPropertyName.EATING_COUNTER, 90);
+            // flags extended (probably used for other flags?)
+            // laying amount
+            // laying amount previous
+            this.put(EntityMetaPropertyName.AREA_EFFECT_CLOUD_DURATION, 94);
+            this.put(EntityMetaPropertyName.AREA_EFFECT_CLOUD_SPAWN_TIME, 95);
+            this.put(EntityMetaPropertyName.AREA_EFFECT_CLOUD_CHANGE_RATE, 96);
+            this.put(EntityMetaPropertyName.AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP, 97);
+            // pickup count
+            // interact text
+            this.put(EntityMetaPropertyName.TRADE_TIER, 100);
+            this.put(EntityMetaPropertyName.MAX_TRADE_TIER, 101);
+            this.put(EntityMetaPropertyName.TRADE_XP, 102);
+            this.put(EntityMetaPropertyName.SKIN_ID, 103);
+            // spawning frames
+            this.put(EntityMetaPropertyName.COMMAND_BLOCK_TICK_DELAY, 105);
+            this.put(EntityMetaPropertyName.COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK, 106);
+            this.put(EntityMetaPropertyName.AMBIENT_SOUND_INTERVAL, 107);
+            this.put(EntityMetaPropertyName.AMBIENT_SOUND_INTERVAL_RANGE, 108);
+            this.put(EntityMetaPropertyName.AMBIENT_SOUND_EVENT_NAME, 109);
+            this.put(EntityMetaPropertyName.FALL_DAMAGE_MULTIPLIER, 110);
+            // name raw text
+            this.put(EntityMetaPropertyName.CAN_RIDE_TARGET, 112);
+            this.put(EntityMetaPropertyName.LOW_TIER_CURED_TRADE_DISCOUNT, 113);
+            this.put(EntityMetaPropertyName.HIGH_TIER_CURED_TRADE_DISCOUNT, 114);
+            this.put(EntityMetaPropertyName.NEARBY_CURED_TRADE_DISCOUNT, 115);
+            this.put(EntityMetaPropertyName.DISCOUNT_TIME_STAMP, 116);
+            this.put(EntityMetaPropertyName.HITBOX, 117);
+            this.put(EntityMetaPropertyName.IS_BUOYANT, 118);
+            this.put(EntityMetaPropertyName.BUOYANCY_DATA, 119);
         }
     };
 
