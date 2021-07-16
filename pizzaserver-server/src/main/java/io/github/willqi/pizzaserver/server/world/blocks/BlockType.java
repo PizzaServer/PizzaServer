@@ -9,11 +9,18 @@ import io.github.willqi.pizzaserver.server.item.ItemToolType;
 import io.github.willqi.pizzaserver.server.player.Player;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Set;
 
 public abstract class BlockType {
 
     private static final BoundingBox FULL_BLOCK_BOUNDING_BOX = new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
+
+    private static final HashBiMap<NBTCompound, Integer> EMPTY_BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
+        {
+            this.put(new NBTCompound(), 0);
+        }
+    });
 
 
     /**
@@ -34,10 +41,12 @@ public abstract class BlockType {
      * Retrieve the NBTCompound for each of the block's states and the index associated with it.
      * The index is used for getBlockStateIndex in order to determine the current state of the block.
      * (e.g. the direction of stairs)
+     *
+     * By default there is a empty block state if this method is not overridden.
      * @return block states
      */
     public BiMap<NBTCompound, Integer> getBlockStates() {
-        return HashBiMap.create();
+        return EMPTY_BLOCK_STATES;
     }
 
     public NBTCompound getBlockState(int index) {
