@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.world.blocks;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 public class Block {

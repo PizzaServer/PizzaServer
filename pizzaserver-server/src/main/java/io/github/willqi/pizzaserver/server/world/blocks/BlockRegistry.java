@@ -46,6 +46,8 @@ public class BlockRegistry {
 
     private void registerVanillaBlocks() {
         this.register(new BlockTypeAir());
+        this.register(new BlockTypeDirt());
+        this.register(new BlockTypeGrass());
         this.register(new BlockTypeStone());
     }
 

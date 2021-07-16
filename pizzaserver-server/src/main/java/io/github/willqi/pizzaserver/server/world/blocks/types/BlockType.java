@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.world.blocks;
+package io.github.willqi.pizzaserver.server.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -7,6 +7,8 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.item.ItemToolType;
 import io.github.willqi.pizzaserver.server.player.Player;
+import io.github.willqi.pizzaserver.server.world.blocks.Block;
+import io.github.willqi.pizzaserver.server.world.blocks.BlockLoot;
 
 import java.util.Collections;
 import java.util.HashMap;

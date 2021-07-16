@@ -7,11 +7,10 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 import io.github.willqi.pizzaserver.server.item.ItemToolType;
-import io.github.willqi.pizzaserver.server.world.blocks.BlockType;
 
 import java.util.*;
 
-public class BlockTypeStone extends BlockType {
+public class BlockTypeStone extends BlockTypeFullSolid {
 
     private static final BoundingBox HIT_BOX = new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
 

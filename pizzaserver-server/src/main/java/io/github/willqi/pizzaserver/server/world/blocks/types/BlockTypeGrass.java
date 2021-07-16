@@ -1,15 +1,15 @@
 package io.github.willqi.pizzaserver.server.world.blocks.types;
 
-public class BlockTypeAir extends BlockType {
+public class BlockTypeGrass extends BlockTypeFullSolid {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.AIR;
+        return BlockTypeID.GRASS;
     }
 
     @Override
     public String getName() {
-        return "Air";
+        return "Grass";
     }
 
 }
