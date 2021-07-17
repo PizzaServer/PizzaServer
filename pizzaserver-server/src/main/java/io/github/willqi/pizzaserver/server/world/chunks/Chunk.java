@@ -29,7 +29,8 @@ public class Chunk {
     private final List<BedrockSubChunk> subChunks;
     private final byte[] biomeData;
 
-    private final Map<Integer, Block> cachedBlocks = new HashMap<>();
+    // subChunkIndex : ( blockIndex : block )
+    private final Map<Integer, Map<Integer, Block>> cachedBlocks = new HashMap<>();
 
     private final World world;
     private final int x;
@@ -91,40 +92,77 @@ public class Chunk {
             throw new IllegalArgumentException("Could not retrieve block outside chunk");
         }
         int subChunkIndex = y / 16;
-        int blockIndex = (subChunkIndex * 4096) + (x * 256) + (z * 16) + y;
+        int blockIndex = getBlockCacheIndex(x, y, z); // Index stored in chunk block cache
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
 
-        if (this.cachedBlocks.containsKey(blockIndex)) {
-            return this.cachedBlocks.get(blockIndex);
+        if (!this.cachedBlocks.containsKey(subChunkIndex)) {
+            this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+        }
+        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+
+        if (subChunkCache.containsKey(blockIndex)) {
+            return subChunkCache.get(blockIndex);
         }
 
+        // Construct new block as none is cached
         BlockLayer.RawBlock rawBlock = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(x, y % 16, z);
         BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
         Block block;
         if (blockRegistry.hasBlockType(rawBlock.getPaletteEntry().getId())) {
+            // Block id is registered
             BlockType blockType = blockRegistry.getBlockType(rawBlock.getPaletteEntry().getId());
-            block = new Block(blockType, this, rawBlock.getPosition());
+            block = new Block(blockType);
             block.setBlockStateIndex(blockType.getBlockStateIndex(rawBlock.getPaletteEntry().getState()));
         } else {
+            // The block id is not registered
             this.getWorld().getServer().getLogger().warn("Could not find block type for id " + rawBlock.getPaletteEntry().getId() + ". Substituting with air");
             BlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
-            block = new Block(blockType, this, rawBlock.getPosition());
+            block = new Block(blockType);
         }
-        this.cachedBlocks.put(blockIndex, block);
+        subChunkCache.put(blockIndex, block);
 
         readLock.unlock();
         return block;
     }
 
+    public void setBlock(BlockType blockType, Vector3i blockPosition) {
+        this.setBlock(new Block(blockType), blockPosition);
+    }
+
     public void setBlock(Block block, Vector3i blockPosition) {
+        this.setBlock(block, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+    }
+
+    public void setBlock(Block block, int x, int y, int z) {
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {
+            throw new IllegalArgumentException("Could not retrieve block outside chunk");
+        }
+        int subChunkIndex = y / 16;
+        int blockIndex = getBlockCacheIndex(x, y, z); // Index stored in chunk block cache
+
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
+
+        if (!this.cachedBlocks.containsKey(subChunkIndex)) {
+            this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+        }
+        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+        subChunkCache.put(blockIndex, block);
+
+        BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
+        // TODO: update subChunk
+        // TODO: update block packet
+        // TODO: block layer should be a argument and a overloaded method should be created for updating layer 0
+        // ^^^ same should go for getBlock
+
         writeLock.unlock();
     }
 
-    public void setBlock(BlockType blockType, Vector3i blockPosition) {}
+    private static int getBlockCacheIndex(int x, int y, int z) {
+        return (x * 256) + (z * 16) + y; // Index stored in chunk block cache
+    }
 
     /**
      * Send the chunk blocks to a player
