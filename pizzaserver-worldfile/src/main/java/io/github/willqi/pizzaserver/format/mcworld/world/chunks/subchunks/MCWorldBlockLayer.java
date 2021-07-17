@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
-import io.github.willqi.pizzaserver.format.mcworld.BlockRuntimeMapper;
+import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import net.daporkchop.lib.common.function.io.IOFunction;
@@ -15,6 +15,11 @@ public class MCWorldBlockLayer implements BlockLayer {
 
     public MCWorldBlockLayer(MCWorldBlockPalette palette) {
         this.palette = palette;
+    }
+
+    @Override
+    public RawBlock getBlockEntryAt(int x, int y, int z) {
+        return this.blocks[(x << 8) | (z << 4) | y];
     }
 
     public void parse(ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {

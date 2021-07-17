@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
-import io.github.willqi.pizzaserver.format.mcworld.BlockRuntimeMapper;
+import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 

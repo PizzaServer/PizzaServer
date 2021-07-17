@@ -11,39 +11,23 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
 
     List<Entry> getAllEntries();
 
+    boolean hasEntry(NBTCompound data);
+
     Entry getEntry(int index);
 
 
-    class Entry {
+    /**
+     * Represents an entry in this block palette
+     */
+    interface Entry {
 
-        private final String name;
-        private final int id;
-        private final int version;
-        private final NBTCompound state;
+        String getId();
 
+        int getPaletteIndex();
 
-        public Entry(NBTCompound data, int id) {
-            this.name = data.getString("name").getValue();
-            this.version = data.getInteger("version").getValue();
-            this.state = data.getCompound("states");
-            this.id = id;
-        }
+        int getVersion();
 
-        public String getName() {
-            return this.name;
-        }
-
-        public int getPaletteIndex() {
-            return this.id;
-        }
-
-        public int getVersion() {
-            return this.version;
-        }
-
-        public NBTCompound getState() {
-            return this.state;
-        }
+        NBTCompound getState();
 
 
     }

@@ -1,25 +1,35 @@
 package io.github.willqi.pizzaserver.server.world.chunks;
 
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
+import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.world.World;
+import io.github.willqi.pizzaserver.server.world.blocks.Block;
+import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockTypeID;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Chunk {
 
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
     private final List<BedrockSubChunk> subChunks;
     private final byte[] biomeData;
+
+    private final Map<Integer, Block> cachedBlocks = new HashMap<>();
 
     private final World world;
     private final int x;
@@ -33,6 +43,10 @@ public class Chunk {
 
 
     protected Chunk(World world, int x, int z, List<BedrockSubChunk> subChunks, byte[] biomeData) {
+        if (subChunks.size() != 16) {
+            throw new IllegalArgumentException("Tried to construct chunk with only " + subChunks.size() + " subchunks instead of 16.");
+        }
+
         this.world = world;
         this.x = x;
         this.z = z;
@@ -68,12 +82,59 @@ public class Chunk {
         return this.biomeData;
     }
 
+    public Block getBlock(Vector3i blockPosition) {
+        return this.getBlock(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+    }
+
+    public Block getBlock(int x, int y, int z) {
+        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {
+            throw new IllegalArgumentException("Could not retrieve block outside chunk");
+        }
+        int subChunkIndex = y / 16;
+        int blockIndex = (subChunkIndex * 4096) + (x * 256) + (z * 16) + y;
+
+        Lock readLock = this.lock.readLock();
+        readLock.lock();
+
+        if (this.cachedBlocks.containsKey(blockIndex)) {
+            return this.cachedBlocks.get(blockIndex);
+        }
+
+        BlockLayer.RawBlock rawBlock = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(x, y % 16, z);
+        BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
+        Block block;
+        if (blockRegistry.hasBlockType(rawBlock.getPaletteEntry().getId())) {
+            BlockType blockType = blockRegistry.getBlockType(rawBlock.getPaletteEntry().getId());
+            block = new Block(blockType, this, rawBlock.getPosition());
+            block.setBlockStateIndex(blockType.getBlockStateIndex(rawBlock.getPaletteEntry().getState()));
+        } else {
+            this.getWorld().getServer().getLogger().warn("Could not find block type for id " + rawBlock.getPaletteEntry().getId() + ". Substituting with air");
+            BlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
+            block = new Block(blockType, this, rawBlock.getPosition());
+        }
+        this.cachedBlocks.put(blockIndex, block);
+
+        readLock.unlock();
+        return block;
+    }
+
+    public void setBlock(Block block, Vector3i blockPosition) {
+        Lock writeLock = this.lock.writeLock();
+        writeLock.lock();
+        writeLock.unlock();
+    }
+
+    public void setBlock(BlockType blockType, Vector3i blockPosition) {}
+
     /**
      * Send the chunk blocks to a player
      * It is recommended that this is done async
      * @param player
      */
     public void sendBlocksTo(Player player) {
+        Lock readLock = this.lock.writeLock();
+        readLock.lock();
+
         // Find the lowest from the top empty subchunk
         int subChunkCount = this.subChunks.size() - 1;
         for (; subChunkCount >= 0; subChunkCount--) {
@@ -112,10 +173,12 @@ public class Chunk {
         player.sendPacket(levelChunkPacket);
 
         this.spawnedTo.add(player);
+        readLock.unlock();
     }
 
     /**
      * Send the entities of this chunk to a player
+     * This should only be called on the MAIN thread
      * @param player
      */
     public void sendEntitiesTo(Player player) {

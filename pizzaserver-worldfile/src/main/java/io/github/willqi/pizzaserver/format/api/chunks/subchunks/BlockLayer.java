@@ -5,6 +5,8 @@ import io.github.willqi.pizzaserver.format.api.chunks.api.BedrockNetworkDiskSeri
 
 public interface BlockLayer extends BedrockNetworkDiskSerializable {
 
+    RawBlock getBlockEntryAt(int x, int y, int z);
+
     /**
      * Represents the raw data retrieved from parsing the sub chunk data. (paletteId and it's position)
      */

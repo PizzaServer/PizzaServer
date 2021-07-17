@@ -32,7 +32,6 @@ public class BlockRegistry {
         if (!this.types.containsKey(blockId)) {
             throw new NullPointerException("Could not find a block type by the id of " + blockId);
         }
-
         return this.types.get(blockId);
     }
 
@@ -42,6 +41,10 @@ public class BlockRegistry {
      */
     public Set<BlockType> getCustomTypes() {
         return new HashSet<>(this.customTypes.values());
+    }
+
+    public boolean hasBlockType(String blockId) {
+        return this.types.containsKey(blockId);
     }
 
     private void registerVanillaBlocks() {

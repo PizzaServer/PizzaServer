@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.format.mcworld;
+package io.github.willqi.pizzaserver.format;
 
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
