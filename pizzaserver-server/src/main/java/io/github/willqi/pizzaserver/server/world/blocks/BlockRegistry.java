@@ -17,7 +17,7 @@ public class BlockRegistry {
     private final Map<String, BlockType> types = new HashMap<>();
 
     // All registered CUSTOM block types
-    private final Map<String, BlockType> customTypes = new HashMap<>();
+    private final Set<BlockType> customTypes = new HashSet<>();
 
 
     public BlockRegistry() {
@@ -35,7 +35,7 @@ public class BlockRegistry {
         }
 
         if (!blockType.getBlockId().startsWith("minecraft:")) {
-            this.customTypes.put(blockType.getBlockId(), blockType);
+            this.customTypes.add(blockType);
         }
         this.types.put(blockType.getBlockId(), blockType);
     }
@@ -67,7 +67,7 @@ public class BlockRegistry {
      * @return registered non-Vanilla {@link BlockType}s
      */
     public Set<BlockType> getCustomTypes() {
-        return new HashSet<>(this.customTypes.values());
+        return Collections.unmodifiableSet(this.customTypes);
     }
 
     private void registerVanillaBlocks() {

@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
+import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
@@ -8,14 +9,13 @@ import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.server.world.data.Dimension;
 import io.github.willqi.pizzaserver.server.data.ServerOrigin;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 public class StartGamePacket extends BedrockPacket {
 
@@ -38,7 +38,6 @@ public class StartGamePacket extends BedrockPacket {
     private Gamemode defaultGamemode;
     private Difficulty difficulty;
     private int enchantmentSeed;
-    private boolean forceExperimentalGameplay;
     private String gameVersion;
     private boolean isTrial;
     private String serverName;
@@ -61,8 +60,12 @@ public class StartGamePacket extends BedrockPacket {
     private UUID eduUuid;
     private ServerOrigin serverOrigin;
 
-    // TODO: block properties for custom blocks
-    private Collection<ItemState> itemStates = new HashSet<>();
+    private Set<BlockType> blockProperties = new HashSet<>();
+    private Set<ItemState> itemStates = new HashSet<>();
+
+    private Set<Experiment> experiments = new HashSet<>();
+    private boolean experimentsPreviouslyEnabled;
+    private boolean forceExperimentalGameplay;
 
     private boolean broadcastToLan;
     private boolean hasPlatformLockedContent;
@@ -75,7 +78,7 @@ public class StartGamePacket extends BedrockPacket {
     // World
     private boolean bonusChestEnabled;
     private boolean bonusMapEnabled;
-    private Collection<GameRule<?>> gameRules = new HashSet<>();
+    private Set<GameRule<?>> gameRules = new HashSet<>();
     private boolean isNetherType;
     private float lightingLevel;
     private int limitedWorldHeight;
@@ -206,14 +209,6 @@ public class StartGamePacket extends BedrockPacket {
 
     public void setEnchantmentSeed(int seed) {
         this.enchantmentSeed = seed;
-    }
-
-    public boolean isExperimentalGameplayForced() {
-        return this.forceExperimentalGameplay;
-    }
-
-    public void setExperimentalGameplayForced(boolean status) {
-        this.forceExperimentalGameplay = status;
     }
 
     public String getGameVersion() {
@@ -363,13 +358,45 @@ public class StartGamePacket extends BedrockPacket {
         this.serverOrigin = serverOrigin;
     }
 
-
-    public Collection<ItemState> getItemStates() {
-        return this.itemStates;
+    public Set<BlockType> getBlockProperties() {
+        return Collections.unmodifiableSet(this.blockProperties);
     }
 
-    public void setItemStates(Collection<ItemState> itemStates) {
+    public void setBlockProperties(Set<BlockType> blockProperties) {
+        this.blockProperties = blockProperties;
+    }
+
+    public Set<ItemState> getItemStates() {
+        return Collections.unmodifiableSet(this.itemStates);
+    }
+
+    public void setItemStates(Set<ItemState> itemStates) {
         this.itemStates = itemStates;
+    }
+
+
+    public Set<Experiment> getExperiments() {
+        return Collections.unmodifiableSet(this.experiments);
+    }
+
+    public void setExperiments(Set<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+    public boolean isExperimentsPreviouslyEnabled() {
+        return this.experimentsPreviouslyEnabled;
+    }
+
+    public void setExperimentsPreviouslyEnabled(boolean experimentsPreviouslyEnabled) {
+        this.experimentsPreviouslyEnabled = experimentsPreviouslyEnabled;
+    }
+
+    public boolean isExperimentalGameplayForced() {
+        return this.forceExperimentalGameplay;
+    }
+
+    public void setExperimentalGameplayForced(boolean status) {
+        this.forceExperimentalGameplay = status;
     }
 
 
@@ -446,11 +473,11 @@ public class StartGamePacket extends BedrockPacket {
         this.bonusMapEnabled = enabled;
     }
 
-    public Collection<GameRule<?>> getGameRules() {
-        return this.gameRules;
+    public Set<GameRule<?>> getGameRules() {
+        return Collections.unmodifiableSet(this.gameRules);
     }
 
-    public void setGameRules(Collection<GameRule<?>> gameRules) {
+    public void setGameRules(Set<GameRule<?>> gameRules) {
         this.gameRules = gameRules;
     }
 

@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
@@ -70,8 +71,8 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
             }
         }
 
-        buffer.writeIntLE(0);   // Experiments - we have no real need for this.
-        buffer.writeBoolean(false); // Not needed
+        helper.writeExperiments(packet.getExperiments(), buffer);
+        buffer.writeBoolean(packet.isExperimentsPreviouslyEnabled());
         buffer.writeBoolean(packet.isBonusChestEnabled());
         buffer.writeBoolean(packet.isBonusMapEnabled());
         VarInts.writeInt(buffer, packet.getPlayerPermissionLevel().ordinal());
