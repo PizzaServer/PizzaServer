@@ -40,9 +40,11 @@ public abstract class BlockType {
     public abstract String getName();
 
     /**
-     * Retrieve the NBTCompound for each of the block's states and the index associated with it.
+     * Retrieve the {@link NBTCompound} for each of the block's states and the index associated with it.
+     * The {@link NBTCompound}s returned should match the data in block_states.nbt in order to work correctly.
      * The index is used for getBlockStateIndex in order to determine the current state of the block.
      * (e.g. the direction of stairs)
+     *
      *
      * By default there is a empty block state if this method is not overridden.
      * @return block states

@@ -12,6 +12,11 @@ public class Block {
         this.blockType = blockType;
     }
 
+    /**
+     * The block state data of the block
+     * This is equivalent to a block state stored in the block_states.nbt file
+     * @return {@link NBTCompound} of the block state data
+     */
     public NBTCompound getBlockState() {
         return this.blockType.getBlockState(this.blockStateIndex);
     }

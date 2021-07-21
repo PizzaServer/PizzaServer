@@ -8,6 +8,9 @@ import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeSton
 
 import java.util.*;
 
+/**
+ * Registry that contains all blocks the server should recognize
+ */
 public class BlockRegistry {
 
     // All registered block types
@@ -21,6 +24,11 @@ public class BlockRegistry {
         this.registerVanillaBlocks();
     }
 
+    /**
+     * Register a {@link BlockType} to the server
+     * Custom blocks will need to register their {@link BlockType} in order to be used and for the world to render correctly
+     * @param blockType {@link BlockType} that needs to be registered
+     */
     public void register(BlockType blockType) {
         if (this.types.containsKey(blockType.getBlockId())) {
             throw new IllegalArgumentException("Block id " + blockType.getBlockId() + " was already registered.");
@@ -32,6 +40,12 @@ public class BlockRegistry {
         this.types.put(blockType.getBlockId(), blockType);
     }
 
+    /**
+     * Retrieve a {@link BlockType} by it's id (e.g. minecraft:air)
+     * @param blockId The id of the block (e.g. minecraft:air)
+     * @return {@link BlockType}
+     * @throws NullPointerException if the block does not exist
+     */
     public BlockType getBlockType(String blockId) {
         if (!this.types.containsKey(blockId)) {
             throw new NullPointerException("Could not find a block type by the id of " + blockId);
@@ -40,15 +54,20 @@ public class BlockRegistry {
     }
 
     /**
-     * Retrieve all non-Vanilla block types that are registered
-     * @return registered non-Vanilla block types
+     * Check if a block id was registered
+     * @param blockId the id of the block (e.g. minecraft:air)
+     * @return if the block was registered or not
+     */
+    public boolean hasBlockType(String blockId) {
+        return this.types.containsKey(blockId);
+    }
+
+    /**
+     * Retrieve all non-Vanilla {@link BlockType}s that are registered
+     * @return registered non-Vanilla {@link BlockType}s
      */
     public Set<BlockType> getCustomTypes() {
         return new HashSet<>(this.customTypes.values());
-    }
-
-    public boolean hasBlockType(String blockId) {
-        return this.types.containsKey(blockId);
     }
 
     private void registerVanillaBlocks() {

@@ -30,14 +30,31 @@ public class ChunkManager {
         return this.chunks.get(new Tuple<>(x, z));
     }
 
-    public void unloadChunk(int x, int z) {
+    /**
+     * Send a request to unload a {@link Chunk} asynchronously.
+     * @param x x chunk coordinate
+     * @param z z chunk cooridnate
+     */
+    public CompletableFuture<Void> unloadChunk(int x, int z) {
+        if (!this.isChunkLoaded(x, z)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        CompletableFuture<Void> unloadRequest = CompletableFuture.completedFuture(null);
+        // TODO: send request to unload chunk and save it to disk
         Tuple<Integer, Integer> chunkKey = new Tuple<>(x, z);
         if (this.chunks.containsKey(chunkKey)) {
             this.chunks.get(chunkKey).close();
             this.chunks.remove(new Tuple<>(x, z));
         }
+        return unloadRequest;
     }
 
+    /**
+     * Send a request to fetch a {@link Chunk} asynchronously.
+     * @param x x chunk cordinate
+     * @param z z chunk coordinate
+     * @return {@link CompletableFuture<Chunk>} that resolves with the fetched chunk if it exists
+     */
     public CompletableFuture<Chunk> fetchChunk(int x, int z) {
         if (this.isChunkLoaded(x, z)) {
             return CompletableFuture.completedFuture(this.getChunk(x, z));
@@ -51,6 +68,11 @@ public class ChunkManager {
         return chunkRequest;
     }
 
+    /**
+     * Request a {@link Chunk} to be sent to a {@link Player} asynchronously.
+     * @param player the {@link Player} who the chunk should be sent to
+     * @param chunk the {@link Chunk} to send to the player
+     */
     public void addChunkToPlayerQueue(Player player, Chunk chunk) {
         this.getWorld().getWorldThread().requestSendChunkToPlayer(player, chunk).thenRun(() -> chunk.sendEntitiesTo(player));
     }

@@ -1,5 +1,8 @@
 package io.github.willqi.pizzaserver.server.world.blocks.types;
 
+/**
+ * Contains all registered Vanilla block ids
+ */
 public class BlockTypeID {
 
     public static final String AIR = "minecraft:air";

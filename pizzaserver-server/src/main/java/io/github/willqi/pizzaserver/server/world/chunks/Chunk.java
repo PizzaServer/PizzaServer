@@ -25,6 +25,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Represents a 16x16 chunk of blocks on the server
+ */
 public class Chunk {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -70,10 +73,20 @@ public class Chunk {
         return this.z;
     }
 
+    /**
+     * Add a {@link Entity} to the set of entities to render when a player is shown this chunk
+     * This will not show an entity to existing players who can see the chunk
+     * @param entity the {@link Entity} to be added
+     */
     public void addEntity(Entity entity) {
         this.entities.add(entity);
     }
 
+    /**
+     * Remove a {@link Entity} from the set of entities that render when a player is shown this chunk
+     * This will not remove an entity from existing players who can see the chunk
+     * @param entity the {@link Entity} to be removed
+     */
     public void removeEntity(Entity entity) {
         this.entities.remove(entity);
     }
@@ -173,14 +186,21 @@ public class Chunk {
         writeLock.unlock();
     }
 
+    /**
+     * Retrieve the index to store a block in the child map in the cachedBlocks map
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @return unique hash for the coordinate
+     */
     private static int getBlockCacheIndex(int x, int y, int z) {
         return (x * 256) + (z * 16) + y; // Index stored in chunk block cache
     }
 
     /**
-     * Send the chunk blocks to a player
-     * It is recommended that this is done async
-     * @param player
+     * Send the chunk blocks to a {@link Player}
+     * It is recommended that this is done async as it can take a while to serialize.
+     * @param player the {@link Player} to send it to
      */
     public void sendBlocksTo(Player player) {
         Lock readLock = this.lock.writeLock();
@@ -228,7 +248,7 @@ public class Chunk {
     }
 
     /**
-     * Send the entities of this chunk to a player
+     * Send the {@link Entity}s of this chunk to a {@link Player}
      * This should only be called on the MAIN thread
      * @param player
      */
@@ -240,14 +260,18 @@ public class Chunk {
         this.spawnedTo.add(player);
     }
 
+    /**
+     * Retrieve all of the {@link Player}s who can see this Chunk.
+     * @return all the {@link Player} who can see this chunk
+     */
     public Set<Player> getViewers() {
         return new HashSet<>(this.spawnedTo);
     }
 
     /**
-     * Called when a player can no longer see a chunk
+     * Called when a {@link Player} should no longer see a chunk
      * Despawns all entities in this chunk from the player's view
-     * @param player
+     * @param player the {@link Player} who will no longer recieve updates from this chunk or see entities in it
      */
     public void despawnFrom(Player player) {
         if (this.spawnedTo.remove(player)) {

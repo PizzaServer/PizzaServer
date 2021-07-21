@@ -32,6 +32,11 @@ public class World implements Closeable {
         this.worldThread.start();
     }
 
+    /**
+     * Add a {@link Entity} to this world and spawn it to {@link Player}s
+     * @param entity The {@link Entity} to spawn
+     * @param position The position to spawn it in this world
+     */
     public void addEntity(Entity entity, Vector3 position) {
         if (entity.hasSpawned()) {
             throw new IllegalStateException("This entity has already been spawned");
@@ -50,6 +55,10 @@ public class World implements Closeable {
         entity.setSpawned(true);
     }
 
+    /**
+     * Despawn a {@link Entity} from this world and all of the {@link Player}s who could see it
+     * @param entity the {@link Entity} to despawn
+     */
     public void removeEntity(Entity entity) {
         if (!entity.hasSpawned()) {
             throw new IllegalStateException("This entity has not been spawned");

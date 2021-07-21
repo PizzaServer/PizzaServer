@@ -5,6 +5,9 @@ import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Represents a request to fetch a chunk from the database
+ */
 public class RequestChunkProcessingAction implements ChunkProcessingAction {
 
     private final int x;
