@@ -7,9 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import net.daporkchop.lib.common.function.io.IOFunction;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class MCWorldBlockLayer implements BlockLayer {
 
@@ -95,8 +93,11 @@ public class MCWorldBlockLayer implements BlockLayer {
     private void cleanUpPalette() {
         Set<BlockPalette.Entry> usedEntries = new HashSet<>(Arrays.asList(this.blocks));
 
-        for (BlockPalette.Entry entry : this.palette.getAllEntries()) {
+        Iterator<BlockPalette.Entry> entryIterator = new HashSet<>(this.palette.getAllEntries()).iterator();
+        while (entryIterator.hasNext()) {
+            BlockPalette.Entry entry = entryIterator.next();
             if (!usedEntries.contains(entry)) {
+                entryIterator.remove();
                 this.palette.removeEntry(entry, false);
             }
         }

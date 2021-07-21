@@ -46,7 +46,7 @@ public class MCWorldBlockPalette implements BlockPalette {
 
     @Override
     public Set<Entry> getAllEntries() {
-        return this.entries.values();
+        return Collections.unmodifiableSet(this.entries.values());
     }
 
     @Override
@@ -75,8 +75,8 @@ public class MCWorldBlockPalette implements BlockPalette {
             int freeIndexAt = resizeStartingIndex - 1;  // New entry position - incremented everytime we relocate a entry
             for (int index = resizeStartingIndex; index < oldTotalPaletteEntries; index++) {
                 if (this.entries.containsKey(index)) {
-                    this.entries.put(freeIndexAt++, this.entries.get(index));
-                    this.entries.remove(index);
+                    Entry entry = this.entries.remove(index);
+                    this.entries.put(freeIndexAt++, entry);
                 } else {
                     // Another entry was removed
                     this.paletteEntries--;
