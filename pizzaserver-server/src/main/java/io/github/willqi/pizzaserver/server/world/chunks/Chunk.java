@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.world.chunks;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
+import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
@@ -107,17 +108,17 @@ public class Chunk {
         }
 
         // Construct new block as none is cached
-        BlockLayer.RawBlock rawBlock = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(x, y % 16, z);
+        BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(x, y % 16, z);
         BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
         Block block;
-        if (blockRegistry.hasBlockType(rawBlock.getPaletteEntry().getId())) {
+        if (blockRegistry.hasBlockType(paletteEntry.getId())) {
             // Block id is registered
-            BlockType blockType = blockRegistry.getBlockType(rawBlock.getPaletteEntry().getId());
+            BlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
             block = new Block(blockType);
-            block.setBlockStateIndex(blockType.getBlockStateIndex(rawBlock.getPaletteEntry().getState()));
+            block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
         } else {
             // The block id is not registered
-            this.getWorld().getServer().getLogger().warn("Could not find block type for id " + rawBlock.getPaletteEntry().getId() + ". Substituting with air");
+            this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
             BlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
             block = new Block(blockType);
         }

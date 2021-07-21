@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 
-import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
@@ -8,14 +7,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import net.daporkchop.lib.common.function.io.IOFunction;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class MCWorldBlockLayer implements BlockLayer {
 
     private final MCWorldBlockPalette palette;
-    private final RawBlock[] blocks = new RawBlock[4096];
+    private final BlockPalette.Entry[] blocks = new BlockPalette.Entry[4096];
 
 
     public MCWorldBlockLayer(MCWorldBlockPalette palette) {
@@ -23,13 +22,13 @@ public class MCWorldBlockLayer implements BlockLayer {
     }
 
     @Override
-    public RawBlock getBlockEntryAt(int x, int y, int z) {
+    public BlockPalette.Entry getBlockEntryAt(int x, int y, int z) {
         return this.blocks[(x << 8) | (z << 4) | y];
     }
 
     @Override
     public void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry) {
-        this.blocks[(x << 8) | (z << 4) | y] = new RawBlock(entry, new Vector3i(x, y, z));
+        this.blocks[(x << 8) | (z << 4) | y] = entry;
     }
 
     public void parse(ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
@@ -40,12 +39,7 @@ public class MCWorldBlockLayer implements BlockLayer {
                 if (pos >= 4096) break;
 
                 int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
-                Vector3i blockPosition = new Vector3i(
-                        (pos >> 8) & 0x0f,
-                        pos & 0x0f,
-                        (pos >> 4) & 0x0f
-                );
-                this.blocks[pos] = new RawBlock(palette.getEntry(paletteIndex), blockPosition);
+                this.blocks[pos] = palette.getEntry(paletteIndex);
                 pos++;
             }
         }
@@ -75,7 +69,7 @@ public class MCWorldBlockLayer implements BlockLayer {
             int word = 0;
             for (int block = 0; block < blocksPerWord; block++) {
                 if (pos >= 4096) break;
-                word |= (this.palette.getPaletteIndex(this.blocks[pos].getPaletteEntry())) << (bitsPerBlock * block);
+                word |= (this.palette.getPaletteIndex(this.blocks[pos])) << (bitsPerBlock * block);
                 pos++;
             }
             buffer.writeIntLE(word);
@@ -93,10 +87,7 @@ public class MCWorldBlockLayer implements BlockLayer {
      * Remove palette entries that are no longer used in this chunk
      */
     private void cleanUpPalette() {
-        Set<BlockPalette.Entry> usedEntries = new HashSet<>();
-        for (RawBlock block : this.blocks) {
-            usedEntries.add(block.getPaletteEntry());
-        }
+        Set<BlockPalette.Entry> usedEntries = new HashSet<>(Arrays.asList(this.blocks));
 
         for (BlockPalette.Entry entry : this.palette.getAllEntries()) {
             if (!usedEntries.contains(entry)) {

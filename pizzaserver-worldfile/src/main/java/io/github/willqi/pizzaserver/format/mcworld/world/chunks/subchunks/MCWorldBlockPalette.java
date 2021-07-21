@@ -27,16 +27,8 @@ public class MCWorldBlockPalette implements BlockPalette {
     private int paletteEntries = 0;
 
 
-    /**
-     * Entries require the following 3 properties
-     * NBTString property: name
-     * NBTInteger property: version (You can fill this out with zero when serializing to the network)
-     * NBTCompound property: states (the block state)
-     * @param data
-     */
     @Override
-    public void add(NBTCompound data) {
-        Entry entry = new MCWorldEntry(data);
+    public void add(Entry entry) {
         if (!this.entries.inverse().containsKey(entry)) {
             this.entries.put(this.paletteEntries++, entry);
         }
@@ -145,7 +137,7 @@ public class MCWorldBlockPalette implements BlockPalette {
         try {
             for (int i = 0; i < paletteLength; i++) {
                 NBTCompound compound = inputStream.readCompound();
-                this.add(compound);
+                this.add(new MCWorldEntry(compound));
             }
         } catch (IOException exception) {
             throw new ChunkParseException("Failed to parse chunk palette.", exception);

@@ -5,30 +5,73 @@ import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
 import java.util.Set;
 
+/**
+ * A block palette holds the block states that this chunk is using
+ * Each block state used is assigned a index starting from 0 that is used
+ * during network serialization to determine which block a {@link BlockPalette.Entry} is referring to.
+ */
 public interface BlockPalette extends BedrockNetworkDiskSerializable {
 
-    void add(NBTCompound data);
-
-    int getPaletteSize();
-
-    Set<Entry> getAllEntries();
-
-    void removeEntry(Entry entry);
-
-    Entry getEntry(int index);
-
-    int getPaletteIndex(Entry entry);
-
+    /**
+     * Add a new block state to this palette
+     * @param data the {@link BlockPalette.Entry} to be added
+     */
+    void add(Entry data);
 
     /**
-     * Represents an entry in this block palette
+     * Retrieve the total palette size
+     * @return length of the palette
+     */
+    int getPaletteSize();
+
+    /**
+     * Retrieve all of the current palette {@link BlockPalette.Entry}s
+     * @return {@link Set<BlockPalette.Entry>} containing all of the entries
+     */
+    Set<Entry> getAllEntries();
+
+    /**
+     * Remove a {@link BlockPalette.Entry} from the palette
+     * @param entry the {@link BlockPalette.Entry} to remove
+     */
+    void removeEntry(Entry entry);
+
+    /**
+     * Retrieve a {@link BlockPalette.Entry} given the index
+     * @param index the index of the {@link BlockPalette.Entry}
+     * @return the {@link BlockPalette.Entry} associated with that index
+     */
+    Entry getEntry(int index);
+
+    /**
+     * Retrieve the index associated with the {@link BlockPalette.Entry}
+     * @param entry the {@link BlockPalette.Entry}
+     * @return the index associated with the {@link BlockPalette.Entry}
+     */
+    int getPaletteIndex(Entry entry);
+
+    /**
+     * Represents an entry of the {@link BlockPalette}
      */
     abstract class Entry {
 
+        /**
+         * The name of the block
+         * E.g. minecraft:air
+         * @return
+         */
         public abstract String getId();
 
+        /**
+         * Version of the block state
+         * @return version of the block state
+         */
         public abstract int getVersion();
 
+        /**
+         * {@link NBTCompound} of the block state data
+         * @return {@link NBTCompound} containing block state data
+         */
         public abstract NBTCompound getState();
 
         @Override
