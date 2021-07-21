@@ -1,12 +1,14 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 import io.netty.buffer.ByteBuf;
 
 public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGamePacket> {
@@ -101,8 +103,11 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         buffer.writeLongLE(packet.getCurrentTick());
         VarInts.writeInt(buffer, packet.getEnchantmentSeed());
 
-        // custom blocks?
-        VarInts.writeUnsignedInt(buffer, 0);    // TODO: Investigate custom blocks
+        // custom blocks
+        VarInts.writeUnsignedInt(buffer, packet.getBlockProperties().size());
+        for (BlockType blockType : packet.getBlockProperties()) {
+            this.writeBlockProperty(blockType, buffer, helper);
+        }
 
         // Item states
         VarInts.writeUnsignedInt(buffer, packet.getItemStates().size());
@@ -115,6 +120,16 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         helper.writeString(packet.getMultiplayerId().toString(), buffer);
         buffer.writeBoolean(packet.isServerAuthoritativeInventory());
 
+    }
+
+    protected void writeBlockProperty(BlockType blockType, ByteBuf buffer, PacketHelper helper) {
+        helper.writeString(blockType.getBlockId(), buffer);
+
+        NBTCompound blockContainer = new NBTCompound();
+        NBTCompound components = new NBTCompound();
+        // TODO: Add block components
+        blockContainer.put("components", components);
+        helper.writeNBTCompound(blockContainer, buffer);
     }
 
 }

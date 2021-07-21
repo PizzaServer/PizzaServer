@@ -6,16 +6,21 @@ import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.server.item.Item;
 import io.github.willqi.pizzaserver.server.item.ItemBlock;
 import io.github.willqi.pizzaserver.server.item.ItemID;
+import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.netty.buffer.ByteBuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class V419PacketHelper extends PacketHelper {
 
     public final static PacketHelper INSTANCE = new V419PacketHelper();
+
+
+    public V419PacketHelper() {
+        this.supportedExperiments.add(Experiment.DATA_DRIVEN_ITEMS);
+    }
 
     @Override
     public void writeItem(Item item, ByteBuf buffer) {
