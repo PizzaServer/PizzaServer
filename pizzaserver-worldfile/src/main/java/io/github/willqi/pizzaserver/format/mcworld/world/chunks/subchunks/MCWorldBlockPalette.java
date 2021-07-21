@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
@@ -17,13 +19,12 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MCWorldBlockPalette implements BlockPalette {
 
-    private final List<Entry> data = new ArrayList<>();
+    private final BiMap<Integer, Entry> entries = HashBiMap.create();
+    private int paletteEntries = 0;
 
 
     /**
@@ -35,34 +36,73 @@ public class MCWorldBlockPalette implements BlockPalette {
      */
     @Override
     public void add(NBTCompound data) {
-        this.data.add(new MCWorldEntry(data, this.data.size()));
+        Entry entry = new MCWorldEntry(data);
+        if (!this.entries.inverse().containsKey(entry)) {
+            this.entries.put(this.paletteEntries++, entry);
+        }
     }
 
     @Override
-    public List<Entry> getAllEntries() {
-        return Collections.unmodifiableList(data);
+    public int getPaletteSize() {
+        return this.entries.size();
     }
 
     @Override
-    public boolean hasEntry(NBTCompound data) {
-        Entry entry = new MCWorldEntry(data, this.data.size());
-        for (Entry storedEntry : this.getAllEntries()) {
-            if (storedEntry.getId().equals(entry.getId()) && storedEntry.getState().equals(entry.getState())) {
-                return true;
+    public Set<Entry> getAllEntries() {
+        return this.entries.values();
+    }
+
+    @Override
+    public void removeEntry(Entry entry) {
+        this.removeEntry(entry, true);
+    }
+
+    public void removeEntry(Entry entry, boolean resize) {
+        this.entries.inverse().remove(entry);
+        if (resize) {
+            this.resize();
+        }
+    }
+
+    public void resize() {
+        int resizeStartingIndex = -1;   // The first entry index that we need to relocate
+        for (int index = 0; index < this.paletteEntries; index++) {
+            if (!this.entries.containsKey(index)) {
+                resizeStartingIndex = index + 1;
+                break;
             }
         }
-        return false;
+
+        if (resizeStartingIndex > -1) {
+            int oldTotalPaletteEntries = this.paletteEntries;
+            int freeIndexAt = resizeStartingIndex - 1;  // New entry position - incremented everytime we relocate a entry
+            for (int index = resizeStartingIndex; index < oldTotalPaletteEntries; index++) {
+                if (this.entries.containsKey(index)) {
+                    this.entries.put(freeIndexAt++, this.entries.get(index));
+                    this.entries.remove(index);
+                } else {
+                    // Another entry was removed
+                    this.paletteEntries--;
+                }
+            }
+            this.paletteEntries--;
+        }
     }
 
     @Override
     public Entry getEntry(int index) {
-        return this.data.get(index);
+        return this.entries.get(index);
+    }
+
+    @Override
+    public int getPaletteIndex(Entry entry) {
+        return this.entries.inverse().get(entry);
     }
 
     @Override
     public byte[] serializeForDisk() throws IOException {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        buffer.writeIntLE(this.data.size());
+        buffer.writeIntLE(this.getPaletteSize());
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
         for (BlockPalette.Entry data : this.getAllEntries()) {
             NBTCompound compound = new NBTCompound();
@@ -113,33 +153,30 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
 
-    public static class MCWorldEntry implements Entry {
+    public static class MCWorldEntry extends Entry {
 
         private final String name;
-        private final int id;
         private final int version;
         private final NBTCompound state;
 
 
-        public MCWorldEntry(NBTCompound data, int id) {
+        public MCWorldEntry(NBTCompound data) {
             this.name = data.getString("name").getValue();
             this.version = data.getInteger("version").getValue();
             this.state = data.getCompound("states");
-            this.id = id;
         }
 
+        @Override
         public String getId() {
             return this.name;
         }
 
-        public int getPaletteIndex() {
-            return this.id;
-        }
-
+        @Override
         public int getVersion() {
             return this.version;
         }
 
+        @Override
         public NBTCompound getState() {
             return this.state;
         }

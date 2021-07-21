@@ -23,6 +23,10 @@ public interface BedrockChunk {
 
     byte getBiomeAt(int x, int z);
 
+    void setBiomeAt(Vector2i position, byte biome);
+
+    void setBiomeAt(int x, int z, byte biome);
+
     List<BedrockSubChunk> getSubChunks();
 
     BedrockSubChunk getSubChunk(int index);

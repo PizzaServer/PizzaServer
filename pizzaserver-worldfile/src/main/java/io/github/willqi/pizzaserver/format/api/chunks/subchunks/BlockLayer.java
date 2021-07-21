@@ -7,6 +7,8 @@ public interface BlockLayer extends BedrockNetworkDiskSerializable {
 
     RawBlock getBlockEntryAt(int x, int y, int z);
 
+    void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry);
+
     /**
      * Represents the raw data retrieved from parsing the sub chunk data. (paletteId and it's position)
      */
