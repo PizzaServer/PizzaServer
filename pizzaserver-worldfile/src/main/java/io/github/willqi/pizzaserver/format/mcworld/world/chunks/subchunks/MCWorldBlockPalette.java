@@ -28,6 +28,11 @@ public class MCWorldBlockPalette implements BlockPalette {
 
 
     @Override
+    public Entry create(String name, NBTCompound states, int version) {
+        return new MCWorldEntry(name, states, version);
+    }
+
+    @Override
     public void add(Entry entry) {
         if (!this.entries.inverse().containsKey(entry)) {
             this.entries.put(this.paletteEntries++, entry);
@@ -156,6 +161,12 @@ public class MCWorldBlockPalette implements BlockPalette {
             this.name = data.getString("name").getValue();
             this.version = data.getInteger("version").getValue();
             this.state = data.getCompound("states");
+        }
+
+        public MCWorldEntry(String name, NBTCompound states, int version) {
+            this.name = name;
+            this.state = states;
+            this.version = version;
         }
 
         @Override

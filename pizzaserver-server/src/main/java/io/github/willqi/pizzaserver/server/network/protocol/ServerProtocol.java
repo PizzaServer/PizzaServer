@@ -11,6 +11,7 @@ public class ServerProtocol {
 
     public static final String GAME_VERSION = "1.16.100";
     public static final int LATEST_PROTOCOL_VERISON = V419MinecraftVersion.PROTOCOL;
+    public static final int LATEST_BLOCK_STATES_VERSION = 17825806;
 
     public static final Map<Integer, MinecraftVersion> VERSIONS = new HashMap<>();
 

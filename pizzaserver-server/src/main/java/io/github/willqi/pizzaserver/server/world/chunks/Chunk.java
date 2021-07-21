@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
+import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.world.World;
@@ -152,11 +153,13 @@ public class Chunk {
         Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
         subChunkCache.put(blockIndex, block);
 
+        // Update internal sub chunk
         BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
-        // TODO: update subChunk
+        BlockLayer mainBlockLayer = subChunk.getLayer(0);
+        BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
+        mainBlockLayer.setBlockEntryAt(x, y, z, entry);
+
         // TODO: update block packet
-        // TODO: block layer should be a argument and a overloaded method should be created for updating layer 0
-        // ^^^ same should go for getBlock
 
         writeLock.unlock();
     }

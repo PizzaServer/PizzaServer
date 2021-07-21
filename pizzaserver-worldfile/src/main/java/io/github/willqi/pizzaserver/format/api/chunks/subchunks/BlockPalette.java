@@ -13,6 +13,15 @@ import java.util.Set;
 public interface BlockPalette extends BedrockNetworkDiskSerializable {
 
     /**
+     * Create a new {@link BlockPalette.Entry} given the name and compound
+     * @param name the id of the block (e.g. minecraft:stone)
+     * @param states an {@link NBTCompound} that contains the block state data
+     * @param version current version of block state
+     * @return the {@link BlockPalette.Entry} that represents the name and block state
+     */
+    Entry create(String name, NBTCompound states, int version);
+
+    /**
      * Add a new block state to this palette
      * @param data the {@link BlockPalette.Entry} to be added
      */
@@ -84,8 +93,7 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
             if (obj instanceof Entry) {
                 Entry entry = (Entry)obj;
                 return entry.getState().equals(this.getState()) &&
-                        entry.getId().equals(this.getId()) &&
-                        entry.getVersion() == this.getVersion();
+                        entry.getId().equals(this.getId());
             }
             return false;
         }

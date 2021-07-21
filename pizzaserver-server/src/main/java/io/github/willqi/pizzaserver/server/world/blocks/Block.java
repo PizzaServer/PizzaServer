@@ -31,8 +31,4 @@ public class Block {
         return this.blockType;
     }
 
-    public int getLightLevel() {
-        return 0;   // TODO
-    }
-
 }

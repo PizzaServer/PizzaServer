@@ -34,6 +34,7 @@ public class MCWorldBlockLayer implements BlockLayer {
     @Override
     public void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry) {
         this.blocks[(x << 8) | (z << 4) | y] = entry;
+        this.palette.add(entry);
     }
 
     public void parse(ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
