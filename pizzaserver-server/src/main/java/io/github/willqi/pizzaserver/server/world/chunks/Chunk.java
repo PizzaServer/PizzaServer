@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.world.World;
 import io.github.willqi.pizzaserver.server.world.blocks.Block;
@@ -159,7 +160,15 @@ public class Chunk {
         BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
         mainBlockLayer.setBlockEntryAt(x, y, z, entry);
 
-        // TODO: update block packet
+        // Send update block packet
+        UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+        updateBlockPacket.setBlock(block);
+        updateBlockPacket.setBlockCoordinates(new Vector3i(x, y, z));
+        updateBlockPacket.setLayer(0);
+        updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
+        for (Player viewer : this.getViewers()) {
+            viewer.sendPacket(updateBlockPacket);
+        }
 
         writeLock.unlock();
     }
