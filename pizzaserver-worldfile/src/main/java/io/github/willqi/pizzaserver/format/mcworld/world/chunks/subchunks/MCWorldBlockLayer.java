@@ -22,6 +22,11 @@ public class MCWorldBlockLayer implements BlockLayer {
     }
 
     @Override
+    public BlockPalette getPalette() {
+        return this.palette;
+    }
+
+    @Override
     public BlockPalette.Entry getBlockEntryAt(int x, int y, int z) {
         return this.blocks[(x << 8) | (z << 4) | y];
     }

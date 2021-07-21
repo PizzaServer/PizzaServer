@@ -9,6 +9,12 @@ import io.github.willqi.pizzaserver.format.api.chunks.api.BedrockNetworkDiskSeri
 public interface BlockLayer extends BedrockNetworkDiskSerializable {
 
     /**
+     * Retrieve the {@link BlockPalette} used for this layer
+     * @return the {@link BlockPalette} used for this layer
+     */
+    BlockPalette getPalette();
+
+    /**
      * Retrieve the {@link BlockPalette.Entry} of a block at the given coordinates
      * @param x x coordinate
      * @param y y coordinate
