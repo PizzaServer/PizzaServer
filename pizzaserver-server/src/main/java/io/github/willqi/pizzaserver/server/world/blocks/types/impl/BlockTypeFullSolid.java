@@ -1,7 +1,8 @@
-package io.github.willqi.pizzaserver.server.world.blocks.types;
+package io.github.willqi.pizzaserver.server.world.blocks.types.impl;
 
 import io.github.willqi.pizzaserver.commons.utils.BoundingBox;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 
 /**
  * A block type with a full block boundary box

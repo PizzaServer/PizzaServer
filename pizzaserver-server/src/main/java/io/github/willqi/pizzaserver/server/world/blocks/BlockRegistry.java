@@ -1,6 +1,10 @@
 package io.github.willqi.pizzaserver.server.world.blocks;
 
 import io.github.willqi.pizzaserver.server.world.blocks.types.*;
+import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeAir;
+import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeDirt;
+import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeGrass;
+import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeStone;
 
 import java.util.*;
 
