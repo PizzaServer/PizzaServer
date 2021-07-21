@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.data.ServerOrigin;
+import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.plugin.events.player.PreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
@@ -22,6 +23,7 @@ import io.github.willqi.pizzaserver.commons.world.WorldType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -205,6 +207,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         stackPacket.setResourcePacks(new HashSet<>(this.server.getResourcePackManager().getResourcePacks().values()));
         stackPacket.setBehaviourPacks(new HashSet<>(this.server.getResourcePackManager().getBehaviorPacks().values()));
         stackPacket.setGameVersion(this.player.getVersion().getVersionString());
+        stackPacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
         this.player.sendPacket(stackPacket);
     }
 
@@ -238,6 +241,8 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         startGamePacket.setServerAuthoritativeInventory(true);
         startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
         startGamePacket.setServerOrigin(ServerOrigin.NONE);
+        startGamePacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
+        startGamePacket.setBlockProperties(this.server.getBlockRegistry().getCustomTypes());
         startGamePacket.setItemStates(this.player.getVersion().getItemStates());
 
         // World
