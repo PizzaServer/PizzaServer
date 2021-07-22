@@ -126,6 +126,33 @@ public class EventManager {
 
 
     /**
+     * Creates a child EventManager which passes all the events its
+     * parent EventManager receives, applying its own filters.
+     *
+     * Events called on the child EventManager are only called on itself
+     * and its own children.
+     */
+    public EventManager createChild(EventFilter... filters) {
+        EventManager child = new EventManager(this.server, filters);
+
+        synchronized (children) {
+            this.children.add(child);
+        }
+
+        return child;
+    }
+
+    /**
+     * Removes an existing child EventManager from this.
+     * It does not deactivate the EventManager, rather preventing events
+     * from the parent reaching the specified child.
+     */
+    public synchronized void removeChild(EventManager child) {
+        this.children.remove(child);
+    }
+
+
+    /**
      * Registers a listener to this EventManager
      * @param listener the listener to be registered.
      * @return listener for storing an instance.
