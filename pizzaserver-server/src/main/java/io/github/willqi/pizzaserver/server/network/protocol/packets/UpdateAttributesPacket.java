@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.server.player.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.player.attributes.APIAttribute;
 
 import java.util.Collections;
 import java.util.Set;
@@ -10,7 +10,7 @@ public class UpdateAttributesPacket extends BedrockPacket {
     public static final int ID = 0x1d;
 
     private long runtimeEntityId;
-    private Set<Attribute> attributes = Collections.emptySet();
+    private Set<APIAttribute> attributes = Collections.emptySet();
 
     private long tick;
 
@@ -27,11 +27,11 @@ public class UpdateAttributesPacket extends BedrockPacket {
         this.runtimeEntityId = id;
     }
 
-    public Set<Attribute> getAttributes() {
+    public Set<APIAttribute> getAttributes() {
         return this.attributes;
     }
 
-    public void setAttributes(Set<Attribute> attributes) {
+    public void setAttributes(Set<APIAttribute> attributes) {
         this.attributes = attributes;
     }
 

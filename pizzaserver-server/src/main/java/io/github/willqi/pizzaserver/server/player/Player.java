@@ -1,7 +1,10 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.APIBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.APIMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.player.attributes.APIAttribute;
+import io.github.willqi.pizzaserver.api.player.attributes.APIPlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.APISkin;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.LivingEntity;
@@ -11,7 +14,6 @@ import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlagType;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
-import io.github.willqi.pizzaserver.server.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
@@ -131,14 +133,17 @@ public class Player extends LivingEntity implements APIPlayer {
         return this.server;
     }
 
-    public void sendPacket(BedrockPacket packet) {
+    @Override
+    public void sendPacket(APIBedrockPacket packet) {
         this.session.queueSendPacket(packet);
     }
 
+    @Override
     public void disconnect() {
         this.session.disconnect();
     }
 
+    @Override
     public void disconnect(String reason) {
         DisconnectPacket disconnectPacket = new DisconnectPacket();
         disconnectPacket.setKickMessage(reason);
@@ -164,7 +169,8 @@ public class Player extends LivingEntity implements APIPlayer {
         }
     }
 
-    public PlayerAttributes getAttributes() {
+    @Override
+    public APIPlayerAttributes getAttributes() {
         return this.attributes;
     }
 
@@ -172,11 +178,11 @@ public class Player extends LivingEntity implements APIPlayer {
         this.sendAttributes(this.attributes.getAttributes());
     }
 
-    private void sendAttribute(Attribute attribute) {
+    private void sendAttribute(APIAttribute attribute) {
         this.sendAttributes(Collections.singleton(attribute));
     }
 
-    private void sendAttributes(Set<Attribute> attributes) {
+    private void sendAttributes(Set<APIAttribute> attributes) {
         UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
         updateAttributesPacket.setRuntimeEntityId(this.getId());
         updateAttributesPacket.setAttributes(attributes);
@@ -185,13 +191,14 @@ public class Player extends LivingEntity implements APIPlayer {
 
     @Override
     public float getHealth() {
-        return super.getHealth();
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
+        return attribute.getCurrentValue();
     }
 
     @Override
     public void setHealth(float health) {
         super.setHealth(health);
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
         attribute.setCurrentValue(health);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
@@ -199,13 +206,13 @@ public class Player extends LivingEntity implements APIPlayer {
 
     @Override
     public float getMaxHealth() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
         return attribute.getMaximumValue();
     }
 
     @Override
     public void setMaxHealth(float maxHealth) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
         attribute.setMaximumValue(maxHealth);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
@@ -213,13 +220,13 @@ public class Player extends LivingEntity implements APIPlayer {
 
     @Override
     public float getAbsorption() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setAbsorption(float absorption) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
         attribute.setCurrentValue(absorption);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
@@ -227,13 +234,13 @@ public class Player extends LivingEntity implements APIPlayer {
 
     @Override
     public float getMaxAbsorption() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
         return attribute.getMaximumValue();
     }
 
     @Override
     public void setMaxAbsorption(float maxAbsorption) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
         attribute.setMaximumValue(maxAbsorption);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
@@ -241,61 +248,69 @@ public class Player extends LivingEntity implements APIPlayer {
 
     @Override
     public float getMovementSpeed() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setMovementSpeed(float movementSpeed) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
         attribute.setCurrentValue(movementSpeed);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
     }
 
+    @Override
     public float getFoodLevel() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
         return attribute.getCurrentValue();
     }
 
+    @Override
     public void setFoodLevel(float foodLevel) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
         attribute.setCurrentValue(foodLevel);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
     }
 
+    @Override
     public float getSaturationLevel() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
         return attribute.getCurrentValue();
     }
 
+    @Override
     public void setSaturationLevel(float saturationLevel) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
         attribute.setCurrentValue(saturationLevel);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
     }
 
+    @Override
     public float getExperience() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
         return attribute.getCurrentValue();
     }
 
+    @Override
     public void setExperience(float experience) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
         attribute.setCurrentValue(experience);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
     }
 
-    public float getExperienceLevel() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
-        return attribute.getCurrentValue();
+    @Override
+    public int getExperienceLevel() {
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        return (int)attribute.getCurrentValue();
     }
 
+    @Override
     public void setExperienceLevel(int experienceLevel) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        APIAttribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
         attribute.setCurrentValue(experienceLevel);
         this.getAttributes().setAttribute(attribute);
         this.sendAttribute(attribute);
@@ -335,12 +350,7 @@ public class Player extends LivingEntity implements APIPlayer {
         // TODO: implement in order for multiplayer to work properly
     }
 
-    /**
-     * Request a chunk in the player's world to be sent to the player.
-     * This does not send it immediately, but rather requests the server to send the chunk.
-     * @param x
-     * @param z
-     */
+    @Override
     public void sendChunk(int x, int z) {
         ChunkManager chunkManager = this.getLocation().getWorld().getChunkManager();
         if (chunkManager.isChunkLoaded(x, z)) {

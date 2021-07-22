@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.network.raknet.RakNetServerSession;
 import com.nukkitx.network.util.DisconnectReason;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.APIBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.BedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
@@ -28,8 +29,8 @@ public class BedrockClientSession {
     private volatile Player player = null;
     private volatile BedrockPacketHandler handler = null;
 
-    private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
-    private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
+    private final Queue<APIBedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
+    private final Queue<APIBedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
 
     public BedrockClientSession(BedrockServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
@@ -73,11 +74,11 @@ public class BedrockClientSession {
         return this.disconnected;
     }
 
-    public void queueSendPacket(BedrockPacket packet) {
+    public void queueSendPacket(APIBedrockPacket packet) {
         this.queuedOutgoingPackets.add(packet);
     }
 
-    public void sendPacket(BedrockPacket packet) {
+    public void sendPacket(APIBedrockPacket packet) {
         if (!this.disconnected) {
             ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();
             rakNetBuffer.writeByte(0xfe); // Game packet
@@ -88,12 +89,12 @@ public class BedrockClientSession {
             int header = packet.getPacketId() & 0x3ff;
             VarInts.writeUnsignedInt(packetBuffer, header);
 
-            ProtocolPacketHandler<BedrockPacket> hander = (ProtocolPacketHandler<BedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
-            if (handler == null) {
+            ProtocolPacketHandler<APIBedrockPacket> handler = (ProtocolPacketHandler<APIBedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
+            if (this.handler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
                 return;
             }
-            hander.encode(packet, packetBuffer, this.version.getPacketRegistry().getPacketHelper());
+            handler.encode(packet, packetBuffer, this.version.getPacketRegistry().getPacketHelper());
 
             // Wrap the packet before sending it off
             ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
@@ -117,7 +118,7 @@ public class BedrockClientSession {
     protected void processIncomingPackets() {
         if (this.handler != null) {
             while (this.queuedIncomingPackets.peek() != null) {
-                BedrockPacket packet = this.queuedIncomingPackets.poll();
+                APIBedrockPacket packet = this.queuedIncomingPackets.poll();
                 this.handler.onPacket(packet);
 
                 // Now we call the specific packet handler
@@ -135,7 +136,7 @@ public class BedrockClientSession {
 
     protected void processOutgoingPackets() {
         while (this.queuedOutgoingPackets.peek() != null) {
-            BedrockPacket packet = this.queuedOutgoingPackets.poll();
+            APIBedrockPacket packet = this.queuedOutgoingPackets.poll();
             this.sendPacket(packet);
         }
     }

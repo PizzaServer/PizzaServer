@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public abstract class BedrockPacket {
+import io.github.willqi.pizzaserver.api.network.protocol.packets.APIBedrockPacket;
+
+public abstract class BedrockPacket implements APIBedrockPacket {
 
     private final int packetId;
 
