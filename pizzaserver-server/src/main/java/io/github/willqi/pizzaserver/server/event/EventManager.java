@@ -15,8 +15,6 @@ import java.util.HashMap;
 
 public class EventManager {
 
-    private static EventManager primaryManager;
-
     // Catalogues all listener events.
     protected static HashMap
             <
@@ -28,12 +26,14 @@ public class EventManager {
                     >
             > listenerReference = new HashMap<>();
 
-    protected ArrayList<EventFilter> filters; // Filter for EVERY listener.
-    protected ArrayList<Object> listeners; // Once a listener is added, it has a permanent place in the listenerReference.
-    protected ArrayList<EventManager> children; // Send events to children too. Only sent if filter is passed.
+    protected final Server server;
 
+    protected final ArrayList<EventFilter> filters; // Filter for EVERY listener.
+    protected final ArrayList<Object> listeners; // Once a listener is added, it has a permanent place in the listenerReference.
+    protected final ArrayList<EventManager> children; // Send events to children too. Only sent if filter is passed.
 
-    public EventManager(EventFilter... filters) {
+    public EventManager(Server server, EventFilter... filters) {
+        this.server = server;
         this.filters = new ArrayList<>();
         this.listeners = new ArrayList<>();
         this.children = new ArrayList<>();
@@ -42,19 +42,6 @@ public class EventManager {
     }
 
 
-    /**
-     * Sets the manager the result provided from EventManager#get() and
-     * finalizes the instance to an extent.
-     *
-     * Cannot be changed once initially called.
-     */
-    public boolean setAsPrimaryManager(){
-        if(primaryManager == null) {
-            primaryManager = this;
-            return true;
-        }
-        return false;
-    }
 
     public synchronized void call(BaseEvent event) {
         ArrayList<EventHandlerReference> callList = new ArrayList<>();
@@ -207,12 +194,12 @@ public class EventManager {
     }
 
 
-    private static void invokeEvent(Object owningListener, BaseEvent event, EventHandlerReference methodPair) {
+    private void invokeEvent(Object owningListener, BaseEvent event, EventHandlerReference methodPair) {
         try {
             methodPair.getMethod().invoke(owningListener, event);
 
         } catch (Exception err) {
-            Server.getInstance().getLogger().error("An error was thrown during the invocation of an event.");
+            this.server.getLogger().error("An error was thrown during the invocation of an event:");
             err.printStackTrace();
         }
     }
@@ -238,12 +225,8 @@ public class EventManager {
         }
     }
 
-    /** @return the primary instance of the EventManager. */
-    public static EventManager get(){
-        return primaryManager;
-    }
-
     public synchronized EventFilter[] getFilters() { return filters.toArray(new EventFilter[0]); }
     public synchronized Object[] getListeners() { return listeners.toArray(); }
     public synchronized EventManager[] getChildren() { return children.toArray(new EventManager[0]); }
+
 }

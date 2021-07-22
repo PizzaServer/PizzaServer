@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server;
 
+import io.github.willqi.pizzaserver.server.event.EventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
@@ -26,6 +27,7 @@ public class Server {
     private final PluginManager pluginManager = new PluginManager(this);
     private final DataPackManager dataPackManager = new DataPackManager(this);
     private final WorldManager worldManager = new WorldManager(this);
+    private final EventManager eventManager = new EventManager(this);
 
     private final BlockRegistry blockRegistry = new BlockRegistry();
 
@@ -234,6 +236,10 @@ public class Server {
 
     public WorldManager getWorldManager() {
         return this.worldManager;
+    }
+
+    public EventManager getEventManager() {
+        return this.eventManager;
     }
 
     public BlockRegistry getBlockRegistry() {
