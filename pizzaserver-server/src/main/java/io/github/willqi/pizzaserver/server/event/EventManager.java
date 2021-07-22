@@ -1,9 +1,13 @@
 package io.github.willqi.pizzaserver.server.event;
 
+import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.event.filter.EventFilter;
+import io.github.willqi.pizzaserver.server.event.handler.EventHandler;
 import io.github.willqi.pizzaserver.server.event.handler.EventHandlerReference;
 import io.github.willqi.pizzaserver.server.event.type.CancellableType;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -141,8 +145,40 @@ public class EventManager {
      */
     public synchronized Object addListener(Object listener) {
         removeListener(listener, true);
-        // Check that it isn't duped by clearing it.
         listeners.add(listener);
+
+        // Generate reference for the listener's type if one doesn't already exist
+        if(!listenerReference.containsKey(listener.getClass())) {
+            HashMap<Class<? extends BaseEvent>, ArrayList<EventHandlerReference>> listenerMethods = new HashMap<>();
+
+            // Get event listening methods.
+            for(Method method : listener.getClass().getMethods()) {
+
+                if(method.isAnnotationPresent(EventHandler.class)) {
+                    EventHandler annotation = method.getAnnotation(EventHandler.class);
+                    Parameter[] parameters = method.getParameters();
+
+                    if(parameters.length == 1){
+                        Class<?> type = parameters[0].getType();
+                        ArrayList<Class<? extends BaseEvent>> eventClasses = new ArrayList<>();
+
+                        EventHandlerReference pair = new EventHandlerReference(annotation, method);
+                        adoptSuperclasses(type, eventClasses); // Get all the categories this method would be in.
+
+                        for(Class<? extends BaseEvent> cls: eventClasses) {
+
+                            if(!listenerMethods.containsKey(cls)){
+                                listenerMethods.put(cls, new ArrayList<>()); // Create new handler list if it doesn't exist.
+                            }
+                            listenerMethods.get(cls).add(pair);
+                        }
+                    }
+                }
+            }
+
+            listenerReference.put(listener.getClass(), listenerMethods);
+        }
+
         return listener;
     }
 
@@ -176,12 +212,31 @@ public class EventManager {
             methodPair.getMethod().invoke(owningListener, event);
 
         } catch (Exception err) {
-            //Server.getMainLogger().error("An error was thrown during the invocation of an event.");
+            Server.getInstance().getLogger().error("An error was thrown during the invocation of an event.");
             err.printStackTrace();
         }
     }
 
+    /**
+     * Checks to see if a class extends an event, adding it to a list of
+     * identified classes. It crawls through all the superclasses and interfaces
+     * of a class with recursion.
+     * @param classIn the class to be checked.
+     * @param list a list of all the previously checked classes.
+     */
+    @SuppressWarnings("unchecked") // It's checked with Class#isAssaignableFrom() :)
+    private static void adoptSuperclasses(Class<?> classIn, ArrayList<Class<? extends BaseEvent>> list) {
+        if(classIn == null) return;
 
+        if(BaseEvent.class.isAssignableFrom(classIn)){
+            list.add((Class<? extends BaseEvent>) classIn);
+            adoptSuperclasses(classIn.getSuperclass(), list);
+
+            for(Class<?> cls: classIn.getInterfaces()) {
+                adoptSuperclasses(cls, list);
+            }
+        }
+    }
 
     /** @return the primary instance of the EventManager. */
     public static EventManager get(){
