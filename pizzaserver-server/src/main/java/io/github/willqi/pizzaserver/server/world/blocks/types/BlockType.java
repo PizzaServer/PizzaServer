@@ -2,8 +2,6 @@ package io.github.willqi.pizzaserver.server.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.github.willqi.pizzaserver.commons.utils.BoundingBox;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.item.ItemToolType;
 import io.github.willqi.pizzaserver.server.player.Player;
@@ -15,8 +13,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 public abstract class BlockType {
-
-    private static final BoundingBox FULL_BLOCK_BOUNDING_BOX = new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
 
     private static final HashBiMap<NBTCompound, Integer> EMPTY_BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
         {
@@ -62,11 +58,19 @@ public abstract class BlockType {
     }
 
     /**
-     * Get the hitbox for this block
-     * @return
+     * The amount of light this block will absorb
+     * @return the amount of light absorbed by this block
      */
-    public BoundingBox getHitBox() {
-        return FULL_BLOCK_BOUNDING_BOX;
+    public int getLightAbsorption() {
+        return 0;
+    }
+
+    /**
+     * The amount of light this block will emit
+     * @return a decimal in the range of [0, 1]
+     */
+    public float getLightEmission() {
+        return 0;
     }
 
     /**
@@ -86,6 +90,120 @@ public abstract class BlockType {
     }
 
     /**
+     * If the block type is solid
+     * @return if the block type is solid
+     */
+    public boolean isSolid() {
+        return true;
+    }
+
+    /**
+     * How strong this block is to mine
+     * @return strength of the block
+     */
+    public int getToughness() {
+        return 0;
+    }
+
+    /**
+     * Get the origin position of the block
+     * @return
+     */
+    public float[] getOrigin() {
+        return new float[]{ -8f, 0f, -8f };
+    }
+
+    /**
+     * Retrieve the height of this BlockType
+     * @return height
+     */
+    public float getHeight() {
+        return 16f;
+    }
+
+    /**
+     * Retrieve the width of this BlockType
+     * @return width
+     */
+    public float getWidth() {
+        return 16f;
+    }
+
+    /**
+     * Retrieve the length of this BlockType
+     * @return length
+     */
+    public float getLength() {
+        return 16f;
+    }
+
+    /**
+     * How hard this block is to explode.
+     * @return strength of the block to explode
+     */
+    public float getBlastResistance() {
+        return 0;
+    }
+
+    /**
+     * How likely the block will be destroyed by flames when on fire.
+     * @return chance of being destroyed
+     */
+    public int getBurnOdds() {
+        return 0;
+    }
+
+    /**
+     * How likely the block will catch flame when next to a fire.
+     * @return Chance of catching fire
+     */
+    public int getFlameOdds() {
+        return 0;
+    }
+
+    /**
+     * Retrieve the friction entities should receive on this block
+     * @return friction of this block type
+     */
+    public float getFriction() {
+        return 0.1f;
+    }
+
+    /**
+     * Retrieve the geometry to use for this block type.
+     * If null is returned then it will use the default block geometry
+     * @return block geometry id
+     */
+    public String getGeometry() {
+        return null;
+    }
+
+    /**
+     * Retrieve the map colour this block displays on a map
+     * If null is returned then it will use the default map colour
+     * @return hex value of the color to display on the map
+     */
+    public String getMapColour() {
+        return null;
+    }
+
+    /**
+     * If this block allows players to jump while on it
+     * @return if players can jump while on this block
+     */
+    public boolean allowsJumping() {
+        return true;
+    }
+
+    /**
+     * Retrieve the rotation of this block
+     * @return rotation of the block
+     */
+    public int[] getRotation() {
+        return new int[]{ 0, 0, 0 };
+    }
+
+    /**
      * If this block should fall if there's no block supporting it
      * @return if the block should fall with no supports
      */
@@ -98,22 +216,6 @@ public abstract class BlockType {
      * @return a float between 0-1 that describes the ignored fall damage percent
      */
     public float getFallDamageReduction() {
-        return 0;
-    }
-
-    /**
-     * How hard this block is to explode.
-     * @return strength of the block to explode
-     */
-    public float getBlastResistance() {
-        return 0;
-    }
-
-    /**
-     * How strong this block is to mine
-     * @return strength of the block
-     */
-    public int getToughness() {
         return 0;
     }
 
@@ -157,11 +259,21 @@ public abstract class BlockType {
 
 
     /**
-     * What should the block type do when it is pushed by a piston?
+     * What the block type should do when it is pushed by a piston
      */
     public enum PushResponse {
         DENY,
+
         ALLOW,
+
+        /**
+         * Prevents this block from sticking to a sticky piston
+         */
+        ALLOW_NO_STICKY,
+
+        /**
+         * Break this block when pushed by a piston
+         */
         BREAK
     }
 

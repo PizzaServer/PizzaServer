@@ -15,4 +15,8 @@ public class BlockTypeAir extends BlockType {
         return "Air";
     }
 
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
 }

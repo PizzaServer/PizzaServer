@@ -1,8 +1,9 @@
 package io.github.willqi.pizzaserver.server.world.blocks.types.impl;
 
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.server.world.blocks.types.BlockTypeID;
 
-public class BlockTypeGrass extends BlockTypeFullSolid {
+public class BlockTypeGrass extends BlockType {
 
     @Override
     public String getBlockId() {

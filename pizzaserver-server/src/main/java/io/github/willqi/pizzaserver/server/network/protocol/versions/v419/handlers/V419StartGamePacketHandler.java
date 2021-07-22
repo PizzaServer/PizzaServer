@@ -2,7 +2,6 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
@@ -126,8 +125,9 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
         helper.writeString(blockType.getBlockId(), buffer);
 
         NBTCompound blockContainer = new NBTCompound();
+
         NBTCompound components = new NBTCompound();
-        // TODO: Add block components
+
         blockContainer.put("components", components);
         helper.writeNBTCompound(blockContainer, buffer);
     }
