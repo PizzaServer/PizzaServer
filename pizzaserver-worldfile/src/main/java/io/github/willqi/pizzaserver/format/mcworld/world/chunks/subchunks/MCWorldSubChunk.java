@@ -24,6 +24,9 @@ public class MCWorldSubChunk implements BedrockSubChunk {
 
     @Override
     public BlockLayer getLayer(int layer) {
+        while (layer >= this.getLayers().size()) {
+            this.addLayer(new MCWorldBlockLayer(new MCWorldBlockPalette()));
+        }
         return this.layers.get(layer);
     }
 

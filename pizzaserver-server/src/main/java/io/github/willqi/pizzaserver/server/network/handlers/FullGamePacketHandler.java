@@ -80,7 +80,6 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
     public void onPacket(MovePlayerPacket packet) {
         Location newLocation = new Location(this.player.getLocation().getWorld(), packet.getPosition());
         this.player.setLocation(newLocation);
-        this.player.getLocation().getWorld().setBlock(Server.getInstance().getBlockRegistry().getBlockType("minecraft:stone"), (int)newLocation.getX(), (int)newLocation.getY() + 2, (int)newLocation.getZ());
     }
 
     @Override

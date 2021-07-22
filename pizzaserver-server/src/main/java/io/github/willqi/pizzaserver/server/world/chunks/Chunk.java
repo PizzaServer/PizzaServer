@@ -104,11 +104,14 @@ public class Chunk {
     }
 
     public Block getBlock(int x, int y, int z) {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {
-            throw new IllegalArgumentException("Could not retrieve block outside chunk");
+        if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
+            throw new IllegalArgumentException("Could not change block outside chunk");
         }
         int subChunkIndex = y / 16;
-        int blockIndex = getBlockCacheIndex(x, y, z); // Index stored in chunk block cache
+        int chunkBlockX = x >= 0 ? x : 16 + x;
+        int chunkBlockY = y % 16;
+        int chunkBlockZ = z >= 0 ? z : 16 + z;
+        int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
@@ -123,7 +126,7 @@ public class Chunk {
         }
 
         // Construct new block as none is cached
-        BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(x, y % 16, z);
+        BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
         BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
         Block block;
         if (blockRegistry.hasBlockType(paletteEntry.getId())) {
@@ -156,11 +159,14 @@ public class Chunk {
     }
 
     public void setBlock(Block block, int x, int y, int z) {
-        if (x < 0 || y < 0 || z < 0 || x >= 16 || y >= 256 || z >= 16) {
-            throw new IllegalArgumentException("Could not retrieve block outside chunk");
+        if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
+            throw new IllegalArgumentException("Could not change block outside chunk");
         }
         int subChunkIndex = y / 16;
-        int blockIndex = getBlockCacheIndex(x, y, z); // Index stored in chunk block cache
+        int chunkBlockX = x >= 0 ? x : 16 + x;
+        int chunkBlockY = y % 16;
+        int chunkBlockZ = z >= 0 ? z : 16 + z;
+        int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
 
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
@@ -175,7 +181,7 @@ public class Chunk {
         BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
         BlockLayer mainBlockLayer = subChunk.getLayer(0);
         BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
-        mainBlockLayer.setBlockEntryAt(x, y, z, entry);
+        mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
 
         // Send update block packet
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();

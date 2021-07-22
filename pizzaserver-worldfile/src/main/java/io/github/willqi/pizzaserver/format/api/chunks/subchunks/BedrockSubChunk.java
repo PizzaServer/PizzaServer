@@ -18,6 +18,7 @@ public interface BedrockSubChunk extends BedrockNetworkDiskSerializable {
 
     /**
      * Retrieve a specific {@link BlockLayer} in this subchunk
+     * If the layer does not exist, it should create the layer
      * @param index block layer index
      * @return {@link BlockLayer}
      */
