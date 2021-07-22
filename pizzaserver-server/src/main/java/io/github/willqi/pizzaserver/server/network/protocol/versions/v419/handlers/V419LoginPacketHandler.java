@@ -11,7 +11,7 @@ import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.player.data.Device;
+import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.skin.Skin;
 import io.github.willqi.pizzaserver.server.player.skin.SkinAnimation;
 import io.github.willqi.pizzaserver.server.player.skin.SkinPersonaPiece;

@@ -1,5 +1,8 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.network.protocol.versions.APIMinecraftVersion;
+import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.player.skin.APISkin;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.LivingEntity;
 import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
@@ -9,10 +12,9 @@ import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.server.player.attributes.Attribute;
-import io.github.willqi.pizzaserver.server.player.attributes.AttributeType;
+import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.player.attributes.PlayerAttributes;
-import io.github.willqi.pizzaserver.server.player.data.Device;
-import io.github.willqi.pizzaserver.server.player.skin.Skin;
+import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ChunkManager;
@@ -22,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Player extends LivingEntity {
+public class Player extends LivingEntity implements APIPlayer {
 
     private final Server server;
     private final BedrockClientSession session;
@@ -33,7 +35,7 @@ public class Player extends LivingEntity {
     private final UUID uuid;
     private final String username;
     private final String languageCode;
-    private Skin skin;
+    private APISkin skin;
 
     private int chunkRadius;
 
@@ -55,35 +57,43 @@ public class Player extends LivingEntity {
         this.chunkRadius = server.getConfig().getChunkRadius();
     }
 
-    public MinecraftVersion getVersion() {
+    @Override
+    public APIMinecraftVersion getVersion() {
         return this.version;
     }
 
+    @Override
     public Device getDevice() {
         return this.device;
     }
 
+    @Override
     public String getXuid() {
         return this.xuid;
     }
 
-    public UUID getUuid() {
+    @Override
+    public UUID getUUID() {
         return this.uuid;
     }
 
+    @Override
     public String getUsername() {
         return this.username;
     }
 
+    @Override
     public String getLanguageCode() {
         return this.languageCode;
     }
 
-    public Skin getSkin() {
+    @Override
+    public APISkin getSkin() {
         return this.skin;
     }
 
-    public void setSkin(Skin newSkin) {
+    @Override
+    public void setSkin(APISkin newSkin) {
         // TODO: packet level stuff for player skin updates
         this.skin = newSkin;
     }
@@ -98,10 +108,12 @@ public class Player extends LivingEntity {
         this.sendPacket(setEntityDataPacket);
     }
 
+    @Override
     public int getChunkRadius() {
         return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
     }
 
+    @Override
     public void setChunkRadiusRequested(int radius) {
         int oldRadius = this.chunkRadius;
         this.chunkRadius = radius;
@@ -394,10 +406,7 @@ public class Player extends LivingEntity {
         }
     }
 
-    /**
-     * Send a raw message
-     * @param message
-     */
+    @Override
     public void sendMessage(String message) {
         TextPacket textPacket = new TextPacket();
         textPacket.setType(TextPacket.TextType.RAW);
@@ -405,12 +414,8 @@ public class Player extends LivingEntity {
         this.sendPacket(textPacket);
     }
 
-    /**
-     * Send a message originating from a player
-     * @param sender
-     * @param message
-     */
-    public void sendPlayerMessage(Player sender, String message) {
+    @Override
+    public void sendPlayerMessage(APIPlayer sender, String message) {
         TextPacket textPacket = new TextPacket();
         textPacket.setType(TextPacket.TextType.CHAT);
         textPacket.setSourceName(sender.getUsername());

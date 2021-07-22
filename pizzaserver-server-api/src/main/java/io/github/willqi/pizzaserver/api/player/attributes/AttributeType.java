@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.player.attributes;
+package io.github.willqi.pizzaserver.api.player.attributes;
 
 public enum AttributeType {
     HEALTH,

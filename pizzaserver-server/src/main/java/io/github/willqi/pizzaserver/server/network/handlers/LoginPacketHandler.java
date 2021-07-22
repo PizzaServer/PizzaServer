@@ -14,7 +14,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.packs.DataPack;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
-import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
+import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -210,7 +210,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         stackPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
         stackPacket.setResourcePacks(new HashSet<>(this.server.getResourcePackManager().getResourcePacks().values()));
         stackPacket.setBehaviourPacks(new HashSet<>(this.server.getResourcePackManager().getBehaviorPacks().values()));
-        stackPacket.setGameVersion(this.player.getVersion().getVersionString());
+        stackPacket.setGameVersion(this.player.getVersion().getVersion());
         stackPacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
         stackPacket.setExperimentsPreviouslyEnabled(true);
         this.player.sendPacket(stackPacket);

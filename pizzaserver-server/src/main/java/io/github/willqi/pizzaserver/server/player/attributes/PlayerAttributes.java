@@ -1,10 +1,14 @@
 package io.github.willqi.pizzaserver.server.player.attributes;
 
+import io.github.willqi.pizzaserver.api.player.attributes.APIAttribute;
+import io.github.willqi.pizzaserver.api.player.attributes.APIPlayerAttributes;
+import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
+
 import java.util.*;
 
-public class PlayerAttributes {
+public class PlayerAttributes implements APIPlayerAttributes {
 
-    private final Map<AttributeType, Attribute> attributes = new HashMap<AttributeType, Attribute>(){
+    private final Map<AttributeType, APIAttribute> attributes = new HashMap<AttributeType, APIAttribute>(){
         {
             this.put(AttributeType.HEALTH, new Attribute(AttributeType.HEALTH, 0f, 20f, 20f, 20f));
             this.put(AttributeType.ABSORPTION, new Attribute(AttributeType.ABSORPTION, 0f, 0f, 0f, 0f));
@@ -17,15 +21,18 @@ public class PlayerAttributes {
     };
 
 
-    public Attribute getAttribute(AttributeType attributeType) {
+    @Override
+    public APIAttribute getAttribute(AttributeType attributeType) {
         return this.attributes.get(attributeType);
     }
 
-    public void setAttribute(Attribute attribute) {
+    @Override
+    public void setAttribute(APIAttribute attribute) {
         this.attributes.put(attribute.getType(), attribute);
     }
 
-    public Set<Attribute> getAttributes() {
+    @Override
+    public Set<APIAttribute> getAttributes() {
         return new HashSet<>(this.attributes.values());
     }
 

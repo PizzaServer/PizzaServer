@@ -11,8 +11,9 @@
     <modules>
         <module>pizzaserver-nbt</module>
         <module>pizzaserver-worldfile</module>
-        <module>pizzaserver-server</module>
         <module>pizzaserver-commons</module>
+        <module>pizzaserver-server-api</module>
+        <module>pizzaserver-server</module>
     </modules>
 
     <properties>

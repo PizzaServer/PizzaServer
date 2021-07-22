@@ -1,17 +1,17 @@
 package io.github.willqi.pizzaserver.server.plugin.events.player;
 
+import io.github.willqi.pizzaserver.api.player.APIPlayer;
 import io.github.willqi.pizzaserver.server.plugin.events.Event;
-import io.github.willqi.pizzaserver.server.player.Player;
 
 public abstract class PlayerEvent extends Event {
 
-    protected Player player;
+    protected APIPlayer player;
 
-    public PlayerEvent(Player player) {
+    public PlayerEvent(APIPlayer player) {
         this.player = player;
     }
 
-    public Player getPlayer() {
+    public APIPlayer getPlayer() {
         return this.player;
     }
 

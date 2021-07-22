@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server;
 
+import io.github.willqi.pizzaserver.api.APIServer;
+import io.github.willqi.pizzaserver.api.player.APIPlayer;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
@@ -18,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class Server {
+public class Server implements APIServer {
 
     private static Server INSTANCE;
 
@@ -181,45 +183,50 @@ public class Server {
         this.sessions.add(session);
     }
 
-    public void setMotd(String motd) {
-        this.motd = motd;
-    }
-
+    @Override
     public String getMotd() {
         return this.motd;
     }
 
-    /**
-     * Return all players who been spawned into the world
-     * @return set of players
-     */
-    public Set<Player> getPlayers() {
+    @Override
+    public void setMotd(String motd) {
+        this.motd = motd;
+    }
+
+    @Override
+    public Set<APIPlayer> getPlayers() {
         return this.sessions.stream()
                 .map(BedrockClientSession::getPlayer)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
+    @Override
     public int getPlayerCount() {
         return this.getPlayers().size();
     }
 
+    @Override
     public void setMaximumPlayerCount(int players) {
         this.maximumPlayersAllowed = players;
     }
 
+    @Override
     public int getMaximumPlayerCount() {
         return this.maximumPlayersAllowed;
     }
 
-    public void setTargetTps(int newTps) {
-        this.targetTps = newTps;
-    }
-
+    @Override
     public int getTargetTps() {
         return this.targetTps;
     }
 
+    @Override
+    public void setTargetTps(int newTps) {
+        this.targetTps = newTps;
+    }
+
+    @Override
     public int getCurrentTps() {
         return this.currentTps;
     }

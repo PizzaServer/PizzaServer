@@ -24,7 +24,7 @@ public class V419MinecraftVersion extends MinecraftVersion {
     }
 
     @Override
-    public String getVersionString() {
+    public String getVersion() {
         return VERSION;
     }
 

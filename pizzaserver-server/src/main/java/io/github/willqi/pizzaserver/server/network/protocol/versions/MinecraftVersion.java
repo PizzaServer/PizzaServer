@@ -3,8 +3,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
+import io.github.willqi.pizzaserver.api.network.protocol.versions.APIMinecraftVersion;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
-import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
@@ -18,7 +19,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
 
-public abstract class MinecraftVersion implements BlockRuntimeMapper {
+public abstract class MinecraftVersion implements APIMinecraftVersion {
 
     private final static Gson GSON = new Gson();
 
@@ -35,10 +36,6 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
         this.loadBlockStates();
         this.loadRuntimeItems();
     }
-
-    public abstract int getProtocol();
-
-    public abstract String getVersionString();
 
     public abstract PacketRegistry getPacketRegistry();
 
@@ -132,11 +129,14 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
         }
     }
 
-    public Set<ItemState> getItemStates() {
+    @Override
+    public Set<APIItemState> getItemStates() {
         return Collections.unmodifiableSet(this.itemStates);
     }
 
+    @Override
     public NBTCompound getBiomeDefinitions() {
         return this.biomesDefinitions;
     }
+
 }

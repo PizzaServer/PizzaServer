@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
@@ -110,8 +111,8 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
 
         // Item states
         VarInts.writeUnsignedInt(buffer, packet.getItemStates().size());
-        for (ItemState itemState : packet.getItemStates()) {
-            helper.writeString(itemState.getNameId(), buffer);
+        for (APIItemState itemState : packet.getItemStates()) {
+            helper.writeString(itemState.getItemId(), buffer);
             buffer.writeShortLE(itemState.getId());
             buffer.writeBoolean(itemState.isComponentBased());
         }

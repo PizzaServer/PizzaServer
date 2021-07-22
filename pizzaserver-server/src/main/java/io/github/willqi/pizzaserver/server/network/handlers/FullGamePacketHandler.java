@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.player.APIPlayer;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
@@ -89,7 +90,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
 
             this.player.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                for (Player recipient : event.getRecipients()) {
+                for (APIPlayer recipient : event.getRecipients()) {
                     recipient.sendPlayerMessage(this.player, event.getMessage());
                 }
             }

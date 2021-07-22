@@ -1,10 +1,12 @@
 package io.github.willqi.pizzaserver.server.player.skin;
 
+import io.github.willqi.pizzaserver.api.player.skin.APISkin;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Skin {
+public class Skin implements APISkin {
 
     private final String skinId;
     private final String playFabId;

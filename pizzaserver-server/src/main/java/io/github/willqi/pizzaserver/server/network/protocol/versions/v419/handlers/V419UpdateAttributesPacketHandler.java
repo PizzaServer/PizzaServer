@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateAttrib
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.github.willqi.pizzaserver.server.player.attributes.Attribute;
-import io.github.willqi.pizzaserver.server.player.attributes.AttributeType;
+import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;

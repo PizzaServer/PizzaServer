@@ -1,11 +1,11 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
-import io.github.willqi.pizzaserver.server.player.data.PermissionLevel;
+import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -61,7 +61,7 @@ public class StartGamePacket extends BedrockPacket {
     private ServerOrigin serverOrigin;
 
     private Set<BlockType> blockProperties = new HashSet<>();
-    private Set<ItemState> itemStates = new HashSet<>();
+    private Set<APIItemState> itemStates = new HashSet<>();
 
     private Set<Experiment> experiments = new HashSet<>();
     private boolean experimentsPreviouslyEnabled;
@@ -366,11 +366,11 @@ public class StartGamePacket extends BedrockPacket {
         this.blockProperties = blockProperties;
     }
 
-    public Set<ItemState> getItemStates() {
+    public Set<APIItemState> getItemStates() {
         return Collections.unmodifiableSet(this.itemStates);
     }
 
-    public void setItemStates(Set<ItemState> itemStates) {
+    public void setItemStates(Set<APIItemState> itemStates) {
         this.itemStates = itemStates;
     }
 

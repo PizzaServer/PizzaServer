@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.player.data;
+package io.github.willqi.pizzaserver.api.player.data;
 
 public enum PermissionLevel {
     VISITOR,
