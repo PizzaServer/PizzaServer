@@ -58,7 +58,6 @@ public class Server {
         this.rootDirectory = rootDirectory;
 
         // Load required data/files
-        ServerProtocol.loadVersions();
         this.setupFiles();
 
         this.getLogger().info("Internal setup complete.");
@@ -71,8 +70,8 @@ public class Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() {
-
         this.stopByConsoleExit = false;
+        ServerProtocol.loadVersions();
         this.getResourcePackManager().loadResourcePacks();
         this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);

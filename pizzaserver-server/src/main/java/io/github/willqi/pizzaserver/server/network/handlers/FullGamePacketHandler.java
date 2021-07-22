@@ -41,7 +41,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
         }
 
         // TODO: get actual player spawn from player data
-        Vector3 playerSpawn = new Vector3(3344, 70, 28);
+        Vector3 playerSpawn = new Vector3(142, 66, 115);
 
         // Load the chunks around the player before we spawn them in
         int playerChunkX = playerSpawn.toVector3i().getX() / 16;

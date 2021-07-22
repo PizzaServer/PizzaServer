@@ -20,7 +20,7 @@ public class BlockTypeStone extends BlockTypeFullSolid {
             List<String> stoneTypes = Arrays.asList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth");
             int stateIndex = 0;
             for (String stoneType : stoneTypes) {
-                NBTCompound state = new NBTCompound();
+                NBTCompound state = new NBTCompound("states");
                 state.put("stone_type", new NBTString(stoneType));
                 this.put(state, stateIndex++);
             }

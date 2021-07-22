@@ -20,7 +20,7 @@ public abstract class BlockType {
 
     private static final HashBiMap<NBTCompound, Integer> EMPTY_BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
         {
-            this.put(new NBTCompound(), 0);
+            this.put(new NBTCompound("states"), 0);
         }
     });
 
@@ -44,7 +44,7 @@ public abstract class BlockType {
      * The {@link NBTCompound}s returned should match the data in block_states.nbt in order to work correctly.
      * The index is used for getBlockStateIndex in order to determine the current state of the block.
      * (e.g. the direction of stairs)
-     *
+     * Each {@link NBTCompound} must be named "states" for proper serialization/deserialization
      *
      * By default there is a empty block state if this method is not overridden.
      * @return block states

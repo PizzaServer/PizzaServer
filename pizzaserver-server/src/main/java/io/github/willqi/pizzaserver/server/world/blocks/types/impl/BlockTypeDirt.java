@@ -17,7 +17,7 @@ public class BlockTypeDirt extends BlockTypeFullSolid {
             List<String> dirtTypes = Arrays.asList("normal", "coarse");
             int stateIndex = 0;
             for (String dirtType : dirtTypes) {
-                NBTCompound state = new NBTCompound();
+                NBTCompound state = new NBTCompound("states");
                 state.put("dirt_type", new NBTString(dirtType));
                 this.put(state, stateIndex++);
             }
