@@ -75,6 +75,7 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
 
 
     public NBTCompound put(String name, NBTTag tag) throws NBTLimitException {
+        tag.setName(name);
         this.data.put(name, tag);
         if (tag instanceof NBTContainer) {
             ((NBTContainer)tag).setDepth(this.getDepth() + 1);

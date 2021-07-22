@@ -11,6 +11,7 @@ import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.plugin.events.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.World;
+import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 import java.util.HashSet;
@@ -79,6 +80,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
     public void onPacket(MovePlayerPacket packet) {
         Location newLocation = new Location(this.player.getLocation().getWorld(), packet.getPosition());
         this.player.setLocation(newLocation);
+        this.player.getLocation().getWorld().setBlock(Server.getInstance().getBlockRegistry().getBlockType("minecraft:stone"), (int)newLocation.getX(), (int)newLocation.getY() + 2, (int)newLocation.getZ());
     }
 
     @Override

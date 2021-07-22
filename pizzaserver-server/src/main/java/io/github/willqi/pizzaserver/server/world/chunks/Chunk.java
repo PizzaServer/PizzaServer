@@ -147,6 +147,10 @@ public class Chunk {
         this.setBlock(new Block(blockType), blockPosition);
     }
 
+    public void setBlock(BlockType blockType, int x, int y, int z) {
+        this.setBlock(new Block(blockType), x, y, z);
+    }
+
     public void setBlock(Block block, Vector3i blockPosition) {
         this.setBlock(block, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
     }
@@ -176,7 +180,7 @@ public class Chunk {
         // Send update block packet
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
         updateBlockPacket.setBlock(block);
-        updateBlockPacket.setBlockCoordinates(new Vector3i(x, y, z));
+        updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
         updateBlockPacket.setLayer(0);
         updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
         for (Player viewer : this.getViewers()) {
