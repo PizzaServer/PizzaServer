@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.data.ServerOrigin;
+import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.plugin.events.player.PreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
@@ -22,6 +23,7 @@ import io.github.willqi.pizzaserver.commons.world.WorldType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -42,7 +44,6 @@ public class LoginPacketHandler extends BedrockPacketHandler {
 
     @Override
     public void onPacket(LoginPacket loginPacket) {
-
         if (this.player != null) {
             this.server.getLogger().info("Client tried to login again.");
             this.session.disconnect();
@@ -124,22 +125,27 @@ public class LoginPacketHandler extends BedrockPacketHandler {
                 // Send all pack info of the packs the client does not have
                 for (PackInfo packInfo : packet.getPacksRequested()) {
 
+                    DataPack pack;
+                    ResourcePackDataInfoPacket resourcePackDataInfoPacket = new ResourcePackDataInfoPacket();
                     if (this.server.getResourcePackManager().getResourcePacks().containsKey(packInfo.getUuid())) {
-                        DataPack pack = this.server.getResourcePackManager().getResourcePacks().get(packInfo.getUuid());
-                        ResourcePackDataInfoPacket resourcePackDataInfoPacket = new ResourcePackDataInfoPacket();
-                        resourcePackDataInfoPacket.setPackId(pack.getUuid());
-                        resourcePackDataInfoPacket.setHash(pack.getHash());
-                        resourcePackDataInfoPacket.setVersion(pack.getVersion());
+                        pack = this.server.getResourcePackManager().getResourcePacks().get(packInfo.getUuid());
                         resourcePackDataInfoPacket.setType(ResourcePackDataInfoPacket.PackType.RESOURCE_PACK);
-                        resourcePackDataInfoPacket.setChunkCount(pack.getChunkCount());
-                        resourcePackDataInfoPacket.setCompressedPackageSize(pack.getDataLength());
-                        resourcePackDataInfoPacket.setMaxChunkSize(DataPack.CHUNK_LENGTH);
-                        this.player.sendPacket(resourcePackDataInfoPacket);
+                    } else if (this.server.getResourcePackManager().getBehaviorPacks().containsKey(packInfo.getUuid())) {
+                        pack = this.server.getResourcePackManager().getBehaviorPacks().get(packInfo.getUuid());
+                        resourcePackDataInfoPacket.setType(ResourcePackDataInfoPacket.PackType.BEHAVIOR_PACK);
                     } else {
                         this.server.getLogger().error("Client requested invalid pack.");
                         this.session.disconnect();
-                        break;
+                        return;
                     }
+
+                    resourcePackDataInfoPacket.setPackId(pack.getUuid());
+                    resourcePackDataInfoPacket.setHash(pack.getHash());
+                    resourcePackDataInfoPacket.setVersion(pack.getVersion());
+                    resourcePackDataInfoPacket.setChunkCount(pack.getChunkCount());
+                    resourcePackDataInfoPacket.setCompressedPackageSize(pack.getDataLength());
+                    resourcePackDataInfoPacket.setMaxChunkSize(DataPack.CHUNK_LENGTH);
+                    this.player.sendPacket(resourcePackDataInfoPacket);
 
                 }
                 break;
@@ -205,6 +211,8 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         stackPacket.setResourcePacks(new HashSet<>(this.server.getResourcePackManager().getResourcePacks().values()));
         stackPacket.setBehaviourPacks(new HashSet<>(this.server.getResourcePackManager().getBehaviorPacks().values()));
         stackPacket.setGameVersion(this.player.getVersion().getVersionString());
+        stackPacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
+        stackPacket.setExperimentsPreviouslyEnabled(true);
         this.player.sendPacket(stackPacket);
     }
 
@@ -212,7 +220,6 @@ public class LoginPacketHandler extends BedrockPacketHandler {
      * Called when the player has passed the resource packs stage and is ready to start the game login process.
      */
     private void sendGameLoginPackets() {
-
         StartGamePacket startGamePacket = new StartGamePacket();
 
         // Entity specific
@@ -222,7 +229,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(new Vector2(0, 0));
-        startGamePacket.setPlayerSpawn(new Vector3(3344, 70, 28));  // TODO: get spawn coords/fetch player data
+        startGamePacket.setPlayerSpawn(new Vector3(142, 66, 115));  // TODO: get spawn coords/fetch player data
 
         // Server
         startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());    // TODO: modify once you get chunks ticking
@@ -238,6 +245,8 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         startGamePacket.setServerAuthoritativeInventory(true);
         startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
         startGamePacket.setServerOrigin(ServerOrigin.NONE);
+        startGamePacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
+        startGamePacket.setBlockProperties(this.server.getBlockRegistry().getCustomTypes());
         startGamePacket.setItemStates(this.player.getVersion().getItemStates());
 
         // World

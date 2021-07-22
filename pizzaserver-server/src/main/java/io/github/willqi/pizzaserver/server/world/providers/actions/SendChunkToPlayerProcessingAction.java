@@ -5,6 +5,9 @@ import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Represents a request to serialize and send a chunk to a player
+ */
 public class SendChunkToPlayerProcessingAction implements ChunkProcessingAction {
 
     private final Player player;

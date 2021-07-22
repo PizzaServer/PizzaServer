@@ -11,6 +11,7 @@ import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.plugin.events.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.World;
+import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
         }
 
         // TODO: get actual player spawn from player data
-        Vector3 playerSpawn = new Vector3(3344, 70, 28);
+        Vector3 playerSpawn = new Vector3(142, 66, 115);
 
         // Load the chunks around the player before we spawn them in
         int playerChunkX = playerSpawn.toVector3i().getX() / 16;

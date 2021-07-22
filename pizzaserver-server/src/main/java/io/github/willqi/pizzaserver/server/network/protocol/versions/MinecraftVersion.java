@@ -4,32 +4,33 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
-import io.github.willqi.pizzaserver.format.mcworld.BlockRuntimeMapper;
+import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.protocol.data.ItemState;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public abstract class MinecraftVersion implements BlockRuntimeMapper {
 
     private final static Gson GSON = new Gson();
 
+    private final Server server;
+
     private NBTCompound biomesDefinitions;
     private final Map<Tuple<String, NBTCompound>, Integer> blockStates = new HashMap<>();
-    private Collection<ItemState> itemStates;
+    private Set<ItemState> itemStates;
 
 
-    public MinecraftVersion() throws IOException {
+    public MinecraftVersion(Server server) throws IOException {
+        this.server = server;
         this.loadBiomeDefinitions();
         this.loadBlockStates();
         this.loadRuntimeItems();
@@ -40,6 +41,10 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
     public abstract String getVersionString();
 
     public abstract PacketRegistry getPacketRegistry();
+
+    public Server getServer() {
+        return this.server;
+    }
 
     public void loadBiomeDefinitions() throws IOException {
         try (NBTInputStream biomesNBTStream = new NBTInputStream(
@@ -54,14 +59,45 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
         try (NBTInputStream blockStatesNBTStream = new NBTInputStream(
                 new VarIntDataInputStream(this.getProtocolResourceStream("block_states.nbt"))
         )) {
-            int runtimeId = 0;
+            // keySet returns in ascending rather than descending so we have to reverse it
+            SortedMap<String, List<NBTCompound>> blockStates = new TreeMap<>(Collections.reverseOrder((fullBlockIdA, fullBlockIdB) -> {
+                // Runtime ids are mapped by their part b first before part a (e.g. b:b goes before b:c and a:d)
+                String blockIdA = fullBlockIdA.substring(fullBlockIdA.indexOf(":") + 1);
+                String blockIdB = fullBlockIdB.substring(fullBlockIdB.indexOf(":") + 1);
+                int blockIdComparison = blockIdB.compareTo(blockIdA);
+                if (blockIdComparison != 0) {
+                    return blockIdComparison;
+                }
+                // Compare by namespace
+                String namespaceA = fullBlockIdA.substring(0, fullBlockIdA.indexOf(":"));
+                String namespaceB = fullBlockIdB.substring(0, fullBlockIdB.indexOf(":"));
+                return namespaceB.compareTo(namespaceA);
+            }));
+
+            // Parse block states
             while (blockStatesNBTStream.available() > 0) {
                 NBTCompound blockState = blockStatesNBTStream.readCompound();
 
                 String name = blockState.getString("name").getValue();
-                NBTCompound states = blockState.getCompound("states");
+                if (!blockStates.containsKey(name)) {
+                    blockStates.put(name, new ArrayList<>());
+                }
 
-                this.blockStates.put(new Tuple<>(name, states), runtimeId++);
+                NBTCompound states = blockState.getCompound("states");
+                blockStates.get(name).add(states);
+            }
+
+            // Add custom block states
+            for (BlockType blockType : this.getServer().getBlockRegistry().getCustomTypes()) {
+                blockStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
+            }
+
+            // Construct runtime ids
+            int runtimeId = 0;
+            for (String blockId : blockStates.keySet()) {
+                for (NBTCompound states : blockStates.get(blockId)) {
+                    this.blockStates.put(new Tuple<>(blockId, states), runtimeId++);
+                }
             }
         }
     }
@@ -70,7 +106,7 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
         try (Reader itemStatesReader = new InputStreamReader(this.getProtocolResourceStream("runtime_item_states.json"))) {
             JsonArray jsonItemStates = GSON.fromJson(itemStatesReader, JsonArray.class);
 
-            Collection<ItemState> itemStates = new HashSet<>(jsonItemStates.size());
+            Set<ItemState> itemStates = new HashSet<>(jsonItemStates.size());
             for (int i = 0; i < jsonItemStates.size(); i++) {
                 JsonObject jsonItemState = jsonItemStates.get(i).getAsJsonObject();
 
@@ -96,8 +132,8 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
         }
     }
 
-    public Collection<ItemState> getItemStates() {
-        return this.itemStates;
+    public Set<ItemState> getItemStates() {
+        return Collections.unmodifiableSet(this.itemStates);
     }
 
     public NBTCompound getBiomeDefinitions() {

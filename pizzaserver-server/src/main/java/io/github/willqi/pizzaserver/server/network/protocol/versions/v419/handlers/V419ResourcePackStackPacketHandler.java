@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePackStackPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
@@ -28,8 +29,9 @@ public class V419ResourcePackStackPacketHandler extends ProtocolPacketHandler<Re
         }
 
         helper.writeString(packet.getGameVersion(), buffer);
-        buffer.writeIntLE(0);   // No experiments
-        buffer.writeBoolean(false); // Experiments toggled?
+
+        helper.writeExperiments(packet.getExperiments(), buffer);
+        buffer.writeBoolean(packet.isExperimentsPreviouslyEnabled());
 
 
     }

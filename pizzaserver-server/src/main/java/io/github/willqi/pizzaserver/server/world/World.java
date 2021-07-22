@@ -1,10 +1,13 @@
 package io.github.willqi.pizzaserver.server.world;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.utils.Location;
+import io.github.willqi.pizzaserver.server.world.blocks.Block;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.server.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProvider;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProviderThread;
@@ -32,6 +35,45 @@ public class World implements Closeable {
         this.worldThread.start();
     }
 
+    public Block getBlock(Vector3i position) {
+        return this.getBlock(position.getX(), position.getY(), position.getZ());
+    }
+
+    public Block getBlock(int x, int y, int z) {
+        int chunkX = x / 16;
+        int chunkZ = z / 16;
+        if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
+            throw new NullPointerException("Cannot get block in unloaded chunk");
+        }
+        return this.getChunkManager().getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
+    }
+
+    public void setBlock(BlockType blockType, Vector3i position) {
+        this.setBlock(new Block(blockType), position);
+    }
+
+    public void setBlock(BlockType blockType, int x, int y, int z) {
+        this.setBlock(new Block(blockType), x, y, z);
+    }
+
+    public void setBlock(Block block, Vector3i position) {
+        this.setBlock(block, position.getX(), position.getY(), position.getZ());
+    }
+
+    public void setBlock(Block block, int x, int y, int z) {
+        int chunkX = x / 16;
+        int chunkZ = z / 16;
+        if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
+            throw new NullPointerException("Cannot set block in unloaded chunk");
+        }
+        this.getChunkManager().getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
+    }
+
+    /**
+     * Add a {@link Entity} to this world and spawn it to {@link Player}s
+     * @param entity The {@link Entity} to spawn
+     * @param position The position to spawn it in this world
+     */
     public void addEntity(Entity entity, Vector3 position) {
         if (entity.hasSpawned()) {
             throw new IllegalStateException("This entity has already been spawned");
@@ -50,6 +92,10 @@ public class World implements Closeable {
         entity.setSpawned(true);
     }
 
+    /**
+     * Despawn a {@link Entity} from this world and all of the {@link Player}s who could see it
+     * @param entity the {@link Entity} to despawn
+     */
     public void removeEntity(Entity entity) {
         if (!entity.hasSpawned()) {
             throw new IllegalStateException("This entity has not been spawned");

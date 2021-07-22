@@ -145,6 +145,16 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
+    public void setBiomeAt(Vector2i position, byte biome) {
+        this.setBiomeAt(position.getX(), position.getY(), biome);
+    }
+
+    @Override
+    public void setBiomeAt(int x, int z, byte biome) {
+        this.biomeData[z * 16 + x] = biome;
+    }
+
+    @Override
     public List<BedrockSubChunk> getSubChunks() {
         return Collections.unmodifiableList(this.subChunks);
     }

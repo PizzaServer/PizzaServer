@@ -11,6 +11,7 @@ import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.Logger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
 import io.github.willqi.pizzaserver.server.world.WorldManager;
+import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
 
 import java.io.*;
 import java.util.*;
@@ -25,6 +26,9 @@ public class Server {
     private final PluginManager pluginManager = new PluginManager(this);
     private final DataPackManager dataPackManager = new DataPackManager(this);
     private final WorldManager worldManager = new WorldManager(this);
+
+    private final BlockRegistry blockRegistry = new BlockRegistry();
+
     private final Logger logger = new Logger("Server");
 
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
@@ -54,7 +58,6 @@ public class Server {
         this.rootDirectory = rootDirectory;
 
         // Load required data/files
-        ServerProtocol.loadVersions();
         this.setupFiles();
 
         this.getLogger().info("Internal setup complete.");
@@ -67,8 +70,8 @@ public class Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() {
-
         this.stopByConsoleExit = false;
+        ServerProtocol.loadVersions();
         this.getResourcePackManager().loadResourcePacks();
         this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);
@@ -231,6 +234,10 @@ public class Server {
 
     public WorldManager getWorldManager() {
         return this.worldManager;
+    }
+
+    public BlockRegistry getBlockRegistry() {
+        return this.blockRegistry;
     }
 
     public String getRootDirectory() {

@@ -1,8 +1,9 @@
 package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
-import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette.Entry;
-import io.github.willqi.pizzaserver.format.mcworld.BlockRuntimeMapper;
+import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
@@ -18,45 +19,91 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MCWorldBlockPalette implements BlockPalette {
 
-    private final List<Entry> data = new ArrayList<>();
+    private final BiMap<Integer, Entry> entries = HashBiMap.create();
+    private int paletteEntries = 0;
 
 
-    /**
-     * Entries require the following 3 properties
-     * NBTString property: name
-     * NBTInteger property: version (You can fill this out with zero when serializing to the network)
-     * NBTCompound property: states (the block state)
-     * @param data
-     */
     @Override
-    public void add(NBTCompound data) {
-        this.data.add(new Entry(data, this.data.size()));
+    public Entry create(String name, NBTCompound states, int version) {
+        return new MCWorldEntry(name, states, version);
     }
 
     @Override
-    public List<Entry> getAllEntries() {
-        return Collections.unmodifiableList(data);
+    public void add(Entry entry) {
+        if (!this.entries.inverse().containsKey(entry)) {
+            this.entries.put(this.paletteEntries++, entry);
+        }
+    }
+
+    @Override
+    public int getPaletteSize() {
+        return this.entries.size();
+    }
+
+    @Override
+    public Set<Entry> getAllEntries() {
+        return Collections.unmodifiableSet(this.entries.values());
+    }
+
+    @Override
+    public void removeEntry(Entry entry) {
+        this.removeEntry(entry, true);
+    }
+
+    public void removeEntry(Entry entry, boolean resize) {
+        this.entries.inverse().remove(entry);
+        if (resize) {
+            this.resize();
+        }
+    }
+
+    public void resize() {
+        int resizeStartingIndex = -1;   // The first entry index that we need to relocate
+        for (int index = 0; index < this.paletteEntries; index++) {
+            if (!this.entries.containsKey(index)) {
+                resizeStartingIndex = index + 1;
+                break;
+            }
+        }
+
+        if (resizeStartingIndex > -1) {
+            int oldTotalPaletteEntries = this.paletteEntries;
+            int freeIndexAt = resizeStartingIndex - 1;  // New entry position - incremented everytime we relocate a entry
+            for (int index = resizeStartingIndex; index < oldTotalPaletteEntries; index++) {
+                if (this.entries.containsKey(index)) {
+                    Entry entry = this.entries.remove(index);
+                    this.entries.put(freeIndexAt++, entry);
+                } else {
+                    // Another entry was removed
+                    this.paletteEntries--;
+                }
+            }
+            this.paletteEntries--;
+        }
     }
 
     @Override
     public Entry getEntry(int index) {
-        return this.data.get(index);
+        return this.entries.get(index);
+    }
+
+    @Override
+    public int getPaletteIndex(Entry entry) {
+        return this.entries.inverse().get(entry);
     }
 
     @Override
     public byte[] serializeForDisk() throws IOException {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        buffer.writeIntLE(this.data.size());
+        buffer.writeIntLE(this.getPaletteSize());
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
         for (BlockPalette.Entry data : this.getAllEntries()) {
             NBTCompound compound = new NBTCompound();
-            compound.put("name", new NBTString("name", data.getName()))
+            compound.put("name", new NBTString("name", data.getId()))
                     .put("version", new NBTInteger("version", data.getVersion()))
                     .put("states", data.getState());
 
@@ -74,7 +121,7 @@ public class MCWorldBlockPalette implements BlockPalette {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
         VarInts.writeInt(buffer, this.getAllEntries().size());
         for (BlockPalette.Entry data : this.getAllEntries()) {
-            int id = runtimeMapper.getBlockRuntimeId(data.getName(), data.getState());
+            int id = runtimeMapper.getBlockRuntimeId(data.getId(), data.getState());
             VarInts.writeInt(buffer, id);
         }
         byte[] serialized = new byte[buffer.readableBytes()];
@@ -95,11 +142,49 @@ public class MCWorldBlockPalette implements BlockPalette {
         try {
             for (int i = 0; i < paletteLength; i++) {
                 NBTCompound compound = inputStream.readCompound();
-                this.add(compound);
+                this.add(new MCWorldEntry(compound));
             }
         } catch (IOException exception) {
             throw new ChunkParseException("Failed to parse chunk palette.", exception);
         }
+    }
+
+
+    public static class MCWorldEntry extends Entry {
+
+        private final String name;
+        private final int version;
+        private final NBTCompound state;
+
+
+        public MCWorldEntry(NBTCompound data) {
+            this.name = data.getString("name").getValue();
+            this.version = data.getInteger("version").getValue();
+            this.state = data.getCompound("states");
+        }
+
+        public MCWorldEntry(String name, NBTCompound states, int version) {
+            this.name = name;
+            this.state = states;
+            this.version = version;
+        }
+
+        @Override
+        public String getId() {
+            return this.name;
+        }
+
+        @Override
+        public int getVersion() {
+            return this.version;
+        }
+
+        @Override
+        public NBTCompound getState() {
+            return this.state;
+        }
+
+
     }
 
 }

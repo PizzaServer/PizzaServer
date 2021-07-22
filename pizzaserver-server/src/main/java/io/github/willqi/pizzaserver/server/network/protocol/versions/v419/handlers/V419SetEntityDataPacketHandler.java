@@ -267,7 +267,6 @@ public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEnt
 
     @Override
     public void encode(SetEntityDataPacket packet, ByteBuf buffer, PacketHelper helper) {
-
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeId());
 
         // We need to write the metadata

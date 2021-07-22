@@ -1,7 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.packs.DataPack;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +18,9 @@ public class ResourcePackStackPacket extends BedrockPacket {
     private boolean forcedToAccept;
     private Set<DataPack> resourcePacks = new HashSet<>();
     private Set<DataPack> behaviourPacks = new HashSet<>();
+
+    private Set<Experiment> experiments = new HashSet<>();
+    private boolean experimentsPreviouslyEnabled;
 
     private String gameVersion;
 
@@ -46,6 +51,22 @@ public class ResourcePackStackPacket extends BedrockPacket {
 
     public void setBehaviourPacks(Set<DataPack> behaviourPacks) {
         this.behaviourPacks = behaviourPacks;
+    }
+
+    public Set<Experiment> getExperiments() {
+        return Collections.unmodifiableSet(this.experiments);
+    }
+
+    public void setExperiments(Set<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+    public boolean isExperimentsPreviouslyEnabled() {
+        return this.experimentsPreviouslyEnabled;
+    }
+
+    public void setExperimentsPreviouslyEnabled(boolean previouslyEnabled) {
+        this.experimentsPreviouslyEnabled = previouslyEnabled;
     }
 
     public String getGameVersion() {

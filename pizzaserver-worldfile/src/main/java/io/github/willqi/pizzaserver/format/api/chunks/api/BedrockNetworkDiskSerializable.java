@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.format.api.chunks.api;
 
-import io.github.willqi.pizzaserver.format.mcworld.BlockRuntimeMapper;
+import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 
 import java.io.IOException;
 
