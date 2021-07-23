@@ -24,55 +24,117 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
         return ID;
     }
 
-    public NBTByte getByte(String name) {
-        return (NBTByte)this.data.get(name);
+    public byte getByte(String name) {
+        return ((NBTByte)this.data.get(name)).getValue();
     }
 
-    public NBTShort getShort(String name) {
-        return (NBTShort)this.data.get(name);
+    public NBTCompound setByte(String name, byte value) {
+        this.put(name, new NBTByte(value));
+        return this;
     }
 
-    public NBTInteger getInteger(String name) {
-        return (NBTInteger)this.data.get(name);
+    public short getShort(String name) {
+        return ((NBTShort)this.data.get(name)).getValue();
     }
 
-    public NBTLong getLong(String name) {
-        return (NBTLong)this.data.get(name);
+    public NBTCompound setShort(String name, short value) {
+        this.put(name, new NBTShort(value));
+        return this;
     }
 
-    public NBTFloat getFloat(String name) {
-        return (NBTFloat)this.data.get(name);
+    public int getInteger(String name) {
+        return ((NBTInteger)this.data.get(name)).getValue();
     }
 
-    public NBTDouble getDouble(String name) {
-        return (NBTDouble)this.data.get(name);
+    public NBTCompound setInteger(String name, int value) {
+        this.put(name, new NBTInteger(value));
+        return this;
     }
 
-    public NBTString getString(String name) {
-        return (NBTString)this.data.get(name);
+    public long getLong(String name) {
+        return ((NBTLong)this.data.get(name)).getValue();
     }
 
-    public NBTList getList(String name) {
-        return (NBTList)this.data.get(name);
+    public NBTCompound setLong(String name, long value) {
+        this.put(name, new NBTLong(value));
+        return this;
+    }
+
+    public float getFloat(String name) {
+        return ((NBTFloat)this.data.get(name)).getValue();
+    }
+
+    public NBTCompound setFloat(String name, float value) {
+        this.put(name, new NBTFloat(value));
+        return this;
+    }
+
+    public double getDouble(String name) {
+        return ((NBTDouble)this.data.get(name)).getValue();
+    }
+
+    public NBTCompound setDouble(String name, double value) {
+        this.put(name, new NBTDouble(value));
+        return this;
+    }
+
+    public String getString(String name) {
+        return ((NBTString)this.data.get(name)).getValue();
+    }
+
+    public NBTCompound setString(String name, String value) {
+        this.put(name, new NBTString(value));
+        return this;
+    }
+
+    public NBTTag[] getList(String name) {
+        return ((NBTList<?>)this.data.get(name)).getContents();
+    }
+
+    public NBTCompound setList(String name, NBTList<?> list) {
+        this.put(name, list);
+        return this;
     }
 
     public NBTCompound getCompound(String name) {
         return (NBTCompound)this.data.get(name);
     }
 
-    public NBTByteArray getByteArray(String name) {
-        return (NBTByteArray)this.data.get(name);
+    public NBTCompound setCompound(String name, NBTCompound compound) {
+        this.put(name, compound);
+        return this;
     }
 
-    public NBTIntegerArray getIntegerArray(String name) {
-        return (NBTIntegerArray)this.data.get(name);
+    public byte[] getByteArray(String name) {
+        return ((NBTByteArray)this.data.get(name)).getData();
     }
 
-    public NBTLongArray getLongArray(String name) {
-        return (NBTLongArray)this.data.get(name);
+    public NBTCompound setByteArray(String name, byte[] value) {
+        this.put(name, new NBTByteArray(value));
+        return this;
     }
 
+    public int[] getIntegerArray(String name) {
+        return ((NBTIntegerArray)this.data.get(name)).getData();
+    }
 
+    public NBTCompound setIntegerArray(String name, int[] value) {
+        this.put(name, new NBTIntegerArray(value));
+        return this;
+    }
+
+    public long[] getLongArray(String name) {
+        return ((NBTLongArray)this.data.get(name)).getData();
+    }
+
+    public NBTCompound setLongArray(String name, long[] value) {
+        this.put(name, new NBTLongArray(value));
+        return this;
+    }
+
+    public NBTTag get(String name) {
+        return this.data.get(name);
+    }
 
     public NBTCompound put(String name, NBTTag tag) throws NBTLimitException {
         tag.setName(name);
@@ -81,10 +143,6 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
             ((NBTContainer)tag).setDepth(this.getDepth() + 1);
         }
         return this;
-    }
-
-    public NBTTag get(String name) {
-        return this.data.get(name);
     }
 
     public Set<String> keySet() {

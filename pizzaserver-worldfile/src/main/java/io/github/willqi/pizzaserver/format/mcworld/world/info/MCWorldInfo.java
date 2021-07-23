@@ -103,129 +103,129 @@ public class MCWorldInfo implements Cloneable {
             // the header is 8 bytes.
             inputStream.skip(8);    // TODO: These 8 bytes are important when writing the level.dat file
             NBTCompound compound = inputStream.readCompound();
-            this.setCommandsEnabled(compound.getByte("commandsEnabled").getValue() == 0x01)
-                .setCurrentTick(compound.getLong("currentTick").getValue())
-                .setHasBeenLoadedInCreative(compound.getByte("hasBeenLoadedInCreative").getValue() == 0x01)
-                .setHasLockedResourcePack(compound.getByte("hasLockedResourcePack").getValue() == 0x01)
-                .setHasLockedBehaviorPack(compound.getByte("hasLockedBehaviorPack").getValue() == 0x01)
+            this.setCommandsEnabled(compound.getByte("commandsEnabled") == 0b1)
+                .setCurrentTick(compound.getLong("currentTick"))
+                .setHasBeenLoadedInCreative(compound.getByte("hasBeenLoadedInCreative") == 0b1)
+                .setHasLockedResourcePack(compound.getByte("hasLockedResourcePack") == 0b1)
+                .setHasLockedBehaviorPack(compound.getByte("hasLockedBehaviorPack") == 0b1)
                 .setExperiments(compound.getCompound("experiments"))
-                .setForceGamemode(compound.getByte("ForceGameType").getValue() == 0x01)
-                .setImmutable(compound.getByte("immutableWorld").getValue() == 0x01)
-                .setConfirmedPlatformLockedContent(compound.getByte("ConfirmedPlatformLockedContent").getValue() == 0x01)
-                .setFromWorldTemplate(compound.getByte("isFromWorldTemplate").getValue() == 0x01)
-                .setFromLockedTemplate(compound.getByte("isFromLockedTemplate").getValue() == 0x01)
-                .setIsMultiplayerGame(compound.getByte("MultiplayerGame").getValue() == 0x01)
-                .setIsSingleUseWorld(compound.getByte("isSingleUseWorld").getValue() == 0x01)
-                .setIsWorldTemplateOptionsLocked(compound.getByte("isWorldTemplateOptionLocked").getValue() == 0x01)
-                .setLanBroadcast(compound.getByte("LANBroadcast").getValue() == 0x01)
-                .setLanBroadcastIntent(compound.getByte("LANBroadcastIntent").getValue() == 0x01)
-                .setMultiplayerGameIntent(compound.getByte("MultiplayerGameIntent").getValue() == 0x01)
-                .setPlatformBroadcastIntent(compound.getInteger("PlatformBroadcastIntent").getValue())
-                .setRequiresCopiedPackRemovalCheck(compound.getByte("requiresCopiedPackRemovalCheck").getValue() == 0x01)
-                .setServerChunkTickRange(compound.getInteger("serverChunkTickRange").getValue())
-                .setSpawnOnlyV1Villagers(compound.getByte("SpawnV1Villagers").getValue() == 0x01)
-                .setStorageVersion(compound.getInteger("StorageVersion").getValue())
-                .setTexturePacksRequired(compound.getByte("texturePacksRequired").getValue() == 0x01)
-                .setUseMsaGamerTagsOnly(compound.getByte("useMsaGamertagsOnly").getValue() == 0x01)
-                .setWorldName(compound.getString("LevelName").getValue())
-                .setWorldStartCount(compound.getLong("worldStartCount").getValue())
-                .setXboxLiveBroadcastIntent(compound.getInteger("XBLBroadcastIntent").getValue())
-                .setEduOffer(compound.getInteger("eduOffer").getValue())
-                .setEduEnabled(compound.getByte("educationFeaturesEnabled").getValue() == 0x01)
-                .setBiomeOverride(compound.getString("BiomeOverride").getValue())
-                .setBonusChestEnabled(compound.getByte("bonusChestEnabled").getValue() == 0x01)
-                .setBonusChestSpawned(compound.getByte("bonusChestSpawned").getValue() == 0x01)
-                .setCenterMapsToOrigin(compound.getByte("CenterMapsToOrigin").getValue() == 0x01)
-                .setDefaultGamemode(Gamemode.values()[compound.getInteger("GameType").getValue()])
-                .setDifficulty(Difficulty.values()[compound.getInteger("Difficulty").getValue()])
-                .setFlatWorldLayers(compound.getString("FlatWorldLayers").getValue())
-                .setLightningLevel(compound.getFloat("lightningLevel").getValue())
-                .setLightningTime(compound.getInteger("lightningTime").getValue())
+                .setForceGamemode(compound.getByte("ForceGameType") == 0b1)
+                .setImmutable(compound.getByte("immutableWorld") == 0b1)
+                .setConfirmedPlatformLockedContent(compound.getByte("ConfirmedPlatformLockedContent") == 0b1)
+                .setFromWorldTemplate(compound.getByte("isFromWorldTemplate") == 0b1)
+                .setFromLockedTemplate(compound.getByte("isFromLockedTemplate") == 0b1)
+                .setIsMultiplayerGame(compound.getByte("MultiplayerGame") == 0b1)
+                .setIsSingleUseWorld(compound.getByte("isSingleUseWorld") == 0b1)
+                .setIsWorldTemplateOptionsLocked(compound.getByte("isWorldTemplateOptionLocked") == 0b1)
+                .setLanBroadcast(compound.getByte("LANBroadcast") == 0b1)
+                .setLanBroadcastIntent(compound.getByte("LANBroadcastIntent") == 0b1)
+                .setMultiplayerGameIntent(compound.getByte("MultiplayerGameIntent") == 0b1)
+                .setPlatformBroadcastIntent(compound.getInteger("PlatformBroadcastIntent"))
+                .setRequiresCopiedPackRemovalCheck(compound.getByte("requiresCopiedPackRemovalCheck") == 0b1)
+                .setServerChunkTickRange(compound.getInteger("serverChunkTickRange"))
+                .setSpawnOnlyV1Villagers(compound.getByte("SpawnV1Villagers") == 0b1)
+                .setStorageVersion(compound.getInteger("StorageVersion"))
+                .setTexturePacksRequired(compound.getByte("texturePacksRequired") == 0b1)
+                .setUseMsaGamerTagsOnly(compound.getByte("useMsaGamertagsOnly") == 0b1)
+                .setWorldName(compound.getString("LevelName"))
+                .setWorldStartCount(compound.getLong("worldStartCount"))
+                .setXboxLiveBroadcastIntent(compound.getInteger("XBLBroadcastIntent"))
+                .setEduOffer(compound.getInteger("eduOffer"))
+                .setEduEnabled(compound.getByte("educationFeaturesEnabled") == 0b1)
+                .setBiomeOverride(compound.getString("BiomeOverride"))
+                .setBonusChestEnabled(compound.getByte("bonusChestEnabled") == 0b1)
+                .setBonusChestSpawned(compound.getByte("bonusChestSpawned") == 0b1)
+                .setCenterMapsToOrigin(compound.getByte("CenterMapsToOrigin") == 0b1)
+                .setDefaultGamemode(Gamemode.values()[compound.getInteger("GameType")])
+                .setDifficulty(Difficulty.values()[compound.getInteger("Difficulty")])
+                .setFlatWorldLayers(compound.getString("FlatWorldLayers"))
+                .setLightningLevel(compound.getFloat("lightningLevel"))
+                .setLightningTime(compound.getInteger("lightningTime"))
                 .setLimitedWorldCoordinates(new Vector3i(
-                        compound.getInteger("LimitedWorldOriginX").getValue(),
-                        compound.getInteger("LimitedWorldOriginY").getValue(),
-                        compound.getInteger("LimitedWorldOriginZ").getValue()
+                        compound.getInteger("LimitedWorldOriginX"),
+                        compound.getInteger("LimitedWorldOriginY"),
+                        compound.getInteger("LimitedWorldOriginZ")
                 ))
-                .setLimitedWorldWidth(compound.getInteger("limitedWorldWidth").getValue())
-                .setNetherScale(compound.getInteger("NetherScale").getValue())
-                .setRainLevel(compound.getFloat("rainLevel").getValue())
-                .setRainTime(compound.getInteger("rainTime").getValue())
-                .setSeed(compound.getLong("RandomSeed").getValue())
+                .setLimitedWorldWidth(compound.getInteger("limitedWorldWidth"))
+                .setNetherScale(compound.getInteger("NetherScale"))
+                .setRainLevel(compound.getFloat("rainLevel"))
+                .setRainTime(compound.getInteger("rainTime"))
+                .setSeed(compound.getLong("RandomSeed"))
                 .setSpawnCoordinates(new Vector3i(
-                        compound.getInteger("SpawnX").getValue(),
-                        compound.getInteger("SpawnY").getValue(),
-                        compound.getInteger("SpawnZ").getValue()
+                        compound.getInteger("SpawnX"),
+                        compound.getInteger("SpawnY"),
+                        compound.getInteger("SpawnZ")
                 ))
-                .setStartWithMapEnabled(compound.getByte("startWithMapEnabled").getValue() == 0x01)
-                .setTime(compound.getLong("Time").getValue())
-                .setWorldType(WorldType.values()[compound.getInteger("Generator").getValue()])
-                .setBaseGameVersion(compound.getString("baseGameVersion").getValue())
-                .setInventoryVersion(compound.getString("InventoryVersion").getValue())
-                .setLastPlayed(compound.getLong("LastPlayed").getValue())
+                .setStartWithMapEnabled(compound.getByte("startWithMapEnabled") == 0x01)
+                .setTime(compound.getLong("Time"))
+                .setWorldType(WorldType.values()[compound.getInteger("Generator")])
+                .setBaseGameVersion(compound.getString("baseGameVersion"))
+                .setInventoryVersion(compound.getString("InventoryVersion"))
+                .setLastPlayed(compound.getLong("LastPlayed"))
                 .setMinimumCompatibleClientVersion(
-                        Arrays.stream((NBTInteger[])compound.getList("MinimumCompatibleClientVersion").getContents())
+                        Arrays.stream((NBTInteger[])compound.getList("MinimumCompatibleClientVersion"))
                                 .mapToInt(NBTInteger::getValue)
                                 .toArray()
                 )
                 .setLastOpenedWithVersion(
-                        Arrays.stream((NBTInteger[])compound.getList("lastOpenedWithVersion").getContents())
+                        Arrays.stream((NBTInteger[])compound.getList("lastOpenedWithVersion"))
                                 .mapToInt(NBTInteger::getValue)
                                 .toArray()
                 )
-                .setPlatform(compound.getInteger("Platform").getValue())
-                .setProtocol(compound.getInteger("NetworkVersion").getValue())
-                .setPrid(compound.getString("prid").getValue());
+                .setPlatform(compound.getInteger("Platform"))
+                .setProtocol(compound.getInteger("NetworkVersion"))
+                .setPrid(compound.getString("prid"));
 
             NBTCompound abilities = compound.getCompound("abilities");
             this.setPlayerAbilities(
                     new PlayerAbilities()
-                            .setCanAttackMobs(abilities.getByte("attackmobs").getValue() == 0x01)
-                            .setCanAttackPlayers(abilities.getByte("attackplayers").getValue() == 0x01)
-                            .setCanBuild(abilities.getByte("build").getValue() == 0x01)
-                            .setCanFly(abilities.getByte("mayfly").getValue() == 0x01)
-                            .setCanInstaBuild(abilities.getByte("instabuild").getValue() == 0x01)
-                            .setCanMine(abilities.getByte("mine").getValue() == 0x01)
-                            .setCanOpenContainers(abilities.getByte("opencontainers").getValue() == 0x01)
-                            .setCanTeleport(abilities.getByte("teleport").getValue() == 0x01)
-                            .setCanUseDoorsAndSwitches(abilities.getByte("doorsandswitches").getValue() == 0x01)
-                            .setFlySpeed(abilities.getFloat("flySpeed").getValue())
-                            .setIsFlying(abilities.getByte("flying").getValue() == 0x01)
-                            .setIsInvulnerable(abilities.getByte("invulnerable").getValue() == 0x01)
-                            .setIsOp(abilities.getByte("op").getValue() == 0x01)
-                            .setIsLightning(abilities.getByte("lightning").getValue() == 0x01)
-                            .setPermissionsLevel(abilities.getInteger("permissionsLevel").getValue())
-                            .setPlayerPermissionsLevel(abilities.getInteger("playerPermissionsLevel").getValue())
-                            .setWalkSpeed(abilities.getFloat("walkSpeed").getValue())
+                            .setCanAttackMobs(abilities.getByte("attackmobs") == 0b1)
+                            .setCanAttackPlayers(abilities.getByte("attackplayers") == 0b1)
+                            .setCanBuild(abilities.getByte("build") == 0b1)
+                            .setCanFly(abilities.getByte("mayfly") == 0b1)
+                            .setCanInstaBuild(abilities.getByte("instabuild") == 0b1)
+                            .setCanMine(abilities.getByte("mine") == 0b1)
+                            .setCanOpenContainers(abilities.getByte("opencontainers") == 0b1)
+                            .setCanTeleport(abilities.getByte("teleport") == 0b1)
+                            .setCanUseDoorsAndSwitches(abilities.getByte("doorsandswitches") == 0b1)
+                            .setFlySpeed(abilities.getFloat("flySpeed"))
+                            .setIsFlying(abilities.getByte("flying") == 0b1)
+                            .setIsInvulnerable(abilities.getByte("invulnerable") == 0b1)
+                            .setIsOp(abilities.getByte("op") == 0b1)
+                            .setIsLightning(abilities.getByte("lightning") == 0b1)
+                            .setPermissionsLevel(abilities.getInteger("permissionsLevel"))
+                            .setPlayerPermissionsLevel(abilities.getInteger("playerPermissionsLevel"))
+                            .setWalkSpeed(abilities.getFloat("walkSpeed"))
             );
 
             this.setGameRules(new HashMap<GameRuleId, GameRule>(){
                 {
-                    put(GameRuleId.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleId.COMMAND_BLOCK_OUTPUT, compound.getByte("commandblockoutput").getValue() == 0x01));
-                    put(GameRuleId.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleId.COMMAND_BLOCKS_ENABLED, compound.getByte("commandblocksenabled").getValue() == 0x01));
-                    put(GameRuleId.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleId.DO_DAYLIGHT_CYCLE, compound.getByte("dodaylightcycle").getValue() == 0x01));
-                    put(GameRuleId.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleId.DO_ENTITY_DROPS, compound.getByte("doentitydrops").getValue() == 0x01));
-                    put(GameRuleId.DO_FIRE_TICK, new BooleanGameRule(GameRuleId.DO_FIRE_TICK, compound.getByte("dofiretick").getValue() == 0x01));
-                    put(GameRuleId.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleId.DO_IMMEDIATE_RESPAWN, compound.getByte("doimmediaterespawn").getValue() == 0x01));
-                    put(GameRuleId.DO_INSOMNIA, new BooleanGameRule(GameRuleId.DO_INSOMNIA, compound.getByte("doinsomnia").getValue() == 0x01));
-                    put(GameRuleId.DO_MOB_LOOT, new BooleanGameRule(GameRuleId.DO_MOB_LOOT, compound.getByte("domobloot").getValue() == 0x01));
-                    put(GameRuleId.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleId.DO_MOB_SPAWNING, compound.getByte("domobspawning").getValue() == 0x01));
-                    put(GameRuleId.DO_TILE_DROPS, new BooleanGameRule(GameRuleId.DO_TILE_DROPS, compound.getByte("dotiledrops").getValue() == 0x01));
-                    put(GameRuleId.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleId.DO_WEATHER_CYCLE, compound.getByte("doweathercycle").getValue() == 0x01));
-                    put(GameRuleId.DROWNING_DAMAGE, new BooleanGameRule(GameRuleId.DROWNING_DAMAGE, compound.getByte("drowningdamage").getValue() == 0x01));
-                    put(GameRuleId.FALL_DAMAGE, new BooleanGameRule(GameRuleId.FALL_DAMAGE, compound.getByte("falldamage").getValue() == 0x01));
-                    put(GameRuleId.FIRE_DAMAGE, new BooleanGameRule(GameRuleId.FIRE_DAMAGE, compound.getByte("firedamage").getValue() == 0x01));
-                    put(GameRuleId.KEEP_INVENTORY, new BooleanGameRule(GameRuleId.KEEP_INVENTORY, compound.getByte("keepinventory").getValue() == 0x01));
-                    put(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, new IntegerGameRule(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, compound.getInteger("maxcommandchainlength").getValue()));
-                    put(GameRuleId.MOB_GRIEFING, new BooleanGameRule(GameRuleId.MOB_GRIEFING, compound.getByte("mobgriefing").getValue() == 0x01));
-                    put(GameRuleId.NATURAL_REGENERATION, new BooleanGameRule(GameRuleId.NATURAL_REGENERATION, compound.getByte("naturalregeneration").getValue() == 0x01));
-                    put(GameRuleId.PVP, new BooleanGameRule(GameRuleId.PVP, compound.getByte("pvp").getValue() == 0x01));
-                    put(GameRuleId.RANDOM_TICK_SPEED, new IntegerGameRule(GameRuleId.RANDOM_TICK_SPEED, compound.getInteger("randomtickspeed").getValue()));
-                    put(GameRuleId.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleId.SEND_COMMAND_FEEDBACK, compound.getByte("sendcommandfeedback").getValue() == 0x01));
-                    put(GameRuleId.SHOW_COORDINATES, new BooleanGameRule(GameRuleId.SHOW_COORDINATES, compound.getByte("showcoordinates").getValue() == 0x01));
-                    put(GameRuleId.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleId.SHOW_DEATH_MESSAGES, compound.getByte("showdeathmessages").getValue() == 0x01));
-                    put(GameRuleId.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleId.SHOW_ITEM_TAGS, compound.getByte("showtags").getValue() == 0x01));
-                    put(GameRuleId.SPAWN_RADIUS, new IntegerGameRule(GameRuleId.SPAWN_RADIUS, compound.getInteger("spawnradius").getValue()));
-                    put(GameRuleId.TNT_EXPLODES, new BooleanGameRule(GameRuleId.TNT_EXPLODES, compound.getByte("tntexplodes").getValue() == 0x01));
+                    put(GameRuleId.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleId.COMMAND_BLOCK_OUTPUT, compound.getByte("commandblockoutput") == 0b1));
+                    put(GameRuleId.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleId.COMMAND_BLOCKS_ENABLED, compound.getByte("commandblocksenabled") == 0b1));
+                    put(GameRuleId.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleId.DO_DAYLIGHT_CYCLE, compound.getByte("dodaylightcycle") == 0b1));
+                    put(GameRuleId.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleId.DO_ENTITY_DROPS, compound.getByte("doentitydrops") == 0b1));
+                    put(GameRuleId.DO_FIRE_TICK, new BooleanGameRule(GameRuleId.DO_FIRE_TICK, compound.getByte("dofiretick") == 0b1));
+                    put(GameRuleId.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleId.DO_IMMEDIATE_RESPAWN, compound.getByte("doimmediaterespawn") == 0b1));
+                    put(GameRuleId.DO_INSOMNIA, new BooleanGameRule(GameRuleId.DO_INSOMNIA, compound.getByte("doinsomnia") == 0b1));
+                    put(GameRuleId.DO_MOB_LOOT, new BooleanGameRule(GameRuleId.DO_MOB_LOOT, compound.getByte("domobloot") == 0b1));
+                    put(GameRuleId.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleId.DO_MOB_SPAWNING, compound.getByte("domobspawning") == 0b1));
+                    put(GameRuleId.DO_TILE_DROPS, new BooleanGameRule(GameRuleId.DO_TILE_DROPS, compound.getByte("dotiledrops") == 0b1));
+                    put(GameRuleId.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleId.DO_WEATHER_CYCLE, compound.getByte("doweathercycle") == 0b1));
+                    put(GameRuleId.DROWNING_DAMAGE, new BooleanGameRule(GameRuleId.DROWNING_DAMAGE, compound.getByte("drowningdamage") == 0b1));
+                    put(GameRuleId.FALL_DAMAGE, new BooleanGameRule(GameRuleId.FALL_DAMAGE, compound.getByte("falldamage") == 0b1));
+                    put(GameRuleId.FIRE_DAMAGE, new BooleanGameRule(GameRuleId.FIRE_DAMAGE, compound.getByte("firedamage") == 0b1));
+                    put(GameRuleId.KEEP_INVENTORY, new BooleanGameRule(GameRuleId.KEEP_INVENTORY, compound.getByte("keepinventory") == 0b1));
+                    put(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, new IntegerGameRule(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, compound.getInteger("maxcommandchainlength")));
+                    put(GameRuleId.MOB_GRIEFING, new BooleanGameRule(GameRuleId.MOB_GRIEFING, compound.getByte("mobgriefing") == 0b1));
+                    put(GameRuleId.NATURAL_REGENERATION, new BooleanGameRule(GameRuleId.NATURAL_REGENERATION, compound.getByte("naturalregeneration") == 0b1));
+                    put(GameRuleId.PVP, new BooleanGameRule(GameRuleId.PVP, compound.getByte("pvp") == 0b1));
+                    put(GameRuleId.RANDOM_TICK_SPEED, new IntegerGameRule(GameRuleId.RANDOM_TICK_SPEED, compound.getInteger("randomtickspeed")));
+                    put(GameRuleId.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleId.SEND_COMMAND_FEEDBACK, compound.getByte("sendcommandfeedback") == 0b1));
+                    put(GameRuleId.SHOW_COORDINATES, new BooleanGameRule(GameRuleId.SHOW_COORDINATES, compound.getByte("showcoordinates") == 0b1));
+                    put(GameRuleId.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleId.SHOW_DEATH_MESSAGES, compound.getByte("showdeathmessages") == 0b1));
+                    put(GameRuleId.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleId.SHOW_ITEM_TAGS, compound.getByte("showtags") == 0b1));
+                    put(GameRuleId.SPAWN_RADIUS, new IntegerGameRule(GameRuleId.SPAWN_RADIUS, compound.getInteger("spawnradius")));
+                    put(GameRuleId.TNT_EXPLODES, new BooleanGameRule(GameRuleId.TNT_EXPLODES, compound.getByte("tntexplodes") == 0b1));
                 }
             });
         }
