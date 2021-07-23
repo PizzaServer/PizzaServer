@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server;
 
+import io.github.willqi.pizzaserver.server.event.EventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
@@ -7,6 +8,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.DataPackManager;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.plugin.PluginManager;
+import io.github.willqi.pizzaserver.server.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.Logger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
@@ -26,6 +28,10 @@ public class Server {
     private final PluginManager pluginManager = new PluginManager(this);
     private final DataPackManager dataPackManager = new DataPackManager(this);
     private final WorldManager worldManager = new WorldManager(this);
+    private final EventManager eventManager = new EventManager(this);
+
+    private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
+    private final Scheduler scheduler = new Scheduler(this, 1);
 
     private final BlockRegistry blockRegistry = new BlockRegistry();
 
@@ -84,6 +90,7 @@ public class Server {
             throw new RuntimeException(exception);
         }
         this.running = true;
+        this.scheduler.startScheduler();
 
         int currentTps = 0;
         long initNanoTime = System.nanoTime();
@@ -105,6 +112,14 @@ public class Server {
                         }
                         sessions.remove();
                     }
+                }
+            }
+
+            for(Scheduler scheduler: syncedSchedulers) {
+                try {
+                    scheduler.serverTick();
+                } catch (Exception err) {
+                    err.printStackTrace();
                 }
             }
 
@@ -236,6 +251,18 @@ public class Server {
         return this.worldManager;
     }
 
+    public EventManager getEventManager() {
+        return this.eventManager;
+    }
+
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+
+    public Set<Scheduler> getSyncedSchedulers() {
+        return syncedSchedulers;
+    }
+
     public BlockRegistry getBlockRegistry() {
         return this.blockRegistry;
     }
@@ -254,6 +281,14 @@ public class Server {
 
     public static Server getInstance() {
         return INSTANCE;
+    }
+
+    public void syncScheduler(Scheduler scheduler) {
+        if(scheduler.isRunning()) syncedSchedulers.add(scheduler);
+    }
+
+    public boolean desyncScheduler(Scheduler scheduler) {
+        return syncedSchedulers.remove(scheduler);
     }
 
     /**

@@ -8,7 +8,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.MovePlayerPa
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RequestChunkRadiusPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.plugin.events.player.PlayerChatEvent;
+import io.github.willqi.pizzaserver.server.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.World;
 import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
@@ -17,7 +17,6 @@ import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class FullGamePacketHandler extends BedrockPacketHandler {
 
