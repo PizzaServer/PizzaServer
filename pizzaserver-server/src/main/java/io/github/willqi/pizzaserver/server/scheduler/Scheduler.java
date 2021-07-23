@@ -37,10 +37,12 @@ public class Scheduler {
 
     // -- Control --
 
-    /** Enables ticking on the scheduler*/
-    public synchronized boolean startScheduler() {
+    /** Enables ticking on the scheduler */
+    public synchronized boolean startScheduler() { return this.startScheduler(true); }
+    public synchronized boolean startScheduler(boolean tickWithServer) {
         if(!isRunning) {
             this.isRunning = true;
+            if(tickWithServer) this.server.syncScheduler(this);
             return true;
         }
         return false;
@@ -62,6 +64,7 @@ public class Scheduler {
     /** Removes scheduler's hook to the server tick whilst clearing the queue */
     public synchronized void pauseScheduler() {
         this.isRunning = false;
+        this.server.desyncScheduler(this);
     }
 
     /** Clears all the tasks queued in the scheduler. */
@@ -116,7 +119,7 @@ public class Scheduler {
                                         task.getTask().run();
 
                                     } catch (Exception err) {
-                                        thiss().server.getLogger().error("Error thrown in asynchronous task! :(");
+                                        thiss().server.getLogger().error("Error thrown in a scheduler (asynchronous) task:");
                                         err.printStackTrace();
                                     }
 
@@ -136,7 +139,13 @@ public class Scheduler {
                         } else {
                             // Run as sync. This task must complete before the next one
                             // is ran.
-                            task.getTask().run();
+                            try {
+                                task.getTask().run();
+
+                            } catch (Exception err) {
+                                this.server.getLogger().error("Error thrown in a scheduler (synchronous) task:");
+                                err.printStackTrace();
+                            }
                         }
 
 
@@ -199,6 +208,8 @@ public class Scheduler {
     public int getTickDelay() { return tickDelay; }
     /** @return a list of active async task threads */
     public ArrayList<Thread> getActiveThreads() { return new ArrayList<>(activeThreads); }
+    /** @return true if the scheduler is currently active. */
+    public boolean isRunning() { return isRunning; }
 
     // -- Setters --
 
