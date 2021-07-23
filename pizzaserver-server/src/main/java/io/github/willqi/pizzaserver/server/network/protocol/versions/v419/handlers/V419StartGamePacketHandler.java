@@ -122,7 +122,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
     }
 
     protected void writeBlockProperty(BlockType blockType, ByteBuf buffer, PacketHelper helper) {
-        helper.writeString(blockType.getBlockId(), buffer);
+        helper.writeString(blockType.getBlockId().getID(), buffer);
 
         NBTCompound blockContainer = new NBTCompound();
 

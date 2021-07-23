@@ -89,7 +89,7 @@ public abstract class MinecraftVersion implements BlockRuntimeMapper {
 
             // Add custom block states
             for (BlockType blockType : this.getServer().getBlockRegistry().getCustomTypes()) {
-                blockStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
+                blockStates.put(blockType.getBlockId().getID(), new ArrayList<>(blockType.getBlockStates().keySet()));
             }
 
             // Construct runtime ids

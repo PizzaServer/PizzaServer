@@ -30,7 +30,7 @@ public class V419UpdateBlockPacketHandler extends ProtocolPacketHandler<UpdateBl
 
         int blockRuntimeId = ServerProtocol.VERSIONS
                 .get(V419MinecraftVersion.PROTOCOL)
-                .getBlockRuntimeId(packet.getBlock().getBlockType().getBlockId(), packet.getBlock().getBlockState());
+                .getBlockRuntimeId(packet.getBlock().getBlockType().getBlockId().getID(), packet.getBlock().getBlockState());
         VarInts.writeUnsignedInt(buffer, blockRuntimeId);
 
         int flags = 0;

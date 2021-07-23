@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.world.blocks.types.impl;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.commons.data.id.Identifier;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
@@ -27,7 +28,7 @@ public class BlockTypeDirt extends BlockType {
 
 
     @Override
-    public String getBlockId() {
+    public Identifier getBlockId() {
         return BlockTypeID.DIRT;
     }
 
