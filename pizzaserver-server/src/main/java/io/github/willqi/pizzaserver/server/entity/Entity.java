@@ -1,62 +1,65 @@
 package io.github.willqi.pizzaserver.server.entity;
 
+import io.github.willqi.pizzaserver.api.entity.APIEntity;
+import io.github.willqi.pizzaserver.api.entity.meta.APIEntityMetaData;
+import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.utils.APILocation;
+import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
-import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.utils.Location;
-import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Entity {
+public abstract class Entity implements APIEntity {
 
     public static long ID;
 
+
     private final long id;
-    private final Set<Player> spawnedTo = new HashSet<>();
+    private final Set<APIPlayer> spawnedTo = new HashSet<>();
     private boolean spawned;
 
-    private Location location = null;
+    private APILocation location = null;
 
-    private EntityMetaData metaData = new EntityMetaData();
+    private APIEntityMetaData metaData = new EntityMetaData();
+
 
     public Entity() {
         this.id = ID++;
     }
 
+    @Override
     public long getId() {
         return this.id;
     }
 
-    public Location getLocation() {
+    @Override
+    public APILocation getLocation() {
         return this.location;
     }
 
-    public Chunk getChunk() {
+    @Override
+    public APIChunk getChunk() {
         return this.location.getChunk();
     }
 
-    /**
-     * Change the location of the entity and spawn itself for viewers of the new chunk
-     * If a player cannot see the new location, it will despawn itself from that player
-     * @param newLocation
-     */
-    public void setLocation(Location newLocation) {
+    @Override
+    public void setLocation(APILocation newLocation) {
         if (this.location != null) {
-            Chunk oldChunk = this.getChunk();
-            Chunk newChunk = newLocation.getChunk();
+            APIChunk oldChunk = this.getChunk();
+            APIChunk newChunk = newLocation.getChunk();
             if (!oldChunk.equals(newChunk)) {
                 oldChunk.removeEntity(this);
-                for (Player viewer : this.getViewers()) {
-                    if (!viewer.canSeeChunk(newChunk)) {
+                for (APIPlayer viewer : this.getViewers()) {
+                    if (!newChunk.canBeVisibleTo(viewer)) {
                         this.despawnFrom(viewer);
                     }
                 }
 
                 newChunk.addEntity(this);
-                for (Player player : newChunk.getViewers()) {
+                for (APIPlayer player : newChunk.getViewers()) {
                     this.spawnTo(player);
                 }
             }
@@ -66,53 +69,55 @@ public abstract class Entity {
         this.location = newLocation;
     }
 
-    public EntityMetaData getMetaData() {
+    @Override
+    public APIEntityMetaData getMetaData() {
         return this.metaData;
     }
 
-    public void setMetaData(EntityMetaData metaData) {
+    @Override
+    public void setMetaData(APIEntityMetaData metaData) {
         this.metaData = metaData;
 
         SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
         entityDataPacket.setRuntimeId(this.getId());
         entityDataPacket.setData(this.getMetaData());
-        for (Player player : this.getViewers()) {
+        for (APIPlayer player : this.getViewers()) {
             player.sendPacket(entityDataPacket);
         }
     }
 
     /**
-     * Used internally to determine whether or not a entity has spawned in a world
-     * @param spawned
+     * Called when the entity is initially spawned into a world.
+     * This is useful for entity initialization.
+     */
+    public abstract void onSpawned();
+
+    /**
+     * Used internally to when spawning this entity in a world
+     * @param spawned if the entity has been spawned
      */
     public void setSpawned(boolean spawned) {
         this.spawned = spawned;
     }
 
-    /**
-     * Whether or not this entity was spawned in a world yet
-     * @return
-     */
+    @Override
     public boolean hasSpawned() {
         return this.spawned;
     }
 
-    /**
-     * Called when this entity is spawned
-     * Used for setup on spawn
-     */
-    public void onSpawned() {}
-
-    public Set<Player> getViewers() {
-        return this.spawnedTo;
-    }
-
-    public void spawnTo(Player player) {
+    @Override
+    public void spawnTo(APIPlayer player) {
         this.spawnedTo.add(player);
     }
 
-    public void despawnFrom(Player player) {
+    @Override
+    public void despawnFrom(APIPlayer player) {
         this.spawnedTo.remove(player);
+    }
+
+    @Override
+    public Set<APIPlayer> getViewers() {
+        return this.spawnedTo;
     }
 
     @Override

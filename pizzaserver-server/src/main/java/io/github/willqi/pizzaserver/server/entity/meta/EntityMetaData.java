@@ -1,170 +1,199 @@
 package io.github.willqi.pizzaserver.server.entity.meta;
 
+import io.github.willqi.pizzaserver.api.entity.meta.APIEntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.APIEntityMetaProperty;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlag;
-import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlagType;
-import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaPropertyName;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaProperty;
-import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaPropertyType;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyType;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class EntityMetaData {
+public class EntityMetaData implements APIEntityMetaData {
 
-    private final Map<EntityMetaFlagType, Set<EntityMetaFlag>> flags = new HashMap<>();
+    private final Map<EntityMetaFlagCategory, Set<EntityMetaFlag>> flags = new HashMap<>();
     private final Map<EntityMetaPropertyName, EntityMetaProperty<?>> properties = new HashMap<>();
 
 
-    public Map<EntityMetaFlagType, Set<EntityMetaFlag>> getFlags() {
+    @Override
+    public Map<EntityMetaFlagCategory, Set<EntityMetaFlag>> getFlags() {
         return this.flags;
     }
 
-    public boolean hasFlag(EntityMetaFlagType flagType, EntityMetaFlag flag) {
-        if (!this.flags.containsKey(flagType)) {
+    @Override
+    public boolean hasFlag(EntityMetaFlagCategory flagCategory, EntityMetaFlag flag) {
+        if (!this.flags.containsKey(flagCategory)) {
             return false;
         }
-        return this.flags.get(flagType).contains(flag);
+        return this.flags.get(flagCategory).contains(flag);
     }
 
-    public void setFlag(EntityMetaFlagType flagType, EntityMetaFlag flag, boolean status) {
-        if (!this.flags.containsKey(flagType)) {
-            this.flags.put(flagType, new HashSet<>());
+    @Override
+    public void setFlag(EntityMetaFlagCategory flagCategory, EntityMetaFlag flag, boolean enabled) {
+        if (!this.flags.containsKey(flagCategory)) {
+            this.flags.put(flagCategory, new HashSet<>());
         }
 
-        if (status) {
-            this.flags.get(flagType).add(flag);
+        if (enabled) {
+            this.flags.get(flagCategory).add(flag);
         } else {
-            this.flags.get(flagType).remove(flag);
+            this.flags.get(flagCategory).remove(flag);
         }
     }
 
-    public Map<EntityMetaPropertyName, EntityMetaProperty<?>> getProperties() {
-        return this.properties;
+    @Override
+    public Map<EntityMetaPropertyName, APIEntityMetaProperty<?>> getProperties() {
+        return Collections.unmodifiableMap(this.properties);
     }
 
+    @Override
     public boolean hasProperty(EntityMetaPropertyName propertyName) {
         return this.properties.containsKey(propertyName);
     }
 
-    public void setProperty(EntityMetaPropertyName propertyName, EntityMetaProperty<?> property) {
+    @Override
+    public byte getByteProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return 0;
+        }
+
+        return ((byte)this.getProperty(propertyName, EntityMetaPropertyType.BYTE).getValue());
+    }
+
+    @Override
+    public void setByteProperty(EntityMetaPropertyName propertyName, byte value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.BYTE, value));
+    }
+
+    @Override
+    public short getShortProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return 0;
+        }
+
+        return ((short)this.getProperty(propertyName, EntityMetaPropertyType.SHORT).getValue());
+    }
+
+    @Override
+    public void setShortProperty(EntityMetaPropertyName propertyName, short value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.SHORT, value));
+    }
+
+    @Override
+    public int getIntProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return 0;
+        }
+
+        return ((int)this.getProperty(propertyName, EntityMetaPropertyType.INTEGER).getValue());
+    }
+
+    @Override
+    public void setIntProperty(EntityMetaPropertyName propertyName, int value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.INTEGER, value));
+    }
+
+    @Override
+    public float getFloatProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return 0;
+        }
+
+        return ((float)this.getProperty(propertyName, EntityMetaPropertyType.FLOAT).getValue());
+    }
+
+    @Override
+    public void setFloatProperty(EntityMetaPropertyName propertyName, float value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.FLOAT, value));
+    }
+
+    @Override
+    public long getLongProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return 0;
+        }
+
+        return ((long)this.getProperty(propertyName, EntityMetaPropertyType.LONG).getValue());
+    }
+
+    @Override
+    public void setLongProperty(EntityMetaPropertyName propertyName, long value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.LONG, value));
+    }
+
+    @Override
+    public String getStringProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return null;
+        }
+
+        return ((String)this.getProperty(propertyName, EntityMetaPropertyType.STRING).getValue());
+    }
+
+    @Override
+    public void setStringProperty(EntityMetaPropertyName propertyName, String value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.STRING, value));
+    }
+
+    @Override
+    public NBTCompound getNBTProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return null;
+        }
+
+        return ((NBTCompound)this.getProperty(propertyName, EntityMetaPropertyType.NBT).getValue());
+    }
+
+    @Override
+    public void setNBTProperty(EntityMetaPropertyName propertyName, NBTCompound value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.NBT, value));
+    }
+
+    @Override
+    public Vector3i getVector3iProperty(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return null;
+        }
+
+        return ((Vector3i)this.getProperty(propertyName, EntityMetaPropertyType.VECTOR3I).getValue());
+    }
+
+    @Override
+    public void setVector3iProperty(EntityMetaPropertyName propertyName, Vector3i value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.VECTOR3I, value));
+    }
+
+    @Override
+    public Vector3 getVector3Property(EntityMetaPropertyName propertyName) {
+        if (!this.hasProperty(propertyName)) {
+            return null;
+        }
+
+        return ((Vector3)this.getProperty(propertyName, EntityMetaPropertyType.VECTOR3).getValue());
+    }
+
+    @Override
+    public void setVector3Property(EntityMetaPropertyName propertyName, Vector3 value) {
+        this.setProperty(propertyName, new EntityMetaProperty<>(EntityMetaPropertyType.VECTOR3, value));
+    }
+
+    private EntityMetaProperty<?> getProperty(EntityMetaPropertyName propertyName, EntityMetaPropertyType expectedType) {
+        EntityMetaProperty<?> storedProperty = this.properties.get(propertyName);
+        if (storedProperty.getType() != expectedType) {
+            throw new IllegalArgumentException(propertyName + " was not a " + expectedType + " property.");
+        }
+        return storedProperty;
+    }
+
+    private void setProperty(EntityMetaPropertyName propertyName, EntityMetaProperty<?> property) {
         if (property.getType() != propertyName.getType()) {
             throw new IllegalArgumentException("The property provided was not of the type " + propertyName.getType());
         }
         this.properties.put(propertyName, property);
     }
-
-    public byte getByteProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return (byte)0;
-        }
-
-        EntityMetaProperty<Byte> storedProperty = (EntityMetaProperty<Byte>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.BYTE) {
-            throw new IllegalArgumentException(property + " was not a byte property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public short getShortProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return 0;
-        }
-
-        EntityMetaProperty<Short> storedProperty = (EntityMetaProperty<Short>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.SHORT) {
-            throw new IllegalArgumentException(property + " was not a short property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public int getIntProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return 0;
-        }
-
-        EntityMetaProperty<Integer> storedProperty = (EntityMetaProperty<Integer>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.INTEGER) {
-            throw new IllegalArgumentException(property + " was not a integer property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public float getFloatProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return 0;
-        }
-
-        EntityMetaProperty<Float> storedProperty = (EntityMetaProperty<Float>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.FLOAT) {
-            throw new IllegalArgumentException(property + " was not a float property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public long getLongProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return 0;
-        }
-
-        EntityMetaProperty<Long> storedProperty = (EntityMetaProperty<Long>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.LONG) {
-            throw new IllegalArgumentException(property + " was not a long property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public String getStringProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return null;
-        }
-
-        EntityMetaProperty<String> storedProperty = (EntityMetaProperty<String>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.STRING) {
-            throw new IllegalArgumentException(property + " was not a string property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public NBTCompound getNBTProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return null;
-        }
-
-        EntityMetaProperty<NBTCompound> storedProperty = (EntityMetaProperty<NBTCompound>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.NBT) {
-            throw new IllegalArgumentException(property + " was not a NBT property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public Vector3i getVector3iProperty(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return null;
-        }
-
-        EntityMetaProperty<Vector3i> storedProperty = (EntityMetaProperty<Vector3i>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.VECTOR3I) {
-            throw new IllegalArgumentException(property + " was not a Vector3i property.");
-        }
-        return storedProperty.getValue();
-    }
-
-    public Vector3 getVector3Property(EntityMetaPropertyName property) {
-        if (!this.hasProperty(property)) {
-            return null;
-        }
-
-        EntityMetaProperty<Vector3> storedProperty = (EntityMetaProperty<Vector3>)this.properties.get(property);
-        if (storedProperty.getType() != EntityMetaPropertyType.VECTOR3) {
-            throw new IllegalArgumentException(property + " was not a Vector3 property.");
-        }
-        return storedProperty.getValue();
-    }
-
 
 }

@@ -1,5 +1,11 @@
 package io.github.willqi.pizzaserver.server.world.chunks;
 
+import io.github.willqi.pizzaserver.api.entity.APIEntity;
+import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.world.APIWorld;
+import io.github.willqi.pizzaserver.api.world.blocks.APIBlock;
+import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
+import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
@@ -28,7 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Represents a 16x16 chunk of blocks on the server
  */
-public class Chunk {
+public class Chunk implements APIChunk {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -36,20 +42,20 @@ public class Chunk {
     private final byte[] biomeData;
 
     // subChunkIndex : ( blockIndex : block )
-    private final Map<Integer, Map<Integer, Block>> cachedBlocks = new HashMap<>();
+    private final Map<Integer, Map<Integer, APIBlock>> cachedBlocks = new HashMap<>();
 
-    private final World world;
+    private final APIWorld world;
     private final int x;
     private final int z;
 
     // Entities in this chunk
-    private final Set<Entity> entities = new HashSet<>();
+    private final Set<APIEntity> entities = new HashSet<>();
 
     // The players who can see this chunk
-    private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
+    private final Set<APIPlayer> spawnedTo = ConcurrentHashMap.newKeySet();
 
 
-    protected Chunk(World world, int x, int z, List<BedrockSubChunk> subChunks, byte[] biomeData) {
+    protected Chunk(APIWorld world, int x, int z, List<BedrockSubChunk> subChunks, byte[] biomeData) {
         if (subChunks.size() != 16) {
             throw new IllegalArgumentException("Tried to construct chunk with only " + subChunks.size() + " subchunks instead of 16.");
         }
@@ -61,16 +67,33 @@ public class Chunk {
         this.biomeData = biomeData;
     }
 
-    public World getWorld() {
+    @Override
+    public APIWorld getWorld() {
         return this.world;
     }
 
+    @Override
     public int getX() {
         return this.x;
     }
 
+    @Override
     public int getZ() {
         return this.z;
+    }
+
+    @Override
+    public boolean canBeVisibleTo(APIPlayer player) {
+        return (player.getChunkRadius() + player.getLocation().getChunkX() >= this.getX()) && (player.getLocation().getChunkX() - player.getChunkRadius() <= this.getX()) &&
+                (player.getChunkRadius() + player.getLocation().getChunkZ() >= this.getZ()) && (player.getLocation().getChunkZ() - player.getChunkRadius() <= this.getZ());
+    }
+
+    @Override
+    public byte getBiomeAt(int x, int z) {
+        if (x > 15 || z > 15 || x < 0 || z < 0) {
+            throw new IllegalArgumentException("Could not fetch biome of block outside of chunk");
+        }
+        return this.biomeData[z * 16 + x];
     }
 
     /**
@@ -78,7 +101,8 @@ public class Chunk {
      * This will not show an entity to existing players who can see the chunk
      * @param entity the {@link Entity} to be added
      */
-    public void addEntity(Entity entity) {
+    @Override
+    public void addEntity(APIEntity entity) {
         this.entities.add(entity);
     }
 
@@ -87,23 +111,27 @@ public class Chunk {
      * This will not remove an entity from existing players who can see the chunk
      * @param entity the {@link Entity} to be removed
      */
-    public void removeEntity(Entity entity) {
+    @Override
+    public void removeEntity(APIEntity entity) {
         this.entities.remove(entity);
     }
 
-    public Set<Entity> getEntities() {
+    @Override
+    public Set<APIEntity> getEntities() {
         return this.entities;
     }
 
-    public byte[] getBiomeData() {
+    private byte[] getBiomeData() {
         return this.biomeData;
     }
 
-    public Block getBlock(Vector3i blockPosition) {
+    @Override
+    public APIBlock getBlock(Vector3i blockPosition) {
         return this.getBlock(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
     }
 
-    public Block getBlock(int x, int y, int z) {
+    @Override
+    public APIBlock getBlock(int x, int y, int z) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
         }
@@ -119,7 +147,7 @@ public class Chunk {
         if (!this.cachedBlocks.containsKey(subChunkIndex)) {
             this.cachedBlocks.put(subChunkIndex, new HashMap<>());
         }
-        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+        Map<Integer, APIBlock> subChunkCache = this.cachedBlocks.get(subChunkIndex);
 
         if (subChunkCache.containsKey(blockIndex)) {
             return subChunkCache.get(blockIndex);
@@ -146,19 +174,23 @@ public class Chunk {
         return block;
     }
 
-    public void setBlock(BlockType blockType, Vector3i blockPosition) {
+    @Override
+    public void setBlock(APIBlockType blockType, Vector3i blockPosition) {
         this.setBlock(new Block(blockType), blockPosition);
     }
 
-    public void setBlock(BlockType blockType, int x, int y, int z) {
+    @Override
+    public void setBlock(APIBlockType blockType, int x, int y, int z) {
         this.setBlock(new Block(blockType), x, y, z);
     }
 
-    public void setBlock(Block block, Vector3i blockPosition) {
+    @Override
+    public void setBlock(APIBlock block, Vector3i blockPosition) {
         this.setBlock(block, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
     }
 
-    public void setBlock(Block block, int x, int y, int z) {
+    @Override
+    public void setBlock(APIBlock block, int x, int y, int z) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
         }
@@ -174,7 +206,7 @@ public class Chunk {
         if (!this.cachedBlocks.containsKey(subChunkIndex)) {
             this.cachedBlocks.put(subChunkIndex, new HashMap<>());
         }
-        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+        Map<Integer, APIBlock> subChunkCache = this.cachedBlocks.get(subChunkIndex);
         subChunkCache.put(blockIndex, block);
 
         // Update internal sub chunk
@@ -189,7 +221,7 @@ public class Chunk {
         updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
         updateBlockPacket.setLayer(0);
         updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
-        for (Player viewer : this.getViewers()) {
+        for (APIPlayer viewer : this.getViewers()) {
             viewer.sendPacket(updateBlockPacket);
         }
 
@@ -263,7 +295,7 @@ public class Chunk {
      * @param player
      */
     public void sendEntitiesTo(Player player) {
-        for (Entity entity : this.getEntities()) {
+        for (APIEntity entity : this.getEntities()) {
             entity.spawnTo(player);
         }
 
@@ -274,7 +306,8 @@ public class Chunk {
      * Retrieve all of the {@link Player}s who can see this Chunk.
      * @return all the {@link Player} who can see this chunk
      */
-    public Set<Player> getViewers() {
+    @Override
+    public Set<APIPlayer> getViewers() {
         return new HashSet<>(this.spawnedTo);
     }
 
@@ -283,19 +316,20 @@ public class Chunk {
      * Despawns all entities in this chunk from the player's view
      * @param player the {@link Player} who will no longer recieve updates from this chunk or see entities in it
      */
-    public void despawnFrom(Player player) {
+    public void despawnFrom(APIPlayer player) {
         if (this.spawnedTo.remove(player)) {
-            for (Entity entity : this.getEntities()) {
+            for (APIEntity entity : this.getEntities()) {
                 entity.despawnFrom(player);
             }
 
             // Should we close this chunk
             if (this.getViewers().size() == 0) {
-                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ());
+                ((World)this.getWorld()).getChunkManager().unloadChunk(this.getX(), this.getZ());
             }
         }
     }
 
+    @Override
     public void close() {}
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.player;
 
+import io.github.willqi.pizzaserver.api.entity.APILivingEntity;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.APIBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.APIMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.attributes.APIPlayerAttributes;
@@ -11,7 +12,7 @@ import java.util.UUID;
 /**
  * Represents a player on the Minecraft server
  */
-public interface APIPlayer {
+public interface APIPlayer extends APILivingEntity {
 
     /**
      * Retrieve the Minecraft version this player is on
@@ -137,8 +138,8 @@ public interface APIPlayer {
     /**
      * Request a chunk in the player's world to be sent to the player.
      * This does not send it immediately, but rather requests the server to send the chunk.
-     * @param x
-     * @param z
+     * @param x chunk x coordinate
+     * @param z chunk z coordinate
      */
     void sendChunk(int x, int z);
 

@@ -1,14 +1,16 @@
 package io.github.willqi.pizzaserver.server.world.blocks;
 
+import io.github.willqi.pizzaserver.api.world.blocks.APIBlock;
+import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 
-public class Block {
+public class Block implements APIBlock {
 
-    private final BlockType blockType;
+    private final APIBlockType blockType;
     private int blockStateIndex = 0;
 
-    public Block(BlockType blockType) {
+    public Block(APIBlockType blockType) {
         this.blockType = blockType;
     }
 

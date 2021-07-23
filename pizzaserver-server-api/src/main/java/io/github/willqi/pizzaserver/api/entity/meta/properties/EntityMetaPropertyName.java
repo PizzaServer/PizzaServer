@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.entity.meta.properties;
+package io.github.willqi.pizzaserver.api.entity.meta.properties;
 
 public enum EntityMetaPropertyName {
     HEALTH(EntityMetaPropertyType.INTEGER),

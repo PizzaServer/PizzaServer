@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.entity.meta.flags;
+package io.github.willqi.pizzaserver.api.entity.meta.flags;
 
 public enum EntityMetaFlag {
     IS_ON_FIRE,

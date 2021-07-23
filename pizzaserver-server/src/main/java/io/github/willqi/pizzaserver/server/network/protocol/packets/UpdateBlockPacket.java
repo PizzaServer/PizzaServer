@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.world.blocks.APIBlock;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.world.blocks.Block;
 
@@ -10,7 +11,7 @@ public class UpdateBlockPacket extends BedrockPacket {
 
     public static final int ID = 0x15;
 
-    private Block block;
+    private APIBlock block;
     private Vector3i blockCoordinates;
     private int layer;
 
@@ -21,11 +22,11 @@ public class UpdateBlockPacket extends BedrockPacket {
         super(ID);
     }
 
-    public Block getBlock() {
+    public APIBlock getBlock() {
         return this.block;
     }
 
-    public void setBlock(Block block) {
+    public void setBlock(APIBlock block) {
         this.block = block;
     }
 

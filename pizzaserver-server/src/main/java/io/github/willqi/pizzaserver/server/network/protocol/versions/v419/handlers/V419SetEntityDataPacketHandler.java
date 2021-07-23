@@ -1,15 +1,16 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
+import io.github.willqi.pizzaserver.api.entity.meta.APIEntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.APIEntityMetaProperty;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlag;
-import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlagType;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaProperty;
-import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaPropertyName;
-import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaPropertyType;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
@@ -20,10 +21,10 @@ import java.util.stream.Collectors;
 
 public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEntityDataPacket> {
 
-    protected final Map<EntityMetaFlagType, Integer> supportedFlagTypeIds = new HashMap<EntityMetaFlagType, Integer>(){
+    protected final Map<EntityMetaFlagCategory, Integer> supportedFlagTypeIds = new HashMap<EntityMetaFlagCategory, Integer>(){
         {
-            this.put(EntityMetaFlagType.DATA_FLAG, 0);
-            this.put(EntityMetaFlagType.PLAYER_FLAG, 26);
+            this.put(EntityMetaFlagCategory.DATA_FLAG, 0);
+            this.put(EntityMetaFlagCategory.PLAYER_FLAG, 26);
         }
     };
 
@@ -270,11 +271,11 @@ public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEnt
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeId());
 
         // We need to write the metadata
-        EntityMetaData metaData = packet.getData();
+        APIEntityMetaData metaData = packet.getData();
 
         // Filter for the flags we support
-        Map<EntityMetaFlagType, Set<EntityMetaFlag>> flags = metaData.getFlags();
-        for (EntityMetaFlagType flagType : flags.keySet()) {
+        Map<EntityMetaFlagCategory, Set<EntityMetaFlag>> flags = metaData.getFlags();
+        for (EntityMetaFlagCategory flagType : flags.keySet()) {
             Set<EntityMetaFlag> supportedFlags = flags.get(flagType).stream()
                     .filter(this.supportedFlags::containsKey)
                     .collect(Collectors.toSet());
@@ -283,16 +284,16 @@ public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEnt
         }
 
         // Filter for the properties we support
-        Map<EntityMetaPropertyName, EntityMetaProperty<?>> properties = new HashMap<>(metaData.getProperties());
+        Map<EntityMetaPropertyName, APIEntityMetaProperty<?>> properties = new HashMap<>(metaData.getProperties());
         properties.keySet().removeIf(propertyName -> !this.supportedProperties.containsKey(propertyName));
 
         // Serialize all entries
         int totalEntries = flags.keySet().size() + properties.size();
         VarInts.writeUnsignedInt(buffer, totalEntries);
 
-        for (EntityMetaFlagType flagType : flags.keySet()) {
+        for (EntityMetaFlagCategory flagType : flags.keySet()) {
             VarInts.writeUnsignedInt(buffer, this.supportedFlagTypeIds.get(flagType));
-            if (flagType == EntityMetaFlagType.PLAYER_FLAG) {
+            if (flagType == EntityMetaFlagCategory.PLAYER_FLAG) {
                 byte flagValue = 0;
                 for (EntityMetaFlag flag : flags.get(flagType)) {
                     flagValue ^= 1 << this.supportedFlags.get(flag);

@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.world;
 
+import io.github.willqi.pizzaserver.api.world.APIWorld;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.Server;
@@ -18,7 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class World implements Closeable {
+public class World implements Closeable, APIWorld {
 
     private final Server server;
 

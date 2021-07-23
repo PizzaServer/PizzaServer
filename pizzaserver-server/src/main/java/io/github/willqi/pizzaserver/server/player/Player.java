@@ -1,16 +1,17 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.entity.meta.APIEntityMetaData;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.APIBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.APIMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.APIPlayer;
 import io.github.willqi.pizzaserver.api.player.attributes.APIAttribute;
 import io.github.willqi.pizzaserver.api.player.attributes.APIPlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.APISkin;
+import io.github.willqi.pizzaserver.api.utils.APILocation;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.LivingEntity;
-import io.github.willqi.pizzaserver.server.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlag;
-import io.github.willqi.pizzaserver.server.entity.meta.flags.EntityMetaFlagType;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.MinecraftVersion;
@@ -101,7 +102,7 @@ public class Player extends LivingEntity implements APIPlayer {
     }
 
     @Override
-    public void setMetaData(EntityMetaData metaData) {
+    public void setMetaData(APIEntityMetaData metaData) {
         super.setMetaData(metaData);
 
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
@@ -122,11 +123,6 @@ public class Player extends LivingEntity implements APIPlayer {
         if (this.hasSpawned()) {
             this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
-    }
-
-    public boolean canSeeChunk(Chunk chunk) {
-        return (this.getChunkRadius() + this.getLocation().getChunkX() >= chunk.getX()) && (this.getLocation().getChunkX() - this.getChunkRadius() <= chunk.getX()) &&
-                (this.getChunkRadius() + this.getLocation().getChunkZ() >= chunk.getZ()) && (this.getLocation().getChunkZ() - this.getChunkRadius() <= chunk.getZ());
     }
 
     public Server getServer() {
@@ -317,8 +313,8 @@ public class Player extends LivingEntity implements APIPlayer {
     }
 
     @Override
-    public void setLocation(Location newLocation) {
-        Location oldLocation = this.getLocation();
+    public void setLocation(APILocation newLocation) {
+        APILocation oldLocation = this.getLocation();
         super.setLocation(newLocation);
 
         if (this.hasSpawned()) {    // Do we need to send new chunks?
@@ -339,14 +335,14 @@ public class Player extends LivingEntity implements APIPlayer {
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
         this.sendPacket(playStatusPacket);
 
-        this.getMetaData().setFlag(EntityMetaFlagType.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
-        this.getMetaData().setFlag(EntityMetaFlagType.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
     }
 
     @Override
-    public void spawnTo(Player player) {
+    public void spawnTo(APIPlayer player) {
         // TODO: implement in order for multiplayer to work properly
     }
 
@@ -368,7 +364,7 @@ public class Player extends LivingEntity implements APIPlayer {
 
     private void sendNetworkChunkPublisher() {
         NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(this.getLocation().toVector3i());
+        packet.setCoordinates(((Location)this.getLocation()).toVector3i());
         packet.setRadius(this.getChunkRadius() * 16);
         this.sendPacket(packet);
     }
@@ -376,7 +372,7 @@ public class Player extends LivingEntity implements APIPlayer {
     /**
      * Sends and removes chunks the player can and cannot see
      */
-    private void updateVisibleChunks(Location oldLocation, int oldChunkRadius) {
+    private void updateVisibleChunks(APILocation oldLocation, int oldChunkRadius) {
         Set<Chunk> chunksToRemove = new HashSet<>();
 
         if (oldLocation != null) {

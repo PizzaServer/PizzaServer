@@ -303,7 +303,7 @@ public class Server implements APIServer {
 
         this.setMotd(this.config.getMotd());
         this.setMaximumPlayerCount(this.config.getMaximumPlayers());
-        this.dataPackManager.setPacksRequired(this.config.arePacksForced());
+        this.getResourcePackManager().setPacksRequired(this.config.arePacksForced());
 
     }
 

@@ -10,6 +10,11 @@ import java.util.Set;
 public interface APIServer {
 
     /**
+     * Start the server's internal logic
+     */
+    void boot();
+
+    /**
      * Return all {@link APIPlayer}s who been spawned into the server
      * @return {@link Set<APIPlayer>}
      */
