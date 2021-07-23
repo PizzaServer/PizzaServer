@@ -1,9 +1,11 @@
 package io.github.willqi.pizzaserver.commons.data.id;
 
+import io.github.willqi.pizzaserver.commons.utils.Util;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class Namespace {
+public final class Namespace {
 
     public static final String MISSING_NAMESPACE = "minecraft";
 
@@ -11,37 +13,12 @@ public class Namespace {
 
     public Namespace(String namespace) {
 
-         if(nullCheck(namespace)) {
+        if(namespace == null || namespace.trim().length() == 0 || !namespace.matches("([A-Za-z0-9_-]*)")) {
+            this.namespace = MISSING_NAMESPACE;
 
-            if(namespace.contains(":")) {
-                String n = namespace.split(Pattern.quote(":"))[0];
-
-                if(nullCheck(n)){
-                    this.namespace = n.trim().toLowerCase();
-                }
-
-            } else {
-                // Not spaces, no colons, all checks passed.
-                this.namespace = namespace.trim().toLowerCase();
-            }
+        } else {
+            this.namespace = namespace.trim().toLowerCase();
         }
-
-    }
-
-    /**
-     * Little constructor utility method for checking if the namespace is
-     * valid, else replacing it with a default value.
-     * @param n the namespace in
-     * @return is the namespace unmodified?
-     */
-    protected boolean nullCheck(String n) {
-
-        // Check it isn't null, length 0, or just spaces.
-        if(n == null || n.trim().length() == 0) {
-            namespace = MISSING_NAMESPACE;
-            return false;
-        }
-        return true;
     }
 
     /**

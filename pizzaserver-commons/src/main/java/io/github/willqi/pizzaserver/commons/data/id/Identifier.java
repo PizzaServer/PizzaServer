@@ -5,53 +5,38 @@ import io.github.willqi.pizzaserver.commons.utils.Util;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class Identifier {
+public final class Identifier {
 
-    protected String namespace;
+    protected final String namespace;
     protected String id;
 
     public Identifier (String namespace, String id) {
         this(new Namespace(namespace), id);
     }
-    public Identifier (Namespace namespace, String id) {
+
+    // Use Namespace#id(...)
+    protected Identifier (Namespace namespace, String id) {
         // Namespace IDs are checked thus can be trusted.
         this.namespace = namespace.getNamespaceString();
 
-        if(nullCheck(id)) {
-
-            if(id.contains(":")) {
-                String i = id.split(Pattern.quote(":"))[1]; // There should be at least index 0 + index 1
-
-                if(nullCheck(i)){
-                    this.id = i.trim().toLowerCase();
-                }
-
-            } else {
-                // Not spaces, no colons, all checks passed.
-                this.id = id.trim().toLowerCase();
-            }
-        }
-    }
-
-
-
-    /**
-     * Little constructor utility method for checking if the identifier is
-     * valid, else replacing it with a random string of characters.
-     * @param i the identifier in
-     * @return has the identifier been modified?
-     */
-    protected boolean nullCheck(String i) {
-
-        // Check it isn't null, length 0, or just spaces.
-        if(i == null || i.trim().length() == 0) {
+        if(id == null || id.trim().length() == 0 || !id.matches("([A-Za-z0-9_-]*)")) {
             this.id = "gen_"+ Util.generateRandomIdentifier(6, 6); // What are the chances of this clashing
-            return false;
+
+        } else {
+            this.id = id.trim().toLowerCase();
         }
-        return true;
+
     }
 
+    public static Identifier fromStringIdentifier(String string) {
+        if(string.contains(":")) {
+            String[] components = string.split(Pattern.quote(":"));
+            return new Identifier(components[0], components[1]);
 
+        } else {
+            return new Identifier((String) null, string);
+        }
+    }
 
     /** @return the namespace of the identifier.*/
     public String getNamespace() { return namespace; }
