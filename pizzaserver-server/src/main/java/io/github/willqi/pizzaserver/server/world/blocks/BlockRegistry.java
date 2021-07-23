@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server.world.blocks;
 
+import io.github.willqi.pizzaserver.commons.data.id.Identifier;
+import io.github.willqi.pizzaserver.commons.data.id.Namespace;
 import io.github.willqi.pizzaserver.server.world.blocks.types.*;
 import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeAir;
 import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeDirt;
@@ -14,7 +16,7 @@ import java.util.*;
 public class BlockRegistry {
 
     // All registered block types
-    private final Map<String, BlockType> types = new HashMap<>();
+    private final Map<Identifier, BlockType> types = new HashMap<>();
 
     // All registered CUSTOM block types
     private final Set<BlockType> customTypes = new HashSet<>();
@@ -34,7 +36,7 @@ public class BlockRegistry {
             throw new IllegalArgumentException("Block id " + blockType.getBlockId() + " was already registered.");
         }
 
-        if (!blockType.getBlockId().startsWith("minecraft:")) {
+        if (!blockType.getBlockId().getNamespace().equals("minecraft")) {
             this.customTypes.add(blockType);
         }
         this.types.put(blockType.getBlockId(), blockType);
@@ -46,7 +48,7 @@ public class BlockRegistry {
      * @return {@link BlockType}
      * @throws NullPointerException if the block does not exist
      */
-    public BlockType getBlockType(String blockId) {
+    public BlockType getBlockType(Identifier blockId) {
         if (!this.types.containsKey(blockId)) {
             throw new NullPointerException("Could not find a block type by the id of " + blockId);
         }
@@ -58,7 +60,7 @@ public class BlockRegistry {
      * @param blockId the id of the block (e.g. minecraft:air)
      * @return if the block was registered or not
      */
-    public boolean hasBlockType(String blockId) {
+    public boolean hasBlockType(Identifier blockId) {
         return this.types.containsKey(blockId);
     }
 

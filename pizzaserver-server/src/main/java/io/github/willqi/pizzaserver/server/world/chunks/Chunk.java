@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.world.chunks;
 
+import io.github.willqi.pizzaserver.commons.data.id.Identifier;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
@@ -129,11 +130,14 @@ public class Chunk {
         BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
         BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
         Block block;
-        if (blockRegistry.hasBlockType(paletteEntry.getId())) {
+        Identifier paletteEntryID = Identifier.fromStringIdentifier(paletteEntry.getId());
+
+        if (blockRegistry.hasBlockType(paletteEntryID)) {
             // Block id is registered
-            BlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
+            BlockType blockType = blockRegistry.getBlockType(paletteEntryID);
             block = new Block(blockType);
             block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
+
         } else {
             // The block id is not registered
             this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
@@ -180,7 +184,7 @@ public class Chunk {
         // Update internal sub chunk
         BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
         BlockLayer mainBlockLayer = subChunk.getLayer(0);
-        BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
+        BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId().getID(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
         mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
 
         // Send update block packet
