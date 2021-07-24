@@ -1,9 +1,11 @@
 package io.github.willqi.pizzaserver.server.scheduler;
 
 import io.github.willqi.pizzaserver.server.BedrockServer;
+import io.github.willqi.pizzaserver.commons.utils.Check;
+import io.github.willqi.pizzaserver.server.scheduler.task.RunnableTypeTask;
+import io.github.willqi.pizzaserver.server.scheduler.task.SchedulerTask;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 public class Scheduler {
 
@@ -15,7 +17,7 @@ public class Scheduler {
 
     protected int tickDelay; // The amount of server ticks between each scheduler tick.
 
-    protected final ArrayList<Thread> activeThreads;
+    protected final Set<Thread> activeThreads;
 
     protected ArrayList<SchedulerTaskEntry> schedulerTasks;
     protected boolean isRunning;
@@ -31,7 +33,7 @@ public class Scheduler {
         this.tickDelay = Math.max(1, tickDelay);
 
         this.schedulerTasks = new ArrayList<>();
-        this.activeThreads = new ArrayList<>();
+        this.activeThreads = Collections.synchronizedSet(new HashSet<>());
         this.isRunning = false;
     }
 
@@ -175,7 +177,7 @@ public class Scheduler {
 
     // -- Task Control --
 
-    protected void queueTaskEntry(SchedulerTaskEntry entry){
+    protected synchronized void queueTaskEntry(SchedulerTaskEntry entry){
         if(entry.getNextTick() >= schedulerTick) throw new IllegalStateException("Task cannot be scheduled before the current tick.");
 
         int size = schedulerTasks.size();
@@ -193,7 +195,14 @@ public class Scheduler {
 
     // -- Task Registering --
 
+    public PendingEntryBuilder prepareTask(Runnable task) {
+        SchedulerTask rTask = new RunnableTypeTask(task);
+        return new PendingEntryBuilder(this, rTask);
+    }
 
+    public PendingEntryBuilder prepareTask(SchedulerTask task) {
+        return new PendingEntryBuilder(this, task);
+    }
 
     // -- Getters --
 
@@ -207,7 +216,7 @@ public class Scheduler {
     /** @return the amount of server ticks between each scheduler tick. */
     public int getTickDelay() { return tickDelay; }
     /** @return a list of active async task threads */
-    public ArrayList<Thread> getActiveThreads() { return new ArrayList<>(activeThreads); }
+    public Set<Thread> getActiveThreads() { return new HashSet<>(activeThreads); }
     /** @return true if the scheduler is currently active. */
     public boolean isRunning() { return isRunning; }
 
@@ -216,5 +225,61 @@ public class Scheduler {
     /** Sets the amount of server ticks that should pass between each scheduler tick. */
     public void setTickDelay(int tickDelay) {
         this.tickDelay = tickDelay;
+    }
+
+
+    public static class PendingEntryBuilder {
+
+        protected final Scheduler scheduler;
+        protected final SchedulerTask task;
+
+        protected int interval;
+        protected int delay;
+        protected boolean isAsynchronous;
+
+        protected PendingEntryBuilder(Scheduler scheduler, SchedulerTask task) {
+            this.scheduler = Check.nullParam(scheduler, "scheduler");
+            this.task = Check.nullParam(task, "task");
+
+            this.interval = 0;
+            this.delay = 0;
+            this.isAsynchronous = false;
+        }
+
+        public SchedulerTask schedule() {
+            long nextTick = scheduler.schedulerTick + delay + 1;
+            SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsynchronous);
+            scheduler.queueTaskEntry(entry);
+            return task;
+        }
+
+
+        public int getInterval() {
+            return interval;
+        }
+
+        public int getDelay() {
+            return delay;
+        }
+
+        public boolean isAsynchronous() {
+            return isAsynchronous;
+        }
+
+
+        public PendingEntryBuilder setInterval(int interval) {
+            this.interval = Check.inclusiveLowerBound(interval, 0, "interval");
+            return this;
+        }
+
+        public PendingEntryBuilder setDelay(int delay) {
+            this.delay = Check.inclusiveLowerBound(delay, 0, "delay");
+            return this;
+        }
+
+        public PendingEntryBuilder setAsynchronous(boolean asynchronous) {
+            this.isAsynchronous = asynchronous;
+            return this;
+        }
     }
 }

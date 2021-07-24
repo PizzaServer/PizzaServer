@@ -158,8 +158,8 @@ public class MCWorldBlockPalette implements BlockPalette {
 
 
         public MCWorldEntry(NBTCompound data) {
-            this.name = data.getString("name").getValue();
-            this.version = data.getInteger("version").getValue();
+            this.name = data.getString("name");
+            this.version = data.getInteger("version");
             this.state = data.getCompound("states");
         }
 

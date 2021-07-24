@@ -74,7 +74,7 @@ public abstract class BedrockMinecraftVersion implements MinecraftVersion {
             while (blockStatesNBTStream.available() > 0) {
                 NBTCompound blockState = blockStatesNBTStream.readCompound();
 
-                String name = blockState.getString("name").getValue();
+                String name = blockState.getString("name");
                 if (!blockStates.containsKey(name)) {
                     blockStates.put(name, new ArrayList<>());
                 }

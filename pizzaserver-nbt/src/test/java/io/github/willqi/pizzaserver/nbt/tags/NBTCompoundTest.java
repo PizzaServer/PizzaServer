@@ -47,13 +47,13 @@ public class NBTCompoundTest {
 
         // Confirm results are correct
         NBTCompound rebuiltCompound = inputStream.readCompound();
-        NBTDouble nbtDouble = rebuiltCompound.getDouble("double");
-        NBTInteger nbtInteger = rebuiltCompound.getInteger("int");
+        double nbtDouble = rebuiltCompound.getDouble("double");
+        int nbtInteger = rebuiltCompound.getInteger("int");
         NBTCompound rebuildInnerCompound = rebuiltCompound.getCompound("innerCompound");
 
-        assertEquals(12d, nbtDouble.getValue());
-        assertEquals(2, nbtInteger.getValue());
-        assertEquals(12f, rebuildInnerCompound.getFloat("float").getValue());
+        assertEquals(12d, nbtDouble);
+        assertEquals(2, nbtInteger);
+        assertEquals(12f, rebuildInnerCompound.getFloat("float"));
 
         outputStream.close();
         inputStream.close();
