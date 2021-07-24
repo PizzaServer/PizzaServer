@@ -5,6 +5,8 @@ import io.github.willqi.pizzaserver.server.Server;
 
 public class PlayerActionPacket extends BedrockPacket {
 
+    public static final int ID = 0x24;
+
     public static final int START_BREAK = 0;
     public static final int ABORT_BREAK = 1;
     public static final int STOP_BREAK = 2;
@@ -36,7 +38,6 @@ public class PlayerActionPacket extends BedrockPacket {
     private Vector3 vector3;
     private int face;
 
-    public static final int ID = 0x24;
     public PlayerActionPacket() {
         super(ID);
     }
