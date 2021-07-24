@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.plugin.events.player.PreLoginAPIEvent;
+import io.github.willqi.pizzaserver.server.plugin.event.type.player.PlayerPreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
@@ -70,7 +70,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         Player player = new Player(this.server, this.session, loginPacket);
         this.player = player;
 
-        PreLoginAPIEvent event = new PreLoginAPIEvent(player);
+        PlayerPreLoginEvent event = new PlayerPreLoginEvent(player);
         this.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             this.session.disconnect();

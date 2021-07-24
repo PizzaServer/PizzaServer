@@ -1,13 +1,13 @@
 package io.github.willqi.pizzaserver.api.plugin;
 
-import io.github.willqi.pizzaserver.api.plugin.events.APIEvent;
+import io.github.willqi.pizzaserver.api.plugin.event.BaseEvent;
 
 public interface APIPluginManager {
 
     /**
-     * Notify all plugins of an {@link APIEvent}
+     * Notify all plugins of an {@link BaseEvent}
      * @param event
      */
-    void callEvent(APIEvent event);
+    void callEvent(BaseEvent event);
 
 }

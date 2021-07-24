@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.plugin.APIPluginManager;
 import io.github.willqi.pizzaserver.api.utils.APILogger;
 import io.github.willqi.pizzaserver.api.world.APIWorldManager;
 import io.github.willqi.pizzaserver.api.world.blocks.APIBlockRegistry;
+import io.github.willqi.pizzaserver.server.plugin.event.EventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
@@ -14,6 +15,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.DataPackManager;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.plugin.PluginManager;
+import io.github.willqi.pizzaserver.server.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.Logger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
@@ -32,11 +34,15 @@ public class Server implements APIServer {
     private final BedrockServer network = new BedrockServer(this);
     private final APIPluginManager pluginManager = new PluginManager(this);
     private final DataPackManager dataPackManager = new DataPackManager(this);
-    private final WorldManager worldManager = new WorldManager(this);
+    private final APIWorldManager worldManager = new WorldManager(this);
+    private final EventManager eventManager = new EventManager(this);
 
-    private final BlockRegistry blockRegistry = new BlockRegistry();
+    private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
+    private final Scheduler scheduler = new Scheduler(this, 1);
 
-    private final Logger logger = new Logger("Server");
+    private final APIBlockRegistry blockRegistry = new BlockRegistry();
+
+    private final APILogger logger = new Logger("Server");
 
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
@@ -91,6 +97,7 @@ public class Server implements APIServer {
             throw new RuntimeException(exception);
         }
         this.running = true;
+        this.scheduler.startScheduler();
 
         int currentTps = 0;
         long initNanoTime = System.nanoTime();
@@ -112,6 +119,14 @@ public class Server implements APIServer {
                         }
                         sessions.remove();
                     }
+                }
+            }
+
+            for(Scheduler scheduler: syncedSchedulers) {
+                try {
+                    scheduler.serverTick();
+                } catch (Exception err) {
+                    err.printStackTrace();
                 }
             }
 
@@ -254,6 +269,26 @@ public class Server implements APIServer {
     @Override
     public APIBlockRegistry getBlockRegistry() {
         return this.blockRegistry;
+    }
+
+    public EventManager getEventManager() {
+        return this.eventManager;
+    }
+
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+
+    public Set<Scheduler> getSyncedSchedulers() {
+        return syncedSchedulers;
+    }
+
+    public void syncScheduler(Scheduler scheduler) {
+        if(scheduler.isRunning()) syncedSchedulers.add(scheduler);
+    }
+
+    public boolean desyncScheduler(Scheduler scheduler) {
+        return syncedSchedulers.remove(scheduler);
     }
 
     @Override

@@ -11,7 +11,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.MovePlayerPa
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RequestChunkRadiusPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.plugin.events.player.PlayerChatAPIEvent;
+import io.github.willqi.pizzaserver.server.plugin.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.Location;
 
 import java.util.HashSet;
@@ -84,7 +84,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
     @Override
     public void onPacket(TextPacket packet) {
         if (packet.getType() == TextPacket.TextType.CHAT) {
-            PlayerChatAPIEvent event = new PlayerChatAPIEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
+            PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
 
             this.player.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
