@@ -36,7 +36,7 @@ public class PlayerActionPacket extends BedrockPacket {
     private Vector3 vector3;
     private int face;
 
-    public static int ID = 0x24;
+    public static final int ID = 0x24;
     public PlayerActionPacket() {
         super(ID);
     }
