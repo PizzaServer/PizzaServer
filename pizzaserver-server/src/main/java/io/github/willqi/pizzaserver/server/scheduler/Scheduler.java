@@ -2,8 +2,7 @@ package io.github.willqi.pizzaserver.server.scheduler;
 
 import io.github.willqi.pizzaserver.server.Server;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 public class Scheduler {
 
@@ -15,7 +14,7 @@ public class Scheduler {
 
     protected int tickDelay; // The amount of server ticks between each scheduler tick.
 
-    protected final ArrayList<Thread> activeThreads;
+    protected final Set<Thread> activeThreads;
 
     protected ArrayList<SchedulerTaskEntry> schedulerTasks;
     protected boolean isRunning;
@@ -31,7 +30,7 @@ public class Scheduler {
         this.tickDelay = Math.max(1, tickDelay);
 
         this.schedulerTasks = new ArrayList<>();
-        this.activeThreads = new ArrayList<>();
+        this.activeThreads = Collections.synchronizedSet(new HashSet<>());
         this.isRunning = false;
     }
 
@@ -207,7 +206,7 @@ public class Scheduler {
     /** @return the amount of server ticks between each scheduler tick. */
     public int getTickDelay() { return tickDelay; }
     /** @return a list of active async task threads */
-    public ArrayList<Thread> getActiveThreads() { return new ArrayList<>(activeThreads); }
+    public Set<Thread> getActiveThreads() { return new HashSet<>(activeThreads); }
     /** @return true if the scheduler is currently active. */
     public boolean isRunning() { return isRunning; }
 
