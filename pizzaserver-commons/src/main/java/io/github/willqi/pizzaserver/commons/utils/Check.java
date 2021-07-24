@@ -34,8 +34,16 @@ public final class Check {
      * @param name the name of the variable/property.
      */
     public static void inclusiveBounds(int val, int lowerBound, int upperBound, String name) {
-        if((val < lowerBound)) throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Lower = %s)", name, val, lowerBound));
-        if((val > upperBound)) throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Upper = %s)", name, val, upperBound));
+        inclusiveLowerBound(val, lowerBound, name);
+        inclusiveUpperBound(val, upperBound, name);
+    }
+
+    public static void inclusiveLowerBound(int val, int bound, String name) {
+        if((val < bound)) throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Lower = %s)", name, val, bound));
+    }
+
+    public static void inclusiveUpperBound(int val, int bound, String name) {
+        if((val < bound)) throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Upper = %s)", name, val, bound));
     }
 
     public static boolean isNull(Object obj) {

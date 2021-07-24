@@ -1,6 +1,9 @@
 package io.github.willqi.pizzaserver.server.scheduler;
 
+import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.scheduler.task.RunnableTypeTask;
+import io.github.willqi.pizzaserver.server.scheduler.task.SchedulerTask;
 
 import java.util.*;
 
@@ -191,8 +194,24 @@ public class Scheduler {
     }
 
     // -- Task Registering --
+    // Maybe get this in a builder? idk
 
+    public SchedulerTask scheduleRunnable(Runnable task, int delay, int interval, boolean isAsync) {
+        SchedulerTask rTask = new RunnableTypeTask(task);
+        scheduleTask(rTask, delay, interval, isAsync);
 
+        return rTask;
+    }
+
+    public synchronized void scheduleTask(SchedulerTask task, int delay, int interval, boolean isAsync) {
+        Check.nullParam(task, "task");
+        Check.inclusiveLowerBound(delay, 0, "delay");
+        Check.inclusiveLowerBound(delay, 0, "interval");
+
+        long nextTick = this.schedulerTick + delay + 1;
+        SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsync);
+        queueTaskEntry(entry);
+    }
 
     // -- Getters --
 
