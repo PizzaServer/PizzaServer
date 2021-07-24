@@ -12,13 +12,13 @@ import io.github.willqi.pizzaserver.api.player.skin.SkinAnimation;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPiece;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPieceTint;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.server.player.skin.BedrockSkin;
-import io.github.willqi.pizzaserver.server.player.skin.BedrockSkinAnimation;
-import io.github.willqi.pizzaserver.server.player.skin.BedrockSkinPersonaPiece;
-import io.github.willqi.pizzaserver.server.player.skin.BedrockSkinPersonaPieceTint;
+import io.github.willqi.pizzaserver.server.player.skin.ImplSkin;
+import io.github.willqi.pizzaserver.server.player.skin.ImplSkinAnimation;
+import io.github.willqi.pizzaserver.server.player.skin.ImplSkinPersonaPiece;
+import io.github.willqi.pizzaserver.server.player.skin.ImplSkinPersonaPieceTint;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;
@@ -30,7 +30,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.*;
 
-public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
+public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacket> {
 
     private static final Gson GSON = new Gson();
 
@@ -47,7 +47,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
     }
 
     @Override
-    public LoginPacket decode(ByteBuf buffer, PacketHelper helper) {
+    public LoginPacket decode(ByteBuf buffer, BasePacketHelper helper) {
         LoginPacket packet = new LoginPacket();
         packet.setProtocol(buffer.readInt());
 
@@ -154,7 +154,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         Device playerDevice = Device.getPlatformByOS(skinData.get("DeviceOS").getAsInt());
         String languageCode = skinData.get("LanguageCode").getAsString();
 
-        BedrockSkin.Builder skinBuilder = new BedrockSkin.Builder();
+        ImplSkin.Builder skinBuilder = new ImplSkin.Builder();
 
         skinBuilder.setSkinId(skinData.get("SkinId").getAsString())
                 .setPlayFabId(skinData.has("PlayFabId") ? skinData.get("PlayFabId").getAsString() : "")
@@ -179,7 +179,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         for (JsonElement element : skinData.get("AnimatedImageData").getAsJsonArray()) {
             JsonObject animation = element.getAsJsonObject();
             animations.add(
-                    new BedrockSkinAnimation.Builder()
+                    new ImplSkinAnimation.Builder()
                             .setType(animation.get("Type").getAsInt())
                             .setFrame(animation.get("Frames").getAsInt())
                             .setSkinHeight(animation.get("ImageWidth").getAsInt())
@@ -194,7 +194,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         for (JsonElement element : skinData.get("PersonaPieces").getAsJsonArray()) {
             JsonObject piece = element.getAsJsonObject();
             pieces.add(
-                    new BedrockSkinPersonaPiece.Builder()
+                    new ImplSkinPersonaPiece.Builder()
                         .setId(piece.get("PieceId").getAsString())
                         .setType(piece.get("PieceType").getAsString())
                         .setPackId(UUID.fromString(piece.get("PackId").getAsString()))
@@ -214,11 +214,11 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
             for (int i = 0; i < colorsArray.size(); i++) {
                 colors.add(colorsArray.get(i).getAsString());
             }
-            tints.add(new BedrockSkinPersonaPieceTint(tint.get("PieceType").getAsString(), colors));
+            tints.add(new ImplSkinPersonaPieceTint(tint.get("PieceType").getAsString(), colors));
         }
         skinBuilder.setTints(tints);
 
-        BedrockSkin skin = skinBuilder.build();
+        ImplSkin skin = skinBuilder.build();
 
         packet.setDevice(playerDevice);
         packet.setLanguageCode(languageCode);

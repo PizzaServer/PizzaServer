@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Sent to inform the client of all packs the server has
  */
-public class ResourcePacksInfoPacket extends BedrockNetworkPacket {
+public class ResourcePacksInfoPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x06;
 

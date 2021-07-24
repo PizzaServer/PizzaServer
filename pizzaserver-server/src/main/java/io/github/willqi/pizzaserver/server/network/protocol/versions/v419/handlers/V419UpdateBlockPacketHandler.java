@@ -3,15 +3,15 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.V419MinecraftVersion;
 import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class V419UpdateBlockPacketHandler extends ProtocolPacketHandler<UpdateBlockPacket> {
+public class V419UpdateBlockPacketHandler extends BaseProtocolPacketHandler<UpdateBlockPacket> {
 
     protected final Map<UpdateBlockPacket.Flag, Integer> flagValues = new HashMap<UpdateBlockPacket.Flag, Integer>(){
         {
@@ -23,7 +23,7 @@ public class V419UpdateBlockPacketHandler extends ProtocolPacketHandler<UpdateBl
     };
 
     @Override
-    public void encode(UpdateBlockPacket packet, ByteBuf buffer, PacketHelper helper) {
+    public void encode(UpdateBlockPacket packet, ByteBuf buffer, BasePacketHelper helper) {
         VarInts.writeInt(buffer, packet.getBlockCoordinates().getX());
         VarInts.writeUnsignedInt(buffer, packet.getBlockCoordinates().getY());
         VarInts.writeInt(buffer, packet.getBlockCoordinates().getZ());

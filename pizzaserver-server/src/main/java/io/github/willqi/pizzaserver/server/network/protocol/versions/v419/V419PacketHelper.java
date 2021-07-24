@@ -7,15 +7,15 @@ import io.github.willqi.pizzaserver.server.item.Item;
 import io.github.willqi.pizzaserver.server.item.ItemBlock;
 import io.github.willqi.pizzaserver.server.item.ItemID;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.netty.buffer.ByteBuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class V419PacketHelper extends PacketHelper {
+public class V419PacketHelper extends BasePacketHelper {
 
-    public final static PacketHelper INSTANCE = new V419PacketHelper();
+    public final static BasePacketHelper INSTANCE = new V419PacketHelper();
 
 
     public V419PacketHelper() {

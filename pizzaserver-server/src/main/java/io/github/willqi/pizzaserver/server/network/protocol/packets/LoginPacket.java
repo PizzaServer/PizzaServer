@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.player.skin.Skin;
 
 import java.util.UUID;
 
-public class LoginPacket extends BedrockNetworkPacket {
+public class LoginPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x01;
 

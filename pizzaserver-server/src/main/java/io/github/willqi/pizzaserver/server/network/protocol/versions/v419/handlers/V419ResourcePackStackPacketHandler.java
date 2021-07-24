@@ -2,15 +2,15 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePackStackPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.packs.DataPack;
 import io.netty.buffer.ByteBuf;
 
-public class V419ResourcePackStackPacketHandler extends ProtocolPacketHandler<ResourcePackStackPacket> {
+public class V419ResourcePackStackPacketHandler extends BaseProtocolPacketHandler<ResourcePackStackPacket> {
 
     @Override
-    public void encode(ResourcePackStackPacket packet, ByteBuf buffer, PacketHelper helper) {
+    public void encode(ResourcePackStackPacket packet, ByteBuf buffer, BasePacketHelper helper) {
         buffer.writeBoolean(packet.isForcedToAccept());
 
         VarInts.writeUnsignedInt(buffer, packet.getBehaviourPacks().size());

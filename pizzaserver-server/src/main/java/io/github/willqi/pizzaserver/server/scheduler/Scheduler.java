@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.scheduler;
 
-import io.github.willqi.pizzaserver.server.BedrockServer;
+import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.server.scheduler.task.RunnableTypeTask;
 import io.github.willqi.pizzaserver.server.scheduler.task.SchedulerTask;
@@ -10,7 +10,7 @@ import java.util.*;
 public class Scheduler {
 
     private final UUID schedulerID;
-    protected final BedrockServer server;
+    protected final ImplServer server;
 
     protected long syncedTick;    // The last received server tick.
     protected long schedulerTick; // The scheduler's actual tick. This depends on the tickrate
@@ -23,7 +23,7 @@ public class Scheduler {
     protected boolean isRunning;
 
     public Scheduler thiss() { return this; }
-    public Scheduler(BedrockServer server, int tickDelay) {
+    public Scheduler(ImplServer server, int tickDelay) {
         this.schedulerID = UUID.randomUUID();
 
         this.server = server;

@@ -17,7 +17,7 @@ import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
 import java.util.*;
 
-public class StartGamePacket extends BedrockNetworkPacket {
+public class StartGamePacket extends ImplBedrockPacket {
 
     public static final int ID = 0x0b;
 

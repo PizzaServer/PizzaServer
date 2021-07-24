@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
-public class BiomeDefinitionPacket extends BedrockNetworkPacket {
+public class BiomeDefinitionPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x7a;
 

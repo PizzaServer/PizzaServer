@@ -5,14 +5,14 @@ import io.github.willqi.pizzaserver.format.exceptions.world.chunks.NoChunkFoundE
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCWorldChunk;
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCChunkDatabase;
 import io.github.willqi.pizzaserver.format.mcworld.world.info.MCWorldInfo;
-import io.github.willqi.pizzaserver.server.world.chunks.BedrockChunk;
-import io.github.willqi.pizzaserver.server.world.providers.actions.RequestChunkProcessingAction;
-import io.github.willqi.pizzaserver.server.world.providers.WorldProvider;
+import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
+import io.github.willqi.pizzaserver.server.world.providers.actions.ImplRequestChunkProcessingAction;
+import io.github.willqi.pizzaserver.server.world.providers.BaseWorldProvider;
 
 import java.io.File;
 import java.io.IOException;
 
-public class LevelDBWorldProvider extends WorldProvider {
+public class LevelDBWorldProvider extends BaseWorldProvider {
 
     private final MCWorld mcWorld;
     private final MCWorldInfo worldInfo;
@@ -31,7 +31,7 @@ public class LevelDBWorldProvider extends WorldProvider {
     }
 
     @Override
-    public void onChunkRequest(RequestChunkProcessingAction action) {
+    public void onChunkRequest(ImplRequestChunkProcessingAction action) {
         try {
             MCWorldChunk internalChunk;
             try {
@@ -50,7 +50,7 @@ public class LevelDBWorldProvider extends WorldProvider {
                         .build();
             }
 
-            BedrockChunk chunk = new BedrockChunk.Builder()
+            ImplChunk chunk = new ImplChunk.Builder()
                     .setWorld(action.getWorld())
                     .setX(internalChunk.getX())
                     .setZ(internalChunk.getZ())

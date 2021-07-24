@@ -1,11 +1,11 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketRegistry;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.*;
 
-public class V419PacketRegistry extends PacketRegistry {
+public class V419PacketRegistry extends BasePacketRegistry {
 
     public V419PacketRegistry() {
         this.register(LoginPacket.ID, new V419LoginPacketHandler())
@@ -35,7 +35,7 @@ public class V419PacketRegistry extends PacketRegistry {
     }
 
     @Override
-    public PacketHelper getPacketHelper() {
+    public BasePacketHelper getPacketHelper() {
         return V419PacketHelper.INSTANCE;
     }
 

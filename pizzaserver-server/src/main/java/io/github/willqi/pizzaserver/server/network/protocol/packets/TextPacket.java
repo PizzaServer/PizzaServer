@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import java.util.Collections;
 import java.util.List;
 
-public class TextPacket extends BedrockNetworkPacket {
+public class TextPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x09;
 

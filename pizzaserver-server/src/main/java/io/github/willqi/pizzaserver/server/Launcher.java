@@ -4,7 +4,7 @@ public class Launcher {
 
     public static void main(String[] args) {
 
-        BedrockServer server = new BedrockServer(System.getProperty("user.dir"));
+        ImplServer server = new ImplServer(System.getProperty("user.dir"));
         server.boot();
 
     }

@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * Contains a portion of the data of a resource pack
  */
-public class ResourcePackChunkDataPacket extends BedrockNetworkPacket {
+public class ResourcePackChunkDataPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x53;
 

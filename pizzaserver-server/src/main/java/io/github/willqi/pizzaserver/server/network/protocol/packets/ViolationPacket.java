@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class ViolationPacket extends BedrockNetworkPacket {
+public class ViolationPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x9c;
 

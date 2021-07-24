@@ -4,14 +4,14 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTString;
-import io.github.willqi.pizzaserver.server.world.blocks.types.BedrockBlockType;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class BlockTypeDirt extends BedrockBlockType {
+public class BlockTypeDirt extends BaseBlockType {
 
     private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
         {

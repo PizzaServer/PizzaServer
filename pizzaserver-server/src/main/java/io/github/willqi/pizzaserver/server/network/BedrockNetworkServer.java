@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network;
 
 import com.nukkitx.network.raknet.*;
+import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,17 +13,17 @@ import java.util.concurrent.ExecutionException;
 
 public class BedrockNetworkServer {
 
-    private final io.github.willqi.pizzaserver.server.BedrockServer server;
+    private final ImplServer server;
 
     private RakNetServer rakNetServer;
     private volatile BedrockPong pong;
 
 
-    public BedrockNetworkServer(io.github.willqi.pizzaserver.server.BedrockServer server) {
+    public BedrockNetworkServer(ImplServer server) {
         this.server = server;
     }
 
-    public io.github.willqi.pizzaserver.server.BedrockServer getPizzaServer() {
+    public ImplServer getPizzaServer() {
         return this.server;
     }
 

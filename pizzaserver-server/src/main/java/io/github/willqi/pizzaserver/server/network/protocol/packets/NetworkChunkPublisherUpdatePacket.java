@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
  *
  * Contrary to the name of the packet, the radius represents blocks rather than chunks
  */
-public class NetworkChunkPublisherUpdatePacket extends BedrockNetworkPacket {
+public class NetworkChunkPublisherUpdatePacket extends ImplBedrockPacket {
 
     public static final int ID = 0x79;
 

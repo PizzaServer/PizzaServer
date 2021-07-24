@@ -10,7 +10,7 @@ public enum ProviderType {
     LEVELDB;
 
 
-    public WorldProvider create(File worldFile) throws IOException {
+    public BaseWorldProvider create(File worldFile) throws IOException {
         switch (this) {
             case LEVELDB:
                 return new LevelDBWorldProvider(worldFile);

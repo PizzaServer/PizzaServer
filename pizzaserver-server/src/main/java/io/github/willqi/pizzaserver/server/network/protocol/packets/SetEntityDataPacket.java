@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 
-public class SetEntityDataPacket extends BedrockNetworkPacket {
+public class SetEntityDataPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x27;
 

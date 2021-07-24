@@ -5,12 +5,12 @@ import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 import io.github.willqi.pizzaserver.api.item.ItemToolType;
-import io.github.willqi.pizzaserver.server.world.blocks.types.BedrockBlockType;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
 
 import java.util.*;
 
-public class BlockTypeStone extends BedrockBlockType {
+public class BlockTypeStone extends BaseBlockType {
 
     private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
         {

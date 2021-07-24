@@ -6,10 +6,10 @@ import com.nukkitx.network.util.DisconnectReason;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BedrockMinecraftVersion;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.server.network.utils.Zlib;
-import io.github.willqi.pizzaserver.server.player.BedrockPlayer;
+import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -24,9 +24,9 @@ public class BedrockClientSession {
     private final RakNetServerSession serverSession;
     private volatile boolean disconnected;
 
-    private BedrockMinecraftVersion version;
-    private volatile BedrockPlayer player = null;
-    private volatile BedrockPacketHandler handler = null;
+    private BaseMinecraftVersion version;
+    private volatile ImplPlayer player = null;
+    private volatile BaseBedrockPacketHandler handler = null;
 
     private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
     private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
@@ -40,23 +40,23 @@ public class BedrockClientSession {
         return this.server;
     }
 
-    public BedrockMinecraftVersion getVersion() {
+    public BaseMinecraftVersion getVersion() {
         return this.version;
     }
 
-    public void setVersion(BedrockMinecraftVersion version) {
+    public void setVersion(BaseMinecraftVersion version) {
         this.version = version;
     }
 
-    public BedrockPlayer getPlayer() {
+    public ImplPlayer getPlayer() {
         return this.player;
     }
 
-    public void setPlayer(BedrockPlayer player) {
+    public void setPlayer(ImplPlayer player) {
         this.player = player;
     }
 
-    public void setPacketHandler(BedrockPacketHandler packetHandler) {
+    public void setPacketHandler(BaseBedrockPacketHandler packetHandler) {
         this.handler = packetHandler;
     }
 
@@ -88,7 +88,7 @@ public class BedrockClientSession {
             int header = packet.getPacketId() & 0x3ff;
             VarInts.writeUnsignedInt(packetBuffer, header);
 
-            ProtocolPacketHandler<BedrockPacket> handler = (ProtocolPacketHandler<BedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
+            BaseProtocolPacketHandler<BedrockPacket> handler = (BaseProtocolPacketHandler<BedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
             if (this.handler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
                 return;
@@ -143,7 +143,7 @@ public class BedrockClientSession {
     public void handlePacket(int packetId, ByteBuf buffer) {
 
         if (this.version != null) {
-            ProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
+            BaseProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when decoding packet id " + packetId);
                 return;
@@ -159,7 +159,7 @@ public class BedrockClientSession {
 
             // Parse login packet given protocol if available
             if (ServerProtocol.VERSIONS.containsKey(protocol)) {
-                BedrockMinecraftVersion version = ServerProtocol.VERSIONS.get(protocol);
+                BaseMinecraftVersion version = ServerProtocol.VERSIONS.get(protocol);
                 this.version = version;
                 BedrockPacket loginPacket;
                 try {

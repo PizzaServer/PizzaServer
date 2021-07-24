@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class LevelChunkPacket extends BedrockNetworkPacket {
+public class LevelChunkPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x3a;
 

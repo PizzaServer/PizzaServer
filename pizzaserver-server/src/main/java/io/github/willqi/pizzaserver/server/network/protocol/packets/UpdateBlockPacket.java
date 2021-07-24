@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import java.util.Collections;
 import java.util.Set;
 
-public class UpdateBlockPacket extends BedrockNetworkPacket {
+public class UpdateBlockPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x15;
 

@@ -4,26 +4,26 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.BedrockServer;
-import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
+import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ChunkRadiusUpdatedPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MovePlayerPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RequestChunkRadiusPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
-import io.github.willqi.pizzaserver.server.player.BedrockPlayer;
+import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.plugin.event.type.player.PlayerChatEvent;
-import io.github.willqi.pizzaserver.server.utils.BedrockLocation;
+import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class FullGamePacketHandler extends BedrockPacketHandler {
+public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
-    private final BedrockPlayer player;
+    private final ImplPlayer player;
 
 
-    public FullGamePacketHandler(BedrockPlayer player) {
+    public FullGamePacketHandler(ImplPlayer player) {
         this.player = player;
         this.completeLogin();
     }
@@ -36,7 +36,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
         World defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
         if (defaultWorld == null) {
             this.player.disconnect("Failed to find default world");
-            BedrockServer.getInstance().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
+            ImplServer.getInstance().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
             return;
         }
 
@@ -77,7 +77,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
 
     @Override
     public void onPacket(MovePlayerPacket packet) {
-        BedrockLocation newLocation = new BedrockLocation(this.player.getLocation().getWorld(), packet.getPosition());
+        ImplLocation newLocation = new ImplLocation(this.player.getLocation().getWorld(), packet.getPosition());
         this.player.setLocation(newLocation);
     }
 

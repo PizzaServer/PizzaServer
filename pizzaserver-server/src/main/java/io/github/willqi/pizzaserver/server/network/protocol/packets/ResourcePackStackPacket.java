@@ -11,7 +11,7 @@ import java.util.Set;
  * Sent after the client responds with a HAVE_ALL_PACKS from the ResourcePackResponsePacket.
  * Contains all of the packs the server supports
  */
-public class ResourcePackStackPacket extends BedrockNetworkPacket {
+public class ResourcePackStackPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x07;
 

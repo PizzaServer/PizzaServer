@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol;
 
-import io.github.willqi.pizzaserver.server.BedrockServer;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BedrockMinecraftVersion;
+import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.V419MinecraftVersion;
 
 import java.lang.reflect.Constructor;
@@ -15,7 +15,7 @@ public class ServerProtocol {
     public static final int LATEST_PROTOCOL_VERISON = V419MinecraftVersion.PROTOCOL;
     public static final int LATEST_BLOCK_STATES_VERSION = 17825806;
 
-    public static final Map<Integer, BedrockMinecraftVersion> VERSIONS = new HashMap<>();
+    public static final Map<Integer, BaseMinecraftVersion> VERSIONS = new HashMap<>();
 
     /**
      * Called to load all version resources at boot rather than when a player joins.
@@ -25,24 +25,24 @@ public class ServerProtocol {
         loadVersion(V419MinecraftVersion.PROTOCOL, V419MinecraftVersion.class);
     }
 
-    private static void loadVersion(int protocol, Class<? extends BedrockMinecraftVersion> minecraftVersionClazz) {
+    private static void loadVersion(int protocol, Class<? extends BaseMinecraftVersion> minecraftVersionClazz) {
         try {
-            Constructor<? extends BedrockMinecraftVersion> constructor = minecraftVersionClazz.getDeclaredConstructor(BedrockServer.class);
-            VERSIONS.put(protocol, constructor.newInstance(BedrockServer.getInstance()));
+            Constructor<? extends BaseMinecraftVersion> constructor = minecraftVersionClazz.getDeclaredConstructor(ImplServer.class);
+            VERSIONS.put(protocol, constructor.newInstance(ImplServer.getInstance()));
         } catch (IllegalAccessException exception) {
-            BedrockServer.getInstance().getLogger().error("Failed to access protocol version v" + protocol, exception);
+            ImplServer.getInstance().getLogger().error("Failed to access protocol version v" + protocol, exception);
             return;
         } catch (InstantiationException exception) {
-            BedrockServer.getInstance().getLogger().error("Failed to load protocol version v" + protocol, exception);
+            ImplServer.getInstance().getLogger().error("Failed to load protocol version v" + protocol, exception);
             return;
         } catch (NoSuchMethodException exception) {
-            BedrockServer.getInstance().getLogger().error("Failed to find protocol version v" + protocol + " constructor.", exception);
+            ImplServer.getInstance().getLogger().error("Failed to find protocol version v" + protocol + " constructor.", exception);
             return;
         } catch (InvocationTargetException exception) {
-            BedrockServer.getInstance().getLogger().error("Failed to call protocol version v" + protocol + " constructor.", exception);
+            ImplServer.getInstance().getLogger().error("Failed to call protocol version v" + protocol + " constructor.", exception);
             return;
         }
-        BedrockServer.getInstance().getLogger().info("Loaded protocol version v" + protocol);
+        ImplServer.getInstance().getLogger().info("Loaded protocol version v" + protocol);
     }
 
 }

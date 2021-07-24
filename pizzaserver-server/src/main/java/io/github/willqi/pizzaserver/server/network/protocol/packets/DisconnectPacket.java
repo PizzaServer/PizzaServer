@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class DisconnectPacket extends BedrockNetworkPacket {
+public class DisconnectPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x05;
 

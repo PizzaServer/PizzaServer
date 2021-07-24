@@ -2,18 +2,18 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePackResponsePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class V419ResourcePackResponsePacketHandler extends ProtocolPacketHandler<ResourcePackResponsePacket> {
+public class V419ResourcePackResponsePacketHandler extends BaseProtocolPacketHandler<ResourcePackResponsePacket> {
 
     @Override
-    public ResourcePackResponsePacket decode(ByteBuf buffer, PacketHelper helper) {
+    public ResourcePackResponsePacket decode(ByteBuf buffer, BasePacketHelper helper) {
         ResourcePackResponsePacket packet = new ResourcePackResponsePacket();
         packet.setStatus(ResourcePackResponsePacket.ResourcePackStatus.values()[buffer.readUnsignedByte()]);
 

@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import java.util.Collections;
 import java.util.Set;
 
-public class UpdateAttributesPacket extends BedrockNetworkPacket {
+public class UpdateAttributesPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x1d;
 

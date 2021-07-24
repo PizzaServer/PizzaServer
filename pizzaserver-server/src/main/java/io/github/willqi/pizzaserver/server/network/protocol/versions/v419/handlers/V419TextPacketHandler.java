@@ -4,15 +4,15 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class V419TextPacketHandler extends ProtocolPacketHandler<TextPacket> {
+public class V419TextPacketHandler extends BaseProtocolPacketHandler<TextPacket> {
 
     // In case a new text type is introduced in later versions
     protected final BiMap<TextPacket.TextType, Byte> typeValues = HashBiMap.create(new HashMap<TextPacket.TextType, Byte>(){
@@ -32,7 +32,7 @@ public class V419TextPacketHandler extends ProtocolPacketHandler<TextPacket> {
     });
 
     @Override
-    public TextPacket decode(ByteBuf buffer, PacketHelper helper) {
+    public TextPacket decode(ByteBuf buffer, BasePacketHelper helper) {
         TextPacket textPacket = new TextPacket();
 
         byte textTypeByte = buffer.readByte();
@@ -70,7 +70,7 @@ public class V419TextPacketHandler extends ProtocolPacketHandler<TextPacket> {
     }
 
     @Override
-    public void encode(TextPacket packet, ByteBuf buffer, PacketHelper helper) {
+    public void encode(TextPacket packet, ByteBuf buffer, BasePacketHelper helper) {
         if (!this.typeValues.containsKey(packet.getType())) {
             packet.setType(TextPacket.TextType.RAW);
         }

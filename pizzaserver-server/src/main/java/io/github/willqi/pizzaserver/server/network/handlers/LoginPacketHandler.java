@@ -1,18 +1,18 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
-import io.github.willqi.pizzaserver.server.BedrockServer;
+import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.plugin.event.type.player.PlayerPreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
-import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
+import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.packs.DataPack;
-import io.github.willqi.pizzaserver.server.player.BedrockPlayer;
+import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -30,14 +30,14 @@ import java.util.HashSet;
  * Handles preparing/authenticating a client to becoming a valid player
  * Includes Login > Packs > Starting Packets > PlayStatus - Player Spawn
  */
-public class LoginPacketHandler extends BedrockPacketHandler {
+public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
-    private final BedrockServer server;
+    private final ImplServer server;
     private final BedrockClientSession session;
-    private BedrockPlayer player;
+    private ImplPlayer player;
 
 
-    public LoginPacketHandler(BedrockServer server, BedrockClientSession session) {
+    public LoginPacketHandler(ImplServer server, BedrockClientSession session) {
         this.server = server;
         this.session = session;
     }
@@ -67,7 +67,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
             return;
         }
 
-        BedrockPlayer player = new BedrockPlayer(this.server, this.session, loginPacket);
+        ImplPlayer player = new ImplPlayer(this.server, this.session, loginPacket);
         this.player = player;
 
         PlayerPreLoginEvent event = new PlayerPreLoginEvent(player);

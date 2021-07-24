@@ -3,8 +3,8 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateAttributesPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.netty.buffer.ByteBuf;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class V419UpdateAttributesPacketHandler extends ProtocolPacketHandler<UpdateAttributesPacket> {
+public class V419UpdateAttributesPacketHandler extends BaseProtocolPacketHandler<UpdateAttributesPacket> {
 
     protected final Map<AttributeType, String> attributeIds = new HashMap<AttributeType, String>(){
         {
@@ -28,7 +28,7 @@ public class V419UpdateAttributesPacketHandler extends ProtocolPacketHandler<Upd
     };
 
     @Override
-    public void encode(UpdateAttributesPacket packet, ByteBuf buffer, PacketHelper helper) {
+    public void encode(UpdateAttributesPacket packet, ByteBuf buffer, BasePacketHelper helper) {
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
 
         Set<Attribute> validAttributes = packet.getAttributes()

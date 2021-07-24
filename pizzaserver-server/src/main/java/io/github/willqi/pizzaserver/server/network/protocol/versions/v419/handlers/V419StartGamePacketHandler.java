@@ -5,15 +5,15 @@ import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 import io.netty.buffer.ByteBuf;
 
-public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGamePacket> {
+public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartGamePacket> {
 
     @Override
-    public void encode(StartGamePacket packet, ByteBuf buffer, PacketHelper helper) {
+    public void encode(StartGamePacket packet, ByteBuf buffer, BasePacketHelper helper) {
         VarInts.writeLong(buffer, packet.getEntityId());
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
         VarInts.writeInt(buffer, packet.getPlayerGamemode().ordinal());
@@ -121,7 +121,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
 
     }
 
-    protected void writeBlockProperty(BlockType blockType, ByteBuf buffer, PacketHelper helper) {
+    protected void writeBlockProperty(BlockType blockType, ByteBuf buffer, BasePacketHelper helper) {
         helper.writeString(blockType.getBlockId(), buffer);
 
         NBTCompound blockContainer = new NBTCompound();
