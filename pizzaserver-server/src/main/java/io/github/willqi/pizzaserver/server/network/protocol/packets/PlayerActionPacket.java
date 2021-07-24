@@ -2,13 +2,14 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 
 public class PlayerActionPacket extends BedrockPacket {
 
     public static final int ID = 0x24;
 
     private long entityRuntimeID;
-    private int actionType;
+    private PlayerAction actionType;
     private Vector3 vector3;
     private int face;
 
@@ -24,11 +25,11 @@ public class PlayerActionPacket extends BedrockPacket {
         this.entityRuntimeID = entityRuntimeID;
     }
 
-    public int getActionType() {
+    public PlayerAction getActionType() {
         return actionType;
     }
 
-    public void setActionType(int actionType) {
+    public void setActionType(PlayerAction actionType) {
         this.actionType = actionType;
     }
 
@@ -56,38 +57,5 @@ public class PlayerActionPacket extends BedrockPacket {
 
     public void setFace(int face) {
         this.face = face;
-    }
-
-    public enum Action {
-        START_BREAK(0),
-        ABORT_BREAK(1),
-        STOP_BREAK(2),
-        GET_UPDATED_BLOCK(3),
-        DROP_ITEM(4),
-        START_SLEEPING(5),
-        STOP_SLEEPING(6),
-        RESPAWN(7),
-        JUMP(8),
-        START_SPRINT(9),
-        STOP_SPRINT(10),
-        START_SNEAK(11),
-        STOP_SNEAK(12),
-        DIMENSION_CHANGE_REQUEST(13),
-        DIMENSION_CHANGE_ACK(14),
-        START_GLIDE(15),
-        STOP_GLIDE(16),
-        BUILD_DENIED(17),
-        CONTINUE_BREAK(18),
-        SET_ENCHANTMENT_SEED(20),
-        START_SWIMMING(21),
-        STOP_SWIMMING(22),
-        START_SPIN_ATTACK(23),
-        STOP_SPIN_ATTACK(24),
-        INTERACT_BLOCK(25);
-
-        public final int id;
-        Action(int id) {
-            this.id = id;
-        }
     }
 }
