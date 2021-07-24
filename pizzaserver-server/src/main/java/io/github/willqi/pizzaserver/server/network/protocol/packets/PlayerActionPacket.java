@@ -7,32 +7,6 @@ public class PlayerActionPacket extends BedrockPacket {
 
     public static final int ID = 0x24;
 
-    public static final int START_BREAK = 0;
-    public static final int ABORT_BREAK = 1;
-    public static final int STOP_BREAK = 2;
-    public static final int GET_UPDATED_BLOCK = 3;
-    public static final int DROP_ITEM = 4;
-    public static final int START_SLEEPING = 5;
-    public static final int STOP_SLEEPING = 6;
-    public static final int RESPAWN = 7;
-    public static final int JUMP = 8;
-    public static final int START_SPRINT = 9;
-    public static final int STOP_SPRINT = 10;
-    public static final int START_SNEAK = 11;
-    public static final int STOP_SNEAK = 12;
-    public static final int DIMENSION_CHANGE_REQUEST = 13; //sent when dying in different dimension
-    public static final int DIMENSION_CHANGE_ACK = 14; //sent when spawning in a different dimension to tell the server we spawned
-    public static final int START_GLIDE = 15;
-    public static final int STOP_GLIDE = 16;
-    public static final int BUILD_DENIED = 17;
-    public static final int CONTINUE_BREAK = 18;
-    public static final int SET_ENCHANTMENT_SEED = 20;
-    public static final int START_SWIMMING = 21;
-    public static final int STOP_SWIMMING = 22;
-    public static final int START_SPIN_ATTACK = 23;
-    public static final int STOP_SPIN_ATTACK = 24;
-    public static final int INTERACT_BLOCK = 25;
-
     private long entityRuntimeID;
     private int actionType;
     private Vector3 vector3;
@@ -82,5 +56,38 @@ public class PlayerActionPacket extends BedrockPacket {
 
     public void setFace(int face) {
         this.face = face;
+    }
+
+    public enum Action {
+        START_BREAK(0),
+        ABORT_BREAK(1),
+        STOP_BREAK(2),
+        GET_UPDATED_BLOCK(3),
+        DROP_ITEM(4),
+        START_SLEEPING(5),
+        STOP_SLEEPING(6),
+        RESPAWN(7),
+        JUMP(8),
+        START_SPRINT(9),
+        STOP_SPRINT(10),
+        START_SNEAK(11),
+        STOP_SNEAK(12),
+        DIMENSION_CHANGE_REQUEST(13),
+        DIMENSION_CHANGE_ACK(14),
+        START_GLIDE(15),
+        STOP_GLIDE(16),
+        BUILD_DENIED(17),
+        CONTINUE_BREAK(18),
+        SET_ENCHANTMENT_SEED(20),
+        START_SWIMMING(21),
+        STOP_SWIMMING(22),
+        START_SPIN_ATTACK(23),
+        STOP_SPIN_ATTACK(24),
+        INTERACT_BLOCK(25);
+
+        public final int id;
+        Action(int id) {
+            this.id = id;
+        }
     }
 }
