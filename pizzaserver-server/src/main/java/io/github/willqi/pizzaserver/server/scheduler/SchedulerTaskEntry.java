@@ -11,9 +11,7 @@ public final class SchedulerTaskEntry {
     private final boolean isAsynchronous;
 
     protected SchedulerTaskEntry(SchedulerTask task, int repeatInterval, long nextTick, boolean isAsynchronous) {
-        Check.nullParam(task, "task");
-
-        this.task = task;
+        this.task = Check.nullParam(task, "task");
         this.repeatInterval = repeatInterval;
         this.nextTick = nextTick;
         this.isAsynchronous = isAsynchronous;

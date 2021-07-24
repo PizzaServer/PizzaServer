@@ -7,8 +7,7 @@ public final class RunnableTypeTask extends SchedulerTask {
     private final Runnable taskRunnable;
 
     public RunnableTypeTask(Runnable task) {
-        Check.nullParam(task, "task");
-        this.taskRunnable = task;
+        this.taskRunnable = Check.nullParam(task, "task");
     }
 
     @Override
