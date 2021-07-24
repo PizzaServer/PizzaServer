@@ -34,10 +34,9 @@ public class BedrockClientSession {
     private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
     private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
 
-    public BedrockClientSession(BedrockServer server, RakNetServerSession rakNetServerSession) throws IOException {
+    public BedrockClientSession(BedrockServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
         this.serverSession = rakNetServerSession;
-        this.version = new V419MinecraftVersion(Server.getInstance());
     }
 
     public BedrockServer getServer() {

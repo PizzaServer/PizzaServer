@@ -93,13 +93,9 @@ public class BedrockServer {
 
         @Override
         public void onSessionCreation(RakNetServerSession rakNetServerSession) {
-            try {
-                BedrockClientSession session = new BedrockClientSession(BedrockServer.this, rakNetServerSession);
-                rakNetServerSession.setListener(new BedrockRakNetConnectionListener(session));
-                BedrockServer.this.getPizzaServer().registerSession(session);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            BedrockClientSession session = new BedrockClientSession(BedrockServer.this, rakNetServerSession);
+            rakNetServerSession.setListener(new BedrockRakNetConnectionListener(session));
+            BedrockServer.this.getPizzaServer().registerSession(session);
         }
 
         // The Bedrock client does not seem to care about this as far as I can tell
