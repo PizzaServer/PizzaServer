@@ -63,7 +63,6 @@ public class PlayerActionPacket extends BedrockPacket {
 
     public void setVector3(Vector3 vector3) {
         this.vector3 = vector3;
-        Server.getInstance().getLogger().info(String.valueOf(vector3));
     }
 
     /**
