@@ -1,6 +1,11 @@
 package io.github.willqi.pizzaserver.api;
 
+import io.github.willqi.pizzaserver.api.packs.APIDataPackManager;
 import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.plugin.APIPluginManager;
+import io.github.willqi.pizzaserver.api.utils.APILogger;
+import io.github.willqi.pizzaserver.api.world.APIWorldManager;
+import io.github.willqi.pizzaserver.api.world.blocks.APIBlockRegistry;
 
 import java.util.Set;
 
@@ -8,11 +13,6 @@ import java.util.Set;
  * Represents a Minecraft Server
  */
 public interface APIServer {
-
-    /**
-     * Start the server's internal logic
-     */
-    void boot();
 
     /**
      * Return all {@link APIPlayer}s who been spawned into the server
@@ -66,5 +66,23 @@ public interface APIServer {
      * @return current tps
      */
     int getCurrentTps();
+
+    APIPluginManager getPluginManager();
+
+    APIDataPackManager getResourcePackManager();
+
+    APIWorldManager getWorldManager();
+
+    APIBlockRegistry getBlockRegistry();
+
+    APILogger getLogger();
+
+    /**
+     * Get the path to the root server directory
+     * @return path to the root server directory
+     */
+    String getRootDirectory();
+
+
 
 }

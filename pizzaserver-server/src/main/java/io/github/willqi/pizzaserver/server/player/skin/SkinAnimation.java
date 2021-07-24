@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.player.skin;
 
-public class SkinAnimation {
+import io.github.willqi.pizzaserver.api.player.skin.APISkinAnimation;
+
+public class SkinAnimation implements APISkinAnimation {
 
     private final int type;
     private final int frame;
@@ -17,22 +19,27 @@ public class SkinAnimation {
         this.skinData = skinData;
     }
 
+    @Override
     public int getType() {
         return this.type;
     }
 
+    @Override
     public int getFrame() {
         return this.frame;
     }
 
+    @Override
     public int getSkinHeight() {
         return this.skinHeight;
     }
 
+    @Override
     public int getSkinWidth() {
         return this.skinWidth;
     }
 
+    @Override
     public byte[] getSkinData() {
         return this.skinData;
     }

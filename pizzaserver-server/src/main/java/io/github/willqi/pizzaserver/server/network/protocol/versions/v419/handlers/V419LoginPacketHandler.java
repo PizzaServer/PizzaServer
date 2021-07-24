@@ -8,6 +8,9 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.api.player.skin.APISkinAnimation;
+import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPiece;
+import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPieceTint;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
@@ -172,7 +175,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
                 .setArmSize(skinData.get("ArmSize").getAsString())
                 .setSkinColor(skinData.get("SkinColor").getAsString());
 
-        List<SkinAnimation> animations = new ArrayList<>();
+        List<APISkinAnimation> animations = new ArrayList<>();
         for (JsonElement element : skinData.get("AnimatedImageData").getAsJsonArray()) {
             JsonObject animation = element.getAsJsonObject();
             animations.add(
@@ -187,7 +190,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         }
         skinBuilder.setAnimations(animations);
 
-        List<SkinPersonaPiece> pieces = new ArrayList<>();
+        List<APISkinPersonaPiece> pieces = new ArrayList<>();
         for (JsonElement element : skinData.get("PersonaPieces").getAsJsonArray()) {
             JsonObject piece = element.getAsJsonObject();
             pieces.add(
@@ -202,14 +205,14 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         }
         skinBuilder.setPieces(pieces);
 
-        List<SkinPersonaPieceTint> tints = new ArrayList<>();
+        List<APISkinPersonaPieceTint> tints = new ArrayList<>();
         for (JsonElement element : skinData.get("PieceTintColors").getAsJsonArray()) {
             JsonObject tint = element.getAsJsonObject();
             JsonArray colorsArray = tint.get("Colors").getAsJsonArray();
 
-            String[] colors = new String[colorsArray.size()];
-            for (int i = 0; i < colors.length; i++) {
-                colors[i] = colorsArray.get(i).getAsString();
+            List<String> colors = new ArrayList<>(colorsArray.size());
+            for (int i = 0; i < colorsArray.size(); i++) {
+                colors.add(colorsArray.get(i).getAsString());
             }
             tints.add(new SkinPersonaPieceTint(tint.get("PieceType").getAsString(), colors));
         }

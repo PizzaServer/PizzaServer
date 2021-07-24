@@ -2,23 +2,23 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
-import io.github.willqi.pizzaserver.server.data.ServerOrigin;
+import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.plugin.events.player.PreLoginEvent;
+import io.github.willqi.pizzaserver.server.plugin.events.player.PreLoginAPIEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
-import io.github.willqi.pizzaserver.server.packs.DataPack;
+import io.github.willqi.pizzaserver.api.packs.APIDataPack;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.world.data.Dimension;
+import io.github.willqi.pizzaserver.api.world.data.Dimension;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 
 import java.nio.charset.StandardCharsets;
@@ -70,7 +70,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         Player player = new Player(this.server, this.session, loginPacket);
         this.player = player;
 
-        PreLoginEvent event = new PreLoginEvent(player);
+        PreLoginAPIEvent event = new PreLoginAPIEvent(player);
         this.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             this.session.disconnect();
@@ -99,7 +99,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         );
         resourcePacksInfoPacket.setBehaviorPacks(
                 new HashSet<>(this.server.getResourcePackManager()
-                    .getBehaviorPacks()
+                    .getBehaviourPacks()
                     .values())
         );
         player.sendPacket(resourcePacksInfoPacket);
@@ -125,13 +125,13 @@ public class LoginPacketHandler extends BedrockPacketHandler {
                 // Send all pack info of the packs the client does not have
                 for (PackInfo packInfo : packet.getPacksRequested()) {
 
-                    DataPack pack;
+                    APIDataPack pack;
                     ResourcePackDataInfoPacket resourcePackDataInfoPacket = new ResourcePackDataInfoPacket();
                     if (this.server.getResourcePackManager().getResourcePacks().containsKey(packInfo.getUuid())) {
                         pack = this.server.getResourcePackManager().getResourcePacks().get(packInfo.getUuid());
                         resourcePackDataInfoPacket.setType(ResourcePackDataInfoPacket.PackType.RESOURCE_PACK);
-                    } else if (this.server.getResourcePackManager().getBehaviorPacks().containsKey(packInfo.getUuid())) {
-                        pack = this.server.getResourcePackManager().getBehaviorPacks().get(packInfo.getUuid());
+                    } else if (this.server.getResourcePackManager().getBehaviourPacks().containsKey(packInfo.getUuid())) {
+                        pack = this.server.getResourcePackManager().getBehaviourPacks().get(packInfo.getUuid());
                         resourcePackDataInfoPacket.setType(ResourcePackDataInfoPacket.PackType.BEHAVIOR_PACK);
                     } else {
                         this.server.getLogger().error("Client requested invalid pack.");
@@ -144,7 +144,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
                     resourcePackDataInfoPacket.setVersion(pack.getVersion());
                     resourcePackDataInfoPacket.setChunkCount(pack.getChunkCount());
                     resourcePackDataInfoPacket.setCompressedPackageSize(pack.getDataLength());
-                    resourcePackDataInfoPacket.setMaxChunkSize(DataPack.CHUNK_LENGTH);
+                    resourcePackDataInfoPacket.setMaxChunkSize(pack.getMaxChunkLength());
                     this.player.sendPacket(resourcePackDataInfoPacket);
 
                 }
@@ -176,15 +176,15 @@ public class LoginPacketHandler extends BedrockPacketHandler {
             return;
         }
 
-        if (!this.server.getResourcePackManager().getResourcePacks().containsKey(packet.getPackInfo().getUuid()) && !this.server.getResourcePackManager().getBehaviorPacks().containsKey(packet.getPackInfo().getUuid())) {
+        if (!this.server.getResourcePackManager().getResourcePacks().containsKey(packet.getPackInfo().getUuid()) && !this.server.getResourcePackManager().getBehaviourPacks().containsKey(packet.getPackInfo().getUuid())) {
             this.server.getLogger().error("Invalid resource pack UUID specified while handling ResourcePackChunkRequestPacket.");
             this.session.disconnect();
             return;
         }
 
-        DataPack pack = this.server.getResourcePackManager().getResourcePacks().getOrDefault(
+        APIDataPack pack = this.server.getResourcePackManager().getResourcePacks().getOrDefault(
                 packet.getPackInfo().getUuid(),
-                this.server.getResourcePackManager().getBehaviorPacks().get(packet.getPackInfo().getUuid()));
+                this.server.getResourcePackManager().getBehaviourPacks().get(packet.getPackInfo().getUuid()));
 
         if (packet.getChunkIndex() < 0 || packet.getChunkIndex() >= pack.getChunkCount()) {
             this.server.getLogger().error("Invalid chunk requested while handling ResourcePackChunkRequestPacket");
@@ -197,7 +197,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         chunkDataPacket.setId(pack.getUuid());
         chunkDataPacket.setVersion(pack.getVersion());
         chunkDataPacket.setChunkIndex(packet.getChunkIndex());
-        chunkDataPacket.setChunkProgress((long)packet.getChunkIndex() * DataPack.CHUNK_LENGTH);  // Where to continue the download process from
+        chunkDataPacket.setChunkProgress((long)packet.getChunkIndex() * pack.getMaxChunkLength());  // Where to continue the download process from
         chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));
         this.player.sendPacket(chunkDataPacket);
     }
@@ -209,7 +209,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
         ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
         stackPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
         stackPacket.setResourcePacks(new HashSet<>(this.server.getResourcePackManager().getResourcePacks().values()));
-        stackPacket.setBehaviourPacks(new HashSet<>(this.server.getResourcePackManager().getBehaviorPacks().values()));
+        stackPacket.setBehaviourPacks(new HashSet<>(this.server.getResourcePackManager().getBehaviourPacks().values()));
         stackPacket.setGameVersion(this.player.getVersion().getVersion());
         stackPacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
         stackPacket.setExperimentsPreviouslyEnabled(true);

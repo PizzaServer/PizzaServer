@@ -1,20 +1,26 @@
 package io.github.willqi.pizzaserver.server.player.skin;
 
-public class SkinPersonaPieceTint {
+import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPieceTint;
+
+import java.util.List;
+
+public class SkinPersonaPieceTint implements APISkinPersonaPieceTint {
 
     private final String id;
-    private final String[] colors;
+    private final List<String> colors;
 
-    public SkinPersonaPieceTint(String id, String[] colors) {
+    public SkinPersonaPieceTint(String id, List<String> colors) {
         this.id = id;
         this.colors = colors;
     }
 
+    @Override
     public String getId() {
         return this.id;
     }
 
-    public String[] getColors() {
+    @Override
+    public List<String> getColors() {
         return this.colors;
     }
 

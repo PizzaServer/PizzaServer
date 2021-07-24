@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.APIMinecraftVersion;
+import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
@@ -85,7 +86,7 @@ public abstract class MinecraftVersion implements APIMinecraftVersion {
             }
 
             // Add custom block states
-            for (BlockType blockType : this.getServer().getBlockRegistry().getCustomTypes()) {
+            for (APIBlockType blockType : this.getServer().getBlockRegistry().getCustomTypes()) {
                 blockStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
             }
 

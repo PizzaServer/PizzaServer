@@ -1,17 +1,19 @@
 package io.github.willqi.pizzaserver.server.plugin;
 
-import io.github.willqi.pizzaserver.server.Server;
-import io.github.willqi.pizzaserver.server.plugin.events.Event;
+import io.github.willqi.pizzaserver.api.APIServer;
+import io.github.willqi.pizzaserver.api.plugin.APIPluginManager;
+import io.github.willqi.pizzaserver.api.plugin.events.APIEvent;
 
-public class PluginManager {
+public class PluginManager implements APIPluginManager {
 
-    private Server server;
+    private final APIServer server;
 
-    public PluginManager(Server server) {
+    public PluginManager(APIServer server) {
         this.server = server;
     }
 
-    public void callEvent(Event event) {
+    @Override
+    public void callEvent(APIEvent event) {
 
     }
 

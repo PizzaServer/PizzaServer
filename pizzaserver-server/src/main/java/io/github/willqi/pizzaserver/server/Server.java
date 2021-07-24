@@ -1,7 +1,12 @@
 package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.APIServer;
+import io.github.willqi.pizzaserver.api.packs.APIDataPackManager;
 import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.plugin.APIPluginManager;
+import io.github.willqi.pizzaserver.api.utils.APILogger;
+import io.github.willqi.pizzaserver.api.world.APIWorldManager;
+import io.github.willqi.pizzaserver.api.world.blocks.APIBlockRegistry;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BedrockServer;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
@@ -25,7 +30,7 @@ public class Server implements APIServer {
     private static Server INSTANCE;
 
     private final BedrockServer network = new BedrockServer(this);
-    private final PluginManager pluginManager = new PluginManager(this);
+    private final APIPluginManager pluginManager = new PluginManager(this);
     private final DataPackManager dataPackManager = new DataPackManager(this);
     private final WorldManager worldManager = new WorldManager(this);
 
@@ -74,11 +79,11 @@ public class Server implements APIServer {
     public void boot() {
         this.stopByConsoleExit = false;
         ServerProtocol.loadVersions();
-        this.getResourcePackManager().loadResourcePacks();
-        this.getResourcePackManager().loadBehaviorPacks();
+        this.dataPackManager.loadResourcePacks();
+        this.dataPackManager.loadBehaviorPacks();
         this.setTargetTps(20);
 
-        this.getWorldManager().loadWorlds();
+        ((WorldManager)this.getWorldManager()).loadWorlds();
 
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
@@ -150,7 +155,7 @@ public class Server implements APIServer {
         }
 
         this.getNetwork().stop();
-        this.getWorldManager().unloadWorlds();
+        ((WorldManager)this.getWorldManager()).unloadWorlds();
 
         // We're done stop operations. Exit program.
         if (this.stopByConsoleExit) {   // Ensure that the notify is called AFTER the thread is in the waiting state.
@@ -231,32 +236,38 @@ public class Server implements APIServer {
         return this.currentTps;
     }
 
-    public PluginManager getPluginManager() {
+    @Override
+    public APIPluginManager getPluginManager() {
         return this.pluginManager;
     }
 
-    public DataPackManager getResourcePackManager() {
+    @Override
+    public APIDataPackManager getResourcePackManager() {
         return this.dataPackManager;
     }
 
-    public WorldManager getWorldManager() {
+    @Override
+    public APIWorldManager getWorldManager() {
         return this.worldManager;
     }
 
-    public BlockRegistry getBlockRegistry() {
+    @Override
+    public APIBlockRegistry getBlockRegistry() {
         return this.blockRegistry;
     }
 
+    @Override
+    public APILogger getLogger() {
+        return this.logger;
+    }
+
+    @Override
     public String getRootDirectory() {
         return this.rootDirectory;
     }
 
     public ServerConfig getConfig() {
         return this.config;
-    }
-
-    public Logger getLogger() {
-        return this.logger;
     }
 
     public static Server getInstance() {
@@ -303,8 +314,7 @@ public class Server implements APIServer {
 
         this.setMotd(this.config.getMotd());
         this.setMaximumPlayerCount(this.config.getMaximumPlayers());
-        this.getResourcePackManager().setPacksRequired(this.config.arePacksForced());
-
+        this.dataPackManager.setPacksRequired(this.config.arePacksForced());
     }
 
 

@@ -1,5 +1,8 @@
 package io.github.willqi.pizzaserver.server.packs;
 
+import io.github.willqi.pizzaserver.api.APIServer;
+import io.github.willqi.pizzaserver.api.packs.APIDataPackManager;
+import io.github.willqi.pizzaserver.api.packs.APIDataPack;
 import io.github.willqi.pizzaserver.server.Server;
 
 import java.io.File;
@@ -9,26 +12,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class DataPackManager {
+public class DataPackManager implements APIDataPackManager {
 
-    private final Map<UUID, DataPack> resourcePacks = new HashMap<>();
-    private final Map<UUID, DataPack> behaviorPacks = new HashMap<>();
-    private final Server server;
+    private final Map<UUID, APIDataPack> resourcePacks = new HashMap<>();
+    private final Map<UUID, APIDataPack> behaviorPacks = new HashMap<>();
+    private final APIServer server;
     private boolean required;
 
-    public DataPackManager(Server server) {
+    public DataPackManager(APIServer server) {
         this.server = server;
     }
 
+    @Override
     public boolean arePacksRequired() {
         return this.required;
     }
 
-    public Map<UUID, DataPack> getResourcePacks() {
+    @Override
+    public Map<UUID, APIDataPack> getResourcePacks() {
         return Collections.unmodifiableMap(this.resourcePacks);
     }
 
-    public Map<UUID, DataPack> getBehaviorPacks() {
+    @Override
+    public Map<UUID, APIDataPack> getBehaviourPacks() {
         return Collections.unmodifiableMap(this.behaviorPacks);
     }
 
@@ -43,7 +49,7 @@ public class DataPackManager {
                     .filter(File::isFile)
                     .forEach(file -> {
                         try {
-                            DataPack pack = new ZipDataPack(file);
+                            APIDataPack pack = new ZipDataPack(file);
                             this.resourcePacks.put(pack.getUuid(), pack);
                             Server.getInstance().getLogger().info("Loaded resource pack: " + file.getName());
                         } catch (IOException exception) {
@@ -64,7 +70,7 @@ public class DataPackManager {
                     .filter(File::isFile)
                     .forEach(file -> {
                         try {
-                            DataPack pack = new ZipDataPack(file);
+                            APIDataPack pack = new ZipDataPack(file);
                             this.behaviorPacks.put(pack.getUuid(), pack);
                             Server.getInstance().getLogger().info("Loaded behavior pack: " + file.getName());
                         } catch (IOException exception) {

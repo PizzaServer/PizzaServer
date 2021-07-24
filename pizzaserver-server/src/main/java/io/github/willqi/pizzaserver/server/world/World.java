@@ -1,14 +1,18 @@
 package io.github.willqi.pizzaserver.server.world;
 
+import io.github.willqi.pizzaserver.api.APIServer;
+import io.github.willqi.pizzaserver.api.entity.APIEntity;
+import io.github.willqi.pizzaserver.api.player.APIPlayer;
 import io.github.willqi.pizzaserver.api.world.APIWorld;
+import io.github.willqi.pizzaserver.api.world.blocks.APIBlock;
+import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
+import io.github.willqi.pizzaserver.api.world.chunks.APIChunkManager;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
-import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.Entity;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.blocks.Block;
-import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.server.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProvider;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProviderThread;
@@ -21,26 +25,52 @@ import java.util.Set;
 
 public class World implements Closeable, APIWorld {
 
-    private final Server server;
+    private final APIServer server;
 
     private final WorldProviderThread worldThread;
 
-    private final ChunkManager chunkManager = new ChunkManager(this);
+    private final APIChunkManager chunkManager = new ChunkManager(this);
 
-    private final Set<Player> players = new HashSet<>();
+    private final Set<APIPlayer> players = new HashSet<>();
 
 
-    public World(Server server, WorldProvider provider) throws IOException {
+    public World(APIServer server, WorldProvider provider) throws IOException {
         this.server = server;
         this.worldThread = new WorldProviderThread(this, provider);
         this.worldThread.start();
     }
 
-    public Block getBlock(Vector3i position) {
+    @Override
+    public String getName() {
+        return this.worldThread.getProvider().getName();
+    }
+
+    @Override
+    public APIServer getServer() {
+        return this.server;
+    }
+
+    @Override
+    public Set<APIPlayer> getPlayers() {
+        return Collections.unmodifiableSet(this.players);
+    }
+
+    @Override
+    public APIChunkManager getChunkManager() {
+        return this.chunkManager;
+    }
+
+    public WorldProviderThread getWorldThread() {
+        return this.worldThread;
+    }
+
+    @Override
+    public APIBlock getBlock(Vector3i position) {
         return this.getBlock(position.getX(), position.getY(), position.getZ());
     }
 
-    public Block getBlock(int x, int y, int z) {
+    @Override
+    public APIBlock getBlock(int x, int y, int z) {
         int chunkX = x / 16;
         int chunkZ = z / 16;
         if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
@@ -49,19 +79,23 @@ public class World implements Closeable, APIWorld {
         return this.getChunkManager().getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
     }
 
-    public void setBlock(BlockType blockType, Vector3i position) {
+    @Override
+    public void setBlock(APIBlockType blockType, Vector3i position) {
         this.setBlock(new Block(blockType), position);
     }
 
-    public void setBlock(BlockType blockType, int x, int y, int z) {
+    @Override
+    public void setBlock(APIBlockType blockType, int x, int y, int z) {
         this.setBlock(new Block(blockType), x, y, z);
     }
 
-    public void setBlock(Block block, Vector3i position) {
+    @Override
+    public void setBlock(APIBlock block, Vector3i position) {
         this.setBlock(block, position.getX(), position.getY(), position.getZ());
     }
 
-    public void setBlock(Block block, int x, int y, int z) {
+    @Override
+    public void setBlock(APIBlock block, int x, int y, int z) {
         int chunkX = x / 16;
         int chunkZ = z / 16;
         if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
@@ -70,12 +104,8 @@ public class World implements Closeable, APIWorld {
         this.getChunkManager().getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
     }
 
-    /**
-     * Add a {@link Entity} to this world and spawn it to {@link Player}s
-     * @param entity The {@link Entity} to spawn
-     * @param position The position to spawn it in this world
-     */
-    public void addEntity(Entity entity, Vector3 position) {
+    @Override
+    public void addEntity(APIEntity entity, Vector3 position) {
         if (entity.hasSpawned()) {
             throw new IllegalStateException("This entity has already been spawned");
         }
@@ -89,15 +119,12 @@ public class World implements Closeable, APIWorld {
         if (entity instanceof Player) {
             this.players.add((Player)entity);
         }
-        entity.onSpawned();
-        entity.setSpawned(true);
+        ((Entity)entity).onSpawned();
+        ((Entity)entity).setSpawned(true);
     }
 
-    /**
-     * Despawn a {@link Entity} from this world and all of the {@link Player}s who could see it
-     * @param entity the {@link Entity} to despawn
-     */
-    public void removeEntity(Entity entity) {
+    @Override
+    public void removeEntity(APIEntity entity) {
         if (!entity.hasSpawned()) {
             throw new IllegalStateException("This entity has not been spawned");
         }
@@ -105,26 +132,6 @@ public class World implements Closeable, APIWorld {
         if (entity instanceof Player) {
             this.players.remove(entity);
         }
-    }
-
-    public String getName() {
-        return this.worldThread.getProvider().getName();
-    }
-
-    public Server getServer() {
-        return this.server;
-    }
-
-    public Set<Player> getPlayers() {
-        return Collections.unmodifiableSet(this.players);
-    }
-
-    public ChunkManager getChunkManager() {
-        return this.chunkManager;
-    }
-
-    public WorldProviderThread getWorldThread() {
-        return this.worldThread;
     }
 
     @Override

@@ -1,8 +1,10 @@
 package io.github.willqi.pizzaserver.server.player.skin;
 
+import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPiece;
+
 import java.util.UUID;
 
-public class SkinPersonaPiece {
+public class SkinPersonaPiece implements APISkinPersonaPiece {
 
     private final String id;
     private final String type;
@@ -18,22 +20,27 @@ public class SkinPersonaPiece {
         this.isDefault = isDefault;
     }
 
+    @Override
     public String getId() {
         return this.id;
     }
 
+    @Override
     public String getType() {
         return this.type;
     }
 
+    @Override
     public UUID getPackId() {
         return this.packId;
     }
 
+    @Override
     public UUID getProductId() {
         return this.productId;
     }
 
+    @Override
     public boolean isDefault() {
         return this.isDefault;
     }

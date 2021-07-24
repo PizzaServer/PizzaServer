@@ -1,11 +1,14 @@
 package io.github.willqi.pizzaserver.server.world;
 
-import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.api.APIServer;
+import io.github.willqi.pizzaserver.api.world.APIWorld;
+import io.github.willqi.pizzaserver.api.world.APIWorldManager;
 import io.github.willqi.pizzaserver.server.world.providers.ProviderType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -13,27 +16,34 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
-public class WorldManager {
+public class WorldManager implements APIWorldManager {
 
-    private final Server server;
+    private final APIServer server;
 
     // fileName : World
-    private final Map<String, World> worlds = new ConcurrentHashMap<>();
+    private final Map<String, APIWorld> worlds = new ConcurrentHashMap<>();
 
 
-    public WorldManager(Server server) {
+    public WorldManager(APIServer server) {
         this.server = server;
     }
 
-    public World getWorld(String name) {
+    public APIServer getServer() {
+        return this.server;
+    }
+
+    @Override
+    public APIWorld getWorld(String name) {
         return this.worlds.getOrDefault(name, null);
     }
 
-    public CompletableFuture<World> loadWorld(String pathToWorldDirectory) {
-        return this.loadWorld(new File(pathToWorldDirectory));
+    @Override
+    public CompletableFuture<APIWorld> loadWorld(String worldName) {
+        return this.loadWorld(Paths.get(this.getServer().getRootDirectory(), "worlds", worldName).toFile());
     }
 
-    public CompletableFuture<World> loadWorld(File worldDirectory) {
+    @Override
+    public CompletableFuture<APIWorld> loadWorld(File worldDirectory) {
         return CompletableFuture.supplyAsync(() -> {
             World world;
             try {
@@ -53,9 +63,10 @@ public class WorldManager {
         });
     }
 
+    @Override
     public CompletableFuture<Void> unloadWorld(String name) {
         return CompletableFuture.supplyAsync(() -> {
-            World world = this.worlds.get(name);
+            World world = (World)this.worlds.get(name);
             if (world != null) {
                 try {
                     world.close();

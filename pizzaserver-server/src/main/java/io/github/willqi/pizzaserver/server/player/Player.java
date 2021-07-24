@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.APIAttribute;
 import io.github.willqi.pizzaserver.api.player.attributes.APIPlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.APISkin;
 import io.github.willqi.pizzaserver.api.utils.APILocation;
+import io.github.willqi.pizzaserver.api.world.chunks.APIChunkManager;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
@@ -158,7 +159,7 @@ public class Player extends LivingEntity implements APIPlayer {
             // Remove player from chunks they can observe
             for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
                 for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                    Chunk chunk = this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
+                    Chunk chunk = (Chunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
                     chunk.despawnFrom(this);
                 }
             }
@@ -348,16 +349,16 @@ public class Player extends LivingEntity implements APIPlayer {
 
     @Override
     public void sendChunk(int x, int z) {
-        ChunkManager chunkManager = this.getLocation().getWorld().getChunkManager();
+        ChunkManager chunkManager = (ChunkManager)this.getLocation().getWorld().getChunkManager();
         if (chunkManager.isChunkLoaded(x, z)) {
-            chunkManager.addChunkToPlayerQueue(this, chunkManager.getChunk(x, z));
+            chunkManager.addChunkToPlayerQueue(this, (Chunk)chunkManager.getChunk(x, z));
         } else {
             chunkManager.fetchChunk(x, z).whenComplete((chunk, exception) -> {
                 if (exception != null) {
                     Server.getInstance().getLogger().error("Failed to send chunk (" + x + ", " + z + ") to player " + this.getUsername(), exception);
                     return;
                 }
-                chunkManager.addChunkToPlayerQueue(this, chunk);
+                chunkManager.addChunkToPlayerQueue(this, (Chunk)chunk);
             });
         }
     }
@@ -380,7 +381,7 @@ public class Player extends LivingEntity implements APIPlayer {
             for (int chunkX = oldLocation.getChunkX() - oldChunkRadius; chunkX <= oldLocation.getChunkX() + oldChunkRadius; chunkX++) {
                 for (int chunkZ = oldLocation.getChunkZ() - oldChunkRadius; chunkZ <= oldLocation.getChunkZ() + oldChunkRadius; chunkZ++) {
                     if (oldLocation.getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-                        Chunk chunk = oldLocation.getWorld().getChunkManager().getChunk(chunkX, chunkZ);
+                        Chunk chunk = (Chunk)oldLocation.getWorld().getChunkManager().getChunk(chunkX, chunkZ);
                         chunksToRemove.add(chunk);
                     }
                 }
@@ -392,7 +393,7 @@ public class Player extends LivingEntity implements APIPlayer {
         for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
             for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
                 if (this.getLocation().getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-                    Chunk chunk = this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
+                    Chunk chunk = (Chunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
                     if (chunksToRemove.remove(chunk)) {
                         continue;   // We don't need to send this chunk
                     }

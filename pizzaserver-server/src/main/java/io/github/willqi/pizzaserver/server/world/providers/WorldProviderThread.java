@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.world.providers;
 
+import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.world.World;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
@@ -41,8 +42,8 @@ public class WorldProviderThread extends Thread implements Closeable {
         return response;
     }
 
-    public CompletableFuture<Chunk> requestChunk(int x, int z) {
-        CompletableFuture<Chunk> response = new CompletableFuture<>();
+    public CompletableFuture<APIChunk> requestChunk(int x, int z) {
+        CompletableFuture<APIChunk> response = new CompletableFuture<>();
         synchronized (this) {
             this.actionsQueue.add(new RequestChunkProcessingAction(this.world, x, z, response));
             this.notify();

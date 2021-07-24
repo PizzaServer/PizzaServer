@@ -1,6 +1,9 @@
 package io.github.willqi.pizzaserver.server.player.skin;
 
 import io.github.willqi.pizzaserver.api.player.skin.APISkin;
+import io.github.willqi.pizzaserver.api.player.skin.APISkinAnimation;
+import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPiece;
+import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPieceTint;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,30 +11,30 @@ import java.util.List;
 
 public class Skin implements APISkin {
 
-    private final String skinId;
-    private final String playFabId;
-    private final String skinResourcePatch;
-    private final String geometryData;
-    private final int skinHeight;
-    private final int skinWidth;
-    private final byte[] skinData;
+    private String skinId;
+    private String playFabId;
+    private String skinResourcePatch;
+    private String geometryData;
+    private int skinHeight;
+    private int skinWidth;
+    private byte[] skinData;
 
-    private final int capeHeight;
-    private final int capeWidth;
-    private final byte[] capeData;
-    private final String capeId;
-    private final boolean capeOnClassic;
+    private int capeHeight;
+    private int capeWidth;
+    private byte[] capeData;
+    private String capeId;
+    private boolean capeOnClassic;
 
-    private final String animationData;
-    private final String armSize;
-    private final String skinColor;
-    private final List<SkinAnimation> animations;
-    private final List<SkinPersonaPiece> pieces;
-    private final List<SkinPersonaPieceTint> tints;
-    private final boolean isPersona;
+    private String animationData;
+    private String armSize;
+    private String skinColour;
+    private List<APISkinAnimation> animations;
+    private List<APISkinPersonaPiece> pieces;
+    private List<APISkinPersonaPieceTint> tints;
+    private boolean isPersona;
 
-    private final boolean premium;
-    private final boolean trusted;
+    private boolean premium;
+    private boolean trusted;
 
     // Persona skin
     private Skin(
@@ -48,11 +51,11 @@ public class Skin implements APISkin {
             int capeWidth,
             byte[] capeData,
             String armSize,
-            String skinColor,
+            String skinColour,
             String animationData,
-            List<SkinAnimation> animations,
-            List<SkinPersonaPiece> pieces,
-            List<SkinPersonaPieceTint> tints,
+            List<APISkinAnimation> animations,
+            List<APISkinPersonaPiece> pieces,
+            List<APISkinPersonaPieceTint> tints,
             boolean premium,
             boolean trusted
     ) {
@@ -75,7 +78,7 @@ public class Skin implements APISkin {
 
         this.isPersona = true;
         this.armSize = armSize;
-        this.skinColor = skinColor;
+        this.skinColour = skinColour;
         this.animationData = animationData;
         this.animations = Collections.unmodifiableList(animations);
         this.pieces = Collections.unmodifiableList(pieces);
@@ -118,95 +121,221 @@ public class Skin implements APISkin {
 
         this.isPersona = false;
         this.armSize = "";
-        this.skinColor = "#O";
+        this.skinColour = "#O";
         this.animationData = "";
         this.animations = Collections.emptyList();
         this.pieces = Collections.emptyList();
         this.tints = Collections.emptyList();
     }
 
+    @Override
     public String getSkinId() {
         return this.skinId;
     }
 
+    @Override
+    public void setSkinId(String skinId) {
+        this.skinId = skinId;
+    }
+
+    @Override
     public String getPlayFabId() {
         return this.playFabId;
     }
 
+    @Override
+    public void setPlayFabId(String playFabId) {
+        this.playFabId = playFabId;
+    }
+
+    @Override
     public String getSkinResourcePatch() {
         return this.skinResourcePatch;
     }
 
+    @Override
+    public void setSkinResourcePatch(String resourcePatch) {
+        this.skinResourcePatch = resourcePatch;
+    }
+
+    @Override
     public String getGeometryData() {
         return this.geometryData;
     }
 
+    @Override
+    public void setGeometryData(String geometryData) {
+        this.geometryData = geometryData;
+    }
+
+    @Override
     public int getSkinHeight() {
         return this.skinHeight;
     }
 
+    @Override
+    public void setSkinHeight(int skinHeight) {
+        this.skinHeight = skinHeight;
+    }
+
+    @Override
     public int getSkinWidth() {
         return this.skinWidth;
     }
 
+    @Override
+    public void setSkinWidth(int skinWidth) {
+        this.skinWidth = skinWidth;
+    }
+
+    @Override
     public byte[] getSkinData() {
         return this.skinData;
     }
 
+    @Override
+    public void setSkinData(byte[] data) {
+        this.skinData = data;
+    }
+
+    @Override
     public int getCapeHeight() {
         return this.capeHeight;
     }
 
+    @Override
+    public void setCapeHeight(int capeHeight) {
+        this.capeHeight = capeHeight;
+    }
+
+    @Override
     public int getCapeWidth() {
         return this.capeWidth;
     }
 
+    @Override
+    public void setCapeWidth(int capeWidth) {
+        this.capeWidth = capeWidth;
+    }
+
+    @Override
     public byte[] getCapeData() {
         return this.capeData;
     }
 
+    @Override
+    public void setCapeData(byte[] capeData) {
+        this.capeData = capeData;
+    }
+
+    @Override
     public String getCapeId() {
         return this.capeId;
     }
 
+    @Override
+    public void setCapeId(String capeId) {
+        this.capeId = capeId;
+    }
+
+    @Override
     public boolean isCapeOnClassic() {
         return this.capeOnClassic;
     }
 
+    @Override
+    public void setCapeOnClassic(boolean isOnClassic) {
+        this.capeOnClassic = isOnClassic;
+    }
+
+    @Override
     public String getAnimationData() {
         return this.animationData;
     }
 
+    @Override
+    public void setAnimationData(String data) {
+        this.animationData = data;
+    }
+
+    @Override
     public String getArmSize() {
         return this.armSize;
     }
 
-    public String getSkinColor() {
-        return this.skinColor;
+    @Override
+    public void setArmSize(String armSize) {
+        this.armSize = armSize;
     }
 
-    public List<SkinAnimation> getAnimations() {
+    @Override
+    public String getSkinColour() {
+        return this.skinColour;
+    }
+
+    @Override
+    public void setSkinColour(String skinColour) {
+        this.skinColour = skinColour;
+    }
+
+    @Override
+    public List<APISkinAnimation> getAnimations() {
         return this.animations;
     }
 
-    public List<SkinPersonaPiece> getPieces() {
+    @Override
+    public void setAnimations(List<APISkinAnimation> animations) {
+        this.animations = animations;
+    }
+
+    @Override
+    public List<APISkinPersonaPiece> getPieces() {
         return this.pieces;
     }
 
-    public List<SkinPersonaPieceTint> getTints() {
+    @Override
+    public void setPieces(List<APISkinPersonaPiece> pieces) {
+        this.pieces = pieces;
+    }
+
+    @Override
+    public List<APISkinPersonaPieceTint> getTints() {
         return this.tints;
     }
 
+    @Override
+    public void setTints(List<APISkinPersonaPieceTint> tints) {
+        this.tints = tints;
+    }
+
+    @Override
     public boolean isPersona() {
         return this.isPersona;
     }
 
+    @Override
+    public void setPersona(boolean isPersona) {
+        this.isPersona = isPersona;
+    }
+
+    @Override
     public boolean isPremium() {
         return this.premium;
     }
 
+    @Override
+    public void setPremium(boolean isPremium) {
+        this.premium = isPremium;
+    }
+
+    @Override
     public boolean isTrusted() {
         return this.trusted;
+    }
+
+    @Override
+    public void setTrusted(boolean trusted) {
+        this.trusted = trusted;
     }
 
 
@@ -229,9 +358,9 @@ public class Skin implements APISkin {
         private String animationData;
         private String armSize;
         private String skinColor;
-        private List<SkinAnimation> animations = new ArrayList<>();
-        private List<SkinPersonaPiece> pieces = new ArrayList<>();
-        private List<SkinPersonaPieceTint> tints = new ArrayList<>();
+        private List<APISkinAnimation> animations = new ArrayList<>();
+        private List<APISkinPersonaPiece> pieces = new ArrayList<>();
+        private List<APISkinPersonaPieceTint> tints = new ArrayList<>();
         private boolean isPersona;
 
         private boolean premium;
@@ -297,17 +426,17 @@ public class Skin implements APISkin {
             return this;
         }
 
-        public Builder setAnimations(List<SkinAnimation> animations) {
+        public Builder setAnimations(List<APISkinAnimation> animations) {
             this.animations = animations;
             return this;
         }
 
-        public Builder setPieces(List<SkinPersonaPiece> pieces) {
+        public Builder setPieces(List<APISkinPersonaPiece> pieces) {
             this.pieces = pieces;
             return this;
         }
 
-        public Builder setTints(List<SkinPersonaPieceTint> tints) {
+        public Builder setTints(List<APISkinPersonaPieceTint> tints) {
             this.tints = tints;
             return this;
         }

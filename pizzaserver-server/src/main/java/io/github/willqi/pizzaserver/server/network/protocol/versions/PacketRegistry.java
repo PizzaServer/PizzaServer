@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.APIBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.BedrockPacket;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public abstract class PacketRegistry {
         return this;
     }
 
-    public ProtocolPacketHandler<? extends BedrockPacket> getPacketHandler(int packetId) {
+    public ProtocolPacketHandler<? extends APIBedrockPacket> getPacketHandler(int packetId) {
         return this.handlers.getOrDefault(packetId, null);
     }
 

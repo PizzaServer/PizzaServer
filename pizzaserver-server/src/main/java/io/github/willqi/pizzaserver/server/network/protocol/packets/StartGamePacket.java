@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
+import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
@@ -9,9 +10,8 @@ import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
-import io.github.willqi.pizzaserver.server.world.data.Dimension;
-import io.github.willqi.pizzaserver.server.data.ServerOrigin;
+import io.github.willqi.pizzaserver.api.world.data.Dimension;
+import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
@@ -60,7 +60,7 @@ public class StartGamePacket extends BedrockPacket {
     private UUID eduUuid;
     private ServerOrigin serverOrigin;
 
-    private Set<BlockType> blockProperties = new HashSet<>();
+    private Set<APIBlockType> blockProperties = new HashSet<>();
     private Set<APIItemState> itemStates = new HashSet<>();
 
     private Set<Experiment> experiments = new HashSet<>();
@@ -358,11 +358,11 @@ public class StartGamePacket extends BedrockPacket {
         this.serverOrigin = serverOrigin;
     }
 
-    public Set<BlockType> getBlockProperties() {
+    public Set<APIBlockType> getBlockProperties() {
         return Collections.unmodifiableSet(this.blockProperties);
     }
 
-    public void setBlockProperties(Set<BlockType> blockProperties) {
+    public void setBlockProperties(Set<APIBlockType> blockProperties) {
         this.blockProperties = blockProperties;
     }
 

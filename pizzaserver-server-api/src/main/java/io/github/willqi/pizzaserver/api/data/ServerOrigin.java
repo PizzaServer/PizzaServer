@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.data;
+package io.github.willqi.pizzaserver.api.data;
 
 public enum ServerOrigin {
     NONE,

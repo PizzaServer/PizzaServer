@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.item;
+package io.github.willqi.pizzaserver.api.item;
 
 public enum ItemToolType {
     ANY,

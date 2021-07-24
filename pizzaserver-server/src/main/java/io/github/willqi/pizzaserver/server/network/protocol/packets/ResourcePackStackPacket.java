@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.packs.DataPack;
+import io.github.willqi.pizzaserver.api.packs.APIDataPack;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,8 +16,8 @@ public class ResourcePackStackPacket extends BedrockPacket {
     public static final int ID = 0x07;
 
     private boolean forcedToAccept;
-    private Set<DataPack> resourcePacks = new HashSet<>();
-    private Set<DataPack> behaviourPacks = new HashSet<>();
+    private Set<APIDataPack> resourcePacks = new HashSet<>();
+    private Set<APIDataPack> behaviourPacks = new HashSet<>();
 
     private Set<Experiment> experiments = new HashSet<>();
     private boolean experimentsPreviouslyEnabled;
@@ -37,19 +37,19 @@ public class ResourcePackStackPacket extends BedrockPacket {
         this.forcedToAccept = forced;
     }
 
-    public Set<DataPack> getResourcePacks() {
+    public Set<APIDataPack> getResourcePacks() {
         return this.resourcePacks;
     }
 
-    public void setResourcePacks(Set<DataPack> resourcePacks) {
+    public void setResourcePacks(Set<APIDataPack> resourcePacks) {
         this.resourcePacks = resourcePacks;
     }
 
-    public Set<DataPack> getBehaviourPacks() {
+    public Set<APIDataPack> getBehaviourPacks() {
         return this.behaviourPacks;
     }
 
-    public void setBehaviourPacks(Set<DataPack> behaviourPacks) {
+    public void setBehaviourPacks(Set<APIDataPack> behaviourPacks) {
         this.behaviourPacks = behaviourPacks;
     }
 

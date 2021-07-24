@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.world.APIWorld;
+import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.Server;
 import io.github.willqi.pizzaserver.server.network.BedrockPacketHandler;
@@ -9,16 +11,12 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.MovePlayerPa
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RequestChunkRadiusPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
 import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.plugin.events.player.PlayerChatEvent;
+import io.github.willqi.pizzaserver.server.plugin.events.player.PlayerChatAPIEvent;
 import io.github.willqi.pizzaserver.server.utils.Location;
-import io.github.willqi.pizzaserver.server.world.World;
-import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
-import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class FullGamePacketHandler extends BedrockPacketHandler {
 
@@ -35,7 +33,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
      */
     private void completeLogin() {
         String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
-        World defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
+        APIWorld defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
         if (defaultWorld == null) {
             this.player.disconnect("Failed to find default world");
             Server.getInstance().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
@@ -49,14 +47,14 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
         int playerChunkX = playerSpawn.toVector3i().getX() / 16;
         int playerChunkZ = playerSpawn.toVector3i().getZ() / 16;
 
-        Set<CompletableFuture<Chunk>> chunkTasksRequired = new HashSet<>();
+        Set<CompletableFuture<APIChunk>> chunkTasksRequired = new HashSet<>();
         for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
             for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
                 chunkTasksRequired.add(defaultWorld.getChunkManager().fetchChunk(chunkX, chunkZ));
             }
         }
         CompletableFuture.runAsync(() -> {
-            for (CompletableFuture<Chunk> chunkTask : chunkTasksRequired) {
+            for (CompletableFuture<APIChunk> chunkTask : chunkTasksRequired) {
                 chunkTask.join();
             }
         }).whenComplete((ignored, exception) -> {
@@ -86,7 +84,7 @@ public class FullGamePacketHandler extends BedrockPacketHandler {
     @Override
     public void onPacket(TextPacket packet) {
         if (packet.getType() == TextPacket.TextType.CHAT) {
-            PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
+            PlayerChatAPIEvent event = new PlayerChatAPIEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
 
             this.player.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {

@@ -144,12 +144,12 @@ public class BedrockClientSession {
     public void handlePacket(int packetId, ByteBuf buffer) {
 
         if (this.version != null) {
-            ProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
+            ProtocolPacketHandler<? extends APIBedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when decoding packet id " + packetId);
                 return;
             }
-            BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.version.getPacketRegistry().getPacketHelper());
+            APIBedrockPacket bedrockPacket = packetHandler.decode(buffer, this.version.getPacketRegistry().getPacketHelper());
             this.queuedIncomingPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
 
@@ -162,7 +162,7 @@ public class BedrockClientSession {
             if (ServerProtocol.VERSIONS.containsKey(protocol)) {
                 MinecraftVersion version = ServerProtocol.VERSIONS.get(protocol);
                 this.version = version;
-                BedrockPacket loginPacket;
+                APIBedrockPacket loginPacket;
                 try {
                     loginPacket = this.version.getPacketRegistry().getPacketHandler(packetId).decode(buffer, this.version.getPacketRegistry().getPacketHelper());
                 } catch (RuntimeException exception) {

@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.packs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.github.willqi.pizzaserver.api.packs.APIDataPack;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ public class ZipDataPackTests {
 
     @Test
     public void shouldRetrieveManifestInformation(@TempDir Path tempDirPath) {
-        DataPack pack = getResourcePack(tempDirPath);
+        APIDataPack pack = getResourcePack(tempDirPath);
         Assertions.assertEquals(pack.getUuid(), UUID.fromString("00000000-0000-0000-0000-000000000000"));
         Assertions.assertEquals(pack.getVersion(), "1.0.0");
     }
@@ -23,7 +24,7 @@ public class ZipDataPackTests {
     @Test
     public void shouldBeEqualToTheResourcePackFile(@TempDir Path tempDirPath) {
         File resourcePackFile = getResourcePackFile(tempDirPath);
-        DataPack pack = getResourcePack(tempDirPath);
+        APIDataPack pack = getResourcePack(tempDirPath);
 
         InputStream testFileStream = null;
         try {
@@ -52,8 +53,8 @@ public class ZipDataPackTests {
 
     }
 
-    private static DataPack getResourcePack(Path tempDirPath) {
-        DataPack pack;
+    private static APIDataPack getResourcePack(Path tempDirPath) {
+        APIDataPack pack;
         try {
             pack = new ZipDataPack(getResourcePackFile(tempDirPath));
         } catch (IOException exception) {

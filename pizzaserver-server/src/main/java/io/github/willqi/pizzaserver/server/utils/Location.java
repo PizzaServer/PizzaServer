@@ -2,9 +2,8 @@ package io.github.willqi.pizzaserver.server.utils;
 
 import io.github.willqi.pizzaserver.api.utils.APILocation;
 import io.github.willqi.pizzaserver.api.world.APIWorld;
+import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.world.World;
-import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 public class Location extends Vector3 implements APILocation {
 
@@ -30,9 +29,9 @@ public class Location extends Vector3 implements APILocation {
      * @return the chunk or null if the chunk is not yet loaded.
      */
     @Override
-    public Chunk getChunk() {
-        if (((World)this.getWorld()).getChunkManager().isChunkLoaded(this.getChunkX(), this.getChunkZ())) {
-            return ((World)this.world).getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
+    public APIChunk getChunk() {
+        if (this.getWorld().getChunkManager().isChunkLoaded(this.getChunkX(), this.getChunkZ())) {
+            return this.getWorld().getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
         }
         return null;
     }

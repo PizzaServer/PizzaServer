@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.APIEntity;
 import io.github.willqi.pizzaserver.api.player.APIPlayer;
 import io.github.willqi.pizzaserver.api.world.APIWorld;
 import io.github.willqi.pizzaserver.api.world.blocks.APIBlock;
+import io.github.willqi.pizzaserver.api.world.blocks.APIBlockRegistry;
 import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
 import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -18,8 +19,6 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockP
 import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.world.World;
 import io.github.willqi.pizzaserver.server.world.blocks.Block;
-import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
-import io.github.willqi.pizzaserver.server.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.server.world.blocks.types.BlockTypeID;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -96,21 +95,11 @@ public class Chunk implements APIChunk {
         return this.biomeData[z * 16 + x];
     }
 
-    /**
-     * Add a {@link Entity} to the set of entities to render when a player is shown this chunk
-     * This will not show an entity to existing players who can see the chunk
-     * @param entity the {@link Entity} to be added
-     */
     @Override
     public void addEntity(APIEntity entity) {
         this.entities.add(entity);
     }
 
-    /**
-     * Remove a {@link Entity} from the set of entities that render when a player is shown this chunk
-     * This will not remove an entity from existing players who can see the chunk
-     * @param entity the {@link Entity} to be removed
-     */
     @Override
     public void removeEntity(APIEntity entity) {
         this.entities.remove(entity);
@@ -155,17 +144,17 @@ public class Chunk implements APIChunk {
 
         // Construct new block as none is cached
         BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
-        BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
+        APIBlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
         Block block;
         if (blockRegistry.hasBlockType(paletteEntry.getId())) {
             // Block id is registered
-            BlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
+            APIBlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
             block = new Block(blockType);
             block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
         } else {
             // The block id is not registered
             this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
-            BlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
+            APIBlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
             block = new Block(blockType);
         }
         subChunkCache.put(blockIndex, block);
@@ -302,20 +291,11 @@ public class Chunk implements APIChunk {
         this.spawnedTo.add(player);
     }
 
-    /**
-     * Retrieve all of the {@link Player}s who can see this Chunk.
-     * @return all the {@link Player} who can see this chunk
-     */
     @Override
     public Set<APIPlayer> getViewers() {
         return new HashSet<>(this.spawnedTo);
     }
 
-    /**
-     * Called when a {@link Player} should no longer see a chunk
-     * Despawns all entities in this chunk from the player's view
-     * @param player the {@link Player} who will no longer recieve updates from this chunk or see entities in it
-     */
     public void despawnFrom(APIPlayer player) {
         if (this.spawnedTo.remove(player)) {
             for (APIEntity entity : this.getEntities()) {
@@ -324,7 +304,7 @@ public class Chunk implements APIChunk {
 
             // Should we close this chunk
             if (this.getViewers().size() == 0) {
-                ((World)this.getWorld()).getChunkManager().unloadChunk(this.getX(), this.getZ());
+                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ());
             }
         }
     }

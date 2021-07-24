@@ -1,16 +1,16 @@
 package io.github.willqi.pizzaserver.server.plugin.events.player;
 
 import io.github.willqi.pizzaserver.api.player.APIPlayer;
-import io.github.willqi.pizzaserver.server.plugin.events.Cancellable;
+import io.github.willqi.pizzaserver.api.plugin.events.Cancellable;
 
 import java.util.Set;
 
-public class PlayerChatEvent extends PlayerEvent implements Cancellable {
+public class PlayerChatAPIEvent extends PlayerAPIEvent implements Cancellable {
 
     private String message;
     private Set<APIPlayer> recipients;
 
-    public PlayerChatEvent(APIPlayer player, String message, Set<APIPlayer> recipients) {
+    public PlayerChatAPIEvent(APIPlayer player, String message, Set<APIPlayer> recipients) {
         super(player);
         this.message = message;
         this.recipients = recipients;
