@@ -1,11 +1,10 @@
-package io.github.willqi.pizzaserver.server.plugin.events.player;
+package io.github.willqi.pizzaserver.server.event.type.player;
 
 import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.plugin.events.Cancellable;
 
 import java.util.Set;
 
-public class PlayerChatEvent extends PlayerEvent implements Cancellable {
+public class PlayerChatEvent extends PlayerEvent.Cancellable {
 
     private String message;
     private Set<Player> recipients;
