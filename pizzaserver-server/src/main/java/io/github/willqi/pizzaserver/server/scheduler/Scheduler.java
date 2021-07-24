@@ -177,7 +177,7 @@ public class Scheduler {
 
     // -- Task Control --
 
-    protected void queueTaskEntry(SchedulerTaskEntry entry){
+    protected synchronized void queueTaskEntry(SchedulerTaskEntry entry){
         if(entry.getNextTick() >= schedulerTick) throw new IllegalStateException("Task cannot be scheduled before the current tick.");
 
         int size = schedulerTasks.size();
@@ -194,23 +194,14 @@ public class Scheduler {
     }
 
     // -- Task Registering --
-    // Maybe get this in a builder? idk
 
-    public SchedulerTask scheduleRunnable(Runnable task, int delay, int interval, boolean isAsync) {
+    public PendingEntryBuilder prepareTask(Runnable task) {
         SchedulerTask rTask = new RunnableTypeTask(task);
-        scheduleTask(rTask, delay, interval, isAsync);
-
-        return rTask;
+        return new PendingEntryBuilder(this, rTask);
     }
 
-    public synchronized void scheduleTask(SchedulerTask task, int delay, int interval, boolean isAsync) {
-        Check.nullParam(task, "task");
-        Check.inclusiveLowerBound(delay, 0, "delay");
-        Check.inclusiveLowerBound(delay, 0, "interval");
-
-        long nextTick = this.schedulerTick + delay + 1;
-        SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsync);
-        queueTaskEntry(entry);
+    public PendingEntryBuilder prepareTask(SchedulerTask task) {
+        return new PendingEntryBuilder(this, task);
     }
 
     // -- Getters --
@@ -234,5 +225,61 @@ public class Scheduler {
     /** Sets the amount of server ticks that should pass between each scheduler tick. */
     public void setTickDelay(int tickDelay) {
         this.tickDelay = tickDelay;
+    }
+
+
+    public static class PendingEntryBuilder {
+
+        protected final Scheduler scheduler;
+        protected final SchedulerTask task;
+
+        protected int interval;
+        protected int delay;
+        protected boolean isAsynchronous;
+
+        protected PendingEntryBuilder(Scheduler scheduler, SchedulerTask task) {
+            this.scheduler = Check.nullParam(scheduler, "scheduler");
+            this.task = Check.nullParam(task, "task");
+
+            this.interval = 0;
+            this.delay = 0;
+            this.isAsynchronous = false;
+        }
+
+        public SchedulerTask schedule() {
+            long nextTick = scheduler.schedulerTick + delay + 1;
+            SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsynchronous);
+            scheduler.queueTaskEntry(entry);
+            return task;
+        }
+
+
+        public int getInterval() {
+            return interval;
+        }
+
+        public int getDelay() {
+            return delay;
+        }
+
+        public boolean isAsynchronous() {
+            return isAsynchronous;
+        }
+
+
+        public PendingEntryBuilder setInterval(int interval) {
+            this.interval = Check.inclusiveLowerBound(interval, 0, "interval");
+            return this;
+        }
+
+        public PendingEntryBuilder setDelay(int delay) {
+            this.delay = Check.inclusiveLowerBound(delay, 0, "delay");
+            return this;
+        }
+
+        public PendingEntryBuilder setAsynchronous(boolean asynchronous) {
+            this.isAsynchronous = asynchronous;
+            return this;
+        }
     }
 }
