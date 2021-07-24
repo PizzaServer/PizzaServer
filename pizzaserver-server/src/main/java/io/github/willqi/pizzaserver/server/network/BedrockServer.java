@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -92,9 +93,13 @@ public class BedrockServer {
 
         @Override
         public void onSessionCreation(RakNetServerSession rakNetServerSession) {
-            BedrockClientSession session = new BedrockClientSession(BedrockServer.this, rakNetServerSession);
-            rakNetServerSession.setListener(new BedrockRakNetConnectionListener(session));
-            BedrockServer.this.getPizzaServer().registerSession(session);
+            try {
+                BedrockClientSession session = new BedrockClientSession(BedrockServer.this, rakNetServerSession);
+                rakNetServerSession.setListener(new BedrockRakNetConnectionListener(session));
+                BedrockServer.this.getPizzaServer().registerSession(session);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         // The Bedrock client does not seem to care about this as far as I can tell

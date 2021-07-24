@@ -23,6 +23,7 @@ public abstract class BedrockPacketHandler {
     // player actions
     public void onPacket(MovePlayerPacket packet) {}
     public void onPacket(TextPacket packet) {}
+    public void onPacket(PlayerActionPacket packet) {}
 
     public void onPacket(ViolationPacket packet) {}
 
