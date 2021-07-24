@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import io.github.willqi.pizzaserver.api.player.attributes.APIAttribute;
+import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateAttributesPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
@@ -31,12 +31,12 @@ public class V419UpdateAttributesPacketHandler extends ProtocolPacketHandler<Upd
     public void encode(UpdateAttributesPacket packet, ByteBuf buffer, PacketHelper helper) {
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
 
-        Set<APIAttribute> validAttributes = packet.getAttributes()
+        Set<Attribute> validAttributes = packet.getAttributes()
                 .stream().filter(attribute -> this.attributeIds.containsKey(attribute.getType()))
                 .collect(Collectors.toSet());
 
         VarInts.writeUnsignedInt(buffer, validAttributes.size());
-        for (APIAttribute attribute : validAttributes) {
+        for (Attribute attribute : validAttributes) {
             buffer.writeFloatLE(attribute.getMinimumValue());
             buffer.writeFloatLE(attribute.getMaximumValue());
             buffer.writeFloatLE(attribute.getCurrentValue());

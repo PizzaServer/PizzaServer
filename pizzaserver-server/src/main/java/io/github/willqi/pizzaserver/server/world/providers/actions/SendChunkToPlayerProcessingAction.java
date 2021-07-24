@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.world.providers.actions;
 
-import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.server.player.BedrockPlayer;
+import io.github.willqi.pizzaserver.server.world.chunks.BedrockChunk;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -10,22 +10,22 @@ import java.util.concurrent.CompletableFuture;
  */
 public class SendChunkToPlayerProcessingAction implements ChunkProcessingAction {
 
-    private final Player player;
-    private final Chunk chunk;
+    private final BedrockPlayer player;
+    private final BedrockChunk chunk;
     private final CompletableFuture<Void> response;
 
 
-    public SendChunkToPlayerProcessingAction(Player player, Chunk chunk, CompletableFuture<Void> response) {
+    public SendChunkToPlayerProcessingAction(BedrockPlayer player, BedrockChunk chunk, CompletableFuture<Void> response) {
         this.player = player;
         this.chunk = chunk;
         this.response = response;
     }
 
-    public Player getPlayer() {
+    public BedrockPlayer getPlayer() {
         return this.player;
     }
 
-    public Chunk getChunk() {
+    public BedrockChunk getChunk() {
         return this.chunk;
     }
 

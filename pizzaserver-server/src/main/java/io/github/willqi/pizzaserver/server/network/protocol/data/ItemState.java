@@ -1,8 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.data;
 
-import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
-
-public class ItemState implements APIItemState {
+public class ItemState implements io.github.willqi.pizzaserver.api.network.protocol.data.ItemState {
 
     private final String nameId;
     private final int id;

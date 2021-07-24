@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.world.providers.actions;
 
-import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
-import io.github.willqi.pizzaserver.server.world.World;
+import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.server.world.BedrockWorld;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,18 +12,18 @@ public class RequestChunkProcessingAction implements ChunkProcessingAction {
 
     private final int x;
     private final int z;
-    private final World world;
-    private final CompletableFuture<APIChunk> response;
+    private final BedrockWorld world;
+    private final CompletableFuture<Chunk> response;
 
 
-    public RequestChunkProcessingAction(World world, int x, int z, CompletableFuture<APIChunk> response) {
+    public RequestChunkProcessingAction(BedrockWorld world, int x, int z, CompletableFuture<Chunk> response) {
         this.world = world;
         this.x = x;
         this.z = z;
         this.response = response;
     }
 
-    public World getWorld() {
+    public BedrockWorld getWorld() {
         return this.world;
     }
 
@@ -35,7 +35,7 @@ public class RequestChunkProcessingAction implements ChunkProcessingAction {
         return this.z;
     }
 
-    public CompletableFuture<APIChunk> getResponseFuture() {
+    public CompletableFuture<Chunk> getResponseFuture() {
         return this.response;
     }
 

@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.format.exceptions.world.chunks.NoChunkFoundE
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCWorldChunk;
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCChunkDatabase;
 import io.github.willqi.pizzaserver.format.mcworld.world.info.MCWorldInfo;
-import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.server.world.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.server.world.providers.actions.RequestChunkProcessingAction;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProvider;
 
@@ -50,7 +50,7 @@ public class LevelDBWorldProvider extends WorldProvider {
                         .build();
             }
 
-            Chunk chunk = new Chunk.Builder()
+            BedrockChunk chunk = new BedrockChunk.Builder()
                     .setWorld(action.getWorld())
                     .setX(internalChunk.getX())
                     .setZ(internalChunk.getZ())

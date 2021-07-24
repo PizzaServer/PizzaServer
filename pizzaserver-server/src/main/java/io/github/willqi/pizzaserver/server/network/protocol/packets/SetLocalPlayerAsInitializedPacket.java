@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class SetLocalPlayerAsInitializedPacket extends BedrockPacket {
+public class SetLocalPlayerAsInitializedPacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x71;
 

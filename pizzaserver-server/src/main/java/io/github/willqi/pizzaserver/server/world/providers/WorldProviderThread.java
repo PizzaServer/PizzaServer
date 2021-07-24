@@ -1,9 +1,9 @@
 package io.github.willqi.pizzaserver.server.world.providers;
 
-import io.github.willqi.pizzaserver.api.world.chunks.APIChunk;
-import io.github.willqi.pizzaserver.server.player.Player;
-import io.github.willqi.pizzaserver.server.world.World;
-import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.server.player.BedrockPlayer;
+import io.github.willqi.pizzaserver.server.world.BedrockWorld;
+import io.github.willqi.pizzaserver.server.world.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.server.world.providers.actions.ChunkProcessingAction;
 import io.github.willqi.pizzaserver.server.world.providers.actions.RequestChunkProcessingAction;
 import io.github.willqi.pizzaserver.server.world.providers.actions.SendChunkToPlayerProcessingAction;
@@ -19,12 +19,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class WorldProviderThread extends Thread implements Closeable {
 
-    private final World world;
+    private final BedrockWorld world;
     private final WorldProvider provider;
     private final Queue<ChunkProcessingAction> actionsQueue = new ConcurrentLinkedQueue<>();
 
 
-    public WorldProviderThread(World world, WorldProvider provider) {
+    public WorldProviderThread(BedrockWorld world, WorldProvider provider) {
         this.world = world;
         this.provider = provider;
     }
@@ -33,7 +33,7 @@ public class WorldProviderThread extends Thread implements Closeable {
         return this.provider;
     }
 
-    public CompletableFuture<Void> requestSendChunkToPlayer(Player player, Chunk chunk) {
+    public CompletableFuture<Void> requestSendChunkToPlayer(BedrockPlayer player, BedrockChunk chunk) {
         CompletableFuture<Void> response = new CompletableFuture<>();
         synchronized (this) {
             this.actionsQueue.add(new SendChunkToPlayerProcessingAction(player, chunk, response));
@@ -42,8 +42,8 @@ public class WorldProviderThread extends Thread implements Closeable {
         return response;
     }
 
-    public CompletableFuture<APIChunk> requestChunk(int x, int z) {
-        CompletableFuture<APIChunk> response = new CompletableFuture<>();
+    public CompletableFuture<Chunk> requestChunk(int x, int z) {
+        CompletableFuture<Chunk> response = new CompletableFuture<>();
         synchronized (this) {
             this.actionsQueue.add(new RequestChunkProcessingAction(this.world, x, z, response));
             this.notify();

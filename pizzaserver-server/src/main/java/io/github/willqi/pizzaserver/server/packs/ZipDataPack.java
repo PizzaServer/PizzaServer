@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.packs;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.willqi.pizzaserver.api.packs.APIDataPack;
+import io.github.willqi.pizzaserver.api.packs.DataPack;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ZipDataPack implements APIDataPack {
+public class ZipDataPack implements DataPack {
 
     private final byte[] hash;
     private UUID uuid;

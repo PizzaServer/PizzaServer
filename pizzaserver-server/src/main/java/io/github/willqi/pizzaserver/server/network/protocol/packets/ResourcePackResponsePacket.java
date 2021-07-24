@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ResourcePackResponsePacket extends BedrockPacket {
+public class ResourcePackResponsePacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x08;
 

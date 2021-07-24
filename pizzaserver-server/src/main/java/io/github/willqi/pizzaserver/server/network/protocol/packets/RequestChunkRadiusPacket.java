@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class RequestChunkRadiusPacket extends BedrockPacket {
+public class RequestChunkRadiusPacket extends BedrockNetworkPacket {
 
     public final static int ID = 0x45;
 

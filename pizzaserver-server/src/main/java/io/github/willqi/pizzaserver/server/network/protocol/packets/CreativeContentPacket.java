@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.server.item.Item;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class CreativeContentPacket extends BedrockPacket {
+public class CreativeContentPacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x91;
 

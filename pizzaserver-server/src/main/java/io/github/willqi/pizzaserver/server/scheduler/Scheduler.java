@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.scheduler;
 
-import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.BedrockServer;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import java.util.UUID;
 public class Scheduler {
 
     private final UUID schedulerID;
-    protected final Server server;
+    protected final BedrockServer server;
 
     protected long syncedTick;    // The last received server tick.
     protected long schedulerTick; // The scheduler's actual tick. This depends on the tickrate
@@ -21,7 +21,7 @@ public class Scheduler {
     protected boolean isRunning;
 
     public Scheduler thiss() { return this; }
-    public Scheduler(Server server, int tickDelay) {
+    public Scheduler(BedrockServer server, int tickDelay) {
         this.schedulerID = UUID.randomUUID();
 
         this.server = server;

@@ -1,15 +1,15 @@
 package io.github.willqi.pizzaserver.server.plugin.event.type.player;
 
-import io.github.willqi.pizzaserver.api.player.APIPlayer;
+import io.github.willqi.pizzaserver.api.player.Player;
 
 import java.util.Set;
 
 public class PlayerChatEvent extends PlayerEvent.Cancellable {
 
     private String message;
-    private Set<APIPlayer> recipients;
+    private Set<Player> recipients;
 
-    public PlayerChatEvent(APIPlayer player, String message, Set<APIPlayer> recipients) {
+    public PlayerChatEvent(Player player, String message, Set<Player> recipients) {
         super(player);
         this.message = message;
         this.recipients = recipients;
@@ -23,11 +23,11 @@ public class PlayerChatEvent extends PlayerEvent.Cancellable {
         this.message = message;
     }
 
-    public Set<APIPlayer> getRecipients() {
+    public Set<Player> getRecipients() {
         return this.recipients;
     }
 
-    public void setRecipients(Set<APIPlayer> recipients) {
+    public void setRecipients(Set<Player> recipients) {
         this.recipients = recipients;
     }
 

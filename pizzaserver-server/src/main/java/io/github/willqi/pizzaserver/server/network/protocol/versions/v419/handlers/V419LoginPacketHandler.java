@@ -8,17 +8,17 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
 import com.nukkitx.network.VarInts;
-import io.github.willqi.pizzaserver.api.player.skin.APISkinAnimation;
-import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPiece;
-import io.github.willqi.pizzaserver.api.player.skin.APISkinPersonaPieceTint;
+import io.github.willqi.pizzaserver.api.player.skin.SkinAnimation;
+import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPiece;
+import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPieceTint;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.server.player.skin.Skin;
-import io.github.willqi.pizzaserver.server.player.skin.SkinAnimation;
-import io.github.willqi.pizzaserver.server.player.skin.SkinPersonaPiece;
-import io.github.willqi.pizzaserver.server.player.skin.SkinPersonaPieceTint;
+import io.github.willqi.pizzaserver.server.player.skin.BedrockSkin;
+import io.github.willqi.pizzaserver.server.player.skin.BedrockSkinAnimation;
+import io.github.willqi.pizzaserver.server.player.skin.BedrockSkinPersonaPiece;
+import io.github.willqi.pizzaserver.server.player.skin.BedrockSkinPersonaPieceTint;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;
@@ -154,7 +154,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         Device playerDevice = Device.getPlatformByOS(skinData.get("DeviceOS").getAsInt());
         String languageCode = skinData.get("LanguageCode").getAsString();
 
-        Skin.Builder skinBuilder = new Skin.Builder();
+        BedrockSkin.Builder skinBuilder = new BedrockSkin.Builder();
 
         skinBuilder.setSkinId(skinData.get("SkinId").getAsString())
                 .setPlayFabId(skinData.has("PlayFabId") ? skinData.get("PlayFabId").getAsString() : "")
@@ -175,11 +175,11 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
                 .setArmSize(skinData.get("ArmSize").getAsString())
                 .setSkinColor(skinData.get("SkinColor").getAsString());
 
-        List<APISkinAnimation> animations = new ArrayList<>();
+        List<SkinAnimation> animations = new ArrayList<>();
         for (JsonElement element : skinData.get("AnimatedImageData").getAsJsonArray()) {
             JsonObject animation = element.getAsJsonObject();
             animations.add(
-                    new SkinAnimation.Builder()
+                    new BedrockSkinAnimation.Builder()
                             .setType(animation.get("Type").getAsInt())
                             .setFrame(animation.get("Frames").getAsInt())
                             .setSkinHeight(animation.get("ImageWidth").getAsInt())
@@ -190,11 +190,11 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         }
         skinBuilder.setAnimations(animations);
 
-        List<APISkinPersonaPiece> pieces = new ArrayList<>();
+        List<SkinPersonaPiece> pieces = new ArrayList<>();
         for (JsonElement element : skinData.get("PersonaPieces").getAsJsonArray()) {
             JsonObject piece = element.getAsJsonObject();
             pieces.add(
-                    new SkinPersonaPiece.Builder()
+                    new BedrockSkinPersonaPiece.Builder()
                         .setId(piece.get("PieceId").getAsString())
                         .setType(piece.get("PieceType").getAsString())
                         .setPackId(UUID.fromString(piece.get("PackId").getAsString()))
@@ -205,7 +205,7 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
         }
         skinBuilder.setPieces(pieces);
 
-        List<APISkinPersonaPieceTint> tints = new ArrayList<>();
+        List<SkinPersonaPieceTint> tints = new ArrayList<>();
         for (JsonElement element : skinData.get("PieceTintColors").getAsJsonArray()) {
             JsonObject tint = element.getAsJsonObject();
             JsonArray colorsArray = tint.get("Colors").getAsJsonArray();
@@ -214,11 +214,11 @@ public class V419LoginPacketHandler extends ProtocolPacketHandler<LoginPacket> {
             for (int i = 0; i < colorsArray.size(); i++) {
                 colors.add(colorsArray.get(i).getAsString());
             }
-            tints.add(new SkinPersonaPieceTint(tint.get("PieceType").getAsString(), colors));
+            tints.add(new BedrockSkinPersonaPieceTint(tint.get("PieceType").getAsString(), colors));
         }
         skinBuilder.setTints(tints);
 
-        Skin skin = skinBuilder.build();
+        BedrockSkin skin = skinBuilder.build();
 
         packet.setDevice(playerDevice);
         packet.setLanguageCode(languageCode);

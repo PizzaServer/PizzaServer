@@ -1,14 +1,14 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import io.github.willqi.pizzaserver.api.entity.meta.APIEntityMetaData;
-import io.github.willqi.pizzaserver.api.entity.meta.properties.APIEntityMetaProperty;
+import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaProperty;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
-import io.github.willqi.pizzaserver.server.entity.meta.properties.EntityMetaProperty;
+import io.github.willqi.pizzaserver.server.entity.meta.properties.BedrockEntityMetaProperty;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
@@ -271,7 +271,7 @@ public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEnt
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeId());
 
         // We need to write the metadata
-        APIEntityMetaData metaData = packet.getData();
+        EntityMetaData metaData = packet.getData();
 
         // Filter for the flags we support
         Map<EntityMetaFlagCategory, Set<EntityMetaFlag>> flags = metaData.getFlags();
@@ -284,7 +284,7 @@ public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEnt
         }
 
         // Filter for the properties we support
-        Map<EntityMetaPropertyName, APIEntityMetaProperty<?>> properties = new HashMap<>(metaData.getProperties());
+        Map<EntityMetaPropertyName, EntityMetaProperty<?>> properties = new HashMap<>(metaData.getProperties());
         properties.keySet().removeIf(propertyName -> !this.supportedProperties.containsKey(propertyName));
 
         // Serialize all entries
@@ -315,34 +315,34 @@ public class V419SetEntityDataPacketHandler extends ProtocolPacketHandler<SetEnt
             VarInts.writeUnsignedInt(buffer, this.propertyTypeIds.get(propertyName.getType()));
             switch (propertyName.getType()) {
                 case BYTE:
-                    buffer.writeByte(((EntityMetaProperty<Byte>)properties.get(propertyName)).getValue());
+                    buffer.writeByte(((BedrockEntityMetaProperty<Byte>)properties.get(propertyName)).getValue());
                     break;
                 case SHORT:
-                    buffer.writeShortLE(((EntityMetaProperty<Short>)properties.get(propertyName)).getValue());
+                    buffer.writeShortLE(((BedrockEntityMetaProperty<Short>)properties.get(propertyName)).getValue());
                     break;
                 case INTEGER:
-                    VarInts.writeInt(buffer, ((EntityMetaProperty<Integer>)properties.get(propertyName)).getValue());
+                    VarInts.writeInt(buffer, ((BedrockEntityMetaProperty<Integer>)properties.get(propertyName)).getValue());
                     break;
                 case FLOAT:
-                    buffer.writeFloatLE(((EntityMetaProperty<Float>)properties.get(propertyName)).getValue());
+                    buffer.writeFloatLE(((BedrockEntityMetaProperty<Float>)properties.get(propertyName)).getValue());
                     break;
                 case LONG:
-                    VarInts.writeLong(buffer, ((EntityMetaProperty<Long>)properties.get(propertyName)).getValue());
+                    VarInts.writeLong(buffer, ((BedrockEntityMetaProperty<Long>)properties.get(propertyName)).getValue());
                     break;
                 case STRING:
-                    helper.writeString(((EntityMetaProperty<String>)properties.get(propertyName)).getValue(), buffer);
+                    helper.writeString(((BedrockEntityMetaProperty<String>)properties.get(propertyName)).getValue(), buffer);
                     break;
                 case NBT:
-                    helper.writeNBTCompound(((EntityMetaProperty<NBTCompound>)properties.get(propertyName)).getValue(), buffer);
+                    helper.writeNBTCompound(((BedrockEntityMetaProperty<NBTCompound>)properties.get(propertyName)).getValue(), buffer);
                     break;
                 case VECTOR3I:
-                    Vector3i vector3i = ((EntityMetaProperty<Vector3i>)properties.get(propertyName)).getValue();
+                    Vector3i vector3i = ((BedrockEntityMetaProperty<Vector3i>)properties.get(propertyName)).getValue();
                     VarInts.writeInt(buffer, vector3i.getX());
                     VarInts.writeInt(buffer, vector3i.getY());
                     VarInts.writeInt(buffer, vector3i.getZ());
                     break;
                 case VECTOR3:
-                    Vector3 vector3 = ((EntityMetaProperty<Vector3>)properties.get(propertyName)).getValue();
+                    Vector3 vector3 = ((BedrockEntityMetaProperty<Vector3>)properties.get(propertyName)).getValue();
                     buffer.writeFloatLE(vector3.getX());
                     buffer.writeFloatLE(vector3.getY());
                     buffer.writeFloatLE(vector3.getZ());

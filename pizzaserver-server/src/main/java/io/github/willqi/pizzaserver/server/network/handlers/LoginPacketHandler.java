@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
-import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.BedrockServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
@@ -11,8 +11,8 @@ import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
-import io.github.willqi.pizzaserver.api.packs.APIDataPack;
-import io.github.willqi.pizzaserver.server.player.Player;
+import io.github.willqi.pizzaserver.api.packs.DataPack;
+import io.github.willqi.pizzaserver.server.player.BedrockPlayer;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -32,12 +32,12 @@ import java.util.HashSet;
  */
 public class LoginPacketHandler extends BedrockPacketHandler {
 
-    private final Server server;
+    private final BedrockServer server;
     private final BedrockClientSession session;
-    private Player player;
+    private BedrockPlayer player;
 
 
-    public LoginPacketHandler(Server server, BedrockClientSession session) {
+    public LoginPacketHandler(BedrockServer server, BedrockClientSession session) {
         this.server = server;
         this.session = session;
     }
@@ -67,7 +67,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
             return;
         }
 
-        Player player = new Player(this.server, this.session, loginPacket);
+        BedrockPlayer player = new BedrockPlayer(this.server, this.session, loginPacket);
         this.player = player;
 
         PlayerPreLoginEvent event = new PlayerPreLoginEvent(player);
@@ -125,7 +125,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
                 // Send all pack info of the packs the client does not have
                 for (PackInfo packInfo : packet.getPacksRequested()) {
 
-                    APIDataPack pack;
+                    DataPack pack;
                     ResourcePackDataInfoPacket resourcePackDataInfoPacket = new ResourcePackDataInfoPacket();
                     if (this.server.getResourcePackManager().getResourcePacks().containsKey(packInfo.getUuid())) {
                         pack = this.server.getResourcePackManager().getResourcePacks().get(packInfo.getUuid());
@@ -182,7 +182,7 @@ public class LoginPacketHandler extends BedrockPacketHandler {
             return;
         }
 
-        APIDataPack pack = this.server.getResourcePackManager().getResourcePacks().getOrDefault(
+        DataPack pack = this.server.getResourcePackManager().getResourcePacks().getOrDefault(
                 packet.getPackInfo().getUuid(),
                 this.server.getResourcePackManager().getBehaviourPacks().get(packet.getPackInfo().getUuid()));
 

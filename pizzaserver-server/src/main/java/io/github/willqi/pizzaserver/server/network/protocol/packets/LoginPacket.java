@@ -1,11 +1,11 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.api.player.skin.APISkin;
+import io.github.willqi.pizzaserver.api.player.skin.Skin;
 
 import java.util.UUID;
 
-public class LoginPacket extends BedrockPacket {
+public class LoginPacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x01;
 
@@ -18,7 +18,7 @@ public class LoginPacket extends BedrockPacket {
     private String username;
     private String languageCode;
 
-    private APISkin skin;
+    private Skin skin;
 
     public LoginPacket() {
         super(ID);
@@ -84,11 +84,11 @@ public class LoginPacket extends BedrockPacket {
         this.languageCode = languageCode;
     }
 
-    public APISkin getSkin() {
+    public Skin getSkin() {
         return this.skin;
     }
 
-    public void setSkin(APISkin skin) {
+    public void setSkin(Skin skin) {
         this.skin = skin;
     }
 

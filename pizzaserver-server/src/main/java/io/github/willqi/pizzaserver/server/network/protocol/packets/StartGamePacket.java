@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
-import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
@@ -17,7 +17,7 @@ import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
 import java.util.*;
 
-public class StartGamePacket extends BedrockPacket {
+public class StartGamePacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x0b;
 
@@ -60,8 +60,8 @@ public class StartGamePacket extends BedrockPacket {
     private UUID eduUuid;
     private ServerOrigin serverOrigin;
 
-    private Set<APIBlockType> blockProperties = new HashSet<>();
-    private Set<APIItemState> itemStates = new HashSet<>();
+    private Set<BlockType> blockProperties = new HashSet<>();
+    private Set<ItemState> itemStates = new HashSet<>();
 
     private Set<Experiment> experiments = new HashSet<>();
     private boolean experimentsPreviouslyEnabled;
@@ -358,19 +358,19 @@ public class StartGamePacket extends BedrockPacket {
         this.serverOrigin = serverOrigin;
     }
 
-    public Set<APIBlockType> getBlockProperties() {
+    public Set<BlockType> getBlockProperties() {
         return Collections.unmodifiableSet(this.blockProperties);
     }
 
-    public void setBlockProperties(Set<APIBlockType> blockProperties) {
+    public void setBlockProperties(Set<BlockType> blockProperties) {
         this.blockProperties = blockProperties;
     }
 
-    public Set<APIItemState> getItemStates() {
+    public Set<ItemState> getItemStates() {
         return Collections.unmodifiableSet(this.itemStates);
     }
 
-    public void setItemStates(Set<APIItemState> itemStates) {
+    public void setItemStates(Set<ItemState> itemStates) {
         this.itemStates = itemStates;
     }
 

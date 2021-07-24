@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 
-public class ResourcePackChunkRequestPacket extends BedrockPacket {
+public class ResourcePackChunkRequestPacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x54;
 

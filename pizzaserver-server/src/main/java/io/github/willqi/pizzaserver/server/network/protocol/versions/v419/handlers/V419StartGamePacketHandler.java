@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import com.nukkitx.network.VarInts;
-import io.github.willqi.pizzaserver.api.network.protocol.data.APIItemState;
-import io.github.willqi.pizzaserver.api.world.blocks.types.APIBlockType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
@@ -104,13 +104,13 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
 
         // custom blocks
         VarInts.writeUnsignedInt(buffer, packet.getBlockProperties().size());
-        for (APIBlockType blockType : packet.getBlockProperties()) {
+        for (BlockType blockType : packet.getBlockProperties()) {
             this.writeBlockProperty(blockType, buffer, helper);
         }
 
         // Item states
         VarInts.writeUnsignedInt(buffer, packet.getItemStates().size());
-        for (APIItemState itemState : packet.getItemStates()) {
+        for (ItemState itemState : packet.getItemStates()) {
             helper.writeString(itemState.getItemId(), buffer);
             buffer.writeShortLE(itemState.getId());
             buffer.writeBoolean(itemState.isComponentBased());
@@ -121,7 +121,7 @@ public class V419StartGamePacketHandler extends ProtocolPacketHandler<StartGameP
 
     }
 
-    protected void writeBlockProperty(APIBlockType blockType, ByteBuf buffer, PacketHelper helper) {
+    protected void writeBlockProperty(BlockType blockType, ByteBuf buffer, PacketHelper helper) {
         helper.writeString(blockType.getBlockId(), buffer);
 
         NBTCompound blockContainer = new NBTCompound();

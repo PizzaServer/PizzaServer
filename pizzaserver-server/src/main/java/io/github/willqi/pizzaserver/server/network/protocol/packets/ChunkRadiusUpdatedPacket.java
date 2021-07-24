@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 /**
  * Sent in response to a RequestChunkRadiusPacket with the server's desired chunk radius for the client
  */
-public class ChunkRadiusUpdatedPacket extends BedrockPacket {
+public class ChunkRadiusUpdatedPacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x46;
 

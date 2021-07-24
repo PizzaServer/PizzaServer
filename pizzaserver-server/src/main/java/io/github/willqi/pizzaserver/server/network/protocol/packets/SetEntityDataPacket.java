@@ -1,13 +1,13 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.api.entity.meta.APIEntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 
-public class SetEntityDataPacket extends BedrockPacket {
+public class SetEntityDataPacket extends BedrockNetworkPacket {
 
     public static final int ID = 0x27;
 
     private long runtimeId;
-    private APIEntityMetaData data;
+    private EntityMetaData data;
 
     private long tick;
 
@@ -24,11 +24,11 @@ public class SetEntityDataPacket extends BedrockPacket {
         this.runtimeId = runtimeId;
     }
 
-    public APIEntityMetaData getData() {
+    public EntityMetaData getData() {
         return this.data;
     }
 
-    public void setData(APIEntityMetaData data) {
+    public void setData(EntityMetaData data) {
         this.data = data;
     }
 

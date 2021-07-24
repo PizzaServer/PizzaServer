@@ -4,7 +4,7 @@ import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePackStackPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.api.packs.APIDataPack;
+import io.github.willqi.pizzaserver.api.packs.DataPack;
 import io.netty.buffer.ByteBuf;
 
 public class V419ResourcePackStackPacketHandler extends ProtocolPacketHandler<ResourcePackStackPacket> {
@@ -14,14 +14,14 @@ public class V419ResourcePackStackPacketHandler extends ProtocolPacketHandler<Re
         buffer.writeBoolean(packet.isForcedToAccept());
 
         VarInts.writeUnsignedInt(buffer, packet.getBehaviourPacks().size());
-        for (APIDataPack behaviourPack : packet.getBehaviourPacks()) {
+        for (DataPack behaviourPack : packet.getBehaviourPacks()) {
             helper.writeString(behaviourPack.getUuid().toString(), buffer);
             helper.writeString(behaviourPack.getVersion(), buffer);
             helper.writeString("", buffer); // subpack name but it doesn't look like it effects anything?
         }
 
         VarInts.writeUnsignedInt(buffer, packet.getResourcePacks().size());
-        for (APIDataPack resourcePack : packet.getResourcePacks()) {
+        for (DataPack resourcePack : packet.getResourcePacks()) {
             helper.writeString(resourcePack.getUuid().toString(), buffer);
             helper.writeString(resourcePack.getVersion(), buffer);
             helper.writeString("", buffer); // subpack name but it doesn't look like it effects anything?

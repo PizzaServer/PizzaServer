@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.plugin.event;
 
 import io.github.willqi.pizzaserver.api.plugin.event.BaseEvent;
-import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.BedrockServer;
 import io.github.willqi.pizzaserver.server.plugin.event.filter.EventFilter;
 import io.github.willqi.pizzaserver.server.plugin.event.handler.EventHandler;
 import io.github.willqi.pizzaserver.server.plugin.event.handler.EventHandlerReference;
@@ -27,14 +27,14 @@ public class EventManager {
                     >
             > listenerReference = new HashMap<>();
 
-    protected final Server server;
+    protected final BedrockServer server;
 
     protected final ArrayList<EventFilter> filters; // Filter for EVERY listener.
     protected final ArrayList<Object> listeners; // Once a listener is added, it has a permanent place in the listenerReference.
     protected final ArrayList<EventManager> children; // Send events to children too. Only sent if filter is passed.
 
 
-    public EventManager(Server server, EventFilter... filters) {
+    public EventManager(BedrockServer server, EventFilter... filters) {
         this.server = server;
         this.filters = new ArrayList<>();
         this.listeners = new ArrayList<>();
