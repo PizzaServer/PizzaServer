@@ -9,6 +9,8 @@ import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.data.PushResponse;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.item.ItemToolType;
+import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +24,18 @@ public abstract class BaseBlockType implements BlockType {
         }
     });
 
+
+    @Override
+    public Block create() {
+        return new ImplBlock(this);
+    }
+
+    @Override
+    public Block create(int blockStateIndex) {
+        Block block = new ImplBlock(this);
+        block.setBlockStateIndex(blockStateIndex);
+        return block;
+    }
 
     @Override
     public BiMap<NBTCompound, Integer> getBlockStates() {
@@ -156,5 +170,16 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public void onUpdate(Player player, Block block) {}
+
+
+    /**
+     * Retrieve a block type based on it's block id
+     * @param blockId id of the block (e.g. minecraft:stone)
+     * @return {@link BlockType} of the id
+     */
+    public static BlockType getBlockTypeById(String blockId) {
+        return ImplServer.getInstance().getBlockRegistry().getBlockType(blockId);
+    }
+
 
 }

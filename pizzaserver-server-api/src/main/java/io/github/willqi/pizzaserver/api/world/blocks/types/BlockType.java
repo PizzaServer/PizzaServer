@@ -30,6 +30,19 @@ public interface BlockType {
     String getName();
 
     /**
+     * Create a {@link Block} with this block type
+     * @return {@link Block}
+     */
+    Block create();
+
+    /**
+     * Create a {@link Block} with this block type and a block state index.
+     * @param blockStateIndex block state index of the block
+     * @return {@link Block}
+     */
+    Block create(int blockStateIndex);
+
+    /**
      * Retrieve the {@link NBTCompound} for each of the block's states and the index associated with it.
      * The {@link NBTCompound}s returned should match the data in block_states.nbt in order to work correctly.
      * The index is used for getBlockStateIndex in order to determine the current state of the block.
