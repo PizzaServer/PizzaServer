@@ -13,6 +13,12 @@ public final class IdentityKey<T> {
         this.key = Check.nullParam(key, "key");
     }
 
+    // Just a nicer looking way of creating it.
+    public static <T> IdentityKey<T> of(Identifier string) {
+        return new IdentityKey<>(string);
+    }
+
+
     public Identifier get() {
         return key;
     }

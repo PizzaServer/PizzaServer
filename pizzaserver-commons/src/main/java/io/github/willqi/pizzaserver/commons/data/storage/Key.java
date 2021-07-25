@@ -15,6 +15,12 @@ public final class Key<T> {
         this.key = modifiedKey;
     }
 
+    // Just a nicer looking way of creating it.
+    public static <T> Key<T> of(String string) {
+        return new Key<>(string);
+    }
+
+
     public String get() {
         return key;
     }
