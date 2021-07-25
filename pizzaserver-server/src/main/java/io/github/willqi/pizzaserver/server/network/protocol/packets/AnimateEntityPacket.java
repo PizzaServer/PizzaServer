@@ -11,7 +11,7 @@ public class AnimateEntityPacket extends ImplBedrockPacket {
     private String stopExpression = "query.any_animation_finished";
     private String controller;
     private float blendOutTime = 0;
-    private Set<Long> entityRuntimeIDs = new LinkedHashSet<>();
+    private Set<Long> entityRuntimeIDs = new HashSet<>();
 
     public AnimateEntityPacket() {
         super(ID);
@@ -67,6 +67,6 @@ public class AnimateEntityPacket extends ImplBedrockPacket {
     }
 
     public void setEntityRuntimeIDs(Set<Long> entityRuntimeIDs) {
-        this.entityRuntimeIDs = entityRuntimeIDs;
+        this.entityRuntimeIDs = new HashSet<>(entityRuntimeIDs);
     }
 }
