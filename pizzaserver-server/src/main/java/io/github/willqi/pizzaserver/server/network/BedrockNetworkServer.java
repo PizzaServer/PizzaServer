@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;

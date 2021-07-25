@@ -29,4 +29,8 @@ public class Vector3 {
         return new Vector3i((int)this.x, (int)this.y, (int)this.z);
     }
 
+    @Override
+    public String toString() {
+        return "Vector3(x="+x+",y="+y+",z="+z+")";
+    }
 }
