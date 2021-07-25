@@ -1,21 +1,23 @@
 package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.event.EventManager;
 import io.github.willqi.pizzaserver.api.packs.DataPackManager;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.plugin.PluginManager;
+import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
 import io.github.willqi.pizzaserver.api.world.WorldManager;
 import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
-import io.github.willqi.pizzaserver.server.plugin.event.EventManager;
+import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.ImplDataPackManager;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
-import io.github.willqi.pizzaserver.server.plugin.BedrockPluginManager;
-import io.github.willqi.pizzaserver.server.scheduler.Scheduler;
+import io.github.willqi.pizzaserver.server.plugin.ImplPluginManager;
+import io.github.willqi.pizzaserver.server.scheduler.ImplScheduler;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.ImplLogger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
@@ -29,16 +31,16 @@ import java.util.stream.Collectors;
 
 public class ImplServer implements Server {
 
-    private static ImplServer INSTANCE;
+    private static Server INSTANCE;
 
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
-    private final PluginManager pluginManager = new BedrockPluginManager(this);
+    private final PluginManager pluginManager = new ImplPluginManager(this);
     private final ImplDataPackManager dataPackManager = new ImplDataPackManager(this);
-    private final WorldManager worldManager = new ImplWorldManager(this);
-    private final EventManager eventManager = new EventManager(this);
+    private final ImplWorldManager worldManager = new ImplWorldManager(this);
+    private final EventManager eventManager = new ImplEventManager(this);
 
     private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
-    private final Scheduler scheduler = new Scheduler(this, 1);
+    private final ImplScheduler scheduler = new ImplScheduler(this, 1);
 
     private final BlockRegistry blockRegistry = new ImplBlockRegistry();
 
@@ -89,7 +91,7 @@ public class ImplServer implements Server {
         this.dataPackManager.loadBehaviorPacks();
         this.setTargetTps(20);
 
-        ((ImplWorldManager)this.getWorldManager()).loadWorlds();
+        this.worldManager.loadWorlds();
 
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
@@ -122,9 +124,9 @@ public class ImplServer implements Server {
                 }
             }
 
-            for(Scheduler scheduler: syncedSchedulers) {
+            for (Scheduler scheduler : this.syncedSchedulers) {
                 try {
-                    scheduler.serverTick();
+                    ((ImplScheduler)scheduler).serverTick();
                 } catch (Exception err) {
                     err.printStackTrace();
                 }
@@ -267,28 +269,30 @@ public class ImplServer implements Server {
     }
 
     @Override
-    public BlockRegistry getBlockRegistry() {
-        return this.blockRegistry;
-    }
-
     public EventManager getEventManager() {
         return this.eventManager;
     }
 
+    @Override
+    public BlockRegistry getBlockRegistry() {
+        return this.blockRegistry;
+    }
+
+    @Override
     public Scheduler getScheduler() {
-        return scheduler;
+        return this.scheduler;
     }
 
     public Set<Scheduler> getSyncedSchedulers() {
-        return syncedSchedulers;
+        return Collections.unmodifiableSet(this.syncedSchedulers);
     }
 
     public void syncScheduler(Scheduler scheduler) {
-        if(scheduler.isRunning()) syncedSchedulers.add(scheduler);
+        if(scheduler.isRunning()) this.syncedSchedulers.add(scheduler);
     }
 
     public boolean desyncScheduler(Scheduler scheduler) {
-        return syncedSchedulers.remove(scheduler);
+        return this.syncedSchedulers.remove(scheduler);
     }
 
     @Override
@@ -305,7 +309,7 @@ public class ImplServer implements Server {
         return this.config;
     }
 
-    public static ImplServer getInstance() {
+    public static Server getInstance() {
         return INSTANCE;
     }
 

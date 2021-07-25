@@ -1,28 +1,26 @@
 package io.github.willqi.pizzaserver.server.scheduler.task;
 
+import io.github.willqi.pizzaserver.api.scheduler.task.SchedulerTask;
+
 import java.util.UUID;
 
-public abstract class SchedulerTask {
+public abstract class ImplSchedulerTask implements SchedulerTask {
 
     //TODO: Add plugin so all plugin tasks can be disabled when the plugin is disabled.
     private UUID taskID;
     private boolean isCancelled;
 
-    public SchedulerTask() {
+    public ImplSchedulerTask() {
         this.taskID = UUID.randomUUID();
         this.isCancelled = false;
     }
 
-
-    /** Executes the task. */
-    public abstract void run();
-
-
-    /** Sets the task as cancelled. */
+    @Override
     public final void cancel() { this.isCancelled = true; }
 
-    /** @return the unique id of the task. */
-    public UUID getTaskID() { return taskID; }
-    /** @return true if the task has been cancelled. */
+    @Override
+    public UUID getTaskID() { return this.taskID; }
+
+    @Override
     public final boolean isCancelled() { return isCancelled; }
 }

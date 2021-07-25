@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.network.protocol.packets;
 
-public interface BedrockPacket {
+public abstract class BedrockPacket {
 
-    int getPacketId();
+    public abstract int getPacketId();
 
 }

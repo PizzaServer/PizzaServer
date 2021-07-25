@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.plugin.event.handler;
+package io.github.willqi.pizzaserver.api.event.handler;
 
 public enum Priority {
 

@@ -11,7 +11,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.MovePlayerPa
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RequestChunkRadiusPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
-import io.github.willqi.pizzaserver.server.plugin.event.type.player.PlayerChatEvent;
+import io.github.willqi.pizzaserver.server.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 
 import java.util.HashSet;

@@ -1,13 +1,16 @@
 package io.github.willqi.pizzaserver.server.scheduler;
 
-import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
+import io.github.willqi.pizzaserver.api.scheduler.task.SchedulerTask;
 import io.github.willqi.pizzaserver.commons.utils.Check;
+import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.scheduler.task.RunnableTypeTask;
-import io.github.willqi.pizzaserver.server.scheduler.task.SchedulerTask;
+import io.github.willqi.pizzaserver.server.scheduler.task.ImplSchedulerTask;
 
 import java.util.*;
 
-public class Scheduler {
+public class ImplScheduler implements Scheduler {
 
     private final UUID schedulerID;
     protected final ImplServer server;
@@ -22,11 +25,10 @@ public class Scheduler {
     protected ArrayList<SchedulerTaskEntry> schedulerTasks;
     protected boolean isRunning;
 
-    public Scheduler thiss() { return this; }
-    public Scheduler(ImplServer server, int tickDelay) {
+    public ImplScheduler(Server server, int tickDelay) {
         this.schedulerID = UUID.randomUUID();
 
-        this.server = server;
+        this.server = (ImplServer)server;
 
         this.syncedTick = 0;
         this.schedulerTick = 0;
@@ -121,7 +123,7 @@ public class Scheduler {
                                         task.getTask().run();
 
                                     } catch (Exception err) {
-                                        thiss().server.getLogger().error("Error thrown in a scheduler (asynchronous) task:");
+                                        ImplScheduler.this.server.getLogger().error("Error thrown in a scheduler (asynchronous) task:");
                                         err.printStackTrace();
                                     }
 
@@ -195,13 +197,15 @@ public class Scheduler {
 
     // -- Task Registering --
 
+    @Override
     public PendingEntryBuilder prepareTask(Runnable task) {
-        SchedulerTask rTask = new RunnableTypeTask(task);
-        return new PendingEntryBuilder(this, rTask);
+        ImplSchedulerTask rTask = new RunnableTypeTask(task);
+        return new ImplPendingEntryBuilder(this, rTask);
     }
 
+    @Override
     public PendingEntryBuilder prepareTask(SchedulerTask task) {
-        return new PendingEntryBuilder(this, task);
+        return new ImplPendingEntryBuilder(this, task);
     }
 
     // -- Getters --
@@ -217,7 +221,8 @@ public class Scheduler {
     public int getTickDelay() { return tickDelay; }
     /** @return a list of active async task threads */
     public Set<Thread> getActiveThreads() { return new HashSet<>(activeThreads); }
-    /** @return true if the scheduler is currently active. */
+
+    @Override
     public boolean isRunning() { return isRunning; }
 
     // -- Setters --
@@ -228,16 +233,16 @@ public class Scheduler {
     }
 
 
-    public static class PendingEntryBuilder {
+    public static class ImplPendingEntryBuilder implements PendingEntryBuilder {
 
-        protected final Scheduler scheduler;
+        protected final ImplScheduler scheduler;
         protected final SchedulerTask task;
 
         protected int interval;
         protected int delay;
         protected boolean isAsynchronous;
 
-        protected PendingEntryBuilder(Scheduler scheduler, SchedulerTask task) {
+        protected ImplPendingEntryBuilder(ImplScheduler scheduler, SchedulerTask task) {
             this.scheduler = Check.nullParam(scheduler, "scheduler");
             this.task = Check.nullParam(task, "task");
 
@@ -246,6 +251,7 @@ public class Scheduler {
             this.isAsynchronous = false;
         }
 
+        @Override
         public SchedulerTask schedule() {
             long nextTick = scheduler.schedulerTick + delay + 1;
             SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsynchronous);
@@ -254,29 +260,34 @@ public class Scheduler {
         }
 
 
+        @Override
         public int getInterval() {
             return interval;
         }
 
+        @Override
         public int getDelay() {
             return delay;
         }
 
+        @Override
         public boolean isAsynchronous() {
             return isAsynchronous;
         }
 
-
+        @Override
         public PendingEntryBuilder setInterval(int interval) {
             this.interval = Check.inclusiveLowerBound(interval, 0, "interval");
             return this;
         }
 
+        @Override
         public PendingEntryBuilder setDelay(int delay) {
             this.delay = Check.inclusiveLowerBound(delay, 0, "delay");
             return this;
         }
 
+        @Override
         public PendingEntryBuilder setAsynchronous(boolean asynchronous) {
             this.isAsynchronous = asynchronous;
             return this;

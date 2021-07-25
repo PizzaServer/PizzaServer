@@ -1,18 +1,14 @@
-package io.github.willqi.pizzaserver.api.plugin.event;
+package io.github.willqi.pizzaserver.api.event;
 
-import io.github.willqi.pizzaserver.api.plugin.event.type.CancellableType;
+import io.github.willqi.pizzaserver.api.event.type.CancellableType;
 
-/**
- * A base event designed to be extended so that its
- * subclasses can be broadcast whenever an action occurs.
- */
-public abstract class BaseEvent {
+public abstract class Event {
 
     // Does anything actually need to be here?
     // It's a class and not an interface because events should
     // Just be their own thing.
 
-    public static abstract class Cancellable extends BaseEvent implements CancellableType {
+    public static abstract class Cancellable extends Event implements CancellableType {
 
         protected boolean isCancelled;
 
@@ -22,7 +18,7 @@ public abstract class BaseEvent {
 
         @Override
         public boolean isCancelled() {
-            return isCancelled;
+            return this.isCancelled;
         }
 
         @Override

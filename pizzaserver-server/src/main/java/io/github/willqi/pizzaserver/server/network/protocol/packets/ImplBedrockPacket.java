@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BedrockPacket;
 
-public abstract class ImplBedrockPacket implements BedrockPacket {
+public abstract class ImplBedrockPacket extends BedrockPacket {
 
     private final int packetId;
 

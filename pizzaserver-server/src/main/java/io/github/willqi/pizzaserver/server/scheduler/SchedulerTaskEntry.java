@@ -1,7 +1,8 @@
 package io.github.willqi.pizzaserver.server.scheduler;
 
+import io.github.willqi.pizzaserver.api.scheduler.task.SchedulerTask;
 import io.github.willqi.pizzaserver.commons.utils.Check;
-import io.github.willqi.pizzaserver.server.scheduler.task.SchedulerTask;
+import io.github.willqi.pizzaserver.server.scheduler.task.ImplSchedulerTask;
 
 public final class SchedulerTaskEntry {
 

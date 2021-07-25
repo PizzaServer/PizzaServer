@@ -1,14 +1,14 @@
-package io.github.willqi.pizzaserver.server.plugin.event.type.player;
+package io.github.willqi.pizzaserver.server.event.type.player;
 
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.plugin.event.BaseEvent;
-import io.github.willqi.pizzaserver.api.plugin.event.type.CancellableType;
+import io.github.willqi.pizzaserver.api.event.Event;
+import io.github.willqi.pizzaserver.api.event.type.CancellableType;
 
-public abstract class PlayerEvent extends BaseEvent {
+public abstract class BasePlayerEvent extends Event {
 
     protected Player player;
 
-    public PlayerEvent(Player player) {
+    public BasePlayerEvent(Player player) {
         this.player = player;
     }
 
@@ -17,7 +17,7 @@ public abstract class PlayerEvent extends BaseEvent {
     }
 
 
-    public static abstract class Cancellable extends PlayerEvent implements CancellableType {
+    public static abstract class Cancellable extends BasePlayerEvent implements CancellableType {
 
         protected boolean isCancelled;
 

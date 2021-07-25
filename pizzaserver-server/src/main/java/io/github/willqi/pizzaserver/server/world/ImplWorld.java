@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.world;
 import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
@@ -10,7 +11,6 @@ import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
-import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
@@ -110,14 +110,14 @@ public class ImplWorld implements Closeable, World {
             throw new IllegalStateException("This entity has already been spawned");
         }
 
-        ImplLocation location = new ImplLocation(this, position);
+        Location location = new ImplLocation(this, position);
         if (location.getChunk() == null) {
             throw new NullPointerException("This entity cannot be spawned in an unloaded chunk");
         }
 
         entity.setLocation(location);
-        if (entity instanceof ImplPlayer) {
-            this.players.add((ImplPlayer)entity);
+        if (entity instanceof Player) {
+            this.players.add((Player)entity);
         }
         ((BaseEntity)entity).onSpawned();
         ((BaseEntity)entity).setSpawned(true);
@@ -129,7 +129,7 @@ public class ImplWorld implements Closeable, World {
             throw new IllegalStateException("This entity has not been spawned");
         }
         entity.getLocation().getChunk().removeEntity(entity);
-        if (entity instanceof ImplPlayer) {
+        if (entity instanceof Player) {
             this.players.remove(entity);
         }
     }

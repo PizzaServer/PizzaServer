@@ -1,4 +1,6 @@
-package io.github.willqi.pizzaserver.server.plugin.event.handler;
+package io.github.willqi.pizzaserver.server.event.handler;
+
+import io.github.willqi.pizzaserver.api.event.handler.EventHandler;
 
 import java.lang.reflect.Method;
 

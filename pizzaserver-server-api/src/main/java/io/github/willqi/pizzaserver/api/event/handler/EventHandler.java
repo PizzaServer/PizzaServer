@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.plugin.event.handler;
+package io.github.willqi.pizzaserver.api.event.handler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,11 +1,12 @@
-package io.github.willqi.pizzaserver.server.plugin.event;
+package io.github.willqi.pizzaserver.server.event;
 
-import io.github.willqi.pizzaserver.api.plugin.event.BaseEvent;
-import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.plugin.event.filter.EventFilter;
-import io.github.willqi.pizzaserver.server.plugin.event.handler.EventHandler;
-import io.github.willqi.pizzaserver.server.plugin.event.handler.EventHandlerReference;
-import io.github.willqi.pizzaserver.api.plugin.event.type.CancellableType;
+import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.event.Event;
+import io.github.willqi.pizzaserver.api.event.EventManager;
+import io.github.willqi.pizzaserver.api.event.filter.EventFilter;
+import io.github.willqi.pizzaserver.api.event.handler.EventHandler;
+import io.github.willqi.pizzaserver.server.event.handler.EventHandlerReference;
+import io.github.willqi.pizzaserver.api.event.type.CancellableType;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class EventManager {
+public class ImplEventManager implements EventManager {
 
     // Catalogues all listener events.
     protected static HashMap
@@ -22,19 +23,19 @@ public class EventManager {
                 Class<?>, // Listener's Class
                 HashMap // Map tying event types to their event methods within the class.
                     <
-                        Class<? extends BaseEvent>,
+                        Class<? extends Event>,
                         ArrayList<EventHandlerReference>
                     >
             > listenerReference = new HashMap<>();
 
-    protected final ImplServer server;
+    protected final Server server;
 
     protected final ArrayList<EventFilter> filters; // Filter for EVERY listener.
     protected final ArrayList<Object> listeners; // Once a listener is added, it has a permanent place in the listenerReference.
-    protected final ArrayList<EventManager> children; // Send events to children too. Only sent if filter is passed.
+    protected final ArrayList<ImplEventManager> children; // Send events to children too. Only sent if filter is passed.
 
 
-    public EventManager(ImplServer server, EventFilter... filters) {
+    public ImplEventManager(Server server, EventFilter... filters) {
         this.server = server;
         this.filters = new ArrayList<>();
         this.listeners = new ArrayList<>();
@@ -44,8 +45,8 @@ public class EventManager {
     }
 
 
-
-    public synchronized void call(BaseEvent event) {
+    @Override
+    public synchronized void call(Event event) {
         ArrayList<EventHandlerReference> callList = new ArrayList<>();
         ArrayList<Object> callListeners = new ArrayList<>(); // Ordered to match call list
 
@@ -53,7 +54,7 @@ public class EventManager {
         // Would be great to bake this but then I can't really use the FilteredListener.
         // Could maybe filter each method as I go?
         for(Object listener: listeners) {
-            HashMap<Class<? extends BaseEvent>, ArrayList<EventHandlerReference>> ref = listenerReference.get(listener.getClass());
+            HashMap<Class<? extends Event>, ArrayList<EventHandlerReference>> ref = listenerReference.get(listener.getClass());
 
             for(EventHandlerReference pair : ref.getOrDefault(event.getClass(), new ArrayList<>())) {
 
@@ -127,15 +128,9 @@ public class EventManager {
     }
 
 
-    /**
-     * Creates a child EventManager which passes all the events its
-     * parent EventManager receives, applying its own filters.
-     *
-     * Events called on the child EventManager are only called on itself
-     * and its own children.
-     */
+    @Override
     public EventManager createChild(EventFilter... filters) {
-        EventManager child = new EventManager(this.server, filters);
+        ImplEventManager child = new ImplEventManager(this.server, filters);
 
         synchronized (children) {
             this.children.add(child);
@@ -144,28 +139,20 @@ public class EventManager {
         return child;
     }
 
-    /**
-     * Removes an existing child EventManager from this.
-     * It does not deactivate the EventManager, rather preventing events
-     * from the parent reaching the specified child.
-     */
+    @Override
     public synchronized void removeChild(EventManager child) {
         this.children.remove(child);
     }
 
 
-    /**
-     * Registers a listener to this EventManager
-     * @param listener the listener to be registered.
-     * @return listener for storing an instance.
-     */
+    @Override
     public synchronized Object addListener(Object listener) {
         removeListener(listener, true);
         listeners.add(listener);
 
         // Generate reference for the listener's type if one doesn't already exist
         if(!listenerReference.containsKey(listener.getClass())) {
-            HashMap<Class<? extends BaseEvent>, ArrayList<EventHandlerReference>> listenerMethods = new HashMap<>();
+            HashMap<Class<? extends Event>, ArrayList<EventHandlerReference>> listenerMethods = new HashMap<>();
 
             // Get event listening methods.
             for(Method method : listener.getClass().getMethods()) {
@@ -176,12 +163,12 @@ public class EventManager {
 
                     if(parameters.length == 1){
                         Class<?> type = parameters[0].getType();
-                        ArrayList<Class<? extends BaseEvent>> eventClasses = new ArrayList<>();
+                        ArrayList<Class<? extends Event>> eventClasses = new ArrayList<>();
 
                         EventHandlerReference pair = new EventHandlerReference(annotation, method);
                         adoptSuperclasses(type, eventClasses); // Get all the categories this method would be in.
 
-                        for(Class<? extends BaseEvent> cls: eventClasses) {
+                        for(Class<? extends Event> cls: eventClasses) {
 
                             if(!listenerMethods.containsKey(cls)){
                                 listenerMethods.put(cls, new ArrayList<>()); // Create new handler list if it doesn't exist.
@@ -198,32 +185,25 @@ public class EventManager {
         return listener;
     }
 
-    /**
-     * Removes listener from this EventManager and any child EventManager's
-     * @param listener the listener to be removed.
-     */
+    @Override
     public synchronized void removeListener(Object listener) {
         removeListener(listener, true);
     }
 
-    /**
-     * Removes a listener from the managers listener list.
-     * @param listener the listener to be removed.
-     * @param removeFromChildren should instances of this listener be removed in child EventManager's ?
-     */
+    @Override
     public synchronized void removeListener(Object listener, boolean removeFromChildren) {
         listeners.remove(listener);
 
         if(removeFromChildren) {
 
-            for (EventManager child : children) {
+            for (ImplEventManager child : children) {
                 child.removeListener(listener, true); // Ensure children don't include it either.
             }
         }
     }
 
 
-    private void invokeEvent(Object owningListener, BaseEvent event, EventHandlerReference methodPair) {
+    private void invokeEvent(Object owningListener, Event event, EventHandlerReference methodPair) {
         try {
             methodPair.getMethod().invoke(owningListener, event);
 
@@ -241,11 +221,11 @@ public class EventManager {
      * @param list a list of all the previously checked classes.
      */
     @SuppressWarnings("unchecked") // It's checked with Class#isAssaignableFrom() :)
-    private static void adoptSuperclasses(Class<?> classIn, ArrayList<Class<? extends BaseEvent>> list) {
+    private static void adoptSuperclasses(Class<?> classIn, ArrayList<Class<? extends Event>> list) {
         if(classIn == null) return;
 
-        if(BaseEvent.class.isAssignableFrom(classIn)){
-            list.add((Class<? extends BaseEvent>) classIn);
+        if(Event.class.isAssignableFrom(classIn)){
+            list.add((Class<? extends Event>) classIn);
             adoptSuperclasses(classIn.getSuperclass(), list);
 
             for(Class<?> cls: classIn.getInterfaces()) {
@@ -256,6 +236,6 @@ public class EventManager {
 
     public synchronized EventFilter[] getFilters() { return filters.toArray(new EventFilter[0]); }
     public synchronized Object[] getListeners() { return listeners.toArray(); }
-    public synchronized EventManager[] getChildren() { return children.toArray(new EventManager[0]); }
+    public synchronized ImplEventManager[] getChildren() { return children.toArray(new ImplEventManager[0]); }
 
 }

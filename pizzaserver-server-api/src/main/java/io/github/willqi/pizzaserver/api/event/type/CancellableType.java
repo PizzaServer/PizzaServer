@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.api.plugin.event.type;
+package io.github.willqi.pizzaserver.api.event.type;
 
 public interface CancellableType {
 
