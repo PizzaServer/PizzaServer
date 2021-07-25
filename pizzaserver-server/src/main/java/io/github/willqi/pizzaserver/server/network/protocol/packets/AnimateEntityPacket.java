@@ -1,11 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
-import com.google.common.primitives.UnsignedLongs;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class AnimateEntityPacket extends ImplBedrockPacket {
 
@@ -16,7 +11,7 @@ public class AnimateEntityPacket extends ImplBedrockPacket {
     private String stopExpression = "query.any_animation_finished";
     private String controller;
     private float blendOutTime = 0;
-    private ArrayList<UnsignedLong> entityRuntimeIDs = new ArrayList<>();
+    private Set<Long> entityRuntimeIDs = new LinkedHashSet<>();
 
     public AnimateEntityPacket() {
         super(ID);
@@ -62,19 +57,16 @@ public class AnimateEntityPacket extends ImplBedrockPacket {
         this.blendOutTime = blendOutTime;
     }
 
-    public ArrayList<UnsignedLong> getEntityRuntimeIDs() {
+    public Set<Long> getEntityRuntimeIDs() {
         return entityRuntimeIDs;
     }
 
-    public void addEntityRuntimeID(long entityRuntimeID) {
-        entityRuntimeIDs.add(UnsignedLong.valueOf(entityRuntimeID));
+    public AnimateEntityPacket addEntityRuntimeID(long entityRuntimeID) {
+        this.entityRuntimeIDs.add(entityRuntimeID);
+        return this;
     }
 
-    public void addEntityRuntimeID(UnsignedLong entityRuntimeID) {
-        entityRuntimeIDs.add(entityRuntimeID);
-    }
-
-    public void setEntityRuntimeIDs(ArrayList<UnsignedLong> entityRuntimeIDs) {
+    public void setEntityRuntimeIDs(Set<Long> entityRuntimeIDs) {
         this.entityRuntimeIDs = entityRuntimeIDs;
     }
 }

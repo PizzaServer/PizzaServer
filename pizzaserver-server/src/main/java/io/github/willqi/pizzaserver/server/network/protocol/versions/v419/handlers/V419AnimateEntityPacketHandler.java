@@ -1,11 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import com.google.common.primitives.UnsignedLong;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.AnimateEntityPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
+
+import java.util.Set;
 
 public class V419AnimateEntityPacketHandler extends BaseProtocolPacketHandler<AnimateEntityPacket> {
     @Override
@@ -15,9 +16,8 @@ public class V419AnimateEntityPacketHandler extends BaseProtocolPacketHandler<An
         helper.writeString(packet.getStopExpression(), buffer);
         helper.writeString(packet.getController(), buffer);
         buffer.writeFloatLE(packet.getBlendOutTime());
-        VarInts.writeUnsignedInt(buffer, packet.getEntityRuntimeIDs().size());
-        for(UnsignedLong unsignedLong : packet.getEntityRuntimeIDs()) {
-            VarInts.writeUnsignedLong(buffer, unsignedLong.longValue());
-        }
+        Set<Long> entityRuntimeIDs = packet.getEntityRuntimeIDs();
+        VarInts.writeUnsignedInt(buffer, entityRuntimeIDs.size());
+        entityRuntimeIDs.forEach(entityRuntimeID -> VarInts.writeUnsignedLong(buffer, entityRuntimeID));
     }
 }
