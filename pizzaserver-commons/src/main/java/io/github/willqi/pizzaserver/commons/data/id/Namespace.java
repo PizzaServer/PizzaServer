@@ -13,7 +13,7 @@ public final class Namespace {
 
     public Namespace(String namespace) {
 
-        if(namespace == null || namespace.trim().length() == 0 || !namespace.matches("([A-Za-z0-9_-]*)")) {
+        if(namespace == null || namespace.trim().length() == 0 || !namespace.matches("([A-Za-z0-9_.-]*)")) {
             this.namespace = MISSING_NAMESPACE;
 
         } else {

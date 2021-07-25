@@ -19,7 +19,7 @@ public final class Identifier {
         // Namespace IDs are checked thus can be trusted.
         this.namespace = namespace.getNamespaceString();
 
-        if(id == null || id.trim().length() == 0 || !id.matches("([A-Za-z0-9_-]*)")) {
+        if(id == null || id.trim().length() == 0 || !id.matches("([A-Za-z0-9_.-]*)")) {
             this.id = "gen_"+ Util.generateRandomIdentifier(6, 6); // What are the chances of this clashing
 
         } else {
