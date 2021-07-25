@@ -71,7 +71,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         this.player = player;
 
         PlayerPreLoginEvent event = new PlayerPreLoginEvent(player);
-        this.server.getPluginManager().callEvent(event);
+        this.server.getEventManager().call(event);
         if (event.isCancelled()) {
             this.session.disconnect();
             return;

@@ -86,7 +86,7 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         if (packet.getType() == TextPacket.TextType.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
 
-            this.player.getServer().getPluginManager().callEvent(event);
+            this.player.getServer().getEventManager().call(event);
             if (!event.isCancelled()) {
                 for (Player recipient : event.getRecipients()) {
                     recipient.sendPlayerMessage(this.player, event.getMessage());
