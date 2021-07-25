@@ -8,7 +8,6 @@ import io.github.willqi.pizzaserver.server.player.Player;
 import io.github.willqi.pizzaserver.server.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.Location;
 import io.github.willqi.pizzaserver.server.world.World;
-import io.github.willqi.pizzaserver.server.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.world.chunks.Chunk;
 
 import java.util.HashSet;
