@@ -19,10 +19,12 @@ public abstract class BedrockPacketHandler {
     // chunk related
     public void onPacket(ClientCacheStatusPacket packet) {}
     public void onPacket(RequestChunkRadiusPacket packet) {}
+    public void onPacket(LevelSoundEventPacket packet) {}
 
     // player actions
     public void onPacket(MovePlayerPacket packet) {}
     public void onPacket(TextPacket packet) {}
+    public void onPacket(PlayerActionPacket packet) {}
 
     public void onPacket(ViolationPacket packet) {}
 
