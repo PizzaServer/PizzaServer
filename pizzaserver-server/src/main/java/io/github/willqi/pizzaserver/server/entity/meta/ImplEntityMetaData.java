@@ -61,7 +61,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((byte)this.getProperty(propertyName, EntityMetaPropertyType.BYTE).getValue());
+        return ((Byte)this.getProperty(propertyName, EntityMetaPropertyType.BYTE).getValue());
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((short)this.getProperty(propertyName, EntityMetaPropertyType.SHORT).getValue());
+        return ((Short)this.getProperty(propertyName, EntityMetaPropertyType.SHORT).getValue());
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((int)this.getProperty(propertyName, EntityMetaPropertyType.INTEGER).getValue());
+        return ((Integer)this.getProperty(propertyName, EntityMetaPropertyType.INTEGER).getValue());
     }
 
     @Override
@@ -103,7 +103,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((float)this.getProperty(propertyName, EntityMetaPropertyType.FLOAT).getValue());
+        return ((Float)this.getProperty(propertyName, EntityMetaPropertyType.FLOAT).getValue());
     }
 
     @Override
@@ -117,7 +117,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((long)this.getProperty(propertyName, EntityMetaPropertyType.LONG).getValue());
+        return ((Long)this.getProperty(propertyName, EntityMetaPropertyType.LONG).getValue());
     }
 
     @Override
