@@ -8,9 +8,6 @@ public interface Scheduler {
 
     PendingEntryBuilder prepareTask(SchedulerTask task);
 
-    /** @return true if the scheduler is currently active. */
-    boolean isRunning();
-
 
     interface PendingEntryBuilder {
 

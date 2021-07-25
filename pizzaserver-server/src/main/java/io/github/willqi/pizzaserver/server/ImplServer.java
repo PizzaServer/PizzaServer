@@ -287,11 +287,11 @@ public class ImplServer implements Server {
         return Collections.unmodifiableSet(this.syncedSchedulers);
     }
 
-    public void syncScheduler(Scheduler scheduler) {
+    public void syncScheduler(ImplScheduler scheduler) {
         if(scheduler.isRunning()) this.syncedSchedulers.add(scheduler);
     }
 
-    public boolean desyncScheduler(Scheduler scheduler) {
+    public boolean desyncScheduler(ImplScheduler scheduler) {
         return this.syncedSchedulers.remove(scheduler);
     }
 
