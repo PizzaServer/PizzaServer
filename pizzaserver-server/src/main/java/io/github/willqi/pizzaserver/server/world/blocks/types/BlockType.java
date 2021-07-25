@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.world.blocks.types;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.commons.data.id.Identifier;
+import io.github.willqi.pizzaserver.commons.data.storage.IdentityKey;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.item.ItemToolType;
 import io.github.willqi.pizzaserver.server.player.Player;
@@ -27,7 +28,7 @@ public abstract class BlockType {
      * e.g. minecraft:stone
      * @return the namespace id
      */
-    public abstract Identifier getBlockId();
+    public abstract IdentityKey<? extends BlockType> getBlockId();
 
     /**
      * Display name of the block

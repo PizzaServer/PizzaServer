@@ -14,6 +14,7 @@ import java.util.*;
  * Registry that contains all blocks the server should recognize
  */
 public class BlockRegistry {
+    //TODO: Allow for Identity Keys when registering/fetching. Add an Identifier-based get method to where types aren't needed.
 
     // All registered block types
     private final Map<Identifier, BlockType> types = new HashMap<>();
@@ -32,14 +33,14 @@ public class BlockRegistry {
      * @param blockType {@link BlockType} that needs to be registered
      */
     public void register(BlockType blockType) {
-        if (this.types.containsKey(blockType.getBlockId())) {
+        if (this.types.containsKey(blockType.getBlockId().get())) {
             throw new IllegalArgumentException("Block id " + blockType.getBlockId() + " was already registered.");
         }
 
-        if (!blockType.getBlockId().getNamespace().equals("minecraft")) {
+        if (!blockType.getBlockId().get().getNamespace().equals("minecraft")) {
             this.customTypes.add(blockType);
         }
-        this.types.put(blockType.getBlockId(), blockType);
+        this.types.put(blockType.getBlockId().get(), blockType);
     }
 
     /**
