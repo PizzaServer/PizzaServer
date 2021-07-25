@@ -11,6 +11,7 @@ public class V419PacketRegistry extends PacketRegistry {
         this.register(LoginPacket.ID, new V419LoginPacketHandler())
             .register(SetLocalPlayerAsInitializedPacket.ID, new V419SetLocalPlayerAsInitializedPacketHandler())
             .register(PlayStatusPacket.ID, new V419PlayStatusPacketHandler())
+            .register(PlayerActionPacket.ID, new V419PlayerActionPacketHandler())
             .register(DisconnectPacket.ID, new V419DisconnectPacketHandler())
             .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler())
             .register(ResourcePackResponsePacket.ID, new V419ResourcePackResponsePacketHandler())
@@ -31,7 +32,8 @@ public class V419PacketRegistry extends PacketRegistry {
             .register(UpdateAttributesPacket.ID, new V419UpdateAttributesPacketHandler())
             .register(TextPacket.ID, new V419TextPacketHandler())
             .register(SetEntityDataPacket.ID, new V419SetEntityDataPacketHandler())
-            .register(ViolationPacket.ID, new V419ViolationPacketHandler());
+            .register(ViolationPacket.ID, new V419ViolationPacketHandler())
+            .register(LevelSoundEventPacket.ID, new V419LevelSoundEventPacketHandler());
     }
 
     @Override
