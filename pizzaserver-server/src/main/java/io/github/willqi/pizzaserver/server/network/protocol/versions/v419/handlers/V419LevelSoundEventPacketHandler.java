@@ -6,13 +6,13 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.data.LevelSound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelSoundEventPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 
-public class V419LevelSoundEventPacketHandler extends ProtocolPacketHandler<LevelSoundEventPacket> {
+public class V419LevelSoundEventPacketHandler extends BaseProtocolPacketHandler<LevelSoundEventPacket> {
 
     protected final BiMap<LevelSound, Integer> sounds = HashBiMap.create(new HashMap<LevelSound, Integer>() {
         {
@@ -271,7 +271,7 @@ public class V419LevelSoundEventPacketHandler extends ProtocolPacketHandler<Leve
     });
 
     @Override
-    public LevelSoundEventPacket decode(ByteBuf buffer, PacketHelper helper) {
+    public LevelSoundEventPacket decode(ByteBuf buffer, BasePacketHelper helper) {
         LevelSoundEventPacket packet = new LevelSoundEventPacket();
         packet.setSound(sounds.inverse().get(VarInts.readUnsignedInt(buffer)));
         packet.setVector3(new Vector3(
@@ -287,7 +287,7 @@ public class V419LevelSoundEventPacketHandler extends ProtocolPacketHandler<Leve
     }
 
     @Override
-    public void encode(LevelSoundEventPacket packet, ByteBuf buffer, PacketHelper helper) {
+    public void encode(LevelSoundEventPacket packet, ByteBuf buffer, BasePacketHelper helper) {
         VarInts.writeUnsignedInt(buffer, sounds.get(packet.getSound()));
         buffer.writeFloatLE(packet.getVector3().getX());
         buffer.writeFloatLE(packet.getVector3().getY());

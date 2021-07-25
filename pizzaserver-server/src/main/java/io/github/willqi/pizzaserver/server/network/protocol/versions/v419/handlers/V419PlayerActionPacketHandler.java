@@ -4,17 +4,16 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
-import io.github.willqi.pizzaserver.server.Server;
+import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerActionPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.PacketHelper;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.ProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.player.Player;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 
-public class V419PlayerActionPacketHandler extends ProtocolPacketHandler<PlayerActionPacket> {
+public class V419PlayerActionPacketHandler extends BaseProtocolPacketHandler<PlayerActionPacket> {
 
 
     protected final BiMap<PlayerAction, Integer> actions = HashBiMap.create(new HashMap<PlayerAction, Integer>(){
@@ -48,12 +47,12 @@ public class V419PlayerActionPacketHandler extends ProtocolPacketHandler<PlayerA
     });
 
     @Override
-    public PlayerActionPacket decode(ByteBuf buffer, PacketHelper helper) {
+    public PlayerActionPacket decode(ByteBuf buffer, BasePacketHelper helper) {
         PlayerActionPacket packet = new PlayerActionPacket();
         packet.setEntityRuntimeID(VarInts.readUnsignedLong(buffer));
         int action = VarInts.readInt(buffer);
         packet.setActionType(actions.inverse().get(action));
-        if(packet.getActionType() == null) Server.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
+        if(packet.getActionType() == null) ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
         packet.setVector3(new Vector3(
                 VarInts.readInt(buffer),
                 VarInts.readUnsignedInt(buffer),
