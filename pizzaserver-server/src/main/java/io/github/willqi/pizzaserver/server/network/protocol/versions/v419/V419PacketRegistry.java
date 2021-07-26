@@ -34,7 +34,8 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(SetEntityDataPacket.ID, new V419SetEntityDataPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
             .register(LevelSoundEventPacket.ID, new V419LevelSoundEventPacketHandler())
-            .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler());
+            .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler())
+            .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler());
     }
 
     @Override
