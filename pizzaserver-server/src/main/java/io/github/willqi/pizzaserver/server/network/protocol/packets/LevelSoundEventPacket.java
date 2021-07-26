@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.network.protocol.data.LevelSound;
 
-public class LevelSoundEventPacket extends BedrockPacket {
+public class LevelSoundEventPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x7b;
 
