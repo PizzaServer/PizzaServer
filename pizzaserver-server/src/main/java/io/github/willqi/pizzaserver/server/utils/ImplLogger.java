@@ -7,6 +7,10 @@ public class ImplLogger implements Logger {
 
     private final org.apache.logging.log4j.Logger logger;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+
     public ImplLogger(String prefix) {
         this.logger = LogManager.getLogger(prefix);
     }
@@ -18,7 +22,7 @@ public class ImplLogger implements Logger {
 
     @Override
     public void error(String message) {
-        this.logger.error(message);
+        error(message, true);
     }
 
     @Override
@@ -28,12 +32,27 @@ public class ImplLogger implements Logger {
 
     @Override
     public void error(String message, Throwable exception) {
-        this.logger.error(message, exception);
+        error(message, exception, true);
+    }
+
+    public void error(String message, boolean colored) {
+        if(colored) this.logger.error(ANSI_RED + message + ANSI_RESET);
+        else this.logger.error(message);
+    }
+
+    public void error(String message, Throwable exception, boolean colored) {
+        if(colored) this.logger.error(ANSI_RED + message + ANSI_RESET, exception);
+        else this.logger.error(message, exception);
     }
 
     @Override
     public void warn(String message) {
-        this.logger.warn(message);
+        warn(message, true);
+    }
+
+    public void warn(String message, boolean colored) {
+        if(colored) this.logger.warn(ANSI_YELLOW + message + ANSI_RESET);
+        else this.logger.warn(message);
     }
 
     @Override
