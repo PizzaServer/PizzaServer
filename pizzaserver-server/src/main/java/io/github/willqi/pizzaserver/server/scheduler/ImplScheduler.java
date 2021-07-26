@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.api.scheduler.task.SchedulerTask;
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.scheduler.task.RunnableTypeTask;
-import io.github.willqi.pizzaserver.server.scheduler.task.ImplSchedulerTask;
+import io.github.willqi.pizzaserver.server.scheduler.task.BaseSchedulerTask;
 
 import java.util.*;
 
@@ -199,7 +199,7 @@ public class ImplScheduler implements Scheduler {
 
     @Override
     public PendingEntryBuilder prepareTask(Runnable task) {
-        ImplSchedulerTask rTask = new RunnableTypeTask(task);
+        BaseSchedulerTask rTask = new RunnableTypeTask(task);
         return new ImplPendingEntryBuilder(this, rTask);
     }
 

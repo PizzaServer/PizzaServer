@@ -329,6 +329,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void onSpawned() {
+        super.onSpawned();
+
         this.updateVisibleChunks(null, this.chunkRadius);
 
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();

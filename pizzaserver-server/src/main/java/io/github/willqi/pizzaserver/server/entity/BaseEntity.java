@@ -19,7 +19,7 @@ public abstract class BaseEntity implements Entity {
 
     private final long id;
     private final Set<Player> spawnedTo = new HashSet<>();
-    private boolean spawned;
+    protected boolean spawned;
 
     private Location location = null;
 
@@ -90,14 +90,8 @@ public abstract class BaseEntity implements Entity {
      * Called when the entity is initially spawned into a world.
      * This is useful for entity initialization.
      */
-    public abstract void onSpawned();
-
-    /**
-     * Used internally to when spawning this entity in a world
-     * @param spawned if the entity has been spawned
-     */
-    public void setSpawned(boolean spawned) {
-        this.spawned = spawned;
+    public void onSpawned() {
+        this.spawned = true;
     }
 
     @Override
@@ -128,7 +122,7 @@ public abstract class BaseEntity implements Entity {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof BaseEntity) {
-            return NumberUtils.isNearlyEqual(((BaseEntity) obj).getId(), this.getId());
+            return NumberUtils.isNearlyEqual(((BaseEntity)obj).getId(), this.getId());
         }
         return false;
     }

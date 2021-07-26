@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.scheduler.task;
 
 import io.github.willqi.pizzaserver.commons.utils.Check;
 
-public final class RunnableTypeTask extends ImplSchedulerTask {
+public final class RunnableTypeTask extends BaseSchedulerTask {
 
     private final Runnable taskRunnable;
 

@@ -120,7 +120,6 @@ public class ImplWorld implements Closeable, World {
             this.players.add((Player)entity);
         }
         ((BaseEntity)entity).onSpawned();
-        ((BaseEntity)entity).setSpawned(true);
     }
 
     @Override

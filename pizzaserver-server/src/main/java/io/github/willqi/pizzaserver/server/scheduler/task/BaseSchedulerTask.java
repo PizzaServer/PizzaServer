@@ -4,13 +4,13 @@ import io.github.willqi.pizzaserver.api.scheduler.task.SchedulerTask;
 
 import java.util.UUID;
 
-public abstract class ImplSchedulerTask implements SchedulerTask {
+public abstract class BaseSchedulerTask implements SchedulerTask {
 
     //TODO: Add plugin so all plugin tasks can be disabled when the plugin is disabled.
     private UUID taskID;
     private boolean isCancelled;
 
-    public ImplSchedulerTask() {
+    public BaseSchedulerTask() {
         this.taskID = UUID.randomUUID();
         this.isCancelled = false;
     }

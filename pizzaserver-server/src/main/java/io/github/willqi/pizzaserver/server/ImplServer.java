@@ -39,7 +39,7 @@ public class ImplServer implements Server {
     private final ImplWorldManager worldManager = new ImplWorldManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
 
-    private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
+    private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final ImplScheduler scheduler = new ImplScheduler(this, 1);
 
     private final BlockRegistry blockRegistry = new ImplBlockRegistry();
@@ -67,16 +67,15 @@ public class ImplServer implements Server {
 
     public ImplServer(String rootDirectory) {
         INSTANCE = this;
+        this.rootDirectory = rootDirectory;
+
         this.getLogger().info("Setting up PizzaServer instance.");
         Runtime.getRuntime().addShutdownHook(serverExitListener);
-
-        this.rootDirectory = rootDirectory;
 
         // Load required data/files
         this.setupFiles();
 
         this.getLogger().info("Internal setup complete.");
-
         // TODO: load plugins
     }
 
@@ -87,11 +86,11 @@ public class ImplServer implements Server {
     public void boot() {
         this.stopByConsoleExit = false;
         ServerProtocol.loadVersions();
-        this.dataPackManager.loadResourcePacks();
-        this.dataPackManager.loadBehaviorPacks();
+        this.getResourcePackManager().loadResourcePacks();
+        this.getResourcePackManager().loadBehaviorPacks();
         this.setTargetTps(20);
 
-        this.worldManager.loadWorlds();
+        this.getWorldManager().loadWorlds();
 
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
@@ -124,11 +123,11 @@ public class ImplServer implements Server {
                 }
             }
 
-            for (Scheduler scheduler : this.syncedSchedulers) {
+            for (ImplScheduler scheduler : this.syncedSchedulers) {
                 try {
-                    ((ImplScheduler)scheduler).serverTick();
-                } catch (Exception err) {
-                    err.printStackTrace();
+                    scheduler.serverTick();
+                } catch (Exception exception) {
+                    this.getLogger().error("Failed to tick scheduler", exception);
                 }
             }
 
@@ -172,7 +171,7 @@ public class ImplServer implements Server {
         }
 
         this.getNetwork().stop();
-        ((ImplWorldManager)this.getWorldManager()).unloadWorlds();
+        this.getWorldManager().unloadWorlds();
 
         // We're done stop operations. Exit program.
         if (this.stopByConsoleExit) {   // Ensure that the notify is called AFTER the thread is in the waiting state.
@@ -259,12 +258,12 @@ public class ImplServer implements Server {
     }
 
     @Override
-    public DataPackManager getResourcePackManager() {
+    public ImplDataPackManager getResourcePackManager() {
         return this.dataPackManager;
     }
 
     @Override
-    public WorldManager getWorldManager() {
+    public ImplWorldManager getWorldManager() {
         return this.worldManager;
     }
 
