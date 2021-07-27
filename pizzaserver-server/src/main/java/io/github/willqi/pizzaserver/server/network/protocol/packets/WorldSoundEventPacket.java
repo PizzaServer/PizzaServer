@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.network.protocol.data.WorldSound;
 
 public class WorldSoundEventPacket extends ImplBedrockPacket {
 

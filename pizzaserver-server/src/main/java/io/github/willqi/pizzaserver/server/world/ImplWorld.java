@@ -8,9 +8,12 @@ import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
+import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
+import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
@@ -131,6 +134,24 @@ public class ImplWorld implements Closeable, World {
         entity.getLocation().getChunk().removeEntity(entity);
         if (entity instanceof Player) {
             this.players.remove(entity);
+        }
+    }
+
+    @Override
+    public void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID) {
+        WorldSoundEventPacket packet = new WorldSoundEventPacket();
+        packet.setSound(sound);
+        packet.setVector3(vector3);
+        packet.setGlobal(isGlobal);
+        packet.setBaby(isBaby);
+        packet.setEntityType(entityType);
+        packet.setBlockID(blockID);
+        WorldSoundEvent event = new WorldSoundEvent(this, packet);
+        getServer().getEventManager().call(event);
+        if(!event.isCancelled()) {
+            for(Player player : getPlayers()) {
+                player.sendPacket(packet);
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.network.protocol.data;
+package io.github.willqi.pizzaserver.api.world.data;
 
 public enum WorldSound {
      ITEM_USE_ON,

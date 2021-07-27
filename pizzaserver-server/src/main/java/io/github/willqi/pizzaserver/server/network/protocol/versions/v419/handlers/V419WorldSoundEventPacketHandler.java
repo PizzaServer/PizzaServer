@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
-import io.github.willqi.pizzaserver.server.network.protocol.data.WorldSound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
