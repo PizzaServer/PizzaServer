@@ -21,6 +21,7 @@ public class KeyLock<K> {
      * @param key Key to assign the lock under
      */
     public void lock(K key) {
+        Check.nullParam(key, "key");
         Lock lock;
         // synchronized so that we can increment the lock count and avoid race conditions where unlock is
         // triggered before the lock count is incremented.
@@ -37,6 +38,7 @@ public class KeyLock<K> {
      * @return whether of not acquiring the lock was successful
      */
     public boolean tryLock(K key) {
+        Check.nullParam(key, "key");
         // synchronized so that we can increment the lock count and avoid race conditions where unlock is
         // triggered before the lock count is incremented.
         synchronized (this.locks) {
@@ -87,6 +89,7 @@ public class KeyLock<K> {
      * @param key key the lock was assigned under
      */
     public void unlock(K key) {
+        Check.nullParam(key, "key");
         Lock lock;
         synchronized (this.locks) {
             lock = this.getLockForUnlocking(key);

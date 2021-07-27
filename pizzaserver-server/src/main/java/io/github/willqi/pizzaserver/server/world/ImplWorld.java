@@ -11,7 +11,6 @@ import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.BaseWorldProvider;
@@ -28,10 +27,11 @@ public class ImplWorld implements Closeable, World {
     private final Server server;
 
     private final WorldProviderThread worldThread;
-
     private final ChunkManager chunkManager = new ImplChunkManager(this);
 
     private final Set<Player> players = new HashSet<>();
+
+    private Vector3i spawnCoordinates;
 
 
     public ImplWorld(Server server, BaseWorldProvider provider) throws IOException {
@@ -58,6 +58,16 @@ public class ImplWorld implements Closeable, World {
     @Override
     public ChunkManager getChunkManager() {
         return this.chunkManager;
+    }
+
+    @Override
+    public Vector3i getSpawnCoordinates() {
+        return this.spawnCoordinates;
+    }
+
+    @Override
+    public void setSpawnCoordinates(Vector3i coordinates) {
+        this.spawnCoordinates = coordinates;
     }
 
     public WorldProviderThread getWorldThread() {
@@ -110,7 +120,7 @@ public class ImplWorld implements Closeable, World {
             throw new IllegalStateException("This entity has already been spawned");
         }
 
-        Location location = new ImplLocation(this, position);
+        Location location = new Location(this, position);
         if (location.getChunk() == null) {
             throw new NullPointerException("This entity cannot be spawned in an unloaded chunk");
         }

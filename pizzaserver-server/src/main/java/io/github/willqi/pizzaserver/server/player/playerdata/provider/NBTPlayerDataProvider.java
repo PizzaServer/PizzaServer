@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.player.playerdata.provider;
 
 import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.KeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
@@ -31,38 +32,46 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
 
     @Override
     public void save(UUID uuid, PlayerData data) throws IOException {
+        Check.nullParam(uuid, "uuid");
+        Check.nullParam(data, "data");
+
         // Make sure that we aren't concurrently reading/writing to the NBT file
         this.keyLock.lock(uuid);
+        try {
+            File playerFile = this.resolvePlayerNBTFile(uuid);
+            if (playerFile.exists() && !playerFile.delete()) {
+                throw new IOException("Failed to delete existing player data file for " + uuid);
+            }
 
-        File playerFile = this.resolvePlayerNBTFile(uuid);
-        if (playerFile.exists() && !playerFile.delete()) {
-            throw new IOException("Failed to delete existing player data file for " + uuid);
+            try (NBTOutputStream outputStream = new NBTOutputStream(new FileOutputStream(playerFile))) {
+                outputStream.writeCompound(getPlayerNBTDataFormat(data));
+                outputStream.flush();
+            }
+        } finally {
+            this.keyLock.unlock(uuid);
         }
-
-        try (NBTOutputStream outputStream = new NBTOutputStream(new FileOutputStream(playerFile))) {
-            outputStream.writeCompound(getPlayerNBTDataFormat(data));
-            outputStream.flush();
-        }
-
-        this.keyLock.unlock(uuid);
     }
 
     @Override
     public Optional<PlayerData> load(UUID uuid) throws IOException {
+        Check.nullParam(uuid, "uuid");
+
         // Make sure that we aren't concurrently reading/writing to the NBT file
         this.keyLock.lock(uuid);
+        try {
+            File playerFile = this.resolvePlayerNBTFile(uuid);
 
-        File playerFile = this.resolvePlayerNBTFile(uuid);
-
-        PlayerData playerData = null;
-        if (playerFile.exists()) {
-            try (NBTInputStream inputStream = new NBTInputStream(new FileInputStream(playerFile))) {
-                playerData = getPlayerDataFormat(inputStream.readCompound());
+            PlayerData playerData = null;
+            if (playerFile.exists()) {
+                try (NBTInputStream inputStream = new NBTInputStream(new FileInputStream(playerFile))) {
+                    playerData = getPlayerDataFormat(inputStream.readCompound());
+                }
             }
+            return Optional.ofNullable(playerData);
+        } finally {
+            this.keyLock.unlock(uuid);
         }
 
-        this.keyLock.unlock(uuid);
-        return Optional.ofNullable(playerData);
     }
 
     private File resolvePlayerNBTFile(UUID uuid) {

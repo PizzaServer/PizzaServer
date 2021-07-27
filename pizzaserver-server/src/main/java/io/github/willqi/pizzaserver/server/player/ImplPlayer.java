@@ -18,7 +18,6 @@ import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.player.attributes.ImplPlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
@@ -366,7 +365,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private void sendNetworkChunkPublisher() {
         NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(((ImplLocation)this.getLocation()).toVector3i());
+        packet.setCoordinates(this.getLocation().toVector3i());
         packet.setRadius(this.getChunkRadius() * 16);
         this.sendPacket(packet);
     }
