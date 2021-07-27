@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class LevelChunkPacket extends ImplBedrockPacket {
+public class WorldChunkPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x3a;
 
@@ -10,7 +10,7 @@ public class LevelChunkPacket extends ImplBedrockPacket {
     private byte[] data = new byte[0];
 
 
-    public LevelChunkPacket() {
+    public WorldChunkPacket() {
         super(ID);
     }
 

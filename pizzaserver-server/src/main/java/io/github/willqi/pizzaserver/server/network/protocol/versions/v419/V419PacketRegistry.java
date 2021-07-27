@@ -24,7 +24,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(BiomeDefinitionPacket.ID, new V419BiomeDefinitionPacketHandler())
             .register(RequestChunkRadiusPacket.ID, new V419RequestChunkRadiusPacketHandler())
             .register(ChunkRadiusUpdatedPacket.ID, new V419ChunkRadiusUpdatedPacketHandler())
-            .register(LevelChunkPacket.ID, new V419LevelChunkPacketHandler())
+            .register(WorldChunkPacket.ID, new V419WorldChunkPacketHandler())
             .register(UpdateBlockPacket.ID, new V419UpdateBlockPacketHandler())
             .register(NetworkChunkPublisherUpdatePacket.ID, new V419NetworkChunkPublisherUpdatePacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler())
@@ -33,7 +33,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(TextPacket.ID, new V419TextPacketHandler())
             .register(SetEntityDataPacket.ID, new V419SetEntityDataPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
-            .register(LevelSoundEventPacket.ID, new V419LevelSoundEventPacketHandler())
+            .register(WorldSoundEventPacket.ID, new V419WorldSoundEventPacketHandler())
             .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler())
             .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler());
     }

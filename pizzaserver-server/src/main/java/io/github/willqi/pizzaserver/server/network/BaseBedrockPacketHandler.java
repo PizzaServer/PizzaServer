@@ -20,7 +20,7 @@ public abstract class BaseBedrockPacketHandler {
     // chunk related
     public void onPacket(ClientCacheStatusPacket packet) {}
     public void onPacket(RequestChunkRadiusPacket packet) {}
-    public void onPacket(LevelSoundEventPacket packet) {}
+    public void onPacket(WorldSoundEventPacket packet) {}
 
     // player actions
     public void onPacket(MovePlayerPacket packet) {}

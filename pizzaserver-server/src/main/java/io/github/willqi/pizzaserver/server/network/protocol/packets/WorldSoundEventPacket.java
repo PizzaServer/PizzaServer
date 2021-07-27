@@ -1,20 +1,20 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.network.protocol.data.LevelSound;
+import io.github.willqi.pizzaserver.server.network.protocol.data.WorldSound;
 
-public class LevelSoundEventPacket extends ImplBedrockPacket {
+public class WorldSoundEventPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x7b;
 
-    private LevelSound sound;
+    private WorldSound sound;
     private Vector3 vector3;
     private int blockID;
     private String entityType; //Entity type (identifier:type, i.e. minecraft:player)
     private boolean isBaby;
     private boolean isGlobal;
 
-    public LevelSoundEventPacket() {
+    public WorldSoundEventPacket() {
         super(ID);
     }
 
@@ -22,11 +22,11 @@ public class LevelSoundEventPacket extends ImplBedrockPacket {
         return ID;
     }
 
-    public LevelSound getSound() {
+    public WorldSound getSound() {
         return sound;
     }
 
-    public void setSound(LevelSound sound) {
+    public void setSound(WorldSound sound) {
         this.sound = sound;
     }
 

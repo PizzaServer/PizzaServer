@@ -1,15 +1,15 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import com.nukkitx.network.VarInts;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldChunkPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.netty.buffer.ByteBuf;
 
-public class V419LevelChunkPacketHandler extends BaseProtocolPacketHandler<LevelChunkPacket> {
+public class V419WorldChunkPacketHandler extends BaseProtocolPacketHandler<WorldChunkPacket> {
 
     @Override
-    public void encode(LevelChunkPacket packet, ByteBuf buffer, BasePacketHelper helper) {
+    public void encode(WorldChunkPacket packet, ByteBuf buffer, BasePacketHelper helper) {
         VarInts.writeInt(buffer, packet.getX());
         VarInts.writeInt(buffer, packet.getZ());
         VarInts.writeUnsignedInt(buffer, packet.getSubChunkCount());
