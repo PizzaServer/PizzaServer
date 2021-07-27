@@ -222,7 +222,6 @@ public class ImplScheduler implements Scheduler {
     /** @return a list of active async task threads */
     public Set<Thread> getActiveThreads() { return new HashSet<>(activeThreads); }
 
-    @Override
     public boolean isRunning() { return isRunning; }
 
     // -- Setters --
