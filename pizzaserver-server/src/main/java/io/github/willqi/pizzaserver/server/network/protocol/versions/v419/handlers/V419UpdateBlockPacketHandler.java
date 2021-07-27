@@ -24,9 +24,7 @@ public class V419UpdateBlockPacketHandler extends BaseProtocolPacketHandler<Upda
 
     @Override
     public void encode(UpdateBlockPacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeInt(buffer, packet.getBlockCoordinates().getX());
-        VarInts.writeUnsignedInt(buffer, packet.getBlockCoordinates().getY());
-        VarInts.writeInt(buffer, packet.getBlockCoordinates().getZ());
+        helper.writeBlockVector(buffer, packet.getBlockCoordinates());
 
         int blockRuntimeId = ServerProtocol.VERSIONS
                 .get(V419MinecraftVersion.PROTOCOL)

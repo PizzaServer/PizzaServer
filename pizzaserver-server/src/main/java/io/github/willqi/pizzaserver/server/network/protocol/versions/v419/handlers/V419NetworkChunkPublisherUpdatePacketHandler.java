@@ -10,10 +10,7 @@ public class V419NetworkChunkPublisherUpdatePacketHandler extends BaseProtocolPa
 
     @Override
     public void encode(NetworkChunkPublisherUpdatePacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeInt(buffer, packet.getCoordinates().getX());
-        VarInts.writeUnsignedInt(buffer, packet.getCoordinates().getY());
-        VarInts.writeInt(buffer, packet.getCoordinates().getZ());
-
+        helper.writeBlockVector(buffer, packet.getCoordinates());
         VarInts.writeUnsignedInt(buffer, packet.getRadius());
     }
 

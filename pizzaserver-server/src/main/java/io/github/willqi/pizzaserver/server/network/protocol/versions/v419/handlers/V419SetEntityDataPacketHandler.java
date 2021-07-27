@@ -337,15 +337,11 @@ public class V419SetEntityDataPacketHandler extends BaseProtocolPacketHandler<Se
                     break;
                 case VECTOR3I:
                     Vector3i vector3i = ((ImplEntityMetaProperty<Vector3i>)properties.get(propertyName)).getValue();
-                    VarInts.writeInt(buffer, vector3i.getX());
-                    VarInts.writeInt(buffer, vector3i.getY());
-                    VarInts.writeInt(buffer, vector3i.getZ());
+                    helper.writeBlockVector(buffer, vector3i);
                     break;
                 case VECTOR3:
                     Vector3 vector3 = ((ImplEntityMetaProperty<Vector3>)properties.get(propertyName)).getValue();
-                    buffer.writeFloatLE(vector3.getX());
-                    buffer.writeFloatLE(vector3.getY());
-                    buffer.writeFloatLE(vector3.getZ());
+                    helper.writeVector3(buffer, vector3);
                     break;
                 default:
                     throw new UnsupportedOperationException("Missing implementation when encoding entity meta type " + propertyName.getType());

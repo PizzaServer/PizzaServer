@@ -18,9 +18,7 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
         VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
         VarInts.writeInt(buffer, packet.getPlayerGamemode().ordinal());
 
-        buffer.writeFloatLE(packet.getPlayerSpawn().getX());
-        buffer.writeFloatLE(packet.getPlayerSpawn().getY());
-        buffer.writeFloatLE(packet.getPlayerSpawn().getZ());
+        helper.writeVector3(buffer, packet.getPlayerSpawn());
 
         buffer.writeFloatLE(packet.getPlayerRotation().getX());
         buffer.writeFloatLE(packet.getPlayerRotation().getY());
@@ -33,9 +31,7 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
         VarInts.writeInt(buffer, packet.getDefaultGamemode().ordinal());
         VarInts.writeInt(buffer, packet.getDifficulty().ordinal());
 
-        VarInts.writeInt(buffer, packet.getWorldSpawn().getX());
-        VarInts.writeUnsignedInt(buffer, packet.getWorldSpawn().getY());
-        VarInts.writeInt(buffer, packet.getWorldSpawn().getZ());
+        helper.writeBlockVector(buffer, packet.getWorldSpawn());
 
         buffer.writeBoolean(!packet.areAchievementsEnabled());
         VarInts.writeInt(buffer, packet.getWorldTime());

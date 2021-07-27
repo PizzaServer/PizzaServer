@@ -274,11 +274,7 @@ public class V419LevelSoundEventPacketHandler extends BaseProtocolPacketHandler<
     public LevelSoundEventPacket decode(ByteBuf buffer, BasePacketHelper helper) {
         LevelSoundEventPacket packet = new LevelSoundEventPacket();
         packet.setSound(sounds.inverse().get(VarInts.readUnsignedInt(buffer)));
-        packet.setVector3(new Vector3(
-                buffer.readFloatLE(),
-                buffer.readFloatLE(),
-                buffer.readFloatLE()
-        ));
+        packet.setVector3(helper.readVector3(buffer));
         packet.setBlockID(VarInts.readInt(buffer));
         packet.setEntityType(helper.readString(buffer));
         packet.setBaby(buffer.readBoolean());
@@ -289,9 +285,7 @@ public class V419LevelSoundEventPacketHandler extends BaseProtocolPacketHandler<
     @Override
     public void encode(LevelSoundEventPacket packet, ByteBuf buffer, BasePacketHelper helper) {
         VarInts.writeUnsignedInt(buffer, sounds.get(packet.getSound()));
-        buffer.writeFloatLE(packet.getVector3().getX());
-        buffer.writeFloatLE(packet.getVector3().getY());
-        buffer.writeFloatLE(packet.getVector3().getZ());
+        helper.writeVector3(buffer, packet.getVector3());
         VarInts.writeInt(buffer, packet.getBlockID());
         helper.writeString(packet.getEntityType(), buffer);
         buffer.writeBoolean(packet.isBaby());
