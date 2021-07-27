@@ -24,25 +24,27 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
      */
     private void completeLogin() {
         // Load the chunks around the player before we spawn them in
-        Location playerSpawn = this.player.getLocation();
-        int playerChunkX = playerSpawn.getChunkX();
-        int playerChunkZ = playerSpawn.getChunkZ();
+        Location location = this.player.getLocation();
+        int playerChunkX = location.getChunkX();
+        int playerChunkZ = location.getChunkZ();
 
-        for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
-            for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
-                try {
-                    this.player.getLocation().getWorld().getChunkManager().fetchChunk(chunkX, chunkZ).join();
-                } catch (CompletionException exception) {
-                    this.player.getServer().getLogger().error("Failed to load chunk ");
+        this.player.getServer().getScheduler().prepareTask(() -> {
+            for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
+                for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
+                    try {
+                        this.player.getLocation().getWorld().getChunkManager().fetchChunk(chunkX, chunkZ).join();
+                    } catch (CompletionException exception) {
+                        this.player.getServer().getLogger().error(String.format("Failed to load chunk (%s, %s)", chunkX, chunkZ));
+                    }
                 }
             }
-        }
 
-        // All chunks around the player have been sent. Spawn the player
-        this.player.getServer()
-                .getScheduler()
-                .prepareTask(() -> this.player.getLocation().getWorld().addEntity(this.player, playerSpawn))
-                .schedule();
+            // All chunks around the player have been sent. Spawn the player
+            this.player.getServer()
+                    .getScheduler()
+                    .prepareTask(() -> this.player.getLocation().getWorld().addEntity(this.player, location))
+                    .schedule();
+        }).setAsynchronous(true).schedule();
     }
     @Override
     public void onPacket(RequestChunkRadiusPacket packet) {
