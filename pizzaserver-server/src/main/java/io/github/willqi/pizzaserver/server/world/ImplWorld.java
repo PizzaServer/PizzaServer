@@ -27,22 +27,28 @@ public class ImplWorld implements Closeable, World {
     private final Server server;
 
     private final WorldProviderThread worldThread;
+    private final BaseWorldProvider provider;
     private final ChunkManager chunkManager = new ImplChunkManager(this);
 
-    private final Set<Player> players = new HashSet<>();
-
+    private String name;
     private Vector3i spawnCoordinates;
+
+    private final Set<Player> players = new HashSet<>();
 
 
     public ImplWorld(Server server, BaseWorldProvider provider) throws IOException {
         this.server = server;
+        this.provider = provider;
         this.worldThread = new WorldProviderThread(this, provider);
         this.worldThread.start();
+
+        this.name = provider.getLevelData().getName();
+        this.spawnCoordinates = provider.getLevelData().getWorldSpawn();
     }
 
     @Override
     public String getName() {
-        return this.worldThread.getProvider().getName();
+        return this.name;
     }
 
     @Override

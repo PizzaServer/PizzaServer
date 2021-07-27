@@ -239,11 +239,10 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         // Fetch existing player data if present
         Optional<PlayerData> playerData;
         try {
-            playerData = this.player.getServer().getPlayerProvider()
-                    .load(this.player.getUUID());
+            playerData = this.player.getData();
         } catch (IOException exception) {
             this.player.disconnect("Failed to load player data");
-            this.player.getServer().getLogger().error("Failed to retrieve the data of " + this.player.getUUID(), exception);
+            this.server.getLogger().error("Failed to retrieve player data of UUID " + this.player.getUUID(), exception);
             return;
         }
 
