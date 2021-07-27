@@ -6,8 +6,9 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.commons.world.gamerules.BooleanGameRule;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
-import io.github.willqi.pizzaserver.commons.world.gamerules.GameRuleId;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRuleID;
 import io.github.willqi.pizzaserver.commons.world.gamerules.IntegerGameRule;
+import io.github.willqi.pizzaserver.format.api.LevelData;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
@@ -23,7 +24,7 @@ import java.util.Map;
 /**
  * Representative of the information in the level.dat file
  */
-public class MCWorldInfo implements Cloneable {
+public class MCWorldInfo implements LevelData, Cloneable {
 
     // world specific
     private boolean commandsEnabled;
@@ -67,7 +68,7 @@ public class MCWorldInfo implements Cloneable {
     private Gamemode defaultGamemode;
     private Difficulty difficulty;
     private String flatWorldLayers;
-    private Map<GameRuleId, GameRule> gameRules = new HashMap<>();
+    private Map<GameRuleID, GameRule<?>> gameRules = new HashMap<>();
     private float lightningLevel;
     private int lightningTime;
     private Vector3i limitedWorldCoordinates;
@@ -103,78 +104,78 @@ public class MCWorldInfo implements Cloneable {
             // the header is 8 bytes.
             inputStream.skip(8);    // TODO: These 8 bytes are important when writing the level.dat file
             NBTCompound compound = inputStream.readCompound();
-            this.setCommandsEnabled(compound.getByte("commandsEnabled") == 0b1)
-                .setCurrentTick(compound.getLong("currentTick"))
-                .setHasBeenLoadedInCreative(compound.getByte("hasBeenLoadedInCreative") == 0b1)
-                .setHasLockedResourcePack(compound.getByte("hasLockedResourcePack") == 0b1)
-                .setHasLockedBehaviorPack(compound.getByte("hasLockedBehaviorPack") == 0b1)
-                .setExperiments(compound.getCompound("experiments"))
-                .setForceGamemode(compound.getByte("ForceGameType") == 0b1)
-                .setImmutable(compound.getByte("immutableWorld") == 0b1)
-                .setConfirmedPlatformLockedContent(compound.getByte("ConfirmedPlatformLockedContent") == 0b1)
-                .setFromWorldTemplate(compound.getByte("isFromWorldTemplate") == 0b1)
-                .setFromLockedTemplate(compound.getByte("isFromLockedTemplate") == 0b1)
-                .setIsMultiplayerGame(compound.getByte("MultiplayerGame") == 0b1)
-                .setIsSingleUseWorld(compound.getByte("isSingleUseWorld") == 0b1)
-                .setIsWorldTemplateOptionsLocked(compound.getByte("isWorldTemplateOptionLocked") == 0b1)
-                .setLanBroadcast(compound.getByte("LANBroadcast") == 0b1)
-                .setLanBroadcastIntent(compound.getByte("LANBroadcastIntent") == 0b1)
-                .setMultiplayerGameIntent(compound.getByte("MultiplayerGameIntent") == 0b1)
-                .setPlatformBroadcastIntent(compound.getInteger("PlatformBroadcastIntent"))
-                .setRequiresCopiedPackRemovalCheck(compound.getByte("requiresCopiedPackRemovalCheck") == 0b1)
-                .setServerChunkTickRange(compound.getInteger("serverChunkTickRange"))
-                .setSpawnOnlyV1Villagers(compound.getByte("SpawnV1Villagers") == 0b1)
-                .setStorageVersion(compound.getInteger("StorageVersion"))
-                .setTexturePacksRequired(compound.getByte("texturePacksRequired") == 0b1)
-                .setUseMsaGamerTagsOnly(compound.getByte("useMsaGamertagsOnly") == 0b1)
-                .setWorldName(compound.getString("LevelName"))
-                .setWorldStartCount(compound.getLong("worldStartCount"))
-                .setXboxLiveBroadcastIntent(compound.getInteger("XBLBroadcastIntent"))
-                .setEduOffer(compound.getInteger("eduOffer"))
-                .setEduEnabled(compound.getByte("educationFeaturesEnabled") == 0b1)
-                .setBiomeOverride(compound.getString("BiomeOverride"))
-                .setBonusChestEnabled(compound.getByte("bonusChestEnabled") == 0b1)
-                .setBonusChestSpawned(compound.getByte("bonusChestSpawned") == 0b1)
-                .setCenterMapsToOrigin(compound.getByte("CenterMapsToOrigin") == 0b1)
-                .setDefaultGamemode(Gamemode.values()[compound.getInteger("GameType")])
-                .setDifficulty(Difficulty.values()[compound.getInteger("Difficulty")])
-                .setFlatWorldLayers(compound.getString("FlatWorldLayers"))
-                .setLightningLevel(compound.getFloat("lightningLevel"))
-                .setLightningTime(compound.getInteger("lightningTime"))
-                .setLimitedWorldCoordinates(new Vector3i(
-                        compound.getInteger("LimitedWorldOriginX"),
-                        compound.getInteger("LimitedWorldOriginY"),
-                        compound.getInteger("LimitedWorldOriginZ")
-                ))
-                .setLimitedWorldWidth(compound.getInteger("limitedWorldWidth"))
-                .setNetherScale(compound.getInteger("NetherScale"))
-                .setRainLevel(compound.getFloat("rainLevel"))
-                .setRainTime(compound.getInteger("rainTime"))
-                .setSeed(compound.getLong("RandomSeed"))
-                .setSpawnCoordinates(new Vector3i(
-                        compound.getInteger("SpawnX"),
-                        compound.getInteger("SpawnY"),
-                        compound.getInteger("SpawnZ")
-                ))
-                .setStartWithMapEnabled(compound.getByte("startWithMapEnabled") == 0x01)
-                .setTime(compound.getLong("Time"))
-                .setWorldType(WorldType.values()[compound.getInteger("Generator")])
-                .setBaseGameVersion(compound.getString("baseGameVersion"))
-                .setInventoryVersion(compound.getString("InventoryVersion"))
-                .setLastPlayed(compound.getLong("LastPlayed"))
-                .setMinimumCompatibleClientVersion(
-                        Arrays.stream((NBTInteger[])compound.getList("MinimumCompatibleClientVersion"))
-                                .mapToInt(NBTInteger::getValue)
-                                .toArray()
-                )
-                .setLastOpenedWithVersion(
-                        Arrays.stream((NBTInteger[])compound.getList("lastOpenedWithVersion"))
-                                .mapToInt(NBTInteger::getValue)
-                                .toArray()
-                )
-                .setPlatform(compound.getInteger("Platform"))
-                .setProtocol(compound.getInteger("NetworkVersion"))
-                .setPrid(compound.getString("prid"));
+            
+            this.setCommandsEnabled(compound.getByte("commandsEnabled") == 0b1);
+            this.setCurrentTick(compound.getLong("currentTick"));
+            this.setHasBeenLoadedInCreative(compound.getByte("hasBeenLoadedInCreative") == 0b1);
+            this.setHasLockedResourcePack(compound.getByte("hasLockedResourcePack") == 0b1);
+            this.setHasLockedBehaviorPack(compound.getByte("hasLockedBehaviorPack") == 0b1);
+            this.setExperiments(compound.getCompound("experiments"));
+            this.setForceGamemode(compound.getByte("ForceGameType") == 0b1);
+            this.setImmutable(compound.getByte("immutableWorld") == 0b1);
+            this.setConfirmedPlatformLockedContent(compound.getByte("ConfirmedPlatformLockedContent") == 0b1);
+            this.setFromWorldTemplate(compound.getByte("isFromWorldTemplate") == 0b1);
+            this.setFromLockedTemplate(compound.getByte("isFromLockedTemplate") == 0b1);
+            this.setIsMultiplayerGame(compound.getByte("MultiplayerGame") == 0b1);
+            this.setIsSingleUseWorld(compound.getByte("isSingleUseWorld") == 0b1);
+            this.setIsWorldTemplateOptionsLocked(compound.getByte("isWorldTemplateOptionLocked") == 0b1);
+            this.setLanBroadcast(compound.getByte("LANBroadcast") == 0b1);
+            this.setLanBroadcastIntent(compound.getByte("LANBroadcastIntent") == 0b1);
+            this.setMultiplayerGameIntent(compound.getByte("MultiplayerGameIntent") == 0b1);
+            this.setPlatformBroadcastIntent(compound.getInteger("PlatformBroadcastIntent"));
+            this.setRequiresCopiedPackRemovalCheck(compound.getByte("requiresCopiedPackRemovalCheck") == 0b1);
+            this.setServerChunkTickRange(compound.getInteger("serverChunkTickRange"));
+            this.setSpawnOnlyV1Villagers(compound.getByte("SpawnV1Villagers") == 0b1);
+            this.setStorageVersion(compound.getInteger("StorageVersion"));
+            this.setTexturePacksRequired(compound.getByte("texturePacksRequired") == 0b1);
+            this.setUseMsaGamerTagsOnly(compound.getByte("useMsaGamertagsOnly") == 0b1);
+            this.setName(compound.getString("LevelName"));
+            this.setWorldStartCount(compound.getLong("worldStartCount"));
+            this.setXboxLiveBroadcastIntent(compound.getInteger("XBLBroadcastIntent"));
+            this.setEduOffer(compound.getInteger("eduOffer"));
+            this.setEduEnabled(compound.getByte("educationFeaturesEnabled") == 0b1);
+            this.setBiomeOverride(compound.getString("BiomeOverride"));
+            this.setBonusChestEnabled(compound.getByte("bonusChestEnabled") == 0b1);
+            this.setBonusChestSpawned(compound.getByte("bonusChestSpawned") == 0b1);
+            this.setCenterMapsToOrigin(compound.getByte("CenterMapsToOrigin") == 0b1);
+            this.setDefaultGamemode(Gamemode.values()[compound.getInteger("GameType")]);
+            this.setDifficulty(Difficulty.values()[compound.getInteger("Difficulty")]);
+            this.setFlatWorldLayers(compound.getString("FlatWorldLayers"));
+            this.setLightningLevel(compound.getFloat("lightningLevel"));
+            this.setLightningTime(compound.getInteger("lightningTime"));
+            this.setLimitedWorldCoordinates(new Vector3i(
+                    compound.getInteger("LimitedWorldOriginX"), 
+                    compound.getInteger("LimitedWorldOriginY"),
+                    compound.getInteger("LimitedWorldOriginZ")));
+            this.setLimitedWorldWidth(compound.getInteger("limitedWorldWidth"));
+            this.setNetherScale(compound.getInteger("NetherScale"));
+            this.setRainLevel(compound.getFloat("rainLevel"));
+            this.setRainTime(compound.getInteger("rainTime"));
+            this.setSeed(compound.getLong("RandomSeed"));
+            this.setWorldSpawn(new Vector3i(
+                    compound.getInteger("SpawnX"), 
+                    compound.getInteger("SpawnY"), 
+                    compound.getInteger("SpawnZ")
+            ));
+            this.setStartWithMapEnabled(compound.getByte("startWithMapEnabled") == 0x01);
+            this.setTime(compound.getLong("Time"));
+            this.setWorldType(WorldType.values()[compound.getInteger("Generator")]);
+            this.setBaseGameVersion(compound.getString("baseGameVersion"));
+            this.setInventoryVersion(compound.getString("InventoryVersion"));
+            this.setLastPlayed(compound.getLong("LastPlayed"));
+            this.setMinimumCompatibleClientVersion(
+                    Arrays.stream((NBTInteger[])compound.getList("MinimumCompatibleClientVersion"))
+                            .mapToInt(NBTInteger::getValue)
+                            .toArray()
+            );
+            this.setLastOpenedWithVersion(
+                    Arrays.stream((NBTInteger[])compound.getList("lastOpenedWithVersion"))
+                            .mapToInt(NBTInteger::getValue)
+                            .toArray()
+            );
+            this.setPlatform(compound.getInteger("Platform"));
+            this.setProtocol(compound.getInteger("NetworkVersion"));
+            this.setPrid(compound.getString("prid"));
 
             NBTCompound abilities = compound.getCompound("abilities");
             this.setPlayerAbilities(
@@ -198,34 +199,34 @@ public class MCWorldInfo implements Cloneable {
                             .setWalkSpeed(abilities.getFloat("walkSpeed"))
             );
 
-            this.setGameRules(new HashMap<GameRuleId, GameRule>(){
+            this.setGameRules(new HashMap<GameRuleID, GameRule<?>>(){
                 {
-                    put(GameRuleId.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleId.COMMAND_BLOCK_OUTPUT, compound.getByte("commandblockoutput") == 0b1));
-                    put(GameRuleId.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleId.COMMAND_BLOCKS_ENABLED, compound.getByte("commandblocksenabled") == 0b1));
-                    put(GameRuleId.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleId.DO_DAYLIGHT_CYCLE, compound.getByte("dodaylightcycle") == 0b1));
-                    put(GameRuleId.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleId.DO_ENTITY_DROPS, compound.getByte("doentitydrops") == 0b1));
-                    put(GameRuleId.DO_FIRE_TICK, new BooleanGameRule(GameRuleId.DO_FIRE_TICK, compound.getByte("dofiretick") == 0b1));
-                    put(GameRuleId.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleId.DO_IMMEDIATE_RESPAWN, compound.getByte("doimmediaterespawn") == 0b1));
-                    put(GameRuleId.DO_INSOMNIA, new BooleanGameRule(GameRuleId.DO_INSOMNIA, compound.getByte("doinsomnia") == 0b1));
-                    put(GameRuleId.DO_MOB_LOOT, new BooleanGameRule(GameRuleId.DO_MOB_LOOT, compound.getByte("domobloot") == 0b1));
-                    put(GameRuleId.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleId.DO_MOB_SPAWNING, compound.getByte("domobspawning") == 0b1));
-                    put(GameRuleId.DO_TILE_DROPS, new BooleanGameRule(GameRuleId.DO_TILE_DROPS, compound.getByte("dotiledrops") == 0b1));
-                    put(GameRuleId.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleId.DO_WEATHER_CYCLE, compound.getByte("doweathercycle") == 0b1));
-                    put(GameRuleId.DROWNING_DAMAGE, new BooleanGameRule(GameRuleId.DROWNING_DAMAGE, compound.getByte("drowningdamage") == 0b1));
-                    put(GameRuleId.FALL_DAMAGE, new BooleanGameRule(GameRuleId.FALL_DAMAGE, compound.getByte("falldamage") == 0b1));
-                    put(GameRuleId.FIRE_DAMAGE, new BooleanGameRule(GameRuleId.FIRE_DAMAGE, compound.getByte("firedamage") == 0b1));
-                    put(GameRuleId.KEEP_INVENTORY, new BooleanGameRule(GameRuleId.KEEP_INVENTORY, compound.getByte("keepinventory") == 0b1));
-                    put(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, new IntegerGameRule(GameRuleId.MAX_COMMAND_CHAIN_LENGTH, compound.getInteger("maxcommandchainlength")));
-                    put(GameRuleId.MOB_GRIEFING, new BooleanGameRule(GameRuleId.MOB_GRIEFING, compound.getByte("mobgriefing") == 0b1));
-                    put(GameRuleId.NATURAL_REGENERATION, new BooleanGameRule(GameRuleId.NATURAL_REGENERATION, compound.getByte("naturalregeneration") == 0b1));
-                    put(GameRuleId.PVP, new BooleanGameRule(GameRuleId.PVP, compound.getByte("pvp") == 0b1));
-                    put(GameRuleId.RANDOM_TICK_SPEED, new IntegerGameRule(GameRuleId.RANDOM_TICK_SPEED, compound.getInteger("randomtickspeed")));
-                    put(GameRuleId.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleId.SEND_COMMAND_FEEDBACK, compound.getByte("sendcommandfeedback") == 0b1));
-                    put(GameRuleId.SHOW_COORDINATES, new BooleanGameRule(GameRuleId.SHOW_COORDINATES, compound.getByte("showcoordinates") == 0b1));
-                    put(GameRuleId.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleId.SHOW_DEATH_MESSAGES, compound.getByte("showdeathmessages") == 0b1));
-                    put(GameRuleId.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleId.SHOW_ITEM_TAGS, compound.getByte("showtags") == 0b1));
-                    put(GameRuleId.SPAWN_RADIUS, new IntegerGameRule(GameRuleId.SPAWN_RADIUS, compound.getInteger("spawnradius")));
-                    put(GameRuleId.TNT_EXPLODES, new BooleanGameRule(GameRuleId.TNT_EXPLODES, compound.getByte("tntexplodes") == 0b1));
+                    put(GameRuleID.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleID.COMMAND_BLOCK_OUTPUT, compound.getByte("commandblockoutput") == 0b1));
+                    put(GameRuleID.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleID.COMMAND_BLOCKS_ENABLED, compound.getByte("commandblocksenabled") == 0b1));
+                    put(GameRuleID.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleID.DO_DAYLIGHT_CYCLE, compound.getByte("dodaylightcycle") == 0b1));
+                    put(GameRuleID.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleID.DO_ENTITY_DROPS, compound.getByte("doentitydrops") == 0b1));
+                    put(GameRuleID.DO_FIRE_TICK, new BooleanGameRule(GameRuleID.DO_FIRE_TICK, compound.getByte("dofiretick") == 0b1));
+                    put(GameRuleID.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleID.DO_IMMEDIATE_RESPAWN, compound.getByte("doimmediaterespawn") == 0b1));
+                    put(GameRuleID.DO_INSOMNIA, new BooleanGameRule(GameRuleID.DO_INSOMNIA, compound.getByte("doinsomnia") == 0b1));
+                    put(GameRuleID.DO_MOB_LOOT, new BooleanGameRule(GameRuleID.DO_MOB_LOOT, compound.getByte("domobloot") == 0b1));
+                    put(GameRuleID.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleID.DO_MOB_SPAWNING, compound.getByte("domobspawning") == 0b1));
+                    put(GameRuleID.DO_TILE_DROPS, new BooleanGameRule(GameRuleID.DO_TILE_DROPS, compound.getByte("dotiledrops") == 0b1));
+                    put(GameRuleID.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleID.DO_WEATHER_CYCLE, compound.getByte("doweathercycle") == 0b1));
+                    put(GameRuleID.DROWNING_DAMAGE, new BooleanGameRule(GameRuleID.DROWNING_DAMAGE, compound.getByte("drowningdamage") == 0b1));
+                    put(GameRuleID.FALL_DAMAGE, new BooleanGameRule(GameRuleID.FALL_DAMAGE, compound.getByte("falldamage") == 0b1));
+                    put(GameRuleID.FIRE_DAMAGE, new BooleanGameRule(GameRuleID.FIRE_DAMAGE, compound.getByte("firedamage") == 0b1));
+                    put(GameRuleID.KEEP_INVENTORY, new BooleanGameRule(GameRuleID.KEEP_INVENTORY, compound.getByte("keepinventory") == 0b1));
+                    put(GameRuleID.MAX_COMMAND_CHAIN_LENGTH, new IntegerGameRule(GameRuleID.MAX_COMMAND_CHAIN_LENGTH, compound.getInteger("maxcommandchainlength")));
+                    put(GameRuleID.MOB_GRIEFING, new BooleanGameRule(GameRuleID.MOB_GRIEFING, compound.getByte("mobgriefing") == 0b1));
+                    put(GameRuleID.NATURAL_REGENERATION, new BooleanGameRule(GameRuleID.NATURAL_REGENERATION, compound.getByte("naturalregeneration") == 0b1));
+                    put(GameRuleID.PVP, new BooleanGameRule(GameRuleID.PVP, compound.getByte("pvp") == 0b1));
+                    put(GameRuleID.RANDOM_TICK_SPEED, new IntegerGameRule(GameRuleID.RANDOM_TICK_SPEED, compound.getInteger("randomtickspeed")));
+                    put(GameRuleID.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleID.SEND_COMMAND_FEEDBACK, compound.getByte("sendcommandfeedback") == 0b1));
+                    put(GameRuleID.SHOW_COORDINATES, new BooleanGameRule(GameRuleID.SHOW_COORDINATES, compound.getByte("showcoordinates") == 0b1));
+                    put(GameRuleID.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleID.SHOW_DEATH_MESSAGES, compound.getByte("showdeathmessages") == 0b1));
+                    put(GameRuleID.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleID.SHOW_ITEM_TAGS, compound.getByte("showtags") == 0b1));
+                    put(GameRuleID.SPAWN_RADIUS, new IntegerGameRule(GameRuleID.SPAWN_RADIUS, compound.getInteger("spawnradius")));
+                    put(GameRuleID.TNT_EXPLODES, new BooleanGameRule(GameRuleID.TNT_EXPLODES, compound.getByte("tntexplodes") == 0b1));
                 }
             });
         }
@@ -235,45 +236,40 @@ public class MCWorldInfo implements Cloneable {
         return this.commandsEnabled;
     }
 
-    public MCWorldInfo setCommandsEnabled(boolean enabled) {
+    public void setCommandsEnabled(boolean enabled) {
         this.commandsEnabled = enabled;
-        return this;
     }
 
     public long getCurrentTick() {
         return this.currentTick;
     }
 
-    public MCWorldInfo setCurrentTick(long currentTick) {
+    public void setCurrentTick(long currentTick) {
         this.currentTick = currentTick;
-        return this;
     }
 
     public boolean hasBeenLoadedInCreative() {
         return this.hasBeenLoadedInCreative;
     }
 
-    public MCWorldInfo setHasBeenLoadedInCreative(boolean loaded) {
+    public void setHasBeenLoadedInCreative(boolean loaded) {
         this.hasBeenLoadedInCreative = loaded;
-        return this;
     }
 
     public boolean hasLockedResourcePack() {
         return this.hasLockedResourcePack;
     }
 
-    public MCWorldInfo setHasLockedResourcePack(boolean hasLocked) {
+    public void setHasLockedResourcePack(boolean hasLocked) {
         this.hasLockedResourcePack = hasLocked;
-        return this;
     }
 
     public boolean isHasLockedBehaviorPack() {
         return this.hasLockedBehaviorPack;
     }
 
-    public MCWorldInfo setHasLockedBehaviorPack(boolean hasLocked) {
+    public void setHasLockedBehaviorPack(boolean hasLocked) {
         this.hasLockedBehaviorPack = hasLocked;
-        return this;
     }
 
     /**
@@ -289,207 +285,186 @@ public class MCWorldInfo implements Cloneable {
      * @param experiments
      * @return self for chaining
      */
-    public MCWorldInfo setExperiments(NBTCompound experiments) {
+    public void setExperiments(NBTCompound experiments) {
         this.experiments = experiments;
-        return this;
     }
 
     public boolean isForcedGamemode() {
         return this.forceGamemode;
     }
 
-    public MCWorldInfo setForceGamemode(boolean forced) {
+    public void setForceGamemode(boolean forced) {
         this.forceGamemode = forced;
-        return this;
     }
 
     public boolean isImmutable() {
         return this.immutable;
     }
 
-    public MCWorldInfo setImmutable(boolean immutable) {
+    public void setImmutable(boolean immutable) {
         this.immutable = immutable;
-        return this;
     }
 
     public boolean isConfirmedPlatformLockedContent() {
         return this.isConfirmedPlatformLockedContent;
     }
 
-    public MCWorldInfo setConfirmedPlatformLockedContent(boolean locked) {
+    public void setConfirmedPlatformLockedContent(boolean locked) {
         this.isConfirmedPlatformLockedContent = locked;
-        return this;
     }
 
     public boolean isFromWorldTemplate() {
         return this.isFromWorldTemplate;
     }
 
-    public MCWorldInfo setFromWorldTemplate(boolean fromWorldTemplate) {
+    public void setFromWorldTemplate(boolean fromWorldTemplate) {
         this.isFromWorldTemplate = fromWorldTemplate;
-        return this;
     }
 
     public boolean isFromLockedTemplate() {
         return this.isFromLockedTemplate;
     }
 
-    public MCWorldInfo setFromLockedTemplate(boolean fromLockedTemplate) {
+    public void setFromLockedTemplate(boolean fromLockedTemplate) {
         this.isFromLockedTemplate = fromLockedTemplate;
-        return this;
     }
 
     public boolean isMultiplayerGame() {
         return this.isMultiplayerGame;
     }
 
-    public MCWorldInfo setIsMultiplayerGame(boolean multiplayerGame) {
+    public void setIsMultiplayerGame(boolean multiplayerGame) {
         this.isMultiplayerGame = multiplayerGame;
-        return this;
     }
 
     public boolean isSingleUseWorld() {
         return this.isSingleUseWorld;
     }
 
-    public MCWorldInfo setIsSingleUseWorld(boolean singleUse) {
+    public void setIsSingleUseWorld(boolean singleUse) {
         this.isSingleUseWorld = singleUse;
-        return this;
     }
 
     public boolean isWorldTemplateOptionsLocked() {
         return this.isWorldTemplateOptionsLocked;
     }
 
-    public MCWorldInfo setIsWorldTemplateOptionsLocked(boolean locked) {
+    public void setIsWorldTemplateOptionsLocked(boolean locked) {
         this.isWorldTemplateOptionsLocked = locked;
-        return this;
     }
 
     public boolean isLanBroadcast() {
         return this.lanBroadcast;
     }
 
-    public MCWorldInfo setLanBroadcast(boolean broadcast) {
+    public void setLanBroadcast(boolean broadcast) {
         this.lanBroadcast = broadcast;
-        return this;
     }
 
     public boolean isLanBroadcastIntent() {
         return this.lanBroadcastIntent;
     }
 
-    public MCWorldInfo setLanBroadcastIntent(boolean intent) {
+    public void setLanBroadcastIntent(boolean intent) {
         this.lanBroadcastIntent = intent;
-        return this;
     }
 
     public boolean isMultiplayerGameIntent() {
         return this.multiplayerGameIntent;
     }
 
-    public MCWorldInfo setMultiplayerGameIntent(boolean multiplayerGameIntent) {
+    public void setMultiplayerGameIntent(boolean multiplayerGameIntent) {
         this.multiplayerGameIntent = multiplayerGameIntent;
-        return this;
     }
 
     public int getPlatformBroadcastIntent() {
         return this.platformBroadcastIntent;
     }
 
-    public MCWorldInfo setPlatformBroadcastIntent(int intent) {
+    public void setPlatformBroadcastIntent(int intent) {
         this.platformBroadcastIntent = intent;
-        return this;
     }
 
     public boolean requiresCopiedPackRemovalCheck() {
         return this.requiresCopiedPackRemovalCheck;
     }
 
-    public MCWorldInfo setRequiresCopiedPackRemovalCheck(boolean required) {
+    public void setRequiresCopiedPackRemovalCheck(boolean required) {
         this.requiresCopiedPackRemovalCheck = required;
-        return this;
     }
 
     public int getServerChunkTickRange() {
         return this.serverChunkTickRange;
     }
 
-    public MCWorldInfo setServerChunkTickRange(int tickRange) {
+    public void setServerChunkTickRange(int tickRange) {
         this.serverChunkTickRange = tickRange;
-        return this;
     }
 
     public boolean spawnOnlyV1Villagers() {
         return this.spawnOnlyV1Villagers;
     }
 
-    public MCWorldInfo setSpawnOnlyV1Villagers(boolean spawnOnly) {
+    public void setSpawnOnlyV1Villagers(boolean spawnOnly) {
         this.spawnOnlyV1Villagers = spawnOnly;
-        return this;
     }
 
     public int getStorageVersion() {
         return this.storageVersion;
     }
 
-    public MCWorldInfo setStorageVersion(int version) {
+    public void setStorageVersion(int version) {
         this.storageVersion = version;
-        return this;
     }
 
     public PlayerAbilities getPlayerAbilities() {
         return this.playerAbilities;
     }
 
-    public MCWorldInfo setPlayerAbilities(PlayerAbilities abilities) {
+    public void setPlayerAbilities(PlayerAbilities abilities) {
         this.playerAbilities = abilities;
-        return this;
     }
 
     public boolean isTexturePacksRequired() {
         return this.texturePacksRequired;
     }
 
-    public MCWorldInfo setTexturePacksRequired(boolean required) {
+    public void setTexturePacksRequired(boolean required) {
         this.texturePacksRequired = required;
-        return this;
     }
 
     public boolean useMsaGamerTagsOnly() {
         return this.useMsaGamerTagsOnly;
     }
 
-    public MCWorldInfo setUseMsaGamerTagsOnly(boolean useMsaGamerTagsOnly) {
+    public void setUseMsaGamerTagsOnly(boolean useMsaGamerTagsOnly) {
         this.useMsaGamerTagsOnly = useMsaGamerTagsOnly;
-        return this;
     }
 
-    public String getWorldName() {
+    @Override
+    public String getName() {
         return this.worldName;
     }
 
-    public MCWorldInfo setWorldName(String worldName) {
+    @Override
+    public void setName(String worldName) {
         this.worldName = worldName;
-        return this;
     }
 
     public long getWorldStartCount() {
         return this.worldStartCount;
     }
 
-    public MCWorldInfo setWorldStartCount(long startCount) {
+    public void setWorldStartCount(long startCount) {
         this.worldStartCount = startCount;
-        return this;
     }
 
     public int getXboxLiveBroadcastIntent() {
         return this.xboxLiveBroadcastIntent;
     }
 
-    public MCWorldInfo setXboxLiveBroadcastIntent(int intent) {
+    public void setXboxLiveBroadcastIntent(int intent) {
         this.xboxLiveBroadcastIntent = intent;
-        return this;
     }
 
 
@@ -497,18 +472,16 @@ public class MCWorldInfo implements Cloneable {
         return this.eduOffer;
     }
 
-    public MCWorldInfo setEduOffer(int offer) {
+    public void setEduOffer(int offer) {
         this.eduOffer = offer;
-        return this;
     }
 
     public boolean isEduEnabled() {
         return this.isEduEnabled;
     }
 
-    public MCWorldInfo setEduEnabled(boolean enabled) {
+    public void setEduEnabled(boolean enabled) {
         this.isEduEnabled = enabled;
-        return this;
     }
 
 
@@ -516,180 +489,178 @@ public class MCWorldInfo implements Cloneable {
         return this.biomeOverride;
     }
 
-    public MCWorldInfo setBiomeOverride(String override) {
+    public void setBiomeOverride(String override) {
         this.biomeOverride = override;
-        return this;
     }
 
     public boolean isBonusChestEnabled() {
         return this.bonusChestEnabled;
     }
 
-    public MCWorldInfo setBonusChestEnabled(boolean enabled) {
+    public void setBonusChestEnabled(boolean enabled) {
         this.bonusChestEnabled = enabled;
-        return this;
     }
 
     public boolean isBonusChestSpawned() {
         return this.bonusChestSpawned;
     }
 
-    public MCWorldInfo setBonusChestSpawned(boolean spawned) {
+    public void setBonusChestSpawned(boolean spawned) {
         this.bonusChestSpawned = spawned;
-        return this;
     }
 
     public boolean isCenterMapsToOrigin() {
         return this.centerMapsToOrigin;
     }
 
-    public MCWorldInfo setCenterMapsToOrigin(boolean status) {
+    public void setCenterMapsToOrigin(boolean status) {
         this.centerMapsToOrigin = status;
-        return this;
     }
 
+    @Override
     public Gamemode getDefaultGamemode() {
         return this.defaultGamemode;
     }
 
-    public MCWorldInfo setDefaultGamemode(Gamemode defaultGamemode) {
+    @Override
+    public void setDefaultGamemode(Gamemode defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
-        return this;
     }
 
+    @Override
     public Difficulty getDifficulty() {
         return this.difficulty;
     }
 
-    public MCWorldInfo setDifficulty(Difficulty difficulty) {
+    @Override
+    public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
-        return this;
     }
 
     public String getFlatWorldLayers() {
         return this.flatWorldLayers;
     }
 
-    public MCWorldInfo setFlatWorldLayers(String layers) {
-        this.flatWorldLayers = flatWorldLayers;
-        return this;
+    public void setFlatWorldLayers(String layers) {
+        this.flatWorldLayers = layers;
     }
 
-    public Map<GameRuleId, GameRule> getGameRules() {
+    @Override
+    public Map<GameRuleID, GameRule<?>> getGameRules() {
         return this.gameRules;
     }
 
-    public MCWorldInfo setGameRules(Map<GameRuleId, GameRule> gameRules) {
+    @Override
+    public void setGameRules(Map<GameRuleID, GameRule<?>> gameRules) {
         this.gameRules = gameRules;
-        return this;
     }
 
+    @Override
     public float getLightningLevel() {
         return this.lightningLevel;
     }
 
-    public MCWorldInfo setLightningLevel(float level) {
+    @Override
+    public void setLightningLevel(float level) {
         this.lightningLevel = level;
-        return this;
     }
 
+    @Override
     public int getLightningTime() {
         return this.lightningTime;
     }
 
-    public MCWorldInfo setLightningTime(int time) {
+    @Override
+    public void setLightningTime(int time) {
         this.lightningTime = time;
-        return this;
     }
 
     public Vector3i getLimitedWorldCoordinates() {
         return this.limitedWorldCoordinates;
     }
 
-    public MCWorldInfo setLimitedWorldCoordinates(Vector3i limitedWorldCoordinates) {
+    public void setLimitedWorldCoordinates(Vector3i limitedWorldCoordinates) {
         this.limitedWorldCoordinates = limitedWorldCoordinates;
-        return this;
     }
 
     public int getLimitedWorldWidth() {
         return this.limitedWorldWidth;
     }
 
-    public MCWorldInfo setLimitedWorldWidth(int width) {
+    public void setLimitedWorldWidth(int width) {
         this.limitedWorldWidth = width;
-        return this;
     }
 
     public int getNetherScale() {
         return this.netherScale;
     }
 
-    public MCWorldInfo setNetherScale(int scale) {
+    public void setNetherScale(int scale) {
         this.netherScale = scale;
-        return this;
     }
 
+    @Override
     public float getRainLevel() {
         return this.rainLevel;
     }
 
-    public MCWorldInfo setRainLevel(float rainLevel) {
+    @Override
+    public void setRainLevel(float rainLevel) {
         this.rainLevel = rainLevel;
-        return this;
     }
 
+    @Override
     public int getRainTime() {
         return this.rainTime;
     }
 
-    public MCWorldInfo setRainTime(int rainTime) {
+    @Override
+    public void setRainTime(int rainTime) {
         this.rainTime = rainTime;
-        return this;
     }
 
     public long getSeed() {
         return this.seed;
     }
 
-    public MCWorldInfo setSeed(long seed) {
+    public void setSeed(long seed) {
         this.seed = seed;
-        return this;
     }
 
-    public Vector3i getSpawnCoordinates() {
+    @Override
+    public Vector3i getWorldSpawn() {
         return this.spawnCoordinates;
     }
 
-    public MCWorldInfo setSpawnCoordinates(Vector3i coordinates) {
+    @Override
+    public void setWorldSpawn(Vector3i coordinates) {
         this.spawnCoordinates = coordinates;
-        return this;
     }
 
     public boolean startWithMapEnabled() {
         return this.startWithMapEnabled;
     }
 
-    public MCWorldInfo setStartWithMapEnabled(boolean enabled) {
+    public void setStartWithMapEnabled(boolean enabled) {
         this.startWithMapEnabled = enabled;
-        return this;
     }
 
+    @Override
     public long getTime() {
         return this.time;
     }
 
-    public MCWorldInfo setTime(long time) {
+    @Override
+    public void setTime(long time) {
         this.time = time;
-        return this;
     }
 
     public WorldType getWorldType() {
         return this.worldType;
     }
 
-    public MCWorldInfo setWorldType(WorldType worldType) {
+    public void setWorldType(WorldType worldType) {
         this.worldType = worldType;
-        return this;
     }
 
 
@@ -697,72 +668,64 @@ public class MCWorldInfo implements Cloneable {
         return this.baseGameVersion;
     }
 
-    public MCWorldInfo setBaseGameVersion(String baseGameVersion) {
+    public void setBaseGameVersion(String baseGameVersion) {
         this.baseGameVersion = baseGameVersion;
-        return this;
     }
 
     public String getInventoryVersion() {
         return this.inventoryVersion;
     }
 
-    public MCWorldInfo setInventoryVersion(String inventoryVersion) {
+    public void setInventoryVersion(String inventoryVersion) {
         this.inventoryVersion = inventoryVersion;
-        return this;
     }
 
     public long getLastPlayed() {
         return this.lastPlayed;
     }
 
-    public MCWorldInfo setLastPlayed(long lastPlayed) {
+    public void setLastPlayed(long lastPlayed) {
         this.lastPlayed = lastPlayed;
-        return this;
     }
 
     public int[] getMinimumCompatibleClientVersion() {
         return this.minimumCompatibleClientVersion;
     }
 
-    public MCWorldInfo setMinimumCompatibleClientVersion(int[] version) {
+    public void setMinimumCompatibleClientVersion(int[] version) {
         this.minimumCompatibleClientVersion = version;
-        return this;
     }
 
     public int[] getLastOpenedWithVersion() {
         return this.lastOpenedWithVersion;
     }
 
-    public MCWorldInfo setLastOpenedWithVersion(int[] version) {
+    public void setLastOpenedWithVersion(int[] version) {
         this.lastOpenedWithVersion = version;
-        return this;
     }
 
     public int getPlatform() {
         return this.platform;
     }
 
-    public MCWorldInfo setPlatform(int platform) {
+    public void setPlatform(int platform) {
         this.platform = platform;
-        return this;
     }
 
     public int getProtocol() {
         return this.protocol;
     }
 
-    public MCWorldInfo setProtocol(int protocol) {
+    public void setProtocol(int protocol) {
         this.protocol = protocol;
-        return this;
     }
 
     public String getPrid() {
         return this.prid;
     }
 
-    public MCWorldInfo setPrid(String prid) {
+    public void setPrid(String prid) {
         this.prid = prid;
-        return this;
     }
 
 

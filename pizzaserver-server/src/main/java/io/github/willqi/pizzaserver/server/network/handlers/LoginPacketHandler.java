@@ -273,7 +273,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     startGamePacket.setPlayerGamemode(Gamemode.SURVIVAL);
                     startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
                     startGamePacket.setRuntimeEntityId(this.player.getId());
-                    startGamePacket.setPlayerRotation(new Vector2(0, 0));
+                    startGamePacket.setPlayerRotation(new Vector2(data.getPitch(), data.getYaw()));
                     startGamePacket.setPlayerSpawn(data.getPosition());
 
                     // Server

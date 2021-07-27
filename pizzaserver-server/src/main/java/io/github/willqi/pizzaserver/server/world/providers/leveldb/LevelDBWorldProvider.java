@@ -27,7 +27,7 @@ public class LevelDBWorldProvider extends BaseWorldProvider {
 
     @Override
     public String getName() {
-        return this.worldInfo.getWorldName();
+        return this.worldInfo.getName();
     }
 
     @Override
