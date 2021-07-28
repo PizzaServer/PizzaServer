@@ -16,7 +16,7 @@ public class ImplScheduler implements Scheduler {
     protected final ImplServer server;
 
     protected long syncedTick;    // The last received server tick.
-    protected long schedulerTick; // The scheduler's actual tick. This depends on the tickrate
+    protected volatile long schedulerTick; // The scheduler's actual tick. This depends on the tickrate
 
     protected int tickDelay; // The amount of server ticks between each scheduler tick.
 
@@ -222,7 +222,6 @@ public class ImplScheduler implements Scheduler {
     /** @return a list of active async task threads */
     public Set<Thread> getActiveThreads() { return new HashSet<>(activeThreads); }
 
-    @Override
     public boolean isRunning() { return isRunning; }
 
     // -- Setters --
@@ -253,9 +252,11 @@ public class ImplScheduler implements Scheduler {
 
         @Override
         public SchedulerTask schedule() {
-            long nextTick = scheduler.schedulerTick + delay + 1;
-            SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsynchronous);
-            scheduler.queueTaskEntry(entry);
+            synchronized (scheduler) {
+                long nextTick = scheduler.schedulerTick + delay + 1;
+                SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsynchronous);
+                scheduler.queueTaskEntry(entry);
+            }
             return task;
         }
 
