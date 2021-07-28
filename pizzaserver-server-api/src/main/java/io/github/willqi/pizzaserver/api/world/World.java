@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
+import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
@@ -45,5 +46,19 @@ public interface World {
      * @param entity the {@link Entity} to despawn
      */
     void removeEntity(Entity entity);
+
+    default void playSound(WorldSound sound, Vector3 vector3) {
+        playSound(sound, vector3, true);
+    }
+
+    default void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal) {
+        playSound(sound, vector3, isGlobal, false, "");
+    }
+
+    default void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType) {
+        playSound(sound, vector3, isGlobal, isBaby, entityType, 0);
+    }
+
+    void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID);
 
 }

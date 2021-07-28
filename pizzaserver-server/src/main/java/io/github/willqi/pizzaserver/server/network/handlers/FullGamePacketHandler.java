@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
@@ -90,6 +91,18 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
                 }
             }
 
+        }
+    }
+
+    @Override
+    public void onPacket(WorldSoundEventPacket packet) {
+        WorldSoundEvent event = new WorldSoundEvent(player.getLocation().getWorld(), packet);
+        this.player.getServer().getEventManager().call(event);
+        if(!event.isCancelled()) {
+            event.getWorld().playSound(packet.getSound(), packet.getVector3(), packet.isGlobal(), packet.isBaby(), packet.getEntityType(), packet.getBlockID());
+            for(Player player : event.getWorld().getPlayers()) {
+                if(player.getUUID() != this.player.getUUID()) player.sendPacket(packet);
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.LevelChunkPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldChunkPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.world.ImplWorld;
@@ -267,12 +267,12 @@ public class ImplChunk implements Chunk {
         packetData.release();
 
         // TODO: Supposedly tile entities are also packaged here
-        LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
-        levelChunkPacket.setX(this.getX());
-        levelChunkPacket.setZ(this.getZ());
-        levelChunkPacket.setSubChunkCount(subChunkCount);
-        levelChunkPacket.setData(data);
-        player.sendPacket(levelChunkPacket);
+        WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
+        worldChunkPacket.setX(this.getX());
+        worldChunkPacket.setZ(this.getZ());
+        worldChunkPacket.setSubChunkCount(subChunkCount);
+        worldChunkPacket.setData(data);
+        player.sendPacket(worldChunkPacket);
 
         this.spawnedTo.add(player);
         readLock.unlock();

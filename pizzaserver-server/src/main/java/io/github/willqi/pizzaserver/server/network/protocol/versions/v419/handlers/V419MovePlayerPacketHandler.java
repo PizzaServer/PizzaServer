@@ -16,16 +16,8 @@ public class V419MovePlayerPacketHandler extends BaseProtocolPacketHandler<MoveP
         MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
 
         movePlayerPacket.setEntityRuntimeId(VarInts.readUnsignedLong(buffer));
-        movePlayerPacket.setPosition(new Vector3(
-                buffer.readFloatLE(),
-                buffer.readFloatLE(),
-                buffer.readFloatLE()
-        ));
-        movePlayerPacket.setRotation(new Vector3(
-                buffer.readFloatLE(),
-                buffer.readFloatLE(),
-                buffer.readFloatLE()
-        ));
+        movePlayerPacket.setPosition(helper.readVector3(buffer));
+        movePlayerPacket.setRotation(helper.readVector3(buffer));
         movePlayerPacket.setMode(MovementMode.values()[buffer.readByte()]);
         movePlayerPacket.setOnGround(buffer.readBoolean());
         movePlayerPacket.setRidingEntityRuntimeId(VarInts.readUnsignedLong(buffer));

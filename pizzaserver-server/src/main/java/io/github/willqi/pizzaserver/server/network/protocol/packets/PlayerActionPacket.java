@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 
 public class PlayerActionPacket extends ImplBedrockPacket {
@@ -9,7 +10,7 @@ public class PlayerActionPacket extends ImplBedrockPacket {
 
     private long entityRuntimeID;
     private PlayerAction actionType;
-    private Vector3 vector3;
+    private Vector3i vector3;
     private int face;
 
     public PlayerActionPacket() {
@@ -32,11 +33,11 @@ public class PlayerActionPacket extends ImplBedrockPacket {
         this.actionType = actionType;
     }
 
-    public Vector3 getVector3() {
+    public Vector3i getVector3() {
         return vector3;
     }
 
-    public void setVector3(Vector3 vector3) {
+    public void setVector3(Vector3i vector3) {
         this.vector3 = vector3;
     }
 

@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
@@ -10,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,10 +28,9 @@ public abstract class BasePacketHelper {
 
     public abstract void writeItem(Item item, ByteBuf buffer);
 
-    public String readLEString(ByteBuf buffer) {
-        int length = buffer.readIntLE();
-        String data = buffer.readSlice(length).toString(StandardCharsets.UTF_8);
-        return data;
+    public void writeString(String string, ByteBuf buffer) {
+        byte[] data = string.getBytes(StandardCharsets.UTF_8);
+        writeByteArray(data, buffer);
     }
 
     public String readString(ByteBuf buffer) {
@@ -36,9 +38,15 @@ public abstract class BasePacketHelper {
         return new String(data, StandardCharsets.UTF_8);
     }
 
-    public void writeString(String string, ByteBuf buffer) {
-        byte[] data = string.getBytes(StandardCharsets.UTF_8);
-        writeByteArray(data, buffer);
+    public String readLEString(ByteBuf buffer) {
+        int length = buffer.readIntLE();
+        String data = buffer.readSlice(length).toString(StandardCharsets.UTF_8);
+        return data;
+    }
+
+    public void writeByteArray(byte[] bytes, ByteBuf buffer) {
+        VarInts.writeUnsignedInt(buffer, bytes.length);
+        buffer.writeBytes(bytes);
     }
 
     public byte[] readByteArray(ByteBuf buffer) {
@@ -46,11 +54,6 @@ public abstract class BasePacketHelper {
         byte[] data = new byte[length];
         buffer.readBytes(data);
         return data;
-    }
-
-    public void writeByteArray(byte[] bytes, ByteBuf buffer) {
-        VarInts.writeUnsignedInt(buffer, bytes.length);
-        buffer.writeBytes(bytes);
     }
 
     public void writeNBTCompound(NBTCompound compound, ByteBuf buffer) {
@@ -73,6 +76,34 @@ public abstract class BasePacketHelper {
             this.writeString(experiment.getId(), buffer);
             buffer.writeBoolean(true);  // It's enabled if it's included
         }
+    }
+
+    public void writeVector3(ByteBuf buffer, Vector3 vector3) {
+        buffer.writeFloatLE(vector3.getX());
+        buffer.writeFloatLE(vector3.getY());
+        buffer.writeFloatLE(vector3.getZ());
+    }
+
+    public Vector3 readVector3(ByteBuf buffer) {
+        return new Vector3(
+                buffer.readFloatLE(),
+                buffer.readFloatLE(),
+                buffer.readFloatLE()
+        );
+    }
+
+    public void writeBlockVector(ByteBuf buffer, Vector3i vector3) {
+        VarInts.writeInt(buffer, vector3.getX());
+        VarInts.writeUnsignedInt(buffer, vector3.getY());
+        VarInts.writeInt(buffer, vector3.getZ());
+    }
+
+    public Vector3i readBlockVector(ByteBuf buffer) {
+        return new Vector3i(
+                VarInts.readInt(buffer),
+                VarInts.readUnsignedInt(buffer),
+                VarInts.readInt(buffer)
+        );
     }
 
 }
