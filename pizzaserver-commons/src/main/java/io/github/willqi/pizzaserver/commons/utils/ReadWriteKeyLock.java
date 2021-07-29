@@ -5,6 +5,10 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Similar to the {@link ReadWriteLock}, however, this lock locks based off of keys rather than a singular object
+ * @param <K> key type
+ */
 public class ReadWriteKeyLock<K> {
 
     private final Map<K, ReadWriteLock> locks = new HashMap<>();

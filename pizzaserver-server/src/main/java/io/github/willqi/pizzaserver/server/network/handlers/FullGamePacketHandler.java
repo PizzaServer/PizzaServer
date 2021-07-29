@@ -2,8 +2,6 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.world.World;
-import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
-import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
@@ -12,7 +10,6 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
 public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
@@ -21,7 +18,10 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     public FullGamePacketHandler(ImplPlayer player) {
         this.player = player;
-        this.completeLogin();
+        this.player.getServer().getScheduler()
+                .prepareTask(this::completeLogin)
+                .setAsynchronous(true)
+                .schedule();
     }
 
     /**
@@ -43,14 +43,14 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         int playerChunkX = playerSpawn.toVector3i().getX() / 16;
         int playerChunkZ = playerSpawn.toVector3i().getZ() / 16;
 
-        this.player.getServer().getScheduler().prepareTask(() -> {
-            for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
-                for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
-                    defaultWorld.getChunkManager().sendChunk(this.player, chunkX, chunkZ);
-                }
+        for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
+            for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
+                defaultWorld.getChunkManager().sendChunk(this.player, chunkX, chunkZ);
             }
-            this.player.getServer().getScheduler().prepareTask(() -> defaultWorld.addEntity(this.player, playerSpawn)).schedule();
-        }).setAsynchronous(true).schedule();
+        }
+
+        // Spawn them to the world
+        this.player.getServer().getScheduler().prepareTask(() -> defaultWorld.addEntity(this.player, playerSpawn)).schedule();
     }
 
     @Override

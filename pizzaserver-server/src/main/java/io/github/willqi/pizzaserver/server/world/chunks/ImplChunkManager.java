@@ -31,11 +31,11 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public boolean isChunkLoaded(int x, int z) {
         Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.getLock().readLock(key);
+        this.lock.readLock(key);
         try {
             return this.chunks.containsKey(key);
         } finally {
-            this.getLock().readUnlock(key);
+            this.lock.readUnlock(key);
         }
     }
 
@@ -47,7 +47,7 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public Chunk getChunk(int x, int z, boolean loadFromProvider) {
         Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.getLock().readLock(key);
+        this.lock.readLock(key);
 
         try {
             this.chunks.computeIfAbsent(key, v -> {
@@ -74,14 +74,14 @@ public class ImplChunkManager implements ChunkManager {
 
             return this.chunks.getOrDefault(key, null);
         } finally {
-            this.getLock().readUnlock(key);
+            this.lock.readUnlock(key);
         }
     }
 
     @Override
     public boolean unloadChunk(int x, int z) {
         Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.getLock().writeLock(key);
+        this.lock.writeLock(key);
 
         try {
             Chunk chunk = this.chunks.getOrDefault(key, null);
@@ -93,38 +93,34 @@ public class ImplChunkManager implements ChunkManager {
 
             return true;
         } finally {
-            this.getLock().writeUnlock(key);
+            this.lock.writeUnlock(key);
         }
     }
 
     @Override
     public boolean tryUnloadChunk(int x, int z) {
         Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.getLock().writeLock(key);
+        this.lock.writeLock(key);
 
         try {
             Chunk chunk = this.getChunk(x, z);
             return !Check.isNull(chunk) && chunk.canBeClosed() && this.unloadChunk(x, z);
         } finally {
-            this.getLock().writeUnlock(key);
+            this.lock.writeUnlock(key);
         }
     }
 
     @Override
     public void sendChunk(Player player, int x, int z) {
         Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.getLock().readLock(key);
+        this.lock.readLock(key);
         try {
             Chunk chunk = this.getChunk(x, z, true);
             chunk.sendTo(player);
         } finally {
-            this.getLock().readUnlock(key);
+            this.lock.readUnlock(key);
         }
 
-    }
-
-    private ReadWriteKeyLock<Tuple<Integer, Integer>> getLock() {
-        return this.lock;
     }
 
 }
