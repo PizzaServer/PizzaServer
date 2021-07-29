@@ -9,13 +9,16 @@ import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.item.Item;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.netty.buffer.ByteBuf;
+import io.netty.util.internal.EmptyArrays;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -104,6 +107,32 @@ public abstract class BasePacketHelper {
                 VarInts.readUnsignedInt(buffer),
                 VarInts.readInt(buffer)
         );
+    }
+
+    public UUID readUUID(ByteBuf buffer) {
+        byte[] bytes = new byte[16];
+        buffer.readBytes(bytes);
+        return new UUID(readLLong(bytes), readLLong(new byte[]{
+                bytes[8],
+                bytes[9],
+                bytes[10],
+                bytes[11],
+                bytes[12],
+                bytes[13],
+                bytes[14],
+                bytes[15]
+        }));
+    }
+
+    public static long readLLong(byte[] bytes) {
+        return (((long) bytes[7] << 56) +
+                ((long) (bytes[6] & 0xFF) << 48) +
+                ((long) (bytes[5] & 0xFF) << 40) +
+                ((long) (bytes[4] & 0xFF) << 32) +
+                ((long) (bytes[3] & 0xFF) << 24) +
+                ((bytes[2] & 0xFF) << 16) +
+                ((bytes[1] & 0xFF) << 8) +
+                ((bytes[0] & 0xFF)));
     }
 
 }

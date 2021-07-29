@@ -27,6 +27,7 @@ public abstract class BaseBedrockPacketHandler {
     public void onPacket(TextPacket packet) {}
     public void onPacket(PlayerActionPacket packet) {}
     public void onPacket(PlayerAnimatePacket packet) {}
+    public void onPacket(CommandRequestPacket packet) {} //TODO: Work on more
 
     public void onPacket(ViolationPacket packet) {}
 
