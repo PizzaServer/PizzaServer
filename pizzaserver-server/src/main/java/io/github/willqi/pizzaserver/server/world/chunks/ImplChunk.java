@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
@@ -16,7 +17,6 @@ import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldChunkPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
-import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
@@ -217,6 +217,14 @@ public class ImplChunk implements Chunk {
         writeLock.unlock();
     }
 
+    @Override
+    public void sendTo(Player player) {
+        this.sendBlocksTo(player);
+        this.getWorld().getServer().getScheduler().prepareTask(() -> {
+            this.sendEntitiesTo(player);
+        });
+    }
+
     /**
      * Retrieve the index to store a block in the child map in the cachedBlocks map
      * @param x x coordinate
@@ -229,11 +237,11 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send the chunk blocks to a {@link ImplPlayer}
+     * Send the chunk blocks to a {@link Player}
      * It is recommended that this is done async as it can take a while to serialize.
-     * @param player the {@link ImplPlayer} to send it to
+     * @param player the {@link Player} to send it to
      */
-    public void sendBlocksTo(ImplPlayer player) {
+    public void sendBlocksTo(Player player) {
         Lock readLock = this.lock.writeLock();
         readLock.lock();
 
@@ -279,11 +287,11 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send the {@link BaseEntity}s of this chunk to a {@link ImplPlayer}
+     * Send the {@link BaseEntity}s of this chunk to a {@link Player}
      * This should only be called on the MAIN thread
      * @param player
      */
-    public void sendEntitiesTo(ImplPlayer player) {
+    public void sendEntitiesTo(Player player) {
         for (Entity entity : this.getEntities()) {
             entity.spawnTo(player);
         }
@@ -302,11 +310,16 @@ public class ImplChunk implements Chunk {
                 entity.despawnFrom(player);
             }
 
-            // Should we close this chunk
-            if (this.getViewers().size() == 0) {
-                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ());
-            }
+            // Check if we should close this chunk
+            this.getWorld().getServer().getScheduler()
+                    .prepareTask(() -> this.getWorld().getChunkManager().tryUnloadChunk(this.getX(), this.getZ()))
+                    .setAsynchronous(true).schedule();
         }
+    }
+
+    @Override
+    public boolean canBeClosed() {
+        return this.spawnedTo.size() == 0;
     }
 
     @Override
@@ -363,6 +376,7 @@ public class ImplChunk implements Chunk {
         }
 
         public ImplChunk build() {
+            Check.nullParam(this.world, "world");
             return new ImplChunk(this.world, this.x, this.z, this.subChunks, this.biomeData);
         }
 

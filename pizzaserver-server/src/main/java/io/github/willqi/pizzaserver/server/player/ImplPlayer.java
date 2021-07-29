@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
@@ -331,16 +332,21 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void onSpawned() {
         super.onSpawned();
 
-        this.updateVisibleChunks(null, this.chunkRadius);
+        this.getServer().getScheduler().prepareTask(() -> {
+            this.updateVisibleChunks(null, this.chunkRadius);
+            this.getServer().getScheduler().prepareTask(this::completeLogin).schedule();
+        }).setAsynchronous(true).schedule();
+    }
 
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
-        this.sendPacket(playStatusPacket);
-
+    private void completeLogin() {
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
+
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+        this.sendPacket(playStatusPacket);
     }
 
     @Override
@@ -350,18 +356,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void sendChunk(int x, int z) {
-        ImplChunkManager chunkManager = (ImplChunkManager)this.getLocation().getWorld().getChunkManager();
-        if (chunkManager.isChunkLoaded(x, z)) {
-            chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunkManager.getChunk(x, z));
-        } else {
-            chunkManager.fetchChunk(x, z).whenComplete((chunk, exception) -> {
-                if (exception != null) {
-                    ImplServer.getInstance().getLogger().error("Failed to send chunk (" + x + ", " + z + ") to player " + this.getUsername(), exception);
-                    return;
-                }
-                chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunk);
-            });
-        }
+        this.getLocation().getWorld().getChunkManager().sendChunk(this, x, z);
     }
 
     private void sendNetworkChunkPublisher() {

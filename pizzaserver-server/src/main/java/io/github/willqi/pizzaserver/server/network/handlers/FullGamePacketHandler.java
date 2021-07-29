@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
@@ -11,10 +12,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
 public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
@@ -45,23 +43,14 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         int playerChunkX = playerSpawn.toVector3i().getX() / 16;
         int playerChunkZ = playerSpawn.toVector3i().getZ() / 16;
 
-        Set<CompletableFuture<Chunk>> chunkTasksRequired = new HashSet<>();
-        for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
-            for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
-                chunkTasksRequired.add(defaultWorld.getChunkManager().fetchChunk(chunkX, chunkZ));
+        this.player.getServer().getScheduler().prepareTask(() -> {
+            for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
+                for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
+                    defaultWorld.getChunkManager().sendChunk(this.player, chunkX, chunkZ);
+                }
             }
-        }
-        CompletableFuture.runAsync(() -> {
-            for (CompletableFuture<Chunk> chunkTask : chunkTasksRequired) {
-                chunkTask.join();
-            }
-        }).whenComplete((ignored, exception) -> {
-            if (exception != null) {
-                this.player.disconnect("Failed to load chunks around player");
-                return;
-            }
-            defaultWorld.addEntity(this.player, playerSpawn);
-        });
+            this.player.getServer().getScheduler().prepareTask(() -> defaultWorld.addEntity(this.player, playerSpawn)).schedule();
+        }).setAsynchronous(true).schedule();
     }
 
     @Override

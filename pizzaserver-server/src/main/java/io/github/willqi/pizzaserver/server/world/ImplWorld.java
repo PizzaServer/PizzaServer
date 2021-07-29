@@ -18,7 +18,6 @@ import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.BaseWorldProvider;
-import io.github.willqi.pizzaserver.server.world.providers.WorldProviderThread;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -30,22 +29,20 @@ public class ImplWorld implements Closeable, World {
 
     private final Server server;
 
-    private final WorldProviderThread worldThread;
-
     private final ChunkManager chunkManager = new ImplChunkManager(this);
+    private final BaseWorldProvider provider;
 
     private final Set<Player> players = new HashSet<>();
 
 
     public ImplWorld(Server server, BaseWorldProvider provider) throws IOException {
         this.server = server;
-        this.worldThread = new WorldProviderThread(this, provider);
-        this.worldThread.start();
+        this.provider = provider;
     }
 
     @Override
     public String getName() {
-        return this.worldThread.getProvider().getName();
+        return this.getProvider().getName();
     }
 
     @Override
@@ -63,8 +60,8 @@ public class ImplWorld implements Closeable, World {
         return this.chunkManager;
     }
 
-    public WorldProviderThread getWorldThread() {
-        return this.worldThread;
+    public BaseWorldProvider getProvider() {
+        return this.provider;
     }
 
     @Override
@@ -156,7 +153,7 @@ public class ImplWorld implements Closeable, World {
 
     @Override
     public void close() throws IOException {
-        this.worldThread.close();
+        this.getProvider().close();
     }
 
     @Override

@@ -136,8 +136,8 @@ public interface Player extends LivingEntity {
     void setChunkRadiusRequested(int radius);
 
     /**
-     * Request a chunk in the player's world to be sent to the player.
-     * This does not send it immediately, but rather requests the server to send the chunk.
+     * Send a chunk to the player.
+     * Recommended to be called asynchronously
      * @param x chunk x coordinate
      * @param z chunk z coordinate
      */
