@@ -153,6 +153,7 @@ public class ImplWorld implements Closeable, World {
 
     @Override
     public void close() throws IOException {
+        this.getChunkManager().close();
         this.getProvider().close();
     }
 

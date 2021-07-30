@@ -8,16 +8,31 @@ import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.server.world.ImplWorld;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.ChunkProcessingRunnable;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.ChunkQueue;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.ChunkRequest;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.PlayerChunkRequest;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.UnloadChunkRequest;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ImplChunkManager implements ChunkManager {
+
+    private final static int REQUESTS_PER_THREAD_THRESHOLD = 100;
 
     private final ImplWorld world;
     private final Map<Tuple<Integer, Integer>, Chunk> chunks = new ConcurrentHashMap<>();
     private final ReadWriteKeyLock<Tuple<Integer, Integer>> lock = new ReadWriteKeyLock<>();
+
+    private final LinkedBlockingQueue<ChunkRequest> chunkRequests = new LinkedBlockingQueue<>();
+    private final ThreadPoolExecutor chunkProcessingThreads = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+
+    private final ChunkQueue chunkQueue = new ChunkQueue(this);
 
 
     public ImplChunkManager(ImplWorld world) {
@@ -41,7 +56,7 @@ public class ImplChunkManager implements ChunkManager {
 
     @Override
     public Chunk getChunk(int x, int z) {
-        return this.getChunk(x, z, false);
+        return this.getChunk(x, z, true);
     }
 
     @Override
@@ -85,12 +100,12 @@ public class ImplChunkManager implements ChunkManager {
 
         try {
             Chunk chunk = this.chunks.getOrDefault(key, null);
-            if (Check.isNull(chunk)) {
+            if (Check.isNull(chunk) || !chunk.canBeClosed()) {
                 return false;
             }
+
             this.chunks.remove(key);
             chunk.close();
-
             return true;
         } finally {
             this.lock.writeUnlock(key);
@@ -98,29 +113,31 @@ public class ImplChunkManager implements ChunkManager {
     }
 
     @Override
-    public boolean tryUnloadChunk(int x, int z) {
-        Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.lock.writeLock(key);
-
-        try {
-            Chunk chunk = this.getChunk(x, z);
-            return !Check.isNull(chunk) && chunk.canBeClosed() && this.unloadChunk(x, z);
-        } finally {
-            this.lock.writeUnlock(key);
-        }
+    public void unloadChunkRequest(int x, int z) {
+        this.chunkQueue.addRequest(new UnloadChunkRequest(x, z));
     }
 
     @Override
-    public void sendChunk(Player player, int x, int z) {
+    public void sendPlayerChunk(Player player, int x, int z) {
         Tuple<Integer, Integer> key = new Tuple<>(x, z);
         this.lock.readLock(key);
         try {
-            Chunk chunk = this.getChunk(x, z, true);
+            Chunk chunk = this.getChunk(x, z);
             chunk.sendTo(player);
         } finally {
             this.lock.readUnlock(key);
         }
+    }
 
+    @Override
+    public void sendPlayerChunkRequest(Player player, int x, int z) {
+        this.chunkQueue.addRequest(new PlayerChunkRequest(player, x, z));
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.chunkQueue.close();
+        // TODO: unload and save all chunks
     }
 
 }

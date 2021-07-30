@@ -8,7 +8,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
@@ -21,7 +21,6 @@ import io.github.willqi.pizzaserver.server.player.attributes.ImplPlayerAttribute
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -331,16 +330,16 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public void onSpawned() {
         super.onSpawned();
+        this.sendNetworkChunkPublisher();   // Load chunks sent during initial login handshake
 
-        this.getServer().getScheduler().prepareTask(() -> {
-            this.updateVisibleChunks(null, this.chunkRadius);
-            this.getServer().getScheduler().prepareTask(this::completeLogin).schedule();
-        }).setAsynchronous(true).schedule();
+        this.updateVisibleChunks(null, this.chunkRadius);
+        this.completeLogin();
     }
 
     private void completeLogin() {
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_FLY, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
 
@@ -355,8 +354,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void sendChunk(int x, int z) {
-        this.getLocation().getWorld().getChunkManager().sendChunk(this, x, z);
+    public void requestSendChunk(int x, int z) {
+        this.getLocation().getWorld().getChunkManager().sendPlayerChunkRequest(this, x, z);
     }
 
     private void sendNetworkChunkPublisher() {
@@ -370,43 +369,32 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      * Sends and removes chunks the player can and cannot see
      */
     private void updateVisibleChunks(Location oldLocation, int oldChunkRadius) {
-        Set<ImplChunk> chunksToRemove = new HashSet<>();
-
+        Set<Tuple<Integer, Integer>> chunksToRemove = new HashSet<>();
         if (oldLocation != null) {
             // What were our previous chunks loaded?
             for (int chunkX = oldLocation.getChunkX() - oldChunkRadius; chunkX <= oldLocation.getChunkX() + oldChunkRadius; chunkX++) {
                 for (int chunkZ = oldLocation.getChunkZ() - oldChunkRadius; chunkZ <= oldLocation.getChunkZ() + oldChunkRadius; chunkZ++) {
-                    if (oldLocation.getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-                        ImplChunk chunk = (ImplChunk)oldLocation.getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                        chunksToRemove.add(chunk);
-                    }
+                    chunksToRemove.add(new Tuple<>(chunkX, chunkZ));
                 }
             }
         }
 
         // What are our new chunks loaded?
-        boolean requiresChunkPublisher = false;
         for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
             for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                if (this.getLocation().getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-                    ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                    if (chunksToRemove.remove(chunk)) {
-                        continue;   // We don't need to send this chunk
-                    }
+                if (chunksToRemove.remove(new Tuple<>(chunkX, chunkZ))) {
+                    continue;   // We don't need to send this chunk because it's already rendered to us
                 }
-                requiresChunkPublisher = true;
-                this.sendChunk(chunkX, chunkZ);
+                this.requestSendChunk(chunkX, chunkZ);
             }
         }
 
         // Remove each chunk we shouldn't get packets from
-        for (ImplChunk chunk : chunksToRemove) {
-            chunk.despawnFrom(this);
+        for (Tuple<Integer, Integer> key : chunksToRemove) {
+            ((ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
         }
 
-        if (requiresChunkPublisher) {
-            this.sendNetworkChunkPublisher();
-        }
+        this.sendNetworkChunkPublisher();
     }
 
     @Override

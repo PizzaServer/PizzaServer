@@ -18,10 +18,7 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     public FullGamePacketHandler(ImplPlayer player) {
         this.player = player;
-        this.player.getServer().getScheduler()
-                .prepareTask(this::completeLogin)
-                .setAsynchronous(true)
-                .schedule();
+        this.completeLogin();
     }
 
     /**
@@ -43,14 +40,14 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         int playerChunkX = playerSpawn.toVector3i().getX() / 16;
         int playerChunkZ = playerSpawn.toVector3i().getZ() / 16;
 
-        for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
-            for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
-                defaultWorld.getChunkManager().sendChunk(this.player, chunkX, chunkZ);
+        for (int chunkX = playerChunkX - 1; chunkX <= playerChunkX + 1; chunkX++) {
+            for (int chunkZ = playerChunkZ - 1; chunkZ <= playerChunkZ + 1; chunkZ++) {
+                defaultWorld.getChunkManager().sendPlayerChunkRequest(this.player, chunkX, chunkZ);
             }
         }
 
         // Spawn them to the world
-        this.player.getServer().getScheduler().prepareTask(() -> defaultWorld.addEntity(this.player, playerSpawn)).schedule();
+        defaultWorld.addEntity(this.player, playerSpawn);
     }
 
     @Override

@@ -222,7 +222,7 @@ public class ImplChunk implements Chunk {
         this.sendBlocksTo(player);
         this.getWorld().getServer().getScheduler().prepareTask(() -> {
             this.sendEntitiesTo(player);
-        });
+        }).schedule();
     }
 
     /**
@@ -310,10 +310,10 @@ public class ImplChunk implements Chunk {
                 entity.despawnFrom(player);
             }
 
-            // Check if we should close this chunk
-            this.getWorld().getServer().getScheduler()
-                    .prepareTask(() -> this.getWorld().getChunkManager().tryUnloadChunk(this.getX(), this.getZ()))
-                    .setAsynchronous(true).schedule();
+            if (this.canBeClosed()) {
+                // Attempt to unload this chunk
+                this.getWorld().getChunkManager().unloadChunkRequest(this.getX(), this.getZ());
+            }
         }
     }
 

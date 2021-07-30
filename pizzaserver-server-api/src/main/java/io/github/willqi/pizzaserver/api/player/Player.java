@@ -136,12 +136,11 @@ public interface Player extends LivingEntity {
     void setChunkRadiusRequested(int radius);
 
     /**
-     * Send a chunk to the player.
-     * Recommended to be called asynchronously
+     * Request the server to send a chunk to the player.
      * @param x chunk x coordinate
      * @param z chunk z coordinate
      */
-    void sendChunk(int x, int z);
+    void requestSendChunk(int x, int z);
 
     /**
      * Send a message originating from another APIPlayer
