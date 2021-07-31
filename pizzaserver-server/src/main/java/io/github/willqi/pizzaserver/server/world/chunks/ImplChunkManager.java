@@ -8,29 +8,19 @@ import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.server.world.ImplWorld;
-import io.github.willqi.pizzaserver.server.world.chunks.processing.ChunkProcessingRunnable;
 import io.github.willqi.pizzaserver.server.world.chunks.processing.ChunkQueue;
-import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.ChunkRequest;
 import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.PlayerChunkRequest;
 import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.UnloadChunkRequest;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class ImplChunkManager implements ChunkManager {
-
-    private final static int REQUESTS_PER_THREAD_THRESHOLD = 100;
 
     private final ImplWorld world;
     private final Map<Tuple<Integer, Integer>, Chunk> chunks = new ConcurrentHashMap<>();
     private final ReadWriteKeyLock<Tuple<Integer, Integer>> lock = new ReadWriteKeyLock<>();
-
-    private final LinkedBlockingQueue<ChunkRequest> chunkRequests = new LinkedBlockingQueue<>();
-    private final ThreadPoolExecutor chunkProcessingThreads = (ThreadPoolExecutor)Executors.newCachedThreadPool();
 
     private final ChunkQueue chunkQueue = new ChunkQueue(this);
 

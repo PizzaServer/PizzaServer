@@ -73,9 +73,6 @@ public class ImplWorld implements Closeable, World {
     public Block getBlock(int x, int y, int z) {
         int chunkX = x / 16;
         int chunkZ = z / 16;
-        if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-            throw new NullPointerException("Cannot get block in unloaded chunk");
-        }
         return this.getChunkManager().getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
     }
 
@@ -98,9 +95,6 @@ public class ImplWorld implements Closeable, World {
     public void setBlock(Block block, int x, int y, int z) {
         int chunkX = x / 16;
         int chunkZ = z / 16;
-        if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-            throw new NullPointerException("Cannot set block in unloaded chunk");
-        }
         this.getChunkManager().getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
     }
 
