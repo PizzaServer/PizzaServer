@@ -25,7 +25,6 @@ public class ZlibTests {
         } catch (DataFormatException exception) {
             throw new RuntimeException(exception);
         }
-        compressed.release();
 
         byte[] resultingBytes = new byte[decompressed.readableBytes()];
         decompressed.readBytes(resultingBytes);

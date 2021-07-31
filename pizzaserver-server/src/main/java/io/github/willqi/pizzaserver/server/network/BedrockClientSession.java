@@ -96,16 +96,16 @@ public class BedrockClientSession extends Thread {
             handler.encode(packet, packetBuffer, this.version.getPacketRegistry().getPacketHelper());
 
             // Wrap the packet before sending it off
-            ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
+            ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer(packetBuffer.readableBytes() + 5, packetBuffer.readableBytes() + 5);    // VarInts can be from 1-5 bytes
             VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
             packetWrapperBuffer.writeBytes(packetBuffer);
             ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer);
             rakNetBuffer.writeBytes(compressedBuffer);
             this.serverSession.send(rakNetBuffer);
 
-            compressedBuffer.release();
-            packetWrapperBuffer.release();
             packetBuffer.release();
+            packetWrapperBuffer.release();
+            compressedBuffer.release();
         }
     }
 
