@@ -372,16 +372,16 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         Set<Tuple<Integer, Integer>> chunksToRemove = new HashSet<>();
         if (oldLocation != null) {
             // What were our previous chunks loaded?
-            for (int chunkX = oldLocation.getChunkX() - oldChunkRadius; chunkX <= oldLocation.getChunkX() + oldChunkRadius; chunkX++) {
-                for (int chunkZ = oldLocation.getChunkZ() - oldChunkRadius; chunkZ <= oldLocation.getChunkZ() + oldChunkRadius; chunkZ++) {
+            for (int chunkX = oldLocation.getChunkX() - oldChunkRadius + 1; chunkX < oldLocation.getChunkX() + oldChunkRadius; chunkX++) {
+                for (int chunkZ = oldLocation.getChunkZ() - oldChunkRadius + 1; chunkZ < oldLocation.getChunkZ() + oldChunkRadius; chunkZ++) {
                     chunksToRemove.add(new Tuple<>(chunkX, chunkZ));
                 }
             }
         }
 
         // What are our new chunks loaded?
-        for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
-            for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
+        for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius() + 1; chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
+            for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius() + 1; chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
                 if (chunksToRemove.remove(new Tuple<>(chunkX, chunkZ))) {
                     continue;   // We don't need to send this chunk because it's already rendered to us
                 }
@@ -413,6 +413,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         textPacket.setMessage(message);
         textPacket.setXuid(sender.getXuid());
         this.sendPacket(textPacket);
+        this.sendNetworkChunkPublisher();
+        this.sendMessage("sent chunks");
     }
 
 

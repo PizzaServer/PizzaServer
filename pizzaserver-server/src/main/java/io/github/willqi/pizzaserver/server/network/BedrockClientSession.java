@@ -17,8 +17,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class BedrockClientSession {
+public class BedrockClientSession extends Thread {
 
     private final BedrockNetworkServer server;
     private final RakNetServerSession serverSession;
@@ -29,11 +30,12 @@ public class BedrockClientSession {
     private volatile BaseBedrockPacketHandler handler = null;
 
     private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
-    private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
+    private final LinkedBlockingQueue<BedrockPacket> queuedOutgoingPackets = new LinkedBlockingQueue<>();
 
     public BedrockClientSession(BedrockNetworkServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
         this.serverSession = rakNetServerSession;
+        this.start();
     }
 
     public BedrockNetworkServer getServer() {
@@ -62,9 +64,8 @@ public class BedrockClientSession {
 
     public void disconnect() {
         if (!this.disconnected) {
-            this.processOutgoingPackets();
-
             this.disconnected = true;
+            this.interrupt();
             this.serverSession.disconnect();
         }
     }
@@ -75,6 +76,20 @@ public class BedrockClientSession {
 
     public void queueSendPacket(BedrockPacket packet) {
         this.queuedOutgoingPackets.add(packet);
+    }
+
+    // Packets are sent asynchronously
+    @Override
+    public void run() {
+        while (!Thread.currentThread().isInterrupted()) {
+            BedrockPacket packet;
+            try {
+                packet = this.queuedOutgoingPackets.take();
+            } catch (InterruptedException exception) {
+                return;
+            }
+            this.sendPacket(packet);
+        }
     }
 
     public void sendPacket(BedrockPacket packet) {
@@ -111,7 +126,6 @@ public class BedrockClientSession {
 
     public void processPackets() {
         this.processIncomingPackets();
-        this.processOutgoingPackets();
     }
 
     protected void processIncomingPackets() {
@@ -130,13 +144,6 @@ public class BedrockClientSession {
                     this.server.getPizzaServer().getLogger().error("Failed to call packet handler for " + packet.getPacketId(), exception);
                 }
             }
-        }
-    }
-
-    protected void processOutgoingPackets() {
-        while (this.queuedOutgoingPackets.peek() != null) {
-            BedrockPacket packet = this.queuedOutgoingPackets.poll();
-            this.sendPacket(packet);
         }
     }
 
