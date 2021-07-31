@@ -245,45 +245,52 @@ public class ImplChunk implements Chunk {
         Lock readLock = this.lock.writeLock();
         readLock.lock();
 
-        // Find the lowest from the top empty subchunk
-        int subChunkCount = this.subChunks.size() - 1;
-        for (; subChunkCount >= 0; subChunkCount--) {
-            BedrockSubChunk subChunk = this.subChunks.get(subChunkCount);
-            if (subChunk.getLayers().size() > 0) {
-                break;
+        try {
+            // Find the lowest from the top empty subchunk
+            int subChunkCount = this.subChunks.size() - 1;
+            for (; subChunkCount >= 0; subChunkCount--) {
+                BedrockSubChunk subChunk = this.subChunks.get(subChunkCount);
+                if (subChunk.getLayers().size() > 0) {
+                    break;
+                }
             }
-        }
-        subChunkCount++;
+            subChunkCount++;
 
-        // Write all subchunks
-        ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
-        for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
-            BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
-            try {
-                byte[] subChunkSerialized = subChunk.serializeForNetwork(player.getVersion());
-                packetData.writeBytes(subChunkSerialized);
-            } catch (IOException exception) {
-                ImplServer.getInstance().getLogger().error("Failed to serialize subchunk (x: " + this.getX() + " z: " + this.getZ() + " index: " + subChunkCount + ")");
-                return;
+            // Write all subchunks
+            ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
+            for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
+                BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
+                try {
+                    byte[] subChunkSerialized = subChunk.serializeForNetwork(player.getVersion());
+                    packetData.writeBytes(subChunkSerialized);
+                } catch (IOException exception) {
+                    ImplServer.getInstance().getLogger().error("Failed to serialize subchunk (x: " + this.getX() + " z: " + this.getZ() + " index: " + subChunkCount + ")");
+                    return;
+                }
             }
+            packetData.writeBytes(this.getBiomeData());
+            packetData.writeByte(0);    // edu feature or smth
+
+            byte[] data = new byte[packetData.readableBytes()];
+            packetData.readBytes(data);
+            packetData.release();
+
+            this.spawnedTo.add(player);
+
+            // Packets are sent on the main thread
+            final int packetSubChunkCount = subChunkCount;
+            this.getWorld().getServer().getScheduler().prepareTask(() -> {
+                // TODO: Supposedly tile entities are also packaged here
+                WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
+                worldChunkPacket.setX(this.getX());
+                worldChunkPacket.setZ(this.getZ());
+                worldChunkPacket.setSubChunkCount(packetSubChunkCount);
+                worldChunkPacket.setData(data);
+                player.sendPacket(worldChunkPacket);
+            }).schedule();
+        } finally {
+            readLock.unlock();
         }
-        packetData.writeBytes(this.getBiomeData());
-        packetData.writeByte(0);    // edu feature or smth
-
-        byte[] data = new byte[packetData.readableBytes()];
-        packetData.readBytes(data);
-        packetData.release();
-
-        // TODO: Supposedly tile entities are also packaged here
-        WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
-        worldChunkPacket.setX(this.getX());
-        worldChunkPacket.setZ(this.getZ());
-        worldChunkPacket.setSubChunkCount(subChunkCount);
-        worldChunkPacket.setData(data);
-        player.sendPacket(worldChunkPacket);
-
-        this.spawnedTo.add(player);
-        readLock.unlock();
     }
 
     /**

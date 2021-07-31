@@ -86,8 +86,8 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         this.player.getServer().getEventManager().call(event);
         if(!event.isCancelled()) {
             event.getWorld().playSound(packet.getSound(), packet.getVector3(), packet.isGlobal(), packet.isBaby(), packet.getEntityType(), packet.getBlockID());
-            for(Player player : event.getWorld().getPlayers()) {
-                if(player.getUUID() != this.player.getUUID()) player.sendPacket(packet);
+            for (Player player : event.getWorld().getPlayers()) {
+                if(!player.getUUID().equals(this.player.getUUID())) player.sendPacket(packet);
             }
         }
     }

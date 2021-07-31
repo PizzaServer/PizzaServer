@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class BedrockClientSession extends Thread {
 
@@ -30,12 +29,11 @@ public class BedrockClientSession extends Thread {
     private volatile BaseBedrockPacketHandler handler = null;
 
     private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
-    private final LinkedBlockingQueue<BedrockPacket> queuedOutgoingPackets = new LinkedBlockingQueue<>();
+    private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
 
     public BedrockClientSession(BedrockNetworkServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
         this.serverSession = rakNetServerSession;
-        this.start();
     }
 
     public BedrockNetworkServer getServer() {
@@ -64,8 +62,9 @@ public class BedrockClientSession extends Thread {
 
     public void disconnect() {
         if (!this.disconnected) {
+            this.processOutgoingPackets();
+
             this.disconnected = true;
-            this.interrupt();
             this.serverSession.disconnect();
         }
     }
@@ -76,20 +75,6 @@ public class BedrockClientSession extends Thread {
 
     public void queueSendPacket(BedrockPacket packet) {
         this.queuedOutgoingPackets.add(packet);
-    }
-
-    // Packets are sent asynchronously
-    @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            BedrockPacket packet;
-            try {
-                packet = this.queuedOutgoingPackets.take();
-            } catch (InterruptedException exception) {
-                return;
-            }
-            this.sendPacket(packet);
-        }
     }
 
     public void sendPacket(BedrockPacket packet) {
@@ -126,9 +111,10 @@ public class BedrockClientSession extends Thread {
 
     public void processPackets() {
         this.processIncomingPackets();
+        this.processOutgoingPackets();
     }
 
-    protected void processIncomingPackets() {
+    private void processIncomingPackets() {
         if (this.handler != null) {
             while (this.queuedIncomingPackets.peek() != null) {
                 BedrockPacket packet = this.queuedIncomingPackets.poll();
@@ -147,8 +133,14 @@ public class BedrockClientSession extends Thread {
         }
     }
 
-    public void handlePacket(int packetId, ByteBuf buffer) {
+    private void processOutgoingPackets() {
+        while (this.queuedOutgoingPackets.peek() != null) {
+            BedrockPacket packet = this.queuedOutgoingPackets.poll();
+            this.sendPacket(packet);
+        }
+    }
 
+    public void handlePacket(int packetId, ByteBuf buffer) {
         if (this.version != null) {
             BaseProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
