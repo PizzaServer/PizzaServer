@@ -133,34 +133,36 @@ public class ImplChunk implements Chunk {
         Lock readLock = this.lock.readLock();
         readLock.lock();
 
-        if (!this.cachedBlocks.containsKey(subChunkIndex)) {
-            this.cachedBlocks.put(subChunkIndex, new HashMap<>());
-        }
-        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+        try {
+            if (!this.cachedBlocks.containsKey(subChunkIndex)) {
+                this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+            }
+            Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
 
-        if (subChunkCache.containsKey(blockIndex)) {
-            return subChunkCache.get(blockIndex);
-        }
+            if (subChunkCache.containsKey(blockIndex)) {
+                return subChunkCache.get(blockIndex);
+            }
 
-        // Construct new block as none is cached
-        BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
-        BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
-        ImplBlock block;
-        if (blockRegistry.hasBlockType(paletteEntry.getId())) {
-            // Block id is registered
-            BlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
-            block = new ImplBlock(blockType);
-            block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
-        } else {
-            // The block id is not registered
-            this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
-            BlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
-            block = new ImplBlock(blockType);
+            // Construct new block as none is cached
+            BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
+            BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
+            ImplBlock block;
+            if (blockRegistry.hasBlockType(paletteEntry.getId())) {
+                // Block id is registered
+                BlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
+                block = new ImplBlock(blockType);
+                block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
+            } else {
+                // The block id is not registered
+                this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
+                BlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
+                block = new ImplBlock(blockType);
+            }
+            subChunkCache.put(blockIndex, block);
+            return block;
+        } finally {
+            readLock.unlock();
         }
-        subChunkCache.put(blockIndex, block);
-
-        readLock.unlock();
-        return block;
     }
 
     @Override
@@ -192,29 +194,31 @@ public class ImplChunk implements Chunk {
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
 
-        if (!this.cachedBlocks.containsKey(subChunkIndex)) {
-            this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+        try {
+            if (!this.cachedBlocks.containsKey(subChunkIndex)) {
+                this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+            }
+            Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+            subChunkCache.put(blockIndex, block);
+
+            // Update internal sub chunk
+            BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
+            BlockLayer mainBlockLayer = subChunk.getLayer(0);
+            BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
+            mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
+
+            // Send update block packet
+            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            updateBlockPacket.setBlock(block);
+            updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
+            updateBlockPacket.setLayer(0);
+            updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
+            for (Player viewer : this.getViewers()) {
+                viewer.sendPacket(updateBlockPacket);
+            }
+        } finally {
+            writeLock.unlock();
         }
-        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
-        subChunkCache.put(blockIndex, block);
-
-        // Update internal sub chunk
-        BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
-        BlockLayer mainBlockLayer = subChunk.getLayer(0);
-        BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
-        mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
-
-        // Send update block packet
-        UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setBlock(block);
-        updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
-        updateBlockPacket.setLayer(0);
-        updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
-        for (Player viewer : this.getViewers()) {
-            viewer.sendPacket(updateBlockPacket);
-        }
-
-        writeLock.unlock();
     }
 
     @Override
