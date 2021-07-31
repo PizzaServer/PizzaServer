@@ -372,20 +372,33 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         Set<Tuple<Integer, Integer>> chunksToRemove = new HashSet<>();
         if (oldLocation != null) {
             // What were our previous chunks loaded?
-            for (int chunkX = oldLocation.getChunkX() - oldChunkRadius + 1; chunkX < oldLocation.getChunkX() + oldChunkRadius; chunkX++) {
-                for (int chunkZ = oldLocation.getChunkZ() - oldChunkRadius + 1; chunkZ < oldLocation.getChunkZ() + oldChunkRadius; chunkZ++) {
-                    chunksToRemove.add(new Tuple<>(chunkX, chunkZ));
+            int oldPlayerChunkX = oldLocation.getChunkX();
+            int oldPlayerChunkZ = oldLocation.getChunkZ();
+            for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
+                for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
+                    // Chunk radius is ciruclar
+                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                    if (oldChunkRadius >= distance) {
+                        chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));
+                    }
                 }
             }
         }
 
         // What are our new chunks loaded?
-        for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius() + 1; chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
-            for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius() + 1; chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                if (chunksToRemove.remove(new Tuple<>(chunkX, chunkZ))) {
+        int currentPlayerChunkX = this.getLocation().getChunkX();
+        int currentPlayerChunkZ = this.getLocation().getChunkZ();
+        for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
+            for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
+                if (chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
                     continue;   // We don't need to send this chunk because it's already rendered to us
                 }
-                this.requestSendChunk(chunkX, chunkZ);
+
+                // Chunk radius is circular
+                int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                if (this.getChunkRadius() >= distance) {
+                    this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
+                }
             }
         }
 
@@ -413,8 +426,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         textPacket.setMessage(message);
         textPacket.setXuid(sender.getXuid());
         this.sendPacket(textPacket);
-        this.sendNetworkChunkPublisher();
-        this.sendMessage("sent chunks");
     }
 
 
