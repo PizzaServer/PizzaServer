@@ -180,7 +180,7 @@ public class ImplScheduler implements Scheduler {
     // -- Task Control --
 
     protected synchronized void queueTaskEntry(SchedulerTaskEntry entry){
-        if(entry.getNextTick() >= schedulerTick) throw new IllegalStateException("Task cannot be scheduled before the current tick.");
+        if(entry.getNextTick() <= schedulerTick) throw new IllegalStateException("Task cannot be scheduled before the current tick.");
 
         int size = schedulerTasks.size();
         for(int i = 0; i < size; i++) {

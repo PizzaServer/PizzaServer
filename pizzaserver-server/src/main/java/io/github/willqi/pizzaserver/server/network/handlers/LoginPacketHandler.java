@@ -1,8 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
-import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
+import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Check;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
@@ -22,6 +23,8 @@ import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.api.world.data.Dimension;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
+import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
+import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +32,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.concurrent.CompletionException;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -229,76 +233,35 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
      */
     private void sendGameLoginPackets() {
         String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
-        final World defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
+        World defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
         if (Check.isNull(defaultWorld)) {
             this.player.disconnect("Failed to find default world");
             this.player.getServer().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
             return;
         }
 
-        // Fetch existing player data if present
-        Optional<PlayerData> playerData;
+        PlayerData data;
         try {
-            playerData = this.player.getData();
+            data = this.getPlayerData(defaultWorld);
         } catch (IOException exception) {
-            this.player.disconnect("Failed to load player data");
-            this.server.getLogger().error("Failed to retrieve player data of UUID " + this.player.getUUID(), exception);
+            this.player.disconnect("Failed to retrieve player data");
+            this.player.getServer().getLogger().error("Failed to retrieve data of " + this.player.getUUID(), exception);
             return;
         }
 
-        if (!playerData.isPresent()) {
-            playerData = Optional.of(
-                    new PlayerData.Builder()
-                            .setWorldName(defaultWorldName)
-                            .setPosition(defaultWorld.getSpawnCoordinates().toVector3())
-                            .setYaw(0)  // TODO: find yaw
-                            .setPitch(0)    // TODO: find pitch
-                            .build()
-            );
-        }
-        final PlayerData data = playerData.get();
-
         this.player.getServer().getScheduler()
                 .prepareTask(() -> {
-                    this.player.setLocation(new Location(defaultWorld, data.getPosition()));
+                    // Get the world they spawn in
+                    World world = this.server.getWorldManager().getWorld(data.getWorldName());
+                    final Vector3 position;
+                    if (Check.isNull(world)) { // Was the world deleted? Set it to the default world if so
+                        world = defaultWorld;
+                        position = world.getSpawnCoordinates().toVector3();
+                    } else {
+                        position = data.getPosition();
+                    }
 
-                    // Create StartGamePacket
-
-                    StartGamePacket startGamePacket = new StartGamePacket();
-
-                    // Entity specific
-                    startGamePacket.setDimension(Dimension.OVERWORLD);
-                    startGamePacket.setEntityId(this.player.getId());
-                    startGamePacket.setPlayerGamemode(Gamemode.SURVIVAL);
-                    startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
-                    startGamePacket.setRuntimeEntityId(this.player.getId());
-                    startGamePacket.setPlayerRotation(new Vector2(data.getPitch(), data.getYaw()));
-                    startGamePacket.setPlayerSpawn(data.getPosition());
-
-                    // Server
-                    startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());
-                    startGamePacket.setCommandsEnabled(true);
-                    // packet.setCurrentTick(0);       // TODO: get actual tick count
-                    startGamePacket.setDefaultGamemode(Gamemode.SURVIVAL);
-                    startGamePacket.setDifficulty(Difficulty.PEACEFUL);
-                    // packet.setEnchantmentSeed(0);   // TODO: find actual seed
-                    startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
-                    startGamePacket.setServerName(defaultWorld.getName());
-                    startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
-                    startGamePacket.setServerAuthoritativeBlockBreaking(true);
-                    startGamePacket.setServerAuthoritativeInventory(true);
-                    startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
-                    startGamePacket.setServerOrigin(ServerOrigin.NONE);
-                    startGamePacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
-                    startGamePacket.setBlockProperties(this.server.getBlockRegistry().getCustomTypes());
-                    startGamePacket.setItemStates(this.player.getVersion().getItemStates());
-
-                    // World
-                    startGamePacket.setWorldSpawn(defaultWorld.getSpawnCoordinates());
-                    startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
-                    startGamePacket.setWorldType(WorldType.INFINITE);
-                    this.player.sendPacket(startGamePacket);
-
+                    this.player.sendPacket(this.getStartGamePacket(world, position, new Vector2(data.getPitch(), data.getYaw())));
 
                     // TODO: Add creative contents to prevent mobile clients from crashing
                     CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
@@ -308,8 +271,95 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
                     this.player.sendPacket(biomeDefinitionPacket);
 
-                    this.session.setPacketHandler(new FullGamePacketHandler(this.player));
-                }).schedule();
+                    // VVVVVVVV move to Player.loadChunks?
+                    // Send chunks
+                    int playerChunkX = position.toVector3i().getX() / 16;
+                    int playerChunkZ = position.toVector3i().getZ() / 16;
+                    for (int chunkX = playerChunkX - 1; chunkX <= playerChunkX + 1; chunkX++) {
+                        for (int chunkZ = playerChunkZ - 1; chunkZ <= playerChunkZ + 1; chunkZ++) {
+                            try {
+                                ImplChunk chunk = (ImplChunk)world.getChunkManager().fetchChunk(chunkX, chunkZ).join();
+                                ((ImplChunkManager)world.getChunkManager()).requestSendChunkToPlayer(this.player, chunk).join();
+                            } catch (CompletionException exception) {
+                                this.player.getServer().getLogger().error(String.format("Failed to send chunk (%s, %s)", chunkX, chunkZ));
+                            }
+                        }
+                    }
+                    this.player.sendNetworkChunkPublisher();
+
+                    this.player.getServer().getScheduler().prepareTask(() -> {
+                        this.player.getLocation().getWorld().addEntity(this.player, position);
+                        this.session.setPacketHandler(new FullGamePacketHandler(this.player));
+                    }).schedule();
+                }).setAsynchronous(true).schedule();
+    }
+
+    /**
+     * Construct the StartGamePacket for the player
+     * @param world The world the player is spawning in
+     * @param position the position the player is spawning at
+     * @param direction the direction the player is spawning with
+     * @return the start game packet
+     */
+    private StartGamePacket getStartGamePacket(World world, Vector3 position, Vector2 direction) {
+        StartGamePacket startGamePacket = new StartGamePacket();
+
+        // Entity specific
+        startGamePacket.setDimension(Dimension.OVERWORLD);
+        startGamePacket.setEntityId(this.player.getId());
+        startGamePacket.setPlayerGamemode(Gamemode.SURVIVAL);
+        startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
+        startGamePacket.setRuntimeEntityId(this.player.getId());
+        startGamePacket.setPlayerRotation(direction);
+        startGamePacket.setPlayerSpawn(position);
+
+        // Server
+        startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());
+        startGamePacket.setCommandsEnabled(true);
+        // packet.setCurrentTick(0);       // TODO: get actual tick count
+        startGamePacket.setDefaultGamemode(Gamemode.SURVIVAL);
+        startGamePacket.setDifficulty(Difficulty.PEACEFUL);
+        // packet.setEnchantmentSeed(0);   // TODO: find actual seed
+        startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
+        startGamePacket.setServerName(world.getName());
+        startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
+        startGamePacket.setServerAuthoritativeBlockBreaking(true);
+        startGamePacket.setServerAuthoritativeInventory(true);
+        startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
+        startGamePacket.setServerOrigin(ServerOrigin.NONE);
+        startGamePacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
+        startGamePacket.setBlockProperties(this.server.getBlockRegistry().getCustomTypes());
+        startGamePacket.setItemStates(this.player.getVersion().getItemStates());
+
+        // World
+        startGamePacket.setWorldSpawn(world.getSpawnCoordinates());
+        startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
+        startGamePacket.setWorldType(WorldType.INFINITE);
+
+        return startGamePacket;
+    }
+
+    /**
+     * Retrieve the saved data of the player
+     * @param defaultWorld default {@link World} players spawn in if no data is present
+     * @return the {@link PlayerData} of the player
+     * @throws IOException if an exception occurs while fetching data
+     */
+    private PlayerData getPlayerData(World defaultWorld) throws IOException {
+        // Fetch existing player data if present
+        Optional<PlayerData> playerData = this.player.getData();
+
+        if (!playerData.isPresent()) {
+            playerData = Optional.of(
+                    new PlayerData.Builder()
+                            .setWorldName(defaultWorld.getName())
+                            .setPosition(defaultWorld.getSpawnCoordinates().toVector3())
+                            .setYaw(0)  // TODO: find yaw
+                            .setPitch(0)    // TODO: find pitch
+                            .build()
+            );
+        }
+        return playerData.get();
     }
 
 }

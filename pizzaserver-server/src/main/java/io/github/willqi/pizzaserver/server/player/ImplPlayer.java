@@ -24,7 +24,6 @@ import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
@@ -384,14 +383,14 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void sendChunk(int x, int z) {
         ImplChunkManager chunkManager = (ImplChunkManager)this.getLocation().getWorld().getChunkManager();
         if (chunkManager.isChunkLoaded(x, z)) {
-            chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunkManager.getChunk(x, z));
+            chunkManager.requestSendChunkToPlayer(this, (ImplChunk)chunkManager.getChunk(x, z));
         } else {
             chunkManager.fetchChunk(x, z).whenComplete((chunk, exception) -> {
                 if (exception != null) {
                     ImplServer.getInstance().getLogger().error("Failed to send chunk (" + x + ", " + z + ") to player " + this.getUsername(), exception);
                     return;
                 }
-                chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunk);
+                chunkManager.requestSendChunkToPlayer(this, (ImplChunk)chunk);
             });
         }
     }

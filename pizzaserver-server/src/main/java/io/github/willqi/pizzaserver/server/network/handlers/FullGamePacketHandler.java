@@ -7,8 +7,6 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.event.type.player.PlayerChatEvent;
 
-import java.util.concurrent.CompletionException;
-
 public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     private final ImplPlayer player;
@@ -29,15 +27,6 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         int playerChunkZ = location.getChunkZ();
 
         this.player.getServer().getScheduler().prepareTask(() -> {
-            for (int chunkX = playerChunkX - this.player.getChunkRadius(); chunkX <= playerChunkX + this.player.getChunkRadius(); chunkX++) {
-                for (int chunkZ = playerChunkZ - this.player.getChunkRadius(); chunkZ <= playerChunkZ + this.player.getChunkRadius(); chunkZ++) {
-                    try {
-                        this.player.getLocation().getWorld().getChunkManager().fetchChunk(chunkX, chunkZ).join();
-                    } catch (CompletionException exception) {
-                        this.player.getServer().getLogger().error(String.format("Failed to load chunk (%s, %s)", chunkX, chunkZ));
-                    }
-                }
-            }
 
             // All chunks around the player have been sent. Spawn the player
             this.player.getServer()
