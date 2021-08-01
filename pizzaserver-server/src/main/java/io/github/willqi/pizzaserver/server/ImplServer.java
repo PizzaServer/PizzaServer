@@ -2,12 +2,10 @@ package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.event.EventManager;
-import io.github.willqi.pizzaserver.api.packs.DataPackManager;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
-import io.github.willqi.pizzaserver.api.world.WorldManager;
 import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.willqi.pizzaserver.server.event.ImplEventManager;
@@ -26,6 +24,7 @@ import io.github.willqi.pizzaserver.server.world.blocks.ImplBlockRegistry;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -48,8 +47,7 @@ public class ImplServer implements Server {
 
     private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
-    private final Thread serverExitListener = new ServerExitListener();
-    private volatile boolean stopByConsoleExit;
+    private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
     private int targetTps;
     private int currentTps;
@@ -70,7 +68,7 @@ public class ImplServer implements Server {
         this.rootDirectory = rootDirectory;
 
         this.getLogger().info("Setting up PizzaServer instance.");
-        Runtime.getRuntime().addShutdownHook(serverExitListener);
+        Runtime.getRuntime().addShutdownHook(new ServerExitListener());
 
         // Load required data/files
         this.setupFiles();
@@ -84,7 +82,6 @@ public class ImplServer implements Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() {
-        this.stopByConsoleExit = false;
         ServerProtocol.loadVersions();
         this.getResourcePackManager().loadResourcePacks();
         this.getResourcePackManager().loadBehaviorPacks();
@@ -174,17 +171,7 @@ public class ImplServer implements Server {
         this.getWorldManager().unloadWorlds();
 
         // We're done stop operations. Exit program.
-        if (this.stopByConsoleExit) {   // Ensure that the notify is called AFTER the thread is in the waiting state.
-            while (this.serverExitListener.getState() != Thread.State.WAITING) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ignored) {}
-            }
-        }
-
-        synchronized (this.serverExitListener) {
-            this.serverExitListener.notify();
-        }
+        this.shutdownLatch.countDown();
     }
 
     public String getIp() {
@@ -316,7 +303,6 @@ public class ImplServer implements Server {
      * Called to load and setup required files/classes.
      */
     private void setupFiles() {
-
         try {
             new File(this.getRootDirectory() + "/plugins").mkdirs();
             new File(this.getRootDirectory() + "/worlds").mkdirs();
@@ -361,12 +347,9 @@ public class ImplServer implements Server {
         @Override
         public void run() {
             if (ImplServer.this.running) {
-                ImplServer.this.stopByConsoleExit = true;
                 ImplServer.this.running = false;
                 try {
-                    synchronized (this) {
-                        Thread.currentThread().wait();
-                    }
+                    ImplServer.this.shutdownLatch.await();
                 } catch (InterruptedException exception) {
                     ImplServer.getInstance().getLogger().error("Exit listener exception", exception);
                 }
