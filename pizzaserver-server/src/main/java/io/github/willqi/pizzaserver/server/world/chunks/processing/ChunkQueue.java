@@ -12,8 +12,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The ChunkQueue is used to manage the amount of threads that are accessing the provider asynchronously.
- * A new Thread is created everytime the requests exceeds the threshold.
+ * The ChunkQueue handles sending chunks and unloading chunks asynchronously.
+ * Only a certain amount (defined in configuration) of requests can be made per player each tick.
+ * This amount is also applied to the amount of chunks that can be unloaded each tick.
  */
 public class ChunkQueue implements Closeable {
 
@@ -28,16 +29,19 @@ public class ChunkQueue implements Closeable {
         this.processor = new ChunkProcessingThread(manager);
     }
 
+    /**
+     * Add a request to the queue for this world
+     * @param request The {@link ChunkRequest} to add to the queue
+     */
     public void addRequest(ChunkRequest request) {
         if (request instanceof PlayerChunkRequest) {
             ImplPlayer player = ((PlayerChunkRequest)request).getPlayer();
             this.queuedSendRequests.computeIfAbsent(player, ignored -> ConcurrentHashMap.newKeySet());
 
-            Set<PlayerChunkRequest> requests = this.queuedSendRequests.getOrDefault(player, null);
-            if (requests != null) {
-                requests.add((PlayerChunkRequest)request);
+            Set<PlayerChunkRequest> playerSendRequests = this.queuedSendRequests.getOrDefault(player, null);
+            if (playerSendRequests != null) {
+                playerSendRequests.add((PlayerChunkRequest)request);
             }
-
         } else {
             this.queuedUnloadChunkRequests.add((UnloadChunkRequest)request);
         }
@@ -45,21 +49,24 @@ public class ChunkQueue implements Closeable {
 
     // Ticked by the main thread
     public void tick() {
-        ((ImplServer)this.chunkManager.getWorld().getServer()).getConfig().getChunkRequestsPerTick();
-
         // Send player chunks
         Iterator<ImplPlayer> playerQueueIterator = this.queuedSendRequests.keySet().iterator();
         while (playerQueueIterator.hasNext()) {
             ImplPlayer player = playerQueueIterator.next();
-            Set<PlayerChunkRequest> requests = this.queuedSendRequests.get(player);
+            Set<PlayerChunkRequest> playerSendRequests = this.queuedSendRequests.get(player);
 
-            if (requests.size() > 0 && player.isConnected()) {
-                Iterator<PlayerChunkRequest> requestsInterator = requests.iterator();
+            // Check if we should push player chunk requests to the processor
+            if (
+                    playerSendRequests.size() > 0 &&
+                    player.isConnected() &&
+                    player.getLocation().getWorld().equals(this.chunkManager.getWorld())
+            ) {  // Send the amount of chunks we can send this for this player during this tick
+                Iterator<PlayerChunkRequest> requestsInterator = playerSendRequests.iterator();
                 while (requestsInterator.hasNext() && player.acknowledgeChunkSendRequest()) {
                     this.processor.addRequest(requestsInterator.next());
                     requestsInterator.remove();
                 }
-            } else {
+            } else {    // Player is no longer connected/has no more chunk requests.
                 playerQueueIterator.remove();
             }
         }
@@ -67,7 +74,7 @@ public class ChunkQueue implements Closeable {
         // Unload some chunks if any exist
         if (this.queuedUnloadChunkRequests.size() > 0) {
             Iterator<UnloadChunkRequest> iterator = this.queuedUnloadChunkRequests.iterator();
-            // How many chunks can we unload per tick?
+            // Check how many chunks we can offload per tick
             int queueLeft = ((ImplServer)this.chunkManager.getWorld().getServer()).getConfig().getChunkRequestsPerTick();
             while (iterator.hasNext() && queueLeft > 0) {
                 UnloadChunkRequest request = iterator.next();

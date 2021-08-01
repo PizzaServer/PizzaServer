@@ -19,14 +19,6 @@ public class ChunkProcessingThread extends Thread {
     }
 
     /**
-     * Retrieve the current amount of chunk requests this queue processor is backed up by
-     * @return amount in queue
-     */
-    public int getRequestsCount() {
-        return this.requests.size();
-    }
-
-    /**
      * Add a request to the queue
      * @param request
      */

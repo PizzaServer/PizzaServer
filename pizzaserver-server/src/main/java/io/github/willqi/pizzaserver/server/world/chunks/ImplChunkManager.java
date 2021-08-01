@@ -30,6 +30,9 @@ public class ImplChunkManager implements ChunkManager {
         this.world = world;
     }
 
+    /**
+     * Tick all chunks and the chunk queue
+     */
     public void tick() {
         this.chunkQueue.tick();
         for (ImplChunk chunk : this.chunks.values()) {

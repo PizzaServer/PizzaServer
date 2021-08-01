@@ -63,13 +63,6 @@ public class ImplWorld implements Closeable, World {
         return this.provider;
     }
 
-    /**
-     * Tick all chunks
-     */
-    public void tick() {
-        this.getChunkManager().tick();
-    }
-
     @Override
     public Block getBlock(Vector3i position) {
         return this.getBlock(position.getX(), position.getY(), position.getZ());

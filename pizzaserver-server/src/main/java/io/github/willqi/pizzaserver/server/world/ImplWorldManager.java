@@ -84,7 +84,7 @@ public class ImplWorldManager implements WorldManager {
      */
     public void tick() {
         for (ImplWorld world : this.worlds.values()) {
-            world.tick();
+            world.getChunkManager().tick();
         }
     }
 
