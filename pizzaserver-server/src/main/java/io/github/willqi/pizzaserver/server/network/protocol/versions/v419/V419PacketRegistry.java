@@ -36,6 +36,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(WorldSoundEventPacket.ID, new V419WorldSoundEventPacketHandler())
             .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler())
             .register(CommandRequestPacket.ID, new V419CommandRequestPacketHandler())
+            .register(AvailableCommandsPacket.ID, new V419AvailableCommandsPacket())
             .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler());
     }
 
