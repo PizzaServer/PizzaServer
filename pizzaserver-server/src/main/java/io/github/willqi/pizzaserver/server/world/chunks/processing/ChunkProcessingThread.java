@@ -4,31 +4,44 @@ import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.ChunkRequest;
 import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.PlayerChunkRequest;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class ChunkProcessingRunnable implements Runnable {
+public class ChunkProcessingThread extends Thread {
 
     private final ChunkManager chunkManager;
-    private final ChunkQueue queue;
+
+    private final LinkedBlockingQueue<ChunkRequest> requests = new LinkedBlockingQueue<>();
 
 
-    public ChunkProcessingRunnable(ChunkManager manager, ChunkQueue queue) {
+    public ChunkProcessingThread(ChunkManager manager) {
         this.chunkManager = manager;
-        this.queue = queue;
+        this.start();
+    }
+
+    /**
+     * Retrieve the current amount of chunk requests this queue processor is backed up by
+     * @return amount in queue
+     */
+    public int getRequestsCount() {
+        return this.requests.size();
+    }
+
+    /**
+     * Add a request to the queue
+     * @param request
+     */
+    public void addRequest(ChunkRequest request) {
+        this.requests.add(request);
     }
 
     @Override
     public void run() {
-        this.queue.notifyStartup();
         while (!Thread.currentThread().isInterrupted()) {
             ChunkRequest request;
             try {
-                request = this.queue.getRequests().poll(30, TimeUnit.SECONDS);
+                request = this.requests.take();
             } catch (InterruptedException exception) {
                 break;  // Thread interrupted
-            }
-            if (request == null) {
-                break; // This thread can now go back to the pool as we do not need this many threads processing chunks
             }
 
             if (request instanceof PlayerChunkRequest) {
@@ -39,7 +52,6 @@ public class ChunkProcessingRunnable implements Runnable {
                 this.chunkManager.unloadChunk(request.getX(), request.getZ());
             }
         }
-        this.queue.notifyShutdown();
     }
 
 }

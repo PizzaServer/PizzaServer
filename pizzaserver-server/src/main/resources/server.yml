@@ -3,5 +3,6 @@ server-port: 19132
 server-motd: PizzaServer - Bedrock v1.16.100
 player-max: 20
 player-force-packs: false
+chunk-requests-per-tick: 16
 world-chunk-radius: 8
 world-default: world

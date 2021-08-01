@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.api.world.chunks;
 
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.world.World;
 
 import java.io.Closeable;
 
@@ -57,5 +58,7 @@ public interface ChunkManager extends Closeable {
      * @param z chunk z
      */
     void sendPlayerChunkRequest(Player player, int x, int z);
+
+    World getWorld();
 
 }

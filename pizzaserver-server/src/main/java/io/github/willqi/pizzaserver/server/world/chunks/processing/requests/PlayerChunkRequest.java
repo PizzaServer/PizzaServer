@@ -1,18 +1,18 @@
 package io.github.willqi.pizzaserver.server.world.chunks.processing.requests;
 
-import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
 public class PlayerChunkRequest extends ChunkRequest {
 
-    private final Player player;
+    private final ImplPlayer player;
 
 
-    public PlayerChunkRequest(Player player, int x, int z) {
+    public PlayerChunkRequest(ImplPlayer player, int x, int z) {
         super(x, z);
         this.player = player;
     }
 
-    public Player getPlayer() {
+    public ImplPlayer getPlayer() {
         return this.player;
     }
 

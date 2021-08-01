@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
@@ -40,7 +41,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private final String languageCode;
     private Skin skin;
 
-    private int chunkRadius;
+    private int chunkRadius = 3;
+    private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // how many chunks can be sent to this player during this tick?
 
     private final ImplPlayerAttributes attributes = new ImplPlayerAttributes();
 
@@ -57,7 +59,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
 
-        this.chunkRadius = server.getConfig().getChunkRadius();
+        this.chunkRequestsLeft.set(server.getConfig().getChunkRequestsPerTick());
     }
 
     @Override
@@ -119,7 +121,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public void setChunkRadiusRequested(int radius) {
         int oldRadius = this.chunkRadius;
-        this.chunkRadius = radius;
+        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
         if (this.hasSpawned()) {
             this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
@@ -127,6 +129,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     public ImplServer getServer() {
         return this.server;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return !this.session.isDisconnected();
     }
 
     @Override
@@ -328,6 +335,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public void tick() {
+        this.chunkRequestsLeft.set(this.getServer().getConfig().getChunkRequestsPerTick()); // Reset amount of chunks that we can be sent this tick
+    }
+
+    @Override
     public void onSpawned() {
         super.onSpawned();
         this.sendNetworkChunkPublisher();   // Load chunks sent during initial login handshake
@@ -355,6 +367,15 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public void requestSendChunk(int x, int z) {
         this.getLocation().getWorld().getChunkManager().sendPlayerChunkRequest(this, x, z);
+    }
+
+    /**
+     * Check if a player can be sent a chunk this tick
+     * Requests are reset during an entity's tick
+     * @return whether or not the player should be sent a chunk this tick
+     */
+    public boolean acknowledgeChunkSendRequest() {
+        return this.chunkRequestsLeft.getAndDecrement() > 0;
     }
 
     private void sendNetworkChunkPublisher() {

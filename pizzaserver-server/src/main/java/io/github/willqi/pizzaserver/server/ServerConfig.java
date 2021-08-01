@@ -35,6 +35,10 @@ public class ServerConfig {
         return this.config.getInteger("world-chunk-radius");
     }
 
+    public int getChunkRequestsPerTick() {
+        return this.config.getInteger("chunk-requests-per-tick");
+    }
+
     public String getDefaultWorldName() {
         return this.config.getString("world-default");
     }

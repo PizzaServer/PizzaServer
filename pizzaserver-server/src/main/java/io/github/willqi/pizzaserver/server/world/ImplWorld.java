@@ -7,7 +7,6 @@ import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
-import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -29,7 +28,7 @@ public class ImplWorld implements Closeable, World {
 
     private final Server server;
 
-    private final ChunkManager chunkManager = new ImplChunkManager(this);
+    private final ImplChunkManager chunkManager = new ImplChunkManager(this);
     private final BaseWorldProvider provider;
 
     private final Set<Player> players = new HashSet<>();
@@ -56,12 +55,19 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
-    public ChunkManager getChunkManager() {
+    public ImplChunkManager getChunkManager() {
         return this.chunkManager;
     }
 
     public BaseWorldProvider getProvider() {
         return this.provider;
+    }
+
+    /**
+     * Tick all chunks
+     */
+    public void tick() {
+        this.getChunkManager().tick();
     }
 
     @Override

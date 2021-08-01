@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
+import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.world.chunks.processing.ChunkQueue;
 import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.PlayerChunkRequest;
@@ -19,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ImplChunkManager implements ChunkManager {
 
     private final ImplWorld world;
-    private final Map<Tuple<Integer, Integer>, Chunk> chunks = new ConcurrentHashMap<>();
+    private final Map<Tuple<Integer, Integer>, ImplChunk> chunks = new ConcurrentHashMap<>();
     private final ReadWriteKeyLock<Tuple<Integer, Integer>> lock = new ReadWriteKeyLock<>();
 
     private final ChunkQueue chunkQueue = new ChunkQueue(this);
@@ -29,8 +30,11 @@ public class ImplChunkManager implements ChunkManager {
         this.world = world;
     }
 
-    public ImplWorld getWorld() {
-        return this.world;
+    public void tick() {
+        this.chunkQueue.tick();
+        for (ImplChunk chunk : this.chunks.values()) {
+            chunk.tick();
+        }
     }
 
     @Override
@@ -61,7 +65,7 @@ public class ImplChunkManager implements ChunkManager {
                 }
 
                 // Load chunk from provider
-                Chunk chunk = null;
+                ImplChunk chunk = null;
                 try {
                     BedrockChunk internalChunk = this.getWorld().getProvider().getChunk(x, z);
 
@@ -121,13 +125,18 @@ public class ImplChunkManager implements ChunkManager {
 
     @Override
     public void sendPlayerChunkRequest(Player player, int x, int z) {
-        this.chunkQueue.addRequest(new PlayerChunkRequest(player, x, z));
+        this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer)player, x, z));
     }
 
     @Override
     public void close() throws IOException {
         this.chunkQueue.close();
         // TODO: unload and save all chunks
+    }
+
+    @Override
+    public ImplWorld getWorld() {
+        return this.world;
     }
 
 }

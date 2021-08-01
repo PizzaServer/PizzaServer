@@ -107,7 +107,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Set<Entity> getEntities() {
-        return this.entities;
+        return new HashSet<>(this.entities);
     }
 
     private byte[] getBiomeData() {
@@ -218,6 +218,15 @@ public class ImplChunk implements Chunk {
             }
         } finally {
             writeLock.unlock();
+        }
+    }
+
+    /**
+     * run block updates and tick entities in this chunk
+     */
+    public void tick() {
+        for (Entity entity : this.getEntities()) {
+            entity.tick();
         }
     }
 

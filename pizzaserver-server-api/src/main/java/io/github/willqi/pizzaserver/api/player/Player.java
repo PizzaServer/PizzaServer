@@ -58,6 +58,13 @@ public interface Player extends LivingEntity {
     void sendMessage(String message);
 
     /**
+     * Send a message originating from another APIPlayer
+     * @param sender the APIPlayer who sent this message
+     * @param message the message they sent
+     */
+    void sendPlayerMessage(Player sender, String message);
+
+    /**
      * Retrieve the current {@link Skin} of the player
      * @return {@link Skin} of the player
      */
@@ -143,11 +150,10 @@ public interface Player extends LivingEntity {
     void requestSendChunk(int x, int z);
 
     /**
-     * Send a message originating from another APIPlayer
-     * @param sender the APIPlayer who sent this message
-     * @param message the message they sent
+     * If this session is still active
+     * @return if the player is still connected
      */
-    void sendPlayerMessage(Player sender, String message);
+    boolean isConnected();
 
     /**
      * Queue a packet to be sent to this player
