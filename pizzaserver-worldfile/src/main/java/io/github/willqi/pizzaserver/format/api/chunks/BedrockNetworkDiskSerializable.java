@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.format.api.chunks.api;
+package io.github.willqi.pizzaserver.format.api.chunks;
 
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 

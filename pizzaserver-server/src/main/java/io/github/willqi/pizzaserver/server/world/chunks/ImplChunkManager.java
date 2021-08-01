@@ -67,9 +67,12 @@ public class ImplChunkManager implements ChunkManager {
      * Request a {@link ImplChunk} to be sent to a {@link ImplPlayer} asynchronously.
      * @param player the {@link ImplPlayer} who the chunk should be sent to
      * @param chunk the {@link ImplChunk} to send to the player
+     * @return {@link CompletableFuture<Void>} that resolves when the chunk is sent
      */
-    public void addChunkToPlayerQueue(ImplPlayer player, ImplChunk chunk) {
-        this.getWorld().getWorldThread().requestSendChunkToPlayer(player, chunk).thenRun(() -> chunk.sendEntitiesTo(player));
+    public CompletableFuture<Void> requestSendChunkToPlayer(ImplPlayer player, ImplChunk chunk) {
+        return this.getWorld().getWorldThread()
+                .requestSendChunkToPlayer(player, chunk)
+                .thenRun(() -> chunk.sendEntitiesTo(player));
     }
 
 }

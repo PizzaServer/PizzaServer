@@ -14,6 +14,8 @@ import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.ImplDataPackManager;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
+import io.github.willqi.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProvider;
+import io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.willqi.pizzaserver.server.plugin.ImplPluginManager;
 import io.github.willqi.pizzaserver.server.scheduler.ImplScheduler;
 import io.github.willqi.pizzaserver.server.utils.Config;
@@ -33,19 +35,20 @@ public class ImplServer implements Server {
     private static Server INSTANCE;
 
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
+    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
+    private final PlayerDataProvider provider = new NBTPlayerDataProvider(this);
+
     private final PluginManager pluginManager = new ImplPluginManager(this);
     private final ImplDataPackManager dataPackManager = new ImplDataPackManager(this);
     private final ImplWorldManager worldManager = new ImplWorldManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
 
+    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
+
     private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final ImplScheduler scheduler = new ImplScheduler(this, 1);
 
-    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
-
     private final Logger logger = new ImplLogger("Server");
-
-    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
@@ -281,6 +284,14 @@ public class ImplServer implements Server {
         return this.syncedSchedulers.remove(scheduler);
     }
 
+    /**
+     * Retrieve the {@link PlayerDataProvider} used to save and store player data
+     * @return {@link PlayerDataProvider}
+     */
+    public PlayerDataProvider getPlayerProvider() {
+        return this.provider;
+    }
+
     @Override
     public Logger getLogger() {
         return this.logger;
@@ -355,6 +366,7 @@ public class ImplServer implements Server {
                 }
             }
         }
+
     }
 
 }

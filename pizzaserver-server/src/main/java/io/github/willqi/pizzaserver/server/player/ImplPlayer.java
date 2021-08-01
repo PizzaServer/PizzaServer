@@ -18,14 +18,12 @@ import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.player.attributes.ImplPlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
+import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
@@ -148,12 +146,45 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     /**
+     * Fetch the SAVED player data from the {@link io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider} if any exists
+     * @return saved player data
+     * @throws IOException if an exception occurred while reading the data
+     */
+    public Optional<PlayerData> getData() throws IOException {
+        return this.getServer().getPlayerProvider()
+                .load(this.getUUID());
+    }
+
+    /**
+     * Save the current player's data to the {@link io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider}
+     * @throws IOException if an exception occurred while saving the data
+     */
+    public void saveData() throws IOException {
+        PlayerData playerData = new PlayerData.Builder()
+                .setWorldName(this.getLocation().getWorld().getName())
+                .setPosition(this.getLocation())
+                .setYaw(0)
+                .setPitch(0)
+                .build();
+        this.getServer().getPlayerProvider()
+                .save(this.getUUID(), playerData);
+    }
+
+    /**
      * Called when the server registers that the player is disconnected.
      * It cleans up data for this player
      */
     public void onDisconnect() {
         if (this.hasSpawned()) {
             this.getLocation().getWorld().removeEntity(this);
+            this.getServer().getScheduler()
+                    .prepareTask(() -> {
+                        try {
+                            this.saveData();
+                        } catch (IOException exception) {
+                            this.getServer().getLogger().error("Failed to save player data for " + this.getUUID(), exception);
+                        }
+                    }).setAsynchronous(true).schedule();
 
             // Remove player from chunks they can observe
             for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
@@ -352,21 +383,21 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void sendChunk(int x, int z) {
         ImplChunkManager chunkManager = (ImplChunkManager)this.getLocation().getWorld().getChunkManager();
         if (chunkManager.isChunkLoaded(x, z)) {
-            chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunkManager.getChunk(x, z));
+            chunkManager.requestSendChunkToPlayer(this, (ImplChunk)chunkManager.getChunk(x, z));
         } else {
             chunkManager.fetchChunk(x, z).whenComplete((chunk, exception) -> {
                 if (exception != null) {
                     ImplServer.getInstance().getLogger().error("Failed to send chunk (" + x + ", " + z + ") to player " + this.getUsername(), exception);
                     return;
                 }
-                chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunk);
+                chunkManager.requestSendChunkToPlayer(this, (ImplChunk)chunk);
             });
         }
     }
 
     private void sendNetworkChunkPublisher() {
         NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(((ImplLocation)this.getLocation()).toVector3i());
+        packet.setCoordinates(this.getLocation().toVector3i());
         packet.setRadius(this.getChunkRadius() * 16);
         this.sendPacket(packet);
     }

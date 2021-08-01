@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.format.api.chunks.subchunks;
 
-import io.github.willqi.pizzaserver.format.api.chunks.api.BedrockNetworkDiskSerializable;
+import io.github.willqi.pizzaserver.format.api.chunks.BedrockNetworkDiskSerializable;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
 import java.util.Set;

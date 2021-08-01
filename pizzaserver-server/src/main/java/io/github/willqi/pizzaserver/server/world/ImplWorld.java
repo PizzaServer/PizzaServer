@@ -14,7 +14,6 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.BaseWorldProvider;
@@ -31,21 +30,28 @@ public class ImplWorld implements Closeable, World {
     private final Server server;
 
     private final WorldProviderThread worldThread;
-
+    private final BaseWorldProvider provider;
     private final ChunkManager chunkManager = new ImplChunkManager(this);
+
+    private String name;
+    private Vector3i spawnCoordinates;
 
     private final Set<Player> players = new HashSet<>();
 
 
     public ImplWorld(Server server, BaseWorldProvider provider) throws IOException {
         this.server = server;
+        this.provider = provider;
         this.worldThread = new WorldProviderThread(this, provider);
         this.worldThread.start();
+
+        this.name = provider.getLevelData().getName();
+        this.spawnCoordinates = provider.getLevelData().getWorldSpawn();
     }
 
     @Override
     public String getName() {
-        return this.worldThread.getProvider().getName();
+        return this.name;
     }
 
     @Override
@@ -61,6 +67,16 @@ public class ImplWorld implements Closeable, World {
     @Override
     public ChunkManager getChunkManager() {
         return this.chunkManager;
+    }
+
+    @Override
+    public Vector3i getSpawnCoordinates() {
+        return this.spawnCoordinates;
+    }
+
+    @Override
+    public void setSpawnCoordinates(Vector3i coordinates) {
+        this.spawnCoordinates = coordinates;
     }
 
     public WorldProviderThread getWorldThread() {
@@ -113,7 +129,7 @@ public class ImplWorld implements Closeable, World {
             throw new IllegalStateException("This entity has already been spawned");
         }
 
-        Location location = new ImplLocation(this, position);
+        Location location = new Location(this, position);
         if (location.getChunk() == null) {
             throw new NullPointerException("This entity cannot be spawned in an unloaded chunk");
         }

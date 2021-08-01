@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server.world.providers.leveldb;
 
+import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.format.api.LevelData;
 import io.github.willqi.pizzaserver.format.mcworld.MCWorld;
 import io.github.willqi.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCWorldChunk;
@@ -26,8 +28,8 @@ public class LevelDBWorldProvider extends BaseWorldProvider {
     }
 
     @Override
-    public String getName() {
-        return this.worldInfo.getWorldName();
+    public LevelData getLevelData() {
+        return this.worldInfo;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class LevelDBWorldProvider extends BaseWorldProvider {
                         .build();
             }
 
-            ImplChunk chunk = new ImplChunk.Builder()
+            Chunk chunk = new ImplChunk.Builder()
                     .setWorld(action.getWorld())
                     .setX(internalChunk.getX())
                     .setZ(internalChunk.getZ())
