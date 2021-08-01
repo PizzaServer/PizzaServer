@@ -377,7 +377,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                 for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
                     // Chunk radius is ciruclar
                     int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
-                    if (oldChunkRadius >= distance) {
+                    if (oldChunkRadius > distance) {
                         chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));
                     }
                 }
@@ -395,7 +395,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
                 // Chunk radius is circular
                 int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
-                if (this.getChunkRadius() >= distance) {
+                if (this.getChunkRadius() > distance) {
                     this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
                 }
             }
