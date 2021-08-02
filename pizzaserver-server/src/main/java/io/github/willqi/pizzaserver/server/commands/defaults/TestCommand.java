@@ -11,6 +11,7 @@ public class TestCommand extends ImplCommand {
     public TestCommand() {
         super("test");
         getParameters().add(CommandEnum.COMMAND_ENUM_BOOLEAN);
+        setDescription("This is a test, please I beg you to work");
     }
 
     @Override

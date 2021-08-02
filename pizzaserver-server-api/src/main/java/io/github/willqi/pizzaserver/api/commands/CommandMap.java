@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.api.commands;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CommandMap {
 
@@ -13,5 +14,7 @@ public interface CommandMap {
     void removeCommand(String name);
 
     ImplCommand getCommand(String name);
+
+    Map<String, ImplCommand> getCommands();
 
 }

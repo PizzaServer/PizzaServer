@@ -59,4 +59,9 @@ public class ImplCommandMap implements CommandMap {
         if(commands.containsKey(name)) return commands.get(name);
         return null;
     }
+
+    @Override
+    public Map<String, ImplCommand> getCommands() {
+        return new HashMap<>(commands);
+    }
 }
