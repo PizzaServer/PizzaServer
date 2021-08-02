@@ -10,6 +10,7 @@ import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.Unlo
 import java.io.Closeable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The ChunkQueue handles sending chunks and unloading chunks asynchronously.
@@ -19,14 +20,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChunkQueue implements Closeable {
 
     private final Map<ImplPlayer, Set<PlayerChunkRequest>> queuedSendRequests = new ConcurrentHashMap<>();
+    private final Map<ImplPlayer, AtomicInteger> activeChunkSendRequests = new ConcurrentHashMap<>();
+
     private final Set<UnloadChunkRequest> queuedUnloadChunkRequests = ConcurrentHashMap.newKeySet();
+    private final AtomicInteger activeUnloadChunkRequests = new AtomicInteger();
 
     private final ChunkManager chunkManager;
     private final ChunkProcessingThread processor;
 
     public ChunkQueue(ChunkManager manager) {
         this.chunkManager = manager;
-        this.processor = new ChunkProcessingThread(manager);
+        this.processor = new ChunkProcessingThread(manager, this);
     }
 
     /**
@@ -62,7 +66,9 @@ public class ChunkQueue implements Closeable {
                     player.getLocation().getWorld().equals(this.chunkManager.getWorld())
             ) {  // Send the amount of chunks we can send this for this player during this tick
                 Iterator<PlayerChunkRequest> requestsInterator = playerSendRequests.iterator();
-                while (requestsInterator.hasNext() && player.acknowledgeChunkSendRequest()) {
+
+                while (requestsInterator.hasNext() && this.isThereRoomToSendChunkToPlayer(player) && player.acknowledgeChunkSendRequest()) {
+                    this.addedChunkToPlayerQueue(player);
                     this.processor.addRequest(requestsInterator.next());
                     requestsInterator.remove();
                 }
@@ -76,11 +82,62 @@ public class ChunkQueue implements Closeable {
             Iterator<UnloadChunkRequest> iterator = this.queuedUnloadChunkRequests.iterator();
             // Check how many chunks we can offload per tick
             int queueLeft = ((ImplServer)this.chunkManager.getWorld().getServer()).getConfig().getChunkRequestsPerTick();
-            while (iterator.hasNext() && queueLeft > 0) {
+            while (iterator.hasNext() && queueLeft > 0 && this.isThereRoomToUnloadChunk()) {
                 UnloadChunkRequest request = iterator.next();
+                this.activeUnloadChunkRequests.getAndIncrement();
                 this.processor.addRequest(request);
                 iterator.remove();
             }
+        }
+    }
+
+    /**
+     * Checks if there is enough room in the chunk's current queue to send a chunk to a player
+     * The player's queue cannot exceed the configured chunk tick count
+     * @param player the player to send a chunk to
+     * @return if there is room
+     */
+    private boolean isThereRoomToSendChunkToPlayer(ImplPlayer player) {
+        return !this.activeChunkSendRequests.containsKey(player) || this.activeChunkSendRequests.get(player).get() < player.getServer().getConfig().getChunkProcessingCap();
+    }
+
+    /**
+     * Notes to the internal queue that a player has a pending chunk request
+     * Players cannot exceed the configured chunk tick count
+     * @param player the player to send a chunk to
+     */
+    private void addedChunkToPlayerQueue(ImplPlayer player) {
+        this.activeChunkSendRequests.computeIfAbsent(player, ignored -> new AtomicInteger());
+        AtomicInteger currentCount = this.activeChunkSendRequests.getOrDefault(player, null);
+        if (currentCount != null) {
+            currentCount.getAndIncrement();
+        } else {
+            this.addedChunkToPlayerQueue(player);
+        }
+    }
+
+    private boolean isThereRoomToUnloadChunk() {
+        return this.activeUnloadChunkRequests.get() < ((ImplServer)ImplServer.getInstance()).getConfig().getChunkProcessingCap();
+    }
+
+    /**
+     * Called by the {@link ChunkProcessingThread} to notify that chunk request has been completed
+     * Removes a chunk from the internal queue count
+     * @param request the request that was completed
+     */
+    void finishedRequest(ChunkRequest request) {
+        if (request instanceof PlayerChunkRequest) {
+            PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest)request;
+            AtomicInteger playerChunkCount = this.activeChunkSendRequests.getOrDefault(playerChunkRequest.getPlayer(), null);
+            if (playerChunkCount != null) {
+                playerChunkCount.getAndDecrement();
+
+                if (playerChunkCount.get() <= 0) {  // player has no more chunks queued: clean up cache
+                    this.activeChunkSendRequests.remove(playerChunkRequest.getPlayer());
+                }
+            }
+        } else {
+            this.activeUnloadChunkRequests.getAndDecrement();
         }
     }
 

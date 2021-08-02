@@ -9,12 +9,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ChunkProcessingThread extends Thread {
 
     private final ChunkManager chunkManager;
+    private final ChunkQueue queue;
 
     private final LinkedBlockingQueue<ChunkRequest> requests = new LinkedBlockingQueue<>();
 
 
-    public ChunkProcessingThread(ChunkManager manager) {
+    public ChunkProcessingThread(ChunkManager manager, ChunkQueue queue) {
         this.chunkManager = manager;
+        this.queue = queue;
         this.start();
     }
 
@@ -38,11 +40,13 @@ public class ChunkProcessingThread extends Thread {
 
             if (request instanceof PlayerChunkRequest) {
                 // send chunk request
-                this.chunkManager.sendPlayerChunk(((PlayerChunkRequest)request).getPlayer(), request.getX(), request.getZ());
+                PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest)request;
+                this.chunkManager.sendPlayerChunk(playerChunkRequest.getPlayer(), request.getX(), request.getZ());
             } else {
                 // unload request
                 this.chunkManager.unloadChunk(request.getX(), request.getZ());
             }
+            this.queue.finishedRequest(request);
         }
     }
 

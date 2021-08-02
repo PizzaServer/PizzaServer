@@ -36,16 +36,6 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         // TODO: get actual player spawn from player data
         Vector3 playerSpawn = new Vector3(142, 66, 115);
 
-        // Load the chunks around the player before we spawn them in
-        int playerChunkX = playerSpawn.toVector3i().getX() / 16;
-        int playerChunkZ = playerSpawn.toVector3i().getZ() / 16;
-
-        for (int chunkX = playerChunkX - 1; chunkX <= playerChunkX + 1; chunkX++) {
-            for (int chunkZ = playerChunkZ - 1; chunkZ <= playerChunkZ + 1; chunkZ++) {
-                defaultWorld.getChunkManager().sendPlayerChunkRequest(this.player, chunkX, chunkZ);
-            }
-        }
-
         // Spawn them to the world
         defaultWorld.addEntity(this.player, playerSpawn);
     }

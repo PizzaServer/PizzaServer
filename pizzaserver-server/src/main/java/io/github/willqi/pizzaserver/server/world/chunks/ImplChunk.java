@@ -293,13 +293,15 @@ public class ImplChunk implements Chunk {
             // Packets are sent on the main thread
             final int packetSubChunkCount = subChunkCount;
             this.getWorld().getServer().getScheduler().prepareTask(() -> {
-                // TODO: Supposedly tile entities are also packaged here
-                WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
-                worldChunkPacket.setX(this.getX());
-                worldChunkPacket.setZ(this.getZ());
-                worldChunkPacket.setSubChunkCount(packetSubChunkCount);
-                worldChunkPacket.setData(data);
-                player.sendPacket(worldChunkPacket);
+                if (player.getLocation().getWorld().equals(this.getWorld())) {
+                    // TODO: Supposedly tile entities are also packaged here
+                    WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
+                    worldChunkPacket.setX(this.getX());
+                    worldChunkPacket.setZ(this.getZ());
+                    worldChunkPacket.setSubChunkCount(packetSubChunkCount);
+                    worldChunkPacket.setData(data);
+                    player.sendPacket(worldChunkPacket);
+                }
             }).schedule();
         } finally {
             readLock.unlock();
