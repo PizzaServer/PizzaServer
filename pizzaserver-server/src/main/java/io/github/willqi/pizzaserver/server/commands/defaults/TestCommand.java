@@ -5,12 +5,17 @@ import io.github.willqi.pizzaserver.api.commands.CommandEnum;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 public class TestCommand extends ImplCommand {
 
     public TestCommand() {
         super("test");
         getParameters().add(CommandEnum.COMMAND_ENUM_BOOLEAN);
+        getParameters().add(new CommandEnum("secondarypath", new LinkedHashSet<String>(){{
+            this.add("option1");
+            this.add("option2");
+        }}));
         setDescription("This is a test, please I beg you to work");
     }
 

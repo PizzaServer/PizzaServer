@@ -92,7 +92,6 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
                 }
             }
 
-            player.sendPacket(new AvailableCommandsPacket());
         }
     }
 

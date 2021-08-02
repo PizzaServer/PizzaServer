@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.commands;
 import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.commands.ImplCommand;
 import io.github.willqi.pizzaserver.api.commands.CommandMap;
+import io.github.willqi.pizzaserver.server.commands.defaults.SecondaryTestCommand;
 import io.github.willqi.pizzaserver.server.commands.defaults.TestCommand;
 
 import java.util.*;
@@ -20,6 +21,7 @@ public class ImplCommandMap implements CommandMap {
 
     private void registerDefaults() {
         this.register(new TestCommand());
+        this.register(new SecondaryTestCommand());
     }
 
     @Override

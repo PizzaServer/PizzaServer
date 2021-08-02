@@ -103,6 +103,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     .values())
         );
         player.sendPacket(resourcePacksInfoPacket);
+        player.sendPacket(new AvailableCommandsPacket());
     }
 
     @Override

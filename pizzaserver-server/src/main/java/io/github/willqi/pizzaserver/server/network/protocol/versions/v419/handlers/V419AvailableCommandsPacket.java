@@ -71,20 +71,21 @@ public class V419AvailableCommandsPacket extends BaseProtocolPacketHandler<Avail
         for(ImplCommand command : commands.values()) {
             helper.writeString(command.getName(), buffer);
             helper.writeString(command.getDescription(), buffer);
-            buffer.writeShortLE(command.getFlags());
+            //TODO: For 1.17.10 support, make the below flags write a LE short
+            buffer.writeByte(command.getFlags());
             buffer.writeByte(command.getPermission());
             buffer.writeIntLE(-1);
-            VarInts.writeUnsignedInt(buffer, 0); //Overload Size
-/*            for(CommandEnum commandEnum : command.getParameters()) {
+            VarInts.writeUnsignedInt(buffer, command.getParameters().size()); //Overload Size
+            for(CommandEnum commandEnum : command.getParameters()) {
                 VarInts.writeUnsignedInt(buffer, 1); //Parameter Size
                 helper.writeString(commandEnum.getName(), buffer);
                 int type = 0;
                 type |= ARG_FLAG_VALID;
-                type |= ARG_FLAG_ENUM | enums.indexOf(commandEnum.getName());
+                type |= ARG_FLAG_ENUM | enums.indexOf(commandEnum);
                 buffer.writeIntLE(type);
                 buffer.writeBoolean(false);
                 buffer.writeByte(0);
-            }*/
+            }
         }
 
         VarInts.writeUnsignedInt(buffer, 0);
