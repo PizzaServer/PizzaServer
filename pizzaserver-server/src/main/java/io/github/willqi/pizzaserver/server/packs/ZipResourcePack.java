@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.packs;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.willqi.pizzaserver.api.packs.DataPack;
+import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ZipDataPack implements DataPack {
+public class ZipResourcePack implements ResourcePack {
 
     private final byte[] hash;
     private UUID uuid;
@@ -21,7 +21,7 @@ public class ZipDataPack implements DataPack {
     private long dataLength;
     private byte[][] chunks;
 
-    public ZipDataPack(File file) throws IOException {
+    public ZipResourcePack(File file) throws IOException {
         this.parseManifestFile(file);
         this.parsePackData(file);
         try {

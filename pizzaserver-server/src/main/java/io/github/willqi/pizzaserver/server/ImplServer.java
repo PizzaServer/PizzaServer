@@ -12,7 +12,7 @@ import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.packs.ImplDataPackManager;
+import io.github.willqi.pizzaserver.server.packs.ImplResourcePackManager;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.plugin.ImplPluginManager;
 import io.github.willqi.pizzaserver.server.scheduler.ImplScheduler;
@@ -34,7 +34,7 @@ public class ImplServer implements Server {
 
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
     private final PluginManager pluginManager = new ImplPluginManager(this);
-    private final ImplDataPackManager dataPackManager = new ImplDataPackManager(this);
+    private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
     private final ImplWorldManager worldManager = new ImplWorldManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
 
@@ -83,8 +83,7 @@ public class ImplServer implements Server {
      */
     public void boot() {
         ServerProtocol.loadVersions();
-        this.getResourcePackManager().loadResourcePacks();
-        this.getResourcePackManager().loadBehaviorPacks();
+        this.getResourcePackManager().loadPacks();
         this.setTargetTps(20);
 
         this.getWorldManager().loadWorlds();
@@ -245,7 +244,7 @@ public class ImplServer implements Server {
     }
 
     @Override
-    public ImplDataPackManager getResourcePackManager() {
+    public ImplResourcePackManager getResourcePackManager() {
         return this.dataPackManager;
     }
 
