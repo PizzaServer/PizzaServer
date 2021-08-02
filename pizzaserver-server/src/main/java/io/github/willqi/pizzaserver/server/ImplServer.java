@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.commands.CommandMap;
 import io.github.willqi.pizzaserver.api.event.EventManager;
 import io.github.willqi.pizzaserver.api.packs.DataPackManager;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -9,6 +10,7 @@ import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
 import io.github.willqi.pizzaserver.api.world.WorldManager;
 import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.server.commands.ImplCommandMap;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -38,6 +40,7 @@ public class ImplServer implements Server {
     private final ImplDataPackManager dataPackManager = new ImplDataPackManager(this);
     private final ImplWorldManager worldManager = new ImplWorldManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
+    private final CommandMap commandMap = new ImplCommandMap(this);
 
     private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final ImplScheduler scheduler = new ImplScheduler(this, 1);
@@ -302,6 +305,11 @@ public class ImplServer implements Server {
     @Override
     public String getRootDirectory() {
         return this.rootDirectory;
+    }
+
+    @Override
+    public CommandMap getCommandMap() {
+        return commandMap;
     }
 
     public ServerConfig getConfig() {

@@ -15,6 +15,6 @@ public class V419CommandRequestPacketHandler extends BaseProtocolPacketHandler<C
         packet.setUuid(helper.readUUID(buffer));
         packet.setRequestID(helper.readString(buffer)); //TODO: I'm worried about this being empty most of the time, do some more research later
         packet.setUnknownBoolean(buffer.readBoolean());
-        return new CommandRequestPacket();
+        return packet;
     }
 }

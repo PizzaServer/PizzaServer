@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api;
 
+import io.github.willqi.pizzaserver.api.commands.CommandMap;
 import io.github.willqi.pizzaserver.api.event.EventManager;
 import io.github.willqi.pizzaserver.api.packs.DataPackManager;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -89,6 +90,6 @@ public interface Server {
      */
     String getRootDirectory();
 
-
+    CommandMap getCommandMap();
 
 }
