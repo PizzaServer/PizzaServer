@@ -12,6 +12,12 @@ import java.io.IOException;
 public abstract class BaseWorldProvider implements Closeable {
 
     /**
+     * Retrieve the name of the world file
+     * @return name of the world file
+     */
+    public abstract String getWorldFileName();
+
+    /**
      * Retrieve information about the level
      * @return {@link LevelData}
      */

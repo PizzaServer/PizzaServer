@@ -40,7 +40,7 @@ public class ImplWorld implements Closeable, World {
         this.server = server;
         this.provider = provider;
 
-        this.name = provider.getLevelData().getName();
+        this.name = provider.getWorldFileName();
         this.spawnCoordinates = provider.getLevelData().getWorldSpawn();
     }
 

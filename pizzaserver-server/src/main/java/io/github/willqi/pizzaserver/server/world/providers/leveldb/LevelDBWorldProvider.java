@@ -15,14 +15,21 @@ import java.io.IOException;
 
 public class LevelDBWorldProvider extends BaseWorldProvider {
 
+    private final File file;
     private final MCWorld mcWorld;
     private final MCWorldInfo worldInfo;
     private final MCChunkDatabase chunkDatabase;
 
     public LevelDBWorldProvider(File worldFile) throws IOException {
+        this.file = worldFile;
         this.mcWorld = new MCWorld(worldFile);
         this.worldInfo = this.mcWorld.getWorldInfo();
         this.chunkDatabase = this.mcWorld.openChunkDatabase();
+    }
+
+    @Override
+    public String getWorldFileName() {
+        return this.file.getName();
     }
 
     @Override

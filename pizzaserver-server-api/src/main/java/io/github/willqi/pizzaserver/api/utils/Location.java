@@ -23,10 +23,7 @@ public class Location extends Vector3 {
     }
 
     public Chunk getChunk() {
-        if (this.world.getChunkManager().isChunkLoaded(this.getChunkX(), this.getChunkZ())) {
-            return this.world.getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
-        }
-        return null;
+        return this.world.getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
     }
 
     public World getWorld() {

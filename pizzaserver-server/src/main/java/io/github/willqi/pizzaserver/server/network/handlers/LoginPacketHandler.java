@@ -1,8 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
-import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
-import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
@@ -23,8 +22,6 @@ import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.api.world.data.Dimension;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +29,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.concurrent.CompletionException;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -219,7 +215,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
     private void sendGameLoginPackets() {
         String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
         World defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
-        if (Check.isNull(defaultWorld)) {
+        if (defaultWorld == null) {
             this.player.disconnect("Failed to find default world");
             this.player.getServer().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
             return;
@@ -234,19 +230,20 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             return;
         }
 
+        // Load player data
         this.player.getServer().getScheduler()
                 .prepareTask(() -> {
                     // Get the world they spawn in
                     World world = this.server.getWorldManager().getWorld(data.getWorldName());
-                    final Vector3 position;
-                    if (Check.isNull(world)) { // Was the world deleted? Set it to the default world if so
+                    final Location location;
+                    if (world == null) { // Was the world deleted? Set it to the default world if so
                         world = defaultWorld;
-                        position = world.getSpawnCoordinates().toVector3();
+                        location = new Location(world, world.getSpawnCoordinates());
                     } else {
-                        position = data.getPosition();
+                        location = new Location(world, data.getPosition());
                     }
 
-                    this.player.sendPacket(this.getStartGamePacket(world, position, new Vector2(data.getPitch(), data.getYaw())));
+                    this.player.sendPacket(this.getStartGamePacket(world, location, new Vector2(data.getPitch(), data.getYaw())));
 
                     // TODO: Add creative contents to prevent mobile clients from crashing
                     CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
@@ -256,24 +253,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
                     this.player.sendPacket(biomeDefinitionPacket);
 
-                    // VVVVVVVV move to Player.loadChunks?
-                    // Send chunks
-                    int playerChunkX = position.toVector3i().getX() / 16;
-                    int playerChunkZ = position.toVector3i().getZ() / 16;
-                    for (int chunkX = playerChunkX - 1; chunkX <= playerChunkX + 1; chunkX++) {
-                        for (int chunkZ = playerChunkZ - 1; chunkZ <= playerChunkZ + 1; chunkZ++) {
-                            try {
-                                ImplChunk chunk = (ImplChunk)world.getChunkManager().fetchChunk(chunkX, chunkZ).join();
-                                ((ImplChunkManager)world.getChunkManager()).requestSendChunkToPlayer(this.player, chunk).join();
-                            } catch (CompletionException exception) {
-                                this.player.getServer().getLogger().error(String.format("Failed to send chunk (%s, %s)", chunkX, chunkZ));
-                            }
-                        }
-                    }
-                    this.player.sendNetworkChunkPublisher();
-
                     this.player.getServer().getScheduler().prepareTask(() -> {
-                        this.player.getLocation().getWorld().addEntity(this.player, position);
+                        location.getWorld().addEntity(this.player, location);
                         this.session.setPacketHandler(new FullGamePacketHandler(this.player));
                     }).schedule();
                 }).setAsynchronous(true).schedule();
