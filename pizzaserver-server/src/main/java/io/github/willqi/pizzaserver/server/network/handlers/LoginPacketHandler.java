@@ -323,7 +323,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         if (!playerData.isPresent()) {
             playerData = Optional.of(
                     new PlayerData.Builder()
-                            .setLevelName(defaultWorld.getLevel().getName())
+                            .setLevelName(defaultWorld.getLevel().getProvider().getFileName())
                             .setDimension(defaultWorld.getDimension())
                             .setPosition(defaultWorld.getSpawnCoordinates().toVector3())
                             .setYaw(defaultWorld.getServer().getConfig().getDefaultYaw())
