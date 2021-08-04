@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.packs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.willqi.pizzaserver.api.packs.DataPack;
+import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,11 +12,11 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.UUID;
 
-public class ZipDataPackTests {
+public class ZipResourcePackTests {
 
     @Test
     public void shouldRetrieveManifestInformation(@TempDir Path tempDirPath) {
-        DataPack pack = getResourcePack(tempDirPath);
+        ResourcePack pack = getResourcePack(tempDirPath);
         Assertions.assertEquals(pack.getUuid(), UUID.fromString("00000000-0000-0000-0000-000000000000"));
         Assertions.assertEquals(pack.getVersion(), "1.0.0");
     }
@@ -24,7 +24,7 @@ public class ZipDataPackTests {
     @Test
     public void shouldBeEqualToTheResourcePackFile(@TempDir Path tempDirPath) {
         File resourcePackFile = getResourcePackFile(tempDirPath);
-        DataPack pack = getResourcePack(tempDirPath);
+        ResourcePack pack = getResourcePack(tempDirPath);
 
         InputStream testFileStream = null;
         try {
@@ -53,10 +53,10 @@ public class ZipDataPackTests {
 
     }
 
-    private static DataPack getResourcePack(Path tempDirPath) {
-        DataPack pack;
+    private static ResourcePack getResourcePack(Path tempDirPath) {
+        ResourcePack pack;
         try {
-            pack = new ZipDataPack(getResourcePackFile(tempDirPath));
+            pack = new ZipResourcePack(getResourcePackFile(tempDirPath));
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
@@ -64,7 +64,7 @@ public class ZipDataPackTests {
     }
 
     private static InputStream getTestResourcePackStream() {
-        return ZipDataPackTests.class.getResourceAsStream("/resourcepack.zip");
+        return ZipResourcePackTests.class.getResourceAsStream("/resourcepack.zip");
     }
 
     private static File getResourcePackFile(Path tempDirPath) {

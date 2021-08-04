@@ -1,10 +1,14 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.data.TeleportationCause;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
-public class MovePlayerPacket extends ImplBedrockPacket {
+/**
+ * Sent by the server and client to move a player entity
+ */
+public class MovePlayerPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x13;
 

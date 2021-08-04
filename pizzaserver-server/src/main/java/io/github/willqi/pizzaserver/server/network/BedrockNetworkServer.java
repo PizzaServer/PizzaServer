@@ -44,14 +44,13 @@ public class BedrockNetworkServer {
         this.setPong(
                 new BedrockPong.Builder()
                     .setEdition(BedrockPong.Edition.MCPE)
-                    .setGamemode(Gamemode.CREATIVE)
+                    .setGamemode(Gamemode.SURVIVAL)
                     .setGameVersion(ServerProtocol.GAME_VERSION)
-                    .setMotd("MOTD 1")
-                    .setPlayerCount(10)
-                    .setPort(19132)
-                    .setProtocol(431)
+                    .setMotd(this.server.getMotd())
+                    .setPlayerCount(this.server.getPlayerCount())
+                    .setProtocol(ServerProtocol.LATEST_PROTOCOL_VERISON)
                     .setSubMotd("MOTD 2")
-                    .setMaximumPlayerCount(20)
+                    .setMaximumPlayerCount(this.server.getMaximumPlayerCount())
                     .build()
         );
     }
@@ -82,10 +81,7 @@ public class BedrockNetworkServer {
                     pong.getMaxPlayerCount() + ";" +
                     BedrockNetworkServer.this.rakNetServer.getGuid() + ";" +
                     pong.getSubMotd() + ";" +
-                    pong.getGamemode().getName() + ";" +
-                    pong.getGamemode().getId() + ";" +
-                    pong.getPort() + ";" +
-                    pong.getPort() + ";").getBytes(StandardCharsets.UTF_8);
+                    pong.getGamemode().getName()).getBytes(StandardCharsets.UTF_8);
         }
 
         @Override

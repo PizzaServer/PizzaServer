@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Manages resource and behaviour packs
+ * Manages resource packs
  */
-public interface DataPackManager {
+public interface ResourcePackManager {
 
     /**
      * Check if data packs are required in order to play on the {@link Server}
-     * @return if data packs are required
+     * @return if resource packs are required
      */
     boolean arePacksRequired();
 
@@ -20,12 +20,6 @@ public interface DataPackManager {
      * Retrieve all resource packs for this server
      * @return all resource packs
      */
-    Map<UUID, DataPack> getResourcePacks();
-
-    /**
-     * Retrieve all behaviour packs for this server
-     * @return all behaviour packs
-     */
-    Map<UUID, DataPack> getBehaviourPacks();
+    Map<UUID, ResourcePack> getPacks();
 
 }

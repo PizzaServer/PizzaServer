@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api;
 
 import io.github.willqi.pizzaserver.api.event.EventManager;
-import io.github.willqi.pizzaserver.api.packs.DataPackManager;
+import io.github.willqi.pizzaserver.api.packs.ResourcePackManager;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
@@ -71,7 +71,7 @@ public interface Server {
 
     PluginManager getPluginManager();
 
-    DataPackManager getResourcePackManager();
+    ResourcePackManager getResourcePackManager();
 
     WorldManager getWorldManager();
 

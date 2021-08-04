@@ -1,6 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class WorldChunkPacket extends ImplBedrockPacket {
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
+/**
+ * Sent by the server to render chunks in the players world
+ * a NetworkChunkPublisherUpdatePacket is REQUIRED in order for these chunks to show up
+ */
+public class WorldChunkPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x3a;
 
@@ -38,6 +44,7 @@ public class WorldChunkPacket extends ImplBedrockPacket {
         this.subChunkCount = subChunkCount;
     }
 
+    // See pizzaserver-worldfile package to see how bedrock chunks are serialized
     public byte[] getData() {
         return this.data;
     }

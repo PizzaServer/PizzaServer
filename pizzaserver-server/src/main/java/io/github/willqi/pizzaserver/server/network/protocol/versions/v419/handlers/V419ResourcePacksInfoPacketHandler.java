@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePacksInfoPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.github.willqi.pizzaserver.api.packs.DataPack;
+import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 import io.netty.buffer.ByteBuf;
 
 import java.util.Collection;
@@ -18,9 +18,9 @@ public class V419ResourcePacksInfoPacketHandler extends BaseProtocolPacketHandle
         writePacks(packet.getResourcePacks(), buffer, helper);
     }
 
-    private static void writePacks(Collection<DataPack> packs, ByteBuf buffer, BasePacketHelper helper) {
+    private static void writePacks(Collection<ResourcePack> packs, ByteBuf buffer, BasePacketHelper helper) {
         buffer.writeShortLE(packs.size());
-        for (DataPack pack : packs) {
+        for (ResourcePack pack : packs) {
             helper.writeString(pack.getUuid().toString(), buffer);
             helper.writeString(pack.getVersion(), buffer);
             buffer.writeLongLE(pack.getDataLength());

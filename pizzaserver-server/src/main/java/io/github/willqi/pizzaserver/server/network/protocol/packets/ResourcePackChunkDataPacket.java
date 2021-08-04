@@ -1,52 +1,71 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
 import java.util.UUID;
 
 /**
  * Contains a portion of the data of a resource pack
+ * Sent in response to a ResourcePackChunkRequest packet
  */
-public class ResourcePackChunkDataPacket extends ImplBedrockPacket {
+public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x53;
 
-    private UUID id;
-    private String version;
+    private UUID uuid;
     private int chunkIndex;
     private long chunkProgress;
     private byte[] data;
+
 
     public ResourcePackChunkDataPacket() {
         super(ID);
     }
 
-    public UUID getId() {
-        return this.id;
+    /**
+     * Get the UUID of the resource pack
+     * @return UUID of the resource pack
+     */
+    public UUID getUUID() {
+        return this.uuid;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    /**
+     * Change the UUID of the resource pack
+     * @param uuid UUID of the resource pack
+     */
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
-    public String getVersion() {
-        return this.version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
+    /**
+     * Change the section of the resource pack this packet represents
+     * @return section of the resource pack
+     */
     public int getChunkIndex() {
         return this.chunkIndex;
     }
 
+    /**
+     * Change the section this resource pack represents
+     * @param index section of the resource pack
+     */
     public void setChunkIndex(int index) {
         this.chunkIndex = index;
     }
 
+    /**
+     * Get the offset of the resource pack this packet represents
+     * @return pack offset
+     */
     public long getChunkProgress() {
         return this.chunkProgress;
     }
 
+    /**
+     * Set the offset of the resource pack this packet represents
+     * @param progress pack offset
+     */
     public void setChunkProgress(long progress) {
         this.chunkProgress = progress;
     }
