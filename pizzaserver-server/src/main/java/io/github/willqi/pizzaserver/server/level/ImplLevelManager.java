@@ -82,8 +82,10 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     private ImplLevel fetchLevel(String name) {
+        this.server.getLogger().info("Loading world: " + name);
         File file = Paths.get(this.server.getRootDirectory(), "levels", name).toFile();
         if (!file.exists()) {
+            this.server.getLogger().error("No level exists with the name: " + name);
             return null;
         }
         BaseLevelProvider provider;
@@ -93,6 +95,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
             this.server.getLogger().error("Failed to create world provider with level: " + name, exception);
             return null;
         }
+        this.server.getLogger().info("Successfully loaded level " + name);
         return new ImplLevel(this.server, provider);
     }
 
@@ -100,9 +103,11 @@ public class ImplLevelManager implements LevelManager, Closeable {
     public boolean unloadLevel(String name) {
         this.locks.writeLock(name);
 
+        this.server.getLogger().info("Unloading level " + name);
         try {
             ImplLevel level = this.levels.getOrDefault(name, null);
             if (level == null) {
+                this.server.getLogger().error("No level is loaded with the name: " + name);
                 return false;
             }
             try {
@@ -113,6 +118,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
                 return false;
             }
 
+            this.server.getLogger().info("Successfully unloaded level " + name);
             this.levels.remove(name);
             return true;
         } finally {
