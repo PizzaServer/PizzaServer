@@ -38,7 +38,7 @@ public class ImplLevel implements Level, Closeable {
 
     @Override
     public String getName() {
-        return this.getProvider().getLevelName();
+        return this.getProvider().getLevelData().getName();
     }
 
     @Override

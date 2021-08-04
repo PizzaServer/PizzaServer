@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.level.providers;
 
 import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.format.api.LevelData;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 
 import java.io.Closeable;
@@ -20,10 +21,10 @@ public abstract class BaseLevelProvider implements Closeable {
     }
 
     /**
-     * Retrieve the name of the world
-     * @return
+     * Retrieve information about the level
+     * @return {@link LevelData}
      */
-    public abstract String getLevelName();
+    public abstract LevelData getLevelData();
 
     /**
      * Retrieve a chunk by it's x and z coordinates

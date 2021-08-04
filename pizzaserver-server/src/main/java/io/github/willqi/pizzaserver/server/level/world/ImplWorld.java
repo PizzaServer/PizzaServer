@@ -30,7 +30,6 @@ public class ImplWorld implements Closeable, World {
     private final Dimension dimension;
     private final ImplChunkManager chunkManager = new ImplChunkManager(this);
 
-    private String name;
     private Vector3i spawnCoordinates;
 
     private final Set<Player> players = new HashSet<>();
@@ -39,6 +38,7 @@ public class ImplWorld implements Closeable, World {
     public ImplWorld(ImplLevel level, Dimension dimension) {
         this.level = level;
         this.dimension = dimension;
+        this.spawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
     }
 
     @Override

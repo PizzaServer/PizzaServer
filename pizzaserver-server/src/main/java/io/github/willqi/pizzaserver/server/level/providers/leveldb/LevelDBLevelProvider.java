@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.level.providers.leveldb;
 
 import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.format.api.LevelData;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.mcworld.MCWorld;
 import io.github.willqi.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
@@ -26,8 +27,9 @@ public class LevelDBLevelProvider extends BaseLevelProvider {
         this.chunkDatabase = this.mcWorld.openChunkDatabase();
     }
 
-    public String getLevelName() {
-        return this.worldInfo.getName();
+    @Override
+    public LevelData getLevelData() {
+        return this.worldInfo;
     }
 
     @Override
