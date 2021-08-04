@@ -33,6 +33,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final ImplServer server;
     private final BedrockClientSession session;
+    private boolean allowAutomaticSaving = true;
 
     private final BaseMinecraftVersion version;
     private final Device device;
@@ -165,20 +166,34 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                 .load(this.getUUID());
     }
 
-    /**
-     * Save the current player's data to the {@link io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider}
-     * @throws IOException if an exception occurred while saving the data
-     */
-    public void saveData() throws IOException {
-        PlayerData playerData = new PlayerData.Builder()
-                .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
-                .setDimension(this.getLocation().getWorld().getDimension())
-                .setPosition(this.getLocation())
-                .setYaw(0)
-                .setPitch(0)
-                .build();
-        this.getServer().getPlayerProvider()
-                .save(this.getUUID(), playerData);
+    @Override
+    public void setAllowAutomaticSaving(boolean allowSaving) {
+        this.allowAutomaticSaving = allowSaving;
+    }
+
+    @Override
+    public boolean isAllowedToAutomaticallySave() {
+        return this.allowAutomaticSaving;
+    }
+
+    @Override
+    public boolean save() {
+        if (this.hasSpawned()) {
+            PlayerData playerData = new PlayerData.Builder()
+                    .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
+                    .setDimension(this.getLocation().getWorld().getDimension())
+                    .setPosition(this.getLocation())
+                    .setYaw(0)
+                    .setPitch(0)
+                    .build();
+            try {
+                this.getServer().getPlayerProvider().save(this.getUUID(), playerData);
+                return true;
+            } catch (IOException exception) {
+                this.getServer().getLogger().error("Failed to save player " + this.getUUID(), exception);
+            }
+        }
+        return false;
     }
 
     /**
@@ -188,14 +203,9 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void onDisconnect() {
         if (this.hasSpawned()) {
             this.getLocation().getWorld().removeEntity(this);
-            this.getServer().getScheduler()
-                    .prepareTask(() -> {
-                        try {
-                            this.saveData();
-                        } catch (IOException exception) {
-                            this.getServer().getLogger().error("Failed to save player data for " + this.getUUID(), exception);
-                        }
-                    }).setAsynchronous(true).schedule();
+            if (this.isAllowedToAutomaticallySave()) {
+                this.getServer().getScheduler().prepareTask(this::save).setAsynchronous(true).schedule();
+            }
 
             // Remove player from chunks they can observe
             for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
@@ -430,7 +440,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             int oldPlayerChunkZ = oldLocation.getChunkZ();
             for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
                 for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
-                    // Chunk radius is ciruclar
+                    // Chunk radius is circular
                     int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
                     if (oldChunkRadius > distance) {
                         chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));

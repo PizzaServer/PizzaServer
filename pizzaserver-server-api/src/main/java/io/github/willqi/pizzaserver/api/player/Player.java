@@ -172,6 +172,22 @@ public interface Player extends LivingEntity {
      */
     void disconnect(String reason);
 
+    /**
+     * Change if the player can be automatically saved
+     * @param allowSaving if the player should be saved automatically
+     */
+    void setAllowAutomaticSaving(boolean allowSaving);
 
+    /**
+     * Check if the player can be saved automatically
+     * @return if the player can be saved automatically
+     */
+    boolean isAllowedToAutomaticallySave();
+
+    /**
+     * Saves the player data to the player data provider
+     * @return if the save was successful
+     */
+    boolean save();
 
 }
