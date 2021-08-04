@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.utils;
 
+import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
@@ -31,6 +32,11 @@ public class ImplLocation extends Vector3 implements Location {
     @Override
     public Chunk getChunk() {
         return this.getWorld().getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
+    }
+
+    @Override
+    public Level getLevel() {
+        return this.getWorld().getLevel();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.utils;
 
+import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 
@@ -16,6 +17,8 @@ public interface Location {
     int getChunkZ();
 
     Chunk getChunk();
+
+    Level getLevel();
 
     World getWorld();
 
