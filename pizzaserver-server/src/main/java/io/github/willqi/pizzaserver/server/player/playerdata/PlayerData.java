@@ -9,20 +9,20 @@ public class PlayerData {
     private final String levelName;
     private final Dimension dimension;
     private final Vector3 position;
-    private final float yaw;
     private final float pitch;
+    private final float yaw;
 
 
     private PlayerData(String levelName,
                        Dimension dimension,
                        Vector3 position,
-                       float yaw,
-                       float pitch) {
+                       float pitch,
+                       float yaw) {
         this.levelName = levelName;
         this.dimension = dimension;
         this.position = position;
-        this.yaw = yaw;
         this.pitch = pitch;
+        this.yaw = yaw;
     }
 
     /**
@@ -41,12 +41,12 @@ public class PlayerData {
         return this.position;
     }
 
-    public float getYaw() {
-        return this.yaw;
-    }
-
     public float getPitch() {
         return this.pitch;
+    }
+
+    public float getYaw() {
+        return this.yaw;
     }
 
 
@@ -55,8 +55,8 @@ public class PlayerData {
         private String levelName;
         private Dimension dimension;
         private Vector3 position;
-        private float yaw;
         private float pitch;
+        private float yaw;
 
 
         public Builder setLevelName(String levelName) {
@@ -74,13 +74,13 @@ public class PlayerData {
             return this;
         }
 
-        public Builder setYaw(float yaw) {
-            this.yaw = yaw;
+        public Builder setPitch(float pitch) {
+            this.pitch = pitch;
             return this;
         }
 
-        public Builder setPitch(float pitch) {
-            this.pitch = pitch;
+        public Builder setYaw(float yaw) {
+            this.yaw = yaw;
             return this;
         }
 
@@ -89,8 +89,8 @@ public class PlayerData {
                     Check.nullParam(this.levelName, "levelName"),
                     Check.nullParam(this.dimension, "dimension"),
                     Check.nullParam(this.position, "position"),
-                    this.yaw,
-                    this.pitch
+                    this.pitch,
+                    this.yaw
             );
         }
 

@@ -183,8 +183,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                     .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
                     .setDimension(this.getLocation().getWorld().getDimension())
                     .setPosition(this.getLocation())
-                    .setYaw(0)
-                    .setPitch(0)
+                    .setPitch(this.getPitch())
+                    .setYaw(this.getYaw())
                     .build();
             try {
                 this.getServer().getPlayerProvider().save(this.getUUID(), playerData);

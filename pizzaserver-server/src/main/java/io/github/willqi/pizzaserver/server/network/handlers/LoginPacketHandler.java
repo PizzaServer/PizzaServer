@@ -233,6 +233,10 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         // Load player data
         this.player.getServer().getScheduler()
                 .prepareTask(() -> {
+                    this.player.setPitch(data.getPitch());
+                    this.player.setYaw(data.getYaw());
+                    this.player.setHeadYaw(data.getYaw());
+
                     // Get the world they spawn in
                     World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
                     final Location location;
