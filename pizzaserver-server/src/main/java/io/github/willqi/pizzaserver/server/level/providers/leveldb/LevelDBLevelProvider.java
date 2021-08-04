@@ -19,13 +19,14 @@ public class LevelDBLevelProvider extends BaseLevelProvider {
     private final MCChunkDatabase chunkDatabase;
 
     public LevelDBLevelProvider(File worldFile) throws IOException {
+        super(worldFile);
         this.mcWorld = new MCWorld(worldFile);
         this.worldInfo = this.mcWorld.getWorldInfo();
         this.chunkDatabase = this.mcWorld.openChunkDatabase();
     }
 
     @Override
-    public String getName() {
+    public String getLevelName() {
         return this.worldInfo.getWorldName();
     }
 

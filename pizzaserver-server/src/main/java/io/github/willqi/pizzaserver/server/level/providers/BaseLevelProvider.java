@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -11,11 +12,18 @@ import java.io.IOException;
  */
 public abstract class BaseLevelProvider implements Closeable {
 
+    private final File file;
+
+
+    public BaseLevelProvider(File file) {
+        this.file = file;
+    }
+
     /**
      * Retrieve the name of the world
      * @return
      */
-    public abstract String getName();
+    public abstract String getLevelName();
 
     /**
      * Retrieve a chunk by it's x and z coordinates
@@ -24,5 +32,13 @@ public abstract class BaseLevelProvider implements Closeable {
      * @return the chunk
      */
     public abstract BedrockChunk getChunk(int x, int z, Dimension dimension) throws IOException;
+
+    /**
+     * Get the name of the file for this level
+     * @return name of the file for this level
+     */
+    public String getFileName() {
+        return this.file.getName();
+    }
 
 }
