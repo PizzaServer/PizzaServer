@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
+import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.event.type.player.PlayerPreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -214,7 +215,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
      */
     private void sendGameLoginPackets() {
         String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
-        World defaultWorld = this.player.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
+        ImplWorld defaultWorld = this.player.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
         if (defaultWorld == null) {
             this.player.disconnect("Failed to find default world");
             this.player.getServer().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
@@ -315,7 +316,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
      * @return the {@link PlayerData} of the player
      * @throws IOException if an exception occurs while fetching data
      */
-    private PlayerData getPlayerData(World defaultWorld) throws IOException {
+    private PlayerData getPlayerData(ImplWorld defaultWorld) throws IOException {
         // Fetch existing player data if present
         Optional<PlayerData> playerData = this.player.getData();
 
@@ -325,8 +326,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                             .setLevelName(defaultWorld.getLevel().getName())
                             .setDimension(defaultWorld.getDimension())
                             .setPosition(defaultWorld.getSpawnCoordinates().toVector3())
-                            .setYaw(0)      // TODO: find yaw
-                            .setPitch(0)    // TODO: find pitch
+                            .setYaw(defaultWorld.getServer().getConfig().getDefaultYaw())
+                            .setPitch(defaultWorld.getServer().getConfig().getDefaultPitch())
                             .build()
             );
         }

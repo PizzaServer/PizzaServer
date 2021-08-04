@@ -11,3 +11,6 @@ chunk-requests-processing-cap: 64
 
 world-chunk-radius: 8
 world-default: world
+# Direction to assign players who first join the server
+world-default-yaw: 0
+world-default-pitch: 0
