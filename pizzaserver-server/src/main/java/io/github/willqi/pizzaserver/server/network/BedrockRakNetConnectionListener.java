@@ -40,19 +40,19 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
                 this.session.disconnect();
                 return;
             }
-            int packetBytes = VarInts.readUnsignedInt(inflatedBuffer);
-            ByteBuf packet = inflatedBuffer.readSlice(packetBytes);
 
-            // https://github.com/CloudburstMC/Protocol/blob/develop/bedrock/bedrock-common/src/main/java/com/nukkitx/protocol/bedrock/wrapper/BedrockWrapperSerializerV9_10.java#L34
-            // Apparently packets start with a header.
-            // The header is used for the packet id and split screen connections. But currently we only support one session.
-            int packetId = VarInts.readUnsignedInt(packet) & 0x3ff;
-            try {
-                session.handlePacket(packetId, packet);
-            } catch (Exception exception) {
-                throw new RuntimeException("Failed to parse packet (id: " + packetId + ")", exception);
-            } finally {
-                packet.release();
+            // Multiple packets can be combined in 1 buffer
+            while (inflatedBuffer.readableBytes() > 0) {
+                int packetBytes = VarInts.readUnsignedInt(inflatedBuffer);
+                ByteBuf packet = inflatedBuffer.readSlice(packetBytes);
+
+                // Packets start with a header that contains the client id (used for split screen) and the packet id
+                int packetId = VarInts.readUnsignedInt(packet) & 0x3ff;
+                try {
+                    session.handlePacket(packetId, packet);
+                } catch (Exception exception) {
+                    throw new RuntimeException("Failed to parse packet (id: " + packetId + ")", exception);
+                }
             }
         }
     }

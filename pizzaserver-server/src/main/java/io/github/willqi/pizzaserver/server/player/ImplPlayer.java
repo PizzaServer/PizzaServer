@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.BedrockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
@@ -53,8 +53,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
         this.version = session.getVersion();
         this.device = loginPacket.getDevice();
-        this.xuid = loginPacket.getXuid();
-        this.uuid = loginPacket.getUuid();
+        this.xuid = loginPacket.getXUID();
+        this.uuid = loginPacket.getUUID();
         this.username = loginPacket.getUsername();
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
@@ -137,7 +137,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void sendPacket(BedrockPacket packet) {
+    public void sendPacket(BaseBedrockPacket packet) {
         this.session.queueSendPacket(packet);
     }
 

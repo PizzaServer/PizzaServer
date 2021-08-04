@@ -15,9 +15,14 @@ public class BedrockPong {
     private final int onlinePlayers;
     private final int maxPlayersAllowed;
 
-    private final int port;
-
-    private BedrockPong(Edition edition, Gamemode gamemode, String motd, String subMotd, int protocol, String gameVersion, int onlinePlayers, int maxPlayersAllowed, int port) {
+    private BedrockPong(Edition edition,
+                        Gamemode gamemode,
+                        String motd,
+                        String subMotd,
+                        int protocol,
+                        String gameVersion,
+                        int onlinePlayers,
+                        int maxPlayersAllowed) {
         this.edition = edition;
         this.gamemode = gamemode;
         this.motd = motd;
@@ -28,8 +33,6 @@ public class BedrockPong {
 
         this.onlinePlayers = onlinePlayers;
         this.maxPlayersAllowed = maxPlayersAllowed;
-
-        this.port = port;
     }
 
     public Edition getEdition() {
@@ -62,10 +65,6 @@ public class BedrockPong {
 
     public int getMaxPlayerCount() {
         return this.maxPlayersAllowed;
-    }
-
-    public int getPort() {
-        return this.port;
     }
 
 
@@ -103,8 +102,6 @@ public class BedrockPong {
 
         private int playerCount;
         private int maxPlayersAllowed;
-
-        private int port;
 
 
         public Builder setEdition(Edition edition) {
@@ -147,11 +144,6 @@ public class BedrockPong {
             return this;
         }
 
-        public Builder setPort(int port) {
-            this.port = port;
-            return this;
-        }
-
         public BedrockPong build() {
             return new BedrockPong(
                     this.edition,
@@ -161,8 +153,7 @@ public class BedrockPong {
                     this.protocol,
                     this.gameVersion,
                     this.playerCount,
-                    this.maxPlayersAllowed,
-                    this.port
+                    this.maxPlayersAllowed
             );
         }
 

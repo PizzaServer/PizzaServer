@@ -1,9 +1,14 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
 import java.util.Collections;
 import java.util.List;
 
-public class TextPacket extends ImplBedrockPacket {
+/**
+ * Sent by the server and client to send/display text messages to one another
+ */
+public class TextPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x09;
 

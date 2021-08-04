@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.player;
 
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.BedrockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
@@ -159,7 +159,7 @@ public interface Player extends LivingEntity {
      * Queue a packet to be sent to this player
      * @param packet the packet to send
      */
-    void sendPacket(BedrockPacket packet);
+    void sendPacket(BaseBedrockPacket packet);
 
     /**
      * Disconnect the player

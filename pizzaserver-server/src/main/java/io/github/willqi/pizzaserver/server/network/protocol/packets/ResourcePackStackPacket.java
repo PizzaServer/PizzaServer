@@ -1,7 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.api.packs.DataPack;
+import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,15 +10,15 @@ import java.util.Set;
 
 /**
  * Sent after the client responds with a HAVE_ALL_PACKS from the ResourcePackResponsePacket.
- * Contains all of the packs the server supports
+ * Contains all the packs the server supports
  */
-public class ResourcePackStackPacket extends ImplBedrockPacket {
+public class ResourcePackStackPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x07;
 
     private boolean forcedToAccept;
-    private Set<DataPack> resourcePacks = new HashSet<>();
-    private Set<DataPack> behaviourPacks = new HashSet<>();
+    private Set<ResourcePack> resourcePacks = new HashSet<>();
+    private Set<ResourcePack> behaviourPacks = new HashSet<>();
 
     private Set<Experiment> experiments = new HashSet<>();
     private boolean experimentsPreviouslyEnabled;
@@ -37,19 +38,19 @@ public class ResourcePackStackPacket extends ImplBedrockPacket {
         this.forcedToAccept = forced;
     }
 
-    public Set<DataPack> getResourcePacks() {
+    public Set<ResourcePack> getResourcePacks() {
         return this.resourcePacks;
     }
 
-    public void setResourcePacks(Set<DataPack> resourcePacks) {
+    public void setResourcePacks(Set<ResourcePack> resourcePacks) {
         this.resourcePacks = resourcePacks;
     }
 
-    public Set<DataPack> getBehaviourPacks() {
+    public Set<ResourcePack> getBehaviourPacks() {
         return this.behaviourPacks;
     }
 
-    public void setBehaviourPacks(Set<DataPack> behaviourPacks) {
+    public void setBehaviourPacks(Set<ResourcePack> behaviourPacks) {
         this.behaviourPacks = behaviourPacks;
     }
 

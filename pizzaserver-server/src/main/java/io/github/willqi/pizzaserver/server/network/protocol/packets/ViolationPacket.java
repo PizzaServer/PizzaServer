@@ -1,6 +1,11 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class ViolationPacket extends ImplBedrockPacket {
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
+/**
+ * Sent by the client when the server has caused a network violation (e.g. incorrect serialization of packets)
+ */
+public class ViolationPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x9c;
 

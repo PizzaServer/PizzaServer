@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
 /**
@@ -7,7 +8,7 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
  *
  * Contrary to the name of the packet, the radius represents blocks rather than chunks
  */
-public class NetworkChunkPublisherUpdatePacket extends ImplBedrockPacket {
+public class NetworkChunkPublisherUpdatePacket extends BaseBedrockPacket {
 
     public static final int ID = 0x79;
 
@@ -27,10 +28,18 @@ public class NetworkChunkPublisherUpdatePacket extends ImplBedrockPacket {
         this.coordinates = coordinates;
     }
 
+    /**
+     * Amount of blocks to keep loaded
+     * @return blocks to keep loaded
+     */
     public int getRadius() {
         return this.radius;
     }
 
+    /**
+     * Set the amount of blocks to keep loaded
+     * @param radius blocks to keep loaded
+     */
     public void setRadius(int radius) {
         this.radius = radius;
     }

@@ -143,8 +143,8 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
                 .getAsString();
 
         packet.setAuthenticated(isAuthenticated(encodedChainArray));
-        packet.setXuid(xuid);
-        packet.setUuid(uuid);
+        packet.setXUID(xuid);
+        packet.setUUID(uuid);
         packet.setUsername(username);
     }
 

@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.api.packs;
 
 import java.util.UUID;
 
-public interface DataPack {
+public interface ResourcePack {
 
     /**
      * Retrieve the max size of each data pack chunk sent to the Minecraft client

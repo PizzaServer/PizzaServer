@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.network.raknet.RakNetServerSession;
 import com.nukkitx.network.util.DisconnectReason;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.BedrockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
@@ -28,8 +28,8 @@ public class BedrockClientSession extends Thread {
     private volatile ImplPlayer player = null;
     private volatile BaseBedrockPacketHandler handler = null;
 
-    private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
-    private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
+    private final Queue<BaseBedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
+    private final Queue<BaseBedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
 
     public BedrockClientSession(BedrockNetworkServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
@@ -73,39 +73,44 @@ public class BedrockClientSession extends Thread {
         return this.disconnected;
     }
 
-    public void queueSendPacket(BedrockPacket packet) {
+    public void queueSendPacket(BaseBedrockPacket packet) {
         this.queuedOutgoingPackets.add(packet);
     }
 
-    public void sendPacket(BedrockPacket packet) {
+
+    public void sendPacket(BaseBedrockPacket packet) {
         if (!this.disconnected) {
+            // Packets begin with the RakNet game packet id
             ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();
-            rakNetBuffer.writeByte(0xfe); // Game packet
+            rakNetBuffer.writeByte(0xfe);
 
-            ByteBuf packetBuffer = ByteBufAllocator.DEFAULT.buffer();
-            // https://github.com/CloudburstMC/Protocol/blob/develop/bedrock/bedrock-common/src/main/java/com/nukkitx/protocol/bedrock/wrapper/BedrockWrapperSerializerV9_10.java#L34
-            // Packets start with a header int rather than just a byte. (used fo split screen but we don't support that atm)
+            // The Minecraft packet buffer begins a header that contains the client id (used for split screen)
+            // and the packet id.
+            ByteBuf minecraftPacketBuffer = ByteBufAllocator.DEFAULT.buffer();
             int header = packet.getPacketId() & 0x3ff;
-            VarInts.writeUnsignedInt(packetBuffer, header);
+            VarInts.writeUnsignedInt(minecraftPacketBuffer, header);
 
-            BaseProtocolPacketHandler<BedrockPacket> handler = (BaseProtocolPacketHandler<BedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
+            // Serialize the BedrockPacket to the minecraftPacketBuffer
+            BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
             if (this.handler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
                 return;
             }
-            handler.encode(packet, packetBuffer, this.version.getPacketRegistry().getPacketHelper());
+            handler.encode(packet, minecraftPacketBuffer, this.version.getPacketRegistry().getPacketHelper());
 
-            // Wrap the packet before sending it off
-            ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer(packetBuffer.readableBytes() + 5, packetBuffer.readableBytes() + 5);    // VarInts can be from 1-5 bytes
-            VarInts.writeUnsignedInt(packetWrapperBuffer, packetBuffer.readableBytes());
-            packetWrapperBuffer.writeBytes(packetBuffer);
+            // The minecraftPacketBuffer is prefixed with the length of the buffer
+            ByteBuf packetWrapperBuffer = ByteBufAllocator.DEFAULT.buffer();
+            VarInts.writeUnsignedInt(packetWrapperBuffer, minecraftPacketBuffer.readableBytes());
+            packetWrapperBuffer.writeBytes(minecraftPacketBuffer);
+
+            // Compress the prefixed buffer and write it to the raknet buffer to send off!
             ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer);
             rakNetBuffer.writeBytes(compressedBuffer);
             this.serverSession.send(rakNetBuffer);
 
-            packetBuffer.release();
-            packetWrapperBuffer.release();
             compressedBuffer.release();
+            packetWrapperBuffer.release();
+            minecraftPacketBuffer.release();
         }
     }
 
@@ -117,7 +122,7 @@ public class BedrockClientSession extends Thread {
     private void processIncomingPackets() {
         if (this.handler != null) {
             while (this.queuedIncomingPackets.peek() != null) {
-                BedrockPacket packet = this.queuedIncomingPackets.poll();
+                BaseBedrockPacket packet = this.queuedIncomingPackets.poll();
                 this.handler.onPacket(packet);
 
                 // Now we call the specific packet handler
@@ -135,51 +140,59 @@ public class BedrockClientSession extends Thread {
 
     private void processOutgoingPackets() {
         while (this.queuedOutgoingPackets.peek() != null) {
-            BedrockPacket packet = this.queuedOutgoingPackets.poll();
+            BaseBedrockPacket packet = this.queuedOutgoingPackets.poll();
             this.sendPacket(packet);
         }
     }
 
-    public void handlePacket(int packetId, ByteBuf buffer) {
+    /**
+     * Handles incoming packets from the client to the server
+     * @param packetId id of the packet sent
+     * @param minecraftPacket contents of the packet we need to deserialize
+     */
+    public void handlePacket(int packetId, ByteBuf minecraftPacket) {
         if (this.version != null) {
-            BaseProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
+            BaseProtocolPacketHandler<? extends BaseBedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when decoding packet id " + packetId);
                 return;
             }
-            BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.version.getPacketRegistry().getPacketHelper());
+            BaseBedrockPacket bedrockPacket = packetHandler.decode(minecraftPacket, this.version.getPacketRegistry().getPacketHelper());
             this.queuedIncomingPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
+            // We do not have a version assigned yet, so we need to use the LoginPacket to get the protocol version we are to use.
+            int index = minecraftPacket.readerIndex();
+            int protocol = minecraftPacket.readInt();
+            minecraftPacket.setIndex(index, minecraftPacket.writerIndex()); // Reset so that the LoginPacket serializer can serialize it correctly
 
-            // First packet, we need to find their protocol to find the correct packet handler.
-            int index = buffer.readerIndex();
-            int protocol = buffer.readInt();
-            buffer.setIndex(index, buffer.writerIndex());
-
-            // Parse login packet given protocol if available
-            if (ServerProtocol.VERSIONS.containsKey(protocol)) {
-                BaseMinecraftVersion version = ServerProtocol.VERSIONS.get(protocol);
-                this.version = version;
-                BedrockPacket loginPacket;
+            LoginPacket loginPacket;
+            if (ServerProtocol.VERSIONS.containsKey(protocol)) {    // Supported version
+                this.version = ServerProtocol.VERSIONS.get(protocol);
                 try {
-                    loginPacket = this.version.getPacketRegistry().getPacketHandler(packetId).decode(buffer, this.version.getPacketRegistry().getPacketHelper());
+                    loginPacket = (LoginPacket)this.version.getPacketRegistry().getPacketHandler(packetId).decode(minecraftPacket, this.version.getPacketRegistry().getPacketHelper());
                 } catch (RuntimeException exception) {
                     this.server.getPizzaServer().getLogger().error("Error while decoding packet from client.", exception);
                     this.serverSession.disconnect(DisconnectReason.BAD_PACKET);
                     return;
                 }
-                this.queuedIncomingPackets.add(loginPacket);
-
             } else {
-                // Unable to find packet handler.
-                LoginPacket loginPacket = new LoginPacket();
+                // Unable to find packet handler, so pretend that we're on the latest version so that it can serialize
+                // a outdated server/client play status.
+                // This should be changed if Microsoft changes the PlayStatus packet format.
+                this.version = ServerProtocol.VERSIONS.get(ServerProtocol.LATEST_PROTOCOL_VERISON);
+                loginPacket = new LoginPacket();
                 loginPacket.setProtocol(protocol);
-                this.queuedIncomingPackets.add(loginPacket);
             }
+            this.queuedIncomingPackets.add(loginPacket);
 
         } else {
             // Client tried to send us a packet without sending the login packet first.
             this.serverSession.disconnect(DisconnectReason.BAD_PACKET);
+        }
+
+        if (minecraftPacket.readableBytes() > 0) {
+            this.server.getPizzaServer().getLogger().warn("There were bytes that were left unread while parsing a packet with the id: " + packetId);
+            minecraftPacket.release();
         }
     }
 

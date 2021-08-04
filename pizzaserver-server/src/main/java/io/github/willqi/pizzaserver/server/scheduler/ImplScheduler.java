@@ -9,6 +9,8 @@ import io.github.willqi.pizzaserver.server.scheduler.task.RunnableTypeTask;
 import io.github.willqi.pizzaserver.server.scheduler.task.BaseSchedulerTask;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ImplScheduler implements Scheduler {
 
@@ -20,6 +22,15 @@ public class ImplScheduler implements Scheduler {
 
     protected int tickDelay; // The amount of server ticks between each scheduler tick.
 
+    private final ExecutorService threadPool = Executors.newCachedThreadPool(runnable -> new Thread(runnable){
+        @Override
+        public void interrupt() {
+            synchronized (activeThreads) {
+                activeThreads.remove(this);
+            }
+            super.interrupt();
+        }
+    });
     protected final Set<Thread> activeThreads;
 
     protected ArrayList<SchedulerTaskEntry> schedulerTasks;
@@ -113,32 +124,19 @@ public class ImplScheduler implements Scheduler {
                     if(!task.getTask().isCancelled()) {
 
                         if(task.isAsynchronous()) {
-                            new Thread() {
+                            this.threadPool.submit(() -> {
+                                synchronized (activeThreads) { activeThreads.add(Thread.currentThread()); }
 
-                                @Override
-                                public void run() {
-                                    synchronized (activeThreads) { activeThreads.add(this); }
+                                try {
+                                    task.getTask().run();
 
-                                    try {
-                                        task.getTask().run();
-
-                                    } catch (Exception err) {
-                                        ImplScheduler.this.server.getLogger().error("Error thrown in a scheduler (asynchronous) task:");
-                                        err.printStackTrace();
-                                    }
-
-                                    synchronized (activeThreads) { activeThreads.remove(this); }
+                                } catch (Exception err) {
+                                    ImplScheduler.this.server.getLogger().error("Error thrown in a scheduler (asynchronous) task:");
+                                    err.printStackTrace();
                                 }
 
-                                @Override
-                                public void interrupt() {
-                                    synchronized (activeThreads) {
-                                        activeThreads.remove(this);
-                                    }
-                                    super.interrupt();
-                                }
-
-                            }.start(); // Start async thread and move on.
+                                synchronized (activeThreads) { activeThreads.remove(Thread.currentThread()); }
+                            }); // Start async task and move on.
 
                         } else {
                             // Run as sync. This task must complete before the next one
