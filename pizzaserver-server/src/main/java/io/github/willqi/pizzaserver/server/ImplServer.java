@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
-import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -21,8 +21,8 @@ import io.github.willqi.pizzaserver.server.scheduler.ImplScheduler;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.ImplLogger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
-import io.github.willqi.pizzaserver.server.world.ImplWorldManager;
-import io.github.willqi.pizzaserver.server.world.blocks.ImplBlockRegistry;
+import io.github.willqi.pizzaserver.server.level.ImplLevelManager;
+import io.github.willqi.pizzaserver.server.level.world.blocks.ImplBlockRegistry;
 
 import java.io.*;
 import java.util.*;
@@ -40,7 +40,7 @@ public class ImplServer implements Server {
 
     private final PluginManager pluginManager = new ImplPluginManager(this);
     private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
-    private final ImplWorldManager worldManager = new ImplWorldManager(this);
+    private final ImplLevelManager levelManager = new ImplLevelManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
 
     private final BlockRegistry blockRegistry = new ImplBlockRegistry();
@@ -89,8 +89,6 @@ public class ImplServer implements Server {
         this.getResourcePackManager().loadPacks();
         this.setTargetTps(20);
 
-        this.getWorldManager().loadWorlds();
-
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
         } catch (InterruptedException | ExecutionException exception) {
@@ -122,7 +120,7 @@ public class ImplServer implements Server {
                 }
             }
 
-            this.getWorldManager().tick();
+            this.getLevelManager().tick();
 
             for (ImplScheduler scheduler : this.syncedSchedulers) {
                 try {
@@ -172,7 +170,11 @@ public class ImplServer implements Server {
         }
 
         this.getNetwork().stop();
-        this.getWorldManager().unloadWorlds();
+        try {
+            this.getLevelManager().close();
+        } catch (IOException exception) {
+            this.getLogger().error("Failed to close LevelManager", exception);
+        }
 
         // We're done stop operations. Exit program.
         this.shutdownLatch.countDown();
@@ -254,8 +256,8 @@ public class ImplServer implements Server {
     }
 
     @Override
-    public ImplWorldManager getWorldManager() {
-        return this.worldManager;
+    public ImplLevelManager getLevelManager() {
+        return this.levelManager;
     }
 
     @Override
@@ -317,7 +319,7 @@ public class ImplServer implements Server {
     private void setupFiles() {
         try {
             new File(this.getRootDirectory() + "/plugins").mkdirs();
-            new File(this.getRootDirectory() + "/worlds").mkdirs();
+            new File(this.getRootDirectory() + "/levels").mkdirs();
             new File(this.getRootDirectory() + "/players").mkdirs();
             new File(this.getRootDirectory() + "/resourcepacks").mkdirs();
             new File(this.getRootDirectory() + "/behaviorpacks").mkdirs();

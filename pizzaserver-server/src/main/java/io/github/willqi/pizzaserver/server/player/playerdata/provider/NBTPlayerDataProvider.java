@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.KeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
@@ -80,7 +81,8 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
 
     private static NBTCompound getPlayerNBTDataFormat(PlayerData data) {
         return new NBTCompound()
-                .setString("worldName", data.getWorldName())
+                .setString("levelName", data.getLevelName())
+                .setInteger("dimension", data.getDimension().ordinal())
                 .setFloat("positionX", data.getPosition().getX())
                 .setFloat("positionY", data.getPosition().getY())
                 .setFloat("positionZ", data.getPosition().getZ())
@@ -90,7 +92,8 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
 
     private static PlayerData getPlayerDataFormat(NBTCompound data) {
         return new PlayerData.Builder()
-                .setWorldName(data.getString("worldName"))
+                .setLevelName(data.getString("levelName"))
+                .setDimension(Dimension.values()[data.getInteger("dimension")])
                 .setPosition(new Vector3(data.getFloat("positionX"), data.getFloat("positionY"), data.getFloat("positionZ")))
                 .setPitch(data.getFloat("pitch"))
                 .setYaw(data.getFloat("yaw"))

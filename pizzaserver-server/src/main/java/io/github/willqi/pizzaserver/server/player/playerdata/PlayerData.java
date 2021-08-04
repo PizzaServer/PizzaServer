@@ -2,28 +2,39 @@ package io.github.willqi.pizzaserver.server.player.playerdata;
 
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 
 public class PlayerData {
 
-    private final String worldName;
+    private final String levelName;
+    private final Dimension dimension;
     private final Vector3 position;
     private final float yaw;
     private final float pitch;
 
 
-    private PlayerData(String worldName, Vector3 position, float yaw, float pitch) {
-        this.worldName = worldName;
+    private PlayerData(String levelName,
+                       Dimension dimension,
+                       Vector3 position,
+                       float yaw,
+                       float pitch) {
+        this.levelName = levelName;
+        this.dimension = dimension;
         this.position = position;
         this.yaw = yaw;
         this.pitch = pitch;
     }
 
     /**
-     * Retrieve the name of the {@link io.github.willqi.pizzaserver.api.world.World} the player is in
+     * Retrieve the name of the {@link io.github.willqi.pizzaserver.api.level.Level} the player is in
      * @return world name
      */
-    public String getWorldName() {
-        return this.worldName;
+    public String getLevelName() {
+        return this.levelName;
+    }
+
+    public Dimension getDimension() {
+        return this.dimension;
     }
 
     public Vector3 getPosition() {
@@ -41,14 +52,20 @@ public class PlayerData {
 
     public static class Builder {
 
-        private String worldName;
+        private String levelName;
+        private Dimension dimension;
         private Vector3 position;
         private float yaw;
         private float pitch;
 
 
-        public Builder setWorldName(String worldName) {
-            this.worldName = worldName;
+        public Builder setLevelName(String levelName) {
+            this.levelName = levelName;
+            return this;
+        }
+
+        public Builder setDimension(Dimension dimension) {
+            this.dimension = dimension;
             return this;
         }
 
@@ -69,7 +86,8 @@ public class PlayerData {
 
         public PlayerData build() {
             return new PlayerData(
-                    Check.nullParam(this.worldName, "worldName"),
+                    Check.nullParam(this.levelName, "levelName"),
+                    Check.nullParam(this.dimension, "dimension"),
                     Check.nullParam(this.position, "position"),
                     this.yaw,
                     this.pitch

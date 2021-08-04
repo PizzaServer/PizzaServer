@@ -1,8 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
@@ -19,7 +20,6 @@ import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
-import io.github.willqi.pizzaserver.api.world.data.Dimension;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 
@@ -214,7 +214,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
      */
     private void sendGameLoginPackets() {
         String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
-        World defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
+        World defaultWorld = this.player.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
         if (defaultWorld == null) {
             this.player.disconnect("Failed to find default world");
             this.player.getServer().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
@@ -234,7 +234,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         this.player.getServer().getScheduler()
                 .prepareTask(() -> {
                     // Get the world they spawn in
-                    World world = this.server.getWorldManager().getWorld(data.getWorldName());
+                    World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
                     final Location location;
                     if (world == null) { // Was the world deleted? Set it to the default world if so
                         world = defaultWorld;
@@ -287,7 +287,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setDifficulty(Difficulty.PEACEFUL);
         // packet.setEnchantmentSeed(0);   // TODO: find actual seed
         startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
-        startGamePacket.setServerName(world.getName());
+        startGamePacket.setServerName(world.getLevel().getName());
         startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
         startGamePacket.setServerAuthoritativeBlockBreaking(true);
         startGamePacket.setServerAuthoritativeInventory(true);
@@ -318,7 +318,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         if (!playerData.isPresent()) {
             playerData = Optional.of(
                     new PlayerData.Builder()
-                            .setWorldName(defaultWorld.getName())
+                            .setLevelName(defaultWorld.getLevel().getName())
+                            .setDimension(defaultWorld.getDimension())
                             .setPosition(defaultWorld.getSpawnCoordinates().toVector3())
                             .setYaw(0)  // TODO: find yaw
                             .setPitch(0)    // TODO: find pitch

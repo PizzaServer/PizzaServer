@@ -20,7 +20,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecra
 import io.github.willqi.pizzaserver.server.player.attributes.ImplPlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
+import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 
 import java.io.IOException;
@@ -170,7 +170,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      */
     public void saveData() throws IOException {
         PlayerData playerData = new PlayerData.Builder()
-                .setWorldName(this.getLocation().getWorld().getName())
+                .setLevelName(this.getLocation().getWorld().getLevel().getName())
+                .setDimension(this.getLocation().getWorld().getDimension())
                 .setPosition(this.getLocation())
                 .setYaw(0)
                 .setPitch(0)

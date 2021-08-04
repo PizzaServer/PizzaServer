@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.event.type.world;
 
-import io.github.willqi.pizzaserver.api.world.World;
-import io.github.willqi.pizzaserver.api.world.data.WorldSound;
+import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 
