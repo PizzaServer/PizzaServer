@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.event.type.world;
 
 import io.github.willqi.pizzaserver.api.event.Event;
 import io.github.willqi.pizzaserver.api.event.type.CancellableType;
-import io.github.willqi.pizzaserver.api.world.World;
+import io.github.willqi.pizzaserver.api.level.world.World;
 
 public class BaseWorldEvent extends Event {
 

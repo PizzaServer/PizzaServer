@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
@@ -18,7 +19,6 @@ import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.api.world.data.Dimension;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 
 import java.nio.charset.StandardCharsets;

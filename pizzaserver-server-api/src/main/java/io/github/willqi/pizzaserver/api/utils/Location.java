@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.utils;
 
-import io.github.willqi.pizzaserver.api.world.World;
-import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 
 public interface Location {
 

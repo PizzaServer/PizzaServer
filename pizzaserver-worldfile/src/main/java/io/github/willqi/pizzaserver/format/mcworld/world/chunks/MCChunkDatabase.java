@@ -93,6 +93,7 @@ public class MCChunkDatabase implements Closeable {
         return new MCWorldChunk.Builder()
                 .setX(x)
                 .setZ(z)
+                .setDimension(dimension)
                 .setChunkVersion(chunkVersion)
                 .setHeightAndBiomeData(heightAndBiomeData)
                 .setBlockEntityData(blockEntityData)

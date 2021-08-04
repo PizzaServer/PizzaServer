@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
-import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
