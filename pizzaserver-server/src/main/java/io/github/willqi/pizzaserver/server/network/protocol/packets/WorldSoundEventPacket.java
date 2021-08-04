@@ -4,6 +4,9 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
+/**
+ * Sent by the client and server to send a sound to each other
+ */
 public class WorldSoundEventPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x7b;

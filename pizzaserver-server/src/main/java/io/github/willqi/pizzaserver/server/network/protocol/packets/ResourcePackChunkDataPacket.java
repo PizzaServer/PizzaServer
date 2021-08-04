@@ -6,6 +6,7 @@ import java.util.UUID;
 
 /**
  * Contains a portion of the data of a resource pack
+ * Sent in response to a ResourcePackChunkRequest packet
  */
 public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
 
@@ -21,26 +22,50 @@ public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
         super(ID);
     }
 
+    /**
+     * Get the UUID of the resource pack
+     * @return UUID of the resource pack
+     */
     public UUID getUUID() {
         return this.uuid;
     }
 
+    /**
+     * Change the UUID of the resource pack
+     * @param uuid UUID of the resource pack
+     */
     public void setUUID(UUID uuid) {
         this.uuid = uuid;
     }
 
+    /**
+     * Change the section of the resource pack this packet represents
+     * @return section of the resource pack
+     */
     public int getChunkIndex() {
         return this.chunkIndex;
     }
 
+    /**
+     * Change the section this resource pack represents
+     * @param index section of the resource pack
+     */
     public void setChunkIndex(int index) {
         this.chunkIndex = index;
     }
 
+    /**
+     * Get the offset of the resource pack this packet represents
+     * @return pack offset
+     */
     public long getChunkProgress() {
         return this.chunkProgress;
     }
 
+    /**
+     * Set the offset of the resource pack this packet represents
+     * @param progress pack offset
+     */
     public void setChunkProgress(long progress) {
         this.chunkProgress = progress;
     }

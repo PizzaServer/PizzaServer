@@ -51,8 +51,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
         this.version = session.getVersion();
         this.device = loginPacket.getDevice();
-        this.xuid = loginPacket.getXuid();
-        this.uuid = loginPacket.getUuid();
+        this.xuid = loginPacket.getXUID();
+        this.uuid = loginPacket.getUUID();
         this.username = loginPacket.getUsername();
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();

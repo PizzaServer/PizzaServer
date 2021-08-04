@@ -18,6 +18,9 @@ import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 
 import java.util.*;
 
+/**
+ * Sent by the server to inform the client about the server details
+ */
 public class StartGamePacket extends BaseBedrockPacket {
 
     public static final int ID = 0x0b;

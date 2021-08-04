@@ -7,6 +7,9 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * Sent by the server to update a single block in the world
+ */
 public class UpdateBlockPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x15;

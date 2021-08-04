@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
+/**
+ * Sent by the server to change the player's ability to play
+ */
 public class PlayStatusPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x02;
@@ -22,13 +25,22 @@ public class PlayStatusPacket extends BaseBedrockPacket {
     }
 
     public enum PlayStatus {
+
         LOGIN_SUCCESS,
+
         OUTDATED_CLIENT,
+
         OUTDATED_SERVER,
+
+        /**
+         * Sent when the player can be shown the world
+         */
         PLAYER_SPAWN,
 
         INVALID_TENANT,
+
         NOT_EDU_SERVER,
+
         INVALID_EDU_VERSION,
 
         SERVER_FULL

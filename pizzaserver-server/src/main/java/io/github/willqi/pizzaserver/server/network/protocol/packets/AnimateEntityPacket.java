@@ -4,6 +4,9 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 
 import java.util.*;
 
+/**
+ * Sent to the client to forcefully animate an entity
+ */
 public class AnimateEntityPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x9e;

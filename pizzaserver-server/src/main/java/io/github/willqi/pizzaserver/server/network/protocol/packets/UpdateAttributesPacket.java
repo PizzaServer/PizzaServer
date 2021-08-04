@@ -6,6 +6,9 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * Sent to update the attributes of a player entity (e.g. hunger, xp, health. etc)
+ */
 public class UpdateAttributesPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x1d;

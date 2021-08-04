@@ -28,10 +28,18 @@ public class NetworkChunkPublisherUpdatePacket extends BaseBedrockPacket {
         this.coordinates = coordinates;
     }
 
+    /**
+     * Amount of blocks to keep loaded
+     * @return blocks to keep loaded
+     */
     public int getRadius() {
         return this.radius;
     }
 
+    /**
+     * Set the amount of blocks to keep loaded
+     * @param radius blocks to keep loaded
+     */
     public void setRadius(int radius) {
         this.radius = radius;
     }

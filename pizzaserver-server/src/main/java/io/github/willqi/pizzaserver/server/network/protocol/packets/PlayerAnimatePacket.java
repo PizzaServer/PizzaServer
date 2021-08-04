@@ -3,6 +3,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAnimateAction;
 
+/**
+ * Sent by the client and server to trigger a {@link PlayerAnimateAction}
+ */
 public class PlayerAnimatePacket extends BaseBedrockPacket {
 
     public static final int ID = 0x2c;

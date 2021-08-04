@@ -5,6 +5,9 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 
+/**
+ * Sent to the server when the client does an action
+ */
 public class PlayerActionPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x24;
