@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * The ChunkQueue handles sending chunks and unloading chunks asynchronously.
  * Only a certain amount (defined in configuration) of requests can be made per player each tick.
- * This amount is also applied to the amount of chunks that can be unloaded each tick.
+ * In addition, the internal chunk processor has its own limit set in configuration as to the amount of requests that can be queued per player/for unload tasks.
  */
 public class ChunkQueue implements Closeable {
 

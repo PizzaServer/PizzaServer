@@ -6,6 +6,9 @@ import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.Play
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Handles unloading and sending chunks to players on another Thread
+ */
 public class ChunkProcessingThread extends Thread {
 
     private final ChunkManager chunkManager;
