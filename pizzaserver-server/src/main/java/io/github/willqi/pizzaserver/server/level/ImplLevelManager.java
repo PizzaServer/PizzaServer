@@ -129,7 +129,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
     @Override
     public void close() throws IOException {
         for (ImplLevel level : this.levels.values()) {
-            this.unloadLevel(level.getName());
+            this.unloadLevel(level.getProvider().getFileName());
         }
     }
 }
