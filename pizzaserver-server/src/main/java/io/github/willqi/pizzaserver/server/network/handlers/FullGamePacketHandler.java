@@ -77,6 +77,9 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
     public void onPacket(MovePlayerPacket packet) {
         ImplLocation newLocation = new ImplLocation(this.player.getLocation().getWorld(), packet.getPosition());
         this.player.setLocation(newLocation);
+        this.player.setPitch(packet.getPitch());
+        this.player.setYaw(packet.getYaw());
+        this.player.setHeadYaw(packet.getHeadYaw());
     }
 
     @Override

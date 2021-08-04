@@ -34,4 +34,16 @@ public interface LivingEntity extends Entity {
      */
     void setMovementSpeed(float movementSpeed);
 
+    float getPitch();
+
+    void setPitch(float pitch);
+
+    float getYaw();
+
+    void setYaw(float yaw);
+
+    float getHeadYaw();
+
+    void setHeadYaw(float headYaw);
+
 }
