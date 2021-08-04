@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ImplBedrockPacket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +10,9 @@ import java.util.Map;
  */
 public abstract class BasePacketRegistry {
 
-    private final Map<Integer, BaseProtocolPacketHandler<? extends ImplBedrockPacket>> handlers = new HashMap<>();
+    private final Map<Integer, BaseProtocolPacketHandler<? extends BaseBedrockPacket>> handlers = new HashMap<>();
 
-    public BasePacketRegistry register(int packetId, BaseProtocolPacketHandler<? extends ImplBedrockPacket> handler) {
+    public BasePacketRegistry register(int packetId, BaseProtocolPacketHandler<? extends BaseBedrockPacket> handler) {
         this.handlers.put(packetId, handler);
         return this;
     }
