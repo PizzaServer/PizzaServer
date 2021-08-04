@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.format.mcworld.world.chunks;
 
+import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks.MCWorldSubChunk;
@@ -18,6 +20,7 @@ public class MCWorldChunk implements BedrockChunk {
 
     private final int x;
     private final int z;
+    private final Dimension dimension;
     private final int chunkVersion;
 
     private final int[] heightMap = new int[256];
@@ -30,6 +33,7 @@ public class MCWorldChunk implements BedrockChunk {
     private MCWorldChunk(
             int x,
             int z,
+            Dimension dimension,
             int chunkVersion,
             byte[] data2d,
             byte[] blockEntityData,
@@ -39,6 +43,7 @@ public class MCWorldChunk implements BedrockChunk {
         this.chunkVersion = chunkVersion;
         this.x = x;
         this.z = z;
+        this.dimension = dimension;
 
         this.parseData2d(data2d);
         this.parseEntityNBT(blockEntityData, entityData);
@@ -100,6 +105,11 @@ public class MCWorldChunk implements BedrockChunk {
     @Override
     public int getZ() {
         return this.z;
+    }
+
+    @Override
+    public Dimension getDimension() {
+        return this.dimension;
     }
 
     public int getChunkVersion() {
@@ -172,6 +182,7 @@ public class MCWorldChunk implements BedrockChunk {
 
         private int x;
         private int z;
+        private Dimension dimension;
 
         private int chunkVersion;
 
@@ -189,6 +200,11 @@ public class MCWorldChunk implements BedrockChunk {
 
         public Builder setZ(int z) {
             this.z = z;
+            return this;
+        }
+
+        public Builder setDimension(Dimension dimension) {
+            this.dimension = dimension;
             return this;
         }
 
@@ -221,11 +237,12 @@ public class MCWorldChunk implements BedrockChunk {
             return new MCWorldChunk(
                     this.x,
                     this.z,
+                    Check.nullParam(this.dimension, "dimension"),
                     this.chunkVersion,
-                    this.heightAndBiomeData,
-                    this.blockEntityData,
-                    this.entityData,
-                    this.subChunks
+                    Check.nullParam(this.heightAndBiomeData, "heightAndBiomeData"),
+                    Check.nullParam(this.blockEntityData, "blockEntityData"),
+                    Check.nullParam(this.entityData, "entityData"),
+                    Check.nullParam(this.subChunks, "subChunks")
             );
         }
 
