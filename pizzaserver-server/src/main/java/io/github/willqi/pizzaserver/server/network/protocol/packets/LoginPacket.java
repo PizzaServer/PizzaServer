@@ -1,11 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 
 import java.util.UUID;
 
-public class LoginPacket extends ImplBedrockPacket {
+public class LoginPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x01;
 

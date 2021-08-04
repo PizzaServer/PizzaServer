@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.network.raknet.RakNetServerSession;
 import com.nukkitx.network.util.DisconnectReason;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.BedrockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
@@ -28,8 +28,8 @@ public class BedrockClientSession {
     private volatile ImplPlayer player = null;
     private volatile BaseBedrockPacketHandler handler = null;
 
-    private final Queue<BedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
-    private final Queue<BedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
+    private final Queue<BaseBedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
+    private final Queue<BaseBedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
 
     public BedrockClientSession(BedrockNetworkServer server, RakNetServerSession rakNetServerSession) {
         this.server = server;
@@ -73,12 +73,12 @@ public class BedrockClientSession {
         return this.disconnected;
     }
 
-    public void queueSendPacket(BedrockPacket packet) {
+    public void queueSendPacket(BaseBedrockPacket packet) {
         this.queuedOutgoingPackets.add(packet);
     }
 
 
-    public void sendPacket(BedrockPacket packet) {
+    public void sendPacket(BaseBedrockPacket packet) {
         if (!this.disconnected) {
             // Packets begin with the RakNet game packet id
             ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();
@@ -91,7 +91,7 @@ public class BedrockClientSession {
             VarInts.writeUnsignedInt(minecraftPacketBuffer, header);
 
             // Serialize the BedrockPacket to the minecraftPacketBuffer
-            BaseProtocolPacketHandler<BedrockPacket> handler = (BaseProtocolPacketHandler<BedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
+            BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
             if (this.handler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
                 return;
@@ -122,7 +122,7 @@ public class BedrockClientSession {
     protected void processIncomingPackets() {
         if (this.handler != null) {
             while (this.queuedIncomingPackets.peek() != null) {
-                BedrockPacket packet = this.queuedIncomingPackets.poll();
+                BaseBedrockPacket packet = this.queuedIncomingPackets.poll();
                 this.handler.onPacket(packet);
 
                 // Now we call the specific packet handler
@@ -140,7 +140,7 @@ public class BedrockClientSession {
 
     protected void processOutgoingPackets() {
         while (this.queuedOutgoingPackets.peek() != null) {
-            BedrockPacket packet = this.queuedOutgoingPackets.poll();
+            BaseBedrockPacket packet = this.queuedOutgoingPackets.poll();
             this.sendPacket(packet);
         }
     }
@@ -152,12 +152,12 @@ public class BedrockClientSession {
      */
     public void handlePacket(int packetId, ByteBuf minecraftPacket) {
         if (this.version != null) {
-            BaseProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
+            BaseProtocolPacketHandler<? extends BaseBedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when decoding packet id " + packetId);
                 return;
             }
-            BedrockPacket bedrockPacket = packetHandler.decode(minecraftPacket, this.version.getPacketRegistry().getPacketHelper());
+            BaseBedrockPacket bedrockPacket = packetHandler.decode(minecraftPacket, this.version.getPacketRegistry().getPacketHelper());
             this.queuedIncomingPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
             // We do not have a version assigned yet, so we need to use the LoginPacket to get the protocol version we are to use.

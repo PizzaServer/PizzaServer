@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network;
 
-import io.github.willqi.pizzaserver.api.network.protocol.packets.BedrockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 
 public abstract class BaseBedrockPacketHandler {
@@ -9,7 +9,7 @@ public abstract class BaseBedrockPacketHandler {
      * Called when any packet is processed
      * @param packet
      */
-    public void onPacket(BedrockPacket packet) {}
+    public void onPacket(BaseBedrockPacket packet) {}
 
     public void onPacket(LoginPacket packet) {}
     public void onPacket(SetLocalPlayerAsInitializedPacket packet) {}

@@ -1,10 +1,11 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 
-public class PlayerActionPacket extends ImplBedrockPacket {
+public class PlayerActionPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x24;
 

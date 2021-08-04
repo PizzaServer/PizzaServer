@@ -1,8 +1,10 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
 import java.util.UUID;
 
-public class ResourcePackChunkRequestPacket extends ImplBedrockPacket {
+public class ResourcePackChunkRequestPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x54;
 

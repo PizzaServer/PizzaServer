@@ -1,8 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
-public class BiomeDefinitionPacket extends ImplBedrockPacket {
+/**
+ * Contains all the biomes that are possible on the server
+ */
+public class BiomeDefinitionPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x7a;
 

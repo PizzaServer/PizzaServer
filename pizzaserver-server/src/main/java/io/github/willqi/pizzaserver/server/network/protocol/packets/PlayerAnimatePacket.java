@@ -1,8 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAnimateAction;
 
-public class PlayerAnimatePacket extends ImplBedrockPacket {
+public class PlayerAnimatePacket extends BaseBedrockPacket {
 
     public static final int ID = 0x2c;
 

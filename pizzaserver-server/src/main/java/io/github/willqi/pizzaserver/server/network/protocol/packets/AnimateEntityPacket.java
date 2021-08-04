@@ -1,8 +1,10 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
 import java.util.*;
 
-public class AnimateEntityPacket extends ImplBedrockPacket {
+public class AnimateEntityPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x9e;
 

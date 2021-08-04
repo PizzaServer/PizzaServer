@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class PlayStatusPacket extends ImplBedrockPacket {
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
+public class PlayStatusPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x02;
 

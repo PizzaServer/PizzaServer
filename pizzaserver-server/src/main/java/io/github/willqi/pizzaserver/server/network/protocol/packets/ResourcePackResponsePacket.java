@@ -1,11 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class ResourcePackResponsePacket extends ImplBedrockPacket {
+public class ResourcePackResponsePacket extends BaseBedrockPacket {
 
     public static final int ID = 0x08;
 

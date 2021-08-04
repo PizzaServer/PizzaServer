@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 
@@ -11,7 +12,7 @@ import java.util.Set;
  * Sent after the client responds with a HAVE_ALL_PACKS from the ResourcePackResponsePacket.
  * Contains all of the packs the server supports
  */
-public class ResourcePackStackPacket extends ImplBedrockPacket {
+public class ResourcePackStackPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x07;
 

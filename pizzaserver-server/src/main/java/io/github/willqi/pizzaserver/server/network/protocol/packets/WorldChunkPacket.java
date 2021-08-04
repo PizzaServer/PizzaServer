@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-public class WorldChunkPacket extends ImplBedrockPacket {
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+
+public class WorldChunkPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x3a;
 

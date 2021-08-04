@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 
 import java.util.HashSet;
@@ -8,7 +9,7 @@ import java.util.Set;
 /**
  * Sent to inform the client of all packs the server has
  */
-public class ResourcePacksInfoPacket extends ImplBedrockPacket {
+public class ResourcePacksInfoPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x06;
 

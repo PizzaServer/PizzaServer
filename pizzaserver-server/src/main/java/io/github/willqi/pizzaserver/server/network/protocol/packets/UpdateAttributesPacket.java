@@ -1,11 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class UpdateAttributesPacket extends ImplBedrockPacket {
+public class UpdateAttributesPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x1d;
 

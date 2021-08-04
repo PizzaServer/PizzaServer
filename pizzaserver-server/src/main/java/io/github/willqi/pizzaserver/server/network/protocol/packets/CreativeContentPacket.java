@@ -5,6 +5,9 @@ import io.github.willqi.pizzaserver.server.item.Item;
 import java.util.Collection;
 import java.util.HashSet;
 
+/**
+ * Sent with all of the creative items in the creative inventory
+ */
 public class CreativeContentPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x91;

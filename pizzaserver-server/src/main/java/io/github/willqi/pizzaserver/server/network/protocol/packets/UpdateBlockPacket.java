@@ -1,12 +1,13 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class UpdateBlockPacket extends ImplBedrockPacket {
+public class UpdateBlockPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x15;
 
