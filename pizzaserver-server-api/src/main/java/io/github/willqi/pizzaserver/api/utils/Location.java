@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.utils;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 
@@ -23,11 +24,15 @@ public class Location extends Vector3 {
     }
 
     public Chunk getChunk() {
-        return this.world.getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
+        return this.getWorld().getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
     }
 
     public World getWorld() {
         return this.world;
+    }
+
+    public Level getLevel() {
+        return this.getWorld().getLevel();
     }
 
     public int getChunkX() {
