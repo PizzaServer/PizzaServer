@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.api.entity;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
@@ -30,6 +31,12 @@ public interface Entity extends Watchable {
      * @param location the new {@link Location}
      */
     void setLocation(Location location);
+
+    /**
+     * Retrieve the {@link Level} this entity is in
+     * @return {@link Level}
+     */
+    Level getLevel();
 
     EntityMetaData getMetaData();
 

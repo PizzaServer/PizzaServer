@@ -13,6 +13,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
@@ -170,7 +171,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      */
     public void saveData() throws IOException {
         PlayerData playerData = new PlayerData.Builder()
-                .setLevelName(this.getLocation().getWorld().getLevel().getName())
+                .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
                 .setDimension(this.getLocation().getWorld().getDimension())
                 .setPosition(this.getLocation())
                 .setYaw(0)
