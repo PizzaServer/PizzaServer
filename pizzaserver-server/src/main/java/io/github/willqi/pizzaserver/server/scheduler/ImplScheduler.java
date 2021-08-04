@@ -183,7 +183,7 @@ public class ImplScheduler implements Scheduler {
         int size = schedulerTasks.size();
         for(int i = 0; i < size; i++) {
             // Entry belongs before task? Insert into it's position
-            if(schedulerTasks.get(i).getNextTick() < entry.getNextTick()) {
+            if(schedulerTasks.get(i).getNextTick() > entry.getNextTick()) {
                 this.schedulerTasks.add(i, entry);
                 return;
             }

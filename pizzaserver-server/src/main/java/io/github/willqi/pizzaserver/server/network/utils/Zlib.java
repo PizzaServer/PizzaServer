@@ -10,7 +10,7 @@ import java.util.zip.Inflater;
 public class Zlib {
 
     // How big should our temporary zlib array allocate space for?
-    private static final int MAX_CHUNK_SIZE = 1048576 * 2;  // 2 MB
+    private static final int MAX_CHUNK_SIZE = 1024;
 
     public static ByteBuf compressBuffer(ByteBuf buffer) {
         byte[] data = new byte[buffer.readableBytes()];
@@ -19,17 +19,14 @@ public class Zlib {
         compressor.setInput(data);
         compressor.finish();
 
-        ByteBuf result = ByteBufAllocator.DEFAULT.buffer();
-        while (!compressor.needsInput()) {
-            byte[] compressed = new byte[MAX_CHUNK_SIZE];
-            int compressedBytesWritten = compressor.deflate(compressed);
-
-            byte[] compressedSlimmed = new byte[compressedBytesWritten];
-            System.arraycopy(compressed, 0, compressedSlimmed, 0, compressedBytesWritten);
-            result.writeBytes(compressedSlimmed);
+        byte[] result = new byte[MAX_CHUNK_SIZE];
+        ByteBuf resultBuffer = ByteBufAllocator.DEFAULT.buffer(MAX_CHUNK_SIZE);
+        while (!compressor.finished()) {
+            int writtenBytes = compressor.deflate(result);
+            resultBuffer.writeBytes(result, 0, writtenBytes);
         }
         compressor.end();
-        return result;
+        return resultBuffer;
     }
 
     public static ByteBuf decompressBuffer(ByteBuf buffer) throws DataFormatException {
@@ -44,17 +41,10 @@ public class Zlib {
             while (!inflater.finished()) {
                 byte[] decompressed = new byte[MAX_CHUNK_SIZE];
                 int uncompressedBytes = inflater.inflate(decompressed);
-                inflater.finished();
-
-                byte[] decompressedSlimmed = new byte[uncompressedBytes];
-                System.arraycopy(decompressed, 0, decompressedSlimmed, 0, uncompressedBytes);
-
-                result.writeBytes(decompressedSlimmed);
+                result.writeBytes(decompressed, 0, uncompressedBytes);
             }
         } catch (DataFormatException exception) {
-            if (result.readableBytes() > 0) {
-                result.release();
-            }
+            result.release();
             throw exception;
         }
         inflater.end();
