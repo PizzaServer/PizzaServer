@@ -9,7 +9,7 @@ public class ResourcePackDataInfoPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x52;
 
-    private UUID id;
+    private UUID uuid;
     private String version;
     private PackType type;
     private byte[] hash;
@@ -19,16 +19,17 @@ public class ResourcePackDataInfoPacket extends ImplBedrockPacket {
     private int maxChunkSize;
     private int chunkCount;
 
+
     public ResourcePackDataInfoPacket() {
         super(ID);
     }
 
-    public UUID getPackId() {
-        return this.id;
+    public UUID getUUID() {
+        return this.uuid;
     }
 
-    public void setPackId(UUID id) {
-        this.id = id;
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getVersion() {
@@ -89,6 +90,7 @@ public class ResourcePackDataInfoPacket extends ImplBedrockPacket {
 
 
     public enum PackType {
+        INVALID,
         RESOURCE_PACK,
         BEHAVIOR_PACK
     }

@@ -1,24 +1,25 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
+import java.util.UUID;
 
 public class ResourcePackChunkRequestPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x54;
 
-    private PackInfo packInfo;
+    private UUID uuid;
     private int chunkIndex;
+
 
     public ResourcePackChunkRequestPacket() {
         super(ID);
     }
 
-    public PackInfo getPackInfo() {
-        return this.packInfo;
+    public UUID getUUID() {
+        return this.uuid;
     }
 
-    public void setPackInfo(PackInfo packInfo) {
-        this.packInfo = packInfo;
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public int getChunkIndex() {

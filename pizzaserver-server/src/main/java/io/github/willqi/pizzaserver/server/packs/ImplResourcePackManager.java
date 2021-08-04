@@ -47,13 +47,11 @@ public class ImplResourcePackManager implements ResourcePackManager {
                             this.packs.put(pack.getUuid(), pack);
                             ImplServer.getInstance().getLogger().info("Loaded resource pack: " + file.getName());
                         } catch (IOException exception) {
-                            ImplServer.getInstance().getLogger().error("Failed to load resource pack: " + file.getName());
-                            ImplServer.getInstance().getLogger().error(exception);
+                            ImplServer.getInstance().getLogger().error("Failed to load resource pack: " + file.getName(), exception);
                         }
                     });
         } catch (IOException exception) {
-            ImplServer.getInstance().getLogger().error("Failed to read resourcepacks directory");
-            ImplServer.getInstance().getLogger().error(exception);
+            ImplServer.getInstance().getLogger().error("Failed to read resourcepacks directory", exception);
         }
     }
 

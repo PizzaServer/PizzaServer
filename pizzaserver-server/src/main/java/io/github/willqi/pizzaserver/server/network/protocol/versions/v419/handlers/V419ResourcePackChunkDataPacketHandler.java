@@ -9,7 +9,7 @@ public class V419ResourcePackChunkDataPacketHandler extends BaseProtocolPacketHa
 
     @Override
     public void encode(ResourcePackChunkDataPacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        helper.writeString(packet.getId() + "_" + packet.getVersion(), buffer);
+        helper.writeString(packet.getUUID().toString(), buffer);
         buffer.writeIntLE(packet.getChunkIndex());
         buffer.writeLongLE(packet.getChunkProgress());
         helper.writeByteArray(packet.getData(), buffer);

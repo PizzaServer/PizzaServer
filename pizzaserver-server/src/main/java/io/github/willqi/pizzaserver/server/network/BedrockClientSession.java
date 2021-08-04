@@ -141,7 +141,6 @@ public class BedrockClientSession {
     }
 
     public void handlePacket(int packetId, ByteBuf buffer) {
-
         if (this.version != null) {
             BaseProtocolPacketHandler<? extends BedrockPacket> packetHandler = this.version.getPacketRegistry().getPacketHandler(packetId);
             if (packetHandler == null) {
@@ -151,7 +150,6 @@ public class BedrockClientSession {
             BedrockPacket bedrockPacket = packetHandler.decode(buffer, this.version.getPacketRegistry().getPacketHelper());
             this.queuedIncomingPackets.add(bedrockPacket);
         } else if (packetId == LoginPacket.ID) {
-
             // First packet, we need to find their protocol to find the correct packet handler.
             int index = buffer.readerIndex();
             int protocol = buffer.readInt();
@@ -181,6 +179,11 @@ public class BedrockClientSession {
         } else {
             // Client tried to send us a packet without sending the login packet first.
             this.serverSession.disconnect(DisconnectReason.BAD_PACKET);
+        }
+
+        if (buffer.readableBytes() > 0) {
+            this.server.getPizzaServer().getLogger().warn("There were bytes that were left unread while parsing a packet with the id: " + packetId);
+            buffer.release();
         }
     }
 

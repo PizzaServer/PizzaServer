@@ -9,30 +9,22 @@ public class ResourcePackChunkDataPacket extends ImplBedrockPacket {
 
     public static final int ID = 0x53;
 
-    private UUID id;
-    private String version;
+    private UUID uuid;
     private int chunkIndex;
     private long chunkProgress;
     private byte[] data;
+
 
     public ResourcePackChunkDataPacket() {
         super(ID);
     }
 
-    public UUID getId() {
-        return this.id;
+    public UUID getUUID() {
+        return this.uuid;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getVersion() {
-        return this.version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public int getChunkIndex() {

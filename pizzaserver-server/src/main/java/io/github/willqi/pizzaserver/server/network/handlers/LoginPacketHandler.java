@@ -50,7 +50,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             return;
         }
 
-        // Do we support the version
+        // Check if the protocol version is supported
         if (!ServerProtocol.VERSIONS.containsKey(loginPacket.getProtocol())) {
             PlayStatusPacket loginFailPacket = new PlayStatusPacket();
             if (loginPacket.getProtocol() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
@@ -83,7 +83,6 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             player.sendPacket(playStatusPacket);
             return;
         }
-
         this.session.setPlayer(player);
 
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
@@ -124,14 +123,13 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     ResourcePackDataInfoPacket resourcePackDataInfoPacket = new ResourcePackDataInfoPacket();
                     if (this.server.getResourcePackManager().getPacks().containsKey(packInfo.getUuid())) {
                         pack = this.server.getResourcePackManager().getPacks().get(packInfo.getUuid());
-                        resourcePackDataInfoPacket.setType(ResourcePackDataInfoPacket.PackType.RESOURCE_PACK);
                     } else {
                         this.server.getLogger().error("Client requested invalid pack.");
                         this.session.disconnect();
                         return;
                     }
-
-                    resourcePackDataInfoPacket.setPackId(pack.getUuid());
+                    resourcePackDataInfoPacket.setType(ResourcePackDataInfoPacket.PackType.RESOURCE_PACK);
+                    resourcePackDataInfoPacket.setUUID(pack.getUuid());
                     resourcePackDataInfoPacket.setHash(pack.getHash());
                     resourcePackDataInfoPacket.setVersion(pack.getVersion());
                     resourcePackDataInfoPacket.setChunkCount(pack.getChunkCount());
@@ -168,7 +166,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             return;
         }
 
-        ResourcePack pack = this.server.getResourcePackManager().getPacks().getOrDefault(packet.getPackInfo().getUuid(), null);
+        ResourcePack pack = this.server.getResourcePackManager().getPacks().getOrDefault(packet.getUUID(), null);
         if (pack == null) {
             this.server.getLogger().error("Invalid resource pack UUID specified while handling ResourcePackChunkRequestPacket.");
             this.session.disconnect();
@@ -183,8 +181,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
         // Send the resource pack chunk requested
         ResourcePackChunkDataPacket chunkDataPacket = new ResourcePackChunkDataPacket();
-        chunkDataPacket.setId(pack.getUuid());
-        chunkDataPacket.setVersion(pack.getVersion());
+        chunkDataPacket.setUUID(pack.getUuid());
         chunkDataPacket.setChunkIndex(packet.getChunkIndex());
         chunkDataPacket.setChunkProgress((long)packet.getChunkIndex() * pack.getMaxChunkLength());  // Where to continue the download process from
         chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));

@@ -28,11 +28,8 @@ public class V419ResourcePackStackPacketHandler extends BaseProtocolPacketHandle
         }
 
         helper.writeString(packet.getGameVersion(), buffer);
-
         helper.writeExperiments(packet.getExperiments(), buffer);
         buffer.writeBoolean(packet.isExperimentsPreviouslyEnabled());
-
-
     }
 
 }

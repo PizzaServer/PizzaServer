@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -24,10 +25,8 @@ public class ZipResourcePack implements ResourcePack {
     public ZipResourcePack(File file) throws IOException {
         this.parseManifestFile(file);
         this.parsePackData(file);
-        try {
-            InputStream fileInputStream = new FileInputStream(file);
+        try (InputStream fileInputStream = new FileInputStream(file)) {
             this.hash = MessageDigest.getInstance("SHA-256").digest(IOUtils.toByteArray(fileInputStream));
-            fileInputStream.close();
         } catch (NoSuchAlgorithmException exception) {
             throw new AssertionError(exception);
         }
@@ -35,7 +34,7 @@ public class ZipResourcePack implements ResourcePack {
 
     @Override
     public int getMaxChunkLength() {
-        return 1048576; // 1 MB
+        return 102400; // While we can technically go higher, the Bedrock Dedicated Server keeps this at 102400.
     }
 
     @Override
@@ -107,31 +106,21 @@ public class ZipResourcePack implements ResourcePack {
         int chunksLength = (int)Math.ceil((float)this.dataLength / this.getMaxChunkLength());
         this.chunks = new byte[chunksLength][];
 
-        InputStream stream = new FileInputStream(file);
-        try {
+        try (InputStream stream = new FileInputStream(file)) {
             for (int i = 0; i < chunksLength - 1; i++) {
-                byte[] data = this.parseDataChunk(stream, new byte[this.getMaxChunkLength()]);
-                this.chunks[i] = data;
+                this.chunks[i] = parseDataChunk(stream, new byte[this.getMaxChunkLength()]);
             }
 
             // The last data chunk doesn't use as much space
-            byte[] data = this.parseDataChunk(stream, new byte[(int)(this.dataLength - (chunksLength - 1) * this.getMaxChunkLength())]);
+            byte[] data = parseDataChunk(stream, new byte[(int)(this.dataLength - (chunksLength - 1) * this.getMaxChunkLength())]);
             this.chunks[chunksLength - 1] = data;
 
-        } finally {
-            stream.close();
         }
+
     }
 
-    private byte[] parseDataChunk(InputStream stream, byte[] data) throws IOException {
-        for (int byteIndex = 0; byteIndex < this.getMaxChunkLength(); byteIndex++) {
-            int currentByte = stream.read();
-            if (currentByte == -1) {
-                break;
-            } else {
-                data[byteIndex] = (byte)currentByte;
-            }
-        }
+    private static byte[] parseDataChunk(InputStream stream, byte[] data) throws IOException {
+        stream.read(data);
         return data;
     }
 
