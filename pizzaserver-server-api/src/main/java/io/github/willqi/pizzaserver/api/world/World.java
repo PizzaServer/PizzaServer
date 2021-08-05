@@ -26,6 +26,10 @@ public interface World {
 
     Block getBlock(int x, int y, int z);
 
+    void setBlock(String blockId, Vector3i position);
+
+    void setBlock(String blockId, int x, int y, int z);
+
     void setBlock(BaseBlockType blockType, Vector3i position);
 
     void setBlock(BaseBlockType blockType, int x, int y, int z);

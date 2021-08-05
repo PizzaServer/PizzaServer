@@ -82,6 +82,17 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
+    public void setBlock(String blockId, Vector3i position) {
+        this.setBlock(blockId, position.getX(), position.getY(), position.getZ());
+    }
+
+    @Override
+    public void setBlock(String blockId, int x, int y, int z) {
+        BaseBlockType blockType = this.getServer().getBlockRegistry().getBlockType(blockId);
+        this.setBlock(blockType, x, y, z);
+    }
+
+    @Override
     public void setBlock(BaseBlockType blockType, Vector3i position) {
         this.setBlock(new Block(blockType), position);
     }
