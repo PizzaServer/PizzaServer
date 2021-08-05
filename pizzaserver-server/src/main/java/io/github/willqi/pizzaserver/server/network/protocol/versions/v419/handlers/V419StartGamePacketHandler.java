@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
-import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
@@ -100,7 +100,7 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
 
         // custom blocks
         VarInts.writeUnsignedInt(buffer, packet.getBlockProperties().size());
-        for (BlockType blockType : packet.getBlockProperties()) {
+        for (BaseBlockType blockType : packet.getBlockProperties()) {
             this.writeBlockProperty(blockType, buffer, helper);
         }
 
@@ -117,7 +117,7 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
 
     }
 
-    protected void writeBlockProperty(BlockType blockType, ByteBuf buffer, BasePacketHelper helper) {
+    protected void writeBlockProperty(BaseBlockType blockType, ByteBuf buffer, BasePacketHelper helper) {
         helper.writeString(blockType.getBlockId(), buffer);
 
         NBTCompound blockContainer = new NBTCompound();

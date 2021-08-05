@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
-import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -26,9 +26,9 @@ public interface World {
 
     Block getBlock(int x, int y, int z);
 
-    void setBlock(BlockType blockType, Vector3i position);
+    void setBlock(BaseBlockType blockType, Vector3i position);
 
-    void setBlock(BlockType blockType, int x, int y, int z);
+    void setBlock(BaseBlockType blockType, int x, int y, int z);
 
     void setBlock(Block block, Vector3i position);
 

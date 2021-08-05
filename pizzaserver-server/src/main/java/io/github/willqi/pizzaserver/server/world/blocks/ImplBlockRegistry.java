@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.world.blocks;
 
 import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
-import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeAir;
 import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeDirt;
 import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeGrass;
@@ -15,10 +15,10 @@ import java.util.*;
 public class ImplBlockRegistry implements BlockRegistry {
 
     // All registered block types
-    private final Map<String, BlockType> types = new HashMap<>();
+    private final Map<String, BaseBlockType> types = new HashMap<>();
 
     // All registered CUSTOM block types
-    private final Set<BlockType> customTypes = new HashSet<>();
+    private final Set<BaseBlockType> customTypes = new HashSet<>();
 
 
     public ImplBlockRegistry() {
@@ -26,7 +26,7 @@ public class ImplBlockRegistry implements BlockRegistry {
     }
 
     @Override
-    public void register(BlockType blockType) {
+    public void register(BaseBlockType blockType) {
         if (this.types.containsKey(blockType.getBlockId())) {
             throw new IllegalArgumentException("Block id " + blockType.getBlockId() + " was already registered.");
         }
@@ -38,7 +38,7 @@ public class ImplBlockRegistry implements BlockRegistry {
     }
 
     @Override
-    public BlockType getBlockType(String blockId) {
+    public BaseBlockType getBlockType(String blockId) {
         if (!this.types.containsKey(blockId)) {
             throw new NullPointerException("Could not find a block type by the id of " + blockId);
         }
@@ -51,7 +51,7 @@ public class ImplBlockRegistry implements BlockRegistry {
     }
 
     @Override
-    public Set<BlockType> getCustomTypes() {
+    public Set<BaseBlockType> getCustomTypes() {
         return Collections.unmodifiableSet(this.customTypes);
     }
 

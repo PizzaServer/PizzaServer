@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.api.world.blocks;
 
-import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 
 import java.util.Set;
 
@@ -10,18 +10,18 @@ import java.util.Set;
 public interface BlockRegistry {
 
     /**
-     * Register a {@link BlockType} to the server
-     * Custom blocks will need to register their {@link BlockType} in order to be used and for the world to render correctly
-     * @param blockType {@link BlockType} that needs to be registered
+     * Register a {@link BaseBlockType} to the server
+     * Custom blocks will need to register their {@link BaseBlockType} in order to be used and for the world to render correctly
+     * @param blockType {@link BaseBlockType} that needs to be registered
      */
-    void register(BlockType blockType);
+    void register(BaseBlockType blockType);
 
     /**
-     * Retrieve a {@link BlockType} by it's id (e.g. minecraft:air)
+     * Retrieve a {@link BaseBlockType} by it's id (e.g. minecraft:air)
      * @param blockId The id of the block (e.g. minecraft:air)
-     * @return {@link BlockType}
+     * @return {@link BaseBlockType}
      */
-    BlockType getBlockType(String blockId);
+    BaseBlockType getBlockType(String blockId);
 
     /**
      * Check if a block id was registered
@@ -31,9 +31,9 @@ public interface BlockRegistry {
     boolean hasBlockType(String blockId);
 
     /**
-     * Retrieve all non-Vanilla {@link BlockType}s that are registered
-     * @return registered non-Vanilla {@link BlockType}s
+     * Retrieve all non-Vanilla {@link BaseBlockType}s that are registered
+     * @return registered non-Vanilla {@link BaseBlockType}s
      */
-    Set<BlockType> getCustomTypes();
+    Set<BaseBlockType> getCustomTypes();
 
 }

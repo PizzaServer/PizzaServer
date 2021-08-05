@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
-import io.github.willqi.pizzaserver.api.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -15,7 +15,6 @@ import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
-import io.github.willqi.pizzaserver.server.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.BaseWorldProvider;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProviderThread;
@@ -83,13 +82,13 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
-    public void setBlock(BlockType blockType, Vector3i position) {
-        this.setBlock(new ImplBlock(blockType), position);
+    public void setBlock(BaseBlockType blockType, Vector3i position) {
+        this.setBlock(new Block(blockType), position);
     }
 
     @Override
-    public void setBlock(BlockType blockType, int x, int y, int z) {
-        this.setBlock(new ImplBlock(blockType), x, y, z);
+    public void setBlock(BaseBlockType blockType, int x, int y, int z) {
+        this.setBlock(new Block(blockType), x, y, z);
     }
 
     @Override

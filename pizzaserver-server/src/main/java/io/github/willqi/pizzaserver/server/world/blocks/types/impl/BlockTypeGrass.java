@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.world.blocks.types.impl;
 
-import io.github.willqi.pizzaserver.server.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
 
 public class BlockTypeGrass extends BaseBlockType {
