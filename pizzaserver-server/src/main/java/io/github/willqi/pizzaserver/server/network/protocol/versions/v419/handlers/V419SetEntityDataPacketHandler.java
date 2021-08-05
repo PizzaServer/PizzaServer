@@ -8,7 +8,6 @@ import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
-import io.github.willqi.pizzaserver.server.entity.meta.properties.ImplEntityMetaProperty;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
@@ -315,32 +314,32 @@ public class V419SetEntityDataPacketHandler extends BaseProtocolPacketHandler<Se
             VarInts.writeUnsignedInt(buffer, this.propertyTypeIds.get(propertyName.getType()));
             switch (propertyName.getType()) {
                 case BYTE:
-                    buffer.writeByte(((ImplEntityMetaProperty<Byte>)properties.get(propertyName)).getValue());
+                    buffer.writeByte((Byte)properties.get(propertyName).getValue());
                     break;
                 case SHORT:
-                    buffer.writeShortLE(((ImplEntityMetaProperty<Short>)properties.get(propertyName)).getValue());
+                    buffer.writeShortLE((Short)properties.get(propertyName).getValue());
                     break;
                 case INTEGER:
-                    VarInts.writeInt(buffer, ((ImplEntityMetaProperty<Integer>)properties.get(propertyName)).getValue());
+                    VarInts.writeInt(buffer, (Integer)properties.get(propertyName).getValue());
                     break;
                 case FLOAT:
-                    buffer.writeFloatLE(((ImplEntityMetaProperty<Float>)properties.get(propertyName)).getValue());
+                    buffer.writeFloatLE((Float)properties.get(propertyName).getValue());
                     break;
                 case LONG:
-                    VarInts.writeLong(buffer, ((ImplEntityMetaProperty<Long>)properties.get(propertyName)).getValue());
+                    VarInts.writeLong(buffer, (Long)properties.get(propertyName).getValue());
                     break;
                 case STRING:
-                    helper.writeString(((ImplEntityMetaProperty<String>)properties.get(propertyName)).getValue(), buffer);
+                    helper.writeString((String)properties.get(propertyName).getValue(), buffer);
                     break;
                 case NBT:
-                    helper.writeNBTCompound(((ImplEntityMetaProperty<NBTCompound>)properties.get(propertyName)).getValue(), buffer);
+                    helper.writeNBTCompound((NBTCompound)properties.get(propertyName).getValue(), buffer);
                     break;
                 case VECTOR3I:
-                    Vector3i vector3i = ((ImplEntityMetaProperty<Vector3i>)properties.get(propertyName)).getValue();
+                    Vector3i vector3i = (Vector3i)properties.get(propertyName).getValue();
                     helper.writeBlockVector(buffer, vector3i);
                     break;
                 case VECTOR3:
-                    Vector3 vector3 = ((ImplEntityMetaProperty<Vector3>)properties.get(propertyName)).getValue();
+                    Vector3 vector3 = (Vector3)properties.get(propertyName).getValue();
                     helper.writeVector3(buffer, vector3);
                     break;
                 default:
