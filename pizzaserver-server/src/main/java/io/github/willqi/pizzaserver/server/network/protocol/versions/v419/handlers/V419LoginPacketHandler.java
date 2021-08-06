@@ -154,6 +154,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
         Skin.Builder skinBuilder = new Skin.Builder();
 
         skinBuilder.setSkinId(skinData.get("SkinId").getAsString())
+                .setFullSkinId(UUID.randomUUID().toString())
                 .setPlayFabId(skinData.has("PlayFabId") ? skinData.get("PlayFabId").getAsString() : "")
                 .setSkinResourcePatch(decodeB64(skinData.get("SkinResourcePatch").getAsString()))
                 .setGeometryData(decodeB64(skinData.get("SkinGeometryData").getAsString()))
@@ -167,10 +168,10 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
                 .setCapeOnClassic(skinData.get("CapeOnClassicSkin").getAsBoolean())
                 .setPremium(skinData.get("PremiumSkin").getAsBoolean())
                 /* Parse persona specific data */
-                .isPersona(skinData.get("PersonaSkin").getAsBoolean())
+                .setPersona(skinData.get("PersonaSkin").getAsBoolean())
                 .setAnimationData(decodeB64(skinData.get("SkinAnimationData").getAsString()))
                 .setArmSize(skinData.get("ArmSize").getAsString())
-                .setSkinColor(skinData.get("SkinColor").getAsString());
+                .setSkinColour(skinData.get("SkinColor").getAsString());
 
         List<SkinAnimation> animations = new ArrayList<>();
         for (JsonElement element : skinData.get("AnimatedImageData").getAsJsonArray()) {
@@ -182,6 +183,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
                             .setSkinHeight(animation.get("ImageWidth").getAsInt())
                             .setSkinWidth(animation.get("ImageHeight").getAsInt())
                             .setSkinData(Base64.getDecoder().decode(animation.get("Image").getAsString()))
+                            .setExpressionType(animation.has("ExpressionType") ? animation.get("ExpressionType").getAsInt() : 0)
                             .build()
             );
         }

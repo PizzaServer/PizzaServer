@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
@@ -27,6 +28,10 @@ public abstract class BasePacketHelper {
 
 
     public abstract void writeItem(Item item, ByteBuf buffer);
+
+    public abstract void writeSkin(ByteBuf buffer, Skin skin);
+
+    public abstract Skin readSkin(ByteBuf buffer);
 
     public void writeString(String string, ByteBuf buffer) {
         byte[] data = string.getBytes(StandardCharsets.UTF_8);
