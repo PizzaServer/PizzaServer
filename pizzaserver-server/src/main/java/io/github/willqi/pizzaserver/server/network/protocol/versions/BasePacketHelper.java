@@ -1,6 +1,11 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
+import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyType;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -8,6 +13,7 @@ import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.item.Item;
+import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.netty.buffer.ByteBuf;
 
@@ -15,9 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +29,13 @@ import java.util.stream.Collectors;
  */
 public abstract class BasePacketHelper {
 
-    protected Set<Experiment> supportedExperiments = new HashSet<>();
+    protected final Set<Experiment> supportedExperiments = new HashSet<>();
+    protected final Set<EntityLink.Type> supportedEntityLinkTypes = new HashSet<>();
+
+    protected final Map<EntityMetaFlagCategory, Integer> supportedEntityFlagTypes = new HashMap<>();
+    protected final Map<EntityMetaFlag, Integer> supportedEntityFlags = new HashMap<>();
+    protected final Map<EntityMetaPropertyName, Integer> supportedEntityProperties = new HashMap<>();
+    protected final Set<EntityMetaPropertyType> supportedEntityPropertyTypes = new HashSet<>();
 
 
     public abstract void writeItem(Item item, ByteBuf buffer);
@@ -33,6 +43,10 @@ public abstract class BasePacketHelper {
     public abstract void writeSkin(ByteBuf buffer, Skin skin);
 
     public abstract Skin readSkin(ByteBuf buffer);
+
+    public abstract void writeEntityMetadata(EntityMetaData metaData, ByteBuf buffer);
+
+    public abstract void writeEntityLink(EntityLink entityLink, ByteBuf buffer);
 
     public void writeString(String string, ByteBuf buffer) {
         byte[] data = string.getBytes(StandardCharsets.UTF_8);
