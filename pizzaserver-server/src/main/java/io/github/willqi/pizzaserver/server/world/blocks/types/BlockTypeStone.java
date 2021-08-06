@@ -1,25 +1,24 @@
-package io.github.willqi.pizzaserver.server.world.blocks.types.impl;
+package io.github.willqi.pizzaserver.server.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTString;
+import io.github.willqi.pizzaserver.api.item.ItemToolType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class BlockTypeDirt extends BaseBlockType {
+public class BlockTypeStone extends BaseBlockType {
 
     private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
         {
-            List<String> dirtTypes = Arrays.asList("normal", "coarse");
+            List<String> stoneTypes = Arrays.asList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth");
             int stateIndex = 0;
-            for (String dirtType : dirtTypes) {
+            for (String stoneType : stoneTypes) {
                 NBTCompound state = new NBTCompound("states");
-                state.put("dirt_type", new NBTString(dirtType));
+                state.put("stone_type", new NBTString(stoneType));
                 this.put(state, stateIndex++);
             }
         }
@@ -28,17 +27,22 @@ public class BlockTypeDirt extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.DIRT;
+        return BlockTypeID.STONE;
     }
 
     @Override
     public String getName() {
-        return "Dirt";
+        return "Stone";
     }
 
     @Override
     public BiMap<NBTCompound, Integer> getBlockStates() {
         return BLOCK_STATES;
+    }
+
+    @Override
+    public Set<ItemToolType> getCorrectTools() {
+        return Collections.singleton(ItemToolType.WOOD_PICKAXE);
     }
 
 }

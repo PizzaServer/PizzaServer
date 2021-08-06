@@ -1,24 +1,25 @@
-package io.github.willqi.pizzaserver.server.world.blocks.types.impl;
+package io.github.willqi.pizzaserver.server.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTString;
-import io.github.willqi.pizzaserver.api.item.ItemToolType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
-public class BlockTypeStone extends BaseBlockType {
+public class BlockTypeDirt extends BaseBlockType {
 
     private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
         {
-            List<String> stoneTypes = Arrays.asList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth");
+            List<String> dirtTypes = Arrays.asList("normal", "coarse");
             int stateIndex = 0;
-            for (String stoneType : stoneTypes) {
+            for (String dirtType : dirtTypes) {
                 NBTCompound state = new NBTCompound("states");
-                state.put("stone_type", new NBTString(stoneType));
+                state.put("dirt_type", new NBTString(dirtType));
                 this.put(state, stateIndex++);
             }
         }
@@ -27,22 +28,17 @@ public class BlockTypeStone extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.STONE;
+        return BlockTypeID.DIRT;
     }
 
     @Override
     public String getName() {
-        return "Stone";
+        return "Dirt";
     }
 
     @Override
     public BiMap<NBTCompound, Integer> getBlockStates() {
         return BLOCK_STATES;
-    }
-
-    @Override
-    public Set<ItemToolType> getCorrectTools() {
-        return Collections.singleton(ItemToolType.WOOD_PICKAXE);
     }
 
 }

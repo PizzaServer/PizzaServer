@@ -2,10 +2,10 @@ package io.github.willqi.pizzaserver.server.world.blocks;
 
 import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeAir;
-import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeDirt;
-import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeGrass;
-import io.github.willqi.pizzaserver.server.world.blocks.types.impl.BlockTypeStone;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockTypeAir;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockTypeDirt;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockTypeGrass;
+import io.github.willqi.pizzaserver.server.world.blocks.types.BlockTypeStone;
 
 import java.util.*;
 
