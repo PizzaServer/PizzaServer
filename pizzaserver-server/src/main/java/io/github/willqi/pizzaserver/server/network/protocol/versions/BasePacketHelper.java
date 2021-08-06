@@ -17,6 +17,7 @@ import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +42,15 @@ public abstract class BasePacketHelper {
     public String readString(ByteBuf buffer) {
         byte[] data = readByteArray(buffer);
         return new String(data, StandardCharsets.UTF_8);
+    }
+
+    public void writeUUID(UUID uuid, ByteBuf buffer) {
+        buffer.writeLongLE(uuid.getMostSignificantBits());
+        buffer.writeLongLE(uuid.getLeastSignificantBits());
+    }
+
+    public UUID readUUID(ByteBuf buffer) {
+        return new UUID(buffer.readLongLE(), buffer.readLongLE());
     }
 
     public String readLEString(ByteBuf buffer) {

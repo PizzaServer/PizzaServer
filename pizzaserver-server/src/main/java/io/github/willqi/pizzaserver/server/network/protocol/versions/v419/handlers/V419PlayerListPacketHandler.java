@@ -16,7 +16,7 @@ public class V419PlayerListPacketHandler extends BaseProtocolPacketHandler<Playe
         switch (packet.getActionType()) {
             case ADD:
                 for (PlayerListPacket.Entry entry : packet.getEntries()) {
-                    helper.writeString(entry.getUUID().toString(), buffer);
+                    helper.writeUUID(entry.getUUID(), buffer);
                     VarInts.writeLong(buffer, entry.getEntityRuntimeId());
                     helper.writeString(entry.getUsername(), buffer);
                     helper.writeString(entry.getXUID(), buffer);
@@ -32,7 +32,7 @@ public class V419PlayerListPacketHandler extends BaseProtocolPacketHandler<Playe
                 break;
             case REMOVE:
                 for (PlayerListPacket.Entry entry : packet.getEntries()) {
-                    helper.writeString(entry.getUUID().toString(), buffer);
+                    helper.writeUUID(entry.getUUID(), buffer);
                 }
                 break;
             default:

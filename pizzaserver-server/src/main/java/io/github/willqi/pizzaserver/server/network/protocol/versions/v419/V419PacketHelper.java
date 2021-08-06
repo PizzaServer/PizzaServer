@@ -77,7 +77,6 @@ public class V419PacketHelper extends BasePacketHelper {
     @Override
     public void writeSkin(ByteBuf buffer, Skin skin) {
         this.writeString(skin.getSkinId(), buffer);
-        this.writeString(skin.getPlayFabId(), buffer);
         this.writeString(skin.getSkinResourcePatch(), buffer);
         buffer.writeIntLE(skin.getSkinWidth());
         buffer.writeIntLE(skin.getSkinHeight());
@@ -113,7 +112,7 @@ public class V419PacketHelper extends BasePacketHelper {
             this.writeString(personaPiece.getType(), buffer);
             this.writeString(personaPiece.getPackId().toString(), buffer);
             buffer.writeBoolean(personaPiece.isDefault());
-            this.writeString(personaPiece.getProductId().toString(), buffer);
+            this.writeString(personaPiece.getProductId() != null ? personaPiece.getProductId().toString() : "", buffer);
         }
 
         buffer.writeIntLE(skin.getTints().size());
@@ -131,7 +130,7 @@ public class V419PacketHelper extends BasePacketHelper {
     public Skin readSkin(ByteBuf buffer) {
         Skin.Builder skinBuilder = new Skin.Builder()
                 .setSkinId(this.readString(buffer))
-                .setPlayFabId(this.readString(buffer))
+                .setPlayFabId("")
                 .setSkinResourcePatch(this.readString(buffer))
                 .setSkinWidth(buffer.readIntLE())
                 .setSkinHeight(buffer.readIntLE())
@@ -168,14 +167,15 @@ public class V419PacketHelper extends BasePacketHelper {
         int piecesCount = buffer.readIntLE();
         List<SkinPersonaPiece> pieces = new ArrayList<>(piecesCount);
         for (int i = 0; i < piecesCount; i++) {
-            SkinPersonaPiece piece = new SkinPersonaPiece.Builder()
+            SkinPersonaPiece.Builder pieceBuilder = new SkinPersonaPiece.Builder()
                     .setId(this.readString(buffer))
                     .setType(this.readString(buffer))
                     .setPackId(UUID.fromString(this.readString(buffer)))
-                    .setDefault(buffer.readBoolean())
-                    .setProductId(UUID.fromString(this.readString(buffer)))
-                    .build();
-            pieces.add(piece);
+                    .setDefault(buffer.readBoolean());
+            String uuidStr = this.readString(buffer);
+            pieceBuilder.setProductId(uuidStr.length() == 0 ? null : UUID.fromString(uuidStr));
+
+            pieces.add(pieceBuilder.build());
         }
         skinBuilder.setPieces(pieces);
 
