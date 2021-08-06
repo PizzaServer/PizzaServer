@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
+import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerListPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
@@ -15,7 +16,7 @@ public class V419PlayerListPacketHandler extends BaseProtocolPacketHandler<Playe
         VarInts.writeUnsignedInt(buffer, packet.getEntries().size());
         switch (packet.getActionType()) {
             case ADD:
-                for (PlayerListPacket.Entry entry : packet.getEntries()) {
+                for (PlayerList.Entry entry : packet.getEntries()) {
                     helper.writeUUID(entry.getUUID(), buffer);
                     VarInts.writeLong(buffer, entry.getEntityRuntimeId());
                     helper.writeString(entry.getUsername(), buffer);
@@ -26,12 +27,12 @@ public class V419PlayerListPacketHandler extends BaseProtocolPacketHandler<Playe
                     buffer.writeBoolean(entry.isTeacher());
                     buffer.writeBoolean(entry.isHost());
                 }
-                for (PlayerListPacket.Entry entry : packet.getEntries()) {
+                for (PlayerList.Entry entry : packet.getEntries()) {
                     buffer.writeBoolean(entry.getSkin().isTrusted());
                 }
                 break;
             case REMOVE:
-                for (PlayerListPacket.Entry entry : packet.getEntries()) {
+                for (PlayerList.Entry entry : packet.getEntries()) {
                     helper.writeUUID(entry.getUUID(), buffer);
                 }
                 break;

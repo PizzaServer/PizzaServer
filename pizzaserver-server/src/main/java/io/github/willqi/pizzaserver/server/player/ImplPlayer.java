@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
@@ -35,12 +36,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private final UUID uuid;
     private final String username;
     private final String languageCode;
+
+    private PlayerList playerList = new ImplPlayerList(this);
     private Skin skin;
 
     private int chunkRadius;
-
-    // Used to figure out if we need to send the player list packet when showing a player that was hidden
-    private final Set<Player> sentPlayerListPacket = new HashSet<>();
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
@@ -127,6 +127,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     public ImplServer getServer() {
         return this.server;
+    }
+
+    @Override
+    public PlayerList getPlayerList() {
+        return this.playerList;
     }
 
     @Override
@@ -316,13 +321,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void onDisconnect() {
         if (this.hasSpawned()) {
             // remove the player from the player list of others
-            PlayerListPacket playerListPacket = new PlayerListPacket();
-            playerListPacket.setActionType(PlayerListPacket.ActionType.REMOVE);
-            playerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
             for (Player player : this.getServer().getPlayers()) {
-                if (!this.isHiddenFrom(player)) {
-                    player.sendPacket(playerListPacket);
-                }
+                player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
 
             // Remove player from the world and chunks they can observe
@@ -352,29 +352,23 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.sendAttributes();
 
         // Update every other player's player list to include this player
-        PlayerListPacket outgoingPlayerListPacket = new PlayerListPacket();
-        outgoingPlayerListPacket.setActionType(PlayerListPacket.ActionType.ADD);
-        outgoingPlayerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
         for (Player player : this.getServer().getPlayers()) {
             if (!this.isHiddenFrom(player)) {
-                player.sendPacket(outgoingPlayerListPacket);
-                this.sentPlayerListPacket.add(player);
+                player.getPlayerList().addEntry(this.getPlayerListEntry());
             }
         }
 
         // Sent the full player list to this player
-        List<PlayerListPacket.Entry> entries = this.getServer().getPlayers().stream()
+        List<PlayerList.Entry> entries = this.getServer().getPlayers().stream()
                 .filter(player -> !player.isHiddenFrom(this))
                 .map(player -> ((ImplPlayer)player).getPlayerListEntry())
                 .collect(Collectors.toList());
-        PlayerListPacket incomingPlayerListPacket = new PlayerListPacket();
-        incomingPlayerListPacket.setActionType(PlayerListPacket.ActionType.ADD);
-        incomingPlayerListPacket.setEntries(entries);
-        this.sendPacket(incomingPlayerListPacket);
+        this.getPlayerList().addEntries(entries);
     }
 
-    public PlayerListPacket.Entry getPlayerListEntry() {
-        return new PlayerListPacket.Entry.Builder()
+    @Override
+    public PlayerList.Entry getPlayerListEntry() {
+        return new PlayerList.Entry.Builder()
                 .setUUID(this.getUUID())
                 .setXUID(this.getXUID())
                 .setUsername(this.getUsername())
@@ -388,13 +382,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void showTo(Player player) {
         if (this.isHiddenFrom(player)) {
             super.showTo(player);
-
-            // We need to handle the case where the player wasn't sent the player list packet since the player couldn't see this player
-            if (this.hasSpawned()) {    // The player doesn't need to be added to any list if they haven't been spawned yet.
-                PlayerListPacket playerListPacket = new PlayerListPacket();
-                playerListPacket.setActionType(PlayerListPacket.ActionType.ADD);
-                playerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
-                player.sendPacket(playerListPacket);
+            if (player.hasSpawned()) {  // we only need to add the entry if we were spawned
+                player.getPlayerList().addEntry(this.getPlayerListEntry());
             }
         }
     }
@@ -403,13 +392,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void hideFrom(Player player) {
         if (!this.isHiddenFrom(player)) {
             super.hideFrom(player);
-
-            // We need to handle the case where the player has this player in it's player list and we need to remove it
-            if (this.hasSpawned()) {    // The player doesn't need to be removed from the list unless they were already added to a player's list
-                PlayerListPacket playerListPacket = new PlayerListPacket();
-                playerListPacket.setActionType(PlayerListPacket.ActionType.REMOVE);
-                playerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
-                player.sendPacket(playerListPacket);
+            if (player.hasSpawned()) {  // we only need to remove the entry if we were spawned
+                player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
         }
     }

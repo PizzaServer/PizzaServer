@@ -70,6 +70,15 @@ public interface Player extends LivingEntity {
     void setSkin(Skin skin);
 
     /**
+     * Get the player list of a player
+     * @return player list of a player
+     */
+    PlayerList getPlayerList();
+
+    // TODO: move to EntityHuman
+    PlayerList.Entry getPlayerListEntry();
+
+    /**
      * Get the player attributes of the player
      * @return {@link PlayerAttributes}
      */
