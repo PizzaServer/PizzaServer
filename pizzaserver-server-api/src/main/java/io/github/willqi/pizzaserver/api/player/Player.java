@@ -31,7 +31,7 @@ public interface Player extends LivingEntity {
      * This is unique to every player authenticated to Xbox Live
      * @return xuid
      */
-    String getXuid();
+    String getXUID();
 
     /**
      * Retrieve the UUID of the player

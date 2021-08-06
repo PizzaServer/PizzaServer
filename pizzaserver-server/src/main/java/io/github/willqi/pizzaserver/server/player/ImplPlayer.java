@@ -21,10 +21,8 @@ import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
@@ -40,6 +38,9 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private Skin skin;
 
     private int chunkRadius;
+
+    // Used to figure out if we need to send the player list packet when showing a player that was hidden
+    private final Set<Player> sentPlayerListPacket = new HashSet<>();
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
@@ -70,7 +71,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public String getXuid() {
+    public String getXUID() {
         return this.xuid;
     }
 
@@ -126,42 +127,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     public ImplServer getServer() {
         return this.server;
-    }
-
-    @Override
-    public void sendPacket(BaseBedrockPacket packet) {
-        this.session.queueSendPacket(packet);
-    }
-
-    @Override
-    public void disconnect() {
-        this.session.disconnect();
-    }
-
-    @Override
-    public void disconnect(String reason) {
-        DisconnectPacket disconnectPacket = new DisconnectPacket();
-        disconnectPacket.setKickMessage(reason);
-        this.sendPacket(disconnectPacket);
-        this.session.disconnect();
-    }
-
-    /**
-     * Called when the server registers that the player is disconnected.
-     * It cleans up data for this player
-     */
-    public void onDisconnect() {
-        if (this.hasSpawned()) {
-            this.getLocation().getWorld().removeEntity(this);
-
-            // Remove player from chunks they can observe
-            for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
-                for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                    ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                    chunk.despawnFrom(this);
-                }
-            }
-        }
     }
 
     @Override
@@ -327,6 +292,51 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public void sendPacket(BaseBedrockPacket packet) {
+        this.session.queueSendPacket(packet);
+    }
+
+    @Override
+    public void disconnect() {
+        this.session.disconnect();
+    }
+
+    @Override
+    public void disconnect(String reason) {
+        DisconnectPacket disconnectPacket = new DisconnectPacket();
+        disconnectPacket.setKickMessage(reason);
+        this.sendPacket(disconnectPacket);
+        this.session.disconnect();
+    }
+
+    /**
+     * Called when the server registers that the player is disconnected.
+     * It cleans up data for this player
+     */
+    public void onDisconnect() {
+        if (this.hasSpawned()) {
+            // remove the player from the player list of others
+            PlayerListPacket playerListPacket = new PlayerListPacket();
+            playerListPacket.setActionType(PlayerListPacket.ActionType.REMOVE);
+            playerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
+            for (Player player : this.getServer().getPlayers()) {
+                if (!this.isHiddenFrom(player)) {
+                    player.sendPacket(playerListPacket);
+                }
+            }
+
+            // Remove player from the world and chunks they can observe
+            this.getLocation().getWorld().removeEntity(this);
+            for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
+                for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
+                    ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
+                    chunk.despawnFrom(this);
+                }
+            }
+        }
+    }
+
+    @Override
     public void onSpawned() {
         super.onSpawned();
 
@@ -340,11 +350,82 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
+
+        // Update every other player's player list to include this player
+        PlayerListPacket outgoingPlayerListPacket = new PlayerListPacket();
+        outgoingPlayerListPacket.setActionType(PlayerListPacket.ActionType.ADD);
+        outgoingPlayerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
+        for (Player player : this.getServer().getPlayers()) {
+            if (!this.isHiddenFrom(player)) {
+                player.sendPacket(outgoingPlayerListPacket);
+                this.sentPlayerListPacket.add(player);
+            }
+        }
+
+        // Sent the full player list to this player
+        List<PlayerListPacket.Entry> entries = this.getServer().getPlayers().stream()
+                .filter(player -> !player.isHiddenFrom(this))
+                .map(player -> ((ImplPlayer)player).getPlayerListEntry())
+                .collect(Collectors.toList());
+        PlayerListPacket incomingPlayerListPacket = new PlayerListPacket();
+        incomingPlayerListPacket.setActionType(PlayerListPacket.ActionType.ADD);
+        incomingPlayerListPacket.setEntries(entries);
+        this.sendPacket(incomingPlayerListPacket);
+    }
+
+    public PlayerListPacket.Entry getPlayerListEntry() {
+        return new PlayerListPacket.Entry.Builder()
+                .setUUID(this.getUUID())
+                .setXUID(this.getXUID())
+                .setUsername(this.getUsername())
+                .setEntityRuntimeId(this.getId())
+                .setDevice(this.getDevice())
+                .setSkin(this.getSkin())
+                .build();
+    }
+
+    @Override
+    public void showTo(Player player) {
+        if (this.isHiddenFrom(player)) {
+            super.showTo(player);
+
+            // We need to handle the case where the player wasn't sent the player list packet since the player couldn't see this player
+            if (this.hasSpawned()) {    // The player doesn't need to be added to any list if they haven't been spawned yet.
+                PlayerListPacket playerListPacket = new PlayerListPacket();
+                playerListPacket.setActionType(PlayerListPacket.ActionType.ADD);
+                playerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
+                player.sendPacket(playerListPacket);
+            }
+        }
+    }
+
+    @Override
+    public void hideFrom(Player player) {
+        if (!this.isHiddenFrom(player)) {
+            super.hideFrom(player);
+
+            // We need to handle the case where the player has this player in it's player list and we need to remove it
+            if (this.hasSpawned()) {    // The player doesn't need to be removed from the list unless they were already added to a player's list
+                PlayerListPacket playerListPacket = new PlayerListPacket();
+                playerListPacket.setActionType(PlayerListPacket.ActionType.REMOVE);
+                playerListPacket.setEntries(Collections.singletonList(this.getPlayerListEntry()));
+                player.sendPacket(playerListPacket);
+            }
+        }
     }
 
     @Override
     public void spawnTo(Player player) {
-        // TODO: implement in order for multiplayer to work properly
+        super.spawnTo(player);
+
+        // TODO: add player packet
+    }
+
+    @Override
+    public void despawnFrom(Player player) {
+        super.despawnFrom(player);
+
+        // TODO: remove player packet
     }
 
     @Override
@@ -427,7 +508,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         textPacket.setType(TextPacket.TextType.CHAT);
         textPacket.setSourceName(sender.getUsername());
         textPacket.setMessage(message);
-        textPacket.setXuid(sender.getXuid());
+        textPacket.setXuid(sender.getXUID());
         this.sendPacket(textPacket);
     }
 
