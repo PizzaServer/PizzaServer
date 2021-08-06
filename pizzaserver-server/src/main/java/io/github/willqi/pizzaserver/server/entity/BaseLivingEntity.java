@@ -1,6 +1,10 @@
 package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.player.Player;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class BaseLivingEntity extends BaseEntity implements LivingEntity {
 
@@ -15,6 +19,8 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     private float pitch;
     private float yaw;
     private float headYaw;
+
+    private final Set<Player> hiddenFrom = new HashSet<>();
 
 
     @Override
@@ -103,4 +109,24 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
         this.headYaw = headYaw;
     }
 
+    @Override
+    public void showTo(Player player) {
+        this.hiddenFrom.remove(player);
+        if (this.getChunk().canBeVisibleTo(player) && !this.getViewers().contains(player)) {
+            this.spawnTo(player);
+        }
+    }
+
+    @Override
+    public void hideFrom(Player player) {
+        this.hiddenFrom.add(player);
+        if (this.getViewers().contains(player)) {
+            this.despawnFrom(player);
+        }
+    }
+
+    @Override
+    public boolean isHiddenFrom(Player player) {
+        return this.hiddenFrom.contains(player);
+    }
 }

@@ -100,6 +100,11 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
+    public boolean hasSpawnedTo(Player player) {
+        return this.spawnedTo.contains(player);
+    }
+
+    @Override
     public void spawnTo(Player player) {
         this.spawnedTo.add(player);
     }

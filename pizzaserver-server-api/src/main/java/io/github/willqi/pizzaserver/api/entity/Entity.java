@@ -41,6 +41,8 @@ public interface Entity extends Watchable {
      */
     boolean hasSpawned();
 
+    boolean hasSpawnedTo(Player player);
+
     void spawnTo(Player player);
 
     void despawnFrom(Player player);

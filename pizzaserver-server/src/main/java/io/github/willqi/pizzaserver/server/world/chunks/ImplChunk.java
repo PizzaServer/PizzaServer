@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.world.chunks;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
@@ -284,6 +285,9 @@ public class ImplChunk implements Chunk {
      */
     public void sendEntitiesTo(ImplPlayer player) {
         for (Entity entity : this.getEntities()) {
+            if (entity instanceof LivingEntity && ((LivingEntity)entity).isHiddenFrom(player)) {
+                continue;
+            }
             entity.spawnTo(player);
         }
 
