@@ -327,7 +327,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     new PlayerData.Builder()
                             .setLevelName(defaultWorld.getLevel().getProvider().getFileName())
                             .setDimension(defaultWorld.getDimension())
-                            .setPosition(defaultWorld.getSpawnCoordinates().toVector3())
+                            .setPosition(defaultWorld.getSpawnCoordinates().add(0, 2, 0).toVector3())
                             .setYaw(defaultWorld.getServer().getConfig().getDefaultYaw())
                             .setPitch(defaultWorld.getServer().getConfig().getDefaultPitch())
                             .build()
