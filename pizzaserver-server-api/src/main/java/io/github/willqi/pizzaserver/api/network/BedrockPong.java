@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.network;
+package io.github.willqi.pizzaserver.api.network;
 
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 
@@ -68,7 +68,7 @@ public class BedrockPong {
     }
 
 
-    enum Edition {
+    public enum Edition {
         MCPE("MCPE"),
         EDU("MCEE");
 

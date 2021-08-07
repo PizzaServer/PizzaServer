@@ -89,6 +89,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.LOGIN_SUCCESS);
         player.sendPacket(playStatusPacket);
 
+        this.server.getNetwork().updatePong();  // Update player count
+
         ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
         resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
         resourcePacksInfoPacket.setResourcePacks(
