@@ -98,11 +98,24 @@ public class ImplChunk implements Chunk {
     @Override
     public void addEntity(Entity entity) {
         this.entities.add(entity);
+        for (Player viewer : this.getViewers()) {
+            if (!entity.hasSpawnedTo(viewer) && !viewer.equals(entity)) {
+                if (entity instanceof LivingEntity && ((LivingEntity)entity).isHiddenFrom(viewer)) {
+                    continue;
+                }
+                entity.spawnTo(viewer);
+            }
+        }
     }
 
     @Override
     public void removeEntity(Entity entity) {
         this.entities.remove(entity);
+        for (Player viewer : this.getViewers()) {
+            if (entity.hasSpawnedTo(viewer) && !viewer.equals(entity) && !entity.getChunk().canBeVisibleTo(viewer)) {
+                entity.despawnFrom(viewer);
+            }
+        }
     }
 
     @Override

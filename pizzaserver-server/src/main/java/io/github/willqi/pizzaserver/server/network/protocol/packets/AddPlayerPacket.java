@@ -18,7 +18,6 @@ public class AddPlayerPacket extends BaseBedrockPacket {
     private String username;
     private String deviceId;
     private Device device;
-    private float playerUniqueId;
     private String platformChatId = "";
     // TODO: When adventure settings are implemented we require the commandLevel, customLevel, and settings here.
 
@@ -69,14 +68,6 @@ public class AddPlayerPacket extends BaseBedrockPacket {
 
     public void setDevice(Device device) {
         this.device = device;
-    }
-
-    public float getPlayerUniqueId() {
-        return this.playerUniqueId;
-    }
-
-    public void setPlayerUniqueId(long uniqueId) {
-        this.playerUniqueId = uniqueId;
     }
 
     public String getPlatformChatId() {

@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.AddPlayerPacket;
@@ -19,10 +20,8 @@ public class V419AddPlayerPacketHandler extends BaseProtocolPacketHandler<AddPla
 
         helper.writeVector3(buffer, packet.getPosition());
         helper.writeVector3(buffer, packet.getVelocity());
-        buffer.writeFloatLE(packet.getPitch());
-        buffer.writeFloatLE(packet.getYaw());
-        buffer.writeFloatLE(packet.getHeadYaw());
-        VarInts.writeInt(buffer, 0);    // TODO: item in hand
+        helper.writeVector3(buffer, new Vector3(packet.getPitch(), packet.getYaw(), packet.getHeadYaw()));
+        buffer.writeByte(0);    // TODO: item serialization
         helper.writeEntityMetadata(packet.getMetaData(), buffer);
 
         // TODO: write proper adventure settings but here's a placeholder
@@ -39,6 +38,7 @@ public class V419AddPlayerPacketHandler extends BaseProtocolPacketHandler<AddPla
             helper.writeEntityLink(link, buffer);
         }
         helper.writeString(packet.getDeviceId(), buffer);
+        buffer.writeIntLE(packet.getDevice().getDeviceOS());
     }
 
 }

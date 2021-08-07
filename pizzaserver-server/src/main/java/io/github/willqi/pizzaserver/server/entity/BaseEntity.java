@@ -50,23 +50,16 @@ public abstract class BaseEntity implements Entity {
         if (this.location != null) {
             Chunk oldChunk = this.getChunk();
             Chunk newChunk = newLocation.getChunk();
+
+            this.location = newLocation;
             if (!oldChunk.equals(newChunk)) {
                 oldChunk.removeEntity(this);
-                for (Player viewer : this.getViewers()) {
-                    if (!newChunk.canBeVisibleTo(viewer)) {
-                        this.despawnFrom(viewer);
-                    }
-                }
-
                 newChunk.addEntity(this);
-                for (Player player : newChunk.getViewers()) {
-                    this.spawnTo(player);
-                }
             }
         } else {
-            newLocation.getChunk().addEntity(this);
+            this.location = newLocation;
+            this.location.getChunk().addEntity(this);
         }
-        this.location = newLocation;
     }
 
     @Override
