@@ -1,13 +1,14 @@
 package io.github.willqi.pizzaserver.server.network;
 
 import com.nukkitx.network.raknet.*;
+import io.github.willqi.pizzaserver.api.event.type.server.ServerPongUpdateEvent;
+import io.github.willqi.pizzaserver.api.network.BedrockPong;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
@@ -40,19 +41,25 @@ public class BedrockNetworkServer {
         this.rakNetServer = new RakNetServer(new InetSocketAddress(ip, port));
         this.rakNetServer.setListener(new BedrockServerEventListener());
         this.rakNetServer.bind().get();
+        this.updatePong();
+    }
 
-        this.setPong(
-                new BedrockPong.Builder()
-                    .setEdition(BedrockPong.Edition.MCPE)
-                    .setGamemode(Gamemode.SURVIVAL)
-                    .setGameVersion(ServerProtocol.GAME_VERSION)
-                    .setMotd(this.server.getMotd())
-                    .setPlayerCount(this.server.getPlayerCount())
-                    .setProtocol(ServerProtocol.LATEST_PROTOCOL_VERISON)
-                    .setSubMotd("MOTD 2")
-                    .setMaximumPlayerCount(this.server.getMaximumPlayerCount())
-                    .build()
-        );
+    public void updatePong() {
+        BedrockPong pong = new BedrockPong.Builder()
+                .setEdition(BedrockPong.Edition.MCPE)
+                .setGamemode(Gamemode.SURVIVAL)
+                .setGameVersion(ServerProtocol.GAME_VERSION)
+                .setMotd(this.server.getMotd())
+                .setPlayerCount(this.server.getPlayerCount())
+                .setProtocol(ServerProtocol.LATEST_PROTOCOL_VERISON)
+                .setSubMotd("MOTD 2")
+                .setMaximumPlayerCount(this.server.getMaximumPlayerCount())
+                .build();
+        ServerPongUpdateEvent serverPongUpdateEvent = new ServerPongUpdateEvent(this.getPizzaServer(), pong);
+        this.getPizzaServer().getEventManager().call(serverPongUpdateEvent);
+        if (!serverPongUpdateEvent.isCancelled()) {
+            this.setPong(serverPongUpdateEvent.getPong());
+        }
     }
 
     public void setPong(BedrockPong pong) {

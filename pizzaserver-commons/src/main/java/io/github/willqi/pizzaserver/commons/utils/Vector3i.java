@@ -25,4 +25,48 @@ public class Vector3i {
         return this.z;
     }
 
+    public Vector3i add(Vector3i vector3i) {
+        return this.add(vector3i.getX(), vector3i.getY(), vector3i.getZ());
+    }
+
+    public Vector3i add(int x, int y, int z) {
+        return new Vector3i(this.getX() + x, this.getY() + y, this.getZ() + z);
+    }
+
+    public Vector3i subtract(Vector3i vector3i) {
+        return this.subtract(vector3i.getX(), vector3i.getY(), vector3i.getZ());
+    }
+
+    public Vector3i subtract(int x, int y, int z) {
+        return new Vector3i(this.getX() - x, this.getY() - y, this.getZ() - z);
+    }
+
+    public Vector3i multiply(int multiplier) {
+        return this.multiply(multiplier, multiplier, multiplier);
+    }
+
+    public Vector3i multiply(Vector3i vector3i) {
+        return this.multiply(vector3i.getX(), vector3i.getY(), vector3i.getZ());
+    }
+
+    public Vector3i multiply(int x, int y, int z) {
+        return new Vector3i(this.getX() * x, this.getY() * y, this.getZ() * z);
+    }
+
+    public Vector3i divide(int divider) {
+        return this.divide(divider, divider, divider);
+    }
+
+    public Vector3i divide(Vector3i vector3i) {
+        return this.divide(vector3i.getX(), vector3i.getY(), vector3i.getZ());
+    }
+
+    public Vector3i divide(int x, int y, int z) {
+        return new Vector3i(this.getX() / x, this.getY() / y, this.getZ() / z);
+    }
+
+    public Vector3 toVector3() {
+        return new Vector3(this.x, this.y, this.z);
+    }
+
 }
