@@ -54,6 +54,7 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
                     throw new RuntimeException("Failed to parse packet (id: " + packetId + ")", exception);
                 }
             }
+            inflatedBuffer.release();
         }
     }
 

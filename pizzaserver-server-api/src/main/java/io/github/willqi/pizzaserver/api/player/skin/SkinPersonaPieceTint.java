@@ -2,10 +2,22 @@ package io.github.willqi.pizzaserver.api.player.skin;
 
 import java.util.List;
 
-public interface SkinPersonaPieceTint {
+public class SkinPersonaPieceTint {
 
-    String getId();
+    private final String id;
+    private final List<String> colors;
 
-    List<String> getColors();
+    public SkinPersonaPieceTint(String id, List<String> colors) {
+        this.id = id;
+        this.colors = colors;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public List<String> getColors() {
+        return this.colors;
+    }
 
 }

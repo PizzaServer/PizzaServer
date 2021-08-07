@@ -14,7 +14,9 @@ public class MovePlayerPacket extends BaseBedrockPacket {
 
     private long entityRuntimeId;
     private Vector3 position;
-    private Vector3 rotation;   // pitch, yaw, and head yaw?
+    private float pitch;
+    private float yaw;
+    private float headYaw;
     private MovementMode mode;
     private boolean onGround;
 
@@ -46,12 +48,28 @@ public class MovePlayerPacket extends BaseBedrockPacket {
         this.position = position;
     }
 
-    public Vector3 getRotation() {
-        return this.rotation;
+    public float getPitch() {
+        return this.pitch;
     }
 
-    public void setRotation(Vector3 rotation) {
-        this.rotation = rotation;
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    public float getYaw() {
+        return this.yaw;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public float getHeadYaw() {
+        return this.headYaw;
+    }
+
+    public void setHeadYaw(float headYaw) {
+        this.headYaw = headYaw;
     }
 
     public MovementMode getMode() {

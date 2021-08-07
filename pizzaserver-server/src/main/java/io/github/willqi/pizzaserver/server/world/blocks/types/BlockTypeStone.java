@@ -1,11 +1,11 @@
-package io.github.willqi.pizzaserver.server.world.blocks.types.impl;
+package io.github.willqi.pizzaserver.server.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 import io.github.willqi.pizzaserver.api.item.ItemToolType;
-import io.github.willqi.pizzaserver.server.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
 
 import java.util.*;

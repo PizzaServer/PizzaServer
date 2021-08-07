@@ -8,17 +8,14 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
 import com.nukkitx.network.VarInts;
-import io.github.willqi.pizzaserver.api.player.skin.SkinAnimation;
-import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPiece;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPieceTint;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.server.player.skin.ImplSkin;
-import io.github.willqi.pizzaserver.server.player.skin.ImplSkinAnimation;
-import io.github.willqi.pizzaserver.server.player.skin.ImplSkinPersonaPiece;
-import io.github.willqi.pizzaserver.server.player.skin.ImplSkinPersonaPieceTint;
+import io.github.willqi.pizzaserver.api.player.skin.Skin;
+import io.github.willqi.pizzaserver.api.player.skin.SkinAnimation;
+import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPiece;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;
@@ -154,7 +151,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
         Device playerDevice = Device.getPlatformByOS(skinData.get("DeviceOS").getAsInt());
         String languageCode = skinData.get("LanguageCode").getAsString();
 
-        ImplSkin.Builder skinBuilder = new ImplSkin.Builder();
+        Skin.Builder skinBuilder = new Skin.Builder();
 
         skinBuilder.setSkinId(skinData.get("SkinId").getAsString())
                 .setPlayFabId(skinData.has("PlayFabId") ? skinData.get("PlayFabId").getAsString() : "")
@@ -179,7 +176,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
         for (JsonElement element : skinData.get("AnimatedImageData").getAsJsonArray()) {
             JsonObject animation = element.getAsJsonObject();
             animations.add(
-                    new ImplSkinAnimation.Builder()
+                    new SkinAnimation.Builder()
                             .setType(animation.get("Type").getAsInt())
                             .setFrame(animation.get("Frames").getAsInt())
                             .setSkinHeight(animation.get("ImageWidth").getAsInt())
@@ -194,7 +191,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
         for (JsonElement element : skinData.get("PersonaPieces").getAsJsonArray()) {
             JsonObject piece = element.getAsJsonObject();
             pieces.add(
-                    new ImplSkinPersonaPiece.Builder()
+                    new SkinPersonaPiece.Builder()
                         .setId(piece.get("PieceId").getAsString())
                         .setType(piece.get("PieceType").getAsString())
                         .setPackId(UUID.fromString(piece.get("PackId").getAsString()))
@@ -214,11 +211,11 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
             for (int i = 0; i < colorsArray.size(); i++) {
                 colors.add(colorsArray.get(i).getAsString());
             }
-            tints.add(new ImplSkinPersonaPieceTint(tint.get("PieceType").getAsString(), colors));
+            tints.add(new SkinPersonaPieceTint(tint.get("PieceType").getAsString(), colors));
         }
         skinBuilder.setTints(tints);
 
-        ImplSkin skin = skinBuilder.build();
+        Skin skin = skinBuilder.build();
 
         packet.setDevice(playerDevice);
         packet.setLanguageCode(languageCode);

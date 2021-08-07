@@ -1,23 +1,81 @@
 package io.github.willqi.pizzaserver.api.player.attributes;
 
-public interface Attribute {
+import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 
-    AttributeType getType();
+public class Attribute {
 
-    float getMinimumValue();
+    private final AttributeType type;
+    private float minimumValue;
+    private float maximumValue;
+    private float defaultValue;
+    private float currentValue;
 
-    void setMinimumValue(float minimumValue);
 
-    float getMaximumValue();
+    public Attribute(AttributeType attributeType, float minimumValue, float maximumValue, float defaultValue, float currentValue) {
+        this.type = attributeType;
+        this.minimumValue = minimumValue;
+        this.maximumValue = maximumValue;
+        this.defaultValue = defaultValue;
+        this.currentValue = currentValue;
+    }
 
-    void setMaximumValue(float maximumValue);
+    public AttributeType getType() {
+        return this.type;
+    }
 
-    float getDefaultValue();
+    public float getMinimumValue() {
+        return this.minimumValue;
+    }
 
-    void setDefaultValue(float defaultValue);
+    public void setMinimumValue(float minimumValue) {
+        this.minimumValue = minimumValue;
+    }
 
-    float getCurrentValue();
+    public float getMaximumValue() {
+        return this.maximumValue;
+    }
 
-    void setCurrentValue(float currentValue);
+    public void setMaximumValue(float maximumValue) {
+        this.maximumValue = maximumValue;
+        this.setDefaultValue(Math.max(this.getMinimumValue(), Math.min(this.getDefaultValue(), this.getMaximumValue())));
+        this.setCurrentValue(Math.max(this.getMinimumValue(), Math.min(this.getCurrentValue(), this.getMaximumValue())));
+    }
 
+    public float getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void setDefaultValue(float defaultValue) {
+        this.defaultValue = Math.max(this.getMinimumValue(), Math.min(defaultValue, this.getMaximumValue()));
+    }
+
+    public float getCurrentValue() {
+        return this.currentValue;
+    }
+
+    public void setCurrentValue(float currentValue) {
+        this.currentValue = Math.max(this.getMinimumValue(), Math.min(currentValue, this.getMaximumValue()));
+    }
+
+    @Override
+    public int hashCode() {
+        return (int)(37 * this.type.hashCode() +
+                        (37 * this.getCurrentValue()) +
+                        (37 * this.getDefaultValue()) +
+                        (37 * this.getMaximumValue()) +
+                        (37 * this.getMinimumValue()));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Attribute) {
+            Attribute otherAttribute = (Attribute)obj;
+            return otherAttribute.getType().equals(this.getType()) &&
+                    NumberUtils.isNearlyEqual(otherAttribute.getCurrentValue(), this.getCurrentValue()) &&
+                    NumberUtils.isNearlyEqual(otherAttribute.getDefaultValue(), this.getDefaultValue()) &&
+                    NumberUtils.isNearlyEqual(otherAttribute.getMaximumValue(), this.getMaximumValue()) &&
+                    NumberUtils.isNearlyEqual(otherAttribute.getMinimumValue(), this.getMinimumValue());
+        }
+        return false;
+    }
 }
