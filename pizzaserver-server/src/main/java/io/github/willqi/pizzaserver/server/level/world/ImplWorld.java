@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.level.world;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.level.world.World;
@@ -12,11 +12,10 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
-import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
-import io.github.willqi.pizzaserver.server.level.world.blocks.ImplBlock;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunkManager;
+import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -90,13 +89,24 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
-    public void setBlock(BlockType blockType, Vector3i position) {
-        this.setBlock(new ImplBlock(blockType), position);
+    public void setBlock(String blockId, Vector3i position) {
+        this.setBlock(blockId, position.getX(), position.getY(), position.getZ());
     }
 
     @Override
-    public void setBlock(BlockType blockType, int x, int y, int z) {
-        this.setBlock(new ImplBlock(blockType), x, y, z);
+    public void setBlock(String blockId, int x, int y, int z) {
+        BaseBlockType blockType = this.getServer().getBlockRegistry().getBlockType(blockId);
+        this.setBlock(blockType, x, y, z);
+    }
+
+    @Override
+    public void setBlock(BaseBlockType blockType, Vector3i position) {
+        this.setBlock(new Block(blockType), position);
+    }
+
+    @Override
+    public void setBlock(BaseBlockType blockType, int x, int y, int z) {
+        this.setBlock(new Block(blockType), x, y, z);
     }
 
     @Override
@@ -149,7 +159,7 @@ public class ImplWorld implements Closeable, World {
         packet.setBaby(isBaby);
         packet.setEntityType(entityType);
         packet.setBlockID(blockID);
-        WorldSoundEvent event = new WorldSoundEvent(this, packet);
+        WorldSoundEvent event = new WorldSoundEvent(this, sound, vector3, isGlobal, isBaby, entityType, blockID);
         getServer().getEventManager().call(event);
         if(!event.isCancelled()) {
             for(Player player : getPlayers()) {

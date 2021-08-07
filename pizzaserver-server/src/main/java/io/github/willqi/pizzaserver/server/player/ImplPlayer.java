@@ -18,7 +18,6 @@ import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
-import io.github.willqi.pizzaserver.server.player.attributes.ImplPlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
@@ -46,7 +45,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private int chunkRadius = 3;
     private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // how many chunks can be sent to this player during this tick?
 
-    private final ImplPlayerAttributes attributes = new ImplPlayerAttributes();
+    private final PlayerAttributes attributes = new PlayerAttributes();
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {

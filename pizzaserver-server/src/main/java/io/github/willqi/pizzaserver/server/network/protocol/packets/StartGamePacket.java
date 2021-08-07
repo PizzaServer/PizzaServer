@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
@@ -64,7 +64,7 @@ public class StartGamePacket extends BaseBedrockPacket {
     private UUID eduUuid;
     private ServerOrigin serverOrigin;
 
-    private Set<BlockType> blockProperties = new HashSet<>();
+    private Set<BaseBlockType> blockProperties = new HashSet<>();
     private Set<ItemState> itemStates = new HashSet<>();
 
     private Set<Experiment> experiments = new HashSet<>();
@@ -362,11 +362,11 @@ public class StartGamePacket extends BaseBedrockPacket {
         this.serverOrigin = serverOrigin;
     }
 
-    public Set<BlockType> getBlockProperties() {
+    public Set<BaseBlockType> getBlockProperties() {
         return Collections.unmodifiableSet(this.blockProperties);
     }
 
-    public void setBlockProperties(Set<BlockType> blockProperties) {
+    public void setBlockProperties(Set<BaseBlockType> blockProperties) {
         this.blockProperties = blockProperties;
     }
 
