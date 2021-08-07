@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.server.entity.meta.ImplEntityMetaData;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.RemoveEntityPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
 
 import java.util.HashSet;
@@ -104,7 +105,11 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public void despawnFrom(Player player) {
-        this.spawnedTo.remove(player);
+        if (this.spawnedTo.remove(player)) {
+            RemoveEntityPacket entityPacket = new RemoveEntityPacket();
+            entityPacket.setUniqueEntityId(this.getId());
+            player.sendPacket(entityPacket);
+        }
     }
 
     @Override

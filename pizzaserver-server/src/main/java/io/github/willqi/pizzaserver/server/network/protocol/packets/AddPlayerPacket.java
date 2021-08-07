@@ -10,6 +10,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Used to spawn player entities
+ */
 public class AddPlayerPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x0c;

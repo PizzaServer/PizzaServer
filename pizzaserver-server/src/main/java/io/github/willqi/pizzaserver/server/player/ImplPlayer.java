@@ -409,13 +409,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void despawnFrom(Player player) {
-        super.despawnFrom(player);
-
-        // TODO: remove player packet
-    }
-
-    @Override
     public void sendChunk(int x, int z) {
         ImplChunkManager chunkManager = (ImplChunkManager)this.getLocation().getWorld().getChunkManager();
         if (chunkManager.isChunkLoaded(x, z)) {
