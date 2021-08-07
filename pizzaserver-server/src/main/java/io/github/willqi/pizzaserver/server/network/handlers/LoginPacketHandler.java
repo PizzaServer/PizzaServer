@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.event.type.player.PlayerPreLoginEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;

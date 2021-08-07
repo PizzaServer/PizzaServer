@@ -1,9 +1,8 @@
-package io.github.willqi.pizzaserver.server.event.type.world;
+package io.github.willqi.pizzaserver.api.event.type.world;
 
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 
 public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
 
@@ -14,14 +13,14 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     private String entityIdentifier;
     private int blockID;
 
-    public WorldSoundEvent(World world, WorldSoundEventPacket packet) {
+    public WorldSoundEvent(World world, WorldSound sound, Vector3 location, boolean isGlobal, boolean isBaby, String entityIdentifier, int blockId) {
         super(world);
-        this.sound = packet.getSound();
-        this.location = packet.getVector3();
-        this.global = packet.isGlobal();
-        this.baby = packet.isBaby();
-        this.entityIdentifier = packet.getEntityType();
-        this.blockID = packet.getBlockID();
+        this.sound = sound;
+        this.location = location;
+        this.global = isGlobal;
+        this.baby = isBaby;
+        this.entityIdentifier = entityIdentifier;
+        this.blockID = blockId;
     }
 
     public WorldSound getSound() {

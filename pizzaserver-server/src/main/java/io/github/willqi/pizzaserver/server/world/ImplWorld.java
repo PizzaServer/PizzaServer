@@ -12,7 +12,7 @@ import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
-import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
+import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
@@ -155,7 +155,7 @@ public class ImplWorld implements Closeable, World {
         packet.setBaby(isBaby);
         packet.setEntityType(entityType);
         packet.setBlockID(blockID);
-        WorldSoundEvent event = new WorldSoundEvent(this, packet);
+        WorldSoundEvent event = new WorldSoundEvent(this, sound, vector3, isGlobal, isBaby, entityType, blockID);
         getServer().getEventManager().call(event);
         if(!event.isCancelled()) {
             for(Player player : getPlayers()) {
