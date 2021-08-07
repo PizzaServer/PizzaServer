@@ -108,11 +108,12 @@ public class ImplServer implements Server {
                     session.processPackets();
 
                     if (session.isDisconnected()) {
+                        sessions.remove();
                         ImplPlayer player = session.getPlayer();
                         if (player != null) {
                             player.onDisconnect();
+                            this.getNetwork().updatePong();
                         }
-                        sessions.remove();
                     }
                 }
             }

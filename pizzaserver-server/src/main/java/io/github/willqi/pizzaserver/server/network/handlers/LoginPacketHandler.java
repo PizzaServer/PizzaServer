@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.event.type.player.PlayerPreLoginEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
@@ -88,6 +88,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.LOGIN_SUCCESS);
         player.sendPacket(playStatusPacket);
+
+        this.server.getNetwork().updatePong();  // Update player count
 
         ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
         resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());

@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.event.type.world;
+package io.github.willqi.pizzaserver.api.event.type.world;
 
 import io.github.willqi.pizzaserver.api.event.Event;
 import io.github.willqi.pizzaserver.api.event.type.CancellableType;

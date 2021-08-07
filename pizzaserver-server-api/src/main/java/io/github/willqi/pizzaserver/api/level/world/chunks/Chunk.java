@@ -1,11 +1,11 @@
 package io.github.willqi.pizzaserver.api.level.world.chunks;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
 import java.util.Set;
@@ -82,19 +82,19 @@ public interface Chunk extends Watchable {
 
     /**
      * Set a block in this chunk
-     * @param blockType the {@link BlockType} of the block that should be created here
+     * @param blockType the {@link BaseBlockType} of the block that should be created here
      * @param blockPosition the chunk position of the block
      */
-    void setBlock(BlockType blockType, Vector3i blockPosition);
+    void setBlock(BaseBlockType blockType, Vector3i blockPosition);
 
     /**
      * Set a block in this chunk
-     * @param blockType the {@link BlockType} of the block that should be created here
+     * @param blockType the {@link BaseBlockType} of the block that should be created here
      * @param x the x coordinate
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    void setBlock(BlockType blockType, int x, int y, int z);
+    void setBlock(BaseBlockType blockType, int x, int y, int z);
 
     /**
      * Set a block in this chunk

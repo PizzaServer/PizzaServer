@@ -5,11 +5,11 @@ import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.event.type.world.WorldSoundEvent;
+import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
-import io.github.willqi.pizzaserver.server.event.type.player.PlayerChatEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 
 public class FullGamePacketHandler extends BaseBedrockPacketHandler {
@@ -54,6 +54,9 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
     public void onPacket(MovePlayerPacket packet) {
         ImplLocation newLocation = new ImplLocation(this.player.getLocation().getWorld(), packet.getPosition());
         this.player.setLocation(newLocation);
+        this.player.setPitch(packet.getPitch());
+        this.player.setYaw(packet.getYaw());
+        this.player.setHeadYaw(packet.getHeadYaw());
     }
 
     @Override
@@ -73,7 +76,7 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(WorldSoundEventPacket packet) {
-        WorldSoundEvent event = new WorldSoundEvent(player.getLocation().getWorld(), packet);
+        WorldSoundEvent event = new WorldSoundEvent(player.getLocation().getWorld(), packet.getSound(), packet.getVector3(), packet.isGlobal(), packet.isBaby(), packet.getEntityType(), packet.getBlockID());
         this.player.getServer().getEventManager().call(event);
         if(!event.isCancelled()) {
             event.getWorld().playSound(packet.getSound(), packet.getVector3(), packet.isGlobal(), packet.isBaby(), packet.getEntityType(), packet.getBlockID());

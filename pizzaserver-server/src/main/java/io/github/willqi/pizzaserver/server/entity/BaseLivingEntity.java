@@ -12,6 +12,10 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
 
     private float movementSpeed;
 
+    private float pitch;
+    private float yaw;
+    private float headYaw;
+
 
     @Override
     public float getHealth() {
@@ -67,6 +71,36 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     @Override
     public void setMovementSpeed(float movementSpeed) {
         this.movementSpeed = Math.max(0, movementSpeed);
+    }
+
+    @Override
+    public float getPitch() {
+        return this.pitch;
+    }
+
+    @Override
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    @Override
+    public float getYaw() {
+        return this.yaw;
+    }
+
+    @Override
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    @Override
+    public float getHeadYaw() {
+        return this.headYaw;
+    }
+
+    @Override
+    public void setHeadYaw(float headYaw) {
+        this.headYaw = headYaw;
     }
 
 }
