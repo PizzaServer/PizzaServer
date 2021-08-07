@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
@@ -342,10 +343,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
         this.updateVisibleChunks(null, this.chunkRadius);
 
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
-        this.sendPacket(playStatusPacket);
-
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.setMetaData(this.getMetaData());
@@ -353,17 +350,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
         // Update every other player's player list to include this player
         for (Player player : this.getServer().getPlayers()) {
-            if (!this.isHiddenFrom(player)) {
+            if (!this.isHiddenFrom(player) && !player.equals(this)) {
                 player.getPlayerList().addEntry(this.getPlayerListEntry());
             }
         }
 
-        // Sent the full player list to this player
-        List<PlayerList.Entry> entries = this.getServer().getPlayers().stream()
-                .filter(player -> !player.isHiddenFrom(this))
-                .map(player -> ((ImplPlayer)player).getPlayerListEntry())
-                .collect(Collectors.toList());
-        this.getPlayerList().addEntries(entries);
     }
 
     @Override
@@ -402,7 +393,19 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void spawnTo(Player player) {
         super.spawnTo(player);
 
-        // TODO: add player packet
+        AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
+        addPlayerPacket.setUUID(this.getUUID());
+        addPlayerPacket.setUsername(this.getUsername());
+        addPlayerPacket.setEntityRuntimeId(this.getId());
+        addPlayerPacket.setEntityUniqueId(this.getId());
+        addPlayerPacket.setPosition(new Vector3(this.getLocation().getX(), this.getLocation().getY(), this.getLocation().getZ()));
+        addPlayerPacket.setVelocity(new Vector3(0, 0, 0));
+        addPlayerPacket.setPitch(this.getPitch());
+        addPlayerPacket.setYaw(this.getYaw());
+        addPlayerPacket.setHeadYaw(this.getHeadYaw());
+        addPlayerPacket.setMetaData(this.getMetaData());
+        addPlayerPacket.setDevice(this.getDevice());
+        player.sendPacket(addPlayerPacket);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -11,10 +12,13 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
+import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
@@ -53,13 +57,26 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         }
         CompletableFuture.runAsync(() -> {
             for (CompletableFuture<Chunk> chunkTask : chunkTasksRequired) {
-                chunkTask.join();
+                ImplChunk chunk = (ImplChunk)chunkTask.join();
+                chunk.sendEntitiesTo(this.player);
             }
         }).whenComplete((ignored, exception) -> {
             if (exception != null) {
                 this.player.disconnect("Failed to load chunks around player");
                 return;
             }
+
+            // Sent the full player list to this player
+            List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()
+                    .filter(player -> !player.isHiddenFrom(this.player))
+                    .map(Player::getPlayerListEntry)
+                    .collect(Collectors.toList());
+            this.player.getPlayerList().addEntries(entries);
+
+            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+            playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+            this.player.sendPacket(playStatusPacket);
+
             defaultWorld.addEntity(this.player, playerSpawn);
         });
     }

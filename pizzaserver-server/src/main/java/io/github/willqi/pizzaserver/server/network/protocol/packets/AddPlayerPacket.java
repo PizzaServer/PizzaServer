@@ -16,7 +16,7 @@ public class AddPlayerPacket extends BaseBedrockPacket {
 
     private UUID uuid;
     private String username;
-    private String deviceId;
+    private String deviceId = "";
     private Device device;
     private String platformChatId = "";
     // TODO: When adventure settings are implemented we require the commandLevel, customLevel, and settings here.
