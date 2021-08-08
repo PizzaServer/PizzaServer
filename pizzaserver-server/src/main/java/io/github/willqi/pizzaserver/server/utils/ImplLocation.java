@@ -30,7 +30,7 @@ public class ImplLocation extends Vector3 implements Location {
      */
     @Override
     public Chunk getChunk() {
-        if (this.getWorld().getChunkManager().isChunkLoaded(this.getChunkX(), this.getChunkZ())) {
+        if (this.getWorld() != null && this.getWorld().getChunkManager().isChunkLoaded(this.getChunkX(), this.getChunkZ())) {
             return this.getWorld().getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
         }
         return null;

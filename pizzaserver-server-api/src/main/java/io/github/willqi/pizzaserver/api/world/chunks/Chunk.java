@@ -47,18 +47,6 @@ public interface Chunk extends Watchable {
     byte getBiomeAt(int x, int z);
 
     /**
-     * Add a {@link Entity} to this chunk
-     * @param entity the {@link Entity} that now exists in this chunk
-     */
-    void addEntity(Entity entity);
-
-    /**
-     * Remove a {@link Entity} from this chunk
-     * @param entity the {@link Entity} that no longer exists in this chunk
-     */
-    void removeEntity(Entity entity);
-
-    /**
      * Retrieve all of the {@link Entity}s that exist in this chunk
      * @return {@link Set< Entity >}s in this chunk
      */

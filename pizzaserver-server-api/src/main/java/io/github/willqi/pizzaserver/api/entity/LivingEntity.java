@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 /**
  * An entity which can be treated as alive.
  */
-public interface LivingEntity extends Entity {
+public interface LivingEntity extends MovingEntity {
 
     float getHealth();
 

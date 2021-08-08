@@ -2,23 +2,25 @@ package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.world.World;
+import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class BaseLivingEntity extends BaseEntity implements LivingEntity {
 
-    private float health;
-    private float maxHealth;
+    protected float health;
+    protected float maxHealth;
 
-    private float absorption;
-    private float maxAbsorption;
+    protected float absorption;
+    protected float maxAbsorption;
 
-    private float movementSpeed;
+    protected float movementSpeed;
 
-    private float pitch;
-    private float yaw;
-    private float headYaw;
+    protected float pitch;
+    protected float yaw;
+    protected float headYaw;
 
     private final Set<Player> hiddenFrom = new HashSet<>();
 
@@ -110,6 +112,40 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     }
 
     @Override
+    public void moveTo(float x, float y, float z) {
+        ImplChunk currentChunk = (ImplChunk)this.getChunk();
+        ImplChunk newChunk = (ImplChunk)this.getWorld().getChunkManager().getChunk((int)Math.floor(this.x / 16), (int)Math.floor(this.z / 16));
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
+            currentChunk.removeEntity(this);
+            newChunk.addEntity(this);
+
+            // Remove entity from players who are in other chunks and can no longer see this entity
+            for (Player player : this.getViewers()) {
+                if (!this.getChunk().canBeVisibleTo(player)) {
+                    this.despawnFrom(player);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void teleport(float x, float y, float z) {
+        this.teleport(this.getWorld(), x, y, z);
+    }
+
+    @Override
+    public void teleport(World world, float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.world = world;
+    }
+
+    @Override
     public void showTo(Player player) {
         this.hiddenFrom.remove(player);
         if (this.getChunk().canBeVisibleTo(player) && !this.getViewers().contains(player)) {
@@ -129,4 +165,5 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     public boolean isHiddenFrom(Player player) {
         return this.hiddenFrom.contains(player);
     }
+
 }

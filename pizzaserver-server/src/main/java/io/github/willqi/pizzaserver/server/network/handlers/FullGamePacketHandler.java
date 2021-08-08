@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -11,14 +10,11 @@ import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
@@ -66,13 +62,6 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
                 return;
             }
 
-            // Sent the full player list to this player
-            List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()
-                    .filter(player -> !player.isHiddenFrom(this.player))
-                    .map(Player::getPlayerListEntry)
-                    .collect(Collectors.toList());
-            this.player.getPlayerList().addEntries(entries);
-
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
             playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
             this.player.sendPacket(playStatusPacket);
@@ -92,11 +81,10 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(MovePlayerPacket packet) {
-        ImplLocation newLocation = new ImplLocation(this.player.getLocation().getWorld(), packet.getPosition());
-        this.player.setLocation(newLocation);
         this.player.setPitch(packet.getPitch());
         this.player.setYaw(packet.getYaw());
         this.player.setHeadYaw(packet.getHeadYaw());
+        this.player.moveTo(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
     }
 
     @Override

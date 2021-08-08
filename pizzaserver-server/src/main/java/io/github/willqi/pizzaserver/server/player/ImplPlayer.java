@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
@@ -24,7 +25,6 @@ import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
@@ -283,18 +283,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void setLocation(Location newLocation) {
-        Location oldLocation = this.getLocation();
-        super.setLocation(newLocation);
-
-        if (this.hasSpawned()) {    // Do we need to send new chunks?
-            boolean shouldUpdateChunks = (oldLocation == null) || (oldLocation.getChunkX() != newLocation.getChunkX()) ||
-                                            (oldLocation.getChunkZ() != newLocation.getChunkZ()) ||
-                                            !(oldLocation.getWorld().equals(this.getLocation().getWorld()));
-            if (shouldUpdateChunks) {
-                this.updateVisibleChunks(oldLocation, this.chunkRadius);
-            }
-        }
+    public void teleport(World world, float x, float y, float z) {
+        // TODO: teleport packet
     }
 
     @Override
@@ -326,14 +316,16 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                 player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
 
-            // Remove player from the world and chunks they can observe
-            this.getLocation().getWorld().removeEntity(this);
+            // Remove all of the chunks this player is viewing
             for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
                 for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
                     ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
                     chunk.despawnFrom(this);
                 }
             }
+
+            // Remove player entity from the world
+            this.despawn();
         }
     }
 
@@ -491,6 +483,5 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         textPacket.setXuid(sender.getXUID());
         this.sendPacket(textPacket);
     }
-
 
 }

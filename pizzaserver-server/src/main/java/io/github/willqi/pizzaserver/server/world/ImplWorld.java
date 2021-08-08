@@ -15,6 +15,7 @@ import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
+import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.BaseWorldProvider;
 import io.github.willqi.pizzaserver.server.world.providers.WorldProviderThread;
@@ -119,31 +120,38 @@ public class ImplWorld implements Closeable, World {
 
     @Override
     public void addEntity(Entity entity, Vector3 position) {
-        if (entity.hasSpawned()) {
-            throw new IllegalStateException("This entity has already been spawned");
+        // Check if we need to despawn the entity from its old world first
+        if (entity.getWorld() != null) {
+            if (entity.getWorld().equals(this)) {
+                throw new IllegalStateException("This entity already exists in this world.");
+            } else {
+                entity.getWorld().removeEntity(entity);
+            }
         }
-
         Location location = new ImplLocation(this, position);
-        if (location.getChunk() == null) {
-            throw new NullPointerException("This entity cannot be spawned in an unloaded chunk");
-        }
 
-        entity.setLocation(location);
         if (entity instanceof Player) {
             this.players.add((Player)entity);
         }
-        ((BaseEntity)entity).onSpawned();
+        BaseEntity baseEntity = (BaseEntity)entity;
+        baseEntity.setLocation(location);
+        ((ImplChunk)location.getChunk()).addEntity(entity);
+        baseEntity.onSpawned();
     }
 
     @Override
     public void removeEntity(Entity entity) {
-        if (!entity.hasSpawned()) {
-            throw new IllegalStateException("This entity has not been spawned");
+        if (!this.equals(entity.getWorld())) {
+            throw new IllegalStateException("This entity has not been spawned in this world");
         }
-        entity.getLocation().getChunk().removeEntity(entity);
         if (entity instanceof Player) {
             this.players.remove(entity);
         }
+        BaseEntity baseEntity = (BaseEntity)entity;
+        ImplChunk chunk = (ImplChunk)baseEntity.getChunk();
+        baseEntity.setLocation(null);   // the entity no longer exists in any world
+        baseEntity.onDespawned();
+        chunk.removeEntity(baseEntity);
     }
 
     @Override

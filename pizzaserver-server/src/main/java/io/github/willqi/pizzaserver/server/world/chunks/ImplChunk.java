@@ -95,26 +95,38 @@ public class ImplChunk implements Chunk {
         return this.biomeData[z * 16 + x];
     }
 
-    @Override
+    /**
+     * Add this entity to be spawned for viewers of this chunk
+     * Called when the entity is in this chunk
+     * @param entity the entity to spawn
+     */
     public void addEntity(Entity entity) {
-        if (this.entities.add(entity)) {
-            for (Player viewer : this.getViewers()) {
-                if (!entity.hasSpawnedTo(viewer) && !viewer.equals(entity)) {
-                    if (entity instanceof LivingEntity && ((LivingEntity)entity).isHiddenFrom(viewer)) {
-                        continue;
-                    }
-                    entity.spawnTo(viewer);
-                }
+        this.entities.add(entity);
+        for (Player player : this.getViewers()) {
+            // an entity cannot be spawned to a player if it is the entity,
+            // has already been spawned, or if the entity is hidden from the player.
+            boolean canSpawnToPlayer = !entity.equals(player) &&
+                    !entity.hasSpawnedTo(player) &&
+                    (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isHiddenFrom(player));
+
+            if (canSpawnToPlayer) {
+                entity.spawnTo(player);
             }
         }
     }
 
-    @Override
+    /**
+     * Remove this entity from the set of entities that are spawned to viewers
+     * Called when the entity is moved to another chunk or is despawned
+     * @param entity the entity to spawn
+     */
     public void removeEntity(Entity entity) {
         if (this.entities.remove(entity)) {
-            for (Player viewer : this.getViewers()) {
-                if (entity.hasSpawnedTo(viewer) && !viewer.equals(entity)) {
-                    entity.despawnFrom(viewer);
+            for (Player player : this.getViewers()) {
+                // Entities are despawned from a viewer if it no longer has a location or if
+                // it is not visible to the entity in its new location.
+                if ((entity.getChunk() == null || !entity.getChunk().canBeVisibleTo(player)) && entity.hasSpawnedTo(player)) {
+                    entity.despawnFrom(player);
                 }
             }
         }
@@ -300,7 +312,7 @@ public class ImplChunk implements Chunk {
      */
     public void sendEntitiesTo(ImplPlayer player) {
         for (Entity entity : this.getEntities()) {
-            if (entity instanceof LivingEntity && ((LivingEntity)entity).isHiddenFrom(player)) {
+            if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity)entity).isHiddenFrom(player))) {
                 continue;
             }
             entity.spawnTo(player);
@@ -317,7 +329,9 @@ public class ImplChunk implements Chunk {
     public void despawnFrom(Player player) {
         if (this.spawnedTo.remove(player)) {
             for (Entity entity : this.getEntities()) {
-                entity.despawnFrom(player);
+                if (!entity.equals(player)) {
+                    entity.despawnFrom(player);
+                }
             }
 
             // Should we close this chunk

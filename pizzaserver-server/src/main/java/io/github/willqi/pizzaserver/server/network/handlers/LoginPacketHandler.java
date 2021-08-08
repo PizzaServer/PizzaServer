@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
@@ -25,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -250,6 +254,13 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         BiomeDefinitionPacket biomeDefinitionPacket = new BiomeDefinitionPacket();
         biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
         this.player.sendPacket(biomeDefinitionPacket);
+
+        // Sent the full player list to this player
+        List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()
+                .filter(player -> !player.isHiddenFrom(this.player))
+                .map(Player::getPlayerListEntry)
+                .collect(Collectors.toList());
+        this.player.getPlayerList().addEntries(entries);
 
         this.session.setPacketHandler(new FullGamePacketHandler(this.player));
     }
