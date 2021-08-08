@@ -34,4 +34,20 @@ public class V419MovePlayerPacketHandler extends BaseProtocolPacketHandler<MoveP
         return movePlayerPacket;
     }
 
+    @Override
+    public void encode(MovePlayerPacket packet, ByteBuf buffer, BasePacketHelper helper) {
+        VarInts.writeUnsignedLong(buffer, packet.getEntityRuntimeId());
+        helper.writeVector3(buffer, packet.getPosition());
+        helper.writeVector3(buffer, new Vector3(packet.getPitch(), packet.getYaw(), packet.getHeadYaw()));
+        buffer.writeByte(packet.getMode().ordinal());
+        buffer.writeBoolean(packet.isOnGround());
+        VarInts.writeUnsignedLong(buffer, packet.getRidingEntityRuntimeId());
+
+        if (packet.getMode() == MovementMode.TELEPORT) {
+            buffer.writeIntLE(packet.getTeleportationCause().ordinal());
+            buffer.writeIntLE(packet.getEntityType());
+        }
+        VarInts.writeUnsignedLong(buffer, packet.getTick());
+    }
+
 }

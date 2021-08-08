@@ -44,6 +44,12 @@ public interface Entity extends Watchable {
      */
     Location getLocation();
 
+    float getHeight();
+
+    float getWidth();
+
+    float getEyeHeight();
+
     EntityMetaData getMetaData();
 
     void setMetaData(EntityMetaData metaData);

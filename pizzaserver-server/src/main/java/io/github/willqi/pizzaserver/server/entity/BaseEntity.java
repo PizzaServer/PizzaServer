@@ -105,6 +105,11 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
+    public float getEyeHeight() {
+        return this.getHeight() / 2 + 0.1f;
+    }
+
+    @Override
     public EntityMetaData getMetaData() {
         return this.metaData;
     }

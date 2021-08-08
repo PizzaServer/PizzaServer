@@ -9,13 +9,13 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
+import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
@@ -103,12 +103,25 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public float getHeight() {
+        return 1.8f;
+    }
+
+    @Override
+    public float getWidth() {
+        return 0.6f;
+    }
+
+    @Override
     public void setMetaData(EntityMetaData metaData) {
         super.setMetaData(metaData);
 
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
         setEntityDataPacket.setRuntimeId(this.getId());
         setEntityDataPacket.setData(this.getMetaData());
+        for (Player player : this.getViewers()) {
+            player.sendPacket(setEntityDataPacket);
+        }
         this.sendPacket(setEntityDataPacket);
     }
 
@@ -283,8 +296,21 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void teleport(World world, float x, float y, float z) {
-        // TODO: teleport packet
+    public void moveTo(float x, float y, float z) {
+        super.moveTo(x, y, z);
+
+        // TODO: movement should be every tick rather than whenever moveTo is called
+        MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
+        movePlayerPacket.setEntityRuntimeId(this.getId());
+        movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY(), this.getZ()));
+        movePlayerPacket.setPitch(this.getPitch());
+        movePlayerPacket.setYaw(this.getYaw());
+        movePlayerPacket.setHeadYaw(this.getHeadYaw());
+        movePlayerPacket.setMode(MovementMode.NORMAL);
+        movePlayerPacket.setOnGround(false);    // TODO: does this change anything when sent to a client?
+        for (Player player : this.getViewers()) {
+            player.sendPacket(movePlayerPacket);
+        }
     }
 
     @Override
@@ -390,7 +416,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         addPlayerPacket.setUsername(this.getUsername());
         addPlayerPacket.setEntityRuntimeId(this.getId());
         addPlayerPacket.setEntityUniqueId(this.getId());
-        addPlayerPacket.setPosition(new Vector3(this.getLocation().getX(), this.getLocation().getY(), this.getLocation().getZ()));
+        addPlayerPacket.setPosition(new Vector3(this.getX(), this.getY(), this.getZ()));
         addPlayerPacket.setVelocity(new Vector3(0, 0, 0));
         addPlayerPacket.setPitch(this.getPitch());
         addPlayerPacket.setYaw(this.getYaw());
