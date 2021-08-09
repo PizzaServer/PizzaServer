@@ -18,7 +18,7 @@ import java.util.Set;
 
 public abstract class BaseEntity implements Entity {
 
-    public static long ID;
+    public static long ID = 1;
 
     protected final long id;
     protected float x;

@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -10,6 +11,7 @@ import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
+import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
 
 import java.util.HashSet;
@@ -19,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     private final ImplPlayer player;
+    private Location startingLocation;
 
 
     public FullGamePacketHandler(ImplPlayer player) {
@@ -40,6 +43,7 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
         // TODO: get actual player spawn from player data
         Vector3 playerSpawn = new Vector3(142, 66, 115);
+        this.startingLocation = new ImplLocation(defaultWorld, playerSpawn);
 
         // Load the chunks around the player before we spawn them in
         int playerChunkX = playerSpawn.toVector3i().getX() / 16;
@@ -65,9 +69,15 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
             playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
             this.player.sendPacket(playStatusPacket);
-
-            defaultWorld.addEntity(this.player, playerSpawn);
         });
+    }
+
+    @Override
+    public void onPacket(SetLocalPlayerAsInitializedPacket packet) {
+        Location initializationLocation = this.startingLocation;
+        this.startingLocation = null;
+
+        initializationLocation.getWorld().addEntity(this.player, new Vector3(initializationLocation.getX(), initializationLocation.getY(), initializationLocation.getZ()));
     }
 
     @Override
@@ -81,10 +91,12 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(MovePlayerPacket packet) {
-        this.player.setPitch(packet.getPitch());
-        this.player.setYaw(packet.getYaw());
-        this.player.setHeadYaw(packet.getHeadYaw());
-        this.player.moveTo(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+        if (this.player.hasSpawned()) {
+            this.player.setPitch(packet.getPitch());
+            this.player.setYaw(packet.getYaw());
+            this.player.setHeadYaw(packet.getHeadYaw());
+            this.player.moveTo(packet.getPosition().getX(), packet.getPosition().getY() - this.player.getEyeHeight(), packet.getPosition().getZ());
+        }
     }
 
     @Override

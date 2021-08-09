@@ -65,6 +65,7 @@ public class WorldProviderThread extends Thread implements Closeable {
                 } else {
                     ImplSendChunkToPlayerProcessingAction chunkSendAction = (ImplSendChunkToPlayerProcessingAction)action;
                     chunkSendAction.getChunk().sendBlocksTo(chunkSendAction.getPlayer());
+                    chunkSendAction.getResponse().complete(null);   // TODO: This is not thread-safe. However, rewrite/chunk-loading should fix that when merged.
                 }
             }
 

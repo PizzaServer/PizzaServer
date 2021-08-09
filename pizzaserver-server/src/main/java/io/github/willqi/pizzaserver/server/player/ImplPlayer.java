@@ -113,6 +113,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public float getEyeHeight() {
+        return 1.62f;
+    }
+
+    @Override
     public void setMetaData(EntityMetaData metaData) {
         super.setMetaData(metaData);
 
@@ -297,12 +302,17 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void moveTo(float x, float y, float z) {
+        Location oldLocation = new ImplLocation(this.world, new Vector3(this.x, this.y, this.z));
         super.moveTo(x, y, z);
+
+        if (!oldLocation.getChunk().equals(this.getChunk())) {
+            this.updateVisibleChunks(oldLocation, this.getChunkRadius());
+        }
 
         // TODO: movement should be every tick rather than whenever moveTo is called
         MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
         movePlayerPacket.setEntityRuntimeId(this.getId());
-        movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY(), this.getZ()));
+        movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
         movePlayerPacket.setPitch(this.getPitch());
         movePlayerPacket.setYaw(this.getYaw());
         movePlayerPacket.setHeadYaw(this.getHeadYaw());
@@ -337,21 +347,23 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      */
     public void onDisconnect() {
         if (this.hasSpawned()) {
+            Location location = this.getLocation();
+
             // remove the player from the player list of others
             for (Player player : this.getServer().getPlayers()) {
                 player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
 
+            // Remove player entity from the world
+            this.despawn();
+
             // Remove all of the chunks this player is viewing
-            for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
-                for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                    ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
+            for (int chunkX = location.getChunkX() - this.getChunkRadius(); chunkX <= location.getChunkX() + this.getChunkRadius(); chunkX++) {
+                for (int chunkZ = location.getChunkZ() - this.getChunkRadius(); chunkZ <= location.getChunkZ() + this.getChunkRadius(); chunkZ++) {
+                    ImplChunk chunk = (ImplChunk)location.getWorld().getChunkManager().getChunk(chunkX, chunkZ);
                     chunk.despawnFrom(this);
                 }
             }
-
-            // Remove player entity from the world
-            this.despawn();
         }
     }
 

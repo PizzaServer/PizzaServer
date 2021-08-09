@@ -114,11 +114,11 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     @Override
     public void moveTo(float x, float y, float z) {
         ImplChunk currentChunk = (ImplChunk)this.getChunk();
-        ImplChunk newChunk = (ImplChunk)this.getWorld().getChunkManager().getChunk((int)Math.floor(this.x / 16), (int)Math.floor(this.z / 16));
         this.x = x;
         this.y = y;
         this.z = z;
 
+        ImplChunk newChunk = (ImplChunk)this.getWorld().getChunkManager().getChunk((int)Math.floor(this.x / 16), (int)Math.floor(this.z / 16));
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
             currentChunk.removeEntity(this);
             newChunk.addEntity(this);
