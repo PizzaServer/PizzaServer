@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
@@ -77,7 +79,24 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
         Location initializationLocation = this.startingLocation;
         this.startingLocation = null;
 
-        initializationLocation.getWorld().addEntity(this.player, new Vector3(initializationLocation.getX(), initializationLocation.getY(), initializationLocation.getZ()));
+        PlayerPreSpawnEvent playerPreSpawnEvent = new PlayerPreSpawnEvent(player, initializationLocation);
+        this.player.getServer().getEventManager().call(playerPreSpawnEvent);
+        if (playerPreSpawnEvent.isCancelled()) {
+            this.player.disconnect();
+            return;
+        }
+
+        Vector3 startCoordinates = new Vector3(playerPreSpawnEvent.getStartLocation().getX(),
+                playerPreSpawnEvent.getStartLocation().getY(),
+                playerPreSpawnEvent.getStartLocation().getZ());
+
+        playerPreSpawnEvent.getStartLocation().getWorld().addEntity(this.player, startCoordinates);
+
+        PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(player);
+        this.player.getServer().getEventManager().call(playerSpawnEvent);
+        if (playerSpawnEvent.isCancelled()) {
+            this.player.disconnect();
+        }
     }
 
     @Override
