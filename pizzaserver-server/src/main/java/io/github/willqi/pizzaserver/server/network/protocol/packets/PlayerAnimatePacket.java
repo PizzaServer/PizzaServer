@@ -1,16 +1,16 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAnimateAction;
+import io.github.willqi.pizzaserver.api.player.data.AnimationAction;
 
 /**
- * Sent by the client and server to trigger a {@link PlayerAnimateAction}
+ * Sent by the client and server to trigger a {@link AnimationAction}
  */
 public class PlayerAnimatePacket extends BaseBedrockPacket {
 
     public static final int ID = 0x2c;
 
-    private PlayerAnimateAction action;
+    private AnimationAction action;
     private long entityRuntimeID;
     private float rowingTime;
 
@@ -18,11 +18,11 @@ public class PlayerAnimatePacket extends BaseBedrockPacket {
         super(ID);
     }
 
-    public PlayerAnimateAction getAction() {
+    public AnimationAction getAction() {
         return action;
     }
 
-    public void setAction(PlayerAnimateAction action) {
+    public void setAction(AnimationAction action) {
         this.action = action;
     }
 

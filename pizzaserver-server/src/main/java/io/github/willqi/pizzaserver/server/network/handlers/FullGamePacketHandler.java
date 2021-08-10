@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerAnimationEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -115,6 +116,22 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
             this.player.setYaw(packet.getYaw());
             this.player.setHeadYaw(packet.getHeadYaw());
             this.player.moveTo(packet.getPosition().getX(), packet.getPosition().getY() - this.player.getEyeHeight(), packet.getPosition().getZ());
+        }
+    }
+
+    @Override
+    public void onPacket(PlayerAnimatePacket packet) {
+        PlayerAnimationEvent event = new PlayerAnimationEvent(this.player, packet.getAction());
+        this.player.getServer().getEventManager().call(event);
+
+        if (!event.isCancelled()) {
+            PlayerAnimatePacket animatePacket = new PlayerAnimatePacket();
+            animatePacket.setEntityRuntimeID(this.player.getId());
+            animatePacket.setAction(packet.getAction());
+            animatePacket.setRowingTime(packet.getRowingTime());
+            for (Player viewer : this.player.getViewers()) {
+                viewer.sendPacket(animatePacket);
+            }
         }
     }
 
