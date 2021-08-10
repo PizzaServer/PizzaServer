@@ -5,36 +5,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ConfigGroup {
 
-    private final Map<String, Object> properties = new LinkedHashMap<>();
+    protected Map<String, Object> properties = new LinkedHashMap<>();
 
-    private final ConfigGroup parent;
-    private final String name;
 
-    public ConfigGroup() {
-        this.parent = null;
-        this.name = null;
-    }
+    public ConfigGroup() {}
 
-    public ConfigGroup(String name) {
-        this.parent = null;
-        this.name = name;
-    }
-
-    public ConfigGroup(String name, ConfigGroup parent) {
-        this.parent = parent;
-        this.name = name;
-    }
-
-    public ConfigGroup getParentGroup() {
-        return this.parent;
-    }
-
-    public String getName() {
-        return this.name;
+    public ConfigGroup(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
     public void setString(String name, String value) {
@@ -50,9 +30,9 @@ public class ConfigGroup {
     }
 
     public List<String> getStringList(String name) {
-        return ((Stream<String>)((List)this.properties.get(name))
+        return ((List<String>)this.properties.get(name))
                 .stream()
-                .map(Object::toString))
+                .map(Object::toString)
                 .collect(Collectors.toList());
     }
 
@@ -69,9 +49,9 @@ public class ConfigGroup {
     }
 
     public List<Boolean> getBooleanList(String name) {
-        return ((Stream<Boolean>)((List)this.properties.get(name))
+        return ((List<Boolean>)this.properties.get(name))
                 .stream()
-                .map(obj -> Boolean.valueOf(obj.toString())))
+                .map(obj -> Boolean.valueOf(obj.toString()))
                 .collect(Collectors.toList());
     }
 
@@ -88,7 +68,7 @@ public class ConfigGroup {
     }
 
     public List<Integer> getIntegerList(String name) {
-        return ((List)this.properties.get(name))
+        return ((List<Integer>)this.properties.get(name))
                 .stream()
                 .mapToInt(obj -> Integer.parseInt(obj.toString()))
                 .boxed()
@@ -108,7 +88,7 @@ public class ConfigGroup {
     }
 
     public List<Double> getDoubleList(String name) {
-        return ((List)this.properties.get(name))
+        return ((List<Double>)this.properties.get(name))
                 .stream()
                 .mapToDouble(obj -> Double.parseDouble(obj.toString()))
                 .boxed()
@@ -127,7 +107,7 @@ public class ConfigGroup {
     }
 
     public List<Long> getLongList(String name) {
-        return ((List)this.properties.get(name))
+        return ((List<Long>)this.properties.get(name))
                 .stream()
                 .mapToLong(obj -> Long.parseLong(obj.toString()))
                 .boxed()
@@ -147,9 +127,9 @@ public class ConfigGroup {
     }
 
     public List<Float> getFloatList(String name) {
-        return ((Stream<Float>)((List)this.properties.get(name))
+        return ((List<Float>)this.properties.get(name))
                 .stream()
-                .map(obj -> Float.valueOf(obj.toString())))
+                .map(obj -> Float.valueOf(obj.toString()))
                 .collect(Collectors.toList());
     }
 
@@ -158,7 +138,7 @@ public class ConfigGroup {
     }
 
     public ConfigGroup getGroup(String name) {
-        return (ConfigGroup)this.properties.get(name);
+        return new ConfigGroup((Map<String, Object>)this.properties.get(name));
     }
 
     public void remove(String name) {
