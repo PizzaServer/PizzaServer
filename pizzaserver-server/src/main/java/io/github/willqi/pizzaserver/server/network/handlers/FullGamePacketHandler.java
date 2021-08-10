@@ -152,12 +152,27 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(WorldSoundEventPacket packet) {
-        WorldSoundEvent event = new WorldSoundEvent(player.getLocation().getWorld(), packet.getSound(), packet.getVector3(), packet.isGlobal(), packet.isBaby(), packet.getEntityType(), packet.getBlockID());
+        WorldSoundEvent event = new WorldSoundEvent(this.player.getLocation().getWorld(),
+                packet.getSound(),
+                packet.getVector3(),
+                packet.isGlobal(),
+                packet.isBaby(),
+                packet.getEntityType(),
+                packet.getBlockID());
         this.player.getServer().getEventManager().call(event);
-        if(!event.isCancelled()) {
-            event.getWorld().playSound(packet.getSound(), packet.getVector3(), packet.isGlobal(), packet.isBaby(), packet.getEntityType(), packet.getBlockID());
-            for(Player player : event.getWorld().getPlayers()) {
-                if(player.getUUID() != this.player.getUUID()) player.sendPacket(packet);
+
+        if (!event.isCancelled()) {
+            event.getWorld().playSound(packet.getSound(),
+                    packet.getVector3(),
+                    packet.isGlobal(),
+                    packet.isBaby(),
+                    packet.getEntityType(),
+                    packet.getBlockID());
+
+            for (Player viewer : this.player.getViewers()) {
+                if (!viewer.getUUID().equals(this.player.getUUID())) {
+                    viewer.sendPacket(packet);
+                }
             }
         }
     }
