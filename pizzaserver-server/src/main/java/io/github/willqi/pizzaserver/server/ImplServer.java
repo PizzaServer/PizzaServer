@@ -128,7 +128,6 @@ public class ImplServer implements Server {
             // Record TPS every second
             if (System.nanoTime() > nextTpsRecording) {
                 this.currentTps = currentTps;
-                this.getLogger().info("tps = " + this.currentTps);
                 currentTps = 0;
                 nextTpsRecording = System.nanoTime() + TimeUtils.secondsToNanoSeconds(1);
             }
