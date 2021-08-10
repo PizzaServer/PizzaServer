@@ -97,60 +97,77 @@ public class ImplServer implements Server {
         this.scheduler.startScheduler();
 
         int currentTps = 0;
-        long initNanoTime = System.nanoTime();
-        long nextTpsRecording = initNanoTime + TimeUtils.secondsToNanoSeconds(1);
-        long nanoSecondsPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
-        long nextPredictedNanoTimeTick = initNanoTime + nanoSecondsPerTick;         // Used to determine how behind/ahead we are
-        long sleepTime = TimeUtils.nanoSecondsToMilliseconds(nanoSecondsPerTick);
+        long nextTpsRecording = 0;
+        long sleepTime = 0;    // The amount of nanoseconds to sleep for
+                               // This fluctuates depending on if we were at a slower/faster tps before
         while (this.running) {
-            synchronized (this.sessions) {
-                Iterator<BedrockClientSession> sessions = this.sessions.iterator();
-                while (sessions.hasNext()) {
-                    BedrockClientSession session = sessions.next();
-                    session.processPackets();
+            long idealNanoSleepPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
 
-                    if (session.isDisconnected()) {
-                        sessions.remove();
-                        ImplPlayer player = session.getPlayer();
-                        if (player != null) {
-                            player.onDisconnect();
-                            this.getNetwork().updatePong();
-                        }
-                    }
-                }
-            }
+            // Figure out how long it took to tick
+            long startTickTime = System.nanoTime();
+            this.tick();
+            currentTps++;
+            long endTickTime = System.nanoTime();
+            long timeTakenToTick = endTickTime - startTickTime;
 
-            for (ImplScheduler scheduler : this.syncedSchedulers) {
-                try {
-                    scheduler.serverTick();
-                } catch (Exception exception) {
-                    this.getLogger().error("Failed to tick scheduler", exception);
-                }
-            }
-
+            // Sleep for the ideal time but take into account the time spent running the tick
+            sleepTime += idealNanoSleepPerTick - timeTakenToTick;
+            long sleepStart = System.nanoTime();
             try {
-                Thread.sleep(sleepTime);
+                Thread.sleep(Math.max(TimeUtils.nanoSecondsToMilliseconds(sleepTime), 0));
             } catch (InterruptedException exception) {
                 exception.printStackTrace();
                 this.stop();
                 return;
             }
+            sleepTime -= System.nanoTime() - sleepStart;    // How long did it actually take to sleep?
+                                                            // If we didn't sleep for the correct amount,
+                                                            // take that into account for the next sleep by
+                                                            // leaving extra/less for the next sleep.
 
-            long completedNanoTime = System.nanoTime();
-            if (completedNanoTime > nextTpsRecording) {
+            // Record TPS every second
+            if (System.nanoTime() > nextTpsRecording) {
                 this.currentTps = currentTps;
+                this.getLogger().info("tps = " + this.currentTps);
                 currentTps = 0;
                 nextTpsRecording = System.nanoTime() + TimeUtils.secondsToNanoSeconds(1);
             }
-            currentTps++;
-
-            long diff = nextPredictedNanoTimeTick - completedNanoTime;
-            nanoSecondsPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
-            nextPredictedNanoTimeTick = System.nanoTime() + nanoSecondsPerTick + diff;
-            sleepTime = TimeUtils.nanoSecondsToMilliseconds(Math.max(nanoSecondsPerTick + diff, 0));
-
         }
         this.stop();
+    }
+
+    private void tick() {
+        synchronized (this.sessions) {
+            // Process all packets that are outgoing and incoming
+            Iterator<BedrockClientSession> sessions = this.sessions.iterator();
+            while (sessions.hasNext()) {
+                BedrockClientSession session = sessions.next();
+                try {
+                    session.processPackets();
+                } catch (Exception exception) {
+                    session.disconnect();
+                    this.getLogger().error("Disconnecting session due to failure in processing packets", exception);
+                }
+
+                // check if the client disconnected
+                if (session.isDisconnected()) {
+                    sessions.remove();
+                    ImplPlayer player = session.getPlayer();
+                    if (player != null) {
+                        player.onDisconnect();
+                        this.getNetwork().updatePong();
+                    }
+                }
+            }
+        }
+
+        for (ImplScheduler scheduler : this.syncedSchedulers) {
+            try {
+                scheduler.serverTick();
+            } catch (Exception exception) {
+                this.getLogger().error("Failed to tick scheduler", exception);
+            }
+        }
     }
 
     /**
