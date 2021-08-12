@@ -159,6 +159,8 @@ public class ImplServer implements Server {
             }
         }
 
+        this.getWorldManager().tick();
+
         for (ImplScheduler scheduler : this.syncedSchedulers) {
             try {
                 scheduler.serverTick();
