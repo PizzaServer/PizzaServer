@@ -1,8 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.world.World;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
@@ -26,7 +27,7 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
      */
     private void completeLogin() {
         String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
-        World defaultWorld = this.player.getServer().getWorldManager().getWorld(defaultWorldName);
+        World defaultWorld = this.player.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
         if (defaultWorld == null) {
             this.player.disconnect("Failed to find default world");
             ImplServer.getInstance().getLogger().error("Failed to find a world by the name of " + defaultWorldName);

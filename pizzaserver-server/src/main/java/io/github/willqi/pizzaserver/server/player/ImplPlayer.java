@@ -19,7 +19,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
+import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -6,8 +6,8 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
-import io.github.willqi.pizzaserver.api.world.WorldManager;
-import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.api.level.LevelManager;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 
 import java.util.Set;
 
@@ -73,7 +73,7 @@ public interface Server {
 
     ResourcePackManager getResourcePackManager();
 
-    WorldManager getWorldManager();
+    LevelManager getLevelManager();
 
     EventManager getEventManager();
 

@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
-import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 
 /**
  * Represents a entity on Minecraft

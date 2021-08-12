@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.format.api.chunks;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public interface BedrockChunk {
     int getX();
 
     int getZ();
+
+    Dimension getDimension();
 
     /**
      * A height map is a array of 256 (16 * 16) integers that stores the highest blocks in a chunk
