@@ -61,7 +61,7 @@ public class ServerConfig {
      * @return default yaw
      */
     public float getDefaultYaw() {
-        return this.config.getFloat("world-default-yaw");
+        return (float)this.config.getDouble("world-default-yaw");
     }
 
     /**
@@ -69,7 +69,7 @@ public class ServerConfig {
      * @return default pitch
      */
     public float getDefaultPitch() {
-        return this.config.getFloat("world-default-pitch");
+        return (float)this.config.getDouble("world-default-pitch");
     }
 
 }

@@ -128,9 +128,6 @@ public class ImplWorld implements Closeable, World {
         }
 
         Location location = new Location(this, position);
-        if (location.getChunk() == null) {
-            throw new NullPointerException("This entity cannot be spawned in an unloaded chunk");
-        }
 
         entity.setLocation(location);
         if (entity instanceof Player) {

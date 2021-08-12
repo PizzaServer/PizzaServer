@@ -233,7 +233,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             return;
         }
 
-        // Load player data
+        // Apply player data and send remaining packets
         this.player.getServer().getScheduler()
                 .prepareTask(() -> {
                     this.player.setPitch(data.getPitch());
@@ -260,11 +260,9 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
                     this.player.sendPacket(biomeDefinitionPacket);
 
-                    this.player.getServer().getScheduler().prepareTask(() -> {
-                        location.getWorld().addEntity(this.player, location);
-                        this.session.setPacketHandler(new FullGamePacketHandler(this.player));
-                    }).schedule();
-                }).setAsynchronous(true).schedule();
+                    location.getWorld().addEntity(this.player, location);
+                    this.session.setPacketHandler(new FullGamePacketHandler(this.player));
+                }).schedule();
     }
 
     /**

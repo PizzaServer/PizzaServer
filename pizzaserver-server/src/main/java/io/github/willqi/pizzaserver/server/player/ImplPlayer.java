@@ -166,12 +166,12 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void setAllowAutomaticSaving(boolean allowSaving) {
+    public void setAutoSave(boolean allowSaving) {
         this.allowAutomaticSaving = allowSaving;
     }
 
     @Override
-    public boolean isAllowedToAutomaticallySave() {
+    public boolean canAutoSave() {
         return this.allowAutomaticSaving;
     }
 
@@ -202,7 +202,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void onDisconnect() {
         if (this.hasSpawned()) {
             this.getLocation().getWorld().removeEntity(this);
-            if (this.isAllowedToAutomaticallySave()) {
+            if (this.canAutoSave()) {
                 this.getServer().getScheduler().prepareTask(this::save).setAsynchronous(true).schedule();
             }
 
