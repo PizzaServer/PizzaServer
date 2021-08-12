@@ -91,50 +91,59 @@ public class ImplChunkManager implements ChunkManager {
     }
 
     @Override
-    public boolean unloadChunk(int x, int z) {
-        Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.lock.writeLock(key);
-
-        try {
-            Chunk chunk = this.chunks.getOrDefault(key, null);
-            if (Check.isNull(chunk) || !chunk.canBeClosed()) {
-                return false;
-            }
-
-            this.chunks.remove(key);
-            chunk.close();
-            return true;
-        } finally {
-            this.lock.writeUnlock(key);
-        }
+    public void unloadChunk(int x, int z) {
+        this.unloadChunk(x, z, false, false);
     }
 
     @Override
-    public void unloadChunkRequest(int x, int z) {
-        this.chunkQueue.addRequest(new UnloadChunkRequest(x, z));
+    public void unloadChunk(int x, int z, boolean async, boolean force) {
+        if (async) {
+            this.chunkQueue.addRequest(new UnloadChunkRequest(x, z));
+        } else {
+            Tuple<Integer, Integer> key = new Tuple<>(x, z);
+            this.lock.writeLock(key);
+
+            try {
+                Chunk chunk = this.chunks.getOrDefault(key, null);
+                if (Check.isNull(chunk) || (!chunk.canBeClosed() && !force)) {
+                    return;
+                }
+
+                this.chunks.remove(key);
+                chunk.close();
+            } finally {
+                this.lock.writeUnlock(key);
+            }
+        }
     }
 
     @Override
     public void sendPlayerChunk(Player player, int x, int z) {
-        Tuple<Integer, Integer> key = new Tuple<>(x, z);
-        this.lock.readLock(key);
-        try {
-            Chunk chunk = this.getChunk(x, z);
-            chunk.sendTo(player);
-        } finally {
-            this.lock.readUnlock(key);
-        }
+        this.sendPlayerChunk(player, x, z, false);
     }
 
     @Override
-    public void sendPlayerChunkRequest(Player player, int x, int z) {
-        this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer)player, x, z));
+    public void sendPlayerChunk(Player player, int x, int z, boolean async) {
+        if (async) {
+            this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer)player, x, z));
+        } else {
+            Tuple<Integer, Integer> key = new Tuple<>(x, z);
+            this.lock.readLock(key);
+            try {
+                Chunk chunk = this.getChunk(x, z);
+                chunk.sendTo(player);
+            } finally {
+                this.lock.readUnlock(key);
+            }
+        }
     }
 
     @Override
     public void close() throws IOException {
         this.chunkQueue.close();
-        // TODO: unload and save all chunks
+        for (Chunk chunk : this.chunks.values()) {
+            this.unloadChunk(chunk.getX(), chunk.getZ(), false, true);
+        }
     }
 
     @Override
