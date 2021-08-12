@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -226,7 +225,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
         PlayerData data;
         try {
-            data = this.getPlayerData(defaultWorld);
+            data = this.player.getSavedData().orElse(defaultWorld.getDefaultPlayerData());
         } catch (IOException exception) {
             this.player.disconnect("Failed to retrieve player data");
             this.player.getServer().getLogger().error("Failed to retrieve data of " + this.player.getUUID(), exception);
@@ -308,30 +307,6 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setWorldType(WorldType.INFINITE);
 
         return startGamePacket;
-    }
-
-    /**
-     * Retrieve the saved data of the player
-     * @param defaultWorld default {@link World} players spawn in if no data is present
-     * @return the {@link PlayerData} of the player
-     * @throws IOException if an exception occurs while fetching data
-     */
-    private PlayerData getPlayerData(ImplWorld defaultWorld) throws IOException {
-        // Fetch existing player data if present
-        Optional<PlayerData> playerData = this.player.getData();
-
-        if (!playerData.isPresent()) {
-            playerData = Optional.of(
-                    new PlayerData.Builder()
-                            .setLevelName(defaultWorld.getLevel().getProvider().getFileName())
-                            .setDimension(defaultWorld.getDimension())
-                            .setPosition(defaultWorld.getSpawnCoordinates().add(0, 2, 0).toVector3())
-                            .setYaw(defaultWorld.getServer().getConfig().getDefaultYaw())
-                            .setPitch(defaultWorld.getServer().getConfig().getDefaultPitch())
-                            .build()
-            );
-        }
-        return playerData.get();
     }
 
 }

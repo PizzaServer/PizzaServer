@@ -160,7 +160,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      * @return saved player data
      * @throws IOException if an exception occurred while reading the data
      */
-    public Optional<PlayerData> getData() throws IOException {
+    public Optional<PlayerData> getSavedData() throws IOException {
         return this.getServer().getPlayerProvider()
                 .load(this.getUUID());
     }

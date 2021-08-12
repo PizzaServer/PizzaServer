@@ -16,6 +16,7 @@ import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunkManager;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
+import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -64,7 +65,6 @@ public class ImplWorld implements Closeable, World {
     public ImplChunkManager getChunkManager() {
         return this.chunkManager;
     }
-
 
     @Override
     public Vector3i getSpawnCoordinates() {
@@ -163,6 +163,20 @@ public class ImplWorld implements Closeable, World {
                 player.sendPacket(packet);
             }
         }
+    }
+
+    /**
+     * Retrieve the default save data for a player spawning in this world
+     * @return default {@link PlayerData} for players spawning in this world
+     */
+    public PlayerData getDefaultPlayerData() {
+        return new PlayerData.Builder()
+                .setLevelName(this.getLevel().getProvider().getFileName())
+                .setDimension(this.getDimension())
+                .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toVector3())
+                .setYaw(this.getServer().getConfig().getDefaultYaw())
+                .setPitch(this.getServer().getConfig().getDefaultPitch())
+                .build();
     }
 
     @Override
