@@ -120,7 +120,7 @@ public abstract class BaseBlockType  {
      * How strong this block is to mine
      * @return strength of the block
      */
-    public int getToughness() {
+    public float getToughness() {
         return 0;
     }
 
@@ -207,19 +207,11 @@ public abstract class BaseBlockType  {
     }
 
     /**
-     * If this block allows players to jump while on it
-     * @return if players can jump while on this block
-     */
-    public boolean allowsJumping() {
-        return true;
-    }
-
-    /**
      * Retrieve the rotation of this block
      * @return rotation of the block
      */
-    public int[] getRotation() {
-        return new int[]{ 0, 0, 0 };
+    public float[] getRotation() {
+        return new float[]{ 0, 0, 0 };
     }
 
     /**
