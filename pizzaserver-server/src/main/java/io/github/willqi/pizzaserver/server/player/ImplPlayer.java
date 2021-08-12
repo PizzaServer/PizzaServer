@@ -162,10 +162,14 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             this.getLocation().getWorld().removeEntity(this);
 
             // Remove player from chunks they can observe
-            for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
-                for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                    ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                    chunk.despawnFrom(this);
+            for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
+                for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
+                    // Chunk radius is circular
+                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                    if (this.chunkRadius < distance) {
+                        ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(this.getLocation().getChunkX() + x, this.getLocation().getChunkZ() + z);
+                        chunk.despawnFrom(this);
+                    }
                 }
             }
         }
@@ -395,7 +399,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             int oldPlayerChunkZ = oldLocation.getChunkZ();
             for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
                 for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
-                    // Chunk radius is ciruclar
+                    // Chunk radius is circular
                     int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
                     if (oldChunkRadius > distance) {
                         chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));
