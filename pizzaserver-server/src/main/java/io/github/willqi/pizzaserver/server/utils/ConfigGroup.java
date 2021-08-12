@@ -114,25 +114,6 @@ public class ConfigGroup {
                 .collect(Collectors.toList());
     }
 
-    public void setFloat(String name, float value) {
-        this.properties.put(name, value);
-    }
-
-    public float getFloat(String name) {
-        return Float.parseFloat(this.properties.get(name).toString());
-    }
-
-    public void setFloatList(String name, List<Float> list) {
-        this.properties.put(name, list);
-    }
-
-    public List<Float> getFloatList(String name) {
-        return ((List<Float>)this.properties.get(name))
-                .stream()
-                .map(obj -> Float.valueOf(obj.toString()))
-                .collect(Collectors.toList());
-    }
-
     public void setGroup(String name, ConfigGroup group) {
         this.properties.put(name, group);
     }
