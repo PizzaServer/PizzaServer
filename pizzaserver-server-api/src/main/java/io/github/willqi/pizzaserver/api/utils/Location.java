@@ -36,11 +36,11 @@ public class Location extends Vector3 {
     }
 
     public int getChunkX() {
-        return (int)(this.getX() / 16);
+        return (int)Math.floor(this.getX() / 16d);
     }
 
     public int getChunkZ() {
-        return (int)(this.getZ() / 16);
+        return (int)Math.floor(this.getZ() / 16d);
     }
 
 }
