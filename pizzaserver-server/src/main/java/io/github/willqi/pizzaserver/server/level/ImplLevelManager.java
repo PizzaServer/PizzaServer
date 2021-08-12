@@ -101,7 +101,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     @Override
-    public boolean unloadLevel(String name) {
+    public void unloadLevel(String name) {
         this.locks.writeLock(name);
 
         this.server.getLogger().info("Unloading level " + name);
@@ -109,21 +109,32 @@ public class ImplLevelManager implements LevelManager, Closeable {
             ImplLevel level = this.levels.getOrDefault(name, null);
             if (level == null) {
                 this.server.getLogger().error("No level is loaded with the name: " + name);
-                return false;
+                return;
             }
             try {
                 level.save();
                 level.close();
             } catch (IOException exception) {
                 this.server.getLogger().error("Failed to unload level: " + name, exception);
-                return false;
+                return;
             }
 
             this.server.getLogger().info("Successfully unloaded level " + name);
             this.levels.remove(name);
-            return true;
         } finally {
             this.locks.writeUnlock(name);
+        }
+    }
+
+    @Override
+    public void unloadLevel(String name, boolean async) {
+        if (async) {
+            this.getServer().getScheduler()
+                    .prepareTask(() -> this.unloadLevel(name))
+                    .setAsynchronous(true)
+                    .schedule();
+        } else {
+            this.unloadLevel(name);
         }
     }
 

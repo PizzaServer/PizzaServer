@@ -1,8 +1,5 @@
 package io.github.willqi.pizzaserver.server.utils;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -77,20 +74,6 @@ public class ConfigTests {
         Config config = getConfig();
         Assertions.assertEquals(config.getBooleanList("boolean-list"), Arrays.asList(true, true, false, true));
     }
-
-
-    @Test
-    public void shouldRetrieveFloatValue() {
-        Config config = getConfig();
-        Assertions.assertEquals(config.getFloat("decimal-value"), 1.23456789012345678901234567890F);
-    }
-
-    @Test
-    public void shouldRetrieveFloatList() {
-        Config config = getConfig();
-        Assertions.assertEquals(config.getFloatList("decimal-list"), Arrays.asList(1.23F, 1.23456789012345678901234567890F));
-    }
-
 
     @Test
     public void shouldRetrieveDoubleValue() {

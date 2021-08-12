@@ -67,7 +67,7 @@ public class ChunkQueue implements Closeable {
             ) {  // Send the amount of chunks we can send this for this player during this tick
                 Iterator<PlayerChunkRequest> requestsInterator = playerSendRequests.iterator();
 
-                while (requestsInterator.hasNext() && this.isThereRoomToSendChunkToPlayer(player) && player.acknowledgeChunkSendRequest()) {
+                while (requestsInterator.hasNext() && this.hasRoomToSendChunkToPlayer(player) && player.acknowledgeChunkSendRequest()) {
                     this.addedChunkToPlayerQueue(player);
                     this.processor.addRequest(requestsInterator.next());
                     requestsInterator.remove();
@@ -82,7 +82,7 @@ public class ChunkQueue implements Closeable {
             Iterator<UnloadChunkRequest> iterator = this.queuedUnloadChunkRequests.iterator();
             // Check how many chunks we can offload per tick
             int queueLeft = ((ImplServer)this.chunkManager.getWorld().getServer()).getConfig().getChunkRequestsPerTick();
-            while (iterator.hasNext() && queueLeft > 0 && this.isThereRoomToUnloadChunk()) {
+            while (iterator.hasNext() && queueLeft > 0 && this.hasRoomToUnloadChunk()) {
                 UnloadChunkRequest request = iterator.next();
                 this.activeUnloadChunkRequests.getAndIncrement();
                 this.processor.addRequest(request);
@@ -97,7 +97,7 @@ public class ChunkQueue implements Closeable {
      * @param player the player to send a chunk to
      * @return if there is room
      */
-    private boolean isThereRoomToSendChunkToPlayer(ImplPlayer player) {
+    private boolean hasRoomToSendChunkToPlayer(ImplPlayer player) {
         return !this.activeChunkSendRequests.containsKey(player) || this.activeChunkSendRequests.get(player).get() < player.getServer().getConfig().getChunkProcessingCap();
     }
 
@@ -116,7 +116,7 @@ public class ChunkQueue implements Closeable {
         }
     }
 
-    private boolean isThereRoomToUnloadChunk() {
+    private boolean hasRoomToUnloadChunk() {
         return this.activeUnloadChunkRequests.get() < ((ImplServer)ImplServer.getInstance()).getConfig().getChunkProcessingCap();
     }
 
@@ -125,7 +125,7 @@ public class ChunkQueue implements Closeable {
      * Removes a chunk from the internal queue count
      * @param request the request that was completed
      */
-    void finishedRequest(ChunkRequest request) {
+    void onRequestCompletion(ChunkRequest request) {
         if (request instanceof PlayerChunkRequest) {
             PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest)request;
             AtomicInteger playerChunkCount = this.activeChunkSendRequests.getOrDefault(playerChunkRequest.getPlayer(), null);

@@ -32,8 +32,14 @@ public interface LevelManager {
     /**
      * Unload a {@link Level} back to the file system
      * @param name name of the level
-     * @return if the {@link Level} was unloaded
      */
-    boolean unloadLevel(String name);
+    void unloadLevel(String name);
+
+    /**
+     * Unload a {@link Level} back to the file system
+     * @param name name of the level
+     * @param async if this should be done asynchronously
+     */
+    void unloadLevel(String name, boolean async);
 
 }

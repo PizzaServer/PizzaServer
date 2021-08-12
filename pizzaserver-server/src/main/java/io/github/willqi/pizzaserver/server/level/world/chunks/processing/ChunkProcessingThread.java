@@ -47,9 +47,9 @@ public class ChunkProcessingThread extends Thread {
                 this.chunkManager.sendPlayerChunk(playerChunkRequest.getPlayer(), request.getX(), request.getZ());
             } else {
                 // unload request
-                this.chunkManager.unloadChunk(request.getX(), request.getZ());
+                this.chunkManager.unloadChunk(request.getX(), request.getZ(), false, false);
             }
-            this.queue.finishedRequest(request);
+            this.queue.onRequestCompletion(request);
         }
     }
 
