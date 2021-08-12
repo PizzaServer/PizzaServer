@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class BedrockClientSession {
+public class BedrockClientSession extends Thread {
 
     private final BedrockNetworkServer server;
     private final RakNetServerSession serverSession;
@@ -119,7 +119,7 @@ public class BedrockClientSession {
         this.processOutgoingPackets();
     }
 
-    protected void processIncomingPackets() {
+    private void processIncomingPackets() {
         if (this.handler != null) {
             while (this.queuedIncomingPackets.peek() != null) {
                 BaseBedrockPacket packet = this.queuedIncomingPackets.poll();
@@ -138,7 +138,7 @@ public class BedrockClientSession {
         }
     }
 
-    protected void processOutgoingPackets() {
+    private void processOutgoingPackets() {
         while (this.queuedOutgoingPackets.peek() != null) {
             BaseBedrockPacket packet = this.queuedOutgoingPackets.poll();
             this.sendPacket(packet);

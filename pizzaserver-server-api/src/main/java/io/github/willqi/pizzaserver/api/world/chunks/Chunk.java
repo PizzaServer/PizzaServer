@@ -113,7 +113,21 @@ public interface Chunk extends Watchable {
     void setBlock(Block block, int x, int y, int z);
 
     /**
-     * Stops operations of this chunk
+     * Send the chunk and it's entities to the player
+     * Recommended to be called asynchronously
+     * @param player
+     */
+    void sendTo(Player player);
+
+    /**
+     * Check if this chunk can be closed
+     * @return if the chunk can be closed
+     */
+    boolean canBeClosed();
+
+    /**
+     * Stops operations of this chunk and saves it to the provider
+     * Recommended to be called asynchronously
      */
     void close();
 

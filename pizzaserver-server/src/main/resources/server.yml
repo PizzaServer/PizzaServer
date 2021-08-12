@@ -3,5 +3,11 @@ server-port: 19132
 server-motd: PizzaServer - Bedrock v1.16.100
 player-max: 20
 player-force-packs: false
+
+# Maximum amount of chunks that can be requested per tick
+chunk-requests-per-tick: 16
+# Maximum amount of requests that can be queued directly to the asynchronous chunk thread instead of waiting to be queued in
+chunk-requests-processing-cap: 64
+
 world-chunk-radius: 8
 world-default: world

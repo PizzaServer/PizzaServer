@@ -21,7 +21,7 @@ public class ImplWorldManager implements WorldManager {
     private final Server server;
 
     // fileName : World
-    private final Map<String, World> worlds = new ConcurrentHashMap<>();
+    private final Map<String, ImplWorld> worlds = new ConcurrentHashMap<>();
 
 
     public ImplWorldManager(Server server) {
@@ -66,7 +66,7 @@ public class ImplWorldManager implements WorldManager {
     @Override
     public CompletableFuture<Void> unloadWorld(String name) {
         return CompletableFuture.supplyAsync(() -> {
-            ImplWorld world = (ImplWorld)this.worlds.get(name);
+            ImplWorld world = this.worlds.get(name);
             if (world != null) {
                 try {
                     world.close();
@@ -77,6 +77,15 @@ public class ImplWorldManager implements WorldManager {
             }
             return null;
         });
+    }
+
+    /**
+     * Tick all worlds
+     */
+    public void tick() {
+        for (ImplWorld world : this.worlds.values()) {
+            world.getChunkManager().tick();
+        }
     }
 
     public void loadWorlds() {

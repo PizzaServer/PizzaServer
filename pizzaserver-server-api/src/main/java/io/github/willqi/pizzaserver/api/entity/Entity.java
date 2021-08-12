@@ -36,6 +36,11 @@ public interface Entity extends Watchable {
     void setMetaData(EntityMetaData metaData);
 
     /**
+     * Called every server tick
+     */
+    void tick();
+
+    /**
      * Check if the entity has been spawned into a world yet
      * @return if the entity has been spawned into a world
      */
