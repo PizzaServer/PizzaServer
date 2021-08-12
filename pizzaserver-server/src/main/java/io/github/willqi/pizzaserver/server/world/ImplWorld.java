@@ -7,7 +7,6 @@ import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.world.World;
 import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.api.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -17,7 +16,6 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEv
 import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
 import io.github.willqi.pizzaserver.server.world.providers.BaseWorldProvider;
-import io.github.willqi.pizzaserver.server.world.providers.WorldProviderThread;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -29,22 +27,20 @@ public class ImplWorld implements Closeable, World {
 
     private final Server server;
 
-    private final WorldProviderThread worldThread;
-
-    private final ChunkManager chunkManager = new ImplChunkManager(this);
+    private final ImplChunkManager chunkManager = new ImplChunkManager(this);
+    private final BaseWorldProvider provider;
 
     private final Set<Player> players = new HashSet<>();
 
 
     public ImplWorld(Server server, BaseWorldProvider provider) throws IOException {
         this.server = server;
-        this.worldThread = new WorldProviderThread(this, provider);
-        this.worldThread.start();
+        this.provider = provider;
     }
 
     @Override
     public String getName() {
-        return this.worldThread.getProvider().getName();
+        return this.getProvider().getName();
     }
 
     @Override
@@ -58,12 +54,12 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
-    public ChunkManager getChunkManager() {
+    public ImplChunkManager getChunkManager() {
         return this.chunkManager;
     }
 
-    public WorldProviderThread getWorldThread() {
-        return this.worldThread;
+    public BaseWorldProvider getProvider() {
+        return this.provider;
     }
 
     @Override
@@ -75,9 +71,6 @@ public class ImplWorld implements Closeable, World {
     public Block getBlock(int x, int y, int z) {
         int chunkX = x / 16;
         int chunkZ = z / 16;
-        if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-            throw new NullPointerException("Cannot get block in unloaded chunk");
-        }
         return this.getChunkManager().getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
     }
 
@@ -111,9 +104,6 @@ public class ImplWorld implements Closeable, World {
     public void setBlock(Block block, int x, int y, int z) {
         int chunkX = x / 16;
         int chunkZ = z / 16;
-        if (!this.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-            throw new NullPointerException("Cannot set block in unloaded chunk");
-        }
         this.getChunkManager().getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
     }
 
@@ -124,10 +114,6 @@ public class ImplWorld implements Closeable, World {
         }
 
         Location location = new ImplLocation(this, position);
-        if (location.getChunk() == null) {
-            throw new NullPointerException("This entity cannot be spawned in an unloaded chunk");
-        }
-
         entity.setLocation(location);
         if (entity instanceof Player) {
             this.players.add((Player)entity);
@@ -166,7 +152,8 @@ public class ImplWorld implements Closeable, World {
 
     @Override
     public void close() throws IOException {
-        this.worldThread.close();
+        this.getChunkManager().close();
+        this.getProvider().close();
     }
 
     @Override

@@ -107,8 +107,7 @@ public class ImplServer implements Server {
             long startTickTime = System.nanoTime();
             this.tick();
             currentTps++;
-            long endTickTime = System.nanoTime();
-            long timeTakenToTick = endTickTime - startTickTime;
+            long timeTakenToTick = System.nanoTime() - startTickTime;
 
             // Sleep for the ideal time but take into account the time spent running the tick
             sleepTime += idealNanoSleepPerTick - timeTakenToTick;
@@ -159,6 +158,8 @@ public class ImplServer implements Server {
                 }
             }
         }
+
+        this.getWorldManager().tick();
 
         for (ImplScheduler scheduler : this.syncedSchedulers) {
             try {

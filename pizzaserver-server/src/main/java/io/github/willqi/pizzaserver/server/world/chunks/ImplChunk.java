@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
@@ -16,7 +17,6 @@ import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldChunkPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
-import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.world.ImplWorld;
 import io.github.willqi.pizzaserver.api.world.blocks.types.BlockTypeID;
 import io.netty.buffer.ByteBuf;
@@ -106,7 +106,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Set<Entity> getEntities() {
-        return this.entities;
+        return new HashSet<>(this.entities);
     }
 
     private byte[] getBiomeData() {
@@ -132,34 +132,36 @@ public class ImplChunk implements Chunk {
         Lock readLock = this.lock.readLock();
         readLock.lock();
 
-        if (!this.cachedBlocks.containsKey(subChunkIndex)) {
-            this.cachedBlocks.put(subChunkIndex, new HashMap<>());
-        }
-        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+        try {
+            if (!this.cachedBlocks.containsKey(subChunkIndex)) {
+                this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+            }
+            Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
 
-        if (subChunkCache.containsKey(blockIndex)) {
-            return subChunkCache.get(blockIndex);
-        }
+            if (subChunkCache.containsKey(blockIndex)) {
+                return subChunkCache.get(blockIndex);
+            }
 
-        // Construct new block as none is cached
-        BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
-        BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
-        Block block;
-        if (blockRegistry.hasBlockType(paletteEntry.getId())) {
-            // Block id is registered
-            BaseBlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
-            block = new Block(blockType);
-            block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
-        } else {
-            // The block id is not registered
-            this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
-            BaseBlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
-            block = new Block(blockType);
+            // Construct new block as none is cached
+            BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
+            BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
+            Block block;
+            if (blockRegistry.hasBlockType(paletteEntry.getId())) {
+                // Block id is registered
+                BaseBlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
+                block = new Block(blockType);
+                block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
+            } else {
+                // The block id is not registered
+                this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
+                BaseBlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
+                block = new Block(blockType);
+            }
+            subChunkCache.put(blockIndex, block);
+            return block;
+        } finally {
+            readLock.unlock();
         }
-        subChunkCache.put(blockIndex, block);
-
-        readLock.unlock();
-        return block;
     }
 
     @Override
@@ -191,29 +193,48 @@ public class ImplChunk implements Chunk {
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
 
-        if (!this.cachedBlocks.containsKey(subChunkIndex)) {
-            this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+        try {
+            if (!this.cachedBlocks.containsKey(subChunkIndex)) {
+                this.cachedBlocks.put(subChunkIndex, new HashMap<>());
+            }
+            Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
+            subChunkCache.put(blockIndex, block);
+
+            // Update internal sub chunk
+            BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
+            BlockLayer mainBlockLayer = subChunk.getLayer(0);
+            BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
+            mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
+
+            // Send update block packet
+            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            updateBlockPacket.setBlock(block);
+            updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
+            updateBlockPacket.setLayer(0);
+            updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
+            for (Player viewer : this.getViewers()) {
+                viewer.sendPacket(updateBlockPacket);
+            }
+        } finally {
+            writeLock.unlock();
         }
-        Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
-        subChunkCache.put(blockIndex, block);
+    }
 
-        // Update internal sub chunk
-        BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
-        BlockLayer mainBlockLayer = subChunk.getLayer(0);
-        BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
-        mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
-
-        // Send update block packet
-        UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setBlock(block);
-        updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
-        updateBlockPacket.setLayer(0);
-        updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
-        for (Player viewer : this.getViewers()) {
-            viewer.sendPacket(updateBlockPacket);
+    /**
+     * run block updates and tick entities in this chunk
+     */
+    public void tick() {
+        for (Entity entity : this.getEntities()) {
+            entity.tick();
         }
+    }
 
-        writeLock.unlock();
+    @Override
+    public void sendTo(Player player) {
+        this.sendBlocksTo(player);
+        this.getWorld().getServer().getScheduler().prepareTask(() -> {
+            this.sendEntitiesTo(player);
+        }).schedule();
     }
 
     /**
@@ -228,61 +249,70 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send the chunk blocks to a {@link ImplPlayer}
+     * Send the chunk blocks to a {@link Player}
      * It is recommended that this is done async as it can take a while to serialize.
-     * @param player the {@link ImplPlayer} to send it to
+     * @param player the {@link Player} to send it to
      */
-    public void sendBlocksTo(ImplPlayer player) {
+    public void sendBlocksTo(Player player) {
         Lock readLock = this.lock.writeLock();
         readLock.lock();
 
-        // Find the lowest from the top empty subchunk
-        int subChunkCount = this.subChunks.size() - 1;
-        for (; subChunkCount >= 0; subChunkCount--) {
-            BedrockSubChunk subChunk = this.subChunks.get(subChunkCount);
-            if (subChunk.getLayers().size() > 0) {
-                break;
+        try {
+            // Find the lowest from the top empty subchunk
+            int subChunkCount = this.subChunks.size() - 1;
+            for (; subChunkCount >= 0; subChunkCount--) {
+                BedrockSubChunk subChunk = this.subChunks.get(subChunkCount);
+                if (subChunk.getLayers().size() > 0) {
+                    break;
+                }
             }
-        }
-        subChunkCount++;
+            subChunkCount++;
 
-        // Write all subchunks
-        ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
-        for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
-            BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
-            try {
-                byte[] subChunkSerialized = subChunk.serializeForNetwork(player.getVersion());
-                packetData.writeBytes(subChunkSerialized);
-            } catch (IOException exception) {
-                ImplServer.getInstance().getLogger().error("Failed to serialize subchunk (x: " + this.getX() + " z: " + this.getZ() + " index: " + subChunkCount + ")");
-                return;
+            // Write all subchunks
+            ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
+            for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
+                BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
+                try {
+                    byte[] subChunkSerialized = subChunk.serializeForNetwork(player.getVersion());
+                    packetData.writeBytes(subChunkSerialized);
+                } catch (IOException exception) {
+                    ImplServer.getInstance().getLogger().error("Failed to serialize subchunk (x: " + this.getX() + " z: " + this.getZ() + " index: " + subChunkCount + ")");
+                    return;
+                }
             }
+            packetData.writeBytes(this.getBiomeData());
+            packetData.writeByte(0);    // edu feature or smth
+
+            byte[] data = new byte[packetData.readableBytes()];
+            packetData.readBytes(data);
+            packetData.release();
+
+            this.spawnedTo.add(player);
+
+            // Packets are sent on the main thread
+            final int packetSubChunkCount = subChunkCount;
+            this.getWorld().getServer().getScheduler().prepareTask(() -> {
+                if (player.getLocation().getWorld().equals(this.getWorld())) {
+                    // TODO: Supposedly tile entities are also packaged here
+                    WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
+                    worldChunkPacket.setX(this.getX());
+                    worldChunkPacket.setZ(this.getZ());
+                    worldChunkPacket.setSubChunkCount(packetSubChunkCount);
+                    worldChunkPacket.setData(data);
+                    player.sendPacket(worldChunkPacket);
+                }
+            }).schedule();
+        } finally {
+            readLock.unlock();
         }
-        packetData.writeBytes(this.getBiomeData());
-        packetData.writeByte(0);    // edu feature or smth
-
-        byte[] data = new byte[packetData.readableBytes()];
-        packetData.readBytes(data);
-        packetData.release();
-
-        // TODO: Supposedly tile entities are also packaged here
-        WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
-        worldChunkPacket.setX(this.getX());
-        worldChunkPacket.setZ(this.getZ());
-        worldChunkPacket.setSubChunkCount(subChunkCount);
-        worldChunkPacket.setData(data);
-        player.sendPacket(worldChunkPacket);
-
-        this.spawnedTo.add(player);
-        readLock.unlock();
     }
 
     /**
-     * Send the {@link BaseEntity}s of this chunk to a {@link ImplPlayer}
+     * Send the {@link BaseEntity}s of this chunk to a {@link Player}
      * This should only be called on the MAIN thread
      * @param player
      */
-    public void sendEntitiesTo(ImplPlayer player) {
+    public void sendEntitiesTo(Player player) {
         for (Entity entity : this.getEntities()) {
             entity.spawnTo(player);
         }
@@ -301,11 +331,16 @@ public class ImplChunk implements Chunk {
                 entity.despawnFrom(player);
             }
 
-            // Should we close this chunk
-            if (this.getViewers().size() == 0) {
-                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ());
+            if (this.canBeClosed()) {
+                // Attempt to unload this chunk
+                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ(), true, false);
             }
         }
+    }
+
+    @Override
+    public boolean canBeClosed() {
+        return this.spawnedTo.size() == 0;
     }
 
     @Override
@@ -362,6 +397,7 @@ public class ImplChunk implements Chunk {
         }
 
         public ImplChunk build() {
+            Check.nullParam(this.world, "world");
             return new ImplChunk(this.world, this.x, this.z, this.subChunks, this.biomeData);
         }
 

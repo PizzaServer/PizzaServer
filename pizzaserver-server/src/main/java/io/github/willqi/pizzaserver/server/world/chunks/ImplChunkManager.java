@@ -1,75 +1,154 @@
 package io.github.willqi.pizzaserver.server.world.chunks;
 
+import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.world.chunks.ChunkManager;
+import io.github.willqi.pizzaserver.commons.utils.Check;
+import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
+import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.world.ImplWorld;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.ChunkQueue;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.PlayerChunkRequest;
+import io.github.willqi.pizzaserver.server.world.chunks.processing.requests.UnloadChunkRequest;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ImplChunkManager implements ChunkManager {
 
     private final ImplWorld world;
-    private final Map<Tuple<Integer, Integer>, Chunk> chunks = new HashMap<>();
+    private final Map<Tuple<Integer, Integer>, ImplChunk> chunks = new ConcurrentHashMap<>();
+    private final ReadWriteKeyLock<Tuple<Integer, Integer>> lock = new ReadWriteKeyLock<>();
+
+    private final ChunkQueue chunkQueue = new ChunkQueue(this);
 
 
     public ImplChunkManager(ImplWorld world) {
         this.world = world;
     }
 
-    public ImplWorld getWorld() {
-        return this.world;
+    /**
+     * Tick all chunks and the chunk queue
+     */
+    public void tick() {
+        this.chunkQueue.tick();
+        for (ImplChunk chunk : this.chunks.values()) {
+            chunk.tick();
+        }
     }
 
     @Override
     public boolean isChunkLoaded(int x, int z) {
-        return this.chunks.containsKey(new Tuple<>(x, z));
+        Tuple<Integer, Integer> key = new Tuple<>(x, z);
+        this.lock.readLock(key);
+        try {
+            return this.chunks.containsKey(key);
+        } finally {
+            this.lock.readUnlock(key);
+        }
     }
 
     @Override
     public Chunk getChunk(int x, int z) {
-        return this.chunks.get(new Tuple<>(x, z));
+        return this.getChunk(x, z, true);
     }
 
     @Override
-    public CompletableFuture<Void> unloadChunk(int x, int z) {
-        if (!this.isChunkLoaded(x, z)) {
-            return CompletableFuture.completedFuture(null);
+    public Chunk getChunk(int x, int z, boolean loadFromProvider) {
+        Tuple<Integer, Integer> key = new Tuple<>(x, z);
+        this.lock.readLock(key);
+
+        try {
+            this.chunks.computeIfAbsent(key, v -> {
+                if (!loadFromProvider) {
+                    return null;
+                }
+
+                // Load chunk from provider
+                ImplChunk chunk = null;
+                try {
+                    BedrockChunk internalChunk = this.getWorld().getProvider().getChunk(x, z);
+
+                    chunk = new ImplChunk.Builder()
+                            .setWorld(world)
+                            .setX(internalChunk.getX())
+                            .setZ(internalChunk.getZ())
+                            .setSubChunks(internalChunk.getSubChunks())
+                            .build();
+                } catch (IOException exception) {
+                    this.getWorld().getServer().getLogger().error(String.format("Failed to retrieve chunk (%s, %s) from provider", x, z), exception);
+                }
+                return chunk;
+            });
+
+            return this.chunks.getOrDefault(key, null);
+        } finally {
+            this.lock.readUnlock(key);
         }
-        CompletableFuture<Void> unloadRequest = CompletableFuture.completedFuture(null);
-        // TODO: send request to unload chunk and save it to disk
-        Tuple<Integer, Integer> chunkKey = new Tuple<>(x, z);
-        if (this.chunks.containsKey(chunkKey)) {
-            this.chunks.get(chunkKey).close();
-            this.chunks.remove(new Tuple<>(x, z));
-        }
-        return unloadRequest;
     }
 
     @Override
-    public CompletableFuture<Chunk> fetchChunk(int x, int z) {
-        if (this.isChunkLoaded(x, z)) {
-            return CompletableFuture.completedFuture(this.getChunk(x, z));
-        }
-        CompletableFuture<Chunk> chunkRequest = this.getWorld().getWorldThread().requestChunk(x, z);
-        chunkRequest.whenComplete((chunk, exception) -> {
-           if (chunk != null) {
-                this.chunks.put(new Tuple<>(x, z), chunk);
-           }
-        });
-        return chunkRequest;
+    public void unloadChunk(int x, int z) {
+        this.unloadChunk(x, z, false, false);
     }
 
-    /**
-     * Request a {@link ImplChunk} to be sent to a {@link ImplPlayer} asynchronously.
-     * @param player the {@link ImplPlayer} who the chunk should be sent to
-     * @param chunk the {@link ImplChunk} to send to the player
-     */
-    public void addChunkToPlayerQueue(ImplPlayer player, ImplChunk chunk) {
-        this.getWorld().getWorldThread().requestSendChunkToPlayer(player, chunk).thenRun(() -> chunk.sendEntitiesTo(player));
+    @Override
+    public void unloadChunk(int x, int z, boolean async, boolean force) {
+        if (async) {
+            this.chunkQueue.addRequest(new UnloadChunkRequest(x, z));
+        } else {
+            Tuple<Integer, Integer> key = new Tuple<>(x, z);
+            this.lock.writeLock(key);
+
+            try {
+                Chunk chunk = this.chunks.getOrDefault(key, null);
+                if (Check.isNull(chunk) || (!chunk.canBeClosed() && !force)) {
+                    return;
+                }
+
+                this.chunks.remove(key);
+                chunk.close();
+            } finally {
+                this.lock.writeUnlock(key);
+            }
+        }
+    }
+
+    @Override
+    public void sendPlayerChunk(Player player, int x, int z) {
+        this.sendPlayerChunk(player, x, z, false);
+    }
+
+    @Override
+    public void sendPlayerChunk(Player player, int x, int z, boolean async) {
+        if (async) {
+            this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer)player, x, z));
+        } else {
+            Tuple<Integer, Integer> key = new Tuple<>(x, z);
+            this.lock.readLock(key);
+            try {
+                Chunk chunk = this.getChunk(x, z);
+                chunk.sendTo(player);
+            } finally {
+                this.lock.readUnlock(key);
+            }
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.chunkQueue.close();
+        for (Chunk chunk : this.chunks.values()) {
+            this.unloadChunk(chunk.getX(), chunk.getZ(), false, true);
+        }
+    }
+
+    @Override
+    public ImplWorld getWorld() {
+        return this.world;
     }
 
 }
