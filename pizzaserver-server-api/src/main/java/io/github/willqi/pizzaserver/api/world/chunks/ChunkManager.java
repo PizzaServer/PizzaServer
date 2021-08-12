@@ -28,19 +28,20 @@ public interface ChunkManager extends Closeable {
     Chunk getChunk(int x, int z, boolean loadFromProvider);
 
     /**
-     * Try to unload a {@link Chunk} and save it to disk
+     * Try to unload a {@link Chunk} and save it to disk immediately
      * @param x x chunk coordinate
-     * @param z z chunk cooridnate
-     * @return if the chunk was unloaded
+     * @param z z chunk coordinate
      */
-    boolean unloadChunk(int x, int z);
+    void unloadChunk(int x, int z);
 
     /**
-     * Schedule the server to unload a {@link Chunk} on another Thread
-     * @param x chunk x
-     * @param z chunk z
+     * Try to unload a {@link Chunk} and save it to disk
+     * @param x x chunk coordinate
+     * @param z z chunk coordinate
+     * @param async if this should be done on a separate thread
+     * @param force Forcefully unload a chunk regardless of whether or not it can be closed
      */
-    void unloadChunkRequest(int x, int z);
+    void unloadChunk(int x, int z, boolean async, boolean force);
 
     /**
      * Send a {@link Chunk} to a {@link Player} immediately.
@@ -52,12 +53,13 @@ public interface ChunkManager extends Closeable {
     void sendPlayerChunk(Player player, int x, int z);
 
     /**
-     * Schedule the server to send a {@link Chunk} to a {@link Player} when it can on another Thread
+     * Send a {@link Chunk} to a {@link Player}
      * @param player the {@link Player}
      * @param x chunk x
      * @param z chunk z
+     * @param async if this should be done on a separate thread
      */
-    void sendPlayerChunkRequest(Player player, int x, int z);
+    void sendPlayerChunk(Player player, int x, int z, boolean async);
 
     World getWorld();
 

@@ -365,7 +365,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void requestSendChunk(int x, int z) {
-        this.getLocation().getWorld().getChunkManager().sendPlayerChunkRequest(this, x, z);
+        this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, false);
     }
 
     /**
