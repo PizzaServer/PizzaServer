@@ -160,7 +160,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                 break;
             case COMPLETED:
                 this.player.getServer().getScheduler()
-                        .prepareTask(this::sendGameLoginPackets)
+                        .prepareTask(this::completeGameLogin)
                         .setAsynchronous(true)
                         .schedule();
                 break;
@@ -214,7 +214,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
      * Called when the player has passed the resource packs stage and is ready to start the game login process.
      * This is called asynchronously to load player data from disk without impacting server performance
      */
-    private void sendGameLoginPackets() {
+    private void completeGameLogin() {
         String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
         ImplWorld defaultWorld = this.player.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
         if (defaultWorld == null) {
