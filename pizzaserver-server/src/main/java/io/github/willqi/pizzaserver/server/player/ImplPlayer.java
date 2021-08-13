@@ -13,24 +13,26 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
+import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+
+import java.io.IOException;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final ImplServer server;
     private final BedrockClientSession session;
+    private boolean allowAutomaticSaving = true;
 
     private final BaseMinecraftVersion version;
     private final Device device;
@@ -154,12 +156,55 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     /**
+     * Fetch the SAVED player data from the {@link io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider} if any exists
+     * @return saved player data
+     * @throws IOException if an exception occurred while reading the data
+     */
+    public Optional<PlayerData> getSavedData() throws IOException {
+        return this.getServer().getPlayerProvider()
+                .load(this.getUUID());
+    }
+
+    @Override
+    public void setAutoSave(boolean allowSaving) {
+        this.allowAutomaticSaving = allowSaving;
+    }
+
+    @Override
+    public boolean canAutoSave() {
+        return this.allowAutomaticSaving;
+    }
+
+    @Override
+    public boolean save() {
+        if (this.hasSpawned()) {
+            PlayerData playerData = new PlayerData.Builder()
+                    .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
+                    .setDimension(this.getLocation().getWorld().getDimension())
+                    .setPosition(this.getLocation())
+                    .setPitch(this.getPitch())
+                    .setYaw(this.getYaw())
+                    .build();
+            try {
+                this.getServer().getPlayerProvider().save(this.getUUID(), playerData);
+                return true;
+            } catch (IOException exception) {
+                this.getServer().getLogger().error("Failed to save player " + this.getUUID(), exception);
+            }
+        }
+        return false;
+    }
+
+    /**
      * Called when the server registers that the player is disconnected.
      * It cleans up data for this player
      */
     public void onDisconnect() {
         if (this.hasSpawned()) {
             this.getLocation().getWorld().removeEntity(this);
+            if (this.canAutoSave()) {
+                this.getServer().getScheduler().prepareTask(this::save).setAsynchronous(true).schedule();
+            }
 
             // Remove player from chunks they can observe
             for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
@@ -367,7 +412,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         // TODO: implement in order for multiplayer to work properly
     }
 
-    @Override
     public void requestSendChunk(int x, int z) {
         this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, true);
     }
@@ -383,7 +427,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private void sendNetworkChunkPublisher() {
         NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(((ImplLocation)this.getLocation()).toVector3i());
+        packet.setCoordinates(this.getLocation().toVector3i());
         packet.setRadius(this.getChunkRadius() * 16);
         this.sendPacket(packet);
     }

@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.commons.world.gamerules;
 
-public enum GameRuleId {
+public enum GameRuleID {
 
     COMMAND_BLOCK_OUTPUT("commandBlockOutput"),
     COMMAND_BLOCKS_ENABLED("commandBlockEenabled"),
@@ -32,7 +32,7 @@ public enum GameRuleId {
 
     private final String id;
 
-    GameRuleId(String id) {
+    GameRuleID(String id) {
         this.id = id;
     }
 

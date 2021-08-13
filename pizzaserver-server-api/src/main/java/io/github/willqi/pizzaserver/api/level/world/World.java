@@ -26,6 +26,10 @@ public interface World {
 
     ChunkManager getChunkManager();
 
+    Vector3i getSpawnCoordinates();
+
+    void setSpawnCoordinates(Vector3i coordinates);
+
     Block getBlock(Vector3i position);
 
     Block getBlock(int x, int y, int z);

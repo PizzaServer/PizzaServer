@@ -4,10 +4,15 @@ server-motd: PizzaServer - Bedrock v1.16.100
 player-max: 20
 player-force-packs: false
 
+# Name of the default world to load
+world-default: world
+# Active chunk radius around players
+world-chunk-radius: 8
+# Direction to assign players who first join the server
+world-default-yaw: 0
+world-default-pitch: 0
+
 # Maximum amount of chunks that can be requested per tick
 chunk-requests-per-tick: 16
 # Maximum amount of requests that can be queued directly to the asynchronous chunk thread instead of waiting to be queued in
 chunk-requests-processing-cap: 64
-
-world-chunk-radius: 8
-world-default: world

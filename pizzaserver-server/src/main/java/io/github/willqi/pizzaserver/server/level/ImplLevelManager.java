@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.level.providers.BaseLevelProvider;
 import io.github.willqi.pizzaserver.server.level.providers.ProviderType;
+import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 
 import java.io.Closeable;
 import java.io.File;
@@ -48,7 +49,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     @Override
-    public Level getLevel(String name) {
+    public ImplLevel getLevel(String name) {
         this.locks.readLock(name);
         this.levels.computeIfAbsent(name, ignored -> {
             this.locks.readUnlock(name);
@@ -73,8 +74,8 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     @Override
-    public World getLevelDimension(String levelName, Dimension dimension) {
-        Level level = this.getLevel(levelName);
+    public ImplWorld getLevelDimension(String levelName, Dimension dimension) {
+        ImplLevel level = this.getLevel(levelName);
         if (level == null) {
             return null;
         }

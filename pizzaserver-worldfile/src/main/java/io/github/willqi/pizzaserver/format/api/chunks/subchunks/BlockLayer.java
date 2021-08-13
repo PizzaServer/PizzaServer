@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.format.api.chunks.subchunks;
 
-import io.github.willqi.pizzaserver.format.api.chunks.api.BedrockNetworkDiskSerializable;
+import io.github.willqi.pizzaserver.format.api.chunks.BedrockNetworkDiskSerializable;
 
 /**
  * A BlockLayer is a layer of the blocks in a {@link BedrockSubChunk}.

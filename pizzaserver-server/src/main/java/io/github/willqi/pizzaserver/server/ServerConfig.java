@@ -56,4 +56,20 @@ public class ServerConfig {
         return this.config.getString("world-default");
     }
 
+    /**
+     * Default yaw to assign players who join the server
+     * @return default yaw
+     */
+    public float getDefaultYaw() {
+        return (float)this.config.getDouble("world-default-yaw");
+    }
+
+    /**
+     * Default pitch to assign players who join the server
+     * @return default pitch
+     */
+    public float getDefaultPitch() {
+        return (float)this.config.getDouble("world-default-pitch");
+    }
+
 }
