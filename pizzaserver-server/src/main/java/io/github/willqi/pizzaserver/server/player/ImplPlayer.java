@@ -33,7 +33,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final ImplServer server;
     private final BedrockClientSession session;
-    private boolean allowAutomaticSaving = true;
+    private boolean autoSave = true;
 
     private final BaseMinecraftVersion version;
     private final Device device;
@@ -42,11 +42,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private final String username;
     private final String languageCode;
 
-    private PlayerList playerList = new ImplPlayerList(this);
+    private final PlayerList playerList = new ImplPlayerList(this);
     private Skin skin;
 
     private int chunkRadius = 3;
-    private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // how many chunks can be sent to this player during this tick?
+    private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // Reset every tick
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
@@ -135,21 +135,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.sendPacket(setEntityDataPacket);
     }
 
-    @Override
-    public int getChunkRadius() {
-        return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
-    }
-
-    @Override
-    public void setChunkRadiusRequested(int radius) {
-        int oldRadius = this.chunkRadius;
-        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
-
-        if (this.hasSpawned()) {
-            this.updateVisibleChunks(this.getLocation(), oldRadius);
-        }
-    }
-
     public ImplServer getServer() {
         return this.server;
     }
@@ -167,16 +152,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public Optional<PlayerData> getSavedData() throws IOException {
         return this.getServer().getPlayerProvider()
                 .load(this.getUUID());
-    }
-
-    @Override
-    public void setAutoSave(boolean allowSaving) {
-        this.allowAutomaticSaving = allowSaving;
-    }
-
-    @Override
-    public boolean canAutoSave() {
-        return this.allowAutomaticSaving;
     }
 
     @Override
@@ -383,13 +358,102 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void moveTo(float x, float y, float z) {
-        Location oldLocation = new Location(this.world, new Vector3(this.x, this.y, this.z));
-        super.moveTo(x, y, z);
+    public void sendMessage(String message) {
+        TextPacket textPacket = new TextPacket();
+        textPacket.setType(TextPacket.TextType.RAW);
+        textPacket.setMessage(message);
+        this.sendPacket(textPacket);
+    }
 
-        if (!oldLocation.getChunk().equals(this.getChunk())) {
-            this.updateVisibleChunks(oldLocation, this.getChunkRadius());
+    @Override
+    public void sendPlayerMessage(Player sender, String message) {
+        TextPacket textPacket = new TextPacket();
+        textPacket.setType(TextPacket.TextType.CHAT);
+        textPacket.setSourceName(sender.getUsername());
+        textPacket.setMessage(message);
+        textPacket.setXuid(sender.getXUID());
+        this.sendPacket(textPacket);
+    }
+
+    @Override
+    public int getChunkRadius() {
+        return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
+    }
+
+    @Override
+    public void setChunkRadiusRequested(int radius) {
+        int oldRadius = this.chunkRadius;
+        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
+
+        if (this.hasSpawned()) {
+            this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
+    }
+
+    @Override
+    public void requestSendChunk(int x, int z) {
+        this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, true);
+    }
+
+    /**
+     * Check if a player can be sent a chunk this tick
+     * Requests are reset during an entity's tick
+     * @return whether or not the player should be sent a chunk this tick
+     */
+    public boolean acknowledgeChunkSendRequest() {
+        return this.chunkRequestsLeft.getAndDecrement() > 0;
+    }
+
+    private void sendNetworkChunkPublisher() {
+        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
+        packet.setCoordinates(this.getLocation().toVector3i());
+        packet.setRadius(this.getChunkRadius() * 16);
+        this.sendPacket(packet);
+    }
+
+    /**
+     * Sends and removes chunks the player can and cannot see
+     */
+    private void updateVisibleChunks(Location oldLocation, int oldChunkRadius) {
+        Set<Tuple<Integer, Integer>> chunksToRemove = new HashSet<>();
+        if (oldLocation != null) {
+            // What were our previous chunks loaded?
+            int oldPlayerChunkX = oldLocation.getChunkX();
+            int oldPlayerChunkZ = oldLocation.getChunkZ();
+            for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
+                for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
+                    // Chunk radius is circular
+                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                    if (oldChunkRadius > distance) {
+                        chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));
+                    }
+                }
+            }
+        }
+
+        // What are our new chunks loaded?
+        int currentPlayerChunkX = this.getLocation().getChunkX();
+        int currentPlayerChunkZ = this.getLocation().getChunkZ();
+        for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
+            for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
+                if (chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
+                    continue;   // We don't need to send this chunk because it's already rendered to us
+                }
+
+                // Chunk radius is circular
+                int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                if (this.getChunkRadius() > distance) {
+                    this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
+                }
+            }
+        }
+
+        // Remove each chunk we shouldn't get packets from
+        for (Tuple<Integer, Integer> key : chunksToRemove) {
+            ((ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
+        }
+
+        this.sendNetworkChunkPublisher();
     }
 
     @Override
@@ -416,6 +480,16 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public void setAutoSave(boolean allowAutoSaving) {
+        this.autoSave = allowAutoSaving;
+    }
+
+    @Override
+    public boolean canAutoSave() {
+        return this.autoSave;
+    }
+
+    @Override
     public void tick() {
         this.chunkRequestsLeft.set(this.getServer().getConfig().getChunkRequestsPerTick()); // Reset amount of chunks that we can be sent this tick
 
@@ -435,6 +509,16 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         }
 
         super.tick();
+    }
+
+    @Override
+    public void moveTo(float x, float y, float z) {
+        Location oldLocation = new Location(this.world, new Vector3(this.x, this.y, this.z));
+        super.moveTo(x, y, z);
+
+        if (!oldLocation.getChunk().equals(this.getChunk())) {
+            this.updateVisibleChunks(oldLocation, this.getChunkRadius());
+        }
     }
 
     @Override
@@ -515,89 +599,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         addPlayerPacket.setMetaData(this.getMetaData());
         addPlayerPacket.setDevice(this.getDevice());
         player.sendPacket(addPlayerPacket);
-    }
-
-    public void requestSendChunk(int x, int z) {
-        this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, true);
-    }
-
-    /**
-     * Check if a player can be sent a chunk this tick
-     * Requests are reset during an entity's tick
-     * @return whether or not the player should be sent a chunk this tick
-     */
-    public boolean acknowledgeChunkSendRequest() {
-        return this.chunkRequestsLeft.getAndDecrement() > 0;
-    }
-
-    private void sendNetworkChunkPublisher() {
-        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(this.getLocation().toVector3i());
-        packet.setRadius(this.getChunkRadius() * 16);
-        this.sendPacket(packet);
-    }
-
-    /**
-     * Sends and removes chunks the player can and cannot see
-     */
-    private void updateVisibleChunks(Location oldLocation, int oldChunkRadius) {
-        Set<Tuple<Integer, Integer>> chunksToRemove = new HashSet<>();
-        if (oldLocation != null) {
-            // What were our previous chunks loaded?
-            int oldPlayerChunkX = oldLocation.getChunkX();
-            int oldPlayerChunkZ = oldLocation.getChunkZ();
-            for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
-                for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
-                    // Chunk radius is circular
-                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
-                    if (oldChunkRadius > distance) {
-                        chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));
-                    }
-                }
-            }
-        }
-
-        // What are our new chunks loaded?
-        int currentPlayerChunkX = this.getLocation().getChunkX();
-        int currentPlayerChunkZ = this.getLocation().getChunkZ();
-        for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
-            for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
-                if (chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
-                    continue;   // We don't need to send this chunk because it's already rendered to us
-                }
-
-                // Chunk radius is circular
-                int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
-                if (this.getChunkRadius() > distance) {
-                    this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
-                }
-            }
-        }
-
-        // Remove each chunk we shouldn't get packets from
-        for (Tuple<Integer, Integer> key : chunksToRemove) {
-            ((ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
-        }
-
-        this.sendNetworkChunkPublisher();
-    }
-
-    @Override
-    public void sendMessage(String message) {
-        TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.RAW);
-        textPacket.setMessage(message);
-        this.sendPacket(textPacket);
-    }
-
-    @Override
-    public void sendPlayerMessage(Player sender, String message) {
-        TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.CHAT);
-        textPacket.setSourceName(sender.getUsername());
-        textPacket.setMessage(message);
-        textPacket.setXuid(sender.getXUID());
-        this.sendPacket(textPacket);
     }
 
 }

@@ -52,19 +52,6 @@ public interface Player extends LivingEntity {
     String getLanguageCode();
 
     /**
-     * Send a text message to this player
-     * @param message the message to send
-     */
-    void sendMessage(String message);
-
-    /**
-     * Send a message originating from another APIPlayer
-     * @param sender the APIPlayer who sent this message
-     * @param message the message they sent
-     */
-    void sendPlayerMessage(Player sender, String message);
-
-    /**
      * Retrieve the current {@link Skin} of the player
      * @return {@link Skin} of the player
      */
@@ -138,6 +125,19 @@ public interface Player extends LivingEntity {
      * @param experienceLevel experience level
      */
     void setExperienceLevel(int experienceLevel);
+
+    /**
+     * Send a text message to this player
+     * @param message the message to send
+     */
+    void sendMessage(String message);
+
+    /**
+     * Send a message originating from another APIPlayer
+     * @param sender the APIPlayer who sent this message
+     * @param message the message they sent
+     */
+    void sendPlayerMessage(Player sender, String message);
 
     /**
      * Retrieve the chunk radius of this player
