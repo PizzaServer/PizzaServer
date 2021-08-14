@@ -144,6 +144,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public void setChunkRadiusRequested(int radius) {
         int oldRadius = this.chunkRadius;
         this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
+
         if (this.hasSpawned()) {
             this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
@@ -389,19 +390,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         if (!oldLocation.getChunk().equals(this.getChunk())) {
             this.updateVisibleChunks(oldLocation, this.getChunkRadius());
         }
-
-        // TODO: movement should be every tick rather than whenever moveTo is called
-        MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-        movePlayerPacket.setEntityRuntimeId(this.getId());
-        movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
-        movePlayerPacket.setPitch(this.getPitch());
-        movePlayerPacket.setYaw(this.getYaw());
-        movePlayerPacket.setHeadYaw(this.getHeadYaw());
-        movePlayerPacket.setMode(MovementMode.NORMAL);
-        movePlayerPacket.setOnGround(false);    // TODO: does this change anything when sent to a client?
-        for (Player player : this.getViewers()) {
-            player.sendPacket(movePlayerPacket);
-        }
     }
 
     @Override
@@ -430,6 +418,23 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public void tick() {
         this.chunkRequestsLeft.set(this.getServer().getConfig().getChunkRequestsPerTick()); // Reset amount of chunks that we can be sent this tick
+
+        if (this.moveUpdate) {
+            MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
+            movePlayerPacket.setEntityRuntimeId(this.getId());
+            movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
+            movePlayerPacket.setPitch(this.getPitch());
+            movePlayerPacket.setYaw(this.getYaw());
+            movePlayerPacket.setHeadYaw(this.getHeadYaw());
+            movePlayerPacket.setMode(MovementMode.NORMAL);
+            movePlayerPacket.setOnGround(false);
+
+            for (Player player : this.getViewers()) {
+                player.sendPacket(movePlayerPacket);
+            }
+        }
+
+        super.tick();
     }
 
     @Override

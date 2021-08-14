@@ -22,6 +22,8 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     protected float yaw;
     protected float headYaw;
 
+    protected boolean moveUpdate;
+
     private final Set<Player> hiddenFrom = new HashSet<>();
 
 
@@ -88,16 +90,19 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
 
     @Override
     public void setPitch(float pitch) {
+        this.moveUpdate = true;
         this.pitch = pitch;
     }
 
     @Override
     public float getYaw() {
+        this.moveUpdate = true;
         return this.yaw;
     }
 
     @Override
     public void setYaw(float yaw) {
+        this.moveUpdate = true;
         this.yaw = yaw;
     }
 
@@ -108,11 +113,14 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
 
     @Override
     public void setHeadYaw(float headYaw) {
+        this.moveUpdate = true;
         this.headYaw = headYaw;
     }
 
     @Override
     public void moveTo(float x, float y, float z) {
+        this.moveUpdate = true;
+
         ImplChunk currentChunk = (ImplChunk)this.getChunk();
         this.x = x;
         this.y = y;
@@ -139,10 +147,17 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
 
     @Override
     public void teleport(World world, float x, float y, float z) {
+        this.moveUpdate = true;
+
         this.x = x;
         this.y = y;
         this.z = z;
         this.world = world;
+    }
+
+    @Override
+    public void tick() {
+        this.moveUpdate = false;
     }
 
     @Override
