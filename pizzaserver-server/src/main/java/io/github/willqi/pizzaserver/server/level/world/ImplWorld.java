@@ -1,12 +1,14 @@
 package io.github.willqi.pizzaserver.server.level.world;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
@@ -39,7 +41,14 @@ public class ImplWorld implements Closeable, World {
     public ImplWorld(ImplLevel level, Dimension dimension) {
         this.level = level;
         this.dimension = dimension;
-        this.spawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
+
+        Vector3i spawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
+        if (spawnCoordinates.getY() > 255) {    // Hack to get around Minecraft worlds having REALLY high y spawn coordinates in the level.dat
+            spawnCoordinates = new Vector3i(spawnCoordinates.getX(),
+                    this.getHighestBlockAt(spawnCoordinates.getX(), spawnCoordinates.getZ()),
+                    spawnCoordinates.getZ());
+        }
+        this.setSpawnCoordinates(spawnCoordinates);
     }
 
     @Override
@@ -78,14 +87,31 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
+    public Chunk getChunk(int x, int z) {
+        return this.getChunkManager().getChunk(x, z);
+    }
+
+    @Override
+    public int getHighestBlockAt(Vector2i coordinates) {
+        return this.getHighestBlockAt(coordinates.getX(), coordinates.getY());
+    }
+
+    @Override
+    public int getHighestBlockAt(int x, int z) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        return this.getChunk(chunkX, chunkZ).getHighestBlockAt(x % 16, z % 16);
+    }
+
+    @Override
     public Block getBlock(Vector3i position) {
         return this.getBlock(position.getX(), position.getY(), position.getZ());
     }
 
     @Override
     public Block getBlock(int x, int y, int z) {
-        int chunkX = x / 16;
-        int chunkZ = z / 16;
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
         return this.getChunkManager().getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
     }
 
@@ -208,4 +234,9 @@ public class ImplWorld implements Closeable, World {
         }
         return false;
     }
+
+    private static int getChunkCoordinate(int i) {
+        return (int)Math.floor(i / 16d);
+    }
+
 }

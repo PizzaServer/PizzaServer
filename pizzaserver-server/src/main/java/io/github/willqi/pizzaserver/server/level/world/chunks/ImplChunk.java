@@ -9,7 +9,9 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Check;
+import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
@@ -37,8 +39,7 @@ public class ImplChunk implements Chunk {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private final List<BedrockSubChunk> subChunks;
-    private final byte[] biomeData;
+    private final BedrockChunk chunk;
 
     // subChunkIndex : ( blockIndex : block )
     private final Map<Integer, Map<Integer, Block>> cachedBlocks = new HashMap<>();
@@ -54,16 +55,15 @@ public class ImplChunk implements Chunk {
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
 
 
-    protected ImplChunk(World world, int x, int z, List<BedrockSubChunk> subChunks, byte[] biomeData) {
-        if (subChunks.size() != 16) {
-            throw new IllegalArgumentException("Tried to construct chunk with only " + subChunks.size() + " subchunks instead of 16.");
+    protected ImplChunk(World world, int x, int z, BedrockChunk chunk) {
+        if (chunk.getSubChunks().size() != 16) {
+            throw new IllegalArgumentException("Tried to construct chunk with only " + chunk.getSubChunks().size() + " subchunks instead of 16.");
         }
 
         this.world = world;
         this.x = x;
         this.z = z;
-        this.subChunks = subChunks;
-        this.biomeData = biomeData;
+        this.chunk = chunk;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ImplChunk implements Chunk {
         if (x > 15 || z > 15 || x < 0 || z < 0) {
             throw new IllegalArgumentException("Could not fetch biome of block outside of chunk");
         }
-        return this.biomeData[z * 16 + x];
+        return this.chunk.getBiomeAt(x, z);
     }
 
     /**
@@ -137,8 +137,17 @@ public class ImplChunk implements Chunk {
         return new HashSet<>(this.entities);
     }
 
-    private byte[] getBiomeData() {
-        return this.biomeData;
+    @Override
+    public int getHighestBlockAt(Vector2i position) {
+        return this.getHighestBlockAt(position.getX(), position.getY());
+    }
+
+    @Override
+    public int getHighestBlockAt(int x, int z) {
+        int chunkBlockX = x >= 0 ? x : 16 + x;
+        int chunkBlockZ = z >= 0 ? z : 16 + z;
+
+        return this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ);
     }
 
     @Override
@@ -171,7 +180,7 @@ public class ImplChunk implements Chunk {
             }
 
             // Construct new block as none is cached
-            BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
+            BlockPalette.Entry paletteEntry = this.chunk.getSubChunks().get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
             BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
             Block block;
             if (blockRegistry.hasBlockType(paletteEntry.getId())) {
@@ -229,10 +238,14 @@ public class ImplChunk implements Chunk {
             subChunkCache.put(blockIndex, block);
 
             // Update internal sub chunk
-            BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
+            BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
             BlockLayer mainBlockLayer = subChunk.getLayer(0);
             BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
             mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
+
+            if (block.getBlockType().isSolid() && y > this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ)) {
+                this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, y);
+            }
 
             // Send update block packet
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
@@ -287,9 +300,9 @@ public class ImplChunk implements Chunk {
 
         try {
             // Find the lowest from the top empty subchunk
-            int subChunkCount = this.subChunks.size() - 1;
+            int subChunkCount = this.chunk.getSubChunks().size() - 1;
             for (; subChunkCount >= 0; subChunkCount--) {
-                BedrockSubChunk subChunk = this.subChunks.get(subChunkCount);
+                BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkCount);
                 if (subChunk.getLayers().size() > 0) {
                     break;
                 }
@@ -299,7 +312,7 @@ public class ImplChunk implements Chunk {
             // Write all subchunks
             ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
             for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
-                BedrockSubChunk subChunk = this.subChunks.get(subChunkIndex);
+                BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
                 try {
                     byte[] subChunkSerialized = subChunk.serializeForNetwork(player.getVersion());
                     packetData.writeBytes(subChunkSerialized);
@@ -308,7 +321,7 @@ public class ImplChunk implements Chunk {
                     return;
                 }
             }
-            packetData.writeBytes(this.getBiomeData());
+            packetData.writeBytes(this.chunk.getBiomeData());
             packetData.writeByte(0);    // edu feature or smth
 
             byte[] data = new byte[packetData.readableBytes()];
@@ -396,21 +409,15 @@ public class ImplChunk implements Chunk {
 
     public static class Builder {
 
-        private List<BedrockSubChunk> subChunks = Collections.emptyList();
-        private byte[] biomeData = new byte[256];
+        private BedrockChunk chunk;
 
         private ImplWorld world;
         private int x;
         private int z;
 
 
-        public Builder setSubChunks(List<BedrockSubChunk> subChunks) {
-            this.subChunks = subChunks;
-            return this;
-        }
-
-        public Builder setBiomeData(byte[] biomeData) {
-            this.biomeData = biomeData;
+        public Builder setChunk(BedrockChunk chunk) {
+            this.chunk = chunk;
             return this;
         }
 
@@ -431,7 +438,7 @@ public class ImplChunk implements Chunk {
 
         public ImplChunk build() {
             Check.nullParam(this.world, "world");
-            return new ImplChunk(this.world, this.x, this.z, this.subChunks, this.biomeData);
+            return new ImplChunk(this.world, this.x, this.z, this.chunk);
         }
 
 

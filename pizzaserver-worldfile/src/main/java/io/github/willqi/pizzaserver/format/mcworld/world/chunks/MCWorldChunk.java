@@ -130,13 +130,23 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public int getHeightAt(Vector2i position) {
-        return this.getHeightAt(position.getX(), position.getY());
+    public int getHighestBlockAt(Vector2i position) {
+        return this.getHighestBlockAt(position.getX(), position.getY());
     }
 
     @Override
-    public int getHeightAt(int x, int y) {
+    public int getHighestBlockAt(int x, int y) {
         return this.heightMap[y * 16 + x];
+    }
+
+    @Override
+    public void setHighestBlockAt(Vector2i position, int newHeight) {
+        this.setHighestBlockAt(position.getX(), position.getY(), newHeight);
+    }
+
+    @Override
+    public void setHighestBlockAt(int x, int z, int newHeight) {
+        this.heightMap[z * 16 + x] = newHeight;
     }
 
     @Override

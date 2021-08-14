@@ -28,7 +28,7 @@ public interface BedrockChunk {
      * @param position The {@link Vector2i} that is representative of the coordinates in the chunk we need the height of.
      * @return height
      */
-    int getHeightAt(Vector2i position);
+    int getHighestBlockAt(Vector2i position);
 
     /**
      * Retrieve the tallest block at a specific coordinate
@@ -36,7 +36,22 @@ public interface BedrockChunk {
      * @param z z coordinate
      * @return height
      */
-    int getHeightAt(int x, int z);
+    int getHighestBlockAt(int x, int z);
+
+    /**
+     * Change the height map at a specific block in this chunk
+     * @param position coordinates
+     * @param newHeight new height
+     */
+    void setHighestBlockAt(Vector2i position, int newHeight);
+
+    /**
+     * Change the height map at a specific block in this chunk
+     * @param x x coordinate
+     * @param z z coordinate
+     * @param newHeight new height
+     */
+    void setHighestBlockAt(int x, int z, int newHeight);
 
     /**
      * An array of 256 (16 * 16) bytes that stores the biomes in a chunk
