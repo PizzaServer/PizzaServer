@@ -307,15 +307,13 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(direction);
-        startGamePacket.setPlayerSpawn(position);
+        startGamePacket.setPlayerSpawn(position.add(0, 2, 0));
 
         // Server
         startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());
         startGamePacket.setCommandsEnabled(true);
-        // packet.setCurrentTick(0);       // TODO: get actual tick count
         startGamePacket.setDefaultGamemode(Gamemode.SURVIVAL);
         startGamePacket.setDifficulty(Difficulty.PEACEFUL);
-        // packet.setEnchantmentSeed(0);   // TODO: find actual seed
         startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
         startGamePacket.setServerName(world.getLevel().getName());
         startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
