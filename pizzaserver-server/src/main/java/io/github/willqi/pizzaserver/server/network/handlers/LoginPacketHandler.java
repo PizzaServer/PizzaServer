@@ -239,9 +239,9 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     this.player.setYaw(data.getYaw());
                     this.player.setHeadYaw(data.getYaw());
 
-                    // Get the world they spawn in
+                    // Get their spawn location
                     World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
-                    final Location location;
+                    Location location;
                     if (world == null) { // Was the world deleted? Set it to the default world if so
                         world = defaultWorld;
                         location = new Location(world, world.getSpawnCoordinates());

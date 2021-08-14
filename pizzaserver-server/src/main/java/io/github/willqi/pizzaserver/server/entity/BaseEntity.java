@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.entity;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.level.Level;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
@@ -67,12 +68,17 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public Chunk getChunk() {
-        return this.location.getChunk();
+        return this.getLocation().getChunk();
+    }
+
+    @Override
+    public World getWorld() {
+        return this.getLocation().getWorld();
     }
 
     @Override
     public Level getLevel() {
-        return this.location.getLevel();
+        return this.getLocation().getLevel();
     }
 
     @Override

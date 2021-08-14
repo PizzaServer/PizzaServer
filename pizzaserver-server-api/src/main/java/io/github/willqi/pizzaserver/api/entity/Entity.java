@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.entity;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.level.Level;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
@@ -13,6 +14,18 @@ import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 public interface Entity extends Watchable {
 
     long getId();
+
+    /**
+     * Retrieve the {@link Level} this entity is in
+     * @return {@link Level}
+     */
+    Level getLevel();
+
+    /**
+     * Retrieve the {@link World} this entity is in
+     * @return {@link World}
+     */
+    World getWorld();
 
     /**
      * Retrieve the {@link Chunk} the entity is in
@@ -31,12 +44,6 @@ public interface Entity extends Watchable {
      * @param location the new {@link Location}
      */
     void setLocation(Location location);
-
-    /**
-     * Retrieve the {@link Level} this entity is in
-     * @return {@link Level}
-     */
-    Level getLevel();
 
     EntityMetaData getMetaData();
 
