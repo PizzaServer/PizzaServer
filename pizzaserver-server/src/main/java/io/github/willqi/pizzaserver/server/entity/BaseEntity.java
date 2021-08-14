@@ -21,10 +21,10 @@ public abstract class BaseEntity implements Entity {
     public static long ID = 1;
 
     protected final long id;
-    protected float x;
-    protected float y;
-    protected float z;
-    protected World world;
+    protected volatile float x;
+    protected volatile float y;
+    protected volatile float z;
+    protected volatile World world;
 
     protected boolean spawned;
     private final Set<Player> spawnedTo = new HashSet<>();
