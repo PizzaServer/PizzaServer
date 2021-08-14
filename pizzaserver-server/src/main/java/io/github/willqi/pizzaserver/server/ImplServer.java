@@ -25,6 +25,7 @@ import io.github.willqi.pizzaserver.server.level.ImplLevelManager;
 import io.github.willqi.pizzaserver.server.level.world.blocks.ImplBlockRegistry;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -343,19 +344,16 @@ public class ImplServer implements Server {
             throw new RuntimeException(exception);
         }
 
-        File propertiesFile = new File(this.getRootDirectory() + "/server.yml");
+        File configFile = new File(this.getRootDirectory() + "/server.yml");
         Config config = new Config();
 
         try {
-            InputStream propertiesStream;
-            if (propertiesFile.exists()) {
-                propertiesStream = new FileInputStream(propertiesFile);
-            } else {
-                propertiesStream = this.getClass().getResourceAsStream("/server.yml");
+            if (!configFile.exists()) {
+                Files.copy(this.getClass().getResourceAsStream("/server.yml"), configFile.toPath());
             }
-            config.load(propertiesStream);
-            if (!propertiesFile.exists()) {
-                config.save(new FileOutputStream(propertiesFile));
+
+            try (FileInputStream inputStream = new FileInputStream(configFile)) {
+                config.load(inputStream);
             }
         } catch (IOException exception) {
             throw new RuntimeException(exception);
