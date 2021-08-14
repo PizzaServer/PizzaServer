@@ -1,9 +1,9 @@
 package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.world.World;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
+import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.HashSet;
 import java.util.Set;

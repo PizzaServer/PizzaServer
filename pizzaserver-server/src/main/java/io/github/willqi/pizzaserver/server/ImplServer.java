@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
-import io.github.willqi.pizzaserver.api.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -14,15 +14,18 @@ import io.github.willqi.pizzaserver.server.network.handlers.LoginPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.packs.ImplResourcePackManager;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
+import io.github.willqi.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProvider;
+import io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.willqi.pizzaserver.server.plugin.ImplPluginManager;
 import io.github.willqi.pizzaserver.server.scheduler.ImplScheduler;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.ImplLogger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
-import io.github.willqi.pizzaserver.server.world.ImplWorldManager;
-import io.github.willqi.pizzaserver.server.world.blocks.ImplBlockRegistry;
+import io.github.willqi.pizzaserver.server.level.ImplLevelManager;
+import io.github.willqi.pizzaserver.server.level.world.blocks.ImplBlockRegistry;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -33,19 +36,20 @@ public class ImplServer implements Server {
     private static Server INSTANCE;
 
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
+    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
+    private final PlayerDataProvider provider = new NBTPlayerDataProvider(this);
+
     private final PluginManager pluginManager = new ImplPluginManager(this);
     private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
-    private final ImplWorldManager worldManager = new ImplWorldManager(this);
+    private final ImplLevelManager levelManager = new ImplLevelManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
+
+    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
 
     private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final ImplScheduler scheduler = new ImplScheduler(this, 1);
 
-    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
-
     private final Logger logger = new ImplLogger("Server");
-
-    private final Set<BedrockClientSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
@@ -86,8 +90,6 @@ public class ImplServer implements Server {
         this.getResourcePackManager().loadPacks();
         this.setTargetTps(20);
 
-        this.getWorldManager().loadWorlds();
-
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
         } catch (InterruptedException | ExecutionException exception) {
@@ -97,60 +99,77 @@ public class ImplServer implements Server {
         this.scheduler.startScheduler();
 
         int currentTps = 0;
-        long initNanoTime = System.nanoTime();
-        long nextTpsRecording = initNanoTime + TimeUtils.secondsToNanoSeconds(1);
-        long nanoSecondsPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
-        long nextPredictedNanoTimeTick = initNanoTime + nanoSecondsPerTick;         // Used to determine how behind/ahead we are
-        long sleepTime = TimeUtils.nanoSecondsToMilliseconds(nanoSecondsPerTick);
+        long nextTpsRecording = 0;
+        long sleepTime = 0;    // The amount of nanoseconds to sleep for
+                               // This fluctuates depending on if we were at a slower/faster tps before
         while (this.running) {
-            synchronized (this.sessions) {
-                Iterator<BedrockClientSession> sessions = this.sessions.iterator();
-                while (sessions.hasNext()) {
-                    BedrockClientSession session = sessions.next();
-                    session.processPackets();
+            long idealNanoSleepPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
 
-                    if (session.isDisconnected()) {
-                        sessions.remove();
-                        ImplPlayer player = session.getPlayer();
-                        if (player != null) {
-                            player.onDisconnect();
-                            this.getNetwork().updatePong();
-                        }
-                    }
-                }
-            }
+            // Figure out how long it took to tick
+            long startTickTime = System.nanoTime();
+            this.tick();
+            currentTps++;
+            long timeTakenToTick = System.nanoTime() - startTickTime;
 
-            for (ImplScheduler scheduler : this.syncedSchedulers) {
-                try {
-                    scheduler.serverTick();
-                } catch (Exception exception) {
-                    this.getLogger().error("Failed to tick scheduler", exception);
-                }
-            }
-
+            // Sleep for the ideal time but take into account the time spent running the tick
+            sleepTime += idealNanoSleepPerTick - timeTakenToTick;
+            long sleepStart = System.nanoTime();
             try {
-                Thread.sleep(sleepTime);
+                Thread.sleep(Math.max(TimeUtils.nanoSecondsToMilliseconds(sleepTime), 0));
             } catch (InterruptedException exception) {
                 exception.printStackTrace();
                 this.stop();
                 return;
             }
+            sleepTime -= System.nanoTime() - sleepStart;    // How long did it actually take to sleep?
+                                                            // If we didn't sleep for the correct amount,
+                                                            // take that into account for the next sleep by
+                                                            // leaving extra/less for the next sleep.
 
-            long completedNanoTime = System.nanoTime();
-            if (completedNanoTime > nextTpsRecording) {
+            // Record TPS every second
+            if (System.nanoTime() > nextTpsRecording) {
                 this.currentTps = currentTps;
                 currentTps = 0;
                 nextTpsRecording = System.nanoTime() + TimeUtils.secondsToNanoSeconds(1);
             }
-            currentTps++;
-
-            long diff = nextPredictedNanoTimeTick - completedNanoTime;
-            nanoSecondsPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
-            nextPredictedNanoTimeTick = System.nanoTime() + nanoSecondsPerTick + diff;
-            sleepTime = TimeUtils.nanoSecondsToMilliseconds(Math.max(nanoSecondsPerTick + diff, 0));
-
         }
         this.stop();
+    }
+
+    private void tick() {
+        synchronized (this.sessions) {
+            // Process all packets that are outgoing and incoming
+            Iterator<BedrockClientSession> sessions = this.sessions.iterator();
+            while (sessions.hasNext()) {
+                BedrockClientSession session = sessions.next();
+                try {
+                    session.processPackets();
+                } catch (Exception exception) {
+                    session.disconnect();
+                    this.getLogger().error("Disconnecting session due to failure in processing packets", exception);
+                }
+
+                // check if the client disconnected
+                if (session.isDisconnected()) {
+                    sessions.remove();
+                    ImplPlayer player = session.getPlayer();
+                    if (player != null) {
+                        player.onDisconnect();
+                        this.getNetwork().updatePong();
+                    }
+                }
+            }
+        }
+
+        this.getLevelManager().tick();
+
+        for (ImplScheduler scheduler : this.syncedSchedulers) {
+            try {
+                scheduler.serverTick();
+            } catch (Exception exception) {
+                this.getLogger().error("Failed to tick scheduler", exception);
+            }
+        }
     }
 
     /**
@@ -168,7 +187,11 @@ public class ImplServer implements Server {
         }
 
         this.getNetwork().stop();
-        this.getWorldManager().unloadWorlds();
+        try {
+            this.getLevelManager().close();
+        } catch (IOException exception) {
+            this.getLogger().error("Failed to close LevelManager", exception);
+        }
 
         // We're done stop operations. Exit program.
         this.shutdownLatch.countDown();
@@ -250,8 +273,8 @@ public class ImplServer implements Server {
     }
 
     @Override
-    public ImplWorldManager getWorldManager() {
-        return this.worldManager;
+    public ImplLevelManager getLevelManager() {
+        return this.levelManager;
     }
 
     @Override
@@ -281,6 +304,14 @@ public class ImplServer implements Server {
         return this.syncedSchedulers.remove(scheduler);
     }
 
+    /**
+     * Retrieve the {@link PlayerDataProvider} used to save and store player data
+     * @return {@link PlayerDataProvider}
+     */
+    public PlayerDataProvider getPlayerProvider() {
+        return this.provider;
+    }
+
     @Override
     public Logger getLogger() {
         return this.logger;
@@ -305,7 +336,7 @@ public class ImplServer implements Server {
     private void setupFiles() {
         try {
             new File(this.getRootDirectory() + "/plugins").mkdirs();
-            new File(this.getRootDirectory() + "/worlds").mkdirs();
+            new File(this.getRootDirectory() + "/levels").mkdirs();
             new File(this.getRootDirectory() + "/players").mkdirs();
             new File(this.getRootDirectory() + "/resourcepacks").mkdirs();
             new File(this.getRootDirectory() + "/behaviorpacks").mkdirs();
@@ -313,19 +344,16 @@ public class ImplServer implements Server {
             throw new RuntimeException(exception);
         }
 
-        File propertiesFile = new File(this.getRootDirectory() + "/server.yml");
+        File configFile = new File(this.getRootDirectory() + "/server.yml");
         Config config = new Config();
 
         try {
-            InputStream propertiesStream;
-            if (propertiesFile.exists()) {
-                propertiesStream = new FileInputStream(propertiesFile);
-            } else {
-                propertiesStream = this.getClass().getResourceAsStream("/server.yml");
+            if (!configFile.exists()) {
+                Files.copy(this.getClass().getResourceAsStream("/server.yml"), configFile.toPath());
             }
-            config.load(propertiesStream);
-            if (!propertiesFile.exists()) {
-                config.save(new FileOutputStream(propertiesFile));
+
+            try (FileInputStream inputStream = new FileInputStream(configFile)) {
+                config.load(inputStream);
             }
         } catch (IOException exception) {
             throw new RuntimeException(exception);
@@ -355,6 +383,7 @@ public class ImplServer implements Server {
                 }
             }
         }
+
     }
 
 }

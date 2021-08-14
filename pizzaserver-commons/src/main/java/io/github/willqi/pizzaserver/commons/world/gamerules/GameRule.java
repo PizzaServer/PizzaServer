@@ -2,16 +2,16 @@ package io.github.willqi.pizzaserver.commons.world.gamerules;
 
 public abstract class GameRule<T> {
 
-    private final GameRuleId id;
+    private final GameRuleID id;
     private final T value;
 
 
-    public GameRule(GameRuleId id, T value) {
+    public GameRule(GameRuleID id, T value) {
         this.id = id;
         this.value = value;
     }
 
-    public GameRuleId getId() {
+    public GameRuleID getId() {
         return this.id;
     }
 

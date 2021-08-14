@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.api.entity;
 
-import io.github.willqi.pizzaserver.api.world.World;
+import io.github.willqi.pizzaserver.api.level.world.World;
 
 /**
  * An entity which has the ability to move from its spawned location

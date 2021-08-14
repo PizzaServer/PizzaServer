@@ -35,8 +35,41 @@ public class ServerConfig {
         return this.config.getInteger("world-chunk-radius");
     }
 
+    /**
+     * Max chunks that be requested per player each tick to be sent to itself
+     * Additionally, this makes up the max chunks that be offloaded per tick
+     * @return
+     */
+    public int getChunkRequestsPerTick() {
+        return this.config.getInteger("chunk-requests-per-tick");
+    }
+
+    /**
+     * Max chunks that be queued to the ChunkProcessingThread for each player/for unloading
+     * @return max chunk queue count
+     */
+    public int getChunkProcessingCap() {
+        return this.config.getInteger("chunk-requests-processing-cap");
+    }
+
     public String getDefaultWorldName() {
         return this.config.getString("world-default");
+    }
+
+    /**
+     * Default yaw to assign players who join the server
+     * @return default yaw
+     */
+    public float getDefaultYaw() {
+        return (float)this.config.getDouble("world-default-yaw");
+    }
+
+    /**
+     * Default pitch to assign players who join the server
+     * @return default pitch
+     */
+    public float getDefaultPitch() {
+        return (float)this.config.getDouble("world-default-pitch");
     }
 
 }

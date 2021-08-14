@@ -1,10 +1,17 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
+import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
+import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -17,12 +24,11 @@ import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
-import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.api.world.data.Dimension;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
+import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
@@ -159,7 +165,10 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                 }
                 break;
             case COMPLETED:
-                this.sendGameLoginPackets();
+                this.player.getServer().getScheduler()
+                        .prepareTask(this::completeGameLogin)
+                        .setAsynchronous(true)
+                        .schedule();
                 break;
         }
     }
@@ -209,8 +218,86 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
     /**
      * Called when the player has passed the resource packs stage and is ready to start the game login process.
+     * This is called asynchronously to load player data from disk without impacting server performance
      */
-    private void sendGameLoginPackets() {
+    private void completeGameLogin() {
+        String defaultWorldName = this.player.getServer().getConfig().getDefaultWorldName();
+        ImplWorld defaultWorld = this.player.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
+        if (defaultWorld == null) {
+            this.player.disconnect("Failed to find default world");
+            this.player.getServer().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
+            return;
+        }
+
+        PlayerData data;
+        try {
+            data = this.player.getSavedData().orElse(defaultWorld.getDefaultPlayerData());
+        } catch (IOException exception) {
+            this.player.disconnect("Failed to retrieve player data");
+            this.player.getServer().getLogger().error("Failed to retrieve data of " + this.player.getUUID(), exception);
+            return;
+        }
+
+        // Apply player data and send remaining packets
+        this.player.getServer().getScheduler()
+                .prepareTask(() -> {
+                    this.player.setPitch(data.getPitch());
+                    this.player.setYaw(data.getYaw());
+                    this.player.setHeadYaw(data.getYaw());
+
+                    // Get their spawn location
+                    World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
+                    Location location;
+                    if (world == null) { // Was the world deleted? Set it to the default world if so
+                        world = defaultWorld;
+                        location = new Location(world, world.getSpawnCoordinates());
+                    } else {
+                        location = new Location(world, data.getPosition());
+                    }
+
+                    PlayerPreSpawnEvent playerPreSpawnEvent = new PlayerPreSpawnEvent(player, location, data.getPitch(), data.getYaw());
+                    this.player.getServer().getEventManager().call(playerPreSpawnEvent);
+                    if (playerPreSpawnEvent.isCancelled()) {
+                        this.player.disconnect();
+                        return;
+                    }
+
+                    this.player.sendPacket(this.getStartGamePacket(world, playerPreSpawnEvent.getStartLocation(), new Vector2(playerPreSpawnEvent.getPitch(), playerPreSpawnEvent.getYaw())));
+
+                    // TODO: Add creative contents to prevent mobile clients from crashing
+                    CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
+                    this.player.sendPacket(creativeContentPacket);
+
+                    BiomeDefinitionPacket biomeDefinitionPacket = new BiomeDefinitionPacket();
+                    biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
+                    this.player.sendPacket(biomeDefinitionPacket);
+
+                    // Sent the full player list to this player
+                    List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()
+                            .filter(player -> !player.isHiddenFrom(this.player))
+                            .map(Player::getPlayerListEntry)
+                            .collect(Collectors.toList());
+                    this.player.getPlayerList().addEntries(entries);
+
+                    location.getWorld().addEntity(this.player, location);
+                    this.session.setPacketHandler(new FullGamePacketHandler(this.player));
+
+                    PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(this.player);
+                    this.player.getServer().getEventManager().call(playerSpawnEvent);
+                    if (playerSpawnEvent.isCancelled()) {
+                        this.player.disconnect();
+                    }
+                }).schedule();
+    }
+
+    /**
+     * Construct the StartGamePacket for the player
+     * @param world The world the player is spawning in
+     * @param position the position the player is spawning at
+     * @param direction the direction the player is spawning with
+     * @return the start game packet
+     */
+    private StartGamePacket getStartGamePacket(World world, Vector3 position, Vector2 direction) {
         StartGamePacket startGamePacket = new StartGamePacket();
 
         // Entity specific
@@ -219,18 +306,18 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setPlayerGamemode(Gamemode.SURVIVAL);
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
-        startGamePacket.setPlayerRotation(new Vector2(0, 0));
-        startGamePacket.setPlayerSpawn(new Vector3(142, 66, 115));  // TODO: get spawn coords/fetch player data
+        startGamePacket.setPlayerRotation(direction);
+        startGamePacket.setPlayerSpawn(position);
 
         // Server
-        startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());    // TODO: modify once you get chunks ticking
+        startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());
         startGamePacket.setCommandsEnabled(true);
         // packet.setCurrentTick(0);       // TODO: get actual tick count
         startGamePacket.setDefaultGamemode(Gamemode.SURVIVAL);
         startGamePacket.setDifficulty(Difficulty.PEACEFUL);
         // packet.setEnchantmentSeed(0);   // TODO: find actual seed
         startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
-        startGamePacket.setServerName("Testing");
+        startGamePacket.setServerName(world.getLevel().getName());
         startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
         startGamePacket.setServerAuthoritativeBlockBreaking(true);
         startGamePacket.setServerAuthoritativeInventory(true);
@@ -241,28 +328,11 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setItemStates(this.player.getVersion().getItemStates());
 
         // World
-        startGamePacket.setWorldSpawn(new Vector3i(0, 0, 0));   // TODO: fetch actual player data
+        startGamePacket.setWorldSpawn(world.getSpawnCoordinates());
         startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
         startGamePacket.setWorldType(WorldType.INFINITE);
-        this.player.sendPacket(startGamePacket);
 
-
-        // TODO: Add creative contents to prevent mobile clients from crashing
-        CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
-        this.player.sendPacket(creativeContentPacket);
-
-        BiomeDefinitionPacket biomeDefinitionPacket = new BiomeDefinitionPacket();
-        biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
-        this.player.sendPacket(biomeDefinitionPacket);
-
-        // Sent the full player list to this player
-        List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()
-                .filter(player -> !player.isHiddenFrom(this.player))
-                .map(Player::getPlayerListEntry)
-                .collect(Collectors.toList());
-        this.player.getPlayerList().addEntries(entries);
-
-        this.session.setPacketHandler(new FullGamePacketHandler(this.player));
+        return startGamePacket;
     }
 
 }

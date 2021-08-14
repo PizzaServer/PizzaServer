@@ -20,7 +20,7 @@ public class WorldInfoTests {
 
         ResourceUtils.deleteDirectoryContents(temporaryDir);
 
-        assertEquals("1.16.100 World Test", info.getWorldName());
+        assertEquals("1.16.100 World Test", info.getName());
         assertEquals(true, info.getPlayerAbilities().canAttackPlayers());
     }
 

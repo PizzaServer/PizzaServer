@@ -1,11 +1,12 @@
 package io.github.willqi.pizzaserver.api.entity;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.level.Level;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
-import io.github.willqi.pizzaserver.api.world.World;
-import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 
 /**
  * Represents a entity on Minecraft
@@ -27,8 +28,14 @@ public interface Entity extends Watchable {
     int getFloorZ();
 
     /**
-     * Retrieve the {@link World} the entity is in
-     * @return the {@link World}
+     * Retrieve the {@link Level} this entity is in
+     * @return {@link Level}
+     */
+    Level getLevel();
+
+    /**
+     * Retrieve the {@link World} this entity is in
+     * @return {@link World}
      */
     World getWorld();
 
@@ -53,6 +60,11 @@ public interface Entity extends Watchable {
     EntityMetaData getMetaData();
 
     void setMetaData(EntityMetaData metaData);
+
+    /**
+     * Called every server tick
+     */
+    void tick();
 
     /**
      * Check if the entity has been spawned into a world yet

@@ -10,26 +10,30 @@ import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.server.world.chunks.ImplChunkManager;
+import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
+import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.io.IOException;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final ImplServer server;
     private final BedrockClientSession session;
+    private boolean allowAutomaticSaving = true;
 
     private final BaseMinecraftVersion version;
     private final Device device;
@@ -41,7 +45,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private PlayerList playerList = new ImplPlayerList(this);
     private Skin skin;
 
-    private int chunkRadius;
+    private int chunkRadius = 3;
+    private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // how many chunks can be sent to this player during this tick?
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
@@ -58,7 +63,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
 
-        this.chunkRadius = server.getConfig().getChunkRadius();
+        this.chunkRequestsLeft.set(server.getConfig().getChunkRequestsPerTick());
     }
 
     @Override
@@ -138,7 +143,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public void setChunkRadiusRequested(int radius) {
         int oldRadius = this.chunkRadius;
-        this.chunkRadius = radius;
+        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
         if (this.hasSpawned()) {
             this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
@@ -151,6 +156,82 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public PlayerList getPlayerList() {
         return this.playerList;
+    }
+
+    /**
+     * Fetch the SAVED player data from the {@link io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider} if any exists
+     * @return saved player data
+     * @throws IOException if an exception occurred while reading the data
+     */
+    public Optional<PlayerData> getSavedData() throws IOException {
+        return this.getServer().getPlayerProvider()
+                .load(this.getUUID());
+    }
+
+    @Override
+    public void setAutoSave(boolean allowSaving) {
+        this.allowAutomaticSaving = allowSaving;
+    }
+
+    @Override
+    public boolean canAutoSave() {
+        return this.allowAutomaticSaving;
+    }
+
+    @Override
+    public boolean save() {
+        if (this.hasSpawned()) {
+            PlayerData playerData = new PlayerData.Builder()
+                    .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
+                    .setDimension(this.getLocation().getWorld().getDimension())
+                    .setPosition(this.getLocation())
+                    .setPitch(this.getPitch())
+                    .setYaw(this.getYaw())
+                    .build();
+            try {
+                this.getServer().getPlayerProvider().save(this.getUUID(), playerData);
+                return true;
+            } catch (IOException exception) {
+                this.getServer().getLogger().error("Failed to save player " + this.getUUID(), exception);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Called when the server registers that the player is disconnected.
+     * It cleans up data for this player
+     */
+    public void onDisconnect() {
+        if (this.hasSpawned()) {
+            Location location = this.getLocation();
+
+            if (this.canAutoSave()) {
+                this.getServer().getScheduler().prepareTask(() -> {
+                    this.save();
+                    this.getServer().getScheduler().prepareTask(this::despawn).schedule();
+                }).setAsynchronous(true).schedule();
+            } else {
+                this.despawn();
+            }
+
+            // remove the player from the player list of others
+            for (Player player : this.getServer().getPlayers()) {
+                player.getPlayerList().removeEntry(this.getPlayerListEntry());
+            }
+
+            // Remove player from chunks they can observe
+            for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
+                for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
+                    // Chunk radius is circular
+                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                    if (this.chunkRadius < distance) {
+                        ImplChunk chunk = (ImplChunk)location.getWorld().getChunkManager().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
+                        chunk.despawnFrom(this);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -302,7 +383,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void moveTo(float x, float y, float z) {
-        Location oldLocation = new ImplLocation(this.world, new Vector3(this.x, this.y, this.z));
+        Location oldLocation = new Location(this.world, new Vector3(this.x, this.y, this.z));
         super.moveTo(x, y, z);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
@@ -324,6 +405,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public boolean isConnected() {
+        return !this.session.isDisconnected();
+    }
+
+    @Override
     public void sendPacket(BaseBedrockPacket packet) {
         this.session.queueSendPacket(packet);
     }
@@ -341,38 +427,21 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.session.disconnect();
     }
 
-    /**
-     * Called when the server registers that the player is disconnected.
-     * It cleans up data for this player
-     */
-    public void onDisconnect() {
-        if (this.hasSpawned()) {
-            Location location = this.getLocation();
-
-            // remove the player from the player list of others
-            for (Player player : this.getServer().getPlayers()) {
-                player.getPlayerList().removeEntry(this.getPlayerListEntry());
-            }
-
-            // Remove player entity from the world
-            this.despawn();
-
-            // Remove all of the chunks this player is viewing
-            for (int chunkX = location.getChunkX() - this.getChunkRadius(); chunkX <= location.getChunkX() + this.getChunkRadius(); chunkX++) {
-                for (int chunkZ = location.getChunkZ() - this.getChunkRadius(); chunkZ <= location.getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                    ImplChunk chunk = (ImplChunk)location.getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                    chunk.despawnFrom(this);
-                }
-            }
-        }
+    @Override
+    public void tick() {
+        this.chunkRequestsLeft.set(this.getServer().getConfig().getChunkRequestsPerTick()); // Reset amount of chunks that we can be sent this tick
     }
 
     @Override
     public void onSpawned() {
         super.onSpawned();
+        this.sendNetworkChunkPublisher();   // Load chunks sent during initial login handshake
 
         this.updateVisibleChunks(null, this.chunkRadius);
+        this.completeLogin();
+    }
 
+    private void completeLogin() {
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.setMetaData(this.getMetaData());
@@ -384,6 +453,10 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                 player.getPlayerList().addEntry(this.getPlayerListEntry());
             }
         }
+
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+        this.sendPacket(playStatusPacket);
 
     }
 
@@ -438,25 +511,22 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         player.sendPacket(addPlayerPacket);
     }
 
-    @Override
-    public void sendChunk(int x, int z) {
-        ImplChunkManager chunkManager = (ImplChunkManager)this.getLocation().getWorld().getChunkManager();
-        if (chunkManager.isChunkLoaded(x, z)) {
-            chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunkManager.getChunk(x, z));
-        } else {
-            chunkManager.fetchChunk(x, z).whenComplete((chunk, exception) -> {
-                if (exception != null) {
-                    ImplServer.getInstance().getLogger().error("Failed to send chunk (" + x + ", " + z + ") to player " + this.getUsername(), exception);
-                    return;
-                }
-                chunkManager.addChunkToPlayerQueue(this, (ImplChunk)chunk);
-            });
-        }
+    public void requestSendChunk(int x, int z) {
+        this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, true);
+    }
+
+    /**
+     * Check if a player can be sent a chunk this tick
+     * Requests are reset during an entity's tick
+     * @return whether or not the player should be sent a chunk this tick
+     */
+    public boolean acknowledgeChunkSendRequest() {
+        return this.chunkRequestsLeft.getAndDecrement() > 0;
     }
 
     private void sendNetworkChunkPublisher() {
         NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(((ImplLocation)this.getLocation()).toVector3i());
+        packet.setCoordinates(this.getLocation().toVector3i());
         packet.setRadius(this.getChunkRadius() * 16);
         this.sendPacket(packet);
     }
@@ -465,43 +535,45 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      * Sends and removes chunks the player can and cannot see
      */
     private void updateVisibleChunks(Location oldLocation, int oldChunkRadius) {
-        Set<ImplChunk> chunksToRemove = new HashSet<>();
-
+        Set<Tuple<Integer, Integer>> chunksToRemove = new HashSet<>();
         if (oldLocation != null) {
             // What were our previous chunks loaded?
-            for (int chunkX = oldLocation.getChunkX() - oldChunkRadius; chunkX <= oldLocation.getChunkX() + oldChunkRadius; chunkX++) {
-                for (int chunkZ = oldLocation.getChunkZ() - oldChunkRadius; chunkZ <= oldLocation.getChunkZ() + oldChunkRadius; chunkZ++) {
-                    if (oldLocation.getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-                        ImplChunk chunk = (ImplChunk)oldLocation.getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                        chunksToRemove.add(chunk);
+            int oldPlayerChunkX = oldLocation.getChunkX();
+            int oldPlayerChunkZ = oldLocation.getChunkZ();
+            for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
+                for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
+                    // Chunk radius is circular
+                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                    if (oldChunkRadius > distance) {
+                        chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));
                     }
                 }
             }
         }
 
         // What are our new chunks loaded?
-        boolean requiresChunkPublisher = false;
-        for (int chunkX = this.getLocation().getChunkX() - this.getChunkRadius(); chunkX <= this.getLocation().getChunkX() + this.getChunkRadius(); chunkX++) {
-            for (int chunkZ = this.getLocation().getChunkZ() - this.getChunkRadius(); chunkZ <= this.getLocation().getChunkZ() + this.getChunkRadius(); chunkZ++) {
-                if (this.getLocation().getWorld().getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
-                    ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(chunkX, chunkZ);
-                    if (chunksToRemove.remove(chunk)) {
-                        continue;   // We don't need to send this chunk
-                    }
+        int currentPlayerChunkX = this.getLocation().getChunkX();
+        int currentPlayerChunkZ = this.getLocation().getChunkZ();
+        for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
+            for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
+                if (chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
+                    continue;   // We don't need to send this chunk because it's already rendered to us
                 }
-                requiresChunkPublisher = true;
-                this.sendChunk(chunkX, chunkZ);
+
+                // Chunk radius is circular
+                int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                if (this.getChunkRadius() > distance) {
+                    this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
+                }
             }
         }
 
         // Remove each chunk we shouldn't get packets from
-        for (ImplChunk chunk : chunksToRemove) {
-            chunk.despawnFrom(this);
+        for (Tuple<Integer, Integer> key : chunksToRemove) {
+            ((ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
         }
 
-        if (requiresChunkPublisher) {
-            this.sendNetworkChunkPublisher();
-        }
+        this.sendNetworkChunkPublisher();
     }
 
     @Override

@@ -58,6 +58,13 @@ public interface Player extends LivingEntity {
     void sendMessage(String message);
 
     /**
+     * Send a message originating from another APIPlayer
+     * @param sender the APIPlayer who sent this message
+     * @param message the message they sent
+     */
+    void sendPlayerMessage(Player sender, String message);
+
+    /**
      * Retrieve the current {@link Skin} of the player
      * @return {@link Skin} of the player
      */
@@ -145,19 +152,17 @@ public interface Player extends LivingEntity {
     void setChunkRadiusRequested(int radius);
 
     /**
-     * Request a chunk in the player's world to be sent to the player.
-     * This does not send it immediately, but rather requests the server to send the chunk.
+     * Request the server to send a chunk to the player.
      * @param x chunk x coordinate
      * @param z chunk z coordinate
      */
-    void sendChunk(int x, int z);
+    void requestSendChunk(int x, int z);
 
     /**
-     * Send a message originating from another APIPlayer
-     * @param sender the APIPlayer who sent this message
-     * @param message the message they sent
+     * If this session is still active
+     * @return if the player is still connected
      */
-    void sendPlayerMessage(Player sender, String message);
+    boolean isConnected();
 
     /**
      * Queue a packet to be sent to this player
@@ -176,6 +181,22 @@ public interface Player extends LivingEntity {
      */
     void disconnect(String reason);
 
+    /**
+     * Change if the player can be automatically saved
+     * @param allowSaving if the player should be saved automatically
+     */
+    void setAutoSave(boolean allowSaving);
 
+    /**
+     * Check if the player can be saved automatically
+     * @return if the player can be saved automatically
+     */
+    boolean canAutoSave();
+
+    /**
+     * Saves the player data to the player data provider
+     * @return if the save was successful
+     */
+    boolean save();
 
 }

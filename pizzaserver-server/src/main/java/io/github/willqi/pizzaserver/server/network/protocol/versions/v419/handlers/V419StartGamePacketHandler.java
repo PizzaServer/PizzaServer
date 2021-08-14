@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
-import io.github.willqi.pizzaserver.api.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
@@ -123,6 +123,17 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
         NBTCompound blockContainer = new NBTCompound();
 
         NBTCompound components = new NBTCompound();
+        components.put("minecraft:block_light_absorption", new NBTCompound().setInteger("value", blockType.getLightAbsorption()));
+        components.put("minecraft:block_light_emission", new NBTCompound().setFloat("emission", blockType.getLightEmission()));
+        components.put("minecraft:destroy_time", new NBTCompound().setFloat("value", blockType.getToughness()));
+        components.put("minecraft:friction", new NBTCompound().setFloat("value", blockType.getFriction()));
+        if (blockType.getGeometry() != null) {
+            components.put("minecraft:geometry", new NBTCompound().setString("value", blockType.getGeometry()));
+        }
+        components.put("minecraft:rotation", new NBTCompound()
+                .setFloat("x", blockType.getRotation()[0])
+                .setFloat("y", blockType.getRotation()[1])
+                .setFloat("z", blockType.getRotation()[2]));
 
         blockContainer.put("components", components);
         helper.writeNBTCompound(blockContainer, buffer);

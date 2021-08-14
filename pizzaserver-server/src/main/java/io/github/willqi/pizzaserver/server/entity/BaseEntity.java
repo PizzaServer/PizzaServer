@@ -2,16 +2,16 @@ package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.level.Level;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.api.world.World;
-import io.github.willqi.pizzaserver.api.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.entity.meta.ImplEntityMetaData;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RemoveEntityPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
-import io.github.willqi.pizzaserver.server.utils.ImplLocation;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -71,13 +71,8 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
-    public World getWorld() {
-        return this.world;
-    }
-
-    @Override
     public Location getLocation() {
-        return new ImplLocation(this.world, new Vector3(this.getX(), this.getY(), this.getZ()));
+        return new Location(this.world, new Vector3(this.getX(), this.getY(), this.getZ()));
     }
 
     /**
@@ -100,13 +95,23 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
+    public float getEyeHeight() {
+        return this.getHeight() / 2 + 0.1f;
+    }
+
+    @Override
     public Chunk getChunk() {
         return this.getLocation().getChunk();
     }
 
     @Override
-    public float getEyeHeight() {
-        return this.getHeight() / 2 + 0.1f;
+    public World getWorld() {
+        return this.getLocation().getWorld();
+    }
+
+    @Override
+    public Level getLevel() {
+        return this.getLocation().getLevel();
     }
 
     @Override
