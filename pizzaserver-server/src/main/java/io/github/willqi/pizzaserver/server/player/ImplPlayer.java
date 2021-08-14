@@ -449,6 +449,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private void completeLogin() {
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
 
