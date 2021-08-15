@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
 
 import java.io.IOException;
@@ -31,6 +32,11 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
     @Override
     public BasePacketRegistry getPacketRegistry() {
         return this.packetRegistry;
+    }
+
+    @Override
+    public BasePacketBuffer createPacketBuffer(int initialCapacity) {
+        return new V419PacketBuffer(initialCapacity);
     }
 
 }

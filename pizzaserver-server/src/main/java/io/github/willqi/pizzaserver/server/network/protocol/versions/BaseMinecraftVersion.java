@@ -11,6 +11,7 @@ import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.ImplServer;
+import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,12 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     }
 
     public abstract BasePacketRegistry getPacketRegistry();
+
+    public BasePacketBuffer createPacketBuffer() {
+        return this.createPacketBuffer(256);
+    }
+
+    public abstract BasePacketBuffer createPacketBuffer(int initialCapacity);
 
     public ImplServer getServer() {
         return this.server;
