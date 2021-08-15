@@ -4,16 +4,14 @@ import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaProperty;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -266,8 +264,8 @@ public class V419SetEntityDataPacketHandler extends BaseProtocolPacketHandler<Se
 
 
     @Override
-    public void encode(SetEntityDataPacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeUnsignedLong(buffer, packet.getRuntimeId());
+    public void encode(SetEntityDataPacket packet, BasePacketBuffer buffer) {
+        buffer.writeUnsignedVarLong(packet.getRuntimeId());
 
         // We need to write the metadata
         EntityMetaData metaData = packet.getData();
@@ -288,30 +286,30 @@ public class V419SetEntityDataPacketHandler extends BaseProtocolPacketHandler<Se
 
         // Serialize all entries
         int totalEntries = flags.keySet().size() + properties.size();
-        VarInts.writeUnsignedInt(buffer, totalEntries);
+        buffer.writeUnsignedVarInt(totalEntries);
 
         for (EntityMetaFlagCategory flagType : flags.keySet()) {
-            VarInts.writeUnsignedInt(buffer, this.supportedFlagTypeIds.get(flagType));
+            buffer.writeUnsignedVarInt(this.supportedFlagTypeIds.get(flagType));
             if (flagType == EntityMetaFlagCategory.PLAYER_FLAG) {
                 byte flagValue = 0;
                 for (EntityMetaFlag flag : flags.get(flagType)) {
                     flagValue ^= 1 << this.supportedFlags.get(flag);
                 }
-                VarInts.writeUnsignedInt(buffer, propertyTypeIds.get(EntityMetaPropertyType.BYTE));
+                buffer.writeUnsignedVarInt(propertyTypeIds.get(EntityMetaPropertyType.BYTE));
                 buffer.writeByte(flagValue);
             } else {
                 long flagValue = 0;
                 for (EntityMetaFlag flag : flags.get(flagType)) {
                     flagValue ^= 1L << this.supportedFlags.get(flag);
                 }
-                VarInts.writeUnsignedInt(buffer, propertyTypeIds.get(EntityMetaPropertyType.LONG));
-                VarInts.writeLong(buffer, flagValue);
+                buffer.writeUnsignedVarInt(propertyTypeIds.get(EntityMetaPropertyType.LONG));
+                buffer.writeVarLong(flagValue);
             }
         }
 
         for (EntityMetaPropertyName propertyName : properties.keySet()) {
-            VarInts.writeUnsignedInt(buffer, this.supportedProperties.get(propertyName));
-            VarInts.writeUnsignedInt(buffer, this.propertyTypeIds.get(propertyName.getType()));
+            buffer.writeUnsignedVarInt(this.supportedProperties.get(propertyName));
+            buffer.writeUnsignedVarInt(this.propertyTypeIds.get(propertyName.getType()));
             switch (propertyName.getType()) {
                 case BYTE:
                     buffer.writeByte((Byte)properties.get(propertyName).getValue());
@@ -320,34 +318,34 @@ public class V419SetEntityDataPacketHandler extends BaseProtocolPacketHandler<Se
                     buffer.writeShortLE((Short)properties.get(propertyName).getValue());
                     break;
                 case INTEGER:
-                    VarInts.writeInt(buffer, (Integer)properties.get(propertyName).getValue());
+                    buffer.writeVarInt((Integer)properties.get(propertyName).getValue());
                     break;
                 case FLOAT:
                     buffer.writeFloatLE((Float)properties.get(propertyName).getValue());
                     break;
                 case LONG:
-                    VarInts.writeLong(buffer, (Long)properties.get(propertyName).getValue());
+                    buffer.writeVarLong((Long)properties.get(propertyName).getValue());
                     break;
                 case STRING:
-                    helper.writeString((String)properties.get(propertyName).getValue(), buffer);
+                    buffer.writeString((String)properties.get(propertyName).getValue());
                     break;
                 case NBT:
-                    helper.writeNBTCompound((NBTCompound)properties.get(propertyName).getValue(), buffer);
+                    buffer.writeNBTCompound((NBTCompound)properties.get(propertyName).getValue());
                     break;
                 case VECTOR3I:
                     Vector3i vector3i = (Vector3i)properties.get(propertyName).getValue();
-                    helper.writeBlockVector(buffer, vector3i);
+                    buffer.writeVector3i(vector3i);
                     break;
                 case VECTOR3:
                     Vector3 vector3 = (Vector3)properties.get(propertyName).getValue();
-                    helper.writeVector3(buffer, vector3);
+                    buffer.writeVector3(vector3);
                     break;
                 default:
                     throw new UnsupportedOperationException("Missing implementation when encoding entity meta type " + propertyName.getType());
             }
         }
 
-        VarInts.writeUnsignedLong(buffer, packet.getTick());
+        buffer.writeUnsignedVarLong(packet.getTick());
     }
 
 }

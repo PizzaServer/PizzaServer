@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * Wrapper around {@link ByteBuf} that adds additional methods to parse Minecraft Bedrock packets
  */
-public abstract class BasePacketBuffer extends ByteBuf {
+public class BasePacketBuffer extends ByteBuf {
 
     private final ByteBuf buffer;
 
@@ -45,7 +45,9 @@ public abstract class BasePacketBuffer extends ByteBuf {
         this.buffer = buffer;
     }
 
-    protected abstract BasePacketBuffer createInstance(ByteBuf buffer);
+    protected BasePacketBuffer createInstance(ByteBuf buffer) {
+        return new BasePacketBuffer(buffer);
+    }
 
     @Override
     public int maxFastWritableBytes() {
@@ -819,12 +821,12 @@ public abstract class BasePacketBuffer extends ByteBuf {
         return this;
     }
 
-    public BasePacketBuffer writeVarLong(int value) {
+    public BasePacketBuffer writeVarLong(long value) {
         VarInts.writeLong(this.buffer, value);
         return this;
     }
 
-    public BasePacketBuffer writeUnsignedVarLong(int value) {
+    public BasePacketBuffer writeUnsignedVarLong(long value) {
         VarInts.writeUnsignedLong(this.buffer, value);
         return this;
     }
@@ -883,7 +885,9 @@ public abstract class BasePacketBuffer extends ByteBuf {
         return this;
     }
 
-    public abstract BasePacketBuffer writeItem(Item item);
+    public BasePacketBuffer writeItem(Item item) {
+        throw new UnsupportedOperationException("This operation is not supported.");
+    }
 
     @Override
     public BasePacketBuffer writeBytes(ByteBuf byteBuf) {

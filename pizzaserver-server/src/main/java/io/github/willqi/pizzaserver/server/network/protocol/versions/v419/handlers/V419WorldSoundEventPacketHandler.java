@@ -3,11 +3,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 
@@ -270,23 +268,23 @@ public class V419WorldSoundEventPacketHandler extends BaseProtocolPacketHandler<
     });
 
     @Override
-    public WorldSoundEventPacket decode(ByteBuf buffer, BasePacketHelper helper) {
+    public WorldSoundEventPacket decode(BasePacketBuffer buffer) {
         WorldSoundEventPacket packet = new WorldSoundEventPacket();
-        packet.setSound(sounds.inverse().get(VarInts.readUnsignedInt(buffer)));
-        packet.setVector3(helper.readVector3(buffer));
-        packet.setBlockID(VarInts.readInt(buffer));
-        packet.setEntityType(helper.readString(buffer));
+        packet.setSound(sounds.inverse().get(buffer.readUnsignedVarInt()));
+        packet.setVector3(buffer.readVector3());
+        packet.setBlockID(buffer.readVarInt());
+        packet.setEntityType(buffer.readString());
         packet.setBaby(buffer.readBoolean());
         packet.setGlobal(buffer.readBoolean());
         return packet;
     }
 
     @Override
-    public void encode(WorldSoundEventPacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeUnsignedInt(buffer, sounds.get(packet.getSound()));
-        helper.writeVector3(buffer, packet.getVector3());
-        VarInts.writeInt(buffer, packet.getBlockID());
-        helper.writeString(packet.getEntityType(), buffer);
+    public void encode(WorldSoundEventPacket packet, BasePacketBuffer buffer) {
+        buffer.writeUnsignedVarInt(sounds.get(packet.getSound()));
+        buffer.writeVector3(packet.getVector3());
+        buffer.writeVarInt(packet.getBlockID());
+        buffer.writeString(packet.getEntityType());
         buffer.writeBoolean(packet.isBaby());
         buffer.writeBoolean(packet.isGlobal());
     }

@@ -7,16 +7,14 @@ import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
-import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPieceTint;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.player.skin.SkinAnimation;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPiece;
-import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -44,14 +42,13 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
     }
 
     @Override
-    public LoginPacket decode(ByteBuf buffer, BasePacketHelper helper) {
+    public LoginPacket decode(BasePacketBuffer buffer) {
         LoginPacket packet = new LoginPacket();
         packet.setProtocol(buffer.readInt());
 
-        int chainAndSkinDataLength = VarInts.readUnsignedInt(buffer);
-        ByteBuf chainAndSkinData = buffer.readSlice(chainAndSkinDataLength);
-        String chainDataString = helper.readLEString(chainAndSkinData);
-        String skinDataString = helper.readLEString(chainAndSkinData);
+        buffer.readUnsignedVarInt();
+        String chainDataString = buffer.readStringLE();
+        String skinDataString = buffer.readStringLE();
 
         parseChainData(packet, chainDataString);
         parseSkinData(packet, skinDataString);
