@@ -2,9 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import io.github.willqi.pizzaserver.server.network.protocol.packets.DisconnectPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 public class V419DisconnectPacketHandler extends BaseProtocolPacketHandler<DisconnectPacket> {
 

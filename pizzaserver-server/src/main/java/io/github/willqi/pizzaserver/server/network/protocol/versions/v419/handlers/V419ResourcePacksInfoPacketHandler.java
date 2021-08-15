@@ -2,10 +2,8 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePacksInfoPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.packs.ResourcePack;
-import io.netty.buffer.ByteBuf;
 
 import java.util.Collection;
 

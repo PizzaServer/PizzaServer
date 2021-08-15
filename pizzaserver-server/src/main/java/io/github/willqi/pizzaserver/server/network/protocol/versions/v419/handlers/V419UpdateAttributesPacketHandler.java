@@ -3,10 +3,8 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateAttributesPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
-import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
