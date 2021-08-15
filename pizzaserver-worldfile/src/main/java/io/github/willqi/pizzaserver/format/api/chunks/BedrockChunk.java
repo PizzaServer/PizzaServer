@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Represents a 16x16 chunk of blocks in a Minecraft world
  */
-public interface BedrockChunk {
+public interface BedrockChunk extends BedrockNetworkDiskSerializable {
 
     int getX();
 
@@ -88,6 +88,8 @@ public interface BedrockChunk {
      * @param biome the new biome we are changing this block column to
      */
     void setBiomeAt(int x, int z, byte biome);
+
+    int getSubChunkCount();
 
     /**
      * Retrieve all of the {@link BedrockSubChunk}s in this chunk.

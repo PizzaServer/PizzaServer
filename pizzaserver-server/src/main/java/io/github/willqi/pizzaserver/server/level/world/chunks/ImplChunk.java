@@ -299,34 +299,8 @@ public class ImplChunk implements Chunk {
         readLock.lock();
 
         try {
-            // Find the lowest from the top empty subchunk
-            int subChunkCount = this.chunk.getSubChunks().size() - 1;
-            for (; subChunkCount >= 0; subChunkCount--) {
-                BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkCount);
-                if (subChunk.getLayers().size() > 0) {
-                    break;
-                }
-            }
-            subChunkCount++;
-
-            // Write all subchunks
-            ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
-            for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
-                BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
-                try {
-                    byte[] subChunkSerialized = subChunk.serializeForNetwork(player.getVersion());
-                    packetData.writeBytes(subChunkSerialized);
-                } catch (IOException exception) {
-                    ImplServer.getInstance().getLogger().error("Failed to serialize subchunk (x: " + this.getX() + " z: " + this.getZ() + " index: " + subChunkCount + ")");
-                    return;
-                }
-            }
-            packetData.writeBytes(this.chunk.getBiomeData());
-            packetData.writeByte(0);    // edu feature or smth
-
-            byte[] data = new byte[packetData.readableBytes()];
-            packetData.readBytes(data);
-            packetData.release();
+            int subChunkCount = this.chunk.getSubChunkCount();
+            byte[] data = this.chunk.serializeForNetwork(player.getVersion());
 
             this.spawnedTo.add(player);
 
@@ -343,6 +317,8 @@ public class ImplChunk implements Chunk {
                     player.sendPacket(worldChunkPacket);
                 }
             }).schedule();
+        } catch (IOException exception) {
+            this.getWorld().getServer().getLogger().error("Failed to serialize blocks", exception);
         } finally {
             readLock.unlock();
         }

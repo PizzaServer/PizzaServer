@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks;
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks.MCWorldSubChunk;
@@ -175,6 +176,19 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
+    public int getSubChunkCount() {
+        int subChunkCount = this.getSubChunks().size() - 1;
+        for (; subChunkCount >= 0; subChunkCount--) {
+            BedrockSubChunk subChunk = this.getSubChunks().get(subChunkCount);
+            if (subChunk.getLayers().size() > 0) {
+                break;
+            }
+        }
+
+        return subChunkCount + 1;
+    }
+
+    @Override
     public List<BedrockSubChunk> getSubChunks() {
         return Collections.unmodifiableList(this.subChunks);
     }
@@ -185,6 +199,35 @@ public class MCWorldChunk implements BedrockChunk {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public byte[] serializeForDisk() {
+        throw new UnsupportedOperationException("Cannot serialize MCWorldChunk. Serialize subchunks individually instead");
+    }
+
+    @Override
+    public byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) throws IOException {
+        int subChunkCount = this.getSubChunkCount();
+
+        // Write all subchunks
+        ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
+        byte[] data;
+        try {
+            for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
+                BedrockSubChunk subChunk = this.getSubChunks().get(subChunkIndex);
+                packetData.writeBytes(subChunk.serializeForNetwork(runtimeMapper));
+            }
+            packetData.writeBytes(this.getBiomeData());
+            packetData.writeByte(0);    // edu feature or smth
+
+            data = new byte[packetData.readableBytes()];
+            packetData.readBytes(data);
+        } finally {
+            packetData.release();
+        }
+
+        return data;
     }
 
 
