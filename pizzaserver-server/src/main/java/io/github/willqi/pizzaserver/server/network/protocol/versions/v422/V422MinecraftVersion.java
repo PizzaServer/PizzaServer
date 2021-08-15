@@ -1,24 +1,24 @@
-package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
+package io.github.willqi.pizzaserver.server.network.protocol.versions.v422;
 
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.V419PacketBuffer;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 
-public class V419MinecraftVersion extends BaseMinecraftVersion {
+public class V422MinecraftVersion extends BaseMinecraftVersion {
 
-    public static final int PROTOCOL = 419;
-    public static final String VERSION = "1.16.100";
-    private static final BasePacketRegistry PACKET_REGISTRY = new V419PacketRegistry();
+    public static final int PROTOCOL = 422;
+    public static final String VERSION = "1.16.200";
+    private final BasePacketRegistry PACKET_REGISTRY = new V422PacketRegistry();
 
 
-    public V419MinecraftVersion(ImplServer server) throws IOException {
+    public V422MinecraftVersion(ImplServer server) throws IOException {
         super(server);
     }
-
 
     @Override
     public int getProtocol() {
