@@ -137,6 +137,22 @@ public class ImplServer implements Server {
     }
 
     private void tick() {
+        this.processPackets();
+        this.getLevelManager().tick();
+
+        for (ImplScheduler scheduler : this.syncedSchedulers) {
+            try {
+                scheduler.serverTick();
+            } catch (Exception exception) {
+                this.getLogger().error("Failed to tick scheduler", exception);
+            }
+        }
+    }
+
+    /**
+     * Processes incoming and outgoing packets
+     */
+    private void processPackets() {
         synchronized (this.sessions) {
             // Process all packets that are outgoing and incoming
             Iterator<BedrockClientSession> sessions = this.sessions.iterator();
@@ -158,16 +174,6 @@ public class ImplServer implements Server {
                         this.getNetwork().updatePong();
                     }
                 }
-            }
-        }
-
-        this.getLevelManager().tick();
-
-        for (ImplScheduler scheduler : this.syncedSchedulers) {
-            try {
-                scheduler.serverTick();
-            } catch (Exception exception) {
-                this.getLogger().error("Failed to tick scheduler", exception);
             }
         }
     }
