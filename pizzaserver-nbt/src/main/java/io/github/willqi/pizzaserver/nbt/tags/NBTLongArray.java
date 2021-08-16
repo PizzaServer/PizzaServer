@@ -35,7 +35,7 @@ public class NBTLongArray extends NBTTag implements Iterable<Long> {
 
     @Override
     public int hashCode() {
-        return 31 * Arrays.hashCode(this.data) * this.name.hashCode();
+        return (31 * Arrays.hashCode(this.data)) + (31 * this.name.hashCode());
     }
 
     @Override

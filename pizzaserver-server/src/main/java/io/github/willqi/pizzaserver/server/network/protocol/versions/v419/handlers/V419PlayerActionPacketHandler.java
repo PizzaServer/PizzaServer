@@ -2,14 +2,11 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerActionPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 
@@ -47,14 +44,14 @@ public class V419PlayerActionPacketHandler extends BaseProtocolPacketHandler<Pla
     });
 
     @Override
-    public PlayerActionPacket decode(ByteBuf buffer, BasePacketHelper helper) {
+    public PlayerActionPacket decode(BasePacketBuffer buffer) {
         PlayerActionPacket packet = new PlayerActionPacket();
-        packet.setEntityRuntimeID(VarInts.readUnsignedLong(buffer));
-        int action = VarInts.readInt(buffer);
-        packet.setActionType(actions.inverse().get(action));
+        packet.setEntityRuntimeID(buffer.readUnsignedVarLong());
+        int action = buffer.readVarInt();
+        packet.setActionType(this.actions.inverse().get(action));
         if(packet.getActionType() == null) ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
-        packet.setVector3(helper.readBlockVector(buffer));
-        packet.setFace(VarInts.readInt(buffer));
+        packet.setVector3(buffer.readVector3i());
+        packet.setFace(buffer.readVarInt());
         return packet;
     }
 }

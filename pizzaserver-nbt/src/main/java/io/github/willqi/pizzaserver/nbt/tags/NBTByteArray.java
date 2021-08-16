@@ -29,7 +29,7 @@ public class NBTByteArray extends NBTTag {
 
     @Override
     public int hashCode() {
-        return 31 * Arrays.hashCode(this.data) * this.name.hashCode();
+        return (31 * Arrays.hashCode(this.data)) + (31 * this.name.hashCode());
     }
 
     @Override

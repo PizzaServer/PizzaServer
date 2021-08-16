@@ -65,7 +65,7 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer, I
 
     @Override
     public int hashCode() {
-        return 31 * Arrays.hashCode(this.list) * this.getName().hashCode();
+        return (31 * Arrays.hashCode(this.list)) + (31 * this.getName().hashCode());
     }
 
     @Override

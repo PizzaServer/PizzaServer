@@ -1,64 +1,62 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
-import io.netty.buffer.ByteBuf;
 
 public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartGamePacket> {
 
     @Override
-    public void encode(StartGamePacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeLong(buffer, packet.getEntityId());
-        VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
-        VarInts.writeInt(buffer, packet.getPlayerGamemode().ordinal());
+    public void encode(StartGamePacket packet, BasePacketBuffer buffer) {
+        buffer.writeVarLong(packet.getEntityId());
+        buffer.writeUnsignedVarLong(packet.getRuntimeEntityId());
+        buffer.writeVarInt(packet.getPlayerGamemode().ordinal());
 
-        helper.writeVector3(buffer, packet.getPlayerSpawn());
+        buffer.writeVector3(packet.getPlayerSpawn());
 
         buffer.writeFloatLE(packet.getPlayerRotation().getX());
         buffer.writeFloatLE(packet.getPlayerRotation().getY());
 
-        VarInts.writeInt(buffer, packet.getSeed());
+        buffer.writeVarInt(packet.getSeed());
         buffer.writeShortLE(packet.getBiomeType());
-        helper.writeString(packet.getCustomBiomeName(), buffer);
-        VarInts.writeInt(buffer, packet.getDimension().ordinal());
-        VarInts.writeInt(buffer, packet.getWorldType().ordinal());
-        VarInts.writeInt(buffer, packet.getDefaultGamemode().ordinal());
-        VarInts.writeInt(buffer, packet.getDifficulty().ordinal());
+        buffer.writeString(packet.getCustomBiomeName());
+        buffer.writeVarInt(packet.getDimension().ordinal());
+        buffer.writeVarInt(packet.getWorldType().ordinal());
+        buffer.writeVarInt(packet.getDefaultGamemode().ordinal());
+        buffer.writeVarInt(packet.getDifficulty().ordinal());
 
-        helper.writeBlockVector(buffer, packet.getWorldSpawn());
+        buffer.writeVector3i(packet.getWorldSpawn());
 
         buffer.writeBoolean(!packet.areAchievementsEnabled());
-        VarInts.writeInt(buffer, packet.getWorldTime());
-        VarInts.writeInt(buffer, packet.getServerOrigin().ordinal());
+        buffer.writeVarInt(packet.getWorldTime());
+        buffer.writeVarInt(packet.getServerOrigin().ordinal());
         buffer.writeBoolean(packet.areEduFeaturedEnabled());
-        helper.writeString((packet.getEduUuid() != null ? packet.getEduUuid() : "").toString(), buffer);
+        buffer.writeString((packet.getEduUuid() != null ? packet.getEduUuid() : "").toString());
         buffer.writeFloatLE(packet.getRainLevel());
         buffer.writeFloatLE(packet.getLightingLevel());
         buffer.writeBoolean(packet.hasPlatformLockedContent());
         buffer.writeBoolean(packet.isMultiplayer());
         buffer.writeBoolean(packet.broadcastingToLan());
-        VarInts.writeInt(buffer, packet.getXboxLiveBroadcastMode());
-        VarInts.writeInt(buffer, packet.getPlatformBroadcastMode());
+        buffer.writeVarInt(packet.getXboxLiveBroadcastMode());
+        buffer.writeVarInt(packet.getPlatformBroadcastMode());
         buffer.writeBoolean(packet.areCommandsEnabled());
         buffer.writeBoolean(packet.areResourcePacksRequired());
 
         // Game rules
-        VarInts.writeUnsignedInt(buffer, packet.getGameRules().size());
+        buffer.writeUnsignedVarInt(packet.getGameRules().size());
         for (GameRule<?> rule : packet.getGameRules()) {
-            helper.writeString(rule.getId().getName(), buffer);
-            VarInts.writeUnsignedInt(buffer, rule.getType().getId());
+            buffer.writeString(rule.getId().getName());
+            buffer.writeUnsignedVarInt(rule.getType().getId());
             switch (rule.getType()) {
                 case BOOLEAN:
                     buffer.writeBoolean(((GameRule<Boolean>)rule).getValue());
                     break;
                 case INT:
-                    VarInts.writeUnsignedInt(buffer, ((GameRule<Integer>)rule).getValue());
+                    buffer.writeUnsignedVarInt(((GameRule<Integer>)rule).getValue());
                     break;
                 case FLOAT:
                     buffer.writeFloatLE(((GameRule<Float>)rule).getValue());
@@ -68,11 +66,11 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
             }
         }
 
-        helper.writeExperiments(packet.getExperiments(), buffer);
+        buffer.writeExperiments(packet.getExperiments());
         buffer.writeBoolean(packet.isExperimentsPreviouslyEnabled());
         buffer.writeBoolean(packet.isBonusChestEnabled());
         buffer.writeBoolean(packet.isBonusMapEnabled());
-        VarInts.writeInt(buffer, packet.getPlayerPermissionLevel().ordinal());
+        buffer.writeVarInt(packet.getPlayerPermissionLevel().ordinal());
         buffer.writeIntLE(packet.getChunkTickRange());
         buffer.writeBoolean(packet.hasLockedBehaviorPacks());
         buffer.writeBoolean(packet.hasLockedResourcePacks());
@@ -81,7 +79,7 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
         buffer.writeBoolean(packet.isFromWorldTemplate());
         buffer.writeBoolean(packet.isWorldTemplateOptionsLocked());
         buffer.writeBoolean(packet.isSpawningOnlyV1VillagersAllowed());
-        helper.writeString(packet.getGameVersion(), buffer);
+        buffer.writeString(packet.getGameVersion());
         buffer.writeIntLE(packet.getLimitedWorldWidth());
         buffer.writeIntLE(packet.getLimitedWorldHeight());
         buffer.writeBoolean(packet.isNetherType());
@@ -90,35 +88,34 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
             buffer.writeBoolean(true);
         }
 
-        helper.writeString(packet.getWorldId(), buffer);
-        helper.writeString(packet.getServerName(), buffer);
-        helper.writeString(packet.getPremiumWorldTemplateId(), buffer);
+        buffer.writeString(packet.getWorldId());
+        buffer.writeString(packet.getServerName());
+        buffer.writeString(packet.getPremiumWorldTemplateId());
         buffer.writeBoolean(packet.isTrial());
-        VarInts.writeInt(buffer, packet.getMovementType().ordinal());
+        buffer.writeVarInt(packet.getMovementType().ordinal());
         buffer.writeLongLE(packet.getCurrentTick());
-        VarInts.writeInt(buffer, packet.getEnchantmentSeed());
+        buffer.writeVarInt(packet.getEnchantmentSeed());
 
         // custom blocks
-        VarInts.writeUnsignedInt(buffer, packet.getBlockProperties().size());
+        buffer.writeUnsignedVarInt(packet.getBlockProperties().size());
         for (BaseBlockType blockType : packet.getBlockProperties()) {
-            this.writeBlockProperty(blockType, buffer, helper);
+            this.writeBlockProperty(blockType, buffer);
         }
 
         // Item states
-        VarInts.writeUnsignedInt(buffer, packet.getItemStates().size());
+        buffer.writeUnsignedVarInt(packet.getItemStates().size());
         for (ItemState itemState : packet.getItemStates()) {
-            helper.writeString(itemState.getItemId(), buffer);
+            buffer.writeString(itemState.getItemId());
             buffer.writeShortLE(itemState.getId());
             buffer.writeBoolean(itemState.isComponentBased());
         }
 
-        helper.writeString(packet.getMultiplayerId().toString(), buffer);
+        buffer.writeString(packet.getMultiplayerId().toString());
         buffer.writeBoolean(packet.isServerAuthoritativeInventory());
-
     }
 
-    protected void writeBlockProperty(BaseBlockType blockType, ByteBuf buffer, BasePacketHelper helper) {
-        helper.writeString(blockType.getBlockId(), buffer);
+    protected void writeBlockProperty(BaseBlockType blockType, BasePacketBuffer buffer) {
+        buffer.writeString(blockType.getBlockId());
 
         NBTCompound blockContainer = new NBTCompound();
 
@@ -136,7 +133,7 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
                 .setFloat("z", blockType.getRotation()[2]));
 
         blockContainer.put("components", components);
-        helper.writeNBTCompound(blockContainer, buffer);
+        buffer.writeNBTCompound(blockContainer);
     }
 
 }

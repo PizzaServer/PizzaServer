@@ -1,12 +1,10 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateAttributesPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
-import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,22 +26,22 @@ public class V419UpdateAttributesPacketHandler extends BaseProtocolPacketHandler
     };
 
     @Override
-    public void encode(UpdateAttributesPacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeUnsignedLong(buffer, packet.getRuntimeEntityId());
+    public void encode(UpdateAttributesPacket packet, BasePacketBuffer buffer) {
+        buffer.writeUnsignedVarLong(packet.getRuntimeEntityId());
 
         Set<Attribute> validAttributes = packet.getAttributes()
                 .stream().filter(attribute -> this.attributeIds.containsKey(attribute.getType()))
                 .collect(Collectors.toSet());
 
-        VarInts.writeUnsignedInt(buffer, validAttributes.size());
+        buffer.writeUnsignedVarInt(validAttributes.size());
         for (Attribute attribute : validAttributes) {
             buffer.writeFloatLE(attribute.getMinimumValue());
             buffer.writeFloatLE(attribute.getMaximumValue());
             buffer.writeFloatLE(attribute.getCurrentValue());
             buffer.writeFloatLE(attribute.getDefaultValue());
-            helper.writeString(this.attributeIds.get(attribute.getType()), buffer);
+            buffer.writeString(this.attributeIds.get(attribute.getType()));
         }
-        VarInts.writeUnsignedLong(buffer, packet.getTick());
+        buffer.writeUnsignedVarLong(packet.getTick());
     }
 
 }

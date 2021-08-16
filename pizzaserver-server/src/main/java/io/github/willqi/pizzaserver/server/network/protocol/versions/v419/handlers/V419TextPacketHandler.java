@@ -2,11 +2,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +30,7 @@ public class V419TextPacketHandler extends BaseProtocolPacketHandler<TextPacket>
     });
 
     @Override
-    public TextPacket decode(ByteBuf buffer, BasePacketHelper helper) {
+    public TextPacket decode(BasePacketBuffer buffer) {
         TextPacket textPacket = new TextPacket();
 
         byte textTypeByte = buffer.readByte();
@@ -46,31 +44,31 @@ public class V419TextPacketHandler extends BaseProtocolPacketHandler<TextPacket>
                 textPacket.getType() == TextPacket.TextType.WHISPER ||
                 textPacket.getType() == TextPacket.TextType.ANNOUNCEMENT;
         if (hasSourceName) {
-            textPacket.setSourceName(helper.readString(buffer));
+            textPacket.setSourceName(buffer.readString());
         }
 
-        textPacket.setMessage(helper.readString(buffer));
+        textPacket.setMessage(buffer.readString());
 
         boolean hasParameters = textPacket.getType() == TextPacket.TextType.TRANSLATION ||
                 textPacket.getType() == TextPacket.TextType.POPUP ||
                 textPacket.getType() == TextPacket.TextType.JUKEBOX_POPUP;
         if (hasParameters) {
-            int parametersSize = VarInts.readUnsignedInt(buffer);
+            int parametersSize = buffer.readUnsignedVarInt();
             List<String> parameters = new ArrayList<>(parametersSize);
             for (int i = 0; i < parametersSize; i++) {
-                parameters.add(helper.readString(buffer));
+                parameters.add(buffer.readString());
             }
             textPacket.setParameters(parameters);
         }
 
-        textPacket.setXuid(helper.readString(buffer));
-        textPacket.setPlatformChatId(helper.readString(buffer));
+        textPacket.setXuid(buffer.readString());
+        textPacket.setPlatformChatId(buffer.readString());
 
         return textPacket;
     }
 
     @Override
-    public void encode(TextPacket packet, ByteBuf buffer, BasePacketHelper helper) {
+    public void encode(TextPacket packet, BasePacketBuffer buffer) {
         if (!this.typeValues.containsKey(packet.getType())) {
             packet.setType(TextPacket.TextType.RAW);
         }
@@ -82,23 +80,23 @@ public class V419TextPacketHandler extends BaseProtocolPacketHandler<TextPacket>
                 packet.getType() == TextPacket.TextType.WHISPER ||
                 packet.getType() == TextPacket.TextType.ANNOUNCEMENT;
         if (hasSourceName) {
-            helper.writeString(packet.getSourceName(), buffer);
+            buffer.writeString(packet.getSourceName());
         }
 
-        helper.writeString(packet.getMessage(), buffer);
+        buffer.writeString(packet.getMessage());
 
         boolean hasParameters = packet.getType() == TextPacket.TextType.TRANSLATION ||
                 packet.getType() == TextPacket.TextType.POPUP ||
                 packet.getType() == TextPacket.TextType.JUKEBOX_POPUP;
         if (hasParameters) {
-            VarInts.writeUnsignedInt(buffer, packet.getParameters().size());
+            buffer.writeUnsignedVarInt(packet.getParameters().size());
             for (String parameter : packet.getParameters()) {
-                helper.writeString(parameter, buffer);
+                buffer.writeString(parameter);
             }
         }
 
-        helper.writeString(packet.getXuid(), buffer);
-        helper.writeString(packet.getPlatformChatId(), buffer);
+        buffer.writeString(packet.getXuid());
+        buffer.writeString(packet.getPlatformChatId());
     }
 
 }
