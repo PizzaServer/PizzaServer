@@ -35,7 +35,7 @@ public class NBTIntegerArray extends NBTTag implements Iterable<Integer> {
 
     @Override
     public int hashCode() {
-        return 31 * Arrays.hashCode(this.data) * this.name.hashCode();
+        return (31 * Arrays.hashCode(this.data)) + (31 * this.name.hashCode());
     }
 
     @Override

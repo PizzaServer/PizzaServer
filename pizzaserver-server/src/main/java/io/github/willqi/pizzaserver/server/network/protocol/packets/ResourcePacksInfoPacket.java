@@ -14,6 +14,7 @@ public class ResourcePacksInfoPacket extends BaseBedrockPacket {
     public static final int ID = 0x06;
 
     private boolean forcedToAccept;
+    private boolean forcingServerPacks;
     private boolean scriptingEnabled;
     private Set<ResourcePack> resourcePacks = new HashSet<>();
     private Set<ResourcePack> behaviorPacks = new HashSet<>();
@@ -28,6 +29,14 @@ public class ResourcePacksInfoPacket extends BaseBedrockPacket {
 
     public void setForcedToAccept(boolean forced) {
         this.forcedToAccept = forced;
+    }
+
+    public boolean isForcingServerPacks() {
+        return this.forcingServerPacks;
+    }
+
+    public void setForcingServerPacks(boolean forced) {
+        this.forcingServerPacks = forced;
     }
 
     public boolean isScriptingEnabled() {

@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.*;
 
@@ -36,11 +35,6 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(WorldSoundEventPacket.ID, new V419WorldSoundEventPacketHandler())
             .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler())
             .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler());
-    }
-
-    @Override
-    public BasePacketHelper getPacketHelper() {
-        return V419PacketHelper.INSTANCE;
     }
 
 }

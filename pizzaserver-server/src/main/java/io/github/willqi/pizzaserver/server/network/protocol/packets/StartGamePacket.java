@@ -97,6 +97,8 @@ public class StartGamePacket extends BaseBedrockPacket {
     private short biomeType;            // TODO: convert to class
     private String customBiomeName = "";
 
+    private String serverEngine = "";
+
 
     public StartGamePacket() {
         super(ID);
@@ -582,5 +584,13 @@ public class StartGamePacket extends BaseBedrockPacket {
         this.customBiomeName = customBiomeName;
     }
 
+
+    public String getServerEngine() {
+        return this.serverEngine;
+    }
+
+    public void setServerEngine(String engine) {
+        this.serverEngine = engine;
+    }
 
 }

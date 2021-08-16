@@ -26,6 +26,4 @@ public abstract class BasePacketRegistry {
         return this.handlers.getOrDefault(packetId, null);
     }
 
-    public abstract BasePacketHelper getPacketHelper();
-
 }

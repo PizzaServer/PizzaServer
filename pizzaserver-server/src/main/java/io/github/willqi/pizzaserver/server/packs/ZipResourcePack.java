@@ -48,6 +48,11 @@ public class ZipResourcePack implements ResourcePack {
     }
 
     @Override
+    public boolean isRayTracingEnabled() {
+        return false;   // TODO: Where is this stored in the resource pack?
+    }
+
+    @Override
     public long getDataLength() {
         return this.dataLength;
     }

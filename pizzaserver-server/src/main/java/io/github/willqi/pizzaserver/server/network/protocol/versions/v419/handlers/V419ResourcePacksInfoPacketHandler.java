@@ -1,33 +1,46 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePacksInfoPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.packs.ResourcePack;
-import io.netty.buffer.ByteBuf;
 
 import java.util.Collection;
 
 public class V419ResourcePacksInfoPacketHandler extends BaseProtocolPacketHandler<ResourcePacksInfoPacket> {
 
     @Override
-    public void encode(ResourcePacksInfoPacket packet, ByteBuf buffer, BasePacketHelper helper) {
+    public void encode(ResourcePacksInfoPacket packet, BasePacketBuffer buffer) {
         buffer.writeBoolean(packet.isForcedToAccept());
         buffer.writeBoolean(packet.isScriptingEnabled());
-        writePacks(packet.getBehaviorPacks(), buffer, helper);
-        writePacks(packet.getResourcePacks(), buffer, helper);
+        this.writeBehaviourPacks(packet.getBehaviorPacks(), buffer);
+        this.writeResourcePacks(packet.getResourcePacks(), buffer);
     }
 
-    private static void writePacks(Collection<ResourcePack> packs, ByteBuf buffer, BasePacketHelper helper) {
+    protected void writeResourcePacks(Collection<ResourcePack> packs, BasePacketBuffer buffer) {
         buffer.writeShortLE(packs.size());
         for (ResourcePack pack : packs) {
-            helper.writeString(pack.getUuid().toString(), buffer);
-            helper.writeString(pack.getVersion(), buffer);
+            buffer.writeString(pack.getUuid().toString());
+            buffer.writeString(pack.getVersion());
             buffer.writeLongLE(pack.getDataLength());
-            helper.writeString("", buffer);
-            helper.writeString("", buffer);
-            helper.writeString("", buffer);
+            buffer.writeString("");
+            buffer.writeString("");
+            buffer.writeString("");
             buffer.writeBoolean(false);
         }
     }
+
+    protected void writeBehaviourPacks(Collection<ResourcePack> packs, BasePacketBuffer buffer) {
+        buffer.writeShortLE(packs.size());
+        for (ResourcePack pack : packs) {
+            buffer.writeString(pack.getUuid().toString());
+            buffer.writeString(pack.getVersion());
+            buffer.writeLongLE(pack.getDataLength());
+            buffer.writeString("");
+            buffer.writeString("");
+            buffer.writeString("");
+            buffer.writeBoolean(false);
+        }
+    }
+
 }

@@ -22,6 +22,8 @@ public interface ResourcePack {
      */
     String getVersion();
 
+    boolean isRayTracingEnabled();
+
     /**
      * Retrieve the total length of the data pack contents
      * @return total length of contents
