@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecra
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.V419MinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.V422MinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v428.V428MinecraftVersion;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.v431.V431MinecraftVersion;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -27,6 +28,7 @@ public class ServerProtocol {
         loadVersion(V419MinecraftVersion.PROTOCOL, V419MinecraftVersion.class);
         loadVersion(V422MinecraftVersion.PROTOCOL, V422MinecraftVersion.class);
         loadVersion(V428MinecraftVersion.PROTOCOL, V428MinecraftVersion.class);
+        loadVersion(V431MinecraftVersion.PROTOCOL, V431MinecraftVersion.class);
     }
 
     private static void loadVersion(int protocol, Class<? extends BaseMinecraftVersion> minecraftVersionClazz) {
