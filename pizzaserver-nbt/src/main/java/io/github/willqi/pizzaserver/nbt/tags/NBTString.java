@@ -27,7 +27,7 @@ public class NBTString extends NBTTag {
 
     @Override
     public int hashCode() {
-        return 31 * this.value.hashCode() * this.name.hashCode();
+        return (31 * this.value.hashCode()) + (31 * this.name.hashCode());
     }
 
     @Override

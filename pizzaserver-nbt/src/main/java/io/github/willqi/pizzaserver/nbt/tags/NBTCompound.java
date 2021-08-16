@@ -178,7 +178,7 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
 
     @Override
     public int hashCode() {
-        return 31 * this.name.hashCode();
+        return (31 * this.name.hashCode()) + (31 * this.data.hashCode());
     }
 
     @Override
