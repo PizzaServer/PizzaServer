@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.api.item.ItemToolType;
+import io.github.willqi.pizzaserver.api.item.data.ItemToolType;
 
 import java.util.Collections;
 import java.util.HashMap;
