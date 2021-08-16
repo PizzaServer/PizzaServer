@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
@@ -84,7 +85,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             }
 
             // Add custom block states
-            for (BaseBlockType blockType : this.getServer().getBlockRegistry().getCustomTypes()) {
+            for (BaseBlockType blockType : BlockRegistry.getCustomTypes()) {
                 blockStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
             }
 

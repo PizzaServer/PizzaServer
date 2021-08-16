@@ -144,17 +144,16 @@ public class ImplChunk implements Chunk {
 
             // Construct new block as none is cached
             BlockPalette.Entry paletteEntry = this.subChunks.get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
-            BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
             Block block;
-            if (blockRegistry.hasBlockType(paletteEntry.getId())) {
+            if (BlockRegistry.hasBlockType(paletteEntry.getId())) {
                 // Block id is registered
-                BaseBlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
+                BaseBlockType blockType = BlockRegistry.getBlockType(paletteEntry.getId());
                 block = new Block(blockType);
                 block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
             } else {
                 // The block id is not registered
                 this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
-                BaseBlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
+                BaseBlockType blockType = BlockRegistry.getBlockType(BlockTypeID.AIR);
                 block = new Block(blockType);
             }
             subChunkCache.put(blockIndex, block);

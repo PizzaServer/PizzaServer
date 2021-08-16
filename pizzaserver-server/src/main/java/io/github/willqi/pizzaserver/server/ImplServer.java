@@ -22,7 +22,6 @@ import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.ImplLogger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
 import io.github.willqi.pizzaserver.server.level.ImplLevelManager;
-import io.github.willqi.pizzaserver.server.level.world.blocks.ImplBlockRegistry;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -43,8 +42,6 @@ public class ImplServer implements Server {
     private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
     private final ImplLevelManager levelManager = new ImplLevelManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
-
-    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
 
     private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final ImplScheduler scheduler = new ImplScheduler(this, 1);
@@ -286,11 +283,6 @@ public class ImplServer implements Server {
     @Override
     public EventManager getEventManager() {
         return this.eventManager;
-    }
-
-    @Override
-    public BlockRegistry getBlockRegistry() {
-        return this.blockRegistry;
     }
 
     @Override

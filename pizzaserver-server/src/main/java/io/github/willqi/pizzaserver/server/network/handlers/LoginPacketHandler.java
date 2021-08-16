@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
@@ -298,7 +299,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
         startGamePacket.setServerOrigin(ServerOrigin.NONE);
         startGamePacket.setExperiments(Collections.singleton(Experiment.DATA_DRIVEN_ITEMS));
-        startGamePacket.setBlockProperties(this.server.getBlockRegistry().getCustomTypes());
+        startGamePacket.setBlockProperties(BlockRegistry.getCustomTypes());
         startGamePacket.setItemStates(this.player.getVersion().getItemStates());
 
         // World
