@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.V419MinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.V422MinecraftVersion;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.v428.V428MinecraftVersion;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,8 +13,8 @@ import java.util.Map;
 
 public class ServerProtocol {
 
-    public static final String GAME_VERSION = "1.16.200";
-    public static final int LATEST_PROTOCOL_VERISON = V422MinecraftVersion.PROTOCOL;
+    public static final String GAME_VERSION = V428MinecraftVersion.VERSION;
+    public static final int LATEST_PROTOCOL_VERISON = V428MinecraftVersion.PROTOCOL;
     public static final int LATEST_BLOCK_STATES_VERSION = 17825806;
 
     public static final Map<Integer, BaseMinecraftVersion> VERSIONS = new HashMap<>();
@@ -25,6 +26,7 @@ public class ServerProtocol {
     public static void loadVersions() {
         loadVersion(V419MinecraftVersion.PROTOCOL, V419MinecraftVersion.class);
         loadVersion(V422MinecraftVersion.PROTOCOL, V422MinecraftVersion.class);
+        loadVersion(V428MinecraftVersion.PROTOCOL, V428MinecraftVersion.class);
     }
 
     private static void loadVersion(int protocol, Class<? extends BaseMinecraftVersion> minecraftVersionClazz) {

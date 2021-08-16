@@ -1,14 +1,13 @@
-package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
+package io.github.willqi.pizzaserver.server.network.protocol.versions.v428.handlers;
 
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
-import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
+import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.V419StartGamePacketHandler;
 
-public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartGamePacket> {
+public class V428StartGamePacketHandler extends V419StartGamePacketHandler {
 
     @Override
     public void encode(StartGamePacket packet, BasePacketBuffer buffer) {
@@ -92,7 +91,9 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
         buffer.writeString(packet.getServerName());
         buffer.writeString(packet.getPremiumWorldTemplateId());
         buffer.writeBoolean(packet.isTrial());
-        buffer.writeVarInt(packet.getMovementType().ordinal());
+        buffer.writeVarInt(packet.getMovementType().ordinal());             // New in v428
+        buffer.writeVarInt(packet.getMovementRewindSize());                 // New in v428
+        buffer.writeBoolean(packet.isServerAuthoritativeBlockBreaking());   // New in v428
         buffer.writeLongLE(packet.getCurrentTick());
         buffer.writeVarInt(packet.getEnchantmentSeed());
 
@@ -112,28 +113,6 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
 
         buffer.writeString(packet.getMultiplayerId().toString());
         buffer.writeBoolean(packet.isServerAuthoritativeInventory());
-    }
-
-    protected void writeBlockProperty(BaseBlockType blockType, BasePacketBuffer buffer) {
-        buffer.writeString(blockType.getBlockId());
-
-        NBTCompound blockContainer = new NBTCompound();
-
-        NBTCompound components = new NBTCompound();
-        components.put("minecraft:block_light_absorption", new NBTCompound().setInteger("value", blockType.getLightAbsorption()));
-        components.put("minecraft:block_light_emission", new NBTCompound().setFloat("emission", blockType.getLightEmission()));
-        components.put("minecraft:destroy_time", new NBTCompound().setFloat("value", blockType.getToughness()));
-        components.put("minecraft:friction", new NBTCompound().setFloat("value", blockType.getFriction()));
-        if (blockType.getGeometry() != null) {
-            components.put("minecraft:geometry", new NBTCompound().setString("value", blockType.getGeometry()));
-        }
-        components.put("minecraft:rotation", new NBTCompound()
-                .setFloat("x", blockType.getRotation()[0])
-                .setFloat("y", blockType.getRotation()[1])
-                .setFloat("z", blockType.getRotation()[2]));
-
-        blockContainer.put("components", components);
-        buffer.writeNBTCompound(blockContainer);
     }
 
 }
