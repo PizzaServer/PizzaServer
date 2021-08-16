@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.server.level.world.blocks.VanillaBlocksLoader;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -84,6 +85,8 @@ public class ImplServer implements Server {
      */
     public void boot() {
         ServerProtocol.loadVersions();
+        VanillaBlocksLoader.load();
+
         this.getResourcePackManager().loadPacks();
         this.setTargetTps(20);
 
