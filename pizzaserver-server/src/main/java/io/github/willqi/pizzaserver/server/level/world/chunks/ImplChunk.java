@@ -128,6 +128,7 @@ public class ImplChunk implements Chunk {
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
         int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
+        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
@@ -156,6 +157,8 @@ public class ImplChunk implements Chunk {
                 BaseBlockType blockType = BlockRegistry.getBlockType(BlockTypeID.AIR);
                 block = new Block(blockType);
             }
+            block.setLocation(this.getWorld(), blockCoordinates);
+
             subChunkCache.put(blockIndex, block);
             return block;
         } finally {
@@ -188,6 +191,9 @@ public class ImplChunk implements Chunk {
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
         int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
+        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
+
+        block.setLocation(this.getWorld(), blockCoordinates);
 
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
@@ -208,7 +214,7 @@ public class ImplChunk implements Chunk {
             // Send update block packet
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.setBlock(block);
-            updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
+            updateBlockPacket.setBlockCoordinates(blockCoordinates);
             updateBlockPacket.setLayer(0);
             updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
             for (Player viewer : this.getViewers()) {
