@@ -1,6 +1,10 @@
 package io.github.willqi.pizzaserver.api.item.types;
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+
+import java.util.Collections;
+import java.util.Set;
 
 public abstract class BaseItemType {
 
@@ -13,6 +17,15 @@ public abstract class BaseItemType {
      * @return
      */
     public abstract String getIconName();
+
+    /**
+     * Get the only blocks that this item can break
+     * If empty, this item is allowed to mine any block
+     * @return only blocks this item can break
+     */
+    public Set<BaseBlockType> getOnlyBlocksCanBreak() {
+        return Collections.emptySet();
+    }
 
     /**
      * Create an {@link ItemStack} of this item type

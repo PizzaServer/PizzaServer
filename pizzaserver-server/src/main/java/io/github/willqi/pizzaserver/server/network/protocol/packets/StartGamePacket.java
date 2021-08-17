@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
@@ -591,6 +590,34 @@ public class StartGamePacket extends BaseBedrockPacket {
 
     public void setServerEngine(String engine) {
         this.serverEngine = engine;
+    }
+
+
+    public static class ItemState {
+
+        private final String itemId;
+        private final int runtimeId;
+        private final boolean componentBased;
+
+
+        public ItemState(String itemId, int runtimeId, boolean componentBased) {
+            this.itemId = itemId;
+            this.runtimeId = runtimeId;
+            this.componentBased = componentBased;
+        }
+
+        public String getItemId() {
+            return this.itemId;
+        }
+
+        public int getRuntimeId() {
+            return this.runtimeId;
+        }
+
+        public boolean isComponentBased() {
+            return false;
+        }
+
     }
 
 }

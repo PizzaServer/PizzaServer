@@ -2,7 +2,6 @@ package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
@@ -64,7 +63,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public MinecraftVersion getVersion() {
+    public BaseMinecraftVersion getVersion() {
         return this.version;
     }
 

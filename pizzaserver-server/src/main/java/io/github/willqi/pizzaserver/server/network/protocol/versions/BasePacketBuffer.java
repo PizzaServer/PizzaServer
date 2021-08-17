@@ -6,8 +6,8 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.server.item.Item;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
+import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.ByteProcessor;
@@ -885,7 +885,7 @@ public class BasePacketBuffer extends ByteBuf {
         return this;
     }
 
-    public BasePacketBuffer writeItem(Item item) {
+    public BasePacketBuffer writeItem(NetworkItemStackData data) {
         throw new UnsupportedOperationException("This operation is not supported.");
     }
 

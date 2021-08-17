@@ -248,6 +248,15 @@ public abstract class BaseBlockType {
     }
 
     /**
+     * Retrieve the blocks that this block can be placed on
+     * If empty, this block can be placed on any block
+     * @return all the block types that this block can be placed on
+     */
+    public Set<BaseBlockType> getPlaceableOnlyOn() {
+        return Collections.emptySet();
+    }
+
+    /**
      * Called when the right click button is used against this block
      * @param player the player who interacted with the block
      * @param block the block interacted with

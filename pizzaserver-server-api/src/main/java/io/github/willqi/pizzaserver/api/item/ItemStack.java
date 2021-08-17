@@ -1,24 +1,26 @@
 package io.github.willqi.pizzaserver.api.item;
 
 import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
+import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
 public class ItemStack {
 
     private final BaseItemType itemType;
-    private int amount;
+    private int count;
     private int damage;
+    private NBTCompound compound;
 
     public ItemStack(BaseItemType itemType) {
         this(itemType, 1);
     }
 
-    public ItemStack(BaseItemType itemType, int amount) {
-        this(itemType, amount, 0);
+    public ItemStack(BaseItemType itemType, int count) {
+        this(itemType, count, 0);
     }
 
-    public ItemStack(BaseItemType itemType, int amount, int damage) {
+    public ItemStack(BaseItemType itemType, int count, int damage) {
         this.itemType = itemType;
-        this.amount = amount;
+        this.count = count;
         this.damage = damage;
     }
 
@@ -26,12 +28,12 @@ public class ItemStack {
         return this.itemType;
     }
 
-    public int getAmount() {
-        return this.amount;
+    public int getCount() {
+        return this.count;
     }
 
-    public void setAmount(int stackSize) {
-        this.amount = stackSize;
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public int getDamage() {
@@ -40,6 +42,14 @@ public class ItemStack {
 
     public void setDamage(int damage) {
         this.damage = damage;
+    }
+
+    public NBTCompound getCompoundTag() {
+        return this.compound;
+    }
+
+    public void setCompoundTag(NBTCompound compound) {
+        this.compound = compound;
     }
 
 }

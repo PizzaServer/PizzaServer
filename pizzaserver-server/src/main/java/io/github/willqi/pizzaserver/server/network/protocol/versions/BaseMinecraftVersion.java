@@ -2,18 +2,20 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +31,9 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     private NBTCompound biomesDefinitions;
     private final Map<Tuple<String, NBTCompound>, Integer> blockStates = new HashMap<>();
-    private Set<io.github.willqi.pizzaserver.server.network.protocol.data.ItemState> itemStates;
+
+    private final Map<String, Integer> itemRuntimeIds = new HashMap<>();
+    private final Set<StartGamePacket.ItemState> itemStates = new HashSet<>();
 
 
     public BaseMinecraftVersion(ImplServer server) throws IOException {
@@ -113,16 +117,24 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         try (Reader itemStatesReader = new InputStreamReader(this.getProtocolResourceStream("runtime_item_states.json"))) {
             JsonArray jsonItemStates = GSON.fromJson(itemStatesReader, JsonArray.class);
 
-            Set<io.github.willqi.pizzaserver.server.network.protocol.data.ItemState> itemStates = new HashSet<>(jsonItemStates.size());
-            for (int i = 0; i < jsonItemStates.size(); i++) {
-                JsonObject jsonItemState = jsonItemStates.get(i).getAsJsonObject();
+            int customIdStart = 0;  // Custom items can be assigned any id as long as it does not conflict with an existing item
+            for (JsonElement element : jsonItemStates) {
+                JsonObject itemState = element.getAsJsonObject();
 
-                itemStates.add(new io.github.willqi.pizzaserver.server.network.protocol.data.ItemState(
-                        jsonItemState.get("name").getAsString(),
-                        jsonItemState.get("id").getAsInt(),
-                        false));
+                String itemId = itemState.get("name").getAsString();
+                int runtimeId = itemState.get("id").getAsInt();
+                customIdStart = Math.max(customIdStart, runtimeId + 1);
+
+                this.itemRuntimeIds.put(itemId, runtimeId);
+                this.itemStates.add(new StartGamePacket.ItemState(itemId, runtimeId, false));
             }
-            this.itemStates = itemStates;
+            this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
+
+            for (BaseItemType itemType : ItemRegistry.getCustomTypes()) {
+                int runtimeId = customIdStart++;
+                this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
+                this.itemStates.add(new StartGamePacket.ItemState(itemType.getItemId(), runtimeId, true));
+            }
         }
     }
 
@@ -139,14 +151,20 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         }
     }
 
-    @Override
-    public Set<ItemState> getItemStates() {
-        return Collections.unmodifiableSet(this.itemStates);
+    public int getItemRuntimeId(String itemName) {
+        try {
+            return this.itemRuntimeIds.get(itemName);
+        } catch (NullPointerException exception) {
+            throw new NullPointerException("Failed to find item runtime id for " + itemName);
+        }
     }
 
-    @Override
     public NBTCompound getBiomeDefinitions() {
         return this.biomesDefinitions;
+    }
+
+    public Set<StartGamePacket.ItemState> getItemStates() {
+        return Collections.unmodifiableSet(this.itemStates);
     }
 
 }
