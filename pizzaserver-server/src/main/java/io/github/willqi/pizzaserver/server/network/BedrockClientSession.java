@@ -16,6 +16,7 @@ import io.netty.buffer.ByteBufAllocator;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BedrockClientSession extends Thread {
@@ -26,7 +27,7 @@ public class BedrockClientSession extends Thread {
 
     private BaseMinecraftVersion version;
     private volatile ImplPlayer player = null;
-    private volatile BaseBedrockPacketHandler handler = null;
+    private final Set<BaseBedrockPacketHandler> handlers = ConcurrentHashMap.newKeySet();
 
     private final Queue<BaseBedrockPacket> queuedIncomingPackets = new ConcurrentLinkedQueue<>();
     private final Queue<BaseBedrockPacket> queuedOutgoingPackets = new ConcurrentLinkedQueue<>();
@@ -56,8 +57,12 @@ public class BedrockClientSession extends Thread {
         this.player = player;
     }
 
-    public void setPacketHandler(BaseBedrockPacketHandler packetHandler) {
-        this.handler = packetHandler;
+    public void addPacketHandler(BaseBedrockPacketHandler packetHandler) {
+        this.handlers.add(packetHandler);
+    }
+
+    public void removePacketHandler(BaseBedrockPacketHandler packetHandler) {
+        this.handlers.remove(packetHandler);
     }
 
     public void disconnect() {
@@ -92,7 +97,7 @@ public class BedrockClientSession extends Thread {
 
             // Serialize the BedrockPacket to the minecraftPacketBuffer
             BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
-            if (this.handler == null) {
+            if (handler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
                 return;
             }
@@ -120,15 +125,18 @@ public class BedrockClientSession extends Thread {
     }
 
     private void processIncomingPackets() {
-        if (this.handler != null) {
-            while (this.queuedIncomingPackets.peek() != null) {
-                BaseBedrockPacket packet = this.queuedIncomingPackets.poll();
-                this.handler.onPacket(packet);
+        for (BaseBedrockPacketHandler handler : this.handlers) {
+
+        }
+        while (this.queuedIncomingPackets.peek() != null) {
+            BaseBedrockPacket packet = this.queuedIncomingPackets.poll();
+            for (BaseBedrockPacketHandler handler : this.handlers) {
+                handler.onPacket(packet);
 
                 // Now we call the specific packet handler
                 try {
-                    Method method = this.handler.getClass().getMethod("onPacket", packet.getClass());
-                    method.invoke(this.handler, packet);
+                    Method method = handler.getClass().getMethod("onPacket", packet.getClass());
+                    method.invoke(handler, packet);
                 } catch (NoSuchMethodException exception) {
                     this.server.getPizzaServer().getLogger().error("Missing onPacket callback for " + packet.getPacketId(), exception);
                 } catch (IllegalAccessException | InvocationTargetException exception) {
