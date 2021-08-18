@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -122,8 +124,20 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void setSneaking(boolean sneaking) {
-        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
-        this.setMetaData(this.getMetaData());
+        boolean isCurrentlySneaking = this.isSneaking();
+        boolean updateSneakingData = false;
+        if (sneaking && !isCurrentlySneaking) {
+            PlayerStartSneakingEvent event = new PlayerStartSneakingEvent(this);
+            this.getServer().getEventManager().call(event);
+        } else if (!sneaking && isCurrentlySneaking) {
+            PlayerStopSneakingEvent event = new PlayerStopSneakingEvent(this);
+            this.getServer().getEventManager().call(event);
+        }
+
+        if (updateSneakingData) {
+            this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
+            this.setMetaData(this.getMetaData());
+        }
     }
 
     @Override
