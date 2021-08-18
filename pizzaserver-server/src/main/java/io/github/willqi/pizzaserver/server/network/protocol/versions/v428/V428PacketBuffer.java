@@ -9,6 +9,10 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketB
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.V422PacketBuffer;
 import io.netty.buffer.ByteBuf;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class V428PacketBuffer extends V422PacketBuffer {
 
     public V428PacketBuffer() {}
@@ -84,6 +88,79 @@ public class V428PacketBuffer extends V422PacketBuffer {
         }
 
         return this;
+    }
+
+    @Override
+    public Skin readSkin() {
+        Skin.Builder skinBuilder = new Skin.Builder()
+                .setSkinId(this.readString())
+                .setPlayFabId(this.readString())        // v428 introduces playfab id
+                .setSkinResourcePatch(this.readString())
+                .setSkinWidth(this.readIntLE())
+                .setSkinHeight(this.readIntLE())
+                .setSkinData(this.readByteArray());
+
+        int animationsCount = this.readIntLE();
+        List<SkinAnimation> animations = new ArrayList<>(animationsCount);
+        for (int i = 0; i < animationsCount; i++) {
+            SkinAnimation skinAnimation = new SkinAnimation.Builder()
+                    .setSkinWidth(this.readIntLE())
+                    .setSkinHeight(this.readIntLE())
+                    .setSkinData(this.readByteArray())
+                    .setType(this.readIntLE())
+                    .setFrame((int)this.readFloatLE())
+                    .setExpressionType(this.readIntLE())
+                    .build();
+            animations.add(skinAnimation);
+        }
+        skinBuilder.setAnimations(animations);
+
+        skinBuilder.setCapeWidth(this.readIntLE())
+                .setCapeHeight(this.readIntLE())
+                .setCapeData(this.readByteArray())
+                .setGeometryData(this.readString())
+                .setAnimationData(this.readString())
+                .setPremium(this.readBoolean())
+                .setPersona(this.readBoolean())
+                .setCapeOnClassic(this.readBoolean())
+                .setCapeId(this.readString())
+                .setFullSkinId(this.readString())
+                .setArmSize(this.readString())
+                .setSkinColour(this.readString());
+
+        int piecesCount = this.readIntLE();
+        List<SkinPersonaPiece> pieces = new ArrayList<>(piecesCount);
+        for (int i = 0; i < piecesCount; i++) {
+            SkinPersonaPiece.Builder pieceBuilder = new SkinPersonaPiece.Builder()
+                    .setId(this.readString())
+                    .setType(this.readString())
+                    .setPackId(UUID.fromString(this.readString()))
+                    .setDefault(this.readBoolean());
+            String uuidStr = this.readString();
+            pieceBuilder.setProductId(uuidStr.length() == 0 ? null : UUID.fromString(uuidStr));
+
+            pieces.add(pieceBuilder.build());
+        }
+        skinBuilder.setPieces(pieces);
+
+        int tintCount = this.readIntLE();
+        List<SkinPersonaPieceTint> tints = new ArrayList<>(tintCount);
+        for (int i = 0; i < tintCount; i++) {
+            String id = this.readString();
+
+            int colourCount = this.readIntLE();
+            List<String> colours = new ArrayList<>(colourCount);
+            for (int j = 0; j < colourCount; j++) {
+                colours.add(this.readString());
+            }
+
+            SkinPersonaPieceTint tint = new SkinPersonaPieceTint(id, colours);
+            tints.add(tint);
+        }
+
+        return skinBuilder
+                .setTints(tints)
+                .build();
     }
 
 }

@@ -29,6 +29,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler())
             .register(PlayerListPacket.ID, new V419PlayerListPacketHandler())
             .register(AddPlayerPacket.ID, new V419AddPlayerPacketHandler())
+            .register(PlayerSkinPacket.ID, new V419PlayerSkinPacketHandler())
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
             .register(UpdateAttributesPacket.ID, new V419UpdateAttributesPacketHandler())
             .register(TextPacket.ID, new V419TextPacketHandler())

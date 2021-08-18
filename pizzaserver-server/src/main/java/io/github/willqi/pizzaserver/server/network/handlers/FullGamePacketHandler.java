@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerAnimationEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerSkinUpdateEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
@@ -64,6 +65,16 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
                 }
             }
 
+        }
+    }
+
+    @Override
+    public void onPacket(PlayerSkinPacket packet) {
+        PlayerSkinUpdateEvent event = new PlayerSkinUpdateEvent(this.player, packet.getSkin());
+        this.player.getServer().getEventManager().call(event);
+
+        if (!event.isCancelled()) {
+            this.player.setSkin(event.getNewSkin());
         }
     }
 

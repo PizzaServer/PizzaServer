@@ -103,8 +103,16 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void setSkin(Skin newSkin) {
-        // TODO: packet level stuff for player skin updates
         this.skin = newSkin;
+        PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
+        playerSkinPacket.setPlayerUUID(this.getUUID());
+        playerSkinPacket.setSkin(newSkin);
+        playerSkinPacket.setTrusted(newSkin.isTrusted());
+
+        for (Player viewer : this.getViewers()) {
+            viewer.sendPacket(playerSkinPacket);
+        }
+        this.sendPacket(playerSkinPacket);
     }
 
     @Override
