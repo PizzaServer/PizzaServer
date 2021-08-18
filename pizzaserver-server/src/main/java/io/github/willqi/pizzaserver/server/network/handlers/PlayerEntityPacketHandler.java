@@ -1,30 +1,23 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerAnimationEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSkinUpdateEvent;
-import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
+import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
-import io.github.willqi.pizzaserver.server.player.ImplPlayer;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
 
-public class FullGamePacketHandler extends BaseBedrockPacketHandler {
+/**
+ * Handles any packets regarding the player entity itself
+ */
+public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
-    private final ImplPlayer player;
+    private final Player player;
 
 
-    public FullGamePacketHandler(ImplPlayer player) {
+    public PlayerEntityPacketHandler(Player player) {
         this.player = player;
-    }
-
-    @Override
-    public void onPacket(RequestChunkRadiusPacket packet) {
-        this.player.setChunkRadiusRequested(packet.getChunkRadiusRequested());
-
-        ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
-        chunkRadiusUpdatedPacket.setRadius(this.player.getChunkRadius());
-        this.player.sendPacket(chunkRadiusUpdatedPacket);
     }
 
     @Override
@@ -104,4 +97,5 @@ public class FullGamePacketHandler extends BaseBedrockPacketHandler {
             }
         }
     }
+
 }

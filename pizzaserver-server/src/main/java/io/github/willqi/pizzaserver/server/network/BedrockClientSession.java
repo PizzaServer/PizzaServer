@@ -125,9 +125,6 @@ public class BedrockClientSession extends Thread {
     }
 
     private void processIncomingPackets() {
-        for (BaseBedrockPacketHandler handler : this.handlers) {
-
-        }
         while (this.queuedIncomingPackets.peek() != null) {
             BaseBedrockPacket packet = this.queuedIncomingPackets.poll();
             for (BaseBedrockPacketHandler handler : this.handlers) {

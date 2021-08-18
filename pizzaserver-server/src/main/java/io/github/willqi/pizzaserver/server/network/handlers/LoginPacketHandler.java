@@ -282,7 +282,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
                     location.getWorld().addEntity(this.player, location);
                     this.session.removePacketHandler(this);
-                    this.session.addPacketHandler(new FullGamePacketHandler(this.player));
+                    this.session.addPacketHandler(new ChunkBlockPacketHandler(this.player));
+                    this.session.addPacketHandler(new PlayerEntityPacketHandler(this.player));
 
                     PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(this.player);
                     this.player.getServer().getEventManager().call(playerSpawnEvent);
