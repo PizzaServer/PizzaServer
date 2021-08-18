@@ -5,9 +5,9 @@ public enum EntityMetaPropertyType {
     SHORT,
     INTEGER,
     FLOAT,
-    LONG,
     STRING,
     NBT,
     VECTOR3I,
+    LONG,
     VECTOR3
 }

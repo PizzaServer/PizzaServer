@@ -6,6 +6,8 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.commons.utils.Vector2;
+import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
 import java.util.Set;
@@ -47,22 +49,25 @@ public interface Chunk extends Watchable {
     byte getBiomeAt(int x, int z);
 
     /**
-     * Add a {@link Entity} to this chunk
-     * @param entity the {@link Entity} that now exists in this chunk
-     */
-    void addEntity(Entity entity);
-
-    /**
-     * Remove a {@link Entity} from this chunk
-     * @param entity the {@link Entity} that no longer exists in this chunk
-     */
-    void removeEntity(Entity entity);
-
-    /**
      * Retrieve all of the {@link Entity}s that exist in this chunk
      * @return {@link Set< Entity >}s in this chunk
      */
     Set<Entity> getEntities();
+
+    /**
+     * Retrieve the highest block coordinate in this chunk column
+     * @param position chunk column coordinates
+     * @return y coordinate
+     */
+    int getHighestBlockAt(Vector2i position);
+
+    /**
+     * Retrieve the highest block coordinate in this chunk column
+     * @param x chunk column x
+     * @param z chunk column z
+     * @return y coordinate
+     */
+    int getHighestBlockAt(int x, int z);
 
     /**
      * Retrieve the {@link Block} at these chunk coordinates

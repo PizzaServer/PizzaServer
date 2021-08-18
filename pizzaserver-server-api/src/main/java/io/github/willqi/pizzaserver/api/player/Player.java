@@ -31,7 +31,7 @@ public interface Player extends LivingEntity {
      * This is unique to every player authenticated to Xbox Live
      * @return xuid
      */
-    String getXuid();
+    String getXUID();
 
     /**
      * Retrieve the UUID of the player
@@ -52,19 +52,6 @@ public interface Player extends LivingEntity {
     String getLanguageCode();
 
     /**
-     * Send a text message to this player
-     * @param message the message to send
-     */
-    void sendMessage(String message);
-
-    /**
-     * Send a message originating from another APIPlayer
-     * @param sender the APIPlayer who sent this message
-     * @param message the message they sent
-     */
-    void sendPlayerMessage(Player sender, String message);
-
-    /**
      * Retrieve the current {@link Skin} of the player
      * @return {@link Skin} of the player
      */
@@ -75,6 +62,27 @@ public interface Player extends LivingEntity {
      * @param skin New skin
      */
     void setSkin(Skin skin);
+
+    /**
+     * Check if the player is sneaking
+     * @return sneaking status
+     */
+    boolean isSneaking();
+
+    /**
+     * Change if the player is sneaking
+     * @param sneaking sneaking status
+     */
+    void setSneaking(boolean sneaking);
+
+    /**
+     * Get the player list of a player
+     * @return player list of a player
+     */
+    PlayerList getPlayerList();
+
+    // TODO: move to EntityHuman
+    PlayerList.Entry getPlayerListEntry();
 
     /**
      * Get the player attributes of the player
@@ -129,6 +137,19 @@ public interface Player extends LivingEntity {
      * @param experienceLevel experience level
      */
     void setExperienceLevel(int experienceLevel);
+
+    /**
+     * Send a text message to this player
+     * @param message the message to send
+     */
+    void sendMessage(String message);
+
+    /**
+     * Send a message originating from another APIPlayer
+     * @param sender the APIPlayer who sent this message
+     * @param message the message they sent
+     */
+    void sendPlayerMessage(Player sender, String message);
 
     /**
      * Retrieve the chunk radius of this player

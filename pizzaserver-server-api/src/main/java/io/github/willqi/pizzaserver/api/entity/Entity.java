@@ -16,6 +16,18 @@ public interface Entity extends Watchable {
 
     long getId();
 
+    float getX();
+
+    float getY();
+
+    float getZ();
+
+    int getFloorX();
+
+    int getFloorY();
+
+    int getFloorZ();
+
     /**
      * Retrieve the {@link Server} this entity is in
      * @return {@link Server}
@@ -46,11 +58,11 @@ public interface Entity extends Watchable {
      */
     Location getLocation();
 
-    /**
-     * Change the {@link Location} of the entity
-     * @param location the new {@link Location}
-     */
-    void setLocation(Location location);
+    float getHeight();
+
+    float getWidth();
+
+    float getEyeHeight();
 
     EntityMetaData getMetaData();
 
@@ -67,8 +79,12 @@ public interface Entity extends Watchable {
      */
     boolean hasSpawned();
 
+    boolean hasSpawnedTo(Player player);
+
     void spawnTo(Player player);
 
     void despawnFrom(Player player);
+
+    void despawn();
 
 }

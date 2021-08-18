@@ -1,6 +1,6 @@
-package io.github.willqi.pizzaserver.server.network.protocol.data;
+package io.github.willqi.pizzaserver.api.player.data;
 
-public enum PlayerAnimateAction {
+public enum AnimationAction {
     NO_ACTION,
     SWING_ARM,
     WAKE_UP,

@@ -1,12 +1,15 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.nukkitx.network.VarInts;
+import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.item.Item;
+import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -24,6 +27,7 @@ import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Wrapper around {@link ByteBuf} that adds additional methods to parse Minecraft Bedrock packets
@@ -47,6 +51,10 @@ public class BasePacketBuffer extends ByteBuf {
 
     protected BasePacketBuffer createInstance(ByteBuf buffer) {
         return new BasePacketBuffer(buffer);
+    }
+
+    protected BasePacketBufferData getData() {
+        throw new IllegalStateException("Called getData() before version was assigned");
     }
 
     @Override
@@ -643,6 +651,10 @@ public class BasePacketBuffer extends ByteBuf {
         return new String(data, StandardCharsets.UTF_8);
     }
 
+    public UUID readUUID() {
+        return new UUID(buffer.readLongLE(), buffer.readLongLE());
+    }
+
     public byte[] readByteArray() {
         byte[] data = new byte[this.readUnsignedVarInt()];
         this.readBytes(data);
@@ -663,6 +675,10 @@ public class BasePacketBuffer extends ByteBuf {
             this.readUnsignedVarInt(),
             this.readVarInt()
         );
+    }
+
+    public Skin readSkin() {
+        throw new IllegalStateException("Called readSkin() before version was assigned.");
     }
 
     @Override
@@ -845,6 +861,12 @@ public class BasePacketBuffer extends ByteBuf {
         return this.writeByteArray(string.getBytes(StandardCharsets.UTF_8));
     }
 
+    public BasePacketBuffer writeUUID(UUID uuid) {
+        this.buffer.writeLongLE(uuid.getMostSignificantBits());
+        this.buffer.writeLongLE(uuid.getLeastSignificantBits());
+        return this;
+    }
+
     public BasePacketBuffer writeByteArray(byte[] data) {
         this.writeUnsignedVarInt(data.length);
         this.writeBytes(data);
@@ -886,7 +908,19 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     public BasePacketBuffer writeItem(Item item) {
-        throw new UnsupportedOperationException("This operation is not supported.");
+        throw new IllegalStateException("Called writeItem(Item item) before version was assigned.");
+    }
+
+    public BasePacketBuffer writeSkin(Skin skin) {
+        throw new IllegalStateException("Called writeSkin(Skin skin) before version was assigned.");
+    }
+
+    public BasePacketBuffer writeEntityMetadata(EntityMetaData entityMetaData) {
+        throw new IllegalStateException("Called writeEntityMetadata(EntityMetaData entityMetaData) before version was assigned.");
+    }
+
+    public BasePacketBuffer writeEntityLink(EntityLink entityLink) {
+        throw new IllegalStateException("Called writeEntityLink(EntityLink entityLink) before version was assigned.");
     }
 
     @Override

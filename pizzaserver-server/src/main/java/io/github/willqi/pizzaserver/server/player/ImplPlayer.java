@@ -1,13 +1,17 @@
 package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
@@ -15,6 +19,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
+import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
@@ -22,17 +27,15 @@ import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
-
-import java.io.IOException;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.IOException;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final ImplServer server;
     private final BedrockClientSession session;
-    private boolean allowAutomaticSaving = true;
+    private boolean autoSave = true;
 
     private final BaseMinecraftVersion version;
     private final Device device;
@@ -40,10 +43,12 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private final UUID uuid;
     private final String username;
     private final String languageCode;
+
+    private final PlayerList playerList = new ImplPlayerList(this);
     private Skin skin;
 
     private int chunkRadius = 3;
-    private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // how many chunks can be sent to this player during this tick?
+    private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // Reset every tick
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
@@ -74,7 +79,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public String getXuid() {
+    public String getXUID() {
         return this.xuid;
     }
 
@@ -100,8 +105,54 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void setSkin(Skin newSkin) {
-        // TODO: packet level stuff for player skin updates
         this.skin = newSkin;
+        PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
+        playerSkinPacket.setPlayerUUID(this.getUUID());
+        playerSkinPacket.setSkin(newSkin);
+        playerSkinPacket.setTrusted(newSkin.isTrusted());
+
+        for (Player viewer : this.getViewers()) {
+            viewer.sendPacket(playerSkinPacket);
+        }
+        this.sendPacket(playerSkinPacket);
+    }
+
+    @Override
+    public boolean isSneaking() {
+        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING);
+    }
+
+    @Override
+    public void setSneaking(boolean sneaking) {
+        boolean isCurrentlySneaking = this.isSneaking();
+        boolean updateSneakingData = false;
+        if (sneaking && !isCurrentlySneaking) {
+            PlayerStartSneakingEvent event = new PlayerStartSneakingEvent(this);
+            this.getServer().getEventManager().call(event);
+        } else if (!sneaking && isCurrentlySneaking) {
+            PlayerStopSneakingEvent event = new PlayerStopSneakingEvent(this);
+            this.getServer().getEventManager().call(event);
+        }
+
+        if (updateSneakingData) {
+            this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
+            this.setMetaData(this.getMetaData());
+        }
+    }
+
+    @Override
+    public float getHeight() {
+        return 1.8f;
+    }
+
+    @Override
+    public float getWidth() {
+        return 0.6f;
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return 1.62f;
     }
 
     @Override
@@ -111,21 +162,10 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
         setEntityDataPacket.setRuntimeId(this.getId());
         setEntityDataPacket.setData(this.getMetaData());
-        this.sendPacket(setEntityDataPacket);
-    }
-
-    @Override
-    public int getChunkRadius() {
-        return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
-    }
-
-    @Override
-    public void setChunkRadiusRequested(int radius) {
-        int oldRadius = this.chunkRadius;
-        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
-        if (this.hasSpawned()) {
-            this.updateVisibleChunks(this.getLocation(), oldRadius);
+        for (Player player : this.getViewers()) {
+            player.sendPacket(setEntityDataPacket);
         }
+        this.sendPacket(setEntityDataPacket);
     }
 
     public ImplServer getServer() {
@@ -133,26 +173,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public boolean isConnected() {
-        return !this.session.isDisconnected();
-    }
-
-    @Override
-    public void sendPacket(BaseBedrockPacket packet) {
-        this.session.queueSendPacket(packet);
-    }
-
-    @Override
-    public void disconnect() {
-        this.session.disconnect();
-    }
-
-    @Override
-    public void disconnect(String reason) {
-        DisconnectPacket disconnectPacket = new DisconnectPacket();
-        disconnectPacket.setKickMessage(reason);
-        this.sendPacket(disconnectPacket);
-        this.session.disconnect();
+    public PlayerList getPlayerList() {
+        return this.playerList;
     }
 
     /**
@@ -163,16 +185,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public Optional<PlayerData> getSavedData() throws IOException {
         return this.getServer().getPlayerProvider()
                 .load(this.getUUID());
-    }
-
-    @Override
-    public void setAutoSave(boolean allowSaving) {
-        this.allowAutomaticSaving = allowSaving;
-    }
-
-    @Override
-    public boolean canAutoSave() {
-        return this.allowAutomaticSaving;
     }
 
     @Override
@@ -201,9 +213,20 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      */
     public void onDisconnect() {
         if (this.hasSpawned()) {
-            this.getLocation().getWorld().removeEntity(this);
+            Location location = this.getLocation();
+
             if (this.canAutoSave()) {
-                this.getServer().getScheduler().prepareTask(this::save).setAsynchronous(true).schedule();
+                this.getServer().getScheduler().prepareTask(() -> {
+                    this.save();
+                    this.getServer().getScheduler().prepareTask(this::despawn).schedule();
+                }).setAsynchronous(true).schedule();
+            } else {
+                this.despawn();
+            }
+
+            // remove the player from the player list of others
+            for (Player player : this.getServer().getPlayers()) {
+                player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
 
             // Remove player from chunks they can observe
@@ -212,7 +235,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                     // Chunk radius is circular
                     int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
                     if (this.chunkRadius < distance) {
-                        ImplChunk chunk = (ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(this.getLocation().getChunkX() + x, this.getLocation().getChunkZ() + z);
+                        ImplChunk chunk = (ImplChunk)location.getWorld().getChunkManager().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
                         chunk.despawnFrom(this);
                     }
                 }
@@ -368,50 +391,39 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void setLocation(Location newLocation) {
-        Location oldLocation = this.getLocation();
-        super.setLocation(newLocation);
+    public void sendMessage(String message) {
+        TextPacket textPacket = new TextPacket();
+        textPacket.setType(TextPacket.TextType.RAW);
+        textPacket.setMessage(message);
+        this.sendPacket(textPacket);
+    }
 
-        if (this.hasSpawned()) {    // Do we need to send new chunks?
-            boolean shouldUpdateChunks = (oldLocation == null) || (oldLocation.getChunkX() != newLocation.getChunkX()) ||
-                                            (oldLocation.getChunkZ() != newLocation.getChunkZ()) ||
-                                            !(oldLocation.getWorld().equals(this.getLocation().getWorld()));
-            if (shouldUpdateChunks) {
-                this.updateVisibleChunks(oldLocation, this.chunkRadius);
-            }
+    @Override
+    public void sendPlayerMessage(Player sender, String message) {
+        TextPacket textPacket = new TextPacket();
+        textPacket.setType(TextPacket.TextType.CHAT);
+        textPacket.setSourceName(sender.getUsername());
+        textPacket.setMessage(message);
+        textPacket.setXuid(sender.getXUID());
+        this.sendPacket(textPacket);
+    }
+
+    @Override
+    public int getChunkRadius() {
+        return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
+    }
+
+    @Override
+    public void setChunkRadiusRequested(int radius) {
+        int oldRadius = this.chunkRadius;
+        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
+
+        if (this.hasSpawned()) {
+            this.updateVisibleChunks(this.getLocation(), oldRadius);
         }
     }
 
     @Override
-    public void tick() {
-        this.chunkRequestsLeft.set(this.getServer().getConfig().getChunkRequestsPerTick()); // Reset amount of chunks that we can be sent this tick
-    }
-
-    @Override
-    public void onSpawned() {
-        super.onSpawned();
-        this.sendNetworkChunkPublisher();   // Load chunks sent during initial login handshake
-
-        this.updateVisibleChunks(null, this.chunkRadius);
-        this.completeLogin();
-    }
-
-    private void completeLogin() {
-        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
-        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
-        this.setMetaData(this.getMetaData());
-        this.sendAttributes();
-
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
-        this.sendPacket(playStatusPacket);
-    }
-
-    @Override
-    public void spawnTo(Player player) {
-        // TODO: implement in order for multiplayer to work properly
-    }
-
     public void requestSendChunk(int x, int z) {
         this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, true);
     }
@@ -478,22 +490,148 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void sendMessage(String message) {
-        TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.RAW);
-        textPacket.setMessage(message);
-        this.sendPacket(textPacket);
+    public boolean isConnected() {
+        return !this.session.isDisconnected();
     }
 
     @Override
-    public void sendPlayerMessage(Player sender, String message) {
-        TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.CHAT);
-        textPacket.setSourceName(sender.getUsername());
-        textPacket.setMessage(message);
-        textPacket.setXuid(sender.getXuid());
-        this.sendPacket(textPacket);
+    public void sendPacket(BaseBedrockPacket packet) {
+        this.session.queueSendPacket(packet);
     }
 
+    @Override
+    public void disconnect() {
+        this.session.disconnect();
+    }
+
+    @Override
+    public void disconnect(String reason) {
+        DisconnectPacket disconnectPacket = new DisconnectPacket();
+        disconnectPacket.setKickMessage(reason);
+        this.sendPacket(disconnectPacket);
+        this.session.disconnect();
+    }
+
+    @Override
+    public void setAutoSave(boolean allowAutoSaving) {
+        this.autoSave = allowAutoSaving;
+    }
+
+    @Override
+    public boolean canAutoSave() {
+        return this.autoSave;
+    }
+
+    @Override
+    public void tick() {
+        this.chunkRequestsLeft.set(this.getServer().getConfig().getChunkRequestsPerTick()); // Reset amount of chunks that we can be sent this tick
+
+        if (this.moveUpdate) {
+            MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
+            movePlayerPacket.setEntityRuntimeId(this.getId());
+            movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
+            movePlayerPacket.setPitch(this.getPitch());
+            movePlayerPacket.setYaw(this.getYaw());
+            movePlayerPacket.setHeadYaw(this.getHeadYaw());
+            movePlayerPacket.setMode(MovementMode.NORMAL);
+            movePlayerPacket.setOnGround(false);
+
+            for (Player player : this.getViewers()) {
+                player.sendPacket(movePlayerPacket);
+            }
+        }
+
+        super.tick();
+    }
+
+    @Override
+    public void moveTo(float x, float y, float z) {
+        Location oldLocation = new Location(this.world, new Vector3(this.x, this.y, this.z));
+        super.moveTo(x, y, z);
+
+        if (!oldLocation.getChunk().equals(this.getChunk())) {
+            this.updateVisibleChunks(oldLocation, this.getChunkRadius());
+        }
+    }
+
+    @Override
+    public void onSpawned() {
+        super.onSpawned();
+        this.sendNetworkChunkPublisher();   // Load chunks sent during initial login handshake
+
+        this.updateVisibleChunks(null, this.chunkRadius);
+        this.completeLogin();
+    }
+
+    private void completeLogin() {
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);
+        this.setMetaData(this.getMetaData());
+        this.sendAttributes();
+
+        // Update every other player's player list to include this player
+        for (Player player : this.getServer().getPlayers()) {
+            if (!this.isHiddenFrom(player) && !player.equals(this)) {
+                player.getPlayerList().addEntry(this.getPlayerListEntry());
+            }
+        }
+
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+        this.sendPacket(playStatusPacket);
+
+    }
+
+    @Override
+    public PlayerList.Entry getPlayerListEntry() {
+        return new PlayerList.Entry.Builder()
+                .setUUID(this.getUUID())
+                .setXUID(this.getXUID())
+                .setUsername(this.getUsername())
+                .setEntityRuntimeId(this.getId())
+                .setDevice(this.getDevice())
+                .setSkin(this.getSkin())
+                .build();
+    }
+
+    @Override
+    public void showTo(Player player) {
+        if (this.isHiddenFrom(player)) {
+            super.showTo(player);
+            if (player.hasSpawned()) {  // we only need to add the entry if we were spawned
+                player.getPlayerList().addEntry(this.getPlayerListEntry());
+            }
+        }
+    }
+
+    @Override
+    public void hideFrom(Player player) {
+        if (!this.isHiddenFrom(player)) {
+            super.hideFrom(player);
+            if (player.hasSpawned()) {  // we only need to remove the entry if we were spawned
+                player.getPlayerList().removeEntry(this.getPlayerListEntry());
+            }
+        }
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        super.spawnTo(player);
+
+        AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
+        addPlayerPacket.setUUID(this.getUUID());
+        addPlayerPacket.setUsername(this.getUsername());
+        addPlayerPacket.setEntityRuntimeId(this.getId());
+        addPlayerPacket.setEntityUniqueId(this.getId());
+        addPlayerPacket.setPosition(new Vector3(this.getX(), this.getY(), this.getZ()));
+        addPlayerPacket.setVelocity(new Vector3(0, 0, 0));
+        addPlayerPacket.setPitch(this.getPitch());
+        addPlayerPacket.setYaw(this.getYaw());
+        addPlayerPacket.setHeadYaw(this.getHeadYaw());
+        addPlayerPacket.setMetaData(this.getMetaData());
+        addPlayerPacket.setDevice(this.getDevice());
+        player.sendPacket(addPlayerPacket);
+    }
 
 }
