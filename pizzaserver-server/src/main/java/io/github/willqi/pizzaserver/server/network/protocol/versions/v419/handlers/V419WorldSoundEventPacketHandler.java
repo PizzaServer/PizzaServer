@@ -3,11 +3,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 
@@ -202,8 +200,8 @@ public class V419WorldSoundEventPacketHandler extends BaseProtocolPacketHandler<
             this.put(WorldSound.ITEM_TRIDENT_THUNDER, 184);
             this.put(WorldSound.ITEM_TRIDENT_HIT_GROUND, 185);
             this.put(WorldSound.DEFAULT, 186);
-
-            this.put(WorldSound.ELEMCONSTRUCT_OPEN, 188);
+            this.put(WorldSound.FLETCHING_TABLE_USE, 187);
+            this.put(WorldSound.ELEMENT_CONSTRUCT_OPEN, 188);
             this.put(WorldSound.ICEBOMB_HIT, 189);
             this.put(WorldSound.BALLOONPOP, 190);
             this.put(WorldSound.LT_REACTION_ICEBOMB, 191);
@@ -265,28 +263,89 @@ public class V419WorldSoundEventPacketHandler extends BaseProtocolPacketHandler<
             this.put(WorldSound.AMBIENT_AGGRESSIVE, 252);
             this.put(WorldSound.AMBIENT_WORRIED, 253);
             this.put(WorldSound.CANT_BREED, 254);
-            this.put(WorldSound.UNDEFINED, 255);
+            this.put(WorldSound.SHIELD_BLOCK, 255);
+            this.put(WorldSound.LECTERN_BOOK_PLACE, 256);
+            this.put(WorldSound.GRINDSTONE_USE, 257);
+            this.put(WorldSound.BELL, 258);
+            this.put(WorldSound.CAMPFIRE_CRACKLE, 259);
+            this.put(WorldSound.ROAR, 260);
+            this.put(WorldSound.STUN, 261);
+            this.put(WorldSound.SWEET_BERRY_BUSH_HURT, 262);
+            this.put(WorldSound.SWEET_BERRY_BUSH_PICK, 263);
+            this.put(WorldSound.CARTOGRAPHY_TABLE_USE, 264);
+            this.put(WorldSound.STONECUTTER_USE, 265);
+            this.put(WorldSound.COMPOSTER_EMPTY, 266);
+            this.put(WorldSound.COMPOSTER_FILL, 267);
+            this.put(WorldSound.COMPOSTER_FILL_LAYER, 268);
+            this.put(WorldSound.BARREL_OPEN, 270);
+            this.put(WorldSound.BARREL_CLOSE, 271);
+            this.put(WorldSound.RAID_HORN, 272);
+            this.put(WorldSound.LOOM_USE, 273);
+            this.put(WorldSound.AMBIENT_IN_RAID, 274);
+            this.put(WorldSound.UI_CARTOGRAPHY_TABLE_USE, 275);
+            this.put(WorldSound.UI_STONECUTTER_USE, 276);
+            this.put(WorldSound.UI_LOOM_USE, 277);
+            this.put(WorldSound.SMOKER_USE, 278);
+            this.put(WorldSound.BLAST_FURNACE_USE, 279);
+            this.put(WorldSound.SMITHING_TABLE_USE, 280);
+            this.put(WorldSound.SCREECH, 281);
+            this.put(WorldSound.SLEEP, 282);
+            this.put(WorldSound.FURNACE_USE, 283);
+            this.put(WorldSound.MOOSHROOM_CONVERT, 284);
+            this.put(WorldSound.MILK_SUSPICIOUSLY, 285);
+            this.put(WorldSound.CELEBRATE, 286);
+            this.put(WorldSound.JUMP_PREVENT, 287);
+            this.put(WorldSound.AMBIENT_POLLINATE, 288);
+            this.put(WorldSound.BEEHIVE_DRIP, 289);
+            this.put(WorldSound.BEEHIVE_ENTER, 290);
+            this.put(WorldSound.BEEHIVE_EXIT, 291);
+            this.put(WorldSound.BEEHIVE_WORK, 292);
+            this.put(WorldSound.BEEHIVE_SHEAR, 293);
+            this.put(WorldSound.HONEYBOTTLE_DRINK, 294);
+            this.put(WorldSound.AMBIENT_CAVE, 295);
+            this.put(WorldSound.RETREAT, 296);
+            this.put(WorldSound.CONVERT_TO_ZOMBIFIED, 297);
+            this.put(WorldSound.ADMIRE, 298);
+            this.put(WorldSound.STEP_LAVA, 299);
+            this.put(WorldSound.TEMPT, 300);
+            this.put(WorldSound.PANIC, 301);
+            this.put(WorldSound.ANGRY, 302);
+            this.put(WorldSound.AMBIENT_WARPED_FOREST, 303);
+            this.put(WorldSound.AMBIENT_SOULSAND_VALLEY, 304);
+            this.put(WorldSound.AMBIENT_NETHER_WASTES, 305);
+            this.put(WorldSound.AMBIENT_BASALT_DELTAS, 306);
+            this.put(WorldSound.AMBIENT_CRIMSON_FOREST, 307);
+            this.put(WorldSound.RESPAWN_ANCHOR_CHARGE, 308);
+            this.put(WorldSound.RESPAWN_ANCHOR_DEPLETE, 309);
+            this.put(WorldSound.RESPAWN_ANCHOR_SET_SPAWN, 310);
+            this.put(WorldSound.RESPAWN_ANCHOR_AMBIENT, 311);
+            this.put(WorldSound.SOUL_ESCAPE_QUIET, 312);
+            this.put(WorldSound.SOUL_ESCAPE_LOUD, 313);
+            this.put(WorldSound.RECORD_PIGSTEP, 314);
+            this.put(WorldSound.LINK_COMPASS_TO_LODESTONE, 315);
+            this.put(WorldSound.USE_SMITHING_TABLE, 316);
+            this.put(WorldSound.EQUIP_NETHERITE, 317);
         }
     });
 
     @Override
-    public WorldSoundEventPacket decode(ByteBuf buffer, BasePacketHelper helper) {
+    public WorldSoundEventPacket decode(BasePacketBuffer buffer) {
         WorldSoundEventPacket packet = new WorldSoundEventPacket();
-        packet.setSound(sounds.inverse().get(VarInts.readUnsignedInt(buffer)));
-        packet.setVector3(helper.readVector3(buffer));
-        packet.setBlockID(VarInts.readInt(buffer));
-        packet.setEntityType(helper.readString(buffer));
+        packet.setSound(sounds.inverse().get(buffer.readUnsignedVarInt()));
+        packet.setVector3(buffer.readVector3());
+        packet.setBlockID(buffer.readVarInt());
+        packet.setEntityType(buffer.readString());
         packet.setBaby(buffer.readBoolean());
         packet.setGlobal(buffer.readBoolean());
         return packet;
     }
 
     @Override
-    public void encode(WorldSoundEventPacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeUnsignedInt(buffer, sounds.get(packet.getSound()));
-        helper.writeVector3(buffer, packet.getVector3());
-        VarInts.writeInt(buffer, packet.getBlockID());
-        helper.writeString(packet.getEntityType(), buffer);
+    public void encode(WorldSoundEventPacket packet, BasePacketBuffer buffer) {
+        buffer.writeUnsignedVarInt(sounds.get(packet.getSound()));
+        buffer.writeVector3(packet.getVector3());
+        buffer.writeVarInt(packet.getBlockID());
+        buffer.writeString(packet.getEntityType());
         buffer.writeBoolean(packet.isBaby());
         buffer.writeBoolean(packet.isGlobal());
     }

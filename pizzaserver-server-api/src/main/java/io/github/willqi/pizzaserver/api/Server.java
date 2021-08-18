@@ -77,8 +77,6 @@ public interface Server {
 
     EventManager getEventManager();
 
-    BlockRegistry getBlockRegistry();
-
     Scheduler getScheduler();
 
     Logger getLogger();

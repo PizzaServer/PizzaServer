@@ -15,15 +15,12 @@ import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
-import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldChunkPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
 import java.util.*;
@@ -165,6 +162,7 @@ public class ImplChunk implements Chunk {
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
         int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
+        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
@@ -181,19 +179,20 @@ public class ImplChunk implements Chunk {
 
             // Construct new block as none is cached
             BlockPalette.Entry paletteEntry = this.chunk.getSubChunks().get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
-            BlockRegistry blockRegistry = this.getWorld().getServer().getBlockRegistry();
             Block block;
-            if (blockRegistry.hasBlockType(paletteEntry.getId())) {
+            if (BlockRegistry.hasBlockType(paletteEntry.getId())) {
                 // Block id is registered
-                BaseBlockType blockType = blockRegistry.getBlockType(paletteEntry.getId());
+                BaseBlockType blockType = BlockRegistry.getBlockType(paletteEntry.getId());
                 block = new Block(blockType);
                 block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
             } else {
                 // The block id is not registered
                 this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
-                BaseBlockType blockType = blockRegistry.getBlockType(BlockTypeID.AIR);
+                BaseBlockType blockType = BlockRegistry.getBlockType(BlockTypeID.AIR);
                 block = new Block(blockType);
             }
+            block.setLocation(this.getWorld(), blockCoordinates);
+
             subChunkCache.put(blockIndex, block);
             return block;
         } finally {
@@ -226,6 +225,9 @@ public class ImplChunk implements Chunk {
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
         int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
+        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
+
+        block.setLocation(this.getWorld(), blockCoordinates);
 
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
@@ -250,7 +252,7 @@ public class ImplChunk implements Chunk {
             // Send update block packet
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.setBlock(block);
-            updateBlockPacket.setBlockCoordinates(new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z));
+            updateBlockPacket.setBlockCoordinates(blockCoordinates);
             updateBlockPacket.setLayer(0);
             updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
             for (Player viewer : this.getViewers()) {

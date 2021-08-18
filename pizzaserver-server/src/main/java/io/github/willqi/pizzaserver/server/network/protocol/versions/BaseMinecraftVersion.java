@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
@@ -11,6 +12,7 @@ import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.ImplServer;
+import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +39,14 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     }
 
     public abstract BasePacketRegistry getPacketRegistry();
+
+    public BasePacketBuffer createPacketBuffer() {
+        return this.createPacketBuffer(256);
+    }
+
+    public abstract BasePacketBuffer createPacketBuffer(ByteBuf buf);
+
+    public abstract BasePacketBuffer createPacketBuffer(int initialCapacity);
 
     public ImplServer getServer() {
         return this.server;
@@ -84,7 +94,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             }
 
             // Add custom block states
-            for (BaseBlockType blockType : this.getServer().getBlockRegistry().getCustomTypes()) {
+            for (BaseBlockType blockType : BlockRegistry.getCustomTypes()) {
                 blockStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
             }
 

@@ -27,7 +27,7 @@ public class NBTShort extends NBTTag {
 
     @Override
     public int hashCode() {
-        return 31 * this.value * this.name.hashCode();
+        return (31 * this.value) + (31 * this.name.hashCode());
     }
 
     @Override

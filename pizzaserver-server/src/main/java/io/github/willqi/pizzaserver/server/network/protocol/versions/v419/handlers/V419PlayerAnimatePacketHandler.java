@@ -2,12 +2,10 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.api.player.data.AnimationAction;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerAnimatePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 
@@ -26,19 +24,19 @@ public class V419PlayerAnimatePacketHandler extends BaseProtocolPacketHandler<Pl
     });
 
     @Override
-    public PlayerAnimatePacket decode(ByteBuf buffer, BasePacketHelper helper) {
+    public PlayerAnimatePacket decode(BasePacketBuffer buffer) {
         PlayerAnimatePacket playerAnimatePacket = new PlayerAnimatePacket();
-        AnimationAction action = actions.inverse().get(VarInts.readInt(buffer));
+        AnimationAction action = this.actions.inverse().get(buffer.readVarInt());
         playerAnimatePacket.setAction(action);
-        playerAnimatePacket.setEntityRuntimeID(VarInts.readUnsignedLong(buffer));
+        playerAnimatePacket.setEntityRuntimeID(buffer.readVarLong());
         if(action == AnimationAction.ROW_LEFT || action == AnimationAction.ROW_RIGHT) playerAnimatePacket.setRowingTime(buffer.readFloatLE());
         return playerAnimatePacket;
     }
 
     @Override
-    public void encode(PlayerAnimatePacket packet, ByteBuf buffer, BasePacketHelper helper) {
-        VarInts.writeInt(buffer, actions.get(packet.getAction()));
-        VarInts.writeUnsignedLong(buffer, packet.getEntityRuntimeID());
+    public void encode(PlayerAnimatePacket packet, BasePacketBuffer buffer) {
+        buffer.writeVarInt(this.actions.get(packet.getAction()));
+        buffer.writeVarLong(packet.getEntityRuntimeID());
         if(packet.getAction() == AnimationAction.ROW_LEFT || packet.getAction() == AnimationAction.ROW_RIGHT) buffer.writeFloatLE(packet.getRowingTime());
     }
 

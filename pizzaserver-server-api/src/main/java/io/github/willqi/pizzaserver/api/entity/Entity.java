@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.entity;
 
+import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
@@ -26,6 +27,12 @@ public interface Entity extends Watchable {
     int getFloorY();
 
     int getFloorZ();
+
+    /**
+     * Retrieve the {@link Server} this entity is in
+     * @return {@link Server}
+     */
+    Server getServer();
 
     /**
      * Retrieve the {@link Level} this entity is in

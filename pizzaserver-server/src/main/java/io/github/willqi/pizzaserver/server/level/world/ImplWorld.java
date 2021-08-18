@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.level.world;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -122,7 +123,7 @@ public class ImplWorld implements Closeable, World {
 
     @Override
     public void setBlock(String blockId, int x, int y, int z) {
-        BaseBlockType blockType = this.getServer().getBlockRegistry().getBlockType(blockId);
+        BaseBlockType blockType = BlockRegistry.getBlockType(blockId);
         this.setBlock(blockType, x, y, z);
     }
 

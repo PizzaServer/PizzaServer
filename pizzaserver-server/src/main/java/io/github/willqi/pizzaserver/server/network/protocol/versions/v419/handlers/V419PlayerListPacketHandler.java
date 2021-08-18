@@ -1,29 +1,27 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import io.github.willqi.pizzaserver.api.player.PlayerList;
-import io.github.willqi.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerListPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketHelper;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.netty.buffer.ByteBuf;
 
 public class V419PlayerListPacketHandler extends BaseProtocolPacketHandler<PlayerListPacket> {
 
     @Override
-    public void encode(PlayerListPacket packet, ByteBuf buffer, BasePacketHelper helper) {
+    public void encode(PlayerListPacket packet, BasePacketBuffer buffer) {
         buffer.writeByte(packet.getActionType().ordinal()); // If more options are added, this will have to be modified
                                                             // to throw an error.
-        VarInts.writeUnsignedInt(buffer, packet.getEntries().size());
+        buffer.writeUnsignedVarInt(packet.getEntries().size());
         switch (packet.getActionType()) {
             case ADD:
                 for (PlayerList.Entry entry : packet.getEntries()) {
-                    helper.writeUUID(entry.getUUID(), buffer);
-                    VarInts.writeLong(buffer, entry.getEntityRuntimeId());
-                    helper.writeString(entry.getUsername(), buffer);
-                    helper.writeString(entry.getXUID(), buffer);
-                    helper.writeString(entry.getPlatformChatId(), buffer);
+                    buffer.writeUUID(entry.getUUID());
+                    buffer.writeVarLong(entry.getEntityRuntimeId());
+                    buffer.writeString(entry.getUsername());
+                    buffer.writeString(entry.getXUID());
+                    buffer.writeString(entry.getPlatformChatId());
                     buffer.writeIntLE(entry.getDevice().getDeviceOS());
-                    helper.writeSkin(buffer, entry.getSkin());
+                    buffer.writeSkin(entry.getSkin());
                     buffer.writeBoolean(entry.isTeacher());
                     buffer.writeBoolean(entry.isHost());
                 }
@@ -33,7 +31,7 @@ public class V419PlayerListPacketHandler extends BaseProtocolPacketHandler<Playe
                 break;
             case REMOVE:
                 for (PlayerList.Entry entry : packet.getEntries()) {
-                    helper.writeUUID(entry.getUUID(), buffer);
+                    buffer.writeUUID(entry.getUUID());
                 }
                 break;
             default:

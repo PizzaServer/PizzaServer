@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.server.level.world.blocks.VanillaBlocksLoader;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -22,7 +23,6 @@ import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.ImplLogger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
 import io.github.willqi.pizzaserver.server.level.ImplLevelManager;
-import io.github.willqi.pizzaserver.server.level.world.blocks.ImplBlockRegistry;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -43,8 +43,6 @@ public class ImplServer implements Server {
     private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
     private final ImplLevelManager levelManager = new ImplLevelManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
-
-    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
 
     private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final ImplScheduler scheduler = new ImplScheduler(this, 1);
@@ -87,6 +85,8 @@ public class ImplServer implements Server {
      */
     public void boot() {
         ServerProtocol.loadVersions();
+        VanillaBlocksLoader.load();
+
         this.getResourcePackManager().loadPacks();
         this.setTargetTps(20);
 
@@ -137,6 +137,22 @@ public class ImplServer implements Server {
     }
 
     private void tick() {
+        this.processPackets();
+        this.getLevelManager().tick();
+
+        for (ImplScheduler scheduler : this.syncedSchedulers) {
+            try {
+                scheduler.serverTick();
+            } catch (Exception exception) {
+                this.getLogger().error("Failed to tick scheduler", exception);
+            }
+        }
+    }
+
+    /**
+     * Processes incoming and outgoing packets
+     */
+    private void processPackets() {
         synchronized (this.sessions) {
             // Process all packets that are outgoing and incoming
             Iterator<BedrockClientSession> sessions = this.sessions.iterator();
@@ -158,16 +174,6 @@ public class ImplServer implements Server {
                         this.getNetwork().updatePong();
                     }
                 }
-            }
-        }
-
-        this.getLevelManager().tick();
-
-        for (ImplScheduler scheduler : this.syncedSchedulers) {
-            try {
-                scheduler.serverTick();
-            } catch (Exception exception) {
-                this.getLogger().error("Failed to tick scheduler", exception);
             }
         }
     }
@@ -280,11 +286,6 @@ public class ImplServer implements Server {
     @Override
     public EventManager getEventManager() {
         return this.eventManager;
-    }
-
-    @Override
-    public BlockRegistry getBlockRegistry() {
-        return this.blockRegistry;
     }
 
     @Override
