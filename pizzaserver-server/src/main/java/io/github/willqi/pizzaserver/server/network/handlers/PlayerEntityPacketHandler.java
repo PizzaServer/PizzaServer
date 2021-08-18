@@ -47,6 +47,18 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
     }
 
     @Override
+    public void onPacket(PlayerActionPacket packet) {
+        switch (packet.getActionType()) {
+            case START_SNEAK:
+                this.player.setSneaking(true);
+                break;
+            case STOP_SNEAK:
+                this.player.setSneaking(false);
+                break;
+        }
+    }
+
+    @Override
     public void onPacket(TextPacket packet) {
         if (packet.getType() == TextPacket.TextType.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());

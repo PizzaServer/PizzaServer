@@ -64,6 +64,18 @@ public interface Player extends LivingEntity {
     void setSkin(Skin skin);
 
     /**
+     * Check if the player is sneaking
+     * @return sneaking status
+     */
+    boolean isSneaking();
+
+    /**
+     * Change if the player is sneaking
+     * @param sneaking sneaking status
+     */
+    void setSneaking(boolean sneaking);
+
+    /**
      * Get the player list of a player
      * @return player list of a player
      */

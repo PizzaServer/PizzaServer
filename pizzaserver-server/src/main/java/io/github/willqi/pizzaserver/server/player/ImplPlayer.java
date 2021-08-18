@@ -116,6 +116,17 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public boolean isSneaking() {
+        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING);
+    }
+
+    @Override
+    public void setSneaking(boolean sneaking) {
+        this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
+        this.setMetaData(this.getMetaData());
+    }
+
+    @Override
     public float getHeight() {
         return 1.8f;
     }
