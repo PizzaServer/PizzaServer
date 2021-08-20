@@ -215,7 +215,7 @@ public class ImplServer implements Server {
     }
 
     public void registerSession(BedrockClientSession session) {
-        session.setPacketHandler(new LoginPacketHandler(this, session));
+        session.addPacketHandler(new LoginPacketHandler(this, session));
         this.sessions.add(session);
     }
 

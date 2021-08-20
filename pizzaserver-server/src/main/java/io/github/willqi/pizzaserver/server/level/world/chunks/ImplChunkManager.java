@@ -76,7 +76,7 @@ public class ImplChunkManager implements ChunkManager {
                             .setWorld(world)
                             .setX(internalChunk.getX())
                             .setZ(internalChunk.getZ())
-                            .setSubChunks(internalChunk.getSubChunks())
+                            .setChunk(internalChunk)
                             .build();
                 } catch (IOException exception) {
                     this.getWorld().getServer().getLogger().error(String.format("Failed to retrieve chunk (%s, %s) from provider", x, z), exception);

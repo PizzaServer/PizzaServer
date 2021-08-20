@@ -9,8 +9,10 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.meta.ImplEntityMetaData;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.RemoveEntityPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
 
 import java.util.HashSet;
@@ -18,15 +20,16 @@ import java.util.Set;
 
 public abstract class BaseEntity implements Entity {
 
-    public static long ID;
+    public static long ID = 1;
 
+    protected final long id;
+    protected volatile float x;
+    protected volatile float y;
+    protected volatile float z;
+    protected volatile World world;
 
-    private final long id;
-    private final Set<Player> spawnedTo = new HashSet<>();
     protected boolean spawned;
-
-    private Location location = null;
-
+    private final Set<Player> spawnedTo = new HashSet<>();
     private EntityMetaData metaData = new ImplEntityMetaData();
 
 
@@ -40,32 +43,62 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
-    public Location getLocation() {
-        return this.location;
+    public float getX() {
+        return this.x;
     }
 
     @Override
-    public void setLocation(Location newLocation) {
-        if (this.location != null) {
-            Chunk oldChunk = this.getChunk();
-            Chunk newChunk = newLocation.getChunk();
-            if (!oldChunk.equals(newChunk)) {
-                oldChunk.removeEntity(this);
-                for (Player viewer : this.getViewers()) {
-                    if (!newChunk.canBeVisibleTo(viewer)) {
-                        this.despawnFrom(viewer);
-                    }
-                }
+    public float getY() {
+        return this.y;
+    }
 
-                newChunk.addEntity(this);
-                for (Player player : newChunk.getViewers()) {
-                    this.spawnTo(player);
-                }
-            }
+    @Override
+    public float getZ() {
+        return this.z;
+    }
+
+    @Override
+    public int getFloorX() {
+        return (int)Math.floor(this.x);
+    }
+
+    @Override
+    public int getFloorY() {
+        return (int)Math.floor(this.y);
+    }
+
+    @Override
+    public int getFloorZ() {
+        return (int)Math.floor(this.z);
+    }
+
+    @Override
+    public Location getLocation() {
+        return new Location(this.world, new Vector3(this.getX(), this.getY(), this.getZ()));
+    }
+
+    /**
+     * Set the location of the entity
+     * Used internally to setup and to clean up the entity
+     * @param location entity location
+     */
+    public void setLocation(Location location) {
+        if (location != null) {
+            this.x = location.getX();
+            this.y = location.getY();
+            this.z = location.getZ();
+            this.world = location.getWorld();
         } else {
-            newLocation.getChunk().addEntity(this);
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
+            this.world = null;
         }
-        this.location = newLocation;
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return this.getHeight() / 2 + 0.1f;
     }
 
     @Override
@@ -113,9 +146,21 @@ public abstract class BaseEntity implements Entity {
         this.spawned = true;
     }
 
+    /**
+     * Called when the entity is completely despawned
+     */
+    public void onDespawned() {
+        this.spawned = false;
+    }
+
     @Override
     public boolean hasSpawned() {
         return this.spawned;
+    }
+
+    @Override
+    public boolean hasSpawnedTo(Player player) {
+        return this.spawnedTo.contains(player);
     }
 
     @Override
@@ -125,12 +170,21 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public void despawnFrom(Player player) {
-        this.spawnedTo.remove(player);
+        if (this.spawnedTo.remove(player)) {
+            RemoveEntityPacket entityPacket = new RemoveEntityPacket();
+            entityPacket.setUniqueEntityId(this.getId());
+            player.sendPacket(entityPacket);
+        }
+    }
+
+    @Override
+    public void despawn() {
+        this.getWorld().removeEntity(this);
     }
 
     @Override
     public Set<Player> getViewers() {
-        return this.spawnedTo;
+        return new HashSet<>(this.spawnedTo);
     }
 
     @Override

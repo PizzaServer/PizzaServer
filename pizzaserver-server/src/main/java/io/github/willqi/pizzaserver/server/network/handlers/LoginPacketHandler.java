@@ -1,5 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
+import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.utils.Location;
@@ -30,6 +34,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handles preparing/authenticating a client to becoming a valid player
@@ -250,7 +256,14 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                         location = new Location(world, data.getPosition());
                     }
 
-                    this.player.sendPacket(this.getStartGamePacket(world, location, new Vector2(data.getPitch(), data.getYaw())));
+                    PlayerPreSpawnEvent playerPreSpawnEvent = new PlayerPreSpawnEvent(player, location, data.getPitch(), data.getYaw());
+                    this.player.getServer().getEventManager().call(playerPreSpawnEvent);
+                    if (playerPreSpawnEvent.isCancelled()) {
+                        this.player.disconnect();
+                        return;
+                    }
+
+                    this.player.sendPacket(this.getStartGamePacket(world, playerPreSpawnEvent.getStartLocation(), new Vector2(playerPreSpawnEvent.getPitch(), playerPreSpawnEvent.getYaw())));
 
                     // TODO: Add creative contents to prevent mobile clients from crashing
                     CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
@@ -260,8 +273,23 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
                     this.player.sendPacket(biomeDefinitionPacket);
 
+                    // Sent the full player list to this player
+                    List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()
+                            .filter(player -> !player.isHiddenFrom(this.player))
+                            .map(Player::getPlayerListEntry)
+                            .collect(Collectors.toList());
+                    this.player.getPlayerList().addEntries(entries);
+
                     location.getWorld().addEntity(this.player, location);
-                    this.session.setPacketHandler(new FullGamePacketHandler(this.player));
+                    this.session.removePacketHandler(this);
+                    this.session.addPacketHandler(new ChunkBlockPacketHandler(this.player));
+                    this.session.addPacketHandler(new PlayerEntityPacketHandler(this.player));
+
+                    PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(this.player);
+                    this.player.getServer().getEventManager().call(playerSpawnEvent);
+                    if (playerSpawnEvent.isCancelled()) {
+                        this.player.disconnect();
+                    }
                 }).schedule();
     }
 
@@ -282,15 +310,13 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(direction);
-        startGamePacket.setPlayerSpawn(position);
+        startGamePacket.setPlayerSpawn(position.add(0, 2, 0));
 
         // Server
         startGamePacket.setChunkTickRange(this.server.getConfig().getChunkRadius());
         startGamePacket.setCommandsEnabled(true);
-        // packet.setCurrentTick(0);       // TODO: get actual tick count
         startGamePacket.setDefaultGamemode(Gamemode.SURVIVAL);
         startGamePacket.setDifficulty(Difficulty.PEACEFUL);
-        // packet.setEnchantmentSeed(0);   // TODO: find actual seed
         startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
         startGamePacket.setServerName(world.getLevel().getName());
         startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);

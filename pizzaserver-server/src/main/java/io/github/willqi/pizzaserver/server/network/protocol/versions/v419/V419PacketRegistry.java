@@ -27,15 +27,19 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(UpdateBlockPacket.ID, new V419UpdateBlockPacketHandler())
             .register(NetworkChunkPublisherUpdatePacket.ID, new V419NetworkChunkPublisherUpdatePacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler())
+            .register(PlayerListPacket.ID, new V419PlayerListPacketHandler())
+            .register(AddPlayerPacket.ID, new V419AddPlayerPacketHandler())
+            .register(PlayerSkinPacket.ID, new V419PlayerSkinPacketHandler())
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
+            .register(InventoryContentPacket.ID, new V419InventoryContentPacketHandler())
             .register(UpdateAttributesPacket.ID, new V419UpdateAttributesPacketHandler())
             .register(TextPacket.ID, new V419TextPacketHandler())
             .register(SetEntityDataPacket.ID, new V419SetEntityDataPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
             .register(WorldSoundEventPacket.ID, new V419WorldSoundEventPacketHandler())
             .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler())
-            .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler())
-            .register(InventoryContentPacket.ID, new V419InventoryContentPacketHandler());
+            .register(RemoveEntityPacket.ID, new V419RemoveEntityPacketHandler())
+            .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler());
     }
 
 }

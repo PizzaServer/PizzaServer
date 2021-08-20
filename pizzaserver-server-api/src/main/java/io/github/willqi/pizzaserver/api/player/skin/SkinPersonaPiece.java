@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.api.player.skin;
 
+import io.github.willqi.pizzaserver.commons.utils.Check;
+
 import java.util.UUID;
 
 public class SkinPersonaPiece {
@@ -73,7 +75,11 @@ public class SkinPersonaPiece {
         }
 
         public SkinPersonaPiece build() {
-            return new SkinPersonaPiece(this.id, this.type, this.packId, this.productId, this.isDefault);
+            return new SkinPersonaPiece(Check.nullParam(this.id, "id"),
+                    Check.nullParam(this.type, "type"),
+                    Check.nullParam(this.packId, "packId"),
+                    this.productId,
+                    this.isDefault);
         }
 
     }

@@ -7,6 +7,7 @@ import java.util.List;
 public class Skin {
 
     private String skinId;
+    private String fullSkinId;
     private String playFabId;
     private String skinResourcePatch;
     private String geometryData;
@@ -35,6 +36,7 @@ public class Skin {
     // Persona skin
     private Skin(
             String skinId,
+            String fullSkinId,
             String playFabId,
             String skinResourcePatch,
             String geometryData,
@@ -56,6 +58,7 @@ public class Skin {
             boolean trusted
     ) {
         this.skinId = skinId;
+        this.fullSkinId = fullSkinId;
         this.playFabId = playFabId;
         this.skinResourcePatch = skinResourcePatch;
         this.geometryData = geometryData;
@@ -84,6 +87,7 @@ public class Skin {
     // Base skin
     private Skin(
             String skinId,
+            String fullSkinId,
             String playFabId,
             String skinResourcePatch,
             String geometryData,
@@ -99,6 +103,7 @@ public class Skin {
             boolean trusted
     ) {
         this.skinId = skinId;
+        this.fullSkinId = fullSkinId;
         this.playFabId = playFabId;
         this.skinResourcePatch = skinResourcePatch;
         this.geometryData = geometryData;
@@ -130,6 +135,14 @@ public class Skin {
 
     public void setSkinId(String skinId) {
         this.skinId = skinId;
+    }
+
+    public String getFullSkinId() {
+        return this.fullSkinId;
+    }
+
+    public void setFullSkinId(String fullSkinId) {
+        this.fullSkinId = fullSkinId;
     }
 
     public String getPlayFabId() {
@@ -296,6 +309,7 @@ public class Skin {
     public static class Builder {
 
         private String skinId;
+        private String fullSkinId;
         private String playFabId;
         private String skinResourcePatch;
         private String geometryData;
@@ -322,6 +336,11 @@ public class Skin {
 
         public Builder setSkinId(String skinId) {
             this.skinId = skinId;
+            return this;
+        }
+
+        public Builder setFullSkinId(String fullSkinId) {
+            this.fullSkinId = fullSkinId;
             return this;
         }
 
@@ -375,7 +394,7 @@ public class Skin {
             return this;
         }
 
-        public Builder setSkinColor(String skinColor) {
+        public Builder setSkinColour(String skinColor) {
             this.skinColor = skinColor;
             return this;
         }
@@ -420,7 +439,7 @@ public class Skin {
             return this;
         }
 
-        public Builder isPersona(boolean persona) {
+        public Builder setPersona(boolean persona) {
             this.isPersona = persona;
             return this;
         }
@@ -429,9 +448,10 @@ public class Skin {
             if (this.isPersona) {
                 return new Skin(
                         this.skinId,
+                        this.fullSkinId,
                         this.playFabId,
+                        this.skinResourcePatch,
                         this.geometryData,
-                        this.armSize,
                         this.skinHeight,
                         this.skinWidth,
                         this.skinData,
@@ -452,9 +472,10 @@ public class Skin {
             } else {
                 return new Skin(
                         this.skinId,
+                        this.fullSkinId,
                         this.playFabId,
+                        this.skinResourcePatch,
                         this.geometryData,
-                        this.armSize,
                         this.skinHeight,
                         this.skinWidth,
                         this.skinData,

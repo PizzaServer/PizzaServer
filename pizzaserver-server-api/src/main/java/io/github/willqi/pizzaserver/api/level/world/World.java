@@ -4,10 +4,12 @@ import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
+import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
@@ -29,6 +31,23 @@ public interface World {
     Vector3i getSpawnCoordinates();
 
     void setSpawnCoordinates(Vector3i coordinates);
+
+    Chunk getChunk(int x, int z);
+
+    /**
+     * Get the highest block y coordinate at a chunk column
+     * @param coordinates chunk column coordinates
+     * @return y coordinate
+     */
+    int getHighestBlockAt(Vector2i coordinates);
+
+    /**
+     * Get the highest block y coordinate at a chunk column
+     * @param x chunk column x coordinates
+     * @param z chunk column z coordinates
+     * @return y coordinate
+     */
+    int getHighestBlockAt(int x, int z);
 
     Block getBlock(Vector3i position);
 

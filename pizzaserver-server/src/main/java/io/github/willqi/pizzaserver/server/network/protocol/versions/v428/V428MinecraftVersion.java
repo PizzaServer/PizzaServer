@@ -5,7 +5,6 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecra
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.V419PacketBuffer;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.V422PacketRegistry;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
@@ -37,13 +36,18 @@ public class V428MinecraftVersion extends BaseMinecraftVersion {
     }
 
     @Override
+    public BasePacketBuffer createPacketBuffer() {
+        return new V428PacketBuffer();
+    }
+
+    @Override
     public BasePacketBuffer createPacketBuffer(ByteBuf buf) {
-        return new V419PacketBuffer(buf);
+        return new V428PacketBuffer(buf);
     }
 
     @Override
     public BasePacketBuffer createPacketBuffer(int initialCapacity) {
-        return new V419PacketBuffer(initialCapacity);
+        return new V428PacketBuffer(initialCapacity);
     }
 
 }
