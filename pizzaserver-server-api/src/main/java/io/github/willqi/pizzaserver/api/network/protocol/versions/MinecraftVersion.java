@@ -15,4 +15,11 @@ public interface MinecraftVersion extends BlockRuntimeMapper {
      */
     String getVersion();
 
+    /**
+     * Resolves the runtime id of an item given its item id
+     * @param itemName item id
+     * @return item runtime id
+     */
+    int getItemRuntimeId(String itemName);
+
 }

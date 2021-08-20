@@ -151,6 +151,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         }
     }
 
+    @Override
     public int getItemRuntimeId(String itemName) {
         try {
             return this.itemRuntimeIds.get(itemName);

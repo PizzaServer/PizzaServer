@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.types.ItemTypeID;
 import io.github.willqi.pizzaserver.api.item.types.components.BlockItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
@@ -52,9 +53,14 @@ public class V419PacketBuffer extends BasePacketBuffer {
 
     @Override
     public BasePacketBuffer writeItem(NetworkItemStackData data) {
+        if (data.getRuntimeId() == 0) {
+            this.writeByte(0);
+            return this;
+        }
+
         ItemStack itemStack = data.getItemStack();
 
-        // network id
+        // item id
         this.writeVarInt(data.getRuntimeId());
 
         // item damage + count
@@ -72,6 +78,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
             }
 
             this.writeShortLE(resultStream.toByteArray().length);
+            this.writeByte(1);  // Supposedly this is hardcoded?
             this.writeBytes(resultStream.toByteArray());
         } else {
             this.writeShortLE(0);
@@ -92,6 +99,10 @@ public class V419PacketBuffer extends BasePacketBuffer {
         this.writeVarInt(itemStack.getItemType().getOnlyBlocksCanBreak().size());
         for (BaseBlockType blockType : itemStack.getItemType().getOnlyBlocksCanBreak()) {
             this.writeString(blockType.getBlockId());
+        }
+
+        if (itemStack.getItemType().getItemId().equals(ItemTypeID.SHIELD)) {
+            this.writeVarInt(0);    // TODO: blocking tick for shields? Investigate and serialize correctly
         }
 
         return this;
