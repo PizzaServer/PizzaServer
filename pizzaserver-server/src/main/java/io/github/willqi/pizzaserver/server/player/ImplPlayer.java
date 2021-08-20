@@ -129,9 +129,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         if (sneaking && !isCurrentlySneaking) {
             PlayerStartSneakingEvent event = new PlayerStartSneakingEvent(this);
             this.getServer().getEventManager().call(event);
+            updateSneakingData = true;
         } else if (!sneaking && isCurrentlySneaking) {
             PlayerStopSneakingEvent event = new PlayerStopSneakingEvent(this);
             this.getServer().getEventManager().call(event);
+            updateSneakingData = true;
         }
 
         if (updateSneakingData) {
