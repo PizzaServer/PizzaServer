@@ -10,6 +10,19 @@ public class ItemStack {
     private int damage;
     private NBTCompound compound;
 
+
+    public ItemStack(String itemId) {
+        this(ItemRegistry.getItemType(itemId));
+    }
+
+    public ItemStack(String itemId, int count) {
+        this(ItemRegistry.getItemType(itemId), count);
+    }
+
+    public ItemStack(String  itemId, int count, int damage) {
+        this(ItemRegistry.getItemType(itemId), count, damage);
+    }
+
     public ItemStack(BaseItemType itemType) {
         this(itemType, 1);
     }

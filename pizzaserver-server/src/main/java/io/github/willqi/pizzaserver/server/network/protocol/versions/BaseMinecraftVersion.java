@@ -15,6 +15,7 @@ import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
+import io.github.willqi.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
@@ -29,11 +30,11 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     private final ImplServer server;
 
-    private NBTCompound biomesDefinitions;
-    private final Map<Tuple<String, NBTCompound>, Integer> blockStates = new HashMap<>();
+    protected NBTCompound biomesDefinitions;
+    protected final Map<Tuple<String, NBTCompound>, Integer> blockStates = new HashMap<>();
 
-    private final Map<String, Integer> itemRuntimeIds = new HashMap<>();
-    private final Set<StartGamePacket.ItemState> itemStates = new HashSet<>();
+    protected final Map<String, Integer> itemRuntimeIds = new HashMap<>();
+    protected final Set<StartGamePacket.ItemState> itemStates = new HashSet<>();
 
 
     public BaseMinecraftVersion(ImplServer server) throws IOException {
@@ -66,24 +67,11 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     }
 
     public void loadBlockStates() throws IOException {
-        this.blockStates.clear();
         try (NBTInputStream blockStatesNBTStream = new NBTInputStream(
                 new VarIntDataInputStream(this.getProtocolResourceStream("block_states.nbt"))
         )) {
             // keySet returns in ascending rather than descending so we have to reverse it
-            SortedMap<String, List<NBTCompound>> blockStates = new TreeMap<>(Collections.reverseOrder((fullBlockIdA, fullBlockIdB) -> {
-                // Runtime ids are mapped by their part b first before part a (e.g. b:b goes before b:c and a:d)
-                String blockIdA = fullBlockIdA.substring(fullBlockIdA.indexOf(":") + 1);
-                String blockIdB = fullBlockIdB.substring(fullBlockIdB.indexOf(":") + 1);
-                int blockIdComparison = blockIdB.compareTo(blockIdA);
-                if (blockIdComparison != 0) {
-                    return blockIdComparison;
-                }
-                // Compare by namespace
-                String namespaceA = fullBlockIdA.substring(0, fullBlockIdA.indexOf(":"));
-                String namespaceB = fullBlockIdB.substring(0, fullBlockIdB.indexOf(":"));
-                return namespaceB.compareTo(namespaceA);
-            }));
+            SortedMap<String, List<NBTCompound>> blockStates = new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compareNamespaces));
 
             // Parse block states
             while (blockStatesNBTStream.available() > 0) {
@@ -117,23 +105,35 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         try (Reader itemStatesReader = new InputStreamReader(this.getProtocolResourceStream("runtime_item_states.json"))) {
             JsonArray jsonItemStates = GSON.fromJson(itemStatesReader, JsonArray.class);
 
-            int customIdStart = 0;  // Custom items can be assigned any id as long as it does not conflict with an existing item
+            int customItemIdStart = 0;  // Custom items can be assigned any id as long as it does not conflict with an existing item
             for (JsonElement element : jsonItemStates) {
                 JsonObject itemState = element.getAsJsonObject();
 
                 String itemId = itemState.get("name").getAsString();
                 int runtimeId = itemState.get("id").getAsInt();
-                customIdStart = Math.max(customIdStart, runtimeId + 1);
+                customItemIdStart = Math.max(customItemIdStart, runtimeId + 1);
 
                 this.itemRuntimeIds.put(itemId, runtimeId);
                 this.itemStates.add(new StartGamePacket.ItemState(itemId, runtimeId, false));
             }
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
+            // Register custom items
             for (BaseItemType itemType : ItemRegistry.getCustomTypes()) {
-                int runtimeId = customIdStart++;
+                int runtimeId = customItemIdStart++;
                 this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
                 this.itemStates.add(new StartGamePacket.ItemState(itemType.getItemId(), runtimeId, true));
+            }
+
+            //Register custom block items
+            int customBlockIdStart = 1000;
+            // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
+            // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
+            // So we will sort it the same way here
+            SortedSet<BaseBlockType> sortedCustomBlockTypes = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compareNamespaces(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+            sortedCustomBlockTypes.addAll(BlockRegistry.getCustomTypes());
+            for (BaseBlockType customBlockType : sortedCustomBlockTypes) {
+                this.itemRuntimeIds.put(customBlockType.getBlockId(), 255 - customBlockIdStart++);
             }
         }
     }
