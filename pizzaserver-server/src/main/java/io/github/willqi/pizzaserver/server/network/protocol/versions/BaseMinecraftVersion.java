@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
+import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
@@ -120,9 +121,11 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
             // Register custom items
             for (BaseItemType itemType : ItemRegistry.getCustomTypes()) {
-                int runtimeId = customItemIdStart++;
-                this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
-                this.itemStates.add(new StartGamePacket.ItemState(itemType.getItemId(), runtimeId, true));
+                if (!(itemType instanceof BlockItemType)) { // We register item representations of custom blocks later
+                    int runtimeId = customItemIdStart++;
+                    this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
+                    this.itemStates.add(new StartGamePacket.ItemState(itemType.getItemId(), runtimeId, true));
+                }
             }
 
             //Register custom block items
@@ -133,7 +136,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             SortedSet<BaseBlockType> sortedCustomBlockTypes = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compareNamespaces(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
             sortedCustomBlockTypes.addAll(BlockRegistry.getCustomTypes());
             for (BaseBlockType customBlockType : sortedCustomBlockTypes) {
-                this.itemRuntimeIds.put(customBlockType.getBlockId(), 255 - customBlockIdStart++);
+                this.itemRuntimeIds.put(customBlockType.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
             }
         }
     }
