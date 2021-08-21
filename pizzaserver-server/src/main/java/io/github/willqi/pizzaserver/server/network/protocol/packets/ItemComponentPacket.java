@@ -26,7 +26,7 @@ public class ItemComponentPacket extends BaseBedrockPacket {
         return Collections.unmodifiableSet(this.customItemTypes);
     }
 
-    public void SetEntries(Set<Entry> customItemTypes) {
+    public void setEntries(Set<Entry> customItemTypes) {
         this.customItemTypes = customItemTypes;
     }
 
