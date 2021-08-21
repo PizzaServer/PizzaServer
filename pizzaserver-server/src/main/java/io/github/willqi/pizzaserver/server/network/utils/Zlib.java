@@ -12,10 +12,10 @@ public class Zlib {
     // How big should our temporary zlib array allocate space for?
     private static final int MAX_CHUNK_SIZE = 1024;
 
-    public static ByteBuf compressBuffer(ByteBuf buffer) {
+    public static ByteBuf compressBuffer(ByteBuf buffer, int level) {
         byte[] data = new byte[buffer.readableBytes()];
         buffer.readBytes(data);
-        Deflater compressor = new Deflater(0, true);
+        Deflater compressor = new Deflater(level, true);
         compressor.setInput(data);
         compressor.finish();
 

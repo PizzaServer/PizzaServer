@@ -72,4 +72,8 @@ public class ServerConfig {
         return (float)this.config.getDouble("world-default-pitch");
     }
 
+    public int getNetworkCompressionLevel() {
+        return this.config.getInteger("network-compression-level");
+    }
+
 }

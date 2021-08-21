@@ -18,7 +18,7 @@ public class ZlibTests {
         ByteBuf inputBuffer = ByteBufAllocator.DEFAULT.buffer();
         inputBuffer.writeBytes(inputBytes);
 
-        ByteBuf compressed = Zlib.compressBuffer(inputBuffer);
+        ByteBuf compressed = Zlib.compressBuffer(inputBuffer, 7);
         ByteBuf decompressed;
         try {
             decompressed = Zlib.decompressBuffer(compressed);

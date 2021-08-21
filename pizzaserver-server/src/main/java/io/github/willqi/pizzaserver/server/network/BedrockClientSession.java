@@ -109,7 +109,7 @@ public class BedrockClientSession extends Thread {
             packetWrapperBuffer.writeBytes(minecraftPacketBuffer);
 
             // Compress the prefixed buffer and write it to the raknet buffer to send off!
-            ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer);
+            ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer, this.getServer().getPizzaServer().getConfig().getNetworkCompressionLevel());
             rakNetBuffer.writeBytes(compressedBuffer);
             this.serverSession.send(rakNetBuffer);
 
