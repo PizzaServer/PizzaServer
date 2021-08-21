@@ -47,6 +47,14 @@ public abstract class BaseItemType {
     }
 
     /**
+     * If this item can be used on a liquid
+     * @return if the item can be used on a liquid
+     */
+    public boolean canClickOnLiquids() {
+        return false;
+    }
+
+    /**
      * Get the only blocks that this item can break
      * If empty, this item is allowed to mine any block
      * @return only blocks this item can break
