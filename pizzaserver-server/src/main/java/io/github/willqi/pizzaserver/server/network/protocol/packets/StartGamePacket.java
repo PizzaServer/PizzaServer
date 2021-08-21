@@ -374,7 +374,7 @@ public class StartGamePacket extends BaseBedrockPacket {
      * @param blockProperties custom block properties
      */
     public void setBlockProperties(Set<BaseBlockType> blockProperties) {
-        this.blockProperties = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compareNamespaces(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+        this.blockProperties = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
         this.blockProperties.addAll(blockProperties);
     }
 

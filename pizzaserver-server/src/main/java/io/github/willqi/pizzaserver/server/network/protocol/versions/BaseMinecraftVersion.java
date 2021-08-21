@@ -72,7 +72,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
                 new VarIntDataInputStream(this.getProtocolResourceStream("block_states.nbt"))
         )) {
             // keySet returns in ascending rather than descending so we have to reverse it
-            SortedMap<String, List<NBTCompound>> blockStates = new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compareNamespaces));
+            SortedMap<String, List<NBTCompound>> blockStates = new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
 
             // Parse block states
             while (blockStatesNBTStream.available() > 0) {
@@ -107,6 +107,8 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             JsonArray jsonItemStates = GSON.fromJson(itemStatesReader, JsonArray.class);
 
             int customItemIdStart = 0;  // Custom items can be assigned any id as long as it does not conflict with an existing item
+
+            // Register Vanilla items
             for (JsonElement element : jsonItemStates) {
                 JsonObject itemState = element.getAsJsonObject();
 
@@ -133,7 +135,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
-            SortedSet<BaseBlockType> sortedCustomBlockTypes = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compareNamespaces(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+            SortedSet<BaseBlockType> sortedCustomBlockTypes = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
             sortedCustomBlockTypes.addAll(BlockRegistry.getCustomTypes());
             for (BaseBlockType customBlockType : sortedCustomBlockTypes) {
                 this.itemRuntimeIds.put(customBlockType.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id

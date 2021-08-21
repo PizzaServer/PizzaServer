@@ -9,7 +9,7 @@ package io.github.willqi.pizzaserver.server.network.utils;
  */
 public class MinecraftNamespaceComparator {
 
-    public static int compareNamespaces(String idA, String idB) {
+    public static int compare(String idA, String idB) {
         String childIdA = idA.substring(idA.indexOf(":") + 1);
         String childIdB = idB.substring(idB.indexOf(":") + 1);
 
