@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.item.types.ItemTypeID;
-import io.github.willqi.pizzaserver.api.item.types.components.BlockItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
@@ -85,8 +85,8 @@ public class V419PacketBuffer extends BasePacketBuffer {
         }
 
         // Blocks this item can be placed on
-        if (itemStack instanceof BlockItemComponent) {
-            BaseBlockType blockType = ((BlockItemComponent)itemStack).getBlock().getBlockType();
+        if (itemStack.getItemType() instanceof BlockItemType) {
+            BaseBlockType blockType = ((BlockItemType)itemStack.getItemType()).getBlockType();
             this.writeVarInt(blockType.getPlaceableOnlyOn().size());
             for (BaseBlockType placeableOnBlockType : blockType.getPlaceableOnlyOn()) {
                 this.writeString(placeableOnBlockType.getBlockId());

@@ -622,7 +622,7 @@ public class StartGamePacket extends BaseBedrockPacket {
         }
 
         public boolean isComponentBased() {
-            return false;
+            return this.componentBased;
         }
 
     }

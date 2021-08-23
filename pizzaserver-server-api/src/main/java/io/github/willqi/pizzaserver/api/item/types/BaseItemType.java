@@ -35,7 +35,7 @@ public abstract class BaseItemType {
      * @return if the item should be held visually like a tool
      */
     public boolean isHandEquipped() {
-        return true;    // TODO: Should this be false by default?
+        return false;    // TODO: Should this be false by default?
     }
 
     /**
@@ -77,7 +77,7 @@ public abstract class BaseItemType {
      * @return {@link ItemStack}
      */
     public ItemStack create(int amount) {
-        return this.create(1, 0);
+        return this.create(amount, 0);
     }
 
     /**
