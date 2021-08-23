@@ -39,6 +39,14 @@ public abstract class BaseItemType {
     }
 
     /**
+     * If this item can be used on a liquid
+     * @return if the item can be used on a liquid
+     */
+    public boolean canClickOnLiquids() {
+        return false;
+    }
+
+    /**
      * Returns if this item should appear enchanted
      * @return if the item should appear enchanted
      */
@@ -47,11 +55,52 @@ public abstract class BaseItemType {
     }
 
     /**
-     * If this item can be used on a liquid
-     * @return if the item can be used on a liquid
+     * Returns if this item should appear flipped on the client
+     * @return if this item should appear flipped on the client
      */
-    public boolean canClickOnLiquids() {
+    public boolean isMirroredArt() {
         return false;
+    }
+
+    /**
+     * Returns the animation to use when using this item
+     * @return animation to use upon using this item
+     */
+    public UseAnimationType getUseAnimationType() {
+        return UseAnimationType.NONE;
+    }
+
+    /**
+     * Amount of ticks to show this animation for
+     * @return how long to show the animation for
+     */
+    public int getUseDuration() {
+        return 32;
+    }
+
+    /**
+     * Returns if this item is separated by its damage
+     * (e.g. durability)
+     * @return if this item should be stacked by damage
+     */
+    public boolean isStackedByDamage() {
+        return false;
+    }
+
+    /**
+     * Returns the base amount of damage this item does
+     * @return the base amount of damage this item does
+     */
+    public int getDamage() {
+        return 1;
+    }
+
+    /**
+     * Returns the level of mining speed this item provides
+     * @return level of mining speed this item provides
+     */
+    public int getMiningSpeed() {
+        return 1;
     }
 
     /**
@@ -88,6 +137,13 @@ public abstract class BaseItemType {
      */
     public ItemStack create(int amount, int damage) {
         return new ItemStack(this, amount, damage);
+    }
+
+
+    public enum UseAnimationType {
+        NONE,
+        FOOD,
+        POTION
     }
 
 }

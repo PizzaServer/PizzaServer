@@ -21,8 +21,8 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
 
             NBTCompound components = new NBTCompound();
             this.writeComponents(entry.getCustomItemType(), components);
-
             containerCompound.setCompound("components", components);
+
             buffer.writeNBTCompound(containerCompound);
         }
     }
@@ -70,9 +70,17 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
      */
     protected void writeItemProperties(BaseItemType itemType, NBTCompound properties) {
         properties.setByte("allow_off_hand", itemType.isAllowedInOffHand() ? (byte)0x01 : (byte)0x00)
+                .setInteger("creative_category", 2)
+                .setInteger("damage", itemType.getDamage())
+                .setByte("foil", itemType.hasFoil() ? (byte)0x01 : (byte)0x00)
                 .setByte("hand_equipped", itemType.isHandEquipped() ? (byte)0x01 : (byte)0x00)
                 .setByte("liquid_clipped", itemType.canClickOnLiquids() ? (byte)0x01 : (byte)0x00)
-                .setInteger("max_stack_size", itemType.getMaxStackSize());
+                .setInteger("max_stack_size", itemType.getMaxStackSize())
+                .setFloat("mining_speed", itemType.getMiningSpeed())
+                .setByte("mirrored_art", itemType.isMirroredArt() ? (byte)0x01 : (byte)0x00)
+                .setByte("stacked_by_data", itemType.isStackedByDamage() ? (byte)0x01 : (byte)0x00)
+                .setInteger("use_animation", itemType.getUseAnimationType().ordinal())
+                .setInteger("use_duration", itemType.getUseDuration());
     }
 
 }
