@@ -19,3 +19,6 @@ chunk-requests-processing-cap: 64
 
 # To what degree should packets be compressed
 network-compression-level: 7
+
+# If xbox chains should be verified
+online-mode: true

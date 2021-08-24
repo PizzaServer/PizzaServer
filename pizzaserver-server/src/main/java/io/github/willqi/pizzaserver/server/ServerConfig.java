@@ -76,4 +76,12 @@ public class ServerConfig {
         return this.config.getInteger("network-compression-level");
     }
 
+    /**
+     * Returns if xbox chains should be verified
+     * @return if xbox chains should be verified
+     */
+    public boolean isOnlineMode() {
+        return this.config.getBoolean("online-mode");
+    }
+
 }
