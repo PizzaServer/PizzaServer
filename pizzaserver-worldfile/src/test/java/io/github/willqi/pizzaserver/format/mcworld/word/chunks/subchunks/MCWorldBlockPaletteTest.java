@@ -12,14 +12,14 @@ public class MCWorldBlockPaletteTest {
     public void resizeShouldProperlyMovePaletteIndexes() {
         MCWorldBlockPalette palette = new MCWorldBlockPalette();
 
-        MCWorldBlockPalette.MCWorldEntry[] entries = new MCWorldBlockPalette.MCWorldEntry[]{
-                new MCWorldBlockPalette.MCWorldEntry("a", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldEntry("b", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldEntry("c", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldEntry("d", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldEntry("e", new NBTCompound(), 0)
+        MCWorldBlockPalette.MCWorldBlockPaletteEntry[] entries = new MCWorldBlockPalette.MCWorldBlockPaletteEntry[]{
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("a", new NBTCompound(), 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("b", new NBTCompound(), 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("c", new NBTCompound(), 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("d", new NBTCompound(), 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("e", new NBTCompound(), 0)
         };
-        for (MCWorldBlockPalette.MCWorldEntry entry : entries) {
+        for (MCWorldBlockPalette.MCWorldBlockPaletteEntry entry : entries) {
             palette.add(entry);
         }
         palette.removeEntry(entries[0]);

@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
+import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import net.daporkchop.lib.common.function.io.IOFunction;
@@ -62,7 +63,7 @@ public class MCWorldBlockLayer implements BlockLayer {
     private byte[] serialize(IOFunction<MCWorldBlockPalette, byte[]> paletteSerializer) {
         this.cleanUpPalette();
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        int bitsPerBlock = (int)Math.ceil(Math.log(this.palette.getAllEntries().size()) / Math.log(2));
+        int bitsPerBlock = Math.max((int)Math.ceil(Math.log(this.palette.getAllEntries().size()) / Math.log(2)), 1);
         int blocksPerWord = 32 / bitsPerBlock;
         int wordsPerChunk = (int)Math.ceil(4096d / blocksPerWord);
 
