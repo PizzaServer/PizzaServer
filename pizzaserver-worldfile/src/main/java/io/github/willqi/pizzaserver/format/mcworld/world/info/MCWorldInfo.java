@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 /**
  * Representative of the information in the level.dat file
@@ -105,39 +104,39 @@ public class MCWorldInfo implements LevelData, Cloneable {
             inputStream.skip(8);    // TODO: These 8 bytes are important when writing the level.dat file
             NBTCompound compound = inputStream.readCompound();
             
-            this.setCommandsEnabled(compound.getByte("commandsEnabled") == 0b1);
+            this.setCommandsEnabled(compound.getBoolean("commandsEnabled"));
             this.setCurrentTick(compound.getLong("currentTick"));
-            this.setHasBeenLoadedInCreative(compound.getByte("hasBeenLoadedInCreative") == 0b1);
-            this.setHasLockedResourcePack(compound.getByte("hasLockedResourcePack") == 0b1);
-            this.setHasLockedBehaviorPack(compound.getByte("hasLockedBehaviorPack") == 0b1);
+            this.setHasBeenLoadedInCreative(compound.getBoolean("hasBeenLoadedInCreative"));
+            this.setHasLockedResourcePack(compound.getBoolean("hasLockedResourcePack"));
+            this.setHasLockedBehaviorPack(compound.getBoolean("hasLockedBehaviorPack"));
             this.setExperiments(compound.getCompound("experiments"));
-            this.setForceGamemode(compound.getByte("ForceGameType") == 0b1);
-            this.setImmutable(compound.getByte("immutableWorld") == 0b1);
-            this.setConfirmedPlatformLockedContent(compound.getByte("ConfirmedPlatformLockedContent") == 0b1);
-            this.setFromWorldTemplate(compound.getByte("isFromWorldTemplate") == 0b1);
-            this.setFromLockedTemplate(compound.getByte("isFromLockedTemplate") == 0b1);
-            this.setIsMultiplayerGame(compound.getByte("MultiplayerGame") == 0b1);
-            this.setIsSingleUseWorld(compound.getByte("isSingleUseWorld") == 0b1);
-            this.setIsWorldTemplateOptionsLocked(compound.getByte("isWorldTemplateOptionLocked") == 0b1);
-            this.setLanBroadcast(compound.getByte("LANBroadcast") == 0b1);
-            this.setLanBroadcastIntent(compound.getByte("LANBroadcastIntent") == 0b1);
-            this.setMultiplayerGameIntent(compound.getByte("MultiplayerGameIntent") == 0b1);
+            this.setForceGamemode(compound.getBoolean("ForceGameType"));
+            this.setImmutable(compound.getBoolean("immutableWorld"));
+            this.setConfirmedPlatformLockedContent(compound.getBoolean("ConfirmedPlatformLockedContent"));
+            this.setFromWorldTemplate(compound.getBoolean("isFromWorldTemplate"));
+            this.setFromLockedTemplate(compound.getBoolean("isFromLockedTemplate"));
+            this.setIsMultiplayerGame(compound.getBoolean("MultiplayerGame"));
+            this.setIsSingleUseWorld(compound.getBoolean("isSingleUseWorld"));
+            this.setIsWorldTemplateOptionsLocked(compound.getBoolean("isWorldTemplateOptionLocked"));
+            this.setLanBroadcast(compound.getBoolean("LANBroadcast"));
+            this.setLanBroadcastIntent(compound.getBoolean("LANBroadcastIntent"));
+            this.setMultiplayerGameIntent(compound.getBoolean("MultiplayerGameIntent"));
             this.setPlatformBroadcastIntent(compound.getInteger("PlatformBroadcastIntent"));
-            this.setRequiresCopiedPackRemovalCheck(compound.getByte("requiresCopiedPackRemovalCheck") == 0b1);
+            this.setRequiresCopiedPackRemovalCheck(compound.getBoolean("requiresCopiedPackRemovalCheck"));
             this.setServerChunkTickRange(compound.getInteger("serverChunkTickRange"));
-            this.setSpawnOnlyV1Villagers(compound.getByte("SpawnV1Villagers") == 0b1);
+            this.setSpawnOnlyV1Villagers(compound.getBoolean("SpawnV1Villagers"));
             this.setStorageVersion(compound.getInteger("StorageVersion"));
-            this.setTexturePacksRequired(compound.getByte("texturePacksRequired") == 0b1);
-            this.setUseMsaGamerTagsOnly(compound.getByte("useMsaGamertagsOnly") == 0b1);
+            this.setTexturePacksRequired(compound.getBoolean("texturePacksRequired"));
+            this.setUseMsaGamerTagsOnly(compound.getBoolean("useMsaGamertagsOnly"));
             this.setName(compound.getString("LevelName"));
             this.setWorldStartCount(compound.getLong("worldStartCount"));
             this.setXboxLiveBroadcastIntent(compound.getInteger("XBLBroadcastIntent"));
             this.setEduOffer(compound.getInteger("eduOffer"));
-            this.setEduEnabled(compound.getByte("educationFeaturesEnabled") == 0b1);
+            this.setEduEnabled(compound.getBoolean("educationFeaturesEnabled"));
             this.setBiomeOverride(compound.getString("BiomeOverride"));
-            this.setBonusChestEnabled(compound.getByte("bonusChestEnabled") == 0b1);
-            this.setBonusChestSpawned(compound.getByte("bonusChestSpawned") == 0b1);
-            this.setCenterMapsToOrigin(compound.getByte("CenterMapsToOrigin") == 0b1);
+            this.setBonusChestEnabled(compound.getBoolean("bonusChestEnabled"));
+            this.setBonusChestSpawned(compound.getBoolean("bonusChestSpawned"));
+            this.setCenterMapsToOrigin(compound.getBoolean("CenterMapsToOrigin"));
             this.setDefaultGamemode(Gamemode.values()[compound.getInteger("GameType")]);
             this.setDifficulty(Difficulty.values()[compound.getInteger("Difficulty")]);
             this.setFlatWorldLayers(compound.getString("FlatWorldLayers"));
@@ -157,7 +156,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
                     compound.getInteger("SpawnY"), 
                     compound.getInteger("SpawnZ")
             ));
-            this.setStartWithMapEnabled(compound.getByte("startWithMapEnabled") == 0x01);
+            this.setStartWithMapEnabled(compound.getBoolean("startWithMapEnabled"));
             this.setTime(compound.getLong("Time"));
             this.setWorldType(WorldType.values()[compound.getInteger("Generator")]);
             this.setBaseGameVersion(compound.getString("baseGameVersion"));
@@ -180,20 +179,20 @@ public class MCWorldInfo implements LevelData, Cloneable {
             NBTCompound abilities = compound.getCompound("abilities");
             this.setPlayerAbilities(
                     new PlayerAbilities()
-                            .setCanAttackMobs(abilities.getByte("attackmobs") == 0b1)
-                            .setCanAttackPlayers(abilities.getByte("attackplayers") == 0b1)
-                            .setCanBuild(abilities.getByte("build") == 0b1)
-                            .setCanFly(abilities.getByte("mayfly") == 0b1)
-                            .setCanInstaBuild(abilities.getByte("instabuild") == 0b1)
-                            .setCanMine(abilities.getByte("mine") == 0b1)
-                            .setCanOpenContainers(abilities.getByte("opencontainers") == 0b1)
-                            .setCanTeleport(abilities.getByte("teleport") == 0b1)
-                            .setCanUseDoorsAndSwitches(abilities.getByte("doorsandswitches") == 0b1)
+                            .setCanAttackMobs(abilities.getBoolean("attackmobs"))
+                            .setCanAttackPlayers(abilities.getBoolean("attackplayers"))
+                            .setCanBuild(abilities.getBoolean("build"))
+                            .setCanFly(abilities.getBoolean("mayfly"))
+                            .setCanInstaBuild(abilities.getBoolean("instabuild"))
+                            .setCanMine(abilities.getBoolean("mine"))
+                            .setCanOpenContainers(abilities.getBoolean("opencontainers"))
+                            .setCanTeleport(abilities.getBoolean("teleport"))
+                            .setCanUseDoorsAndSwitches(abilities.getBoolean("doorsandswitches"))
                             .setFlySpeed(abilities.getFloat("flySpeed"))
-                            .setIsFlying(abilities.getByte("flying") == 0b1)
-                            .setIsInvulnerable(abilities.getByte("invulnerable") == 0b1)
-                            .setIsOp(abilities.getByte("op") == 0b1)
-                            .setIsLightning(abilities.getByte("lightning") == 0b1)
+                            .setIsFlying(abilities.getBoolean("flying"))
+                            .setIsInvulnerable(abilities.getBoolean("invulnerable"))
+                            .setIsOp(abilities.getBoolean("op"))
+                            .setIsLightning(abilities.getBoolean("lightning"))
                             .setPermissionsLevel(abilities.getInteger("permissionsLevel"))
                             .setPlayerPermissionsLevel(abilities.getInteger("playerPermissionsLevel"))
                             .setWalkSpeed(abilities.getFloat("walkSpeed"))
@@ -201,32 +200,32 @@ public class MCWorldInfo implements LevelData, Cloneable {
 
             this.setGameRules(new HashMap<GameRuleID, GameRule<?>>(){
                 {
-                    put(GameRuleID.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleID.COMMAND_BLOCK_OUTPUT, compound.getByte("commandblockoutput") == 0b1));
-                    put(GameRuleID.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleID.COMMAND_BLOCKS_ENABLED, compound.getByte("commandblocksenabled") == 0b1));
-                    put(GameRuleID.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleID.DO_DAYLIGHT_CYCLE, compound.getByte("dodaylightcycle") == 0b1));
-                    put(GameRuleID.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleID.DO_ENTITY_DROPS, compound.getByte("doentitydrops") == 0b1));
-                    put(GameRuleID.DO_FIRE_TICK, new BooleanGameRule(GameRuleID.DO_FIRE_TICK, compound.getByte("dofiretick") == 0b1));
-                    put(GameRuleID.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleID.DO_IMMEDIATE_RESPAWN, compound.getByte("doimmediaterespawn") == 0b1));
-                    put(GameRuleID.DO_INSOMNIA, new BooleanGameRule(GameRuleID.DO_INSOMNIA, compound.getByte("doinsomnia") == 0b1));
-                    put(GameRuleID.DO_MOB_LOOT, new BooleanGameRule(GameRuleID.DO_MOB_LOOT, compound.getByte("domobloot") == 0b1));
-                    put(GameRuleID.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleID.DO_MOB_SPAWNING, compound.getByte("domobspawning") == 0b1));
-                    put(GameRuleID.DO_TILE_DROPS, new BooleanGameRule(GameRuleID.DO_TILE_DROPS, compound.getByte("dotiledrops") == 0b1));
-                    put(GameRuleID.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleID.DO_WEATHER_CYCLE, compound.getByte("doweathercycle") == 0b1));
-                    put(GameRuleID.DROWNING_DAMAGE, new BooleanGameRule(GameRuleID.DROWNING_DAMAGE, compound.getByte("drowningdamage") == 0b1));
-                    put(GameRuleID.FALL_DAMAGE, new BooleanGameRule(GameRuleID.FALL_DAMAGE, compound.getByte("falldamage") == 0b1));
-                    put(GameRuleID.FIRE_DAMAGE, new BooleanGameRule(GameRuleID.FIRE_DAMAGE, compound.getByte("firedamage") == 0b1));
-                    put(GameRuleID.KEEP_INVENTORY, new BooleanGameRule(GameRuleID.KEEP_INVENTORY, compound.getByte("keepinventory") == 0b1));
+                    put(GameRuleID.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleID.COMMAND_BLOCK_OUTPUT, compound.getBoolean("commandblockoutput")));
+                    put(GameRuleID.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleID.COMMAND_BLOCKS_ENABLED, compound.getBoolean("commandblocksenabled")));
+                    put(GameRuleID.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleID.DO_DAYLIGHT_CYCLE, compound.getBoolean("dodaylightcycle")));
+                    put(GameRuleID.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleID.DO_ENTITY_DROPS, compound.getBoolean("doentitydrops")));
+                    put(GameRuleID.DO_FIRE_TICK, new BooleanGameRule(GameRuleID.DO_FIRE_TICK, compound.getBoolean("dofiretick")));
+                    put(GameRuleID.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleID.DO_IMMEDIATE_RESPAWN, compound.getBoolean("doimmediaterespawn")));
+                    put(GameRuleID.DO_INSOMNIA, new BooleanGameRule(GameRuleID.DO_INSOMNIA, compound.getBoolean("doinsomnia")));
+                    put(GameRuleID.DO_MOB_LOOT, new BooleanGameRule(GameRuleID.DO_MOB_LOOT, compound.getBoolean("domobloot")));
+                    put(GameRuleID.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleID.DO_MOB_SPAWNING, compound.getBoolean("domobspawning")));
+                    put(GameRuleID.DO_TILE_DROPS, new BooleanGameRule(GameRuleID.DO_TILE_DROPS, compound.getBoolean("dotiledrops")));
+                    put(GameRuleID.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleID.DO_WEATHER_CYCLE, compound.getBoolean("doweathercycle")));
+                    put(GameRuleID.DROWNING_DAMAGE, new BooleanGameRule(GameRuleID.DROWNING_DAMAGE, compound.getBoolean("drowningdamage")));
+                    put(GameRuleID.FALL_DAMAGE, new BooleanGameRule(GameRuleID.FALL_DAMAGE, compound.getBoolean("falldamage")));
+                    put(GameRuleID.FIRE_DAMAGE, new BooleanGameRule(GameRuleID.FIRE_DAMAGE, compound.getBoolean("firedamage")));
+                    put(GameRuleID.KEEP_INVENTORY, new BooleanGameRule(GameRuleID.KEEP_INVENTORY, compound.getBoolean("keepinventory")));
                     put(GameRuleID.MAX_COMMAND_CHAIN_LENGTH, new IntegerGameRule(GameRuleID.MAX_COMMAND_CHAIN_LENGTH, compound.getInteger("maxcommandchainlength")));
-                    put(GameRuleID.MOB_GRIEFING, new BooleanGameRule(GameRuleID.MOB_GRIEFING, compound.getByte("mobgriefing") == 0b1));
-                    put(GameRuleID.NATURAL_REGENERATION, new BooleanGameRule(GameRuleID.NATURAL_REGENERATION, compound.getByte("naturalregeneration") == 0b1));
-                    put(GameRuleID.PVP, new BooleanGameRule(GameRuleID.PVP, compound.getByte("pvp") == 0b1));
+                    put(GameRuleID.MOB_GRIEFING, new BooleanGameRule(GameRuleID.MOB_GRIEFING, compound.getBoolean("mobgriefing")));
+                    put(GameRuleID.NATURAL_REGENERATION, new BooleanGameRule(GameRuleID.NATURAL_REGENERATION, compound.getBoolean("naturalregeneration")));
+                    put(GameRuleID.PVP, new BooleanGameRule(GameRuleID.PVP, compound.getBoolean("pvp")));
                     put(GameRuleID.RANDOM_TICK_SPEED, new IntegerGameRule(GameRuleID.RANDOM_TICK_SPEED, compound.getInteger("randomtickspeed")));
-                    put(GameRuleID.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleID.SEND_COMMAND_FEEDBACK, compound.getByte("sendcommandfeedback") == 0b1));
-                    put(GameRuleID.SHOW_COORDINATES, new BooleanGameRule(GameRuleID.SHOW_COORDINATES, compound.getByte("showcoordinates") == 0b1));
-                    put(GameRuleID.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleID.SHOW_DEATH_MESSAGES, compound.getByte("showdeathmessages") == 0b1));
-                    put(GameRuleID.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleID.SHOW_ITEM_TAGS, compound.getByte("showtags") == 0b1));
+                    put(GameRuleID.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleID.SEND_COMMAND_FEEDBACK, compound.getBoolean("sendcommandfeedback")));
+                    put(GameRuleID.SHOW_COORDINATES, new BooleanGameRule(GameRuleID.SHOW_COORDINATES, compound.getBoolean("showcoordinates")));
+                    put(GameRuleID.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleID.SHOW_DEATH_MESSAGES, compound.getBoolean("showdeathmessages")));
+                    put(GameRuleID.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleID.SHOW_ITEM_TAGS, compound.getBoolean("showtags")));
                     put(GameRuleID.SPAWN_RADIUS, new IntegerGameRule(GameRuleID.SPAWN_RADIUS, compound.getInteger("spawnradius")));
-                    put(GameRuleID.TNT_EXPLODES, new BooleanGameRule(GameRuleID.TNT_EXPLODES, compound.getByte("tntexplodes") == 0b1));
+                    put(GameRuleID.TNT_EXPLODES, new BooleanGameRule(GameRuleID.TNT_EXPLODES, compound.getBoolean("tntexplodes")));
                 }
             });
         }
