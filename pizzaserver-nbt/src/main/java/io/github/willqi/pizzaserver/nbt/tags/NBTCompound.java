@@ -25,6 +25,14 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return this;
     }
 
+    public boolean getBoolean(String name) {
+        return this.getByte(name) == 1;
+    }
+
+    public NBTCompound putBoolean(String name, boolean value) {
+        return this.putByte(name, (byte)(value ? 1 : 0));
+    }
+
     public short getShort(String name) {
         return (short)this.data.get(name);
     }
