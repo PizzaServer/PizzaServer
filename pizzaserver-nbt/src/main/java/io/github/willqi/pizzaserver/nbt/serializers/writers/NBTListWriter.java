@@ -5,70 +5,59 @@ import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
 
-public class NBTListWriter<T extends NBTTag> extends NBTWriter<NBTList<T>> {
+public class NBTListWriter<T> extends NBTWriter<NBTList<T>> {
 
-    private final NBTByteWriter byteWriter = new NBTByteWriter(this.stream);
-    private final NBTShortWriter shortWriter = new NBTShortWriter(this.stream);
-    private final NBTIntegerWriter integerWriter = new NBTIntegerWriter(this.stream);
-    private final NBTLongWriter longWriter = new NBTLongWriter(this.stream);
-    private final NBTFloatWriter floatWriter = new NBTFloatWriter(this.stream);
-    private final NBTDoubleWriter doubleWriter = new NBTDoubleWriter(this.stream);
-    private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
-    private final NBTStringWriter stringWriter = new NBTStringWriter(this.stream);
-    private final NBTIntegerArrayWriter integerArrayWriter = new NBTIntegerArrayWriter(this.stream);
-    private final NBTLongArrayWriter longArrayWriter = new NBTLongArrayWriter(this.stream);
+    public static final NBTWriter<NBTList<?>> INSTANCE = new NBTListWriter();
 
-    public NBTListWriter(LittleEndianDataOutputStream stream) {
-        super(stream);
-    }
 
     @Override
-    protected void writeTagData(NBTList<T> tag) throws IOException {
-        int childrenTagId = tag.getChildrenTypeId();
+    public void write(LittleEndianDataOutputStream stream, NBTList<T> data) throws IOException {
+        int childrenTagId = data.getChildrenTypeId();
 
-        this.stream.writeByte(childrenTagId);
-        this.stream.writeInt(tag.getContents().length);
+        stream.writeByte(childrenTagId);
+        stream.writeInt(data.getContents().length);
 
-        for (NBTTag childTag : tag.getContents()) {
+        for (Object childTag : data.getContents()) {
             switch (childrenTagId) {
-                case NBTByte.ID:
-                    this.byteWriter.writeTagData((NBTByte)childTag);
+                case NBTTag.BYTE_TAG_ID:
+                    NBTByteWriter.INSTANCE.write(stream, (byte)childTag);
                     break;
-                case NBTShort.ID:
-                    this.shortWriter.writeTagData((NBTShort)childTag);
+                case NBTTag.SHORT_TAG_ID:
+                    NBTShortWriter.INSTANCE.write(stream, (short)childTag);
+
                     break;
-                case NBTInteger.ID:
-                    this.integerWriter.writeTagData((NBTInteger)childTag);
+                case NBTTag.INT_TAG_ID:
+                    NBTIntegerWriter.INSTANCE.write(stream, (int)childTag);
                     break;
-                case NBTLong.ID:
-                    this.longWriter.writeTagData((NBTLong)childTag);
+                case NBTTag.LONG_TAG_ID:
+                    NBTLongWriter.INSTANCE.write(stream, (long)childTag);
                     break;
-                case NBTFloat.ID:
-                    this.floatWriter.writeTagData((NBTFloat)childTag);
+                case NBTTag.FLOAT_TAG_ID:
+                    NBTFloatWriter.INSTANCE.write(stream, (float)childTag);
                     break;
-                case NBTDouble.ID:
-                    this.doubleWriter.writeTagData((NBTDouble)childTag);
+                case NBTTag.DOUBLE_TAG_ID:
+                    NBTDoubleWriter.INSTANCE.write(stream, (double)childTag);
                     break;
-                case NBTByteArray.ID:
-                    this.byteArrayWriter.writeTagData((NBTByteArray)childTag);
+                case NBTTag.BYTE_ARRAY_TAG_ID:
+                    NBTByteArrayWriter.INSTANCE.write(stream, (byte[])childTag);
                     break;
-                case NBTString.ID:
-                    this.stringWriter.writeTagData((NBTString)childTag);
+                case NBTTag.STRING_TAG_ID:
+                    NBTStringWriter.INSTANCE.write(stream, (String)childTag);
                     break;
-                case NBTList.ID:
-                    this.writeTagData((NBTList)childTag);
+                case NBTTag.LIST_TAG_ID:
+                    NBTListWriter.INSTANCE.write(stream, (NBTList<Object>)childTag);
                     break;
-                case NBTCompound.ID:
-                    new NBTCompoundWriter(this.stream).writeTagData((NBTCompound)childTag);
+                case NBTTag.COMPOUND_TAG_ID:
+                    NBTCompoundWriter.INSTANCE.write(stream, (NBTCompound)childTag);
                     break;
-                case NBTIntegerArray.ID:
-                    this.integerArrayWriter.writeTagData((NBTIntegerArray)childTag);
+                case NBTTag.INT_ARRAY_TAG_ID:
+                    NBTIntegerArrayWriter.INSTANCE.write(stream, (int[])childTag);
                     break;
-                case NBTLongArray.ID:
-                    this.longArrayWriter.writeTagData((NBTLongArray)childTag);
+                case NBTTag.LONG_ARRAY_TAG_ID:
+                    NBTLongArrayWriter.INSTANCE.write(stream, (long[])childTag);
                     break;
                 default:
-                    throw new UnsupportedOperationException("Unspported/invalid NBT tag id found when writing contents to NBTListWriter. Id: " + childrenTagId);
+                    throw new UnsupportedOperationException("Unsupported/invalid NBT tag id found when reading contents in NBTListReader. Id: " + childrenTagId);
             }
         }
 

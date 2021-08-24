@@ -12,7 +12,6 @@ import io.github.willqi.pizzaserver.format.api.LevelData;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.nbt.tags.NBTInteger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +19,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Representative of the information in the level.dat file
@@ -164,13 +164,13 @@ public class MCWorldInfo implements LevelData, Cloneable {
             this.setInventoryVersion(compound.getString("InventoryVersion"));
             this.setLastPlayed(compound.getLong("LastPlayed"));
             this.setMinimumCompatibleClientVersion(
-                    Arrays.stream((NBTInteger[])compound.getList("MinimumCompatibleClientVersion"))
-                            .mapToInt(NBTInteger::getValue)
+                    Arrays.stream(compound.getList("MinimumCompatibleClientVersion").getContents())
+                            .mapToInt(i -> (Integer)i)
                             .toArray()
             );
             this.setLastOpenedWithVersion(
-                    Arrays.stream((NBTInteger[])compound.getList("lastOpenedWithVersion"))
-                            .mapToInt(NBTInteger::getValue)
+                    Arrays.stream(compound.getList("lastOpenedWithVersion").getContents())
+                            .mapToInt(i -> (Integer)i)
                             .toArray()
             );
             this.setPlatform(compound.getInteger("Platform"));

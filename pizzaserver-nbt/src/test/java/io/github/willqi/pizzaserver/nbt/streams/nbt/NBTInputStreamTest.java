@@ -13,7 +13,6 @@ public class NBTInputStreamTest {
     @Test
     public void shouldParseTestFileCorrectly() throws IOException {
         // TODO: In the future, we should have our own test file and check for proper names and values rather than relying on the biome_definitions file
-
         NBTInputStream nbtInputStream = new NBTInputStream(new VarIntDataInputStream(this.getClass().getResourceAsStream("/biome_definitions.dat")));
         NBTCompound compound = nbtInputStream.readCompound();
 

@@ -2,13 +2,12 @@ package io.github.willqi.pizzaserver.nbt.tags;
 
 import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
-public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String> {
+public class NBTCompound extends NBTContainer implements Iterable<String> {
 
-    public static final byte ID = 10;
-
-    private final Map<String, NBTTag> data = new HashMap<>();
+    private final Map<String, Object> data = new HashMap<>();
     private int depth;
 
 
@@ -18,81 +17,75 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
         super(name);
     }
 
-
-    @Override
-    public int getId() {
-        return ID;
-    }
-
     public byte getByte(String name) {
-        return ((NBTByte)this.data.get(name)).getValue();
+        return ((byte)this.data.get(name));
     }
 
     public NBTCompound setByte(String name, byte value) {
-        this.put(name, new NBTByte(value));
+        this.data.put(name, value);
         return this;
     }
 
     public short getShort(String name) {
-        return ((NBTShort)this.data.get(name)).getValue();
+        return (short)this.data.get(name);
     }
 
     public NBTCompound setShort(String name, short value) {
-        this.put(name, new NBTShort(value));
+        this.data.put(name, value);
         return this;
     }
 
     public int getInteger(String name) {
-        return ((NBTInteger)this.data.get(name)).getValue();
+        return (int)this.data.get(name);
     }
 
     public NBTCompound setInteger(String name, int value) {
-        this.put(name, new NBTInteger(value));
+        this.data.put(name, value);
         return this;
     }
 
     public long getLong(String name) {
-        return ((NBTLong)this.data.get(name)).getValue();
+        return (long)this.data.get(name);
     }
 
     public NBTCompound setLong(String name, long value) {
-        this.put(name, new NBTLong(value));
+        this.data.put(name, value);
         return this;
     }
 
     public float getFloat(String name) {
-        return ((NBTFloat)this.data.get(name)).getValue();
+        return (float)this.data.get(name);
     }
 
     public NBTCompound setFloat(String name, float value) {
-        this.put(name, new NBTFloat(value));
+        this.data.put(name, value);
         return this;
     }
 
     public double getDouble(String name) {
-        return ((NBTDouble)this.data.get(name)).getValue();
+        return (double)this.data.get(name);
     }
 
     public NBTCompound setDouble(String name, double value) {
-        this.put(name, new NBTDouble(value));
+        this.data.put(name, value);
         return this;
     }
 
     public String getString(String name) {
-        return ((NBTString)this.data.get(name)).getValue();
+        return (String)this.data.get(name);
     }
 
     public NBTCompound setString(String name, String value) {
-        this.put(name, new NBTString(value));
+        this.data.put(name, value);
         return this;
     }
 
-    public NBTTag[] getList(String name) {
-        return ((NBTList<?>)this.data.get(name)).getContents();
+    public NBTList<Object> getList(String name) {
+        return ((NBTList<Object>)this.data.get(name));
     }
 
-    public NBTCompound setList(String name, NBTList<?> list) {
-        this.put(name, list);
+    public <T> NBTCompound setList(String name, NBTList<T> value) {
+        this.data.put(name, value);
         return this;
     }
 
@@ -100,53 +93,46 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
         return (NBTCompound)this.data.get(name);
     }
 
-    public NBTCompound setCompound(String name, NBTCompound compound) {
-        this.put(name, compound);
+    public NBTCompound setCompound(String name, NBTCompound value) {
+        value.setName(name);
+        this.data.put(name, value);
+        value.setDepth(this.getDepth() + 1);
         return this;
     }
 
     public byte[] getByteArray(String name) {
-        return ((NBTByteArray)this.data.get(name)).getData();
+        return (byte[])this.data.get(name);
     }
 
     public NBTCompound setByteArray(String name, byte[] value) {
-        this.put(name, new NBTByteArray(value));
+        this.data.put(name, value);
         return this;
     }
 
     public int[] getIntegerArray(String name) {
-        return ((NBTIntegerArray)this.data.get(name)).getData();
+        return (int[])this.data.get(name);
     }
 
     public NBTCompound setIntegerArray(String name, int[] value) {
-        this.put(name, new NBTIntegerArray(value));
+        this.data.put(name, value);
         return this;
     }
 
     public long[] getLongArray(String name) {
-        return ((NBTLongArray)this.data.get(name)).getData();
+        return (long[])this.data.get(name);
     }
 
     public NBTCompound setLongArray(String name, long[] value) {
-        this.put(name, new NBTLongArray(value));
-        return this;
-    }
-
-    public NBTTag get(String name) {
-        return this.data.get(name);
-    }
-
-    public NBTCompound put(String name, NBTTag tag) throws NBTLimitException {
-        tag.setName(name);
-        this.data.put(name, tag);
-        if (tag instanceof NBTContainer) {
-            ((NBTContainer)tag).setDepth(this.getDepth() + 1);
-        }
+        this.data.put(name, value);
         return this;
     }
 
     public Set<String> keySet() {
         return this.data.keySet();
+    }
+
+    public Object get(String name) {
+        return this.data.get(name);
     }
 
     @Override
@@ -190,10 +176,32 @@ public class NBTCompound extends NBTTag implements NBTContainer, Iterable<String
             }
 
             for (String key : nbtCompound) {
-                if (!this.data.containsKey(key) || !this.get(key).equals(nbtCompound.get(key))) {
+                boolean bothHaveKey = this.data.containsKey(key) && nbtCompound.data.containsKey(key);
+                if (!bothHaveKey) {
+                    return false;
+                }
+                Object element = this.get(key);
+                Object otherElement = nbtCompound.get(key);
+
+                // We can't call .equals directly on the maps since it uses .equal regardless of if it's an array or not.
+                // So we have to handle arrays manually
+                if (element instanceof byte[] && otherElement instanceof byte[]) {
+                    if (!Arrays.equals((byte[])element, (byte[])otherElement)) {
+                        return false;
+                    }
+                } else if (element instanceof int[] && otherElement instanceof int[]) {
+                    if (!Arrays.equals((int[])element, (int[])otherElement)) {
+                        return false;
+                    }
+                } else if (element instanceof long[] && otherElement instanceof long[]) {
+                    if (!Arrays.equals((long[])element, (long[])otherElement)) {
+                        return false;
+                    }
+                } else if (!element.equals(otherElement)) { // the elements were not an array or were both not of the same time
                     return false;
                 }
             }
+
             return true;
         }
         return false;

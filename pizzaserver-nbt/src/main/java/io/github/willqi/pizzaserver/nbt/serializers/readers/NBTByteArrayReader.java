@@ -1,28 +1,22 @@
 package io.github.willqi.pizzaserver.nbt.serializers.readers;
 
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
-import io.github.willqi.pizzaserver.nbt.tags.NBTByteArray;
 
 import java.io.IOException;
 
-public class NBTByteArrayReader extends NBTReader<NBTByteArray> {
+public class NBTByteArrayReader extends NBTReader<byte[]> {
 
-    private final NBTByteReader byteReader;
+    public static final NBTReader<byte[]> INSTANCE = new NBTByteArrayReader();
 
-
-    public NBTByteArrayReader(LittleEndianDataInputStream stream) {
-        super(stream);
-        this.byteReader = new NBTByteReader(this.stream);
-    }
 
     @Override
-    protected NBTByteArray parse(String tagName) throws IOException {
-        int elements = this.stream.readInt();
+    public byte[] read(LittleEndianDataInputStream stream) throws IOException {
+        int elements = stream.readInt();
         byte[] data = new byte[elements];
         for (int i = 0; i < data.length; i++) {
-            data[i] = this.byteReader.parse().getValue();
+            data[i] = NBTByteReader.INSTANCE.read(stream);
         }
-        return new NBTByteArray(tagName, data);
+        return data;
     }
 
 }

@@ -11,19 +11,6 @@ public class NBTInputStream extends InputStream {
 
     private final LittleEndianDataInputStream stream;
 
-    private final NBTByteReader byteReader;
-    private final NBTShortReader shortReader;
-    private final NBTIntegerReader integerReader;
-    private final NBTLongReader longReader;
-    private final NBTFloatReader floatReader;
-    private final NBTDoubleReader doubleReader;
-    private final NBTByteArrayReader byteArrayReader;
-    private final NBTStringReader stringReader;
-    private final NBTListReader<? extends NBTTag> listReader;
-    private final NBTCompoundReader compoundReader;
-    private final NBTIntegerArrayReader integerArrayReader;
-    private final NBTLongArrayReader longArrayReader;
-
 
     public NBTInputStream(InputStream stream) {
         if (stream instanceof LittleEndianDataInputStream) {
@@ -31,19 +18,6 @@ public class NBTInputStream extends InputStream {
         } else {
             this.stream = new LittleEndianDataInputStream(stream);
         }
-
-        this.byteReader = new NBTByteReader(this.stream);
-        this.shortReader = new NBTShortReader(this.stream);
-        this.integerReader = new NBTIntegerReader(this.stream);
-        this.longReader = new NBTLongReader(this.stream);
-        this.floatReader = new NBTFloatReader(this.stream);
-        this.doubleReader = new NBTDoubleReader(this.stream);
-        this.byteArrayReader = new NBTByteArrayReader(this.stream);
-        this.stringReader = new NBTStringReader(this.stream);
-        this.listReader = new NBTListReader(this.stream);
-        this.compoundReader = new NBTCompoundReader(this.stream);
-        this.integerArrayReader = new NBTIntegerArrayReader(this.stream);
-        this.longArrayReader = new NBTLongArrayReader(this.stream);
     }
 
     @Override
@@ -56,65 +30,69 @@ public class NBTInputStream extends InputStream {
         return this.stream.read();
     }
 
-    public NBTByte readByte() throws IOException {
-        this.ensureNbtId(NBTByte.ID);
-        return this.byteReader.read();
+    public byte readByte() throws IOException {
+        this.ensureNbtId(NBTTag.BYTE_TAG_ID);
+        return NBTByteReader.INSTANCE.read(this.stream);
     }
 
-    public NBTShort readShort() throws IOException {
-        this.ensureNbtId(NBTShort.ID);
-        return this.shortReader.read();
+    public short readShort() throws IOException {
+        this.ensureNbtId(NBTTag.SHORT_TAG_ID);
+        return NBTShortReader.INSTANCE.read(this.stream);
     }
 
-    public NBTInteger readInteger() throws IOException {
-        this.ensureNbtId(NBTInteger.ID);
-        return this.integerReader.read();
+    public int readInteger() throws IOException {
+        this.ensureNbtId(NBTTag.INT_TAG_ID);
+        return NBTIntegerReader.INSTANCE.read(this.stream);
     }
 
-    public NBTLong readLong() throws IOException {
-        this.ensureNbtId(NBTLong.ID);
-        return this.longReader.read();
+    public long readLong() throws IOException {
+        this.ensureNbtId(NBTTag.LONG_TAG_ID);
+        return NBTLongReader.INSTANCE.read(this.stream);
     }
 
-    public NBTFloat readFloat() throws IOException {
-        this.ensureNbtId(NBTFloat.ID);
-        return this.floatReader.read();
+    public float readFloat() throws IOException {
+        this.ensureNbtId(NBTTag.FLOAT_TAG_ID);
+        return NBTFloatReader.INSTANCE.read(this.stream);
     }
 
-    public NBTDouble readDouble() throws IOException {
-        this.ensureNbtId(NBTDouble.ID);
-        return this.doubleReader.read();
+    public double readDouble() throws IOException {
+        this.ensureNbtId(NBTTag.DOUBLE_TAG_ID);
+        return NBTDoubleReader.INSTANCE.read(this.stream);
     }
 
-    public NBTByteArray readByteArray() throws IOException {
-        this.ensureNbtId(NBTByteArray.ID);
-        return this.byteArrayReader.read();
+    public byte[] readByteArray() throws IOException {
+        this.ensureNbtId(NBTTag.BYTE_ARRAY_TAG_ID);
+        return NBTByteArrayReader.INSTANCE.read(this.stream);
     }
 
-    public NBTString readString() throws IOException {
-        this.ensureNbtId(NBTString.ID);
-        return this.stringReader.read();
+    public String readString() throws IOException {
+        this.ensureNbtId(NBTTag.STRING_TAG_ID);
+        return NBTStringReader.INSTANCE.read(this.stream);
     }
 
-    public NBTIntegerArray readIntegerArray() throws IOException {
-        this.ensureNbtId(NBTIntegerArray.ID);
-        return this.integerArrayReader.read();
+    public int[] readIntegerArray() throws IOException {
+        this.ensureNbtId(NBTTag.INT_ARRAY_TAG_ID);
+        return NBTIntegerArrayReader.INSTANCE.read(this.stream);
     }
 
-    public NBTLongArray readLongArray() throws IOException {
-        this.ensureNbtId(NBTLongArray.ID);
-        return this.longArrayReader.read();
+    public long[] readLongArray() throws IOException {
+        this.ensureNbtId(NBTTag.LONG_ARRAY_TAG_ID);
+        return NBTLongArrayReader.INSTANCE.read(this.stream);
     }
 
-    public NBTList<? extends NBTTag> readList() throws IOException {
-        this.ensureNbtId(NBTList.ID);
-        return this.listReader.read();
+    public NBTList readList() throws IOException {
+        this.ensureNbtId(NBTTag.LIST_TAG_ID);
+        return NBTListReader.INSTANCE.read(this.stream);
     }
 
 
     public NBTCompound readCompound() throws IOException {
-        this.ensureNbtId(NBTCompound.ID);
-        return this.compoundReader.read();
+        this.ensureNbtId(NBTTag.COMPOUND_TAG_ID);
+        String name = this.stream.readUTF();
+        NBTCompound compound = NBTCompoundReader.INSTANCE.read(this.stream);
+        compound.setName(name);
+
+        return compound;
     }
 
     private void ensureNbtId(int id) throws IOException {

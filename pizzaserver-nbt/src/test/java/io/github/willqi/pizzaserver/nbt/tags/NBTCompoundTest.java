@@ -19,25 +19,25 @@ public class NBTCompoundTest {
         NBTCompound compound = new NBTCompound();
         for (int i = 0; i < 512; i++) {
             NBTCompound innerCompound = new NBTCompound();
-            compound.put("a", innerCompound);
+            compound.setCompound("a", innerCompound);
             compound = innerCompound;
         }
 
         NBTCompound finalCompound = compound;
-        assertThrows(NBTLimitException.class, () -> finalCompound.put("a", new NBTCompound()));
+        assertThrows(NBTLimitException.class, () -> finalCompound.setCompound("a", new NBTCompound()));
     }
 
     @Test
     public void shouldParseCorrectly() throws IOException {
 
         // Create test compound
-        NBTCompound testCompound = new NBTCompound();
-        testCompound.put("double", new NBTDouble(12d));
-        testCompound.put("int", new NBTInteger(2));
+        NBTCompound testCompound = new NBTCompound()
+                .setDouble("double", 12d)
+                .setInteger("int", 2);
 
-        NBTCompound innerCompound = new NBTCompound();
-        innerCompound.put("float", new NBTFloat(12f));
-        testCompound.put("innerCompound", innerCompound);
+        NBTCompound innerCompound = new NBTCompound()
+                .setFloat("float", 12f);
+        testCompound.setCompound("innerCompound", innerCompound);
 
         // Write and read the result
         ByteArrayOutputStream resultingByteStream = new ByteArrayOutputStream();

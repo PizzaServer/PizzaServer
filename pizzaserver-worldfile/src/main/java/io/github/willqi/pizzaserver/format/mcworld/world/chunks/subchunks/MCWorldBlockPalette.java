@@ -11,8 +11,6 @@ import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.nbt.tags.NBTInteger;
-import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -103,9 +101,9 @@ public class MCWorldBlockPalette implements BlockPalette {
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
         for (BlockPalette.Entry data : this.getAllEntries()) {
             NBTCompound compound = new NBTCompound();
-            compound.put("name", new NBTString("name", data.getId()))
-                    .put("version", new NBTInteger("version", data.getVersion()))
-                    .put("states", data.getState());
+            compound.setString("name", data.getId())
+                    .setInteger("version", data.getVersion())
+                    .setCompound("states", data.getState());
 
             outputStream.writeCompound(compound);
         }
