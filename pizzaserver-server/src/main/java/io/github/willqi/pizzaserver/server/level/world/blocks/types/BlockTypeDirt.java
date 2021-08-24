@@ -4,7 +4,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,8 +16,8 @@ public class BlockTypeDirt extends BaseBlockType {
             List<String> dirtTypes = Arrays.asList("normal", "coarse");
             int stateIndex = 0;
             for (String dirtType : dirtTypes) {
-                NBTCompound state = new NBTCompound("states");
-                state.put("dirt_type", new NBTString(dirtType));
+                NBTCompound state = new NBTCompound("states")
+                        .putString("dirt_type", dirtType);
                 this.put(state, stateIndex++);
             }
         }

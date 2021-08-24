@@ -27,13 +27,23 @@ import java.util.*;
 
 public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
-    private final static Gson GSON = new Gson();
+    private static final Gson GSON = new Gson();
+
+    // GLOBAL_BLOCK_STATES stores all possible block states and their indexes
+    // the purpose of this is to reduce memory usage
+    // when loading the block states for each version
+    // as many of them have duplicate id and NBT
+    // by storing the integer rather than the tuple into
+    // this.blockStates, we can reduce the amount of memory allocated
+    // for the tuple and its properties since multiple versions
+    // no longer have to recreate a tuple that would use more space
+    // than an integer
+    protected static final Map<Tuple<String, NBTCompound>, Integer> GLOBAL_BLOCK_STATES = new HashMap<>();
 
     private final ImplServer server;
 
     protected NBTCompound biomesDefinitions;
-    protected final Map<Tuple<String, NBTCompound>, Integer> blockStates = new HashMap<>();
-
+    protected final Map<Integer, Integer> blockStates = new HashMap<>();
     protected final Map<String, Integer> itemRuntimeIds = new HashMap<>();
     protected final Set<StartGamePacket.ItemState> itemStates = new HashSet<>();
 
@@ -72,31 +82,37 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
                 new VarIntDataInputStream(this.getProtocolResourceStream("block_states.nbt"))
         )) {
             // keySet returns in ascending rather than descending so we have to reverse it
-            SortedMap<String, List<NBTCompound>> blockStates = new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
+            SortedMap<String, List<NBTCompound>> sortedBlockRuntimeStates = new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
 
             // Parse block states
             while (blockStatesNBTStream.available() > 0) {
                 NBTCompound blockState = blockStatesNBTStream.readCompound();
 
                 String name = blockState.getString("name");
-                if (!blockStates.containsKey(name)) {
-                    blockStates.put(name, new ArrayList<>());
+                if (!sortedBlockRuntimeStates.containsKey(name)) {
+                    sortedBlockRuntimeStates.put(name, new ArrayList<>());
                 }
 
                 NBTCompound states = blockState.getCompound("states");
-                blockStates.get(name).add(states);
+                sortedBlockRuntimeStates.get(name).add(states);
             }
 
             // Add custom block states
             for (BaseBlockType blockType : BlockRegistry.getCustomTypes()) {
-                blockStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
+                sortedBlockRuntimeStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
             }
 
-            // Construct runtime ids
+            // Block runtime ids are determined by the order of the sorted block runtime states.
             int runtimeId = 0;
-            for (String blockId : blockStates.keySet()) {
-                for (NBTCompound states : blockStates.get(blockId)) {
-                    this.blockStates.put(new Tuple<>(blockId, states), runtimeId++);
+            for (String blockId : sortedBlockRuntimeStates.keySet()) {
+                for (NBTCompound states : sortedBlockRuntimeStates.get(blockId)) {
+                    Tuple<String, NBTCompound> blockStateLookupKey = new Tuple<>(blockId, states);
+                    if (!GLOBAL_BLOCK_STATES.containsKey(blockStateLookupKey)) {
+                        GLOBAL_BLOCK_STATES.put(blockStateLookupKey, GLOBAL_BLOCK_STATES.size());
+                    }
+                    int blockStateLookupId = GLOBAL_BLOCK_STATES.get(blockStateLookupKey);
+
+                    this.blockStates.put(blockStateLookupId, runtimeId++);
                 }
             }
         }
@@ -150,7 +166,8 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     @Override
     public int getBlockRuntimeId(String name, NBTCompound state) {
         try {
-            return this.blockStates.get(new Tuple<>(name, state));
+            int blockStateLookupId = GLOBAL_BLOCK_STATES.get(new Tuple<>(name, state));
+            return this.blockStates.get(blockStateLookupId);
         } catch (NullPointerException exception) {
             throw new NullPointerException("Failed to find block runtime id for a state of " + name);
         }

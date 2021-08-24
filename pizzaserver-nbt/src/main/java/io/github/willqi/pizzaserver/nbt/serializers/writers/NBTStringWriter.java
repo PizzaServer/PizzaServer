@@ -1,19 +1,17 @@
 package io.github.willqi.pizzaserver.nbt.serializers.writers;
 
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataOutputStream;
-import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 
 import java.io.IOException;
 
-public class NBTStringWriter extends NBTWriter<NBTString> {
+public class NBTStringWriter extends NBTWriter<String> {
 
-    public NBTStringWriter(LittleEndianDataOutputStream stream) {
-        super(stream);
-    }
+    public static final NBTWriter<String> INSTANCE = new NBTStringWriter();
+
 
     @Override
-    protected void writeTagData(NBTString tag) throws IOException {
-        this.stream.writeUTF(tag.getValue());
+    public void write(LittleEndianDataOutputStream stream, String data) throws IOException {
+        stream.writeUTF(data);
     }
 
 }

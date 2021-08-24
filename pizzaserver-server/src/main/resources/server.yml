@@ -16,3 +16,6 @@ world-default-pitch: 0
 chunk-requests-per-tick: 16
 # Maximum amount of requests that can be queued directly to the asynchronous chunk thread instead of waiting to be queued in
 chunk-requests-processing-cap: 64
+
+# To what degree should packets be compressed
+network-compression-level: 7

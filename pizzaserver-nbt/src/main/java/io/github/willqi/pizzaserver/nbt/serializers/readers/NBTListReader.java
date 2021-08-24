@@ -5,107 +5,93 @@ import io.github.willqi.pizzaserver.nbt.tags.*;
 
 import java.io.IOException;
 
-public class NBTListReader<T extends NBTTag> extends NBTReader<NBTList<T>> {
+public class NBTListReader<T> extends NBTReader<NBTList<T>> {
 
-    private final NBTByteReader byteReader = new NBTByteReader(this.stream);
-    private final NBTShortReader shortReader = new NBTShortReader(this.stream);
-    private final NBTIntegerReader integerReader = new NBTIntegerReader(this.stream);
-    private final NBTLongReader longReader = new NBTLongReader(this.stream);
-    private final NBTFloatReader floatReader = new NBTFloatReader(this.stream);
-    private final NBTDoubleReader doubleReader = new NBTDoubleReader(this.stream);
-    private final NBTByteArrayReader byteArrayReader = new NBTByteArrayReader(this.stream);
-    private final NBTStringReader stringReader = new NBTStringReader(this.stream);
-    private final NBTIntegerArrayReader integerArrayReader = new NBTIntegerArrayReader(this.stream);
-    private final NBTLongArrayReader longArrayReader = new NBTLongArrayReader(this.stream);
+    public static final NBTReader<NBTList> INSTANCE = new NBTListReader();
 
-    public NBTListReader(LittleEndianDataInputStream stream) {
-        super(stream);
-    }
 
     @Override
-    protected NBTList<T> parse(String tagName) throws IOException {
-        int nbtId = this.stream.readByte();
-        NBTList<T> list = new NBTList<>(tagName, nbtId);
+    public NBTList<T> read(LittleEndianDataInputStream stream) throws IOException {
+        int nbtId = stream.readByte();
+        NBTList<T> list = new NBTList<T>(nbtId);
 
-        NBTTag[] contents;
-        int length = this.stream.readInt();
+        Object[] contents;
+        int length = stream.readInt();
 
         switch (nbtId) {
-            case NBTByte.ID:
-                contents = new NBTByte[length];
+            case NBTTag.BYTE_TAG_ID:
+                contents = new Byte[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.byteReader.parse();
+                    contents[i] = NBTByteReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTShort.ID:
-                contents = new NBTShort[length];
+            case NBTTag.SHORT_TAG_ID:
+                contents = new Short[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.shortReader.parse();
+                    contents[i] = NBTShortReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTInteger.ID:
-                contents = new NBTInteger[length];
+            case NBTTag.INT_TAG_ID:
+                contents = new Integer[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.integerReader.parse();
+                    contents[i] = NBTIntegerReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTLong.ID:
-                contents = new NBTLong[length];
+            case NBTTag.LONG_TAG_ID:
+                contents = new Long[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.longReader.parse();
+                    contents[i] = NBTLongReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTFloat.ID:
-                contents = new NBTFloat[length];
+            case NBTTag.FLOAT_TAG_ID:
+                contents = new Float[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.floatReader.parse();
+                    contents[i] = NBTFloatReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTDouble.ID:
-                contents = new NBTDouble[length];
+            case NBTTag.DOUBLE_TAG_ID:
+                contents = new Double[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.doubleReader.parse();
+                    contents[i] = NBTDoubleReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTByteArray.ID:
-                contents = new NBTByteArray[length];
+            case NBTTag.BYTE_ARRAY_TAG_ID:
+                contents = new byte[length][];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.byteArrayReader.parse();
+                    contents[i] = NBTByteArrayReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTString.ID:
-                contents = new NBTString[length];
+            case NBTTag.STRING_TAG_ID:
+                contents = new String[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.stringReader.parse();
+                    contents[i] = NBTStringReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTList.ID:
+            case NBTTag.LIST_TAG_ID:
                 contents = new NBTList[length];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.parse();
+                    contents[i] = this.read(stream);
                 }
                 break;
-            case NBTCompound.ID:
+            case NBTTag.COMPOUND_TAG_ID:
                 contents = new NBTCompound[length];
-                NBTCompoundReader compoundReader = new NBTCompoundReader(this.stream);
                 for (int i = 0; i < length; i++) {
-                    contents[i] = compoundReader.parse();
+                    contents[i] = NBTCompoundReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTIntegerArray.ID:
-                contents = new NBTIntegerArray[length];
+            case NBTTag.INT_ARRAY_TAG_ID:
+                contents = new int[length][];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.integerArrayReader.parse();
+                    contents[i] = NBTIntegerArrayReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTLongArray.ID:
-                contents = new NBTLongArray[length];
+            case NBTTag.LONG_ARRAY_TAG_ID:
+                contents = new long[length][];
                 for (int i = 0; i < length; i++) {
-                    contents[i] = this.longArrayReader.parse();
+                    contents[i] = NBTLongArrayReader.INSTANCE.read(stream);
                 }
                 break;
-            case NBTContainer.END_ID:
-
+            case NBTTag.END_TAG_ID:
                 contents = new NBTTag[0];
                 break;
             default:
@@ -113,7 +99,6 @@ public class NBTListReader<T extends NBTTag> extends NBTReader<NBTList<T>> {
         }
 
         list.setContents((T[])contents);
-
         return list;
     }
 

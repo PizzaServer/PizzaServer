@@ -16,12 +16,12 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
             buffer.writeString(entry.getCustomItemType().getItemId());
 
             NBTCompound containerCompound = new NBTCompound();
-            containerCompound.setInteger("id", entry.getRuntimeId());
-            containerCompound.setString("name", entry.getCustomItemType().getItemId());
+            containerCompound.putInteger("id", entry.getRuntimeId())
+                    .putString("name", entry.getCustomItemType().getItemId());
 
             NBTCompound components = new NBTCompound();
             this.writeComponents(entry.getCustomItemType(), components);
-            containerCompound.setCompound("components", components);
+            containerCompound.putCompound("components", components);
 
             buffer.writeNBTCompound(containerCompound);
         }
@@ -30,35 +30,35 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
     protected void writeComponents(BaseItemType itemType, NBTCompound components) {
         NBTCompound properties = new NBTCompound();
         this.writeItemProperties(itemType, properties);
-        components.setCompound("item_properties", properties);
+        components.putCompound("item_properties", properties);
 
-        components.setCompound("minecraft:icon", new NBTCompound()
-                .setString("texture", itemType.getIconName()));
+        components.putCompound("minecraft:icon", new NBTCompound()
+                .putString("texture", itemType.getIconName()));
 
         // Write non-required components if present
         if (itemType instanceof ArmorItemComponent) {
             ArmorItemComponent armorItemComponent = (ArmorItemComponent)itemType;
-            components.setCompound("minecraft:armor", new NBTCompound()
-                    .setInteger("protection", armorItemComponent.getProtection()));
+            components.putCompound("minecraft:armor", new NBTCompound()
+                    .putInteger("protection", armorItemComponent.getProtection()));
         }
         if (itemType instanceof CooldownItemComponent) {
             CooldownItemComponent cooldownItemComponent = (CooldownItemComponent)itemType;
-            components.setCompound("minecraft:cooldown", new NBTCompound()
-                    .setString("category", cooldownItemComponent.getCooldownCategory())
-                    .setFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f));
+            components.putCompound("minecraft:cooldown", new NBTCompound()
+                    .putString("category", cooldownItemComponent.getCooldownCategory())
+                    .putFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f));
         }
         if (itemType instanceof DurableItemComponent) {
             DurableItemComponent durableItemComponent = (DurableItemComponent)itemType;
-            components.setCompound("minecraft:durability", new NBTCompound()
-                    .setInteger("max_durability", durableItemComponent.getMaxDurability()));
+            components.putCompound("minecraft:durability", new NBTCompound()
+                    .putInteger("max_durability", durableItemComponent.getMaxDurability()));
         }
         if (itemType instanceof FoodItemComponent) {
             FoodItemComponent foodItemComponent = (FoodItemComponent)itemType;
-            components.setCompound("minecraft:food", new NBTCompound()
-                    .setByte("can_always_eat", foodItemComponent.canAlwaysBeEaten() ? (byte)0x01 : (byte)0x00));
+            components.putCompound("minecraft:food", new NBTCompound()
+                    .putBoolean("can_always_eat", foodItemComponent.canAlwaysBeEaten()));
         }
         if (itemType instanceof PlantableItemComponent) {
-            components.setCompound("minecraft:block_placer", new NBTCompound());
+            components.putCompound("minecraft:block_placer", new NBTCompound());
         }
     }
 
@@ -69,18 +69,18 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
      * @param properties
      */
     protected void writeItemProperties(BaseItemType itemType, NBTCompound properties) {
-        properties.setByte("allow_off_hand", itemType.isAllowedInOffHand() ? (byte)0x01 : (byte)0x00)
-                .setInteger("creative_category", 2)
-                .setInteger("damage", itemType.getDamage())
-                .setByte("foil", itemType.hasFoil() ? (byte)0x01 : (byte)0x00)
-                .setByte("hand_equipped", itemType.isHandEquipped() ? (byte)0x01 : (byte)0x00)
-                .setByte("liquid_clipped", itemType.canClickOnLiquids() ? (byte)0x01 : (byte)0x00)
-                .setInteger("max_stack_size", itemType.getMaxStackSize())
-                .setFloat("mining_speed", itemType.getMiningSpeed())
-                .setByte("mirrored_art", itemType.isMirroredArt() ? (byte)0x01 : (byte)0x00)
-                .setByte("stacked_by_data", itemType.isStackedByDamage() ? (byte)0x01 : (byte)0x00)
-                .setInteger("use_animation", itemType.getUseAnimationType().ordinal())
-                .setInteger("use_duration", itemType.getUseDuration());
+        properties.putBoolean("allow_off_hand", itemType.isAllowedInOffHand())
+                .putInteger("creative_category", 2)
+                .putInteger("damage", itemType.getDamage())
+                .putBoolean("foil", itemType.hasFoil())
+                .putBoolean("hand_equipped", itemType.isHandEquipped())
+                .putBoolean("liquid_clipped", itemType.canClickOnLiquids())
+                .putInteger("max_stack_size", itemType.getMaxStackSize())
+                .putFloat("mining_speed", itemType.getMiningSpeed())
+                .putBoolean("mirrored_art", itemType.isMirroredArt())
+                .putBoolean("stacked_by_data", itemType.isStackedByDamage())
+                .putInteger("use_animation", itemType.getUseAnimationType().ordinal())
+                .putInteger("use_duration", itemType.getUseDuration());
     }
 
 }

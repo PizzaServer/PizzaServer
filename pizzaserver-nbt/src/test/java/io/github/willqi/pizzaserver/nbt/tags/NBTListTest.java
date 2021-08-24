@@ -16,23 +16,23 @@ public class NBTListTest {
 
     @Test
     public void cannotGoDeeperThan512() {
-        NBTList<NBTList<? extends NBTTag>> list = new NBTList<>(NBTList.ID);
+        NBTList<NBTList<?>> list = new NBTList<>(NBTTag.LIST_TAG_ID);
         for (int i = 0; i < 512; i++) {
-            NBTList<NBTList<? extends NBTTag>> innerList = new NBTList<>(NBTList.ID);
+            NBTList<NBTList<?>> innerList = new NBTList<>(NBTTag.LIST_TAG_ID);
             list.setContents(new NBTList[]{ innerList });
             list = innerList;
         }
 
-        NBTList<NBTList<? extends NBTTag>> finalList = list;
-        assertThrows(NBTLimitException.class, () -> finalList.setContents(new NBTList[]{ new NBTList<>(NBTList.ID) }));
+        NBTList<NBTList<?>> finalList = list;
+        assertThrows(NBTLimitException.class, () -> finalList.setContents(new NBTList[]{ new NBTList<>(NBTTag.LIST_TAG_ID) }));
     }
 
     @Test
     public void shouldParseCorrectly() throws IOException {
 
         // Create test input
-        NBTList<NBTInteger> list = new NBTList<>(NBTInteger.ID);
-        list.setContents(new NBTInteger[]{ new NBTInteger(1), new NBTInteger(2), new NBTInteger(3) });
+        NBTList<Integer> list = new NBTList<>(NBTTag.INT_TAG_ID);
+        list.setContents(new Integer[]{ 1, 2, 3 });
 
         // Write and read it
         ByteArrayOutputStream resultingByteStream = new ByteArrayOutputStream();
@@ -40,12 +40,12 @@ public class NBTListTest {
         outputStream.writeList(list);
 
         NBTInputStream inputStream = new NBTInputStream(new ByteArrayInputStream(resultingByteStream.toByteArray()));
-        NBTList<NBTInteger> rebuiltList =  (NBTList<NBTInteger>)inputStream.readList();
+        NBTList<Integer> rebuiltList =  inputStream.readList();
 
         // Confirm results
-        assertEquals(1, rebuiltList.getContents()[0].getValue());
-        assertEquals(2, rebuiltList.getContents()[1].getValue());
-        assertEquals(3, rebuiltList.getContents()[2].getValue());
+        assertEquals(1, rebuiltList.getContents()[0]);
+        assertEquals(2, rebuiltList.getContents()[1]);
+        assertEquals(3, rebuiltList.getContents()[2]);
 
     }
 

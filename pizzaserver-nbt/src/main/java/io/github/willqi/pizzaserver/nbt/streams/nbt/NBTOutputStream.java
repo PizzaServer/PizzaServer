@@ -11,18 +11,6 @@ public class NBTOutputStream extends OutputStream {
 
     private final LittleEndianDataOutputStream stream;
 
-    private final NBTByteWriter byteWriter;
-    private final NBTShortWriter shortWriter;
-    private final NBTIntegerWriter integerWriter;
-    private final NBTLongWriter longWriter;
-    private final NBTFloatWriter floatWriter;
-    private final NBTDoubleWriter doubleWriter;
-    private final NBTByteArrayWriter byteArrayWriter;
-    private final NBTStringWriter stringWriter;
-    private final NBTListWriter<? extends NBTTag> listWriter;
-    private final NBTCompoundWriter compoundWriter;
-    private final NBTIntegerArrayWriter integerArrayWriter;
-    private final NBTLongArrayWriter longArrayWriter;
 
     public NBTOutputStream(OutputStream stream) {
         if (stream instanceof LittleEndianDataOutputStream) {
@@ -30,19 +18,6 @@ public class NBTOutputStream extends OutputStream {
         } else {
             this.stream = new LittleEndianDataOutputStream(stream);
         }
-
-        this.byteWriter = new NBTByteWriter(this.stream);
-        this.shortWriter = new NBTShortWriter(this.stream);
-        this.integerWriter = new NBTIntegerWriter(this.stream);
-        this.longWriter = new NBTLongWriter(this.stream);
-        this.floatWriter = new NBTFloatWriter(this.stream);
-        this.doubleWriter = new NBTDoubleWriter(this.stream);
-        this.byteArrayWriter = new NBTByteArrayWriter(this.stream);
-        this.stringWriter = new NBTStringWriter(this.stream);
-        this.listWriter = new NBTListWriter<>(this.stream);
-        this.compoundWriter = new NBTCompoundWriter(this.stream);
-        this.integerArrayWriter = new NBTIntegerArrayWriter(this.stream);
-        this.longArrayWriter = new NBTLongArrayWriter(this.stream);
     }
 
     @Override
@@ -50,56 +25,70 @@ public class NBTOutputStream extends OutputStream {
         this.stream.write(b);
     }
 
-    public void writeByte(NBTByte nbtByte) throws IOException {
-        this.byteWriter.write(nbtByte);
+    public void writeByte(byte value) throws IOException {
+        this.write(NBTTag.BYTE_TAG_ID);
+        NBTByteWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeShort(NBTShort nbtShort) throws IOException {
-        this.shortWriter.write(nbtShort);
+    public void writeShort(short value) throws IOException {
+        this.write(NBTTag.SHORT_TAG_ID);
+        NBTShortWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeInt(NBTInteger nbtInteger) throws IOException {
-        this.integerWriter.write(nbtInteger);
+    public void writeInt(int value) throws IOException {
+        this.write(NBTTag.INT_TAG_ID);
+        NBTIntegerWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeLong(NBTLong nbtLong) throws IOException {
-        this.longWriter.write(nbtLong);
+    public void writeLong(long value) throws IOException {
+        this.write(NBTTag.LONG_TAG_ID);
+        NBTLongWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeFloat(NBTFloat nbtFloat) throws IOException {
-        this.floatWriter.write(nbtFloat);
+    public void writeFloat(float value) throws IOException {
+        this.write(NBTTag.FLOAT_TAG_ID);
+        NBTFloatWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeDouble(NBTDouble nbtDouble) throws IOException {
-        this.doubleWriter.write(nbtDouble);
+    public void writeDouble(double value) throws IOException {
+        this.write(NBTTag.DOUBLE_TAG_ID);
+        NBTDoubleWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeByteArray(NBTByteArray nbtByteArray) throws IOException {
-        this.byteArrayWriter.write(nbtByteArray);
+    public void writeByteArray(byte[] value) throws IOException {
+        this.write(NBTTag.BYTE_ARRAY_TAG_ID);
+        NBTByteArrayWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeString(NBTString nbtString) throws IOException {
-        this.stringWriter.write(nbtString);
+    public void writeString(String value) throws IOException {
+        this.write(NBTTag.STRING_TAG_ID);
+        NBTStringWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeList(NBTList nbtList) throws IOException {
-        this.listWriter.write(nbtList);
+    public void writeList(NBTList value) throws IOException {
+        this.write(NBTTag.LIST_TAG_ID);
+        NBTListWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeCompound(NBTCompound compound) throws IOException {
-        this.compoundWriter.write(compound);
+    public void writeCompound(NBTCompound value) throws IOException {
+        this.write(NBTTag.COMPOUND_TAG_ID);
+        this.stream.writeUTF(value.getName());
+        NBTCompoundWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeIntegerArray(NBTIntegerArray integerArray) throws IOException {
-        this.integerArrayWriter.write(integerArray);
+    public void writeIntegerArray(int[] value) throws IOException {
+        this.write(NBTTag.INT_ARRAY_TAG_ID);
+        NBTIntegerArrayWriter.INSTANCE.write(this.stream, value);
     }
 
-    public void writeLongArray(NBTLongArray longArray) throws IOException {
-        this.longArrayWriter.write(longArray);
+    public void writeLongArray(long[] value) throws IOException {
+        this.write(NBTTag.LONG_ARRAY_TAG_ID);
+        NBTLongArrayWriter.INSTANCE.write(this.stream, value);
     }
 
     @Override
     public void close() throws IOException {
         super.close();
     }
+
 }

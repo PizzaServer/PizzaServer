@@ -4,7 +4,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.nbt.tags.NBTString;
 import io.github.willqi.pizzaserver.api.item.data.ItemToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 
@@ -17,8 +16,8 @@ public class BlockTypeStone extends BaseBlockType {
             List<String> stoneTypes = Arrays.asList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth");
             int stateIndex = 0;
             for (String stoneType : stoneTypes) {
-                NBTCompound state = new NBTCompound("states");
-                state.put("stone_type", new NBTString(stoneType));
+                NBTCompound state = new NBTCompound("states")
+                        .putString("stone_type", stoneType);
                 this.put(state, stateIndex++);
             }
         }

@@ -7,72 +7,80 @@ import java.io.IOException;
 
 public class NBTCompoundWriter extends NBTWriter<NBTCompound> {
 
-    private final NBTByteWriter byteWriter = new NBTByteWriter(this.stream);
-    private final NBTShortWriter shortWriter = new NBTShortWriter(this.stream);
-    private final NBTIntegerWriter integerWriter = new NBTIntegerWriter(this.stream);
-    private final NBTLongWriter longWriter = new NBTLongWriter(this.stream);
-    private final NBTFloatWriter floatWriter = new NBTFloatWriter(this.stream);
-    private final NBTDoubleWriter doubleWriter = new NBTDoubleWriter(this.stream);
-    private final NBTByteArrayWriter byteArrayWriter = new NBTByteArrayWriter(this.stream);
-    private final NBTStringWriter stringWriter = new NBTStringWriter(this.stream);
-    private final NBTIntegerArrayWriter integerArrayWriter = new NBTIntegerArrayWriter(this.stream);
-    private final NBTLongArrayWriter longArrayWriter = new NBTLongArrayWriter(this.stream);
+    public static final NBTWriter<NBTCompound> INSTANCE = new NBTCompoundWriter();
 
-
-    public NBTCompoundWriter(LittleEndianDataOutputStream stream) {
-        super(stream);
-    }
 
     @Override
-    protected void writeTagData(NBTCompound tag) throws IOException {
-        for (String name : tag.keySet()) {
+    public void write(LittleEndianDataOutputStream stream, NBTCompound tag) throws IOException {
+        for (String childName : tag.keySet()) {
+            Object childTag = tag.get(childName);
 
-            NBTTag childTag = tag.get(name);
-            childTag.setName(name);
-            switch (childTag.getId()) {
-                case NBTByte.ID:
-                    this.byteWriter.write((NBTByte)childTag);
-                    break;
-                case NBTShort.ID:
-                    this.shortWriter.write((NBTShort)childTag);
-                    break;
-                case NBTInteger.ID:
-                    this.integerWriter.write((NBTInteger)childTag);
-                    break;
-                case NBTLong.ID:
-                    this.longWriter.write((NBTLong)childTag);
-                    break;
-                case NBTFloat.ID:
-                    this.floatWriter.write((NBTFloat)childTag);
-                    break;
-                case NBTDouble.ID:
-                    this.doubleWriter.write((NBTDouble)childTag);
-                    break;
-                case NBTByteArray.ID:
-                    this.byteArrayWriter.write((NBTByteArray)childTag);
-                    break;
-                case NBTString.ID:
-                    this.stringWriter.write((NBTString)childTag);
-                    break;
-                case NBTList.ID:
-                    NBTListWriter<? extends NBTTag> listWriter = new NBTListWriter<>(this.stream);
-                    listWriter.write((NBTList)childTag);
-                    break;
-                case NBTCompound.ID:
-                    this.write((NBTCompound)childTag);
-                    break;
-                case NBTIntegerArray.ID:
-                    this.integerArrayWriter.write((NBTIntegerArray)childTag);
-                    break;
-                case NBTLongArray.ID:
-                    this.longArrayWriter.writeTagData((NBTLongArray)childTag);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported/invalid NBT tag id found when writing contents to NBTCompoundWriter. Id: " + tag.getId());
+            if (Byte.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.BYTE_TAG_ID);
+                stream.writeUTF(childName);
+                NBTByteWriter.INSTANCE.write(stream, (Byte)childTag);
+
+            } else if (Short.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.SHORT_TAG_ID);
+                stream.writeUTF(childName);
+                NBTShortWriter.INSTANCE.write(stream, (Short)childTag);
+
+            } else if (Integer.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.INT_TAG_ID);
+                stream.writeUTF(childName);
+                NBTIntegerWriter.INSTANCE.write(stream, (Integer)childTag);
+
+            } else if (Long.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.LONG_TAG_ID);
+                stream.writeUTF(childName);
+                NBTLongWriter.INSTANCE.write(stream, (Long)childTag);
+
+            } else if (Float.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.FLOAT_TAG_ID);
+                stream.writeUTF(childName);
+                NBTFloatWriter.INSTANCE.write(stream, (Float)childTag);
+
+            } else if (Double.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.DOUBLE_TAG_ID);
+                stream.writeUTF(childName);
+                NBTDoubleWriter.INSTANCE.write(stream, (Double)childTag);
+
+            } else if (byte[].class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.BYTE_ARRAY_TAG_ID);
+                stream.writeUTF(childName);
+                NBTByteArrayWriter.INSTANCE.write(stream, (byte[])childTag);
+
+            } else if (String.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.STRING_TAG_ID);
+                stream.writeUTF(childName);
+                NBTStringWriter.INSTANCE.write(stream, (String)childTag);
+
+            } else if (NBTList.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.LIST_TAG_ID);
+                stream.writeUTF(childName);
+                NBTListWriter.INSTANCE.write(stream, (NBTList<Object>)childTag);
+
+            } else if (NBTCompound.class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.COMPOUND_TAG_ID);
+                stream.writeUTF(childName);
+                this.write(stream, (NBTCompound)childTag);
+
+            } else if (int[].class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.INT_ARRAY_TAG_ID);
+                stream.writeUTF(childName);
+                NBTIntegerArrayWriter.INSTANCE.write(stream, (int[])childTag);
+
+            } else if (long[].class.equals(childTag.getClass())) {
+                stream.writeByte(NBTTag.LONG_ARRAY_TAG_ID);
+                stream.writeUTF(childName);
+                NBTLongArrayWriter.INSTANCE.write(stream, (long[])childTag);
+
+            } else {
+                throw new UnsupportedOperationException("Unsupported/invalid NBT tag id found when writing contents to NBTCompoundWriter. Class: " + childTag.getClass().getName());
             }
 
         }
-        stream.write(NBTContainer.END_ID);
+        stream.writeByte(NBTTag.END_TAG_ID);
     }
 
 }

@@ -5,11 +5,9 @@ import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer, Iterable<NBTTag> {
+public class NBTList<T> extends NBTContainer implements Iterable<T> {
 
-    public static final int ID = 9;
-
-    private T[] list = (T[])new NBTTag[0];
+    private T[] list = (T[])new Object[0];
     private final int childrenTypeId;
     private int depth;
 
@@ -25,20 +23,15 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer, I
 
     public void setContents(T[] list) {
         this.list = list;
-        for (T tag : list) {
+        for (Object tag : list) {
             if (tag instanceof NBTContainer) {
                 ((NBTContainer)tag).setDepth(this.getDepth() + 1);
             }
         }
     }
 
-    public T[] getContents() {
+    public Object[] getContents() {
         return this.list;
-    }
-
-    @Override
-    public int getId() {
-        return ID;
     }
 
     public int getChildrenTypeId() {
@@ -56,7 +49,7 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer, I
         if (this.depth > 512) {
             throw new NBTLimitException("Reached maximum depth of 512.");
         }
-        for (T childTag : this.list) {
+        for (Object childTag : this.list) {
             if (childTag instanceof NBTContainer) {
                 ((NBTContainer)childTag).setDepth(this.getDepth() + 1);
             }
@@ -71,7 +64,7 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer, I
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NBTList) {
-            NBTList<?> nbtList = (NBTList<?>)obj;
+            NBTList<T> nbtList = (NBTList<T>)obj;
             return Arrays.equals(nbtList.getContents(), this.getContents()) &&
                     nbtList.getName().equals(this.getName()) &&
                     nbtList.getChildrenTypeId() == this.getChildrenTypeId();
@@ -80,8 +73,8 @@ public class NBTList<T extends NBTTag> extends NBTTag implements NBTContainer, I
     }
 
     @Override
-    public Iterator<NBTTag> iterator() {
-        return (Iterator<NBTTag>)Arrays.stream(this.list).iterator();
+    public Iterator<T> iterator() {
+        return (Iterator<T>)Arrays.stream(this.list).iterator();
     }
 
 }
