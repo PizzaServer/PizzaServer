@@ -2,7 +2,6 @@ package io.github.willqi.pizzaserver.nbt.tags;
 
 import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class NBTCompound extends NBTContainer implements Iterable<String> {
@@ -21,7 +20,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return ((byte)this.data.get(name));
     }
 
-    public NBTCompound setByte(String name, byte value) {
+    public NBTCompound putByte(String name, byte value) {
         this.data.put(name, value);
         return this;
     }
@@ -30,7 +29,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (short)this.data.get(name);
     }
 
-    public NBTCompound setShort(String name, short value) {
+    public NBTCompound putShort(String name, short value) {
         this.data.put(name, value);
         return this;
     }
@@ -39,7 +38,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (int)this.data.get(name);
     }
 
-    public NBTCompound setInteger(String name, int value) {
+    public NBTCompound putInteger(String name, int value) {
         this.data.put(name, value);
         return this;
     }
@@ -48,7 +47,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (long)this.data.get(name);
     }
 
-    public NBTCompound setLong(String name, long value) {
+    public NBTCompound putLong(String name, long value) {
         this.data.put(name, value);
         return this;
     }
@@ -57,7 +56,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (float)this.data.get(name);
     }
 
-    public NBTCompound setFloat(String name, float value) {
+    public NBTCompound putFloat(String name, float value) {
         this.data.put(name, value);
         return this;
     }
@@ -66,7 +65,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (double)this.data.get(name);
     }
 
-    public NBTCompound setDouble(String name, double value) {
+    public NBTCompound putDouble(String name, double value) {
         this.data.put(name, value);
         return this;
     }
@@ -75,7 +74,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (String)this.data.get(name);
     }
 
-    public NBTCompound setString(String name, String value) {
+    public NBTCompound putString(String name, String value) {
         this.data.put(name, value);
         return this;
     }
@@ -84,7 +83,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return ((NBTList<Object>)this.data.get(name));
     }
 
-    public <T> NBTCompound setList(String name, NBTList<T> value) {
+    public <T> NBTCompound putList(String name, NBTList<T> value) {
         this.data.put(name, value);
         return this;
     }
@@ -93,7 +92,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (NBTCompound)this.data.get(name);
     }
 
-    public NBTCompound setCompound(String name, NBTCompound value) {
+    public NBTCompound putCompound(String name, NBTCompound value) {
         value.setName(name);
         this.data.put(name, value);
         value.setDepth(this.getDepth() + 1);
@@ -104,7 +103,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (byte[])this.data.get(name);
     }
 
-    public NBTCompound setByteArray(String name, byte[] value) {
+    public NBTCompound putByteArray(String name, byte[] value) {
         this.data.put(name, value);
         return this;
     }
@@ -113,7 +112,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (int[])this.data.get(name);
     }
 
-    public NBTCompound setIntegerArray(String name, int[] value) {
+    public NBTCompound putIntegerArray(String name, int[] value) {
         this.data.put(name, value);
         return this;
     }
@@ -122,7 +121,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return (long[])this.data.get(name);
     }
 
-    public NBTCompound setLongArray(String name, long[] value) {
+    public NBTCompound putLongArray(String name, long[] value) {
         this.data.put(name, value);
         return this;
     }

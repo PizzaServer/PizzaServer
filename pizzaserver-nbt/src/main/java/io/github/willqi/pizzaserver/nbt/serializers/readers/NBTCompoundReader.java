@@ -22,51 +22,51 @@ public class NBTCompoundReader extends NBTReader<NBTCompound> {
             switch (nbtTagId) {
                 case NBTTag.BYTE_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setByte(tagName, NBTByteReader.INSTANCE.read(stream));
+                    compound.putByte(tagName, NBTByteReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.SHORT_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setShort(tagName, NBTShortReader.INSTANCE.read(stream));
+                    compound.putShort(tagName, NBTShortReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.INT_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setInteger(tagName, NBTIntegerReader.INSTANCE.read(stream));
+                    compound.putInteger(tagName, NBTIntegerReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.LONG_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setLong(tagName, NBTLongReader.INSTANCE.read(stream));
+                    compound.putLong(tagName, NBTLongReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.FLOAT_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setFloat(tagName, NBTFloatReader.INSTANCE.read(stream));
+                    compound.putFloat(tagName, NBTFloatReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.DOUBLE_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setDouble(tagName, NBTDoubleReader.INSTANCE.read(stream));
+                    compound.putDouble(tagName, NBTDoubleReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.BYTE_ARRAY_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setByteArray(tagName, NBTByteArrayReader.INSTANCE.read(stream));
+                    compound.putByteArray(tagName, NBTByteArrayReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.STRING_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setString(tagName, NBTStringReader.INSTANCE.read(stream));
+                    compound.putString(tagName, NBTStringReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.LIST_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setList(tagName, NBTListReader.INSTANCE.read(stream));
+                    compound.putList(tagName, NBTListReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.COMPOUND_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setCompound(tagName, NBTCompoundReader.INSTANCE.read(stream));
+                    compound.putCompound(tagName, NBTCompoundReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.INT_ARRAY_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setIntegerArray(tagName, NBTIntegerArrayReader.INSTANCE.read(stream));
+                    compound.putIntegerArray(tagName, NBTIntegerArrayReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.LONG_ARRAY_TAG_ID:
                     tagName = stream.readUTF();
-                    compound.setLongArray(tagName, NBTLongArrayReader.INSTANCE.read(stream));
+                    compound.putLongArray(tagName, NBTLongArrayReader.INSTANCE.read(stream));
                     break;
                 case NBTTag.END_TAG_ID:
                     reachedEnd = true;

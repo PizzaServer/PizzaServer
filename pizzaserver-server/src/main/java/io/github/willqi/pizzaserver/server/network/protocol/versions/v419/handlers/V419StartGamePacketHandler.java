@@ -120,19 +120,19 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
         NBTCompound blockContainer = new NBTCompound();
 
         NBTCompound components = new NBTCompound();
-        components.setCompound("minecraft:block_light_absorption", new NBTCompound().setInteger("value", blockType.getLightAbsorption()))
-                .setCompound("minecraft:block_light_emission", new NBTCompound().setFloat("emission", blockType.getLightEmission()))
-                .setCompound("minecraft:destroy_time", new NBTCompound().setFloat("value", blockType.getToughness()))
-                .setCompound("minecraft:friction", new NBTCompound().setFloat("value", blockType.getFriction()));
+        components.putCompound("minecraft:block_light_absorption", new NBTCompound().putInteger("value", blockType.getLightAbsorption()))
+                .putCompound("minecraft:block_light_emission", new NBTCompound().putFloat("emission", blockType.getLightEmission()))
+                .putCompound("minecraft:destroy_time", new NBTCompound().putFloat("value", blockType.getToughness()))
+                .putCompound("minecraft:friction", new NBTCompound().putFloat("value", blockType.getFriction()));
         if (blockType.getGeometry() != null) {
-            components.setCompound("minecraft:geometry", new NBTCompound().setString("value", blockType.getGeometry()));
+            components.putCompound("minecraft:geometry", new NBTCompound().putString("value", blockType.getGeometry()));
         }
-        components.setCompound("minecraft:rotation", new NBTCompound()
-                .setFloat("x", blockType.getRotation()[0])
-                .setFloat("y", blockType.getRotation()[1])
-                .setFloat("z", blockType.getRotation()[2]));
+        components.putCompound("minecraft:rotation", new NBTCompound()
+                .putFloat("x", blockType.getRotation()[0])
+                .putFloat("y", blockType.getRotation()[1])
+                .putFloat("z", blockType.getRotation()[2]));
 
-        blockContainer.setCompound("components", components);
+        blockContainer.putCompound("components", components);
         buffer.writeNBTCompound(blockContainer);
     }
 

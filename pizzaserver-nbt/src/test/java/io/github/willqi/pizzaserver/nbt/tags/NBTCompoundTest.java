@@ -19,12 +19,12 @@ public class NBTCompoundTest {
         NBTCompound compound = new NBTCompound();
         for (int i = 0; i < 512; i++) {
             NBTCompound innerCompound = new NBTCompound();
-            compound.setCompound("a", innerCompound);
+            compound.putCompound("a", innerCompound);
             compound = innerCompound;
         }
 
         NBTCompound finalCompound = compound;
-        assertThrows(NBTLimitException.class, () -> finalCompound.setCompound("a", new NBTCompound()));
+        assertThrows(NBTLimitException.class, () -> finalCompound.putCompound("a", new NBTCompound()));
     }
 
     @Test
@@ -32,12 +32,12 @@ public class NBTCompoundTest {
 
         // Create test compound
         NBTCompound testCompound = new NBTCompound()
-                .setDouble("double", 12d)
-                .setInteger("int", 2);
+                .putDouble("double", 12d)
+                .putInteger("int", 2);
 
         NBTCompound innerCompound = new NBTCompound()
-                .setFloat("float", 12f);
-        testCompound.setCompound("innerCompound", innerCompound);
+                .putFloat("float", 12f);
+        testCompound.putCompound("innerCompound", innerCompound);
 
         // Write and read the result
         ByteArrayOutputStream resultingByteStream = new ByteArrayOutputStream();

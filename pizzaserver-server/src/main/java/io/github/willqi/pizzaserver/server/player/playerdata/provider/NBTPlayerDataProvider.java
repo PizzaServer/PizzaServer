@@ -81,13 +81,13 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
 
     private static NBTCompound getPlayerNBTDataFormat(PlayerData data) {
         return new NBTCompound()
-                .setString("levelName", data.getLevelName())
-                .setInteger("dimension", data.getDimension().ordinal())
-                .setFloat("positionX", data.getPosition().getX())
-                .setFloat("positionY", data.getPosition().getY())
-                .setFloat("positionZ", data.getPosition().getZ())
-                .setFloat("pitch", data.getPitch())
-                .setFloat("yaw", data.getYaw());
+                .putString("levelName", data.getLevelName())
+                .putInteger("dimension", data.getDimension().ordinal())
+                .putFloat("positionX", data.getPosition().getX())
+                .putFloat("positionY", data.getPosition().getY())
+                .putFloat("positionZ", data.getPosition().getZ())
+                .putFloat("pitch", data.getPitch())
+                .putFloat("yaw", data.getYaw());
     }
 
     private static PlayerData getPlayerDataFormat(NBTCompound data) {

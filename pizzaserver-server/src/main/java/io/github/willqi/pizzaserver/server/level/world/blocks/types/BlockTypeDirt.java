@@ -17,7 +17,7 @@ public class BlockTypeDirt extends BaseBlockType {
             int stateIndex = 0;
             for (String dirtType : dirtTypes) {
                 NBTCompound state = new NBTCompound("states")
-                        .setString("dirt_type", dirtType);
+                        .putString("dirt_type", dirtType);
                 this.put(state, stateIndex++);
             }
         }

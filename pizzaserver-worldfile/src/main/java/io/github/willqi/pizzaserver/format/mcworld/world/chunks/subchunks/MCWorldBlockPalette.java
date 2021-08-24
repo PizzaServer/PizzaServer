@@ -101,9 +101,9 @@ public class MCWorldBlockPalette implements BlockPalette {
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
         for (BlockPalette.Entry data : this.getAllEntries()) {
             NBTCompound compound = new NBTCompound();
-            compound.setString("name", data.getId())
-                    .setInteger("version", data.getVersion())
-                    .setCompound("states", data.getState());
+            compound.putString("name", data.getId())
+                    .putInteger("version", data.getVersion())
+                    .putCompound("states", data.getState());
 
             outputStream.writeCompound(compound);
         }

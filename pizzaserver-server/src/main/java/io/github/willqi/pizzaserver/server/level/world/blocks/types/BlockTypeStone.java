@@ -17,7 +17,7 @@ public class BlockTypeStone extends BaseBlockType {
             int stateIndex = 0;
             for (String stoneType : stoneTypes) {
                 NBTCompound state = new NBTCompound("states")
-                        .setString("stone_type", stoneType);
+                        .putString("stone_type", stoneType);
                 this.put(state, stateIndex++);
             }
         }
