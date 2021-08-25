@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.entity;
 
+import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -25,6 +26,8 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     protected boolean moveUpdate;
 
     private final Set<Player> hiddenFrom = new HashSet<>();
+
+    protected LivingEntityInventory inventory = null;
 
 
     @Override
@@ -115,6 +118,11 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     public void setHeadYaw(float headYaw) {
         this.moveUpdate = true;
         this.headYaw = headYaw;
+    }
+
+    @Override
+    public LivingEntityInventory getInventory() {
+        return this.inventory;
     }
 
     @Override

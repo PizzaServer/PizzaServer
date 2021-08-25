@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.player;
 
+import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
@@ -83,6 +84,8 @@ public interface Player extends LivingEntity {
 
     // TODO: move to EntityHuman
     PlayerList.Entry getPlayerListEntry();
+
+    PlayerInventory getInventory();
 
     /**
      * Get the player attributes of the player

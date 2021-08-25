@@ -13,7 +13,8 @@ public class V419InventoryContentPacketHandler extends BaseProtocolPacketHandler
         buffer.writeUnsignedVarInt(packet.getContents().size());
         for (NetworkItemStackData networkItemStackData : packet.getContents()) {
             // Write the unique stack id before the item (or zero if it is empty) (used for authoritative server inventory system)
-            buffer.writeVarInt(networkItemStackData.getRuntimeId() == 0 ? 0 : networkItemStackData.getItemStack().getStackId());
+            // However, it is not needed and writing a 1 in its place is fine as the packets tell us the slots involved.
+            buffer.writeVarInt(networkItemStackData.getRuntimeId() == 0 ? 0 : 1);
             buffer.writeItem(networkItemStackData);
         }
     }

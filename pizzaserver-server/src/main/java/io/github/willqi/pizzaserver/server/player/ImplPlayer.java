@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
@@ -171,6 +173,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     public ImplServer getServer() {
         return this.server;
+    }
+
+    @Override
+    public PlayerInventory getInventory() {
+        return (PlayerInventory)this.inventory;
     }
 
     @Override

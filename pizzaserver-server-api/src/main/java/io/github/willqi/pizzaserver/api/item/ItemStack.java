@@ -5,10 +5,7 @@ import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
 public class ItemStack {
 
-    public static int ID = 1;
-
     private final BaseItemType itemType;
-    private final int id;
     private int count;
     private int damage;
     private NBTCompound compound;
@@ -36,17 +33,12 @@ public class ItemStack {
 
     public ItemStack(BaseItemType itemType, int count, int damage) {
         this.itemType = itemType;
-        this.id = ID++;
         this.count = count;
         this.damage = damage;
     }
 
     public BaseItemType getItemType() {
         return this.itemType;
-    }
-
-    public int getStackId() {
-        return this.id;
     }
 
     public int getCount() {

@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.api.entity;
 
+import io.github.willqi.pizzaserver.api.entity.MovingEntity;
+import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 /**
@@ -47,6 +49,8 @@ public interface LivingEntity extends MovingEntity {
     float getHeadYaw();
 
     void setHeadYaw(float headYaw);
+
+    LivingEntityInventory getInventory();
 
     /**
      * This entity will be shown to the player when the player is within range
