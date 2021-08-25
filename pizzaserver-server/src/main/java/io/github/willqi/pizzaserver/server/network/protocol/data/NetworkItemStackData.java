@@ -10,11 +10,15 @@ public class NetworkItemStackData {
     private final int runtimeId;
     private final ItemStack itemStack;
 
-    public NetworkItemStackData(int runtimeId, ItemStack itemStack) {
-        this.runtimeId = runtimeId;
+    public NetworkItemStackData(ItemStack itemStack, int runtimeId) {
         this.itemStack = itemStack;
+        this.runtimeId = runtimeId;
     }
 
+    /**
+     * Item runtime id
+     * @return item runtime id
+     */
     public int getRuntimeId() {
         return this.runtimeId;
     }
