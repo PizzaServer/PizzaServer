@@ -30,6 +30,7 @@ public abstract class BaseBedrockPacketHandler {
     public void onPacket(PlayerAnimatePacket packet) {}
     public void onPacket(PlayerSkinPacket packet) {}
     public void onPacket(MobEquipmentPacket packet) {}
+    public void onPacket(InteractPacket packet) {}
 
     // inventory actions
     public void onPacket(ContainerClosePacket packet) {}

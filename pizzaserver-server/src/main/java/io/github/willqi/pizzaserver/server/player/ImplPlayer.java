@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.player;
 
-import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
-import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
@@ -18,6 +17,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.server.entity.inventory.BaseEntityInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -53,6 +53,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // Reset every tick
 
     private final PlayerAttributes attributes = new PlayerAttributes();
+
+    private EntityInventory openInventory = null;
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -178,8 +180,35 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public PlayerInventory getInventory() {
-        return (PlayerInventory)this.inventory;
+    public ImplPlayerInventory getInventory() {
+        return (ImplPlayerInventory)this.inventory;
+    }
+
+    @Override
+    public Optional<EntityInventory> getOpenInventory() {
+        return Optional.ofNullable(this.openInventory);
+    }
+
+    @Override
+    public boolean closeOpenInventory() {
+        Optional<EntityInventory> openInventory = this.getOpenInventory();
+        if (openInventory.isPresent() && !((BaseEntityInventory)openInventory.get()).closeFor(this)) {
+            return false;
+        } else {
+            this.openInventory = null;
+            return true;
+        }
+    }
+
+    @Override
+    public boolean openInventory(EntityInventory inventory) {
+        this.closeOpenInventory();
+        if (((BaseEntityInventory)inventory).openFor(this)) {
+            this.openInventory = inventory;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

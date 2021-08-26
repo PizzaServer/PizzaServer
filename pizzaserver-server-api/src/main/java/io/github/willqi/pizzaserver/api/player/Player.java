@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.player;
 
+import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
@@ -8,6 +9,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -86,6 +88,27 @@ public interface Player extends LivingEntity {
     PlayerList.Entry getPlayerListEntry();
 
     PlayerInventory getInventory();
+
+    /**
+     * Get the current open inventory of the player if any exist
+     * @return the open inventory if the player has one open
+     */
+    Optional<EntityInventory> getOpenInventory();
+
+    /**
+     * Try to close our current open inventory.
+     * If the inventory was not opened or cannot be closed it will return false
+     * @return if the inventory was closed
+     */
+    boolean closeOpenInventory();
+
+    /**
+     * Try to open an inventory
+     * If the inventory cannot be opened (or is already opened) it will return false
+     * @param inventory The inventory to open
+     * @return if the inventory was opened
+     */
+    boolean openInventory(EntityInventory inventory);
 
     /**
      * Get the player attributes of the player

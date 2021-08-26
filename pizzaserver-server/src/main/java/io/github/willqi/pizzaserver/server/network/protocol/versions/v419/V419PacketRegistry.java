@@ -33,6 +33,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(AddPlayerPacket.ID, new V419AddPlayerPacketHandler())
             .register(PlayerSkinPacket.ID, new V419PlayerSkinPacketHandler())
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
+            .register(InteractPacket.ID, new V419InteractPacketHandler())
             .register(ContainerOpenPacket.ID, new V419ContainerOpenPacketHandler())
             .register(ContainerClosePacket.ID, new V419ContainerClosePacketHandler())
             .register(InventoryContentPacket.ID, new V419InventoryContentPacketHandler())

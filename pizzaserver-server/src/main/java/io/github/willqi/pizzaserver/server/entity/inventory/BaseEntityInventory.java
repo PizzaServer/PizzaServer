@@ -136,6 +136,15 @@ public abstract class BaseEntityInventory implements EntityInventory {
     }
 
     @Override
+    public boolean canBeOpenedBy(Player player) {
+        return true;
+    }
+
+    /**
+     * Tries to open the inventory
+     * @param player the player to open this inventory to
+     * @return if the inventory was opened
+     */
     public boolean openFor(Player player) {
         if (this.viewers.add(player)) {
             this.sendContainerOpenPacket(player);
@@ -147,7 +156,11 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     protected abstract void sendContainerOpenPacket(Player player);
 
-    @Override
+    /**
+     * Close this inventory for a player
+     * @param player the player to close this inventory for
+     * @return if the inventory was closed
+     */
     public boolean closeFor(Player player) {
         if (this.viewers.remove(player)) {
             ContainerClosePacket containerClosePacket = new ContainerClosePacket();

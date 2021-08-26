@@ -75,17 +75,10 @@ public interface EntityInventory extends Watchable {
     void sendSlots(Player player);
 
     /**
-     * Show this inventory to a player
-     * @param player the player
-     * @return if the inventory was opened
+     * Check if this player has permission to open this inventory by themselves
+     * @param player if the player has permission to open this inventory
+     * @return if the player has permission to open the inventory by themselves
      */
-    boolean openFor(Player player);
-
-    /**
-     * Close this inventory for a player
-     * @param player the player
-     * @return if the inventory was closed
-     */
-    boolean closeFor(Player player);
+    boolean canBeOpenedBy(Player player);
 
 }
