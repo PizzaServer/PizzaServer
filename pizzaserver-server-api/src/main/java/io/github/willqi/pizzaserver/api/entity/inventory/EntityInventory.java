@@ -29,10 +29,17 @@ public interface EntityInventory extends Watchable {
      * Change all the slots in this inventory
      * The slots provided must be the same size as the existing slots
      * @param slots new slots
+     * @returns if the slots were changed
      */
-    void setSlots(ItemStack[] slots);
+    boolean setSlots(ItemStack[] slots);
 
-    void setSlot(int slot, ItemStack itemStack);
+    /**
+     * Change a single slot
+     * @param slot the slot to change
+     * @param itemStack the item to place in it
+     * @return if the slot was changed
+     */
+    boolean setSlot(int slot, ItemStack itemStack);
 
     /**
      * Try to add an item to the inventory.
@@ -62,15 +69,23 @@ public interface EntityInventory extends Watchable {
     Set<ItemStack> addItems(Collection<ItemStack> itemStacks);
 
     /**
+     * Send this inventory to a player
+     * @param player the player to send this inventory to
+     */
+    void sendSlots(Player player);
+
+    /**
      * Show this inventory to a player
      * @param player the player
+     * @return if the inventory was opened
      */
-    void openFor(Player player);
+    boolean openFor(Player player);
 
     /**
      * Close this inventory for a player
      * @param player the player
+     * @return if the inventory was closed
      */
-    void closeFor(Player player);
+    boolean closeFor(Player player);
 
 }

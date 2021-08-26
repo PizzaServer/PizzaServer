@@ -18,6 +18,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
@@ -65,6 +66,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.username = loginPacket.getUsername();
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
+        this.inventory = new ImplPlayerInventory(this);
 
         this.chunkRequestsLeft.set(server.getConfig().getChunkRequestsPerTick());
     }
@@ -572,6 +574,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     private void completeLogin() {
+        this.getInventory().sendSlots(this);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);

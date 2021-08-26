@@ -1,8 +1,11 @@
 package io.github.willqi.pizzaserver.api.entity.inventory;
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.player.Player;
 
 public interface PlayerInventory extends LivingEntityInventory {
+
+    Player getEntity();
 
     /**
      * Get the current selected slot for the player
@@ -13,8 +16,9 @@ public interface PlayerInventory extends LivingEntityInventory {
     /**
      * Change the current selected slot for the player
      * @param slot new selected slot
+     * @return if the slot was changed
      */
-    void setSelectedSlot(int slot);
+    boolean setSelectedSlot(int slot);
 
     /**
      * Get the item held by the cursor
@@ -25,7 +29,8 @@ public interface PlayerInventory extends LivingEntityInventory {
     /**
      * Change the item held by the player's cursor
      * @param item item held by the player's cursor
+     * @return if the slot was changed
      */
-    void setCursor(ItemStack item);
+    boolean setCursor(ItemStack item);
 
 }

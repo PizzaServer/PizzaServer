@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -679,6 +680,10 @@ public class BasePacketBuffer extends ByteBuf {
 
     public Skin readSkin() {
         throw new IllegalStateException("Called readSkin() before version was assigned.");
+    }
+
+    public ItemStack readItem() {
+        throw new IllegalStateException("Called readItem() before version was assigned.");
     }
 
     @Override

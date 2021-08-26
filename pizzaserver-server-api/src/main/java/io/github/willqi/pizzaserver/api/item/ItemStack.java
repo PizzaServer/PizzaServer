@@ -8,7 +8,7 @@ public class ItemStack {
     private final BaseItemType itemType;
     private int count;
     private int damage;
-    private NBTCompound compound;
+    private NBTCompound compound = null;
 
 
     public ItemStack(String itemId) {
@@ -65,4 +65,22 @@ public class ItemStack {
         this.compound = compound;
     }
 
+    @Override
+    public int hashCode() {
+        return this.getItemType().hashCode() * 73;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ItemStack) {
+            ItemStack otherItemStack = (ItemStack)obj;
+            boolean compoundsMatch = (otherItemStack.getCompoundTag() == null && this.getCompoundTag() == null) ||
+                                        (this.getCompoundTag() != null && this.getCompoundTag().equals(otherItemStack.getCompoundTag()));
+
+            return otherItemStack.getItemType().equals(this.getItemType()) &&
+                    otherItemStack.getDamage() == this.getDamage() &&
+                    otherItemStack.getCount() == this.getCount() && compoundsMatch;
+        }
+        return false;
+    }
 }

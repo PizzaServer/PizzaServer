@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
+import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.*;
@@ -32,7 +33,12 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(AddPlayerPacket.ID, new V419AddPlayerPacketHandler())
             .register(PlayerSkinPacket.ID, new V419PlayerSkinPacketHandler())
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
+            .register(ContainerOpenPacket.ID, new V419ContainerOpenPacketHandler())
+            .register(ContainerClosePacket.ID, new V419ContainerClosePacketHandler())
             .register(InventoryContentPacket.ID, new V419InventoryContentPacketHandler())
+            .register(InventorySlotPacket.ID, new V419InventorySlotPacketHandler())
+            .register(MobEquipmentPacket.ID, new V419MobEquipmentPacketHandler())
+            .register(MobArmourEquipmentPacket.ID, new V419MobArmourEquipmentPacketHandler())
             .register(UpdateAttributesPacket.ID, new V419UpdateAttributesPacketHandler())
             .register(TextPacket.ID, new V419TextPacketHandler())
             .register(SetEntityDataPacket.ID, new V419SetEntityDataPacketHandler())
