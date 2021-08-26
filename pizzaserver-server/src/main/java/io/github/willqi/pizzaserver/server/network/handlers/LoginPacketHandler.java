@@ -53,6 +53,15 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         this.session = session;
     }
 
+    /**
+     * Called when the login process is complete
+     */
+    private void addGamePacketHandlers() {
+        this.session.addPacketHandler(new ChunkBlockPacketHandler(this.player));
+        this.session.addPacketHandler(new PlayerEntityPacketHandler(this.player));
+        this.session.addPacketHandler(new InventoryPacketHandler(this.player));
+    }
+
     @Override
     public void onPacket(LoginPacket loginPacket) {
         if (this.player != null) {
@@ -293,8 +302,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
                     location.getWorld().addEntity(this.player, location);
                     this.session.removePacketHandler(this);
-                    this.session.addPacketHandler(new ChunkBlockPacketHandler(this.player));
-                    this.session.addPacketHandler(new PlayerEntityPacketHandler(this.player));
+                    this.addGamePacketHandlers();
 
                     PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(this.player);
                     this.player.getServer().getEventManager().call(playerSpawnEvent);
