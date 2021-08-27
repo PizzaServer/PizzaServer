@@ -83,7 +83,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
         if (isDifferentItems(this.slots[slot], itemStack)) {
             this.slots[slot] = itemStack;
             for (Player viewer : this.getViewers()) {
-                this.sendSlot(viewer, this.getSlot(slot), slot, this.getId());
+                sendSlot(viewer, this.getSlot(slot), slot, this.getId());
             }
             return true;
         } else {

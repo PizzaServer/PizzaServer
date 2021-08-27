@@ -4,16 +4,23 @@ import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 
 import java.util.*;
 
-public class NBTCompound extends NBTContainer implements Iterable<String> {
+public class NBTCompound extends NBTContainer implements Iterable<String>, Cloneable {
 
-    private final Map<String, Object> data = new HashMap<>();
+    private final Map<String, Object> data;
     private int depth;
 
 
-    public NBTCompound() {}
+    public NBTCompound() {
+        this("");
+    }
 
     public NBTCompound(String name) {
+        this(name, new HashMap<>());
+    }
+
+    public NBTCompound(String name, Map<String, Object> data) {
         super(name);
+        this.data = data;
     }
 
     public byte getByte(String name) {
@@ -87,8 +94,8 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return this;
     }
 
-    public NBTList<Object> getList(String name) {
-        return ((NBTList<Object>)this.data.get(name));
+    public <T> NBTList<T> getList(String name) {
+        return ((NBTList<T>)this.data.get(name));
     }
 
     public <T> NBTCompound putList(String name, NBTList<T> value) {
@@ -142,6 +149,10 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
         return this.data.get(name);
     }
 
+    public boolean remove(String name) {
+        return this.data.remove(name) != null;
+    }
+
     @Override
     public int getDepth() {
         return this.depth;
@@ -158,6 +169,14 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
                 ((NBTContainer)tag).setDepth(this.getDepth() + 1);
             }
         });
+    }
+
+    public boolean isEmpty() {
+        return this.data.isEmpty();
+    }
+
+    public boolean containsKey(String key) {
+        return this.data.containsKey(key);
     }
 
     public int size() {
@@ -212,6 +231,26 @@ public class NBTCompound extends NBTContainer implements Iterable<String> {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public NBTCompound clone() {
+        // Clone elements in map
+        Map<String, Object> clonedData = new HashMap<>();
+        for (String key : this.data.keySet()) {
+            Object obj = this.data.get(key);
+            if (obj instanceof NBTCompound) {
+                clonedData.put(key, ((NBTCompound)obj).clone());
+            } else if (obj instanceof NBTList) {
+                clonedData.put(key, ((NBTList<?>)obj).clone());
+            } else {
+                clonedData.put(key, obj);
+            }
+        }
+
+        NBTCompound clone = new NBTCompound(this.name, clonedData);
+        clone.setDepth(this.getDepth());
+        return clone;
     }
 
 }

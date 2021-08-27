@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.nbt.exceptions.NBTLimitException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class NBTList<T> extends NBTContainer implements Iterable<T> {
+public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
 
     private T[] list = (T[])new Object[0];
     private final int childrenTypeId;
@@ -30,7 +30,7 @@ public class NBTList<T> extends NBTContainer implements Iterable<T> {
         }
     }
 
-    public Object[] getContents() {
+    public T[] getContents() {
         return this.list;
     }
 
@@ -74,7 +74,25 @@ public class NBTList<T> extends NBTContainer implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return (Iterator<T>)Arrays.stream(this.list).iterator();
+        return Arrays.stream(this.list).iterator();
     }
 
+    @Override
+    public NBTList<T> clone() {
+        // Clone elements in array
+        Object[] elements = new Object[this.getContents().length];
+        for (int i = 0; i < elements.length; i++) {
+            Object element = this.getContents()[i];
+            if (element instanceof NBTCompound) {
+                elements[i] = ((NBTCompound)element).clone();
+            } else if (element instanceof NBTList) {
+                elements[i] = ((NBTList<T>)element).clone();
+            }
+        }
+
+        NBTList<T> clone = new NBTList<>(this.childrenTypeId);
+        clone.setDepth(this.getDepth());
+        clone.setContents((T[])elements);
+        return clone;
+    }
 }
