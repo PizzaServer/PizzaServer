@@ -73,7 +73,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
         this.writeVarInt(itemData);
 
         // Write NBT tag
-        if (itemStack.getCompoundTag() != null) {
+        if (!itemStack.getCompoundTag().isEmpty()) {
             ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
             try (NBTOutputStream stream = new NBTOutputStream(new VarIntDataOutputStream(resultStream))) {
                 stream.writeCompound(itemStack.getCompoundTag());
@@ -81,8 +81,8 @@ public class V419PacketBuffer extends BasePacketBuffer {
                 throw new RuntimeException("Unable to write NBT tag", exception);
             }
 
-            this.writeShortLE(resultStream.toByteArray().length);
-            this.writeByte(1);  // Supposedly this is hardcoded?
+            this.writeShortLE(-1);  // Item tag format?
+            this.writeByte(1);  // Item version
             this.writeBytes(resultStream.toByteArray());
         } else {
             this.writeShortLE(0);
@@ -252,9 +252,12 @@ public class V419PacketBuffer extends BasePacketBuffer {
 
         ItemStack itemStack = new ItemStack(itemType, count, damage);
 
-        NBTCompound tag = null;
-        if (this.readShortLE() > 0) {
-            this.readByte();    // 0x01
+        NBTCompound tag = new NBTCompound();
+        int tagLength = this.readShortLE();
+        if (tagLength == -1) {  // Why does Microsoft allow -1 or a valid tag length for reading from the client but not writing to the client?...
+            this.readByte();    // 0x01 - this is supposedly the item version
+            tag = this.readNBTCompound();
+        } else if (tagLength > 0) {
             tag = this.readNBTCompound();
         }
         itemStack.setCompoundTag(tag);
