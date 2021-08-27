@@ -123,7 +123,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
     @Override
     public ItemStack getCursor() {
-        return Optional.ofNullable(this.cursor).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.cursor).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override

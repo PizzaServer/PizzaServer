@@ -20,7 +20,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
     private final int id;
     private final int size;
 
-    private ItemStack[] slots;
+    private final ItemStack[] slots;
 
     private final Set<Player> viewers = new HashSet<>();
 
@@ -53,7 +53,11 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     @Override
     public ItemStack[] getSlots() {
-        return this.slots;
+        ItemStack[] slots = new ItemStack[this.getSize()];
+        for (int i = 0; i < this.getSize(); i++) {
+            slots[i] = this.getSlot(i); // Clones the item stack
+        }
+        return slots;
     }
 
     @Override
@@ -63,7 +67,10 @@ public abstract class BaseEntityInventory implements EntityInventory {
         }
 
         if (!Arrays.equals(this.slots, slots)) {
-            this.slots = slots;
+            for (int i = 0 ; i < this.size; i++) {
+                this.slots[i] = slots[i].clone();
+            }
+
             for (Player viewer : this.getViewers()) {
                 this.sendSlots(viewer);
             }
@@ -75,13 +82,13 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     @Override
     public ItemStack getSlot(int slot) {
-        return Optional.ofNullable(this.getSlots()[slot]).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.getSlots()[slot]).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override
     public boolean setSlot(int slot, ItemStack itemStack) {
         if (isDifferentItems(this.slots[slot], itemStack)) {
-            this.slots[slot] = itemStack;
+            this.slots[slot] = itemStack.clone();
             for (Player viewer : this.getViewers()) {
                 sendSlot(viewer, this.getSlot(slot), slot, this.getId());
             }

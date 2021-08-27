@@ -37,13 +37,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     @Override
     public ItemStack getHelmet() {
-        return Optional.ofNullable(this.helmet).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.helmet).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override
     public boolean setHelmet(ItemStack helmet) {
         if (isDifferentItems(this.helmet, helmet)) {
-            this.helmet = helmet;
+            this.helmet = helmet.clone();
             this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
             return true;
         } else {
@@ -53,13 +53,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     @Override
     public ItemStack getChestplate() {
-        return Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override
     public boolean setChestplate(ItemStack chestplate) {
         if (isDifferentItems(this.chestplate, chestplate)) {
-            this.chestplate = chestplate;
+            this.chestplate = chestplate.clone();
             this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
             return true;
         } else {
@@ -69,13 +69,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     @Override
     public ItemStack getLeggings() {
-        return Optional.ofNullable(this.leggings).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.leggings).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override
     public boolean setLeggings(ItemStack leggings) {
         if (isDifferentItems(this.leggings, leggings)) {
-            this.leggings = leggings;
+            this.leggings = leggings.clone();
             this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
             return true;
         } else {
@@ -85,13 +85,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     @Override
     public ItemStack getBoots() {
-        return Optional.ofNullable(this.boots).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.boots).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override
     public boolean setBoots(ItemStack boots) {
         if (isDifferentItems(this.boots, boots)) {
-            this.boots = boots;
+            this.boots = boots.clone();
             this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
             return true;
         } else {
@@ -113,13 +113,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     @Override
     public ItemStack getHeldItem() {
-        return Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override
     public boolean setHeldItem(ItemStack mainHand) {
         if (isDifferentItems(this.mainHand, mainHand)) {
-            this.mainHand = mainHand;
+            this.mainHand = mainHand.clone();
             this.broadcastMobEquipmentPacket(this.mainHand, 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
             return true;
         } else {
@@ -129,13 +129,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     @Override
     public ItemStack getOffhandItem() {
-        return Optional.ofNullable(this.offHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        return Optional.ofNullable(this.offHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override
     public boolean setOffhandItem(ItemStack offHand) {
         if (isDifferentItems(this.offHand, offHand)) {
-            this.offHand = offHand;
+            this.offHand = offHand.clone();
             this.broadcastMobEquipmentPacket(this.offHand, 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
             return true;
         } else {
