@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 
 /**
  * Sent by the server to update a single slot in a inventory the player has open
@@ -12,7 +12,7 @@ public class InventorySlotPacket extends BaseBedrockPacket {
 
     private int inventoryId;
     private int slot;
-    private NetworkItemStackData itemStackData;
+    private ItemStack item;
 
 
     public InventorySlotPacket() {
@@ -35,12 +35,12 @@ public class InventorySlotPacket extends BaseBedrockPacket {
         this.slot = slot;
     }
 
-    public NetworkItemStackData getItemStackData() {
-        return this.itemStackData;
+    public ItemStack getItem() {
+        return this.item;
     }
 
-    public void setItemStackData(NetworkItemStackData data) {
-        this.itemStackData = data;
+    public void setItem(ItemStack data) {
+        this.item = data;
     }
 
 }

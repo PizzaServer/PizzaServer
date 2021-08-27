@@ -10,7 +10,7 @@ public class V419MobEquipmentPacketHandler extends BaseProtocolPacketHandler<Mob
     public MobEquipmentPacket decode(BasePacketBuffer buffer) {
         MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
         mobEquipmentPacket.setEntityRuntimeId(buffer.readUnsignedVarLong());
-        mobEquipmentPacket.setNetworkItemStackData(buffer.readItem());
+        mobEquipmentPacket.setEquipment(buffer.readItem());
         mobEquipmentPacket.setSlot(buffer.readByte());
         mobEquipmentPacket.setHotbarSlot(buffer.readByte());
         mobEquipmentPacket.setInventoryId(buffer.readByte());
@@ -20,7 +20,7 @@ public class V419MobEquipmentPacketHandler extends BaseProtocolPacketHandler<Mob
     @Override
     public void encode(MobEquipmentPacket packet, BasePacketBuffer buffer) {
         buffer.writeUnsignedVarLong(packet.getEntityRuntimeId());
-        buffer.writeItem(packet.getNetworkItemStackData());
+        buffer.writeItem(packet.getEquipment());
         buffer.writeByte(packet.getSlot());
         buffer.writeByte(packet.getHotbarSlot());
         buffer.writeByte(packet.getInventoryId());

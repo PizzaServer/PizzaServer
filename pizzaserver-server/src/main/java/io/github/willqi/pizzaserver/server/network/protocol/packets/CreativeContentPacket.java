@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +13,18 @@ public class CreativeContentPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x91;
 
-    private List<NetworkItemStackData> entries = new ArrayList<>();
+    private List<ItemStack> entries = new ArrayList<>();
 
 
     public CreativeContentPacket() {
         super(ID);
     }
 
-    public List<NetworkItemStackData> getEntries() {
+    public List<ItemStack> getEntries() {
         return this.entries;
     }
 
-    public void setEntries(List<NetworkItemStackData> entries) {
+    public void setEntries(List<ItemStack> entries) {
         this.entries = entries;
     }
 

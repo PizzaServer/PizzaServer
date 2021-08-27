@@ -6,7 +6,6 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerClosePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.InventorySlotPacket;
@@ -113,10 +112,9 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     @Override
     public void sendSlots(Player player) {
-        NetworkItemStackData[] contents = new NetworkItemStackData[this.getSize()];
+        ItemStack[] contents = new ItemStack[this.getSize()];
         for (int i = 0; i < this.getSize(); i++) {  // TODO: change serializers to include way to get MinecraftVersion to reduce time complexity
-            ItemStack itemStack = this.getSlot(i);
-            contents[i] = new NetworkItemStackData(itemStack, player.getVersion().getItemRuntimeId(itemStack.getItemType().getItemId()));
+            contents[i] = this.getSlot(i);
         }
 
         InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
@@ -179,7 +177,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
         inventorySlotPacket.setInventoryId(inventoryId);
         inventorySlotPacket.setSlot(slot);
-        inventorySlotPacket.setItemStackData(new NetworkItemStackData(itemStack, player.getVersion().getItemRuntimeId(itemStack.getItemType().getItemId())));
+        inventorySlotPacket.setItem(itemStack);
         player.sendPacket(inventorySlotPacket);
     }
 

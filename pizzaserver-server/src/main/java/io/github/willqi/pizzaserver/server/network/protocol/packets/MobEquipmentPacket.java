@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 
 /**
  * Sent by the client when it changes the item being held
@@ -14,7 +14,7 @@ public class MobEquipmentPacket extends BaseBedrockPacket {
     private long entityRuntimeId;
 
     private int inventoryId;
-    private NetworkItemStackData networkItemStackData;
+    private ItemStack equipment;
     private int slot;
     private int hotbarSlot;
 
@@ -39,12 +39,12 @@ public class MobEquipmentPacket extends BaseBedrockPacket {
         this.inventoryId = id;
     }
 
-    public NetworkItemStackData getNetworkItemStackData() {
-        return this.networkItemStackData;
+    public ItemStack getEquipment() {
+        return this.equipment;
     }
 
-    public void setNetworkItemStackData(NetworkItemStackData networkItemStackData) {
-        this.networkItemStackData = networkItemStackData;
+    public void setEquipment(ItemStack equipment) {
+        this.equipment = equipment;
     }
 
     public int getSlot() {

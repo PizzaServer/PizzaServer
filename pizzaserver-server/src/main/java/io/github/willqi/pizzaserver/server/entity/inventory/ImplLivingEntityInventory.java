@@ -6,7 +6,6 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobArmourEquipmentPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 
@@ -104,10 +103,10 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
         for (Player player : this.getEntity().getViewers()) {
             MobArmourEquipmentPacket mobArmourEquipmentPacket = new MobArmourEquipmentPacket();
             mobArmourEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-            mobArmourEquipmentPacket.setHelmetNetworkData(new NetworkItemStackData(this.helmet, player.getVersion().getItemRuntimeId(this.helmet.getItemType().getItemId())));
-            mobArmourEquipmentPacket.setChestplateNetworkData(new NetworkItemStackData(this.chestplate, player.getVersion().getItemRuntimeId(this.chestplate.getItemType().getItemId())));
-            mobArmourEquipmentPacket.setLeggingsNetworkData(new NetworkItemStackData(this.leggings, player.getVersion().getItemRuntimeId(this.leggings.getItemType().getItemId())));
-            mobArmourEquipmentPacket.setBootsNetworkData(new NetworkItemStackData(this.boots, player.getVersion().getItemRuntimeId(this.boots.getItemType().getItemId())));
+            mobArmourEquipmentPacket.setHelmet(this.helmet);
+            mobArmourEquipmentPacket.setChestplate(this.chestplate);
+            mobArmourEquipmentPacket.setLeggings(this.leggings);
+            mobArmourEquipmentPacket.setBoots(this.boots);
             player.sendPacket(mobArmourEquipmentPacket);
         }
     }
@@ -151,7 +150,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
             mobEquipmentPacket.setInventoryId(mainHand ? InventoryID.MAIN_INVENTORY : InventoryID.OFF_HAND_INVENTORY);
             mobEquipmentPacket.setSlot(slot);
             mobEquipmentPacket.setHotbarSlot(slot);
-            mobEquipmentPacket.setNetworkItemStackData(new NetworkItemStackData(itemStack, player.getVersion().getItemRuntimeId(itemStack.getItemType().getItemId())));
+            mobEquipmentPacket.setEquipment(itemStack);
             player.sendPacket(mobEquipmentPacket);
         }
     }

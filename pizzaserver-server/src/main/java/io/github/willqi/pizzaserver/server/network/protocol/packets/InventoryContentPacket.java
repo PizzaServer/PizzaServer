@@ -1,9 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
-
-import java.util.List;
 
 /**
  * Sent to update an inventory for the player
@@ -13,7 +11,7 @@ public class InventoryContentPacket extends BaseBedrockPacket {
     public static final int ID = 0x31;
 
     private int inventoryId;
-    private NetworkItemStackData[] contents;
+    private ItemStack[] contents;
 
 
     public InventoryContentPacket() {
@@ -32,7 +30,7 @@ public class InventoryContentPacket extends BaseBedrockPacket {
      * The contents of this list are equal to the size of the container
      * @return contents
      */
-    public NetworkItemStackData[] getContents() {
+    public ItemStack[] getContents() {
         return this.contents;
     }
 
@@ -41,7 +39,7 @@ public class InventoryContentPacket extends BaseBedrockPacket {
      * The size of this list is equal to the size of the container
      * @param contents contents
      */
-    public void setContents(NetworkItemStackData[] contents) {
+    public void setContents(ItemStack[] contents) {
         this.contents = contents;
     }
 

@@ -13,7 +13,6 @@ import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -708,7 +707,7 @@ public class BasePacketBuffer extends ByteBuf {
         throw new IllegalStateException("Called readSkin() before version was assigned.");
     }
 
-    public NetworkItemStackData readItem() {
+    public ItemStack readItem() {
         throw new IllegalStateException("Called readItem() before version was assigned.");
     }
 
@@ -938,7 +937,7 @@ public class BasePacketBuffer extends ByteBuf {
         return this;
     }
 
-    public BasePacketBuffer writeItem(NetworkItemStackData data) {
+    public BasePacketBuffer writeItem(ItemStack data) {
         throw new UnsupportedOperationException("This operation is not supported.");
     }
 

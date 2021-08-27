@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 
 /**
  * Sent by the server to update the armor of an entity
@@ -12,10 +12,10 @@ public class MobArmourEquipmentPacket extends BaseBedrockPacket {
 
     private long entityRuntimeId;
 
-    private NetworkItemStackData helmet;
-    private NetworkItemStackData chestplate;
-    private NetworkItemStackData leggings;
-    private NetworkItemStackData boots;
+    private ItemStack helmet;
+    private ItemStack chestplate;
+    private ItemStack leggings;
+    private ItemStack boots;
 
 
     public MobArmourEquipmentPacket() {
@@ -30,36 +30,36 @@ public class MobArmourEquipmentPacket extends BaseBedrockPacket {
         this.entityRuntimeId = entityRuntimeId;
     }
 
-    public NetworkItemStackData getHelmetNetworkData() {
+    public ItemStack getHelmet() {
         return this.helmet;
     }
 
-    public void setHelmetNetworkData(NetworkItemStackData helmetNetworkData) {
-        this.helmet = helmetNetworkData;
+    public void setHelmet(ItemStack helmet) {
+        this.helmet = helmet;
     }
 
-    public NetworkItemStackData getChestplateNetworkData() {
+    public ItemStack getChestplate() {
         return this.chestplate;
     }
 
-    public void setChestplateNetworkData(NetworkItemStackData chestplateNetworkData) {
-        this.chestplate = chestplateNetworkData;
+    public void setChestplate(ItemStack chestplate) {
+        this.chestplate = chestplate;
     }
 
-    public NetworkItemStackData getLeggingsNetworkData() {
+    public ItemStack getLeggings() {
         return this.leggings;
     }
 
-    public void setLeggingsNetworkData(NetworkItemStackData leggingsNetworkData) {
-        this.leggings = leggingsNetworkData;
+    public void setLeggings(ItemStack leggings) {
+        this.leggings = leggings;
     }
 
-    public NetworkItemStackData getBootsNetworkData() {
+    public ItemStack getBoots() {
         return this.boots;
     }
 
-    public void setBootsNetworkData(NetworkItemStackData bootsNetworkData) {
-        this.boots = bootsNetworkData;
+    public void setBoots(ItemStack boots) {
+        this.boots = boots;
     }
 
 }

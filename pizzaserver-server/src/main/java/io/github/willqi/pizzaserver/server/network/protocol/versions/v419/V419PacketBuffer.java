@@ -8,11 +8,8 @@ import io.github.willqi.pizzaserver.api.item.types.ItemTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
-import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
-import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
@@ -32,7 +29,6 @@ import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketB
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
 import io.netty.buffer.ByteBuf;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -62,16 +58,15 @@ public class V419PacketBuffer extends BasePacketBuffer {
     }
 
     @Override
-    public BasePacketBuffer writeItem(NetworkItemStackData data) {
-        if (data.getRuntimeId() == 0) {
+    public BasePacketBuffer writeItem(ItemStack itemStack) {
+        int runtimeId = this.getVersion().getItemRuntimeId(itemStack.getItemType().getItemId());
+        if (runtimeId == 0) {
             this.writeByte(0);
             return this;
         }
 
-        ItemStack itemStack = data.getItemStack();
-
         // item id
-        this.writeVarInt(data.getRuntimeId());
+        this.writeVarInt(runtimeId);
 
         // item damage + count
         int itemData = ((itemStack.getDamage() << 8) | itemStack.getCount());
@@ -244,10 +239,10 @@ public class V419PacketBuffer extends BasePacketBuffer {
     }
 
     @Override
-    public NetworkItemStackData readItem() {
+    public ItemStack readItem() {
         int runtimeId = this.readVarInt();
         if (runtimeId == 0) {
-            return new NetworkItemStackData(ItemRegistry.getItem(BlockTypeID.AIR), 0);
+            return ItemRegistry.getItem(BlockTypeID.AIR);
         }
         BaseItemType itemType = ItemRegistry.getItemType(this.getVersion().getItemName(runtimeId));
 
@@ -286,7 +281,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
             int blockingTicks = this.readVarInt();
             // TODO: blocking ticks for shields? Investigate and apply correctly.
         }
-        return new NetworkItemStackData(itemStack, runtimeId);
+        return itemStack;
     }
 
     @Override

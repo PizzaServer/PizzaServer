@@ -9,10 +9,10 @@ public class V419MobArmourEquipmentPacketHandler extends BaseProtocolPacketHandl
     @Override
     public void encode(MobArmourEquipmentPacket packet, BasePacketBuffer buffer) {
         buffer.writeUnsignedVarLong(packet.getEntityRuntimeId());
-        buffer.writeItem(packet.getHelmetNetworkData());
-        buffer.writeItem(packet.getChestplateNetworkData());
-        buffer.writeItem(packet.getLeggingsNetworkData());
-        buffer.writeItem(packet.getBootsNetworkData());
+        buffer.writeItem(packet.getHelmet());
+        buffer.writeItem(packet.getChestplate());
+        buffer.writeItem(packet.getLeggings());
+        buffer.writeItem(packet.getBoots());
     }
 
 }

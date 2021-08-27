@@ -5,7 +5,6 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerOpenPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
@@ -89,7 +88,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
             mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
             mobEquipmentPacket.setHotbarSlot(slot);
             mobEquipmentPacket.setSlot(slot);
-            mobEquipmentPacket.setNetworkItemStackData(new NetworkItemStackData(this.getSlot(slot), this.getEntity().getVersion().getItemRuntimeId("minecraft:stone")));
+            mobEquipmentPacket.setEquipment(this.getSlot(slot));
             this.getEntity().sendPacket(mobEquipmentPacket);
 
             sendSlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
@@ -114,7 +113,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
         if (super.setOffhandItem(offHand)) {
             InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
             inventoryContentPacket.setInventoryId(InventoryID.OFF_HAND_INVENTORY);
-            inventoryContentPacket.setContents(new NetworkItemStackData[]{ new NetworkItemStackData(offHand, this.getEntity().getVersion().getItemRuntimeId(offHand.getItemType().getItemId())) });
+            inventoryContentPacket.setContents(new ItemStack[]{ offHand });
             this.getEntity().sendPacket(inventoryContentPacket);
             return true;
         } else {
