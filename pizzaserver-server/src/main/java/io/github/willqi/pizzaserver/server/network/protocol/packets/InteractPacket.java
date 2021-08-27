@@ -3,6 +3,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
+/**
+ * Sent by the client when they interact with an entity
+ */
 public class InteractPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x21;

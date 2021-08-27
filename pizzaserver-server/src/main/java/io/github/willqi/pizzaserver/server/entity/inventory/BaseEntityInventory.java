@@ -84,7 +84,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
         if (isDifferentItems(this.slots[slot], itemStack)) {
             this.slots[slot] = itemStack;
             for (Player viewer : this.getViewers()) {
-                this.sendSlot(viewer, slot);
+                this.sendSlot(viewer, this.getSlot(slot), slot, this.getId());
             }
             return true;
         } else {
@@ -109,16 +109,6 @@ public abstract class BaseEntityInventory implements EntityInventory {
             this.addItem(itemStack).ifPresent(failedToAddItems::add);
         }
         return failedToAddItems;
-    }
-
-    protected void sendSlot(Player player, int slot) {
-        ItemStack itemStack = this.getSlot(slot);
-
-        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.setInventoryId(this.getId());
-        inventorySlotPacket.setSlot(slot);
-        inventorySlotPacket.setItemStackData(new NetworkItemStackData(itemStack, player.getVersion().getItemRuntimeId(itemStack.getItemType().getItemId())));
-        player.sendPacket(inventorySlotPacket);
     }
 
     @Override
@@ -183,6 +173,14 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     protected static boolean isDifferentItems(ItemStack itemStackA, ItemStack itemStackB) {
         return !Objects.equals(itemStackA, itemStackB) && !(isAir(itemStackA) == isAir(itemStackB));
+    }
+
+    protected static void sendSlot(Player player, ItemStack itemStack, int slot, int inventoryId) {
+        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+        inventorySlotPacket.setInventoryId(inventoryId);
+        inventorySlotPacket.setSlot(slot);
+        inventorySlotPacket.setItemStackData(new NetworkItemStackData(itemStack, player.getVersion().getItemRuntimeId(itemStack.getItemType().getItemId())));
+        player.sendPacket(inventorySlotPacket);
     }
 
 }

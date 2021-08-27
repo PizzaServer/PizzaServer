@@ -5,9 +5,14 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerOpenPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 public class ImplPlayerInventory extends ImplLivingEntityInventory implements PlayerInventory {
 
@@ -16,7 +21,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
 
     public ImplPlayerInventory(Player player) {
-        super(player, 36, 0);
+        super(player, 36, InventoryID.MAIN_INVENTORY);
     }
 
     @Override
@@ -27,6 +32,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public boolean setHelmet(ItemStack helmet) {
         if (super.setHelmet(helmet)) {
+            sendSlot(this.getEntity(), helmet, 0, InventoryID.ARMOR_INVENTORY);
             return true;
         } else {
             return false;
@@ -36,7 +42,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public boolean setChestplate(ItemStack chestplate) {
         if (super.setChestplate(chestplate)) {
-            // TODO: update slot packet (also check if a mob equipment packet will remove the need for it)
+            sendSlot(this.getEntity(), chestplate, 1, InventoryID.ARMOR_INVENTORY);
             return true;
         } else {
             return false;
@@ -46,7 +52,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public boolean setLeggings(ItemStack leggings) {
         if (super.setLeggings(leggings)) {
-            // TODO: update slot packet (also check if a mob equipment packet will remove the need for it)
+            sendSlot(this.getEntity(), leggings, 2, InventoryID.ARMOR_INVENTORY);
             return true;
         } else {
             return false;
@@ -56,7 +62,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public boolean setBoots(ItemStack boots) {
         if (super.setBoots(boots)) {
-            // TODO: update slot packet (also check if a mob equipment packet will remove the need for it)
+            sendSlot(this.getEntity(), boots, 3, InventoryID.ARMOR_INVENTORY);
             return true;
         } else {
             return false;
@@ -70,10 +76,23 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
     @Override
     public boolean setSelectedSlot(int slot) {
-        // TODO: validate slot is in hotbar
-        if (this.selectedSlot != slot) {
+        if (slot < 0 || slot >= 9) {
+            throw new IllegalArgumentException("The selected slot cannot be a number outside of slots 0-8");
+        }
+
+        if (this.selectedSlot != slot && !this.getSlot(slot).getItemType().getItemId().equals(BlockTypeID.AIR)) {
             this.selectedSlot = slot;
-            // TODO: Send packet
+
+            // To select a slot, we need to send a mob equipment packet and then resend the slot we are selecting
+            // However, this appears to only work for non-empty slots. Sending this from an empty to another empty slot will not change the slot
+            MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
+            mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
+            mobEquipmentPacket.setHotbarSlot(slot);
+            mobEquipmentPacket.setSlot(slot);
+            mobEquipmentPacket.setNetworkItemStackData(new NetworkItemStackData(this.getSlot(slot), this.getEntity().getVersion().getItemRuntimeId("minecraft:stone")));
+            this.getEntity().sendPacket(mobEquipmentPacket);
+
+            sendSlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
             return true;
         } else {
             return false;
@@ -93,7 +112,10 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public boolean setOffhandItem(ItemStack offHand) {
         if (super.setOffhandItem(offHand)) {
-            // TODO: send packet
+            InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+            inventoryContentPacket.setInventoryId(InventoryID.OFF_HAND_INVENTORY);
+            inventoryContentPacket.setContents(new NetworkItemStackData[]{ new NetworkItemStackData(offHand, this.getEntity().getVersion().getItemRuntimeId(offHand.getItemType().getItemId())) });
+            this.getEntity().sendPacket(inventoryContentPacket);
             return true;
         } else {
             return false;
@@ -120,9 +142,22 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     protected void sendContainerOpenPacket(Player player) {
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.setEntityRuntimeId(this.getEntity().getId());
-        containerOpenPacket.setInventoryId(this.getId());
         containerOpenPacket.setInventoryType(-1);   // TODO: get rid of magic number and replace with enum
         containerOpenPacket.setCoordinates(this.getEntity().getLocation().toVector3i());
         player.sendPacket(containerOpenPacket);
     }
+
+    @Override
+    public boolean openFor(Player player) {
+        if (!player.equals(this.getEntity())) {
+            return false;
+        }
+        return super.openFor(player);
+    }
+
+    @Override
+    public Set<Player> getViewers() {   // The player is ALWAYS a viewer. However, it is possible to open and close the inventory
+        return Collections.singleton(this.getEntity());
+    }
+
 }

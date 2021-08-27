@@ -15,6 +15,7 @@ public interface PlayerInventory extends LivingEntityInventory {
 
     /**
      * Change the current selected slot for the player
+     * This will not work for going from a empty slot to another empty slot
      * @param slot new selected slot
      * @return if the slot was changed
      */

@@ -148,7 +148,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
         for (Player player : this.getEntity().getViewers()) {
             MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
             mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-            mobEquipmentPacket.setInventoryId(mainHand ? 0 : 119);
+            mobEquipmentPacket.setInventoryId(mainHand ? InventoryID.MAIN_INVENTORY : InventoryID.OFF_HAND_INVENTORY);
             mobEquipmentPacket.setSlot(slot);
             mobEquipmentPacket.setHotbarSlot(slot);
             mobEquipmentPacket.setNetworkItemStackData(new NetworkItemStackData(itemStack, player.getVersion().getItemRuntimeId(itemStack.getItemType().getItemId())));

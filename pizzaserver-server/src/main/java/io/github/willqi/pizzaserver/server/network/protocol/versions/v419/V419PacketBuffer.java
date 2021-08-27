@@ -1,10 +1,16 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.item.types.ItemTypeID;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
+import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
@@ -21,10 +27,12 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
 import io.netty.buffer.ByteBuf;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -32,19 +40,21 @@ import java.util.stream.Collectors;
 
 public class V419PacketBuffer extends BasePacketBuffer {
 
-    public V419PacketBuffer() {}
-
-    public V419PacketBuffer(int initialCapacity) {
-        super(initialCapacity);
+    public V419PacketBuffer(BaseMinecraftVersion version) {
+        super(version);
     }
 
-    public V419PacketBuffer(ByteBuf byteBuf) {
-        super(byteBuf);
+    public V419PacketBuffer(BaseMinecraftVersion version, int initialCapacity) {
+        super(version, initialCapacity);
+    }
+
+    public V419PacketBuffer(BaseMinecraftVersion version, ByteBuf byteBuf) {
+        super(version, byteBuf);
     }
 
     @Override
     protected BasePacketBuffer createInstance(ByteBuf buffer) {
-        return new V419PacketBuffer(buffer);
+        return new V419PacketBuffer(this.getVersion(), buffer);
     }
 
     protected BasePacketBufferData getData() {
@@ -70,8 +80,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
         // Write NBT tag
         if (itemStack.getCompoundTag() != null) {
             ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
-            try {
-                NBTOutputStream stream = new NBTOutputStream(new VarIntDataOutputStream(resultStream));
+            try (NBTOutputStream stream = new NBTOutputStream(new VarIntDataOutputStream(resultStream))) {
                 stream.writeCompound(itemStack.getCompoundTag());
             } catch (IOException exception) {
                 throw new RuntimeException("Unable to write NBT tag", exception);
@@ -86,9 +95,8 @@ public class V419PacketBuffer extends BasePacketBuffer {
 
         // Blocks this item can be placed on
         if (itemStack.getItemType() instanceof BlockItemType) {
-            BaseBlockType blockType = ((BlockItemType)itemStack.getItemType()).getBlockType();
-            this.writeVarInt(blockType.getPlaceableOnlyOn().size());
-            for (BaseBlockType placeableOnBlockType : blockType.getPlaceableOnlyOn()) {
+            this.writeVarInt(itemStack.getBlocksCanPlaceOn().size());
+            for (BaseBlockType placeableOnBlockType : itemStack.getBlocksCanPlaceOn()) {
                 this.writeString(placeableOnBlockType.getBlockId());
             }
         } else {
@@ -96,8 +104,8 @@ public class V419PacketBuffer extends BasePacketBuffer {
         }
 
         // Blocks this item can break
-        this.writeVarInt(itemStack.getItemType().getOnlyBlocksCanBreak().size());
-        for (BaseBlockType blockType : itemStack.getItemType().getOnlyBlocksCanBreak()) {
+        this.writeVarInt(itemStack.getBlocksCanBreak().size());
+        for (BaseBlockType blockType : itemStack.getBlocksCanBreak()) {
             this.writeString(blockType.getBlockId());
         }
 
@@ -233,6 +241,52 @@ public class V419PacketBuffer extends BasePacketBuffer {
         return skinBuilder
                 .setTints(tints)
                 .build();
+    }
+
+    @Override
+    public NetworkItemStackData readItem() {
+        int runtimeId = this.readVarInt();
+        if (runtimeId == 0) {
+            return new NetworkItemStackData(ItemRegistry.getItem(BlockTypeID.AIR), 0);
+        }
+        BaseItemType itemType = ItemRegistry.getItemType(this.getVersion().getItemName(runtimeId));
+
+        int itemData = this.readVarInt();
+        int count = itemData & 0xff;
+        int damage = (itemData >> 8);
+
+        ItemStack itemStack = new ItemStack(itemType, count, damage);
+
+        NBTCompound tag = null;
+        if (this.readShortLE() > 0) {
+            this.readByte();    // 0x01
+            tag = this.readNBTCompound();
+        }
+        itemStack.setCompoundTag(tag);
+
+        if (itemType instanceof BlockItemType) {
+            int blocksCanPlaceCount = this.readVarInt();
+            Set<BaseBlockType> blocksCanPlaceOn = new HashSet<>(blocksCanPlaceCount);
+            for (int i = 0; i < blocksCanPlaceCount; i++) {
+                String blockId = this.readString();
+                blocksCanPlaceOn.add(BlockRegistry.getBlockType(blockId));
+            }
+            itemStack.setBlocksCanPlaceOn(blocksCanPlaceOn);
+        }
+
+        int blocksCanBreakCount = this.readVarInt();
+        Set<BaseBlockType> blocksCanBreak = new HashSet<>(blocksCanBreakCount);
+        for (int i = 0; i < blocksCanBreakCount; i++) {
+            String blockId = this.readString();
+            blocksCanBreak.add(BlockRegistry.getBlockType(blockId));
+        }
+        itemStack.setBlocksCanBreak(blocksCanBreak);
+
+        if (itemType.getItemId().equals(ItemTypeID.SHIELD)) {
+            int blockingTicks = this.readVarInt();
+            // TODO: blocking ticks for shields? Investigate and apply correctly.
+        }
+        return new NetworkItemStackData(itemStack, runtimeId);
     }
 
     @Override

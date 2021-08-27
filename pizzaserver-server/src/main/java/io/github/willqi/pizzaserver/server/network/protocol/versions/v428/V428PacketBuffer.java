@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.player.skin.SkinAnimation;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPiece;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPieceTint;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.V422PacketBuffer;
@@ -15,19 +16,21 @@ import java.util.UUID;
 
 public class V428PacketBuffer extends V422PacketBuffer {
 
-    public V428PacketBuffer() {}
-
-    public V428PacketBuffer(int initialCapacity) {
-        super(initialCapacity);
+    public V428PacketBuffer(BaseMinecraftVersion version) {
+        super(version);
     }
 
-    public V428PacketBuffer(ByteBuf byteBuf) {
-        super(byteBuf);
+    public V428PacketBuffer(BaseMinecraftVersion version, int initialCapacity) {
+        super(version, initialCapacity);
+    }
+
+    public V428PacketBuffer(BaseMinecraftVersion version, ByteBuf byteBuf) {
+        super(version, byteBuf);
     }
 
     @Override
     protected BasePacketBuffer createInstance(ByteBuf buffer) {
-        return new V428PacketBuffer(buffer);
+        return new V428PacketBuffer(this.getVersion(), buffer);
     }
 
     @Override

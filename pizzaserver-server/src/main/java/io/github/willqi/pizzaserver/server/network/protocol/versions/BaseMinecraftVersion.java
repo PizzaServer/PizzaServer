@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -44,7 +46,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     protected NBTCompound biomesDefinitions;
     protected final Map<Integer, Integer> blockStates = new HashMap<>();
-    protected final Map<String, Integer> itemRuntimeIds = new HashMap<>();
+    protected final BiMap<String, Integer> itemRuntimeIds = HashBiMap.create();
     protected final Set<StartGamePacket.ItemState> itemStates = new HashSet<>();
 
 
@@ -178,7 +180,16 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         try {
             return this.itemRuntimeIds.get(itemName);
         } catch (NullPointerException exception) {
-            throw new NullPointerException("Failed to find item runtime id for " + itemName);
+            throw new IllegalStateException("Attempted to retrieve runtime id for non-existent item: " + itemName);
+        }
+    }
+
+    @Override
+    public String getItemName(int runtimeId) {
+        try {
+            return this.itemRuntimeIds.inverse().get(runtimeId);
+        } catch (NullPointerException exception) {
+            throw new IllegalStateException("Attempted to retrieve item name for non-existent runtime id: " + runtimeId);
         }
     }
 

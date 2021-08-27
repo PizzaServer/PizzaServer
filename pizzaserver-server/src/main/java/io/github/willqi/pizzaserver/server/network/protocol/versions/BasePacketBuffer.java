@@ -6,7 +6,9 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
+import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
@@ -14,6 +16,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.NetworkItemStackData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.util.ByteProcessor;
 
 import java.io.ByteArrayOutputStream;
@@ -36,22 +39,36 @@ import java.util.UUID;
 public class BasePacketBuffer extends ByteBuf {
 
     private final ByteBuf buffer;
+    private BaseMinecraftVersion version;
 
 
-    public BasePacketBuffer() {
-        this.buffer = ByteBufAllocator.DEFAULT.buffer();
+    public BasePacketBuffer(BaseMinecraftVersion version) {
+        this(version, 256);
     }
 
-    public BasePacketBuffer(int initialCapacity) {
-        this.buffer = ByteBufAllocator.DEFAULT.buffer(initialCapacity);
+    public BasePacketBuffer(BaseMinecraftVersion version, int initialCapacity) {
+        this(version, ByteBufAllocator.DEFAULT.buffer(initialCapacity));
     }
 
-    public BasePacketBuffer(ByteBuf buffer) {
+    public BasePacketBuffer(BaseMinecraftVersion version, ByteBuf buffer) {
         this.buffer = buffer;
+        this.version = version;
     }
 
     protected BasePacketBuffer createInstance(ByteBuf buffer) {
-        return new BasePacketBuffer(buffer);
+        return new BasePacketBuffer(null, buffer);
+    }
+
+    public BaseMinecraftVersion getVersion() {
+        if (this.version == null) {
+            throw new IllegalStateException("Called getVersion() before version was assigned");
+        } else {
+            return this.version;
+        }
+    }
+
+    public void setVersion(BaseMinecraftVersion version) {
+        this.version = version;
     }
 
     protected BasePacketBufferData getData() {
@@ -678,11 +695,20 @@ public class BasePacketBuffer extends ByteBuf {
         );
     }
 
+    public NBTCompound readNBTCompound() {
+        NBTInputStream nbtOutputStream = new NBTInputStream(new VarIntDataInputStream(new ByteBufInputStream(this)));
+        try {
+            return nbtOutputStream.readCompound();
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to read NBTCompound", exception);
+        }
+    }
+
     public Skin readSkin() {
         throw new IllegalStateException("Called readSkin() before version was assigned.");
     }
 
-    public ItemStack readItem() {
+    public NetworkItemStackData readItem() {
         throw new IllegalStateException("Called readItem() before version was assigned.");
     }
 

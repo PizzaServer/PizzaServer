@@ -173,6 +173,7 @@ public class BedrockClientSession extends Thread {
             LoginPacket loginPacket;
             if (ServerProtocol.VERSIONS.containsKey(protocol)) {    // Supported version
                 this.version = ServerProtocol.VERSIONS.get(protocol);
+                minecraftPacket.setVersion(this.version);
                 try {
                     loginPacket = (LoginPacket)this.version.getPacketRegistry().getPacketHandler(packetId).decode(minecraftPacket);
                 } catch (RuntimeException exception) {
@@ -185,6 +186,7 @@ public class BedrockClientSession extends Thread {
                 // a outdated server/client play status.
                 // This should be changed if Microsoft changes the PlayStatus packet format.
                 this.version = ServerProtocol.VERSIONS.get(ServerProtocol.LATEST_PROTOCOL_VERISON);
+                minecraftPacket.setVersion(this.version);
                 loginPacket = new LoginPacket();
                 loginPacket.setProtocol(protocol);
             }
@@ -196,8 +198,7 @@ public class BedrockClientSession extends Thread {
         }
 
         if (minecraftPacket.readableBytes() > 0) {
-            this.server.getPizzaServer().getLogger().warn("There were bytes that were left unread while parsing a packet with the id: " + packetId);
-            minecraftPacket.release();
+            this.server.getPizzaServer().getLogger().warn("There were " + minecraftPacket.readableBytes() + " bytes that were left unread while parsing a packet with the id: " + packetId);
         }
     }
 

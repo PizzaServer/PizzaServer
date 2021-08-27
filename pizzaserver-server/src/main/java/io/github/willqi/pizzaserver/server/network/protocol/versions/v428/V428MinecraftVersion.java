@@ -36,18 +36,13 @@ public class V428MinecraftVersion extends BaseMinecraftVersion {
     }
 
     @Override
-    public BasePacketBuffer createPacketBuffer() {
-        return new V428PacketBuffer();
-    }
-
-    @Override
     public BasePacketBuffer createPacketBuffer(ByteBuf buf) {
-        return new V428PacketBuffer(buf);
+        return new V428PacketBuffer(this, buf);
     }
 
     @Override
     public BasePacketBuffer createPacketBuffer(int initialCapacity) {
-        return new V428PacketBuffer(initialCapacity);
+        return new V428PacketBuffer(this, initialCapacity);
     }
 
 }
