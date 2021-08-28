@@ -55,7 +55,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
     public ItemStack[] getSlots() {
         ItemStack[] slots = new ItemStack[this.getSize()];
         for (int i = 0; i < this.getSize(); i++) {
-            slots[i] = this.getSlot(i); // Clones the item stack
+            slots[i] = this.getSlot(i);
         }
         return slots;
     }
@@ -82,7 +82,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     @Override
     public ItemStack getSlot(int slot) {
-        return Optional.ofNullable(this.getSlots()[slot]).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
     }
 
     @Override

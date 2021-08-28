@@ -24,6 +24,9 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlotData;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlotType;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
@@ -285,6 +288,80 @@ public class V419PacketBuffer extends BasePacketBuffer {
             // TODO: blocking ticks for shields? Investigate and apply correctly.
         }
         return itemStack;
+    }
+
+    @Override
+    public InventoryAction readInventoryAction() {
+        int typeId = this.readByte();
+        InventoryActionType type = this.getData().getInventoryActionType(typeId);
+        InventoryAction action;
+        switch (type) {
+            case TAKE:
+                int takenAmount = this.readByte();
+                action = new InventoryActionTake(this.readInventorySlot(), this.readInventorySlot(), takenAmount);
+                break;
+            case PLACE:
+                int placedAmount = this.readByte();
+                action = new InventoryActionPlace(this.readInventorySlot(), this.readInventorySlot(), placedAmount);
+                break;
+            case SWAP:
+                action = new InventoryActionSwap(this.readInventorySlot(), this.readInventorySlot());
+                break;
+            case DROP:
+                int droppedAmount = this.readByte();
+                action = new InventoryActionDrop(this.readInventorySlot(), droppedAmount, this.readBoolean());
+                break;
+            case DESTROY:
+                int destroyedAmount = this.readByte();
+                action = new InventoryActionDestroy(this.readInventorySlot(), destroyedAmount);
+                break;
+            case CONSUME:
+                int consumedAmount = this.readByte();
+                action = new InventoryActionConsume(this.readInventorySlot(), consumedAmount);
+                break;
+            case CREATE:
+                int createdSlot = this.readByte();
+                action = new InventoryActionCreate(createdSlot);
+                break;
+            case LAB_TABLE_COMBINE:
+                action = new InventoryActionLabTable();
+                break;
+            case BEACON_PAYMENT:
+                action = new InventoryActionBeaconPayment(this.readVarInt(), this.readVarInt());
+                break;
+            case CRAFT_RECIPE:
+                action = new InventoryActionCraftRecipe(this.readUnsignedVarInt());
+                break;
+            case AUTO_CRAFT_RECIPE:
+                action = new InventoryActionAutoCraftRecipe(this.readUnsignedVarInt());
+                break;
+            case CRAFT_CREATIVE:
+                action = new InventoryActionCraftCreative(this.readUnsignedVarInt());
+                break;
+            case CRAFT_NOT_IMPLEMENTED:
+                action = new InventoryActionNotImplemented();
+                break;
+            case CRAFT_RESULTS_DEPRECATED:
+                int craftedItemsAmount = this.readUnsignedVarInt();
+                List<ItemStack> createdItems = new ArrayList<>(craftedItemsAmount);
+                for (int i = 0; i < craftedItemsAmount; i++) {
+                    createdItems.add(this.readItem());
+                }
+                int timesCreated = this.readByte();
+                action = new InventoryActionCraftResultsDeprecated(createdItems, timesCreated);
+                break;
+            default:
+                throw new IllegalStateException("Encountered unknown inventory action id: " + typeId);
+        }
+        return action;
+    }
+
+    @Override
+    public InventorySlotData readInventorySlot() {
+        int type = this.readByte();
+        int slot = this.readByte();
+        int stackNetworkId = this.readVarInt();
+        return new InventorySlotData(InventorySlotType.values()[type], slot, stackNetworkId);
     }
 
     @Override

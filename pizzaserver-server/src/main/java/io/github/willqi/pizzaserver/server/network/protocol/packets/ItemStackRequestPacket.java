@@ -1,0 +1,51 @@
+package io.github.willqi.pizzaserver.server.network.protocol.packets;
+
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
+
+import java.util.Collections;
+import java.util.List;
+
+public class ItemStackRequestPacket extends BaseBedrockPacket {
+
+    public static final int ID = 0x93;
+
+    private List<Request> requests = Collections.emptyList();
+
+
+    public ItemStackRequestPacket() {
+        super(ID);
+    }
+
+    public List<Request> getRequests() {
+        return Collections.unmodifiableList(this.requests);
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
+    }
+
+
+    public static class Request {
+
+        private final int id;
+        private final List<InventoryAction> actions;
+
+
+        public Request(int id, List<InventoryAction> actions) {
+            this.id = id;
+            this.actions = actions;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public List<InventoryAction> getActions() {
+            return this.actions;
+        }
+
+
+    }
+
+}
