@@ -13,13 +13,13 @@ import java.util.Optional;
 
 public class ImplLivingEntityInventory extends BaseEntityInventory implements LivingEntityInventory {
 
-    private ItemStack helmet = null;
-    private ItemStack chestplate = null;
-    private ItemStack leggings = null;
-    private ItemStack boots = null;
+    protected ItemStack helmet = null;
+    protected ItemStack chestplate = null;
+    protected ItemStack leggings = null;
+    protected ItemStack boots = null;
 
-    private ItemStack mainHand = null;
-    private ItemStack offHand = null;
+    protected ItemStack mainHand = null;
+    protected ItemStack offHand = null;
 
 
     public ImplLivingEntityInventory(LivingEntity entity, int size) {
@@ -37,121 +37,185 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     @Override
     public ItemStack getHelmet() {
-        return Optional.ofNullable(this.helmet).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return this.getHelmet(true);
+    }
+
+    public ItemStack getHelmet(boolean clone) {
+        ItemStack helmet = Optional.ofNullable(this.helmet).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        if (clone) {
+            return helmet.clone();
+        } else {
+            return helmet;
+        }
     }
 
     @Override
     public boolean setHelmet(ItemStack helmet) {
-        if (isDifferentItems(this.helmet, helmet)) {
-            this.helmet = helmet.clone();
-            this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
-            return true;
-        } else {
-            return false;
-        }
+        return this.setHelmet(null, helmet, false);
+    }
+
+    public boolean setHelmet(Player player, ItemStack helmet, boolean keepNetworkId) {
+        // TODO: events
+        this.helmet = keepNetworkId ? helmet : helmet.newNetworkStack();
+        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
+        return true;
     }
 
     @Override
     public ItemStack getChestplate() {
-        return Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return this.getChestplate(true);
+    }
+
+    public ItemStack getChestplate(boolean clone) {
+        ItemStack chestplate = Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        if (clone) {
+            return chestplate.clone();
+        } else {
+            return chestplate;
+        }
     }
 
     @Override
     public boolean setChestplate(ItemStack chestplate) {
-        if (isDifferentItems(this.chestplate, chestplate)) {
-            this.chestplate = chestplate.clone();
-            this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
-            return true;
-        } else {
-            return false;
-        }
+        return this.setChestplate(null, chestplate, false);
+    }
+
+    public boolean setChestplate(Player player, ItemStack chestplate, boolean keepNetworkId) {
+        // TODO: events
+        this.chestplate = keepNetworkId ? chestplate : chestplate.newNetworkStack();
+        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
+        return true;
     }
 
     @Override
     public ItemStack getLeggings() {
-        return Optional.ofNullable(this.leggings).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return this.getLeggings(true);
+    }
+
+    public ItemStack getLeggings(boolean clone) {
+        ItemStack leggings = Optional.ofNullable(this.leggings).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        if (clone) {
+            return leggings.clone();
+        } else {
+            return leggings;
+        }
     }
 
     @Override
     public boolean setLeggings(ItemStack leggings) {
-        if (isDifferentItems(this.leggings, leggings)) {
-            this.leggings = leggings.clone();
-            this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
-            return true;
-        } else {
-            return false;
-        }
+        return this.setLeggings(null, leggings, false);
+    }
+
+    public boolean setLeggings(Player player, ItemStack leggings, boolean keepNetworkId) {
+        // TODO: events
+        this.leggings = keepNetworkId ? leggings : leggings.newNetworkStack();
+        this.broadcastMobArmourEquipmentPacket(player);
+        return true;
     }
 
     @Override
     public ItemStack getBoots() {
-        return Optional.ofNullable(this.boots).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return this.getBoots(true);
+    }
+
+    public ItemStack getBoots(boolean clone) {
+        ItemStack boots = Optional.ofNullable(this.boots).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        if (clone) {
+            return boots.clone();
+        } else {
+            return boots;
+        }
     }
 
     @Override
     public boolean setBoots(ItemStack boots) {
-        if (isDifferentItems(this.boots, boots)) {
-            this.boots = boots.clone();
-            this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
-            return true;
-        } else {
-            return false;
-        }
+        return this.setBoots(null, boots, false);
     }
 
-    protected void broadcastMobArmourEquipmentPacket() {
+    public boolean setBoots(Player player, ItemStack boots, boolean keepNetworkId) {
+        // TODO: events
+        this.boots = keepNetworkId ? boots : boots.newNetworkStack();
+        this.broadcastMobArmourEquipmentPacket(player);
+        return true;
+    }
+
+    protected void broadcastMobArmourEquipmentPacket(Player activatingPlayer) {
         for (Player player : this.getEntity().getViewers()) {
-            MobArmourEquipmentPacket mobArmourEquipmentPacket = new MobArmourEquipmentPacket();
-            mobArmourEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-            mobArmourEquipmentPacket.setHelmet(this.helmet);
-            mobArmourEquipmentPacket.setChestplate(this.chestplate);
-            mobArmourEquipmentPacket.setLeggings(this.leggings);
-            mobArmourEquipmentPacket.setBoots(this.boots);
-            player.sendPacket(mobArmourEquipmentPacket);
+            if (!player.equals(activatingPlayer)) {
+                MobArmourEquipmentPacket mobArmourEquipmentPacket = new MobArmourEquipmentPacket();
+                mobArmourEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
+                mobArmourEquipmentPacket.setHelmet(this.getHelmet());
+                mobArmourEquipmentPacket.setChestplate(this.getChestplate());
+                mobArmourEquipmentPacket.setLeggings(this.getLeggings());
+                mobArmourEquipmentPacket.setBoots(this.getBoots());
+                player.sendPacket(mobArmourEquipmentPacket);
+            }
         }
     }
 
     @Override
     public ItemStack getHeldItem() {
-        return Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return this.getHeldItem(true);
+    }
+
+    public ItemStack getHeldItem(boolean clone) {
+        ItemStack mainHand = Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        if (clone) {
+            return mainHand.clone();
+        } else {
+            return mainHand;
+        }
     }
 
     @Override
     public boolean setHeldItem(ItemStack mainHand) {
-        if (isDifferentItems(this.mainHand, mainHand)) {
-            this.mainHand = mainHand.clone();
-            this.broadcastMobEquipmentPacket(this.mainHand, 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
-            return true;
-        } else {
-            return false;
-        }
+        return this.setHeldItem(null, mainHand, false);
+    }
+
+    public boolean setHeldItem(Player player, ItemStack mainHand, boolean keepNetworkId) {
+        // TODO: events
+        this.mainHand = keepNetworkId ? mainHand : mainHand.newNetworkStack();
+        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 0, true);
+        return true;
     }
 
     @Override
     public ItemStack getOffhandItem() {
-        return Optional.ofNullable(this.offHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return this.getOffhandItem(true);
+    }
+
+    public ItemStack getOffhandItem(boolean clone) {
+        ItemStack offhand = Optional.ofNullable(this.offHand).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        if (clone) {
+            return offhand.clone();
+        } else {
+            return offhand;
+        }
     }
 
     @Override
     public boolean setOffhandItem(ItemStack offHand) {
-        if (isDifferentItems(this.offHand, offHand)) {
-            this.offHand = offHand.clone();
-            this.broadcastMobEquipmentPacket(this.offHand, 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
-            return true;
-        } else {
-            return false;
-        }
+        return this.setOffhandItem(null, offHand, false);
     }
 
-    protected void broadcastMobEquipmentPacket(ItemStack itemStack, int slot, boolean mainHand) {
+    public boolean setOffhandItem(Player player, ItemStack offHand, boolean keepNetworkId) {
+        // TODO: events
+        this.offHand = keepNetworkId ? offHand : offHand.newNetworkStack();
+        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 1, false);
+        return true;
+    }
+
+    protected void broadcastMobEquipmentPacket(Player activatingPlayer, ItemStack itemStack, int slot, boolean mainHand) {
         for (Player player : this.getEntity().getViewers()) {
-            MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
-            mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-            mobEquipmentPacket.setInventoryId(mainHand ? InventoryID.MAIN_INVENTORY : InventoryID.OFF_HAND_INVENTORY);
-            mobEquipmentPacket.setSlot(slot);
-            mobEquipmentPacket.setHotbarSlot(slot);
-            mobEquipmentPacket.setEquipment(itemStack);
-            player.sendPacket(mobEquipmentPacket);
+            if (!player.equals(activatingPlayer)) {
+                MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
+                mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
+                mobEquipmentPacket.setInventoryId(mainHand ? InventoryID.MAIN_INVENTORY : InventoryID.OFF_HAND_INVENTORY);
+                mobEquipmentPacket.setSlot(slot);
+                mobEquipmentPacket.setHotbarSlot(slot);
+                mobEquipmentPacket.setEquipment(itemStack);
+                player.sendPacket(mobEquipmentPacket);
+            }
         }
     }
 

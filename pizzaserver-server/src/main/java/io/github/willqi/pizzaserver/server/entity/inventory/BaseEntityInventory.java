@@ -16,11 +16,11 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     public static int ID = 1;
 
-    private final Entity entity;
-    private final int id;
-    private final int size;
+    protected final Entity entity;
+    protected final int id;
+    protected final int size;
 
-    private final ItemStack[] slots;
+    protected ItemStack[] slots;
 
     private final Set<Player> viewers = new HashSet<>();
 
@@ -32,8 +32,8 @@ public abstract class BaseEntityInventory implements EntityInventory {
     public BaseEntityInventory(Entity entity, int size, int id) {
         this.entity = entity;
         this.size = size;
-        this.slots = new ItemStack[size];
         this.id = id;
+        this.slots = new ItemStack[this.size];
     }
 
     @Override
@@ -55,7 +55,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
     public ItemStack[] getSlots() {
         ItemStack[] slots = new ItemStack[this.getSize()];
         for (int i = 0; i < this.getSize(); i++) {
-            slots[i] = this.getSlot(i);
+            slots[i] = this.getSlot(i); // These slots are cloned
         }
         return slots;
     }
@@ -68,7 +68,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
         if (!Arrays.equals(this.slots, slots)) {
             for (int i = 0 ; i < this.size; i++) {
-                this.slots[i] = slots[i].clone();
+                this.slots[i] = slots[i].newNetworkStack();
             }
 
             for (Player viewer : this.getViewers()) {
@@ -82,20 +82,48 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     @Override
     public ItemStack getSlot(int slot) {
-        return Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getItem(BlockTypeID.AIR)).clone();
+        return this.getSlot(slot, true);
+    }
+
+    /**
+     * Get a slot in the inventory
+     * @param slot the slot
+     * @param clone if the ItemStack should be cloned or if it should retrieve the actual object
+     * @return ItemStack in that slot
+     */
+    public ItemStack getSlot(int slot, boolean clone) {
+        ItemStack itemStack = Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        if (clone) {
+            return itemStack.clone();
+        } else {
+            return itemStack;
+        }
     }
 
     @Override
     public boolean setSlot(int slot, ItemStack itemStack) {
-        if (isDifferentItems(this.slots[slot], itemStack)) {
-            this.slots[slot] = itemStack.clone();
-            for (Player viewer : this.getViewers()) {
+        return this.setSlot(null, slot, itemStack, false);
+    }
+
+    /**
+     * Change a slot in the inventory
+     * @param player the player who is changing the slot if any exists
+     * @param slot the slot changed
+     * @param itemStack the new item stack
+     * @param keepNetworkId if the network id of the ItemStack should be kept or if a new one should be generated
+     * @return if it successfuly set the slot
+     */
+    public boolean setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
+        this.slots[slot] = keepNetworkId ? itemStack : itemStack.newNetworkStack();
+
+        // TODO: events
+
+        for (Player viewer : this.getViewers()) {
+            if (!viewer.equals(player)) {
                 sendSlot(viewer, this.getSlot(slot), slot, this.getId());
             }
-            return true;
-        } else {
-            return false;
         }
+        return true;
     }
 
     @Override
@@ -119,14 +147,9 @@ public abstract class BaseEntityInventory implements EntityInventory {
 
     @Override
     public void sendSlots(Player player) {
-        ItemStack[] contents = new ItemStack[this.getSize()];
-        for (int i = 0; i < this.getSize(); i++) {  // TODO: change serializers to include way to get MinecraftVersion to reduce time complexity
-            contents[i] = this.getSlot(i);
-        }
-
         InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
         inventoryContentPacket.setInventoryId(this.getId());
-        inventoryContentPacket.setContents(contents);
+        inventoryContentPacket.setContents(this.getSlots());
         player.sendPacket(inventoryContentPacket);
     }
 
@@ -170,14 +193,6 @@ public abstract class BaseEntityInventory implements EntityInventory {
     @Override
     public Set<Player> getViewers() {
         return Collections.unmodifiableSet(this.viewers);
-    }
-
-    protected static boolean isAir(ItemStack itemStack) {
-        return (itemStack == null) || itemStack.getItemType().getItemId().equals(BlockTypeID.AIR);
-    }
-
-    protected static boolean isDifferentItems(ItemStack itemStackA, ItemStack itemStackB) {
-        return !Objects.equals(itemStackA, itemStackB) && !(isAir(itemStackA) == isAir(itemStackB));
     }
 
     protected static void sendSlot(Player player, ItemStack itemStack, int slot, int inventoryId) {

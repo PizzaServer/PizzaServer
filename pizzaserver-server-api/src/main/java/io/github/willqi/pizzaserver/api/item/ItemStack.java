@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.api.item;
 import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.nbt.tags.NBTList;
 import io.github.willqi.pizzaserver.nbt.tags.NBTTag;
@@ -11,7 +12,11 @@ import java.util.*;
 
 public class ItemStack implements Cloneable {
 
+    public static int ID = 1;
+
+
     private final BaseItemType itemType;
+    private final int networkId;
     private int count;
     private int damage;
     private NBTCompound compound = new NBTCompound();
@@ -41,7 +46,12 @@ public class ItemStack implements Cloneable {
     }
 
     public ItemStack(BaseItemType itemType, int count, int damage) {
+        this(itemType, count, damage, itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : -1);
+    }
+
+    public ItemStack(BaseItemType itemType, int count, int damage, int networkId) {
         this.itemType = itemType;
+        this.networkId = networkId;
         this.count = count;
         this.damage = damage;
 
@@ -108,6 +118,24 @@ public class ItemStack implements Cloneable {
                 this.getCompoundTag().getCompound("display").containsKey("Lore") &&
                 this.getCompoundTag().getCompound("display").get("Lore") instanceof NBTList &&
                 this.getCompoundTag().getCompound("display").getList("Lore").getChildrenTypeId() == NBTTag.STRING_TAG_ID;
+    }
+
+    /**
+     * Returns the id of this stack as represented over the network
+     * An id of -1 means that this stack has not been assigned a network id
+     * @return stack id
+     */
+    public int getNetworkId() {
+        return this.networkId;
+    }
+
+    /**
+     * Create a copy of this ItemStack but with a new network id assigned
+     * @return new ItemStack with a new network id assigned
+     */
+    public ItemStack newNetworkStack() {
+        int networkId = this.getItemType().getItemId().equals(BlockTypeID.AIR) ? 0 : ItemStack.ID++;
+        return new ItemStack(this.getItemType(), this.getCount(), this.getDamage(), networkId);
     }
 
     public List<String> getLore() {

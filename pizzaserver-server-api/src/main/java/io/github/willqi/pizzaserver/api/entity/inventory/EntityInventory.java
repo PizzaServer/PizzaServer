@@ -21,13 +21,23 @@ public interface EntityInventory extends Watchable {
 
     int getSize();
 
+    /**
+     * Returns a copy of the slots of this inventory
+     * @return clone of the slots
+     */
     ItemStack[] getSlots();
 
+    /**
+     * Returns a copy of the slot in this inventory
+     * @param slot the slot
+     * @return clone of the slot
+     */
     ItemStack getSlot(int slot);
 
     /**
      * Change all the slots in this inventory
      * The slots provided must be the same size as the existing slots
+     * ItemStacks will be cloned when setting
      * @param slots new slots
      * @returns if the slots were changed
      */
@@ -36,7 +46,7 @@ public interface EntityInventory extends Watchable {
     /**
      * Change a single slot
      * @param slot the slot to change
-     * @param itemStack the item to place in it
+     * @param itemStack the item to place in it (this will be cloned)
      * @return if the slot was changed
      */
     boolean setSlot(int slot, ItemStack itemStack);

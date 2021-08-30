@@ -10,7 +10,7 @@ public class V419InventorySlotPacketHandler extends BaseProtocolPacketHandler<In
     public void encode(InventorySlotPacket packet, BasePacketBuffer buffer) {
         buffer.writeUnsignedVarInt(packet.getInventoryId());
         buffer.writeUnsignedVarInt(packet.getSlot());
-        buffer.writeVarInt(buffer.getVersion().getItemRuntimeId(packet.getItem().getItemType().getItemId()) == 0 ? 0 : 1);
+        buffer.writeVarInt(packet.getItem().getNetworkId());
         buffer.writeItem(packet.getItem());
     }
 
