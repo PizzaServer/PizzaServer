@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.entity.inventory;
 
+import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
@@ -10,17 +11,33 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryCon
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 public class ImplPlayerInventory extends ImplLivingEntityInventory implements PlayerInventory {
+
+    private static final Set<InventorySlotType> PLAYER_SLOT_TYPES = new HashSet<InventorySlotType>(){
+        {
+            this.add(InventorySlotType.ARMOR);
+            this.add(InventorySlotType.INVENTORY);
+            this.add(InventorySlotType.HOTBAR);
+            this.add(InventorySlotType.CURSOR);
+            this.add(InventorySlotType.OFFHAND);
+            // TODO: is the player_inventory slot type used when a container is open?
+
+            // TODO: uncomment when crafting inventory related slots are implemented
+//            this.add(InventorySlotType.CRAFTING_ITEM);
+//            this.add(InventorySlotType.CRAFTING_RESULT);
+        }
+    };
 
     private int selectedSlot;
     private ItemStack cursor = ItemRegistry.getItem(BlockTypeID.AIR);
 
 
     public ImplPlayerInventory(Player player) {
-        super(player, 36, InventoryID.MAIN_INVENTORY);
+        super(player, PLAYER_SLOT_TYPES, 36, InventoryID.MAIN_INVENTORY);
     }
 
     @Override
@@ -133,7 +150,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
     public boolean setCursor(ItemStack cursor, boolean keepNetworkId) {
         // TODO: events
-        this.cursor = keepNetworkId ? cursor : cursor.newNetworkStack();
+        this.cursor = keepNetworkId ? ensureItemStackExists(cursor) : ensureItemStackExists(cursor).newNetworkStack();
         // TODO: send cursor packet
         return true;
     }

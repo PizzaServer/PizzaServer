@@ -52,7 +52,7 @@ public class ItemStack implements Cloneable {
     public ItemStack(BaseItemType itemType, int count, int damage, int networkId) {
         this.itemType = itemType;
         this.networkId = networkId;
-        this.count = count;
+        this.count = itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : count;
         this.damage = damage;
 
         this.blocksCanBreak = itemType.getOnlyBlocksCanBreak();
@@ -70,7 +70,7 @@ public class ItemStack implements Cloneable {
     }
 
     public void setCount(int count) {
-        this.count = count;
+        this.count = this.getItemType().getItemId().equals(BlockTypeID.AIR) ? 0 : count;
     }
 
     public int getDamage() {

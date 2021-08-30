@@ -82,10 +82,10 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             return;
         }
 
-        if (!loginPacket.isAuthenticated()) {
-            this.session.disconnect();
-            return;
-        }
+//        if (!loginPacket.isAuthenticated()) {
+//            this.session.disconnect();
+//            return;
+//        }
 
         ImplPlayer player = new ImplPlayer(this.server, this.session, loginPacket);
         this.player = player;

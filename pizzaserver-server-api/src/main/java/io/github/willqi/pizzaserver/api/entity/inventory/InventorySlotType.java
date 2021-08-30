@@ -1,7 +1,7 @@
-package io.github.willqi.pizzaserver.server.network.protocol.data.inventory;
+package io.github.willqi.pizzaserver.api.entity.inventory;
 
 /**
- * Used in server authoritative
+ * All the possible inventory slot types an inventory can have
  */
 public enum InventorySlotType {
     ANVIL_ITEM,
@@ -14,7 +14,6 @@ public enum InventorySlotType {
     CONTAINER,
     BEACON_ITEM,
     BREWING_ITEM,
-    BREWING_MATERIAL,
     BREWING_RESULT,
     BREWING_FUEL,
     PLAYER_INVENTORY,

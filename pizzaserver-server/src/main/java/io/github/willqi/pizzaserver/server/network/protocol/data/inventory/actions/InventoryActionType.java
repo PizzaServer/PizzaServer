@@ -46,6 +46,7 @@ public enum InventoryActionType {
 
     /**
      * When a player breaks a block
+     * Used in v428 and higher
      */
     MINE_BLOCK,
 
@@ -64,6 +65,9 @@ public enum InventoryActionType {
      */
     CRAFT_CREATIVE,
 
+    /**
+     * Used in v422 and higher
+     */
     CRAFT_RECIPE_OPTIONAL,
 
     /**

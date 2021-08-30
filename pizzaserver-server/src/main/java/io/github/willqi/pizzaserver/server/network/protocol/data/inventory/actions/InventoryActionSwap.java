@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions;
 
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlotData;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
 
 /**
  * Used for server authoritative inventories
@@ -8,11 +8,11 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.Inven
  */
 public class InventoryActionSwap implements InventoryAction {
 
-    private final InventorySlotData source;
-    private final InventorySlotData destination;
+    private final InventorySlot source;
+    private final InventorySlot destination;
 
 
-    public InventoryActionSwap(InventorySlotData source, InventorySlotData destination) {
+    public InventoryActionSwap(InventorySlot source, InventorySlot destination) {
         this.source = source;
         this.destination = destination;
     }
@@ -22,11 +22,11 @@ public class InventoryActionSwap implements InventoryAction {
         return InventoryActionType.SWAP;
     }
 
-    public InventorySlotData getSource() {
+    public InventorySlot getSource() {
         return this.source;
     }
 
-    public InventorySlotData getDestination() {
+    public InventorySlot getDestination() {
         return this.destination;
     }
 

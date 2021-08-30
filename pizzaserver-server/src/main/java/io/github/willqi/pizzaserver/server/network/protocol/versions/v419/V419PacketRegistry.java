@@ -39,6 +39,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(InventoryContentPacket.ID, new V419InventoryContentPacketHandler())
             .register(InventorySlotPacket.ID, new V419InventorySlotPacketHandler())
             .register(ItemStackRequestPacket.ID, new V419ItemStackRequestPacketHandler())
+            .register(ItemStackResponsePacket.ID, new V419ItemStackResponsePacketHandler())
             .register(PlayerHotbarPacket.ID, new V419PlayerHotbarPacketHandler())
             .register(MobEquipmentPacket.ID, new V419MobEquipmentPacketHandler())
             .register(MobArmourEquipmentPacket.ID, new V419MobArmourEquipmentPacketHandler())

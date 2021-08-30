@@ -24,8 +24,8 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlotData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlotType;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
+import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
@@ -357,11 +357,11 @@ public class V419PacketBuffer extends BasePacketBuffer {
     }
 
     @Override
-    public InventorySlotData readInventorySlot() {
+    public InventorySlot readInventorySlot() {
         int type = this.readByte();
         int slot = this.readByte();
         int stackNetworkId = this.readVarInt();
-        return new InventorySlotData(InventorySlotType.values()[type], slot, stackNetworkId);
+        return new InventorySlot(InventorySlotType.values()[type], slot, stackNetworkId);
     }
 
     @Override

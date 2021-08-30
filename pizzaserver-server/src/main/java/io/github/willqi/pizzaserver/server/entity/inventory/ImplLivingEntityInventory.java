@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.entity.inventory;
 
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
@@ -10,6 +11,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.MobArmourEqu
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 
 import java.util.Optional;
+import java.util.Set;
 
 public class ImplLivingEntityInventory extends BaseEntityInventory implements LivingEntityInventory {
 
@@ -22,12 +24,12 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
     protected ItemStack offHand = null;
 
 
-    public ImplLivingEntityInventory(LivingEntity entity, int size) {
-        super(entity, size);
+    public ImplLivingEntityInventory(LivingEntity entity, Set<InventorySlotType> slotTypes, int size) {
+        super(entity, slotTypes, size);
     }
 
-    public ImplLivingEntityInventory(LivingEntity entity, int size, int id) {
-        super(entity, size, id);
+    public ImplLivingEntityInventory(LivingEntity entity, Set<InventorySlotType> slotTypes, int size, int id) {
+        super(entity, slotTypes, size, id);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setHelmet(Player player, ItemStack helmet, boolean keepNetworkId) {
         // TODO: events
-        this.helmet = keepNetworkId ? helmet : helmet.newNetworkStack();
+        this.helmet = keepNetworkId ? ensureItemStackExists(helmet) : ensureItemStackExists(helmet).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
         return true;
     }
@@ -82,7 +84,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setChestplate(Player player, ItemStack chestplate, boolean keepNetworkId) {
         // TODO: events
-        this.chestplate = keepNetworkId ? chestplate : chestplate.newNetworkStack();
+        this.chestplate = keepNetworkId ? ensureItemStackExists(chestplate) : ensureItemStackExists(chestplate).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
         return true;
     }
@@ -108,7 +110,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setLeggings(Player player, ItemStack leggings, boolean keepNetworkId) {
         // TODO: events
-        this.leggings = keepNetworkId ? leggings : leggings.newNetworkStack();
+        this.leggings = keepNetworkId ? ensureItemStackExists(leggings) : ensureItemStackExists(leggings).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player);
         return true;
     }
@@ -134,7 +136,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setBoots(Player player, ItemStack boots, boolean keepNetworkId) {
         // TODO: events
-        this.boots = keepNetworkId ? boots : boots.newNetworkStack();
+        this.boots = keepNetworkId ? ensureItemStackExists(boots) : ensureItemStackExists(boots).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player);
         return true;
     }
@@ -174,7 +176,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setHeldItem(Player player, ItemStack mainHand, boolean keepNetworkId) {
         // TODO: events
-        this.mainHand = keepNetworkId ? mainHand : mainHand.newNetworkStack();
+        this.mainHand = keepNetworkId ? ensureItemStackExists(mainHand) : ensureItemStackExists(mainHand).newNetworkStack();
         this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 0, true);
         return true;
     }
@@ -200,7 +202,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setOffhandItem(Player player, ItemStack offHand, boolean keepNetworkId) {
         // TODO: events
-        this.offHand = keepNetworkId ? offHand : offHand.newNetworkStack();
+        this.offHand = keepNetworkId ? ensureItemStackExists(offHand) : ensureItemStackExists(offHand).newNetworkStack();
         this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 1, false);
         return true;
     }

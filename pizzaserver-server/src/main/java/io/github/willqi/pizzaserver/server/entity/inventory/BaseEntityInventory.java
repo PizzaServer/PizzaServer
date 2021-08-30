@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.entity.inventory;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
@@ -21,24 +22,31 @@ public abstract class BaseEntityInventory implements EntityInventory {
     protected final int size;
 
     protected ItemStack[] slots;
+    protected final Set<InventorySlotType> slotTypes;
 
     private final Set<Player> viewers = new HashSet<>();
 
 
-    public BaseEntityInventory(Entity entity, int size) {
-        this(entity, size, ID++);
+    public BaseEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size) {
+        this(entity, slotTypes, size, ID++);
     }
 
-    public BaseEntityInventory(Entity entity, int size, int id) {
+    public BaseEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size, int id) {
         this.entity = entity;
         this.size = size;
         this.id = id;
+        this.slotTypes = slotTypes;
         this.slots = new ItemStack[this.size];
     }
 
     @Override
     public int getId() {
         return this.id;
+    }
+
+    @Override
+    public Set<InventorySlotType> getSlotTypes() {
+        return this.slotTypes;
     }
 
     @Override
@@ -114,7 +122,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
      * @return if it successfuly set the slot
      */
     public boolean setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
-        this.slots[slot] = keepNetworkId ? itemStack : itemStack.newNetworkStack();
+        this.slots[slot] = keepNetworkId ? ensureItemStackExists(itemStack) : ensureItemStackExists(itemStack).newNetworkStack();
 
         // TODO: events
 
@@ -201,6 +209,16 @@ public abstract class BaseEntityInventory implements EntityInventory {
         inventorySlotPacket.setSlot(slot);
         inventorySlotPacket.setItem(itemStack);
         player.sendPacket(inventorySlotPacket);
+    }
+
+    /**
+     * Ensures that the ItemStack provided will exist
+     * If the ItemStack provided is null, it will return an air ItemStack
+     * @param itemStack nullable item stack
+     * @return item stack
+     */
+    protected static ItemStack ensureItemStackExists(ItemStack itemStack) {
+        return itemStack == null ? ItemRegistry.getItem(BlockTypeID.AIR) : itemStack;
     }
 
 }

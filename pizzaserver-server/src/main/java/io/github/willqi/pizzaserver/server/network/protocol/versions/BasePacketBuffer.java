@@ -13,7 +13,7 @@ import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlotData;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -717,7 +717,7 @@ public class BasePacketBuffer extends ByteBuf {
         throw new IllegalStateException("Called readInventoryAction() before version was assigned.");
     }
 
-    public InventorySlotData readInventorySlot() {
+    public InventorySlot readInventorySlot() {
         throw new IllegalStateException("Called readInventorySlot() before version was assigned.");
     }
 
@@ -959,7 +959,7 @@ public class BasePacketBuffer extends ByteBuf {
         throw new IllegalStateException("Called writeInventoryAction() before version was assigned.");
     }
 
-    public BasePacketBuffer writeInventorySlot(InventorySlotData data) {
+    public BasePacketBuffer writeInventorySlot(InventorySlot data) {
         throw new IllegalStateException("Called readInventorySlot() before version was assigned.");
     }
 
