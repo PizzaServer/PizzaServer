@@ -10,8 +10,8 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackReq
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackResponsePacket;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     private final ImplPlayer player;
@@ -36,7 +36,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     @Override
     public void onPacket(ItemStackRequestPacket packet) {
         ItemStackResponsePacket itemStackResponsePacket = new ItemStackResponsePacket();
-        Set<ItemStackResponsePacket.Response> responses = new HashSet<>();
+        List<ItemStackResponsePacket.Response> responses = new ArrayList<>();
 
         for (ItemStackRequestPacket.Request request : packet.getRequests()) {
             int requestId = request.getId();

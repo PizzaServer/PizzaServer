@@ -12,18 +12,18 @@ public class ItemStackResponsePacket extends BaseBedrockPacket {
 
     public static final int ID = 0x94;
 
-    private Set<Response> responses = Collections.emptySet();
+    private List<Response> responses = Collections.emptyList();
 
 
     public ItemStackResponsePacket() {
         super(ID);
     }
 
-    public Set<Response> getResponses() {
+    public List<Response> getResponses() {
         return this.responses;
     }
 
-    public void setResponses(Set<Response> responses) {
+    public void setResponses(List<Response> responses) {
         this.responses = responses;
     }
 
@@ -32,7 +32,7 @@ public class ItemStackResponsePacket extends BaseBedrockPacket {
 
         private final int requestId;
         private Status status = Status.OK;
-        private final Map<InventorySlotType, Set<SlotInfo>> inventories = new HashMap<>();
+        private final Map<InventorySlotType, List<SlotInfo>> inventories = new HashMap<>();
 
         public Response(int requestId) {
             this.requestId = requestId;
@@ -50,13 +50,13 @@ public class ItemStackResponsePacket extends BaseBedrockPacket {
             this.status = status;
         }
 
-        public Map<InventorySlotType, Set<SlotInfo>> getInventories() {
+        public Map<InventorySlotType, List<SlotInfo>> getInventories() {
             return this.inventories;
         }
 
         public void addSlotChange(InventorySlotType slotType, SlotInfo slotInfo) {
             if (!this.inventories.containsKey(slotType)) {
-                this.inventories.put(slotType, new HashSet<>());
+                this.inventories.put(slotType, new ArrayList<>());
             }
             this.inventories.get(slotType).add(slotInfo);
         }
