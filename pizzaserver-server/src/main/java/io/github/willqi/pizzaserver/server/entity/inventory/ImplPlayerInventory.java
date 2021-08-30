@@ -150,7 +150,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
     public boolean setCursor(ItemStack cursor, boolean keepNetworkId) {
         // TODO: events
-        this.cursor = keepNetworkId ? ensureItemStackExists(cursor) : ensureItemStackExists(cursor).newNetworkStack();
+        this.cursor = keepNetworkId ? ItemStack.ensureItemStackExists(cursor) : ItemStack.ensureItemStackExists(cursor).newNetworkStack();
         // TODO: send cursor packet
         return true;
     }

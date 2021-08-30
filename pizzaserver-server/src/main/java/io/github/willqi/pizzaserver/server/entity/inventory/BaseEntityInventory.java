@@ -122,7 +122,7 @@ public abstract class BaseEntityInventory implements EntityInventory {
      * @return if it successfuly set the slot
      */
     public boolean setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
-        this.slots[slot] = keepNetworkId ? ensureItemStackExists(itemStack) : ensureItemStackExists(itemStack).newNetworkStack();
+        this.slots[slot] = keepNetworkId ? ItemStack.ensureItemStackExists(itemStack) : ItemStack.ensureItemStackExists(itemStack).newNetworkStack();
 
         // TODO: events
 
@@ -209,16 +209,6 @@ public abstract class BaseEntityInventory implements EntityInventory {
         inventorySlotPacket.setSlot(slot);
         inventorySlotPacket.setItem(itemStack);
         player.sendPacket(inventorySlotPacket);
-    }
-
-    /**
-     * Ensures that the ItemStack provided will exist
-     * If the ItemStack provided is null, it will return an air ItemStack
-     * @param itemStack nullable item stack
-     * @return item stack
-     */
-    protected static ItemStack ensureItemStackExists(ItemStack itemStack) {
-        return itemStack == null ? ItemRegistry.getItem(BlockTypeID.AIR) : itemStack;
     }
 
 }

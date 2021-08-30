@@ -58,7 +58,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setHelmet(Player player, ItemStack helmet, boolean keepNetworkId) {
         // TODO: events
-        this.helmet = keepNetworkId ? ensureItemStackExists(helmet) : ensureItemStackExists(helmet).newNetworkStack();
+        this.helmet = keepNetworkId ? ItemStack.ensureItemStackExists(helmet) : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
         return true;
     }
@@ -84,7 +84,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setChestplate(Player player, ItemStack chestplate, boolean keepNetworkId) {
         // TODO: events
-        this.chestplate = keepNetworkId ? ensureItemStackExists(chestplate) : ensureItemStackExists(chestplate).newNetworkStack();
+        this.chestplate = keepNetworkId ? ItemStack.ensureItemStackExists(chestplate) : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
         return true;
     }
@@ -110,7 +110,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setLeggings(Player player, ItemStack leggings, boolean keepNetworkId) {
         // TODO: events
-        this.leggings = keepNetworkId ? ensureItemStackExists(leggings) : ensureItemStackExists(leggings).newNetworkStack();
+        this.leggings = keepNetworkId ? ItemStack.ensureItemStackExists(leggings) : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player);
         return true;
     }
@@ -136,7 +136,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setBoots(Player player, ItemStack boots, boolean keepNetworkId) {
         // TODO: events
-        this.boots = keepNetworkId ? ensureItemStackExists(boots) : ensureItemStackExists(boots).newNetworkStack();
+        this.boots = keepNetworkId ? ItemStack.ensureItemStackExists(boots) : ItemStack.ensureItemStackExists(boots).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player);
         return true;
     }
@@ -176,7 +176,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setHeldItem(Player player, ItemStack mainHand, boolean keepNetworkId) {
         // TODO: events
-        this.mainHand = keepNetworkId ? ensureItemStackExists(mainHand) : ensureItemStackExists(mainHand).newNetworkStack();
+        this.mainHand = keepNetworkId ? ItemStack.ensureItemStackExists(mainHand) : ItemStack.ensureItemStackExists(mainHand).newNetworkStack();
         this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 0, true);
         return true;
     }
@@ -202,7 +202,7 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
 
     public boolean setOffhandItem(Player player, ItemStack offHand, boolean keepNetworkId) {
         // TODO: events
-        this.offHand = keepNetworkId ? ensureItemStackExists(offHand) : ensureItemStackExists(offHand).newNetworkStack();
+        this.offHand = keepNetworkId ? ItemStack.ensureItemStackExists(offHand) : ItemStack.ensureItemStackExists(offHand).newNetworkStack();
         this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 1, false);
         return true;
     }

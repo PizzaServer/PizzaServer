@@ -14,9 +14,8 @@ public class ItemStack implements Cloneable {
 
     public static int ID = 1;
 
-
-    private final BaseItemType itemType;
-    private final int networkId;
+    private int networkId;
+    private BaseItemType itemType;
     private int count;
     private int damage;
     private NBTCompound compound = new NBTCompound();
@@ -50,9 +49,9 @@ public class ItemStack implements Cloneable {
     }
 
     public ItemStack(BaseItemType itemType, int count, int damage, int networkId) {
-        this.itemType = itemType;
-        this.networkId = networkId;
-        this.count = itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : count;
+        this.itemType = count <= 0 ? ItemRegistry.getItemType(BlockTypeID.AIR) : itemType;
+        this.networkId = this.itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : networkId;
+        this.count = this.itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : count;
         this.damage = damage;
 
         this.blocksCanBreak = itemType.getOnlyBlocksCanBreak();
@@ -70,7 +69,15 @@ public class ItemStack implements Cloneable {
     }
 
     public void setCount(int count) {
-        this.count = this.getItemType().getItemId().equals(BlockTypeID.AIR) ? 0 : count;
+        if (!this.itemType.getItemId().equals(BlockTypeID.AIR)) {
+            if (count <= 0) {
+                this.count = 0;
+                this.networkId = 0;
+                this.itemType = ItemRegistry.getItemType(BlockTypeID.AIR);
+            } else {
+                this.count = count;
+            }
+        }
     }
 
     public int getDamage() {
@@ -228,4 +235,16 @@ public class ItemStack implements Cloneable {
             throw new AssertionError();
         }
     }
+
+
+    /**
+     * Ensures that the ItemStack provided will exist
+     * If the ItemStack provided is null, it will return an air ItemStack
+     * @param itemStack nullable item stack
+     * @return item stack
+     */
+    public static ItemStack ensureItemStackExists(ItemStack itemStack) {
+        return itemStack == null ? ItemRegistry.getItem(BlockTypeID.AIR) : itemStack;
+    }
+
 }
