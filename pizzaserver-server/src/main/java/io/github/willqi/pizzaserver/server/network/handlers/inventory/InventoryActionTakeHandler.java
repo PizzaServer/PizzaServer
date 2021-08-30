@@ -17,7 +17,8 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<Inventory
         return stackExists(player, action.getSource()) &&
                 stackExists(player, action.getDestination()) &&
                 (action.getDestination().getInventorySlotType() == InventorySlotType.CURSOR) &&
-                player.getInventory().getCursor().getItemType().getItemId().equals(BlockTypeID.AIR);
+                player.getInventory().getCursor().getItemType().getItemId().equals(BlockTypeID.AIR) &&
+                action.getCount() > 0;
     }
 
     @Override

@@ -4,6 +4,8 @@ import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
+import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseEntityInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
@@ -42,6 +44,44 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             return openInventory;
         }
         return Optional.empty();
+    }
+
+    protected static Optional<ItemStack> getItemStack(Player player, InventorySlot inventorySlot) {
+        Optional<EntityInventory> optionalInventory = getInventory(player, inventorySlot);
+        if (optionalInventory.isPresent()) {
+            EntityInventory inventory = optionalInventory.get();
+
+            if (isUniquePlayerSlot(inventory, inventorySlot)) {
+                // Handle the slot differently
+                ImplPlayerInventory playerInventory = (ImplPlayerInventory)inventory;
+
+                switch (inventorySlot.getInventorySlotType()) {
+                    case OFFHAND:
+                        return Optional.of(playerInventory.getOffhandItem());
+                    case ARMOR:
+                        switch (inventorySlot.getSlot()) {
+                            case 0:
+                                return Optional.of(playerInventory.getHelmet());
+                            case 1:
+                                return Optional.of(playerInventory.getChestplate());
+                            case 2:
+                                return Optional.of(playerInventory.getLeggings());
+                            case 3:
+                                return Optional.of(playerInventory.getBoots());
+                            default:
+                                throw new IllegalArgumentException("Invalid armor slot: " + inventorySlot.getSlot());
+                        }
+                    case CURSOR:
+                        return Optional.of(playerInventory.getCursor());
+                    default:
+                        throw new IllegalArgumentException("Missing unique player slot handler: " + inventorySlot.getInventorySlotType());
+                }
+            } else {
+                return Optional.of(inventory.getSlot(inventorySlot.getSlot()));
+            }
+        } else {
+            return Optional.empty();
+        }
     }
 
     protected static boolean stackExists(Player player, InventorySlot slot) {
@@ -85,6 +125,23 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         }
     }
 
+    protected static boolean canPutItemTypeInSlot(BaseItemType itemType, InventorySlotType slotType) {
+        switch (slotType) {
+            case ARMOR:
+                return itemType instanceof ArmorItemComponent;
+            case OFFHAND:
+                return itemType.isAllowedInOffHand();
+            default:
+                return true;
+        }
+    }
+
+    protected static boolean isUniquePlayerSlot(EntityInventory inventory, InventorySlot slot) {
+        return inventory instanceof PlayerInventory &&
+                (slot.getInventorySlotType() != InventorySlotType.INVENTORY &&
+                        slot.getInventorySlotType() != InventorySlotType.HOTBAR);
+    }
+
 
     protected static class SlotLocation {
 
@@ -105,42 +162,8 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             this.inventory = inventory.get();
             this.inventorySlot = inventorySlot;
 
-            // Assign the item stack this slot is referring to
-            if (this.isUniquePlayerSlot()) {
-                // Handle the slot differently
-                ImplPlayerInventory playerInventory = (ImplPlayerInventory)this.getInventory();
-
-                switch (this.inventorySlot.getInventorySlotType()) {
-                    case OFFHAND:
-                        this.itemStack = playerInventory.getOffhandItem();
-                        break;
-                    case ARMOR:
-                        switch (this.inventorySlot.getSlot()) {
-                            case 0:
-                                this.itemStack = playerInventory.getHelmet();
-                                break;
-                            case 1:
-                                this.itemStack = playerInventory.getChestplate();
-                                break;
-                            case 2:
-                                this.itemStack = playerInventory.getLeggings();
-                                break;
-                            case 3:
-                                this.itemStack = playerInventory.getBoots();
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Invalid armor slot: " + this.inventorySlot.getSlot());
-                        }
-                        break;
-                    case CURSOR:
-                        this.itemStack = playerInventory.getCursor();
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Missing unique player slot handler: " + this.inventorySlot.getInventorySlotType());
-                }
-            } else {
-                this.itemStack = this.getInventory().getSlot(this.inventorySlot.getSlot());
-            }
+            // Slot exists as we checked it before
+            this.itemStack = getItemStack(player, inventorySlot).get();
 
         }
 
@@ -156,7 +179,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             this.itemStack = ItemStack.ensureItemStackExists(itemStack);
 
             // Change the slot
-            if (this.isUniquePlayerSlot()) {
+            if (isUniquePlayerSlot(this.inventory, this.inventorySlot)) {
                 // Handle the slot differently
                 ImplPlayerInventory playerInventory = (ImplPlayerInventory)this.getInventory();
 
@@ -198,12 +221,6 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
                     .setItemStackCount(this.itemStack.getCount())
                     .setItemStackNetworkId(this.itemStack.getNetworkId())
                     .build());
-        }
-
-        private boolean isUniquePlayerSlot() {
-            return this.getInventory() instanceof PlayerInventory &&
-                    (this.inventorySlot.getInventorySlotType() != InventorySlotType.INVENTORY &&
-                            this.inventorySlot.getInventorySlotType() != InventorySlotType.HOTBAR);
         }
 
     }
