@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers.inventory;
 
+import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionSwap;
@@ -30,6 +31,24 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<Inventory
         SlotLocation source = new SlotLocation(response, player, action.getSource());
         SlotLocation destination = new SlotLocation(response, player, action.getDestination());
 
+        // Call the event
+        InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
+                InventoryMoveItemEvent.Action.SWAP,
+                source.getInventory(),
+                action.getSource().getInventorySlotType(),
+                action.getSource().getSlot(),
+                source.getItem(),
+                source.getItem().getCount(),
+                destination.getInventory(),
+                action.getDestination().getInventorySlotType(),
+                action.getDestination().getSlot(),
+                destination.getItem());
+        player.getServer().getEventManager().call(inventoryMoveItemEvent);
+        if (inventoryMoveItemEvent.isCancelled()) {
+            return false;
+        }
+
+        // Swap item stacks
         ItemStack originalSourceItemStack = source.getItem();
         source.setItem(destination.getItem());
         destination.setItem(originalSourceItemStack);

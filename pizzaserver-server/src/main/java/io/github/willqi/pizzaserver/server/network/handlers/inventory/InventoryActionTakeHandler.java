@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers.inventory;
 
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
+import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -50,6 +51,22 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<Inventory
             pickedUpStack.setCount(pickedUpStackCount + destination.getItem().getCount());
         } else {
             pickedUpStack.setCount(pickedUpStackCount);
+        }
+
+        InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
+                InventoryMoveItemEvent.Action.TAKE,
+                source.getInventory(),
+                action.getSource().getInventorySlotType(),
+                action.getSource().getSlot(),
+                source.getItem(),
+                pickedUpStackCount,
+                destination.getInventory(),
+                action.getDestination().getInventorySlotType(),
+                action.getDestination().getSlot(),
+                destination.getItem());
+        player.getServer().getEventManager().call(inventoryMoveItemEvent);
+        if (inventoryMoveItemEvent.isCancelled()) {
+            return false;
         }
 
         // Change the existing item stack to get rid of the picked up item count

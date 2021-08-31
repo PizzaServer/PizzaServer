@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-public interface EntityInventory extends Watchable {
+public interface Inventory extends Watchable {
 
     int getId();
 

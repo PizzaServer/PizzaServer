@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.api.entity.inventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 
-public interface LivingEntityInventory extends EntityInventory {
+public interface LivingEntityInventory extends Inventory {
 
     /**
      * Get the entity who owns this inventory

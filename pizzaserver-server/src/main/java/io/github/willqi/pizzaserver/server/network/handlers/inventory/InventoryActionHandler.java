@@ -1,13 +1,13 @@
 package io.github.willqi.pizzaserver.server.network.handlers.inventory;
 
-import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.entity.inventory.BaseEntityInventory;
+import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
@@ -54,8 +54,8 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      * @param inventorySlot the slot requested
      * @return the inventory or none if it doesn't exist
      */
-    protected static Optional<EntityInventory> getInventory(Player player, InventorySlot inventorySlot) {
-        Optional<EntityInventory> openInventory = player.getOpenInventory();
+    protected static Optional<Inventory> getInventory(Player player, InventorySlot inventorySlot) {
+        Optional<Inventory> openInventory = player.getOpenInventory();
         if (player.getInventory().getSlotTypes().contains(inventorySlot.getInventorySlotType())) {
             return Optional.of(player.getInventory());
         } else if (openInventory.isPresent() && openInventory.get().getSlotTypes().contains(inventorySlot.getInventorySlotType())) {
@@ -71,9 +71,9 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      * @return the item stack or none if it doesn't exist
      */
     protected static Optional<ItemStack> getItemStack(Player player, InventorySlot inventorySlot) {
-        Optional<EntityInventory> optionalInventory = getInventory(player, inventorySlot);
+        Optional<Inventory> optionalInventory = getInventory(player, inventorySlot);
         if (optionalInventory.isPresent()) {
-            EntityInventory inventory = optionalInventory.get();
+            Inventory inventory = optionalInventory.get();
 
             if (isUniquePlayerSlot(inventory, inventorySlot)) {
                 // Call the correct getter as getSlot is not sufficient
@@ -141,7 +141,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         }
     }
 
-    private static boolean isUniquePlayerSlot(EntityInventory inventory, InventorySlot slot) {
+    private static boolean isUniquePlayerSlot(Inventory inventory, InventorySlot slot) {
         return inventory instanceof PlayerInventory &&
                 (slot.getInventorySlotType() != InventorySlotType.INVENTORY &&
                         slot.getInventorySlotType() != InventorySlotType.HOTBAR);
@@ -155,7 +155,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
 
         private final ItemStackResponsePacket.Response response;
         private final Player player;
-        private final EntityInventory inventory;
+        private final Inventory inventory;
         private final InventorySlot inventorySlot;
         private ItemStack itemStack;
 
@@ -163,7 +163,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             this.response = response;
             this.player = player;
 
-            Optional<EntityInventory> inventory = InventoryActionHandler.getInventory(player, inventorySlot);
+            Optional<Inventory> inventory = InventoryActionHandler.getInventory(player, inventorySlot);
             if (!inventory.isPresent()) {
                 throw new IllegalArgumentException("Inventory does not exist");
             }
@@ -177,7 +177,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             this.itemStack = itemStack.get();
         }
 
-        public EntityInventory getInventory() {
+        public Inventory getInventory() {
             return this.inventory;
         }
 
@@ -222,7 +222,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
                         throw new IllegalArgumentException("Missing unique player slot handler: " + this.inventorySlot.getInventorySlotType());
                 }
             } else {
-                ((BaseEntityInventory)this.getInventory()).setSlot(this.player, this.inventorySlot.getSlot(), this.itemStack, true);
+                ((BaseInventory)this.getInventory()).setSlot(this.player, this.inventorySlot.getSlot(), this.itemStack, true);
             }
 
             // Record the change to be sent in the ItemStackResponsePacket

@@ -1,8 +1,10 @@
 package io.github.willqi.pizzaserver.server.entity.inventory;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
-import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
+import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
+import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
@@ -13,7 +15,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.InventorySlo
 
 import java.util.*;
 
-public abstract class BaseEntityInventory implements EntityInventory {
+public abstract class BaseInventory implements Inventory {
 
     public static int ID = 1;
 
@@ -27,11 +29,11 @@ public abstract class BaseEntityInventory implements EntityInventory {
     private final Set<Player> viewers = new HashSet<>();
 
 
-    public BaseEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size) {
+    public BaseInventory(Entity entity, Set<InventorySlotType> slotTypes, int size) {
         this(entity, slotTypes, size, ID++);
     }
 
-    public BaseEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size, int id) {
+    public BaseInventory(Entity entity, Set<InventorySlotType> slotTypes, int size, int id) {
         this.entity = entity;
         this.size = size;
         this.id = id;
@@ -114,7 +116,6 @@ public abstract class BaseEntityInventory implements EntityInventory {
      * @param slot the slot changed
      * @param itemStack the new item stack
      * @param keepNetworkId if the network id of the ItemStack should be kept or if a new one should be generated
-     * @return if it successfuly set the slot
      */
     public void setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
         this.slots[slot] = keepNetworkId ? ItemStack.ensureItemStackExists(itemStack) : ItemStack.ensureItemStackExists(itemStack).newNetworkStack();
@@ -164,7 +165,14 @@ public abstract class BaseEntityInventory implements EntityInventory {
      * @return if the inventory was opened
      */
     public boolean openFor(Player player) {
-        if (this.viewers.add(player)) {
+        if (!this.viewers.contains(player)) {
+            InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(player, this);
+            this.getEntity().getServer().getEventManager().call(inventoryOpenEvent);
+            if (inventoryOpenEvent.isCancelled()) {
+                return false;
+            }
+
+            this.viewers.add(player);
             this.sendContainerOpenPacket(player);
             return true;
         } else {
@@ -180,10 +188,14 @@ public abstract class BaseEntityInventory implements EntityInventory {
      * @return if the inventory was closed
      */
     public boolean closeFor(Player player) {
-        if (this.viewers.remove(player)) {
+        if (this.viewers.contains(player)) {
             ContainerClosePacket containerClosePacket = new ContainerClosePacket();
             containerClosePacket.setInventoryId(this.getId());
             player.sendPacket(containerClosePacket);
+
+            InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
+            this.getEntity().getServer().getEventManager().call(inventoryCloseEvent);
+
             return true;
         } else {
             return false;

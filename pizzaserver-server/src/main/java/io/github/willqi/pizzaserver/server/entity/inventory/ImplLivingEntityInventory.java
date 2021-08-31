@@ -13,7 +13,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipment
 import java.util.Optional;
 import java.util.Set;
 
-public class ImplLivingEntityInventory extends BaseEntityInventory implements LivingEntityInventory {
+public class ImplLivingEntityInventory extends BaseInventory implements LivingEntityInventory {
 
     protected ItemStack helmet = null;
     protected ItemStack chestplate = null;

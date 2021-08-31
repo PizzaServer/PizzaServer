@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.player;
 
-import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
@@ -17,7 +17,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
-import io.github.willqi.pizzaserver.server.entity.inventory.BaseEntityInventory;
+import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -54,7 +54,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
-    private EntityInventory openInventory = null;
+    private Inventory openInventory = null;
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -185,14 +185,14 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public Optional<EntityInventory> getOpenInventory() {
+    public Optional<Inventory> getOpenInventory() {
         return Optional.ofNullable(this.openInventory);
     }
 
     @Override
     public boolean closeOpenInventory() {
-        Optional<EntityInventory> openInventory = this.getOpenInventory();
-        if (openInventory.isPresent() && !((BaseEntityInventory)openInventory.get()).closeFor(this)) {
+        Optional<Inventory> openInventory = this.getOpenInventory();
+        if (openInventory.isPresent() && !((BaseInventory)openInventory.get()).closeFor(this)) {
             return false;
         } else {
             this.openInventory = null;
@@ -201,9 +201,9 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public boolean openInventory(EntityInventory inventory) {
+    public boolean openInventory(Inventory inventory) {
         this.closeOpenInventory();
-        if (((BaseEntityInventory)inventory).openFor(this)) {
+        if (((BaseInventory)inventory).openFor(this)) {
             this.openInventory = inventory;
             return true;
         } else {

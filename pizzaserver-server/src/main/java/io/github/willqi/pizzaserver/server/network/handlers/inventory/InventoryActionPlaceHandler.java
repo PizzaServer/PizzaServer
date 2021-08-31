@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers.inventory;
 
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
+import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -49,12 +50,34 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
         int sourceStackCount = source.getItem().getCount();
         int playerRequestedAmount = Math.min(action.getCount(), sourceStackCount);
 
-        int placedStackAmount = destination.getItem().getCount() + playerRequestedAmount;
+        // Create new stack with the amount that will be placed down + existing destination count
+        int placedStackAmount = playerRequestedAmount + destination.getItem().getCount();
         ItemStack placedStack = new ItemStack(source.getItem().getItemType(), placedStackAmount, source.getItem().getDamage()).newNetworkStack();
-        destination.setItem(placedStack);
+        placedStack.setCompoundTag(source.getItem().getCompoundTag());
 
-        source.getItem().setCount(sourceStackCount - playerRequestedAmount);
-        source.setItem(source.getItem());
+        // Remove the amount placed from our source
+        ItemStack newSourceStack = source.getItem().clone();
+        newSourceStack.setCount(sourceStackCount - playerRequestedAmount);
+
+        // Call the event
+        InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
+                InventoryMoveItemEvent.Action.PLACE,
+                source.getInventory(),
+                action.getSource().getInventorySlotType(),
+                action.getSource().getSlot(),
+                source.getItem(),
+                playerRequestedAmount,
+                destination.getInventory(),
+                action.getDestination().getInventorySlotType(),
+                action.getDestination().getSlot(),
+                destination.getItem());
+        player.getServer().getEventManager().call(inventoryMoveItemEvent);
+        if (inventoryMoveItemEvent.isCancelled()) {
+            return false;
+        }
+
+        destination.setItem(placedStack);
+        source.setItem(newSourceStack);
         return true;
     }
 
