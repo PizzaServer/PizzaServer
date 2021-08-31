@@ -2,13 +2,14 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventoryType;
 
 public class ContainerOpenPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x2e;
 
     private int inventoryId;
-    private int inventoryType;  // TODO: Maybe this could be an enum
+    private InventoryType inventoryType;
     private Vector3i coordinates;
     private long entityRuntimeId;
 
@@ -25,11 +26,11 @@ public class ContainerOpenPacket extends BaseBedrockPacket {
         this.inventoryId = inventoryId;
     }
 
-    public int getInventoryType() {
+    public InventoryType getInventoryType() {
         return this.inventoryType;
     }
 
-    public void setInventoryType(int type) {
+    public void setInventoryType(InventoryType type) {
         this.inventoryType = type;
     }
 

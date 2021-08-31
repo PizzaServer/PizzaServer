@@ -9,7 +9,7 @@ public class V419ContainerOpenPacketHandler extends BaseProtocolPacketHandler<Co
     @Override
     public void encode(ContainerOpenPacket packet, BasePacketBuffer buffer) {
         buffer.writeByte(packet.getInventoryId());
-        buffer.writeByte(packet.getInventoryType());
+        buffer.writeByte(packet.getInventoryType().getId());
         buffer.writeVector3i(packet.getCoordinates());
         buffer.writeUnsignedVarLong(packet.getEntityRuntimeId());
     }

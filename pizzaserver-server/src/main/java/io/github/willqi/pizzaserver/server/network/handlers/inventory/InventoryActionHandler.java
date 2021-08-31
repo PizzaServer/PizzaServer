@@ -36,16 +36,28 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      */
     public abstract boolean handle(ItemStackResponsePacket.Response response, Player player, T action);
 
-    protected static Optional<EntityInventory> getInventory(Player player, InventorySlot slot) {
+    /**
+     * Returns the inventory of the slot provided or none if it doesn't exist
+     * @param player the player who requested the slot
+     * @param inventorySlot the slot requested
+     * @return the inventory or none if it doesn't exist
+     */
+    protected static Optional<EntityInventory> getInventory(Player player, InventorySlot inventorySlot) {
         Optional<EntityInventory> openInventory = player.getOpenInventory();
-        if (player.getInventory().getSlotTypes().contains(slot.getInventorySlotType())) {
+        if (player.getInventory().getSlotTypes().contains(inventorySlot.getInventorySlotType())) {
             return Optional.of(player.getInventory());
-        } else if (openInventory.isPresent() && openInventory.get().getSlotTypes().contains(slot.getInventorySlotType())) {
+        } else if (openInventory.isPresent() && openInventory.get().getSlotTypes().contains(inventorySlot.getInventorySlotType())) {
             return openInventory;
         }
         return Optional.empty();
     }
 
+    /**
+     * Returns the item stack at the specified slot or none if it doesn't exist
+     * @param player the player who requested the slot
+     * @param inventorySlot the slot requested
+     * @return the item stack or none if it doesn't exist
+     */
     protected static Optional<ItemStack> getItemStack(Player player, InventorySlot inventorySlot) {
         Optional<EntityInventory> optionalInventory = getInventory(player, inventorySlot);
         if (optionalInventory.isPresent()) {
@@ -84,6 +96,12 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         }
     }
 
+    /**
+     * Returns if a stack has a matching network id at a slot
+     * @param player the player who requested the check
+     * @param slot the slot requested
+     * @return if the stacks match
+     */
     protected static boolean stackExists(Player player, InventorySlot slot) {
         Optional<EntityInventory> openInventory = player.getOpenInventory();
         if (player.getInventory().getSlotTypes().contains(slot.getInventorySlotType())) {
@@ -125,6 +143,12 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         }
     }
 
+    /**
+     * Returns if an item type can be placed in a specific slot
+     * @param itemType the item type
+     * @param slotType the slot type
+     * @return if the item type can be placed in the slot type
+     */
     protected static boolean canPutItemTypeInSlot(BaseItemType itemType, InventorySlotType slotType) {
         switch (slotType) {
             case ARMOR:
@@ -136,13 +160,16 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         }
     }
 
-    protected static boolean isUniquePlayerSlot(EntityInventory inventory, InventorySlot slot) {
+    private static boolean isUniquePlayerSlot(EntityInventory inventory, InventorySlot slot) {
         return inventory instanceof PlayerInventory &&
                 (slot.getInventorySlotType() != InventorySlotType.INVENTORY &&
                         slot.getInventorySlotType() != InventorySlotType.HOTBAR);
     }
 
 
+    /**
+     * Wrapper to make changing slots and registering slot responses easier
+     */
     protected static class SlotLocation {
 
         private final ItemStackResponsePacket.Response response;

@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventoryType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerOpenPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.InventorySlotPacket;
@@ -139,7 +140,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     protected void sendContainerOpenPacket(Player player) {
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.setEntityRuntimeId(this.getEntity().getId());
-        containerOpenPacket.setInventoryType(-1);   // TODO: get rid of magic number and replace with enum
+        containerOpenPacket.setInventoryType(InventoryType.INVENTORY);
         containerOpenPacket.setCoordinates(this.getEntity().getLocation().toVector3i());
         player.sendPacket(containerOpenPacket);
     }
