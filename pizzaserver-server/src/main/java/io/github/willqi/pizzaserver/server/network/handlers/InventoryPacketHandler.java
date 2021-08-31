@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
+import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionSwapHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionTakeHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.*;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerClosePacket;
@@ -58,6 +59,8 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                                 InventoryActionPlaceHandler.INSTANCE.handle(response, this.player, (InventoryActionPlace)action);
                         break;
                     case SWAP:
+                        continueActions = InventoryActionSwapHandler.INSTANCE.isValid(this.player, (InventoryActionSwap)action) &&
+                                InventoryActionSwapHandler.INSTANCE.handle(response, this.player, (InventoryActionSwap)action);
                         break;
                     case DROP:
                         break;

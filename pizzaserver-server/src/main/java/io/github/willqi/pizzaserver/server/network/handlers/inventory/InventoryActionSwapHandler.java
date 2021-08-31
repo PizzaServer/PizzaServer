@@ -1,0 +1,39 @@
+package io.github.willqi.pizzaserver.server.network.handlers.inventory;
+
+import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionSwap;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackResponsePacket;
+
+import java.util.Optional;
+
+public class InventoryActionSwapHandler extends InventoryActionHandler<InventoryActionSwap> {
+
+    public static final InventoryActionHandler<InventoryActionSwap> INSTANCE = new InventoryActionSwapHandler();
+
+
+    @Override
+    public boolean isValid(Player player, InventoryActionSwap action) {
+        Optional<ItemStack> sourceItemStack = getItemStack(player, action.getSource());
+        Optional<ItemStack> destinationItemStack = getItemStack(player, action.getDestination());
+        if (sourceItemStack.isPresent() && destinationItemStack.isPresent()) {
+            return canPutItemTypeInSlot(sourceItemStack.get().getItemType(), action.getDestination().getInventorySlotType()) &&
+                    canPutItemTypeInSlot(destinationItemStack.get().getItemType(), action.getSource().getInventorySlotType());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean handle(ItemStackResponsePacket.Response response, Player player, InventoryActionSwap action) {
+        SlotLocation source = new SlotLocation(response, player, action.getSource());
+        SlotLocation destination = new SlotLocation(response, player, action.getDestination());
+
+        ItemStack originalSourceItemStack = source.getItem();
+        source.setItem(destination.getItem());
+        destination.setItem(originalSourceItemStack);
+
+        return true;
+    }
+
+}
