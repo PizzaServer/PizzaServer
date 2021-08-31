@@ -205,6 +205,17 @@ public class ItemStack implements Cloneable {
         this.blocksCanPlaceOn = blocksCanPlaceOn;
     }
 
+    /**
+     * Checks if this ItemStack has the same data as another ItemStack
+     * @param otherStack the other ItemStack we are trying to check
+     * @return if the two stacks have the same data
+     */
+    public boolean hasSameDataAs(ItemStack otherStack) {
+        return (otherStack.getItemType().equals(this.getItemType()) &&
+                otherStack.getCompoundTag().equals(this.getCompoundTag()) &&
+                otherStack.getDamage() == this.getDamage()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
+    }
+
     @Override
     public int hashCode() {
         return this.getItemType().hashCode() * 73;

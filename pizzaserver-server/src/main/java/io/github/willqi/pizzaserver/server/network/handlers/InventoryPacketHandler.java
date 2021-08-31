@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionSwapHandler;
@@ -26,6 +27,8 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     public void onPacket(InteractPacket packet) {
         if (packet.getAction() == InteractPacket.Type.OPEN_INVENTORY && !this.player.getOpenInventory().isPresent()) {
             this.player.openInventory(this.player.getInventory());
+            this.player.getInventory().setSlot(0, ItemRegistry.getItem("minecraft:stone", 10));
+            this.player.getInventory().setSlot(5, ItemRegistry.getItem("minecraft:dirt", 42));
         }
     }
 

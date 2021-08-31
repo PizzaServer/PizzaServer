@@ -19,7 +19,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
         Optional<ItemStack> source = getItemStack(player, action.getSource());
         Optional<ItemStack> destination = getItemStack(player, action.getDestination());
 
-        if (source.isPresent() && destination.isPresent() && action.getCount() > 0) {
+        if (source.isPresent() && destination.isPresent()) {
             ItemStack sourceItemStack = source.get();
             ItemStack destinationItemStack = destination.get();
 
@@ -27,7 +27,8 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
                                             sourceItemStack.getCompoundTag().equals(destinationItemStack.getCompoundTag()) &&
                                             sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.getItemType().getItemId().equals(BlockTypeID.AIR);
 
-            boolean doesNotExceedMaxCount = destinationItemStack.getCount() + action.getCount() <= sourceItemStack.getItemType().getMaxStackSize();
+            boolean doesNotExceedMaxCount = action.getCount() > 0 &&
+                                                destinationItemStack.getCount() + action.getCount() <= sourceItemStack.getItemType().getMaxStackSize();
 
             boolean canPutItemTypeInSlot = canPutItemTypeInSlot(sourceItemStack.getItemType(), action.getDestination().getInventorySlotType()) &&
                                                 action.getDestination().getInventorySlotType() != InventorySlotType.CURSOR;
@@ -44,12 +45,13 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
         SlotLocation destination = new SlotLocation(response, player, action.getDestination());
 
         int sourceStackCount = source.getItem().getCount();
-        int placedStackCount = destination.getItem().getCount() + Math.min(action.getCount(), sourceStackCount);
+        int playerRequestedAmount = Math.min(action.getCount(), sourceStackCount);
 
-        ItemStack placedStack = new ItemStack(source.getItem().getItemType(), placedStackCount, source.getItem().getDamage()).newNetworkStack();
+        int placedStackAmount = destination.getItem().getCount() + playerRequestedAmount;
+        ItemStack placedStack = new ItemStack(source.getItem().getItemType(), placedStackAmount, source.getItem().getDamage()).newNetworkStack();
         destination.setItem(placedStack);
 
-        source.getItem().setCount(sourceStackCount - placedStackCount);
+        source.getItem().setCount(sourceStackCount - playerRequestedAmount);
         source.setItem(source.getItem());
         return true;
     }
