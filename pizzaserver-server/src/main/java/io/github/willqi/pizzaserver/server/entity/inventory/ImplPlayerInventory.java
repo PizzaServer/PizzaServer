@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerOpenPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.InventorySlotPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 
 import java.util.Collections;
@@ -46,43 +47,27 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     }
 
     @Override
-    public boolean setHelmet(ItemStack helmet) {
-        if (super.setHelmet(helmet)) {
-            sendSlot(this.getEntity(), this.getHelmet(), 0, InventoryID.ARMOR_INVENTORY);
-            return true;
-        } else {
-            return false;
-        }
+    public void setHelmet(ItemStack helmet) {
+        super.setHelmet(helmet);
+        sendSlot(this.getEntity(), this.getHelmet(), 0, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
-    public boolean setChestplate(ItemStack chestplate) {
-        if (super.setChestplate(chestplate)) {
-            sendSlot(this.getEntity(), this.getChestplate(), 1, InventoryID.ARMOR_INVENTORY);
-            return true;
-        } else {
-            return false;
-        }
+    public void setChestplate(ItemStack chestplate) {
+        super.setChestplate(chestplate);
+        sendSlot(this.getEntity(), this.getChestplate(), 1, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
-    public boolean setLeggings(ItemStack leggings) {
-        if (super.setLeggings(leggings)) {
-            sendSlot(this.getEntity(), this.getLeggings(), 2, InventoryID.ARMOR_INVENTORY);
-            return true;
-        } else {
-            return false;
-        }
+    public void setLeggings(ItemStack leggings) {
+        super.setLeggings(leggings);
+        sendSlot(this.getEntity(), this.getLeggings(), 2, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
-    public boolean setBoots(ItemStack boots) {
-        if (super.setBoots(boots)) {
-            sendSlot(this.getEntity(), this.getBoots(), 3, InventoryID.ARMOR_INVENTORY);
-            return true;
-        } else {
-            return false;
-        }
+    public void setBoots(ItemStack boots) {
+        super.setBoots(boots);
+        sendSlot(this.getEntity(), this.getBoots(), 3, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
@@ -91,7 +76,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     }
 
     @Override
-    public boolean setSelectedSlot(int slot) {
+    public void setSelectedSlot(int slot) {
         if (slot < 0 || slot >= 9) {
             throw new IllegalArgumentException("The selected slot cannot be a number outside of slots 0-8");
         }
@@ -109,9 +94,6 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
             this.getEntity().sendPacket(mobEquipmentPacket);
 
             sendSlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -121,21 +103,18 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     }
 
     @Override
-    public boolean setHeldItem(ItemStack mainHand) {
-        return this.setSlot(this.getSelectedSlot(), mainHand);
+    public void setHeldItem(ItemStack mainHand) {
+        this.setSlot(this.getSelectedSlot(), mainHand);
     }
 
     @Override
-    public boolean setOffhandItem(ItemStack offHand) {
-        if (super.setOffhandItem(offHand)) {
-            InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-            inventoryContentPacket.setInventoryId(InventoryID.OFF_HAND_INVENTORY);
-            inventoryContentPacket.setContents(new ItemStack[]{ this.getOffhandItem() });
-            this.getEntity().sendPacket(inventoryContentPacket);
-            return true;
-        } else {
-            return false;
-        }
+    public void setOffhandItem(ItemStack offHand) {
+        super.setOffhandItem(offHand);
+
+        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.setInventoryId(InventoryID.OFF_HAND_INVENTORY);
+        inventoryContentPacket.setContents(new ItemStack[]{ this.getOffhandItem() });
+        this.getEntity().sendPacket(inventoryContentPacket);
     }
 
     @Override
@@ -144,15 +123,16 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     }
 
     @Override
-    public boolean setCursor(ItemStack cursor) {
-        return this.setCursor(cursor, false);
+    public void setCursor(ItemStack cursor) {
+        this.setCursor(cursor, false);
     }
 
-    public boolean setCursor(ItemStack cursor, boolean keepNetworkId) {
-        // TODO: events
+    public void setCursor(ItemStack cursor, boolean keepNetworkId) {
         this.cursor = keepNetworkId ? ItemStack.ensureItemStackExists(cursor) : ItemStack.ensureItemStackExists(cursor).newNetworkStack();
-        // TODO: send cursor packet
-        return true;
+        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+        inventorySlotPacket.setInventoryId(InventoryID.PLAYER_UI);
+        inventorySlotPacket.setItem(this.cursor);
+        this.getEntity().sendPacket(inventorySlotPacket);
     }
 
     @Override

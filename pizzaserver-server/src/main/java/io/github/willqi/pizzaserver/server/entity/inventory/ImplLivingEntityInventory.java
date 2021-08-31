@@ -52,15 +52,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
     }
 
     @Override
-    public boolean setHelmet(ItemStack helmet) {
-        return this.setHelmet(null, helmet, false);
+    public void setHelmet(ItemStack helmet) {
+        this.setHelmet(null, helmet, false);
     }
 
-    public boolean setHelmet(Player player, ItemStack helmet, boolean keepNetworkId) {
-        // TODO: events
+    public void setHelmet(Player player, ItemStack helmet, boolean keepNetworkId) {
         this.helmet = keepNetworkId ? ItemStack.ensureItemStackExists(helmet) : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
-        return true;
     }
 
     @Override
@@ -78,15 +76,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
     }
 
     @Override
-    public boolean setChestplate(ItemStack chestplate) {
-        return this.setChestplate(null, chestplate, false);
+    public void setChestplate(ItemStack chestplate) {
+        this.setChestplate(null, chestplate, false);
     }
 
-    public boolean setChestplate(Player player, ItemStack chestplate, boolean keepNetworkId) {
-        // TODO: events
+    public void setChestplate(Player player, ItemStack chestplate, boolean keepNetworkId) {
         this.chestplate = keepNetworkId ? ItemStack.ensureItemStackExists(chestplate) : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
-        return true;
     }
 
     @Override
@@ -104,15 +100,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
     }
 
     @Override
-    public boolean setLeggings(ItemStack leggings) {
-        return this.setLeggings(null, leggings, false);
+    public void setLeggings(ItemStack leggings) {
+        this.setLeggings(null, leggings, false);
     }
 
-    public boolean setLeggings(Player player, ItemStack leggings, boolean keepNetworkId) {
-        // TODO: events
+    public void setLeggings(Player player, ItemStack leggings, boolean keepNetworkId) {
         this.leggings = keepNetworkId ? ItemStack.ensureItemStackExists(leggings) : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
-        this.broadcastMobArmourEquipmentPacket(player);
-        return true;
+        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
@@ -130,15 +124,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
     }
 
     @Override
-    public boolean setBoots(ItemStack boots) {
-        return this.setBoots(null, boots, false);
+    public void setBoots(ItemStack boots) {
+        this.setBoots(null, boots, false);
     }
 
-    public boolean setBoots(Player player, ItemStack boots, boolean keepNetworkId) {
-        // TODO: events
+    public void setBoots(Player player, ItemStack boots, boolean keepNetworkId) {
         this.boots = keepNetworkId ? ItemStack.ensureItemStackExists(boots) : ItemStack.ensureItemStackExists(boots).newNetworkStack();
-        this.broadcastMobArmourEquipmentPacket(player);
-        return true;
+        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     protected void broadcastMobArmourEquipmentPacket(Player activatingPlayer) {
@@ -170,15 +162,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
     }
 
     @Override
-    public boolean setHeldItem(ItemStack mainHand) {
-        return this.setHeldItem(null, mainHand, false);
+    public void setHeldItem(ItemStack mainHand) {
+        this.setHeldItem(null, mainHand, false);
     }
 
-    public boolean setHeldItem(Player player, ItemStack mainHand, boolean keepNetworkId) {
-        // TODO: events
+    public void setHeldItem(Player player, ItemStack mainHand, boolean keepNetworkId) {
         this.mainHand = keepNetworkId ? ItemStack.ensureItemStackExists(mainHand) : ItemStack.ensureItemStackExists(mainHand).newNetworkStack();
-        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 0, true);
-        return true;
+        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
@@ -196,15 +186,13 @@ public class ImplLivingEntityInventory extends BaseEntityInventory implements Li
     }
 
     @Override
-    public boolean setOffhandItem(ItemStack offHand) {
-        return this.setOffhandItem(null, offHand, false);
+    public void setOffhandItem(ItemStack offHand) {
+        this.setOffhandItem(null, offHand, false);
     }
 
-    public boolean setOffhandItem(Player player, ItemStack offHand, boolean keepNetworkId) {
-        // TODO: events
+    public void setOffhandItem(Player player, ItemStack offHand, boolean keepNetworkId) {
         this.offHand = keepNetworkId ? ItemStack.ensureItemStackExists(offHand) : ItemStack.ensureItemStackExists(offHand).newNetworkStack();
-        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 1, false);
-        return true;
+        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     protected void broadcastMobEquipmentPacket(Player activatingPlayer, ItemStack itemStack, int slot, boolean mainHand) {

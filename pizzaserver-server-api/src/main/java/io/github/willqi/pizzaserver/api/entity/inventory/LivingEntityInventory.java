@@ -16,36 +16,32 @@ public interface LivingEntityInventory extends EntityInventory {
     /**
      * Change the helmet of this entity
      * @param helmet the helmet to change it to
-     * @return if the slot was changed
      */
-    boolean setHelmet(ItemStack helmet);
+    void setHelmet(ItemStack helmet);
 
     ItemStack getChestplate();
 
     /**
      * Change the chestplate of this entity
      * @param chestplate the chestplate to change it to
-     * @return if the slot was changed
      */
-    boolean setChestplate(ItemStack chestplate);
+    void setChestplate(ItemStack chestplate);
 
     ItemStack getLeggings();
 
     /**
      * Change the leggings of this entity
      * @param leggings the leggings to change it to
-     * @return if the slot was changed
      */
-    boolean setLeggings(ItemStack leggings);
+    void setLeggings(ItemStack leggings);
 
     ItemStack getBoots();
 
     /**
      * Change the boots of this entity
      * @param boots the boots to change it to
-     * @return if the slot was changed
      */
-    boolean setBoots(ItemStack boots);
+    void setBoots(ItemStack boots);
 
     /**
      * Get the item the entity is holding
@@ -56,9 +52,8 @@ public interface LivingEntityInventory extends EntityInventory {
     /**
      * Change the item the entity is holding
      * @param mainHand item the entity should hold
-     * @return if the slot was changed
      */
-    boolean setHeldItem(ItemStack mainHand);
+    void setHeldItem(ItemStack mainHand);
 
     /**
      * Change the item that is in the offhand of the entity
@@ -69,8 +64,7 @@ public interface LivingEntityInventory extends EntityInventory {
     /**
      * Set the item that is in the offhand of the entity
      * @param offHand item in the offhand of the entity
-     * @return if the slot was changed
      */
-    boolean setOffhandItem(ItemStack offHand);
+    void setOffhandItem(ItemStack offHand);
 
 }

@@ -17,9 +17,8 @@ public interface PlayerInventory extends LivingEntityInventory {
      * Change the current selected slot for the player
      * This will not work for going from a empty slot to another empty slot
      * @param slot new selected slot
-     * @return if the slot was changed
      */
-    boolean setSelectedSlot(int slot);
+    void setSelectedSlot(int slot);
 
     /**
      * Get the item held by the cursor
@@ -30,8 +29,7 @@ public interface PlayerInventory extends LivingEntityInventory {
     /**
      * Change the item held by the player's cursor
      * @param item item held by the player's cursor
-     * @return if the slot was changed
      */
-    boolean setCursor(ItemStack item);
+    void setCursor(ItemStack item);
 
 }

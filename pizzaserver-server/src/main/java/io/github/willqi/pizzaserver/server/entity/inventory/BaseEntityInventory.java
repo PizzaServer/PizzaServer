@@ -69,22 +69,17 @@ public abstract class BaseEntityInventory implements EntityInventory {
     }
 
     @Override
-    public boolean setSlots(ItemStack[] slots) {
+    public void setSlots(ItemStack[] slots) {
         if (slots.length != this.size) {
             throw new IllegalArgumentException("The slots provided must be " + this.size + " in length.");
         }
 
-        if (!Arrays.equals(this.slots, slots)) {
-            for (int i = 0 ; i < this.size; i++) {
-                this.slots[i] = slots[i].newNetworkStack();
-            }
+        for (int i = 0 ; i < this.size; i++) {
+            this.slots[i] = slots[i].newNetworkStack();
+        }
 
-            for (Player viewer : this.getViewers()) {
-                this.sendSlots(viewer);
-            }
-            return true;
-        } else {
-            return false;
+        for (Player viewer : this.getViewers()) {
+            this.sendSlots(viewer);
         }
     }
 
@@ -109,8 +104,8 @@ public abstract class BaseEntityInventory implements EntityInventory {
     }
 
     @Override
-    public boolean setSlot(int slot, ItemStack itemStack) {
-        return this.setSlot(null, slot, itemStack, false);
+    public void setSlot(int slot, ItemStack itemStack) {
+        this.setSlot(null, slot, itemStack, false);
     }
 
     /**
@@ -121,17 +116,14 @@ public abstract class BaseEntityInventory implements EntityInventory {
      * @param keepNetworkId if the network id of the ItemStack should be kept or if a new one should be generated
      * @return if it successfuly set the slot
      */
-    public boolean setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
+    public void setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
         this.slots[slot] = keepNetworkId ? ItemStack.ensureItemStackExists(itemStack) : ItemStack.ensureItemStackExists(itemStack).newNetworkStack();
-
-        // TODO: events
 
         for (Player viewer : this.getViewers()) {
             if (!viewer.equals(player)) {
                 sendSlot(viewer, this.getSlot(slot), slot, this.getId());
             }
         }
-        return true;
     }
 
     @Override
