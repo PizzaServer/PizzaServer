@@ -196,6 +196,7 @@ public abstract class BaseInventory implements Inventory {
             InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
             this.getEntity().getServer().getEventManager().call(inventoryCloseEvent);
 
+            this.viewers.remove(player);
             return true;
         } else {
             return false;

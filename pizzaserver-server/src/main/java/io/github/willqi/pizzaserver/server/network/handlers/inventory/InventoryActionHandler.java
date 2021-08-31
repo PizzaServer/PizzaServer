@@ -72,43 +72,40 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      */
     protected static Optional<ItemStack> getItemStack(Player player, InventorySlot inventorySlot) {
         Optional<Inventory> optionalInventory = getInventory(player, inventorySlot);
-        if (optionalInventory.isPresent()) {
-            Inventory inventory = optionalInventory.get();
+        boolean validSlotId = inventorySlot.getInventorySlotType().isValidSlot(inventorySlot.getSlot());
+        if (!validSlotId || !optionalInventory.isPresent()) {
+            return Optional.empty();
+        }
 
-            if (isUniquePlayerSlot(inventory, inventorySlot)) {
-                // Call the correct getter as getSlot is not sufficient
-                ImplPlayerInventory playerInventory = (ImplPlayerInventory)inventory;
+        Inventory inventory = optionalInventory.get();
 
-                switch (inventorySlot.getInventorySlotType()) {
-                    case OFFHAND:
-                        return Optional.of(playerInventory.getOffhandItem());
-                    case ARMOR:
-                        switch (inventorySlot.getSlot()) {
-                            case 0:
-                                return Optional.of(playerInventory.getHelmet());
-                            case 1:
-                                return Optional.of(playerInventory.getChestplate());
-                            case 2:
-                                return Optional.of(playerInventory.getLeggings());
-                            case 3:
-                                return Optional.of(playerInventory.getBoots());
-                            default:
-                                throw new IllegalArgumentException("Invalid armor slot: " + inventorySlot.getSlot());
-                        }
-                    case CURSOR:
-                        return Optional.of(playerInventory.getCursor());
-                    default:
-                        throw new IllegalArgumentException("Missing unique player slot handler: " + inventorySlot.getInventorySlotType());
-                }
-            } else {
-                boolean slotExists = inventorySlot.getSlot() >= 0 && inventory.getSize() > inventorySlot.getSlot();
-                if (!slotExists) {
-                    return Optional.empty();
-                }
-                return Optional.of(inventory.getSlot(inventorySlot.getSlot()));
+        if (isUniquePlayerSlot(inventory, inventorySlot)) {
+            // Call the correct getter as getSlot is not sufficient
+            ImplPlayerInventory playerInventory = (ImplPlayerInventory)inventory;
+
+            switch (inventorySlot.getInventorySlotType()) {
+                case OFFHAND:
+                    return Optional.of(playerInventory.getOffhandItem());
+                case ARMOR:
+                    switch (inventorySlot.getSlot()) {
+                        case 0:
+                            return Optional.of(playerInventory.getHelmet());
+                        case 1:
+                            return Optional.of(playerInventory.getChestplate());
+                        case 2:
+                            return Optional.of(playerInventory.getLeggings());
+                        case 3:
+                            return Optional.of(playerInventory.getBoots());
+                        default:
+                            throw new IllegalArgumentException("Invalid armor slot: " + inventorySlot.getSlot());
+                    }
+                case CURSOR:
+                    return Optional.of(playerInventory.getCursor());
+                default:
+                    throw new IllegalArgumentException("Missing unique player slot handler: " + inventorySlot.getInventorySlotType());
             }
         } else {
-            return Optional.empty();
+            return Optional.of(inventory.getSlot(inventorySlot.getSlot()));
         }
     }
 

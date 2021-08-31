@@ -24,9 +24,9 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
             this.add(InventorySlotType.ARMOR);
             this.add(InventorySlotType.INVENTORY);
             this.add(InventorySlotType.HOTBAR);
+            this.add(InventorySlotType.PLAYER_INVENTORY);
             this.add(InventorySlotType.CURSOR);
             this.add(InventorySlotType.OFFHAND);
-            // TODO: is the player_inventory slot type used when a container is open?
 
             // TODO: uncomment when crafting inventory related slots are implemented
 //            this.add(InventorySlotType.CRAFTING_ITEM);
