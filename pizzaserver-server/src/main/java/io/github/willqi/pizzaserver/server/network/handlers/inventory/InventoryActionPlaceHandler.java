@@ -23,10 +23,12 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
             ItemStack sourceItemStack = source.get();
             ItemStack destinationItemStack = destination.get();
 
+            // the slots must be either of the same type or the destination has to be air
             boolean canMergeItemData = (sourceItemStack.getItemType().equals(destinationItemStack.getItemType()) &&
                                             sourceItemStack.getCompoundTag().equals(destinationItemStack.getCompoundTag()) &&
                                             sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.getItemType().getItemId().equals(BlockTypeID.AIR);
 
+            // final destination slot cannot exceed max count
             boolean doesNotExceedMaxCount = action.getCount() > 0 &&
                                                 destinationItemStack.getCount() + action.getCount() <= sourceItemStack.getItemType().getMaxStackSize();
 
@@ -40,7 +42,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
     }
 
     @Override
-    public boolean handle(ItemStackResponsePacket.Response response, Player player, InventoryActionPlace action) {
+    public boolean runAction(ItemStackResponsePacket.Response response, Player player, InventoryActionPlace action) {
         SlotLocation source = new SlotLocation(response, player, action.getSource());
         SlotLocation destination = new SlotLocation(response, player, action.getDestination());
 

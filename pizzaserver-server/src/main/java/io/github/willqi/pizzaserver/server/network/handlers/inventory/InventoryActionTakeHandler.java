@@ -18,12 +18,15 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<Inventory
     public boolean isValid(Player player, InventoryActionTake action) {
         Optional<ItemStack> sourceStack = getItemStack(player, action.getSource());
         Optional<ItemStack> destinationStack = getItemStack(player, action.getDestination());
+
+        // Validate the slots exist and that the player is requesting a valid slot/amount
         boolean valid = sourceStack.isPresent() &&
                 destinationStack.isPresent() &&
                 (action.getDestination().getInventorySlotType() == InventorySlotType.CURSOR) &&
                 action.getCount() > 0;
         if (valid) {
-            // Verify that the destination is either air or can add the source to its stack.
+            // Verify that the source can be added to the destination.
+            // (either the destination is air or the source can be merged with the destination)
             boolean underStackLimit = destinationStack.get().getCount() + sourceStack.get().getCount() < destinationStack.get().getItemType().getMaxStackSize();
             boolean canAddSourceToStack = destinationStack.get().hasSameDataAs(sourceStack.get()) && underStackLimit;
 
@@ -34,7 +37,7 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<Inventory
     }
 
     @Override
-    public boolean handle(ItemStackResponsePacket.Response response, Player player, InventoryActionTake action) {
+    public boolean runAction(ItemStackResponsePacket.Response response, Player player, InventoryActionTake action) {
         SlotLocation source = new SlotLocation(response, player, action.getSource());
         SlotLocation destination = new SlotLocation(response, player, action.getDestination());
 

@@ -51,16 +51,13 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
                 switch (action.getType()) {
                     case TAKE:
-                        continueActions = InventoryActionTakeHandler.INSTANCE.isValid(this.player, (InventoryActionTake)action) &&
-                                InventoryActionTakeHandler.INSTANCE.handle(response, this.player, (InventoryActionTake)action);
+                        continueActions = InventoryActionTakeHandler.INSTANCE.tryAction(response, this.player, (InventoryActionTake)action);
                         break;
                     case PLACE:
-                        continueActions = InventoryActionPlaceHandler.INSTANCE.isValid(this.player, (InventoryActionPlace)action) &&
-                                InventoryActionPlaceHandler.INSTANCE.handle(response, this.player, (InventoryActionPlace)action);
+                        continueActions = InventoryActionPlaceHandler.INSTANCE.tryAction(response, this.player, (InventoryActionPlace)action);
                         break;
                     case SWAP:
-                        continueActions = InventoryActionSwapHandler.INSTANCE.isValid(this.player, (InventoryActionSwap)action) &&
-                                InventoryActionSwapHandler.INSTANCE.handle(response, this.player, (InventoryActionSwap)action);
+                        continueActions = InventoryActionSwapHandler.INSTANCE.tryAction(response, this.player, (InventoryActionSwap)action);
                         break;
                     case DROP:
                         break;

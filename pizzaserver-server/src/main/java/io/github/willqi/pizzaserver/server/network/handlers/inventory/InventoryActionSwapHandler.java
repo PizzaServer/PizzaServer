@@ -17,6 +17,7 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<Inventory
         Optional<ItemStack> sourceItemStack = getItemStack(player, action.getSource());
         Optional<ItemStack> destinationItemStack = getItemStack(player, action.getDestination());
         if (sourceItemStack.isPresent() && destinationItemStack.isPresent()) {
+            // Ensure that the source and destination items are allowed in their new slots
             return canPutItemTypeInSlot(sourceItemStack.get().getItemType(), action.getDestination().getInventorySlotType()) &&
                     canPutItemTypeInSlot(destinationItemStack.get().getItemType(), action.getSource().getInventorySlotType());
         } else {
@@ -25,7 +26,7 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<Inventory
     }
 
     @Override
-    public boolean handle(ItemStackResponsePacket.Response response, Player player, InventoryActionSwap action) {
+    public boolean runAction(ItemStackResponsePacket.Response response, Player player, InventoryActionSwap action) {
         SlotLocation source = new SlotLocation(response, player, action.getSource());
         SlotLocation destination = new SlotLocation(response, player, action.getDestination());
 

@@ -30,11 +30,23 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     /**
      * Returns if the action went through
      * The action is validated before this is called
+     * @param response response container
      * @param player player who sent the request
      * @param action action being validated
-     * @return if the action went through
+     * @return if the action went through successfully
      */
-    public abstract boolean handle(ItemStackResponsePacket.Response response, Player player, T action);
+    public abstract boolean runAction(ItemStackResponsePacket.Response response, Player player, T action);
+
+    /**
+     * Validates the action before running it
+     * @param response response container
+     * @param player player who sent the request
+     * @param action action being validated
+     * @return if the action went through successfully
+     */
+    public boolean tryAction(ItemStackResponsePacket.Response response, Player player, T action) {
+        return this.isValid(player, action) && this.runAction(response, player, action);
+    }
 
     /**
      * Returns the inventory of the slot provided or none if it doesn't exist
@@ -64,7 +76,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             EntityInventory inventory = optionalInventory.get();
 
             if (isUniquePlayerSlot(inventory, inventorySlot)) {
-                // Handle the slot differently
+                // Call the correct getter as getSlot is not sufficient
                 ImplPlayerInventory playerInventory = (ImplPlayerInventory)inventory;
 
                 switch (inventorySlot.getInventorySlotType()) {
@@ -89,6 +101,10 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
                         throw new IllegalArgumentException("Missing unique player slot handler: " + inventorySlot.getInventorySlotType());
                 }
             } else {
+                boolean slotExists = inventorySlot.getSlot() >= 0 && inventory.getSize() > inventorySlot.getSlot();
+                if (!slotExists) {
+                    return Optional.empty();
+                }
                 return Optional.of(inventory.getSlot(inventorySlot.getSlot()));
             }
         } else {
@@ -99,48 +115,13 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     /**
      * Returns if a stack has a matching network id at a slot
      * @param player the player who requested the check
-     * @param slot the slot requested
+     * @param inventorySlot the slot requested
      * @return if the stacks match
      */
-    protected static boolean stackExists(Player player, InventorySlot slot) {
-        Optional<EntityInventory> openInventory = player.getOpenInventory();
-        if (player.getInventory().getSlotTypes().contains(slot.getInventorySlotType())) {
-            // only consider the main inventory
-            return playerInventoryStackExists(player, slot);
-        } else if (openInventory.isPresent() && openInventory.get().getSlotTypes().contains(slot.getInventorySlotType())) {
-            // only consider the open inventory
-            // Check that the slot exists and matches
-            return slot.getSlot() >= 0 &&
-                    slot.getSlot() < openInventory.get().getSize() &&
-                    openInventory.get().getSlot(slot.getSlot()).getNetworkId() == slot.getNetworkStackId();
-        }
-        return false;
-    }
-
-    private static boolean playerInventoryStackExists(Player player, InventorySlot slot) {
-        switch (slot.getInventorySlotType()) {
-            case ARMOR:
-                switch (slot.getSlot()) {
-                    case 0:
-                        return player.getInventory().getHelmet().getNetworkId() == slot.getNetworkStackId();
-                    case 1:
-                        return player.getInventory().getChestplate().getNetworkId() == slot.getNetworkStackId();
-                    case 2:
-                        return player.getInventory().getLeggings().getNetworkId() == slot.getNetworkStackId();
-                    case 3:
-                        return player.getInventory().getBoots().getNetworkId() == slot.getNetworkStackId();
-                    default:
-                        return false;   // Armor slots are only 0-3
-                }
-            case OFFHAND:
-                return slot.getSlot() == 1 && player.getInventory().getOffhandItem().getNetworkId() == slot.getNetworkStackId();
-            case CURSOR:
-                return slot.getSlot() == 0 && player.getInventory().getCursor().getNetworkId() == slot.getNetworkStackId();
-            default:
-                return slot.getSlot() >= 0 &&
-                        slot.getSlot() < player.getInventory().getSize() &&
-                        player.getInventory().getSlot(slot.getSlot()).getNetworkId() == slot.getNetworkStackId();
-        }
+    protected static boolean stackExists(Player player, InventorySlot inventorySlot) {
+        Optional<ItemStack> itemStack = getItemStack(player, inventorySlot);
+        return itemStack.isPresent() &&
+                itemStack.get().getNetworkId() == inventorySlot.getNetworkStackId();
     }
 
     /**
@@ -184,14 +165,16 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
 
             Optional<EntityInventory> inventory = InventoryActionHandler.getInventory(player, inventorySlot);
             if (!inventory.isPresent()) {
-                throw new IllegalArgumentException("Slot does not exist");
+                throw new IllegalArgumentException("Inventory does not exist");
             }
             this.inventory = inventory.get();
             this.inventorySlot = inventorySlot;
 
-            // Slot exists as we checked it before
-            this.itemStack = getItemStack(player, inventorySlot).get();
-
+            Optional<ItemStack> itemStack = getItemStack(player, inventorySlot);
+            if (!itemStack.isPresent()) {
+                throw new IllegalArgumentException("Slot does not exist");
+            }
+            this.itemStack = itemStack.get();
         }
 
         public EntityInventory getInventory() {
@@ -207,7 +190,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
 
             // Change the slot
             if (isUniquePlayerSlot(this.inventory, this.inventorySlot)) {
-                // Handle the slot differently
+                // Call the correct setter as setSlot is not sufficient
                 ImplPlayerInventory playerInventory = (ImplPlayerInventory)this.getInventory();
 
                 switch (this.inventorySlot.getInventorySlotType()) {
@@ -242,6 +225,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
                 ((BaseEntityInventory)this.getInventory()).setSlot(this.player, this.inventorySlot.getSlot(), this.itemStack, true);
             }
 
+            // Record the change to be sent in the ItemStackResponsePacket
             this.response.addSlotChange(this.inventorySlot.getInventorySlotType(), new ItemStackResponsePacket.Response.SlotInfo.Builder()
                     .setSlot(this.inventorySlot.getSlot())
                     .setHotbarSlot(this.inventorySlot.getSlot())
