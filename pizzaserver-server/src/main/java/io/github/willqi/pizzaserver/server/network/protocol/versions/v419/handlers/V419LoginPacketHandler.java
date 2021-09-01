@@ -61,27 +61,27 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
      * @param data the string
      * @return the JSON data object
      */
-    private static JsonObject extractJWTData(String data) {
+    protected static JsonObject extractJWTData(String data) {
         String jwtData = data.split("\\.")[1];
         String decodedData = decodeB64(jwtData);
         return GSON.fromJson(decodedData, JsonObject.class);
     }
 
-    private static String decodeB64(String encoded) {
+    protected static String decodeB64(String encoded) {
         return new String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8);
     }
 
-    private static PublicKey getKey(String base64) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    protected static PublicKey getKey(String base64) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(base64)));
     }
 
     /**
      * It is valid if each part of the chain signs the next chain.
-     * Additionally, at somepoint it must be signed by Mojang's public key.
+     * Additionally, at some point it must be signed by Mojang's public key.
      * @param chainParts The "chain" json string array property from the parsed chain data string.
      * @return if the chain is signed properly.
      */
-    private static boolean isAuthenticated(JsonArray chainParts) {
+    protected static boolean isAuthenticated(JsonArray chainParts) {
         DefaultJWSVerifierFactory verifier = new DefaultJWSVerifierFactory();
         boolean mojangSigned = false;
         PublicKey prevKey = null;
@@ -90,20 +90,39 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
             for (JsonElement element : chainParts) {
                 String chain = element.getAsString();
 
-                // Was this signed by Mojang or by the previous key?
+                // All chain data MUST have a certificate
                 JWSObject chainJWS = JWSObject.parse(chain);
+                if (chainJWS.getHeader().getX509CertURL() == null) {
+                    return false;
+                }
+                PublicKey correctKey = getKey(chainJWS.getHeader().getX509CertURL().toString());
+
+                // All data must be validated and signed properly.
+                // The first element is self-signed by the client.
+                if (prevKey == null) {
+                    prevKey = correctKey;
+                }
+
+                // identityPublicKey must match x5u key
+                if (!prevKey.equals(correctKey)) {
+                    return false;
+                }
+
+                // Ensure the key can verify the payload of the chain
+                if (!chainJWS.verify(verifier.createJWSVerifier(chainJWS.getHeader(), prevKey))) {
+                    return false;
+                }
+
+                // All chains must be validated by Mojang at some point to ensure it is an authenticated account
                 if (chainJWS.verify(verifier.createJWSVerifier(chainJWS.getHeader(), MOJANG_KEY))) {
                     mojangSigned = true;
                 }
-                // This should also be signed by the previous key.
-                if (prevKey != null && !chainJWS.verify(verifier.createJWSVerifier(chainJWS.getHeader(), prevKey))) {
-                    return false;
-                }
+
                 Map<String, Object> payload = chainJWS.getPayload().toJSONObject();
                 if (!payload.containsKey("identityPublicKey")) {
                     return false;   // We need to ensure that each part is signed by the next.
                 }
-                prevKey = getKey((String)payload.get("identityPublicKey"));
+                prevKey = getKey((String)payload.get("identityPublicKey")); // used to validate x5u key/chain contents
             }
         } catch (ParseException | JOSEException | NoSuchAlgorithmException | InvalidKeySpecException exception) {
             return false;
@@ -121,6 +140,10 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
     private static void parseChainData(LoginPacket packet, String chainDataString) {
         JsonObject encodedChainDataObj = GSON.fromJson(chainDataString, JsonObject.class);
         JsonArray encodedChainArray = encodedChainDataObj.get("chain").getAsJsonArray();
+
+        if (encodedChainArray.size() != 3) {
+            return;
+        }
 
         JsonObject chainData = extractJWTData(encodedChainArray.get(2).getAsString());
         String xuid = chainData.get("extraData")
@@ -219,9 +242,6 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
         packet.setDevice(playerDevice);
         packet.setLanguageCode(languageCode);
         packet.setSkin(skin);
-
-
-
     }
 
 }
