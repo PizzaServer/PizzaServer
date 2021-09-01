@@ -252,6 +252,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      */
     public void onDisconnect() {
         if (this.hasSpawned()) {
+            this.closeOpenInventory();
+
             Location location = this.getLocation();
 
             if (this.canAutoSave()) {
