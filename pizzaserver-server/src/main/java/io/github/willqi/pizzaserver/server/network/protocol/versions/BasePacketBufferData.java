@@ -90,7 +90,7 @@ public abstract class BasePacketBufferData {
     //
 
     public BasePacketBufferData registerInventoryActionType(InventoryActionType type, int id) {
-        this.supportedInventoryActionTypes.put(type, id);
+        this.supportedInventoryActionTypes.forcePut(type, id);
         return this;
     }
 

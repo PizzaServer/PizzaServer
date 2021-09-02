@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 
@@ -70,69 +71,20 @@ public class ItemStackResponsePacket extends BaseBedrockPacket {
         public static class SlotInfo {
 
             private int slot;
-            private int hotbarSlot;
-
-            private int itemStackNetworkId;
-            private int itemStackCount;
+            private ItemStack itemStack;
 
 
-            private SlotInfo(int slot, int hotbarSlot, int itemStackNetworkId, int itemStackCount) {
+            public SlotInfo(int slot, ItemStack itemStack) {
                 this.slot = slot;
-                this.hotbarSlot = hotbarSlot;
-                this.itemStackNetworkId = itemStackNetworkId;
-                this.itemStackCount = itemStackCount;
+                this.itemStack = itemStack;
             }
 
             public int getSlot() {
                 return this.slot;
             }
 
-            public int getHotbarSlot() {
-                return this.hotbarSlot;
-            }
-
-            public int getItemStackNetworkId() {
-                return this.itemStackNetworkId;
-            }
-
-            public int getItemStackCount() {
-                return this.itemStackCount;
-            }
-
-
-            public static class Builder {
-
-                private int slot;
-                private int hotbarSlot;
-
-                private int itemStackNetworkId;
-                private int itemStackCount;
-
-
-                public Builder setSlot(int slot) {
-                    this.slot = slot;
-                    return this;
-                }
-
-                public Builder setHotbarSlot(int hotbarSlot) {
-                    this.hotbarSlot = hotbarSlot;
-                    return this;
-                }
-
-                public Builder setItemStackNetworkId(int itemStackNetworkId) {
-                    this.itemStackNetworkId = itemStackNetworkId;
-                    return this;
-                }
-
-                public Builder setItemStackCount(int itemStackCount) {
-                    this.itemStackCount = itemStackCount;
-                    return this;
-                }
-
-                public SlotInfo build() {
-                    return new SlotInfo(this.slot, this.hotbarSlot, this.itemStackNetworkId, this.itemStackCount);
-                }
-
+            public ItemStack getItemStack() {
+                return this.itemStack;
             }
 
         }

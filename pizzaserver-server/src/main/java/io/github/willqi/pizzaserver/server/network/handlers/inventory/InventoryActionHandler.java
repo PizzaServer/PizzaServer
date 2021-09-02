@@ -223,12 +223,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             }
 
             // Record the change to be sent in the ItemStackResponsePacket
-            this.response.addSlotChange(this.inventorySlot.getInventorySlotType(), new ItemStackResponsePacket.Response.SlotInfo.Builder()
-                    .setSlot(this.inventorySlot.getSlot())
-                    .setHotbarSlot(this.inventorySlot.getSlot())
-                    .setItemStackCount(this.itemStack.getCount())
-                    .setItemStackNetworkId(this.itemStack.getNetworkId())
-                    .build());
+            this.response.addSlotChange(this.inventorySlot.getInventorySlotType(), new ItemStackResponsePacket.Response.SlotInfo(this.inventorySlot.getSlot(), this.itemStack));
         }
 
     }

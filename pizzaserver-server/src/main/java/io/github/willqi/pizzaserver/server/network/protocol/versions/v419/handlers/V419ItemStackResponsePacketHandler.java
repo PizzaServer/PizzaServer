@@ -21,14 +21,18 @@ public class V419ItemStackResponsePacketHandler extends BaseProtocolPacketHandle
 
                     buffer.writeUnsignedVarInt(slots.size());
                     for (ItemStackResponsePacket.Response.SlotInfo slot : slots) {  // write all slots that changed
-                        buffer.writeByte(slot.getSlot());
-                        buffer.writeByte(slot.getHotbarSlot());
-                        buffer.writeByte(slot.getItemStackCount());
-                        buffer.writeVarInt(slot.getItemStackNetworkId());
+                        this.writeSlot(slot, buffer);
                     }
                 });
             }
         }
+    }
+
+    protected void writeSlot(ItemStackResponsePacket.Response.SlotInfo slot, BasePacketBuffer buffer) {
+        buffer.writeByte(slot.getSlot());
+        buffer.writeByte(slot.getSlot());
+        buffer.writeByte(slot.getItemStack().getCount());
+        buffer.writeVarInt(slot.getItemStack().getNetworkId());
     }
 
 }

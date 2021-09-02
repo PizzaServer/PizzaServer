@@ -1,5 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v422;
 
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionCraftRecipeOptional;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
@@ -26,7 +29,19 @@ public class V422PacketBuffer extends V419PacketBuffer {
     }
 
     @Override
-    protected BasePacketBufferData getData() {
+    public BasePacketBufferData getData() {
         return V422PacketBufferData.INSTANCE;
     }
+
+    @Override
+    public InventoryAction readInventoryAction(InventoryActionType actionType) {
+        if (actionType == InventoryActionType.CRAFT_RECIPE_OPTIONAL) {
+            int networkId = this.readUnsignedVarInt();
+            int customNameIndex = this.readIntLE();
+            return new InventoryActionCraftRecipeOptional(networkId, customNameIndex);
+        } else {
+            return super.readInventoryAction(actionType);
+        }
+    }
+
 }

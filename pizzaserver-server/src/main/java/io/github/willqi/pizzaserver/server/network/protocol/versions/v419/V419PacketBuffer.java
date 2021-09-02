@@ -56,7 +56,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
         return new V419PacketBuffer(this.getVersion(), buffer);
     }
 
-    protected BasePacketBufferData getData() {
+    public BasePacketBufferData getData() {
         return V419PacketBufferData.INSTANCE;
     }
 
@@ -249,6 +249,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
         }
         BaseItemType itemType = ItemRegistry.getItemType(this.getVersion().getItemName(runtimeId));
 
+        // get count + damage
         int itemData = this.readVarInt();
         int count = itemData & 0xff;
         int damage = (itemData >> 8);
@@ -265,8 +266,8 @@ public class V419PacketBuffer extends BasePacketBuffer {
         }
         itemStack.setCompoundTag(tag);
 
+        int blocksCanPlaceCount = this.readVarInt();
         if (itemType instanceof BlockItemType) {
-            int blocksCanPlaceCount = this.readVarInt();
             Set<BaseBlockType> blocksCanPlaceOn = new HashSet<>(blocksCanPlaceCount);
             for (int i = 0; i < blocksCanPlaceCount; i++) {
                 String blockId = this.readString();
@@ -291,11 +292,9 @@ public class V419PacketBuffer extends BasePacketBuffer {
     }
 
     @Override
-    public InventoryAction readInventoryAction() {
-        int typeId = this.readByte();
-        InventoryActionType type = this.getData().getInventoryActionType(typeId);
+    public InventoryAction readInventoryAction(InventoryActionType actionType) {
         InventoryAction action;
-        switch (type) {
+        switch (actionType) {
             case TAKE:
                 int takenAmount = this.readByte();
                 action = new InventoryActionTake(this.readInventorySlot(), this.readInventorySlot(), takenAmount);
@@ -351,7 +350,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
                 action = new InventoryActionCraftResultsDeprecated(createdItems, timesCreated);
                 break;
             default:
-                throw new IllegalStateException("Encountered unknown inventory action id: " + typeId);
+                throw new IllegalStateException("Encountered unknown inventory action id: " + actionType);
         }
         return action;
     }

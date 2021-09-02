@@ -12,9 +12,13 @@ public class V419InventoryContentPacketHandler extends BaseProtocolPacketHandler
         buffer.writeUnsignedVarInt(packet.getInventoryId());
         buffer.writeUnsignedVarInt(packet.getContents().length);
         for (ItemStack itemStack : packet.getContents()) {
-            buffer.writeVarInt(itemStack.getNetworkId());
-            buffer.writeItem(itemStack);
+            this.writeItemStack(itemStack, buffer);
         }
+    }
+
+    protected void writeItemStack(ItemStack itemStack, BasePacketBuffer buffer) {
+        buffer.writeVarInt(itemStack.getNetworkId());
+        buffer.writeItem(itemStack);
     }
 
 }

@@ -30,11 +30,16 @@ public class ItemStackRequestPacket extends BaseBedrockPacket {
 
         private final int id;
         private final List<InventoryAction> actions;
-
+        private final List<String> customNames;
 
         public Request(int id, List<InventoryAction> actions) {
+            this(id, actions, Collections.emptyList());
+        }
+
+        public Request(int id, List<InventoryAction> actions, List<String> customNames) {
             this.id = id;
             this.actions = actions;
+            this.customNames = customNames;
         }
 
         public int getId() {
@@ -45,6 +50,9 @@ public class ItemStackRequestPacket extends BaseBedrockPacket {
             return this.actions;
         }
 
+        public List<String> getCustomNames() {
+            return this.customNames;
+        }
 
     }
 

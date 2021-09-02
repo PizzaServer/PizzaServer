@@ -1,29 +1,17 @@
-package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
+package io.github.willqi.pizzaserver.server.network.protocol.versions.v422.handlers;
 
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackRequestPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
+import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.V419ItemStackRequestPacketHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class V419ItemStackRequestPacketHandler extends BaseProtocolPacketHandler<ItemStackRequestPacket> {
+public class V422ItemStackRequestPacketHandler extends V419ItemStackRequestPacketHandler {
 
     @Override
-    public ItemStackRequestPacket decode(BasePacketBuffer buffer) {
-        ItemStackRequestPacket packet = new ItemStackRequestPacket();
-        int totalRequests = buffer.readUnsignedVarInt();
-        List<ItemStackRequestPacket.Request> requests = new ArrayList<>(totalRequests);
-        for (int i = 0; i < totalRequests; i++) {
-            requests.add(this.readRequest(buffer));
-        }
-
-        packet.setRequests(requests);
-        return packet;
-    }
-
     protected ItemStackRequestPacket.Request readRequest(BasePacketBuffer buffer) {
         int requestId = buffer.readVarInt();
 
@@ -34,7 +22,14 @@ public class V419ItemStackRequestPacketHandler extends BaseProtocolPacketHandler
             InventoryActionType type = buffer.getData().getInventoryActionType(typeId);
             actions.add(buffer.readInventoryAction(type));
         }
-        return new ItemStackRequestPacket.Request(requestId, actions);
+
+        int customNamesLength = buffer.readUnsignedVarInt();
+        List<String> customNames = new ArrayList<>();
+        for (int i = 0; i < customNamesLength; i++) {
+            customNames.add(buffer.readString());
+        }
+
+        return new ItemStackRequestPacket.Request(requestId, actions, customNames);
     }
 
 }

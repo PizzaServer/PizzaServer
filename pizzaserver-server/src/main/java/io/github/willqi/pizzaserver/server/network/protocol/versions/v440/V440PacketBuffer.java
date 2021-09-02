@@ -26,7 +26,7 @@ public class V440PacketBuffer extends V431PacketBuffer {
     }
 
     @Override
-    protected BasePacketBufferData getData() {
+    public BasePacketBufferData getData() {
         return V440PacketBufferData.INSTANCE;
     }
 

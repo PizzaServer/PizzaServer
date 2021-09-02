@@ -1,7 +1,10 @@
 package io.github.willqi.pizzaserver.api.item.types;
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.player.Player;
 
 import java.util.Collections;
 import java.util.Set;
@@ -111,6 +114,14 @@ public abstract class BaseItemType {
     public Set<BaseBlockType> getOnlyBlocksCanBreak() {
         return Collections.emptySet();
     }
+
+    /**
+     * Called when the player interacts with a block using this item
+     * @param player the player
+     * @param itemStack the item stack
+     * @param block the block interacted with
+     */
+    public void onInteract(Player player, ItemStack itemStack, Block block) {}
 
     /**
      * Create an {@link ItemStack} of this item type

@@ -142,7 +142,11 @@ public class ItemStack implements Cloneable {
      */
     public ItemStack newNetworkStack() {
         int networkId = this.getItemType().getItemId().equals(BlockTypeID.AIR) ? 0 : ItemStack.ID++;
-        return new ItemStack(this.getItemType(), this.getCount(), this.getDamage(), networkId);
+        ItemStack newStack = new ItemStack(this.getItemType(), this.getCount(), this.getDamage(), networkId);
+        newStack.setCompoundTag(this.getCompoundTag());
+        newStack.setBlocksCanBreak(this.getBlocksCanBreak());
+        newStack.setBlocksCanPlaceOn(this.getBlocksCanPlaceOn());
+        return newStack;
     }
 
     public List<String> getLore() {

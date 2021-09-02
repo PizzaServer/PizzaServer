@@ -15,6 +15,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -72,7 +73,7 @@ public class BasePacketBuffer extends ByteBuf {
         this.version = version;
     }
 
-    protected BasePacketBufferData getData() {
+    public BasePacketBufferData getData() {
         throw new IllegalStateException("Called getData() before version was assigned");
     }
 
@@ -705,6 +706,15 @@ public class BasePacketBuffer extends ByteBuf {
         }
     }
 
+    public NBTCompound readLENBTCompound() {
+        NBTInputStream nbtOutputStream = new NBTInputStream(new ByteBufInputStream(this));
+        try {
+            return nbtOutputStream.readCompound();
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to read NBTCompound", exception);
+        }
+    }
+
     public Skin readSkin() {
         throw new IllegalStateException("Called readSkin() before version was assigned.");
     }
@@ -713,7 +723,7 @@ public class BasePacketBuffer extends ByteBuf {
         throw new IllegalStateException("Called readItem() before version was assigned.");
     }
 
-    public InventoryAction readInventoryAction() {
+    public InventoryAction readInventoryAction(InventoryActionType actionType) {
         throw new IllegalStateException("Called readInventoryAction() before version was assigned.");
     }
 
@@ -901,6 +911,13 @@ public class BasePacketBuffer extends ByteBuf {
         return this.writeByteArray(string.getBytes(StandardCharsets.UTF_8));
     }
 
+    public BasePacketBuffer writeStringLE(String string) {
+        byte[] strBytes = string.getBytes(StandardCharsets.UTF_8);
+        this.writeShortLE(strBytes.length);
+        this.writeBytes(strBytes);
+        return this;
+    }
+
     public BasePacketBuffer writeUUID(UUID uuid) {
         this.buffer.writeLongLE(uuid.getMostSignificantBits());
         this.buffer.writeLongLE(uuid.getLeastSignificantBits());
@@ -930,6 +947,17 @@ public class BasePacketBuffer extends ByteBuf {
     public BasePacketBuffer writeNBTCompound(NBTCompound compound) {
         ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
         try (NBTOutputStream nbtOutputStream = new NBTOutputStream(new VarIntDataOutputStream(resultStream))) {
+            nbtOutputStream.writeCompound(compound);
+            this.writeBytes(resultStream.toByteArray());
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to write NBTCompound", exception);
+        }
+        return this;
+    }
+
+    public BasePacketBuffer writeLENBTCompound(NBTCompound compound) {
+        ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+        try (NBTOutputStream nbtOutputStream = new NBTOutputStream(resultStream)) {
             nbtOutputStream.writeCompound(compound);
             this.writeBytes(resultStream.toByteArray());
         } catch (IOException exception) {

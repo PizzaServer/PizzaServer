@@ -4,6 +4,10 @@ import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.player.skin.SkinAnimation;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPiece;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPieceTint;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionCraftRecipeOptional;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionMineBlock;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
@@ -34,8 +38,20 @@ public class V428PacketBuffer extends V422PacketBuffer {
     }
 
     @Override
-    protected BasePacketBufferData getData() {
+    public BasePacketBufferData getData() {
         return V428PacketBufferData.INSTANCE;
+    }
+
+    @Override
+    public InventoryAction readInventoryAction(InventoryActionType actionType) {
+        if (actionType == InventoryActionType.MINE_BLOCK) {
+            int unknown = this.readVarInt();
+            int predictedDurability = this.readVarInt();
+            int networkStackId = this.readVarInt();
+            return new InventoryActionMineBlock(unknown, predictedDurability, networkStackId);
+        } else {
+            return super.readInventoryAction(actionType);
+        }
     }
 
     @Override

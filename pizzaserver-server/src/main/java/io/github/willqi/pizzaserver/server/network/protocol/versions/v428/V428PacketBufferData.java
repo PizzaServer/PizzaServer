@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v428;
 
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.V422PacketBufferData;
 
@@ -71,6 +72,14 @@ public class V428PacketBufferData extends V422PacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.HITBOX, 118)
             .registerEntityProperty(EntityMetaPropertyName.IS_BUOYANT, 119)
             .registerEntityProperty(EntityMetaPropertyName.BUOYANCY_DATA, 121);
+
+        this.registerInventoryActionType(InventoryActionType.MINE_BLOCK, 9)
+            .registerInventoryActionType(InventoryActionType.CRAFT_RECIPE, 10)
+            .registerInventoryActionType(InventoryActionType.AUTO_CRAFT_RECIPE, 11)
+            .registerInventoryActionType(InventoryActionType.CRAFT_CREATIVE, 12)
+            .registerInventoryActionType(InventoryActionType.CRAFT_RECIPE_OPTIONAL, 13)
+            .registerInventoryActionType(InventoryActionType.CRAFT_NOT_IMPLEMENTED, 14)
+            .registerInventoryActionType(InventoryActionType.CRAFT_RESULTS_DEPRECATED, 15);
     }
 
 }

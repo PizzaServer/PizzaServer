@@ -87,6 +87,8 @@ public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
                 elements[i] = ((NBTCompound)element).clone();
             } else if (element instanceof NBTList) {
                 elements[i] = ((NBTList<T>)element).clone();
+            } else {
+                elements[i] = element;
             }
         }
 
