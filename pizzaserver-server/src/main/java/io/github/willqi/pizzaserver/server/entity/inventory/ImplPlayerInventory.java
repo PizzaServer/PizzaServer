@@ -126,14 +126,15 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public void setCursor(ItemStack cursor) {
         this.setCursor(cursor, false);
-    }
 
-    public void setCursor(ItemStack cursor, boolean keepNetworkId) {
-        this.cursor = keepNetworkId ? ItemStack.ensureItemStackExists(cursor) : ItemStack.ensureItemStackExists(cursor).newNetworkStack();
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
         inventorySlotPacket.setInventoryId(InventoryID.PLAYER_UI);
         inventorySlotPacket.setItem(this.cursor);
         this.getEntity().sendPacket(inventorySlotPacket);
+    }
+
+    public void setCursor(ItemStack cursor, boolean keepNetworkId) {
+        this.cursor = keepNetworkId ? ItemStack.ensureItemStackExists(cursor) : ItemStack.ensureItemStackExists(cursor).newNetworkStack();
     }
 
     @Override
