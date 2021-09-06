@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions;
+package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions;
 
 /**
  * Used in the ItemStackRequest and ItemStackResponse packets for server authoritative inventories

@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 
@@ -36,6 +35,7 @@ public abstract class BaseBedrockPacketHandler {
     // inventory actions
     public void onPacket(ContainerClosePacket packet) {}
     public void onPacket(ItemStackRequestPacket packet) {}
+    public void onPacket(InventoryTransactionPacket packet) {}
 
     public void onPacket(ViolationPacket packet) {}
 

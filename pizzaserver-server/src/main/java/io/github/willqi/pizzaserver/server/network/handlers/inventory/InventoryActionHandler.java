@@ -9,8 +9,8 @@ import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryAction;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackResponsePacket;
 
 import java.util.Optional;
@@ -54,7 +54,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      * @param inventorySlot the slot requested
      * @return the inventory or none if it doesn't exist
      */
-    protected static Optional<Inventory> getInventory(Player player, InventorySlot inventorySlot) {
+    protected static Optional<Inventory> getInventory(Player player, AuthoritativeInventorySlot inventorySlot) {
         Optional<Inventory> openInventory = player.getOpenInventory();
         if (player.getInventory().getSlotTypes().contains(inventorySlot.getInventorySlotType())) {
             return Optional.of(player.getInventory());
@@ -70,7 +70,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      * @param inventorySlot the slot requested
      * @return the item stack or none if it doesn't exist
      */
-    protected static Optional<ItemStack> getItemStack(Player player, InventorySlot inventorySlot) {
+    protected static Optional<ItemStack> getItemStack(Player player, AuthoritativeInventorySlot inventorySlot) {
         Optional<Inventory> optionalInventory = getInventory(player, inventorySlot);
         boolean validSlotId = inventorySlot.getInventorySlotType().isValidSlot(inventorySlot.getSlot());
         if (!validSlotId || !optionalInventory.isPresent()) {
@@ -115,7 +115,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      * @param inventorySlot the slot requested
      * @return if the stacks match
      */
-    protected static boolean stackExists(Player player, InventorySlot inventorySlot) {
+    protected static boolean stackExists(Player player, AuthoritativeInventorySlot inventorySlot) {
         Optional<ItemStack> itemStack = getItemStack(player, inventorySlot);
         return itemStack.isPresent() &&
                 itemStack.get().getNetworkId() == inventorySlot.getNetworkStackId();
@@ -138,7 +138,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         }
     }
 
-    private static boolean isUniquePlayerSlot(Inventory inventory, InventorySlot slot) {
+    private static boolean isUniquePlayerSlot(Inventory inventory, AuthoritativeInventorySlot slot) {
         return inventory instanceof PlayerInventory &&
                 (slot.getInventorySlotType() != InventorySlotType.INVENTORY &&
                         slot.getInventorySlotType() != InventorySlotType.HOTBAR);
@@ -153,10 +153,10 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         private final ItemStackResponsePacket.Response response;
         private final Player player;
         private final Inventory inventory;
-        private final InventorySlot inventorySlot;
+        private final AuthoritativeInventorySlot inventorySlot;
         private ItemStack itemStack;
 
-        public SlotLocation(ItemStackResponsePacket.Response response, Player player, InventorySlot inventorySlot) {
+        public SlotLocation(ItemStackResponsePacket.Response response, Player player, AuthoritativeInventorySlot inventorySlot) {
             this.response = response;
             this.player = player;
 

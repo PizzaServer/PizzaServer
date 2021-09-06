@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.network.protocol.data.inventory;
+package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative;
 
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 
@@ -6,14 +6,14 @@ import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
  * Used for server authoritative inventories
  * Represents a slot
  */
-public class InventorySlot {
+public class AuthoritativeInventorySlot {
 
     private final InventorySlotType inventorySlotType;
     private final int slot;
     private final int networkStackId;
 
 
-    public InventorySlot(InventorySlotType slotType, int slot, int networkStackId) {
+    public AuthoritativeInventorySlot(InventorySlotType slotType, int slot, int networkStackId) {
         this.inventorySlotType = slotType;
         this.slot = slot;
         this.networkStackId = networkStackId;

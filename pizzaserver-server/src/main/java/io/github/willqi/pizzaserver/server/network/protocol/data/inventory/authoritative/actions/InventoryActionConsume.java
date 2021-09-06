@@ -1,6 +1,6 @@
-package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions;
+package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions;
 
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
 
 /**
  * Used for server authoritative inventories
@@ -8,11 +8,11 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.Inven
  */
 public class InventoryActionConsume implements InventoryAction {
 
-    private final InventorySlot source;
+    private final AuthoritativeInventorySlot source;
     private final int amount;
 
 
-    public InventoryActionConsume(InventorySlot source, int amount) {
+    public InventoryActionConsume(AuthoritativeInventorySlot source, int amount) {
         this.source = source;
         this.amount = amount;
     }
@@ -22,7 +22,7 @@ public class InventoryActionConsume implements InventoryAction {
         return InventoryActionType.CONSUME;
     }
 
-    public InventorySlot getSlot() {
+    public AuthoritativeInventorySlot getSlot() {
         return this.source;
     }
 

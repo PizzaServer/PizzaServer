@@ -13,9 +13,9 @@ import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryAction;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionType;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryAction;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -727,7 +727,7 @@ public class BasePacketBuffer extends ByteBuf {
         throw new IllegalStateException("Called readInventoryAction() before version was assigned.");
     }
 
-    public InventorySlot readInventorySlot() {
+    public AuthoritativeInventorySlot readInventorySlot() {
         throw new IllegalStateException("Called readInventorySlot() before version was assigned.");
     }
 
@@ -987,7 +987,7 @@ public class BasePacketBuffer extends ByteBuf {
         throw new IllegalStateException("Called writeInventoryAction() before version was assigned.");
     }
 
-    public BasePacketBuffer writeInventorySlot(InventorySlot data) {
+    public BasePacketBuffer writeInventorySlot(AuthoritativeInventorySlot data) {
         throw new IllegalStateException("Called readInventorySlot() before version was assigned.");
     }
 

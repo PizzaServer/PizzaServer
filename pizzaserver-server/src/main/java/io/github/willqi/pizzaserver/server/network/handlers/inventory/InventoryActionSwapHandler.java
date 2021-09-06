@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.handlers.inventory;
 import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.InventoryActionSwap;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionSwap;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackResponsePacket;
 
 import java.util.Optional;

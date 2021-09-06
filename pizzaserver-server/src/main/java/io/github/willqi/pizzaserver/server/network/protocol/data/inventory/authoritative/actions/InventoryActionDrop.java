@@ -1,6 +1,6 @@
-package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions;
+package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions;
 
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventorySlot;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
 
 /**
  * Used for server authoritative inventories
@@ -8,12 +8,12 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.Inven
  */
 public class InventoryActionDrop implements InventoryAction {
 
-    private final InventorySlot source;
+    private final AuthoritativeInventorySlot source;
     private final int amount;
     private final boolean randomly;
 
 
-    public InventoryActionDrop(InventorySlot source, int amount, boolean randomly) {
+    public InventoryActionDrop(AuthoritativeInventorySlot source, int amount, boolean randomly) {
         this.source = source;
         this.amount = amount;
         this.randomly = randomly;
@@ -24,7 +24,7 @@ public class InventoryActionDrop implements InventoryAction {
         return InventoryActionType.DROP;
     }
 
-    public InventorySlot getSlot() {
+    public AuthoritativeInventorySlot getSlot() {
         return this.source;
     }
 

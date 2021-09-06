@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionSwapHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionTakeHandler;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.actions.*;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.*;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerClosePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.InteractPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackRequestPacket;
