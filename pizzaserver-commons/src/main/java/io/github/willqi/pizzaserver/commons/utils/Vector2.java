@@ -59,6 +59,14 @@ public class Vector2 {
         return new Vector2(this.getX() / x, this.getY() / y);
     }
 
+    public double distanceTo(Vector2i vector2i) {
+        return Math.sqrt(Math.pow(this.getX() - vector2i.getX(), 2) + Math.pow(this.getY() - vector2i.getY(), 2));
+    }
+
+    public double distanceTo(Vector2 vector2) {
+        return Math.sqrt(Math.pow(this.getX() - vector2.getX(), 2) + Math.pow(this.getY() - vector2.getY(), 2));
+    }
+
     public Vector2i toVector2i() {
         return new Vector2i((int)this.x, (int)this.y);
     }

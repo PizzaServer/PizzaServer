@@ -122,7 +122,7 @@ public abstract class BaseInventory implements Inventory {
 
         for (Player viewer : this.getViewers()) {
             if (!viewer.equals(player)) {
-                sendSlot(viewer, this.getSlot(slot), slot, this.getId());
+                sendInventorySlot(viewer, this.getSlot(slot), slot, this.getId());
             }
         }
     }
@@ -152,6 +152,11 @@ public abstract class BaseInventory implements Inventory {
         inventoryContentPacket.setInventoryId(this.getId());
         inventoryContentPacket.setContents(this.getSlots());
         player.sendPacket(inventoryContentPacket);
+    }
+
+    @Override
+    public void sendSlot(Player player, int slot) {
+        sendInventorySlot(player, this.getSlot(slot), slot, this.getId());
     }
 
     @Override
@@ -208,7 +213,14 @@ public abstract class BaseInventory implements Inventory {
         return Collections.unmodifiableSet(this.viewers);
     }
 
-    protected static void sendSlot(Player player, ItemStack itemStack, int slot, int inventoryId) {
+    /**
+     * Helper method to send a slot of an inventory
+     * @param player player to send the slot to
+     * @param itemStack the item stack to send
+     * @param slot the slot
+     * @param inventoryId the id of the inventory
+     */
+    protected static void sendInventorySlot(Player player, ItemStack itemStack, int slot, int inventoryId) {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
         inventorySlotPacket.setInventoryId(inventoryId);
         inventorySlotPacket.setSlot(slot);

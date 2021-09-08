@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.types.components.DurableItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventoryType;
@@ -48,27 +49,43 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     }
 
     @Override
+    public void setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
+        ItemStack oldItemStack = this.getSlot(slot);
+        super.setSlot(player, slot, itemStack, keepNetworkId);
+
+        // Only broadcast this slot change to other entities if the slot is in the main hand and the change is a visible change.
+        boolean isSelectedSlot = slot == this.getSelectedSlot();
+        boolean isSameItemVisually = itemStack.getCompoundTag().equals(oldItemStack.getCompoundTag()) &&
+                (itemStack.getDamage() == oldItemStack.getDamage() || (itemStack.getItemType() instanceof DurableItemComponent)) &&
+                itemStack.getItemType().equals(oldItemStack.getItemType());
+
+        if (isSelectedSlot && !isSameItemVisually) {
+            this.broadcastMobEquipmentPacket(player, itemStack, slot, true);
+        }
+    }
+
+    @Override
     public void setHelmet(ItemStack helmet) {
         super.setHelmet(helmet);
-        sendSlot(this.getEntity(), this.getHelmet(), 0, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getHelmet(), 0, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
     public void setChestplate(ItemStack chestplate) {
         super.setChestplate(chestplate);
-        sendSlot(this.getEntity(), this.getChestplate(), 1, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getChestplate(), 1, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
     public void setLeggings(ItemStack leggings) {
         super.setLeggings(leggings);
-        sendSlot(this.getEntity(), this.getLeggings(), 2, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getLeggings(), 2, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
     public void setBoots(ItemStack boots) {
         super.setBoots(boots);
-        sendSlot(this.getEntity(), this.getBoots(), 3, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getBoots(), 3, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
@@ -82,7 +99,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
             throw new IllegalArgumentException("The selected slot cannot be a number outside of slots 0-8");
         }
 
-        if (this.selectedSlot != slot && !this.getSlot(slot).getItemType().getItemId().equals(BlockTypeID.AIR)) {
+        if (this.selectedSlot != slot && !this.getSlot(slot).isEmpty()) {
             this.selectedSlot = slot;
 
             // To select a slot, we need to send a mob equipment packet and then resend the slot we are selecting
@@ -94,7 +111,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
             mobEquipmentPacket.setEquipment(this.getSlot(slot));
             this.getEntity().sendPacket(mobEquipmentPacket);
 
-            sendSlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
+            sendInventorySlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
         }
     }
 

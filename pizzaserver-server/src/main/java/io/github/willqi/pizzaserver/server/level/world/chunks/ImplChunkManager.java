@@ -52,12 +52,12 @@ public class ImplChunkManager implements ChunkManager {
     }
 
     @Override
-    public Chunk getChunk(int x, int z) {
+    public ImplChunk getChunk(int x, int z) {
         return this.getChunk(x, z, true);
     }
 
     @Override
-    public Chunk getChunk(int x, int z, boolean loadFromProvider) {
+    public ImplChunk getChunk(int x, int z, boolean loadFromProvider) {
         Tuple<Integer, Integer> key = new Tuple<>(x, z);
         this.lock.readLock(key);
 
@@ -130,8 +130,8 @@ public class ImplChunkManager implements ChunkManager {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.readLock(key);
             try {
-                Chunk chunk = this.getChunk(x, z);
-                chunk.sendTo(player);
+                ImplChunk chunk = this.getChunk(x, z);
+                chunk.spawnTo(player);
             } finally {
                 this.lock.readUnlock(key);
             }

@@ -28,7 +28,7 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<Inventory
         if (valid) {
             // (Verify that either the destination is air or the source can be merged with the destination)
             boolean underStackLimit = destinationStack.get().getCount() + Math.min(action.getCount(), sourceStack.get().getCount()) <= sourceStack.get().getItemType().getMaxStackSize();
-            boolean destinationIsAir = destinationStack.get().getItemType().getItemId().equals(BlockTypeID.AIR);
+            boolean destinationIsAir = destinationStack.get().isEmpty();
             boolean canAddSourceToStack = destinationStack.get().hasSameDataAs(sourceStack.get()) || destinationIsAir;
 
             return underStackLimit && canAddSourceToStack;

@@ -1,17 +1,17 @@
 package io.github.willqi.pizzaserver.server.entity;
 
-import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.meta.ImplEntityMetaData;
+import io.github.willqi.pizzaserver.server.level.ImplLevel;
+import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
+import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.RemoveEntityPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
 
@@ -30,7 +30,7 @@ public abstract class BaseEntity implements Entity {
 
     protected boolean spawned;
     private final Set<Player> spawnedTo = new HashSet<>();
-    private EntityMetaData metaData = new ImplEntityMetaData();
+    private ImplEntityMetaData metaData = new ImplEntityMetaData();
 
 
     public BaseEntity() {
@@ -102,33 +102,33 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
-    public Chunk getChunk() {
-        return this.getLocation().getChunk();
+    public ImplChunk getChunk() {
+        return (ImplChunk)this.getLocation().getChunk();
     }
 
     @Override
-    public World getWorld() {
-        return this.getLocation().getWorld();
+    public ImplWorld getWorld() {
+        return (ImplWorld)this.getLocation().getWorld();
     }
 
     @Override
-    public Level getLevel() {
-        return this.getLocation().getLevel();
+    public ImplLevel getLevel() {
+        return (ImplLevel)this.getLocation().getLevel();
     }
 
     @Override
-    public Server getServer() {
-        return ImplServer.getInstance();
+    public ImplServer getServer() {
+        return (ImplServer)ImplServer.getInstance();
     }
 
     @Override
-    public EntityMetaData getMetaData() {
+    public ImplEntityMetaData getMetaData() {
         return this.metaData;
     }
 
     @Override
     public void setMetaData(EntityMetaData metaData) {
-        this.metaData = metaData;
+        this.metaData = (ImplEntityMetaData)metaData;
 
         SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
         entityDataPacket.setRuntimeId(this.getId());

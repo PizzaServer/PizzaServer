@@ -2,8 +2,6 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionAction;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionSlotChange;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionType;
@@ -50,7 +48,7 @@ public class V419InventoryTransactionPacketHandler extends BaseProtocolPacketHan
     }
 
     protected List<InventoryTransactionAction> readActions(BasePacketBuffer buffer) {
-        boolean usingNetworkIds = buffer.readBoolean();
+        buffer.readBoolean();   // TODO: Is there any point to reading this? Supposedly it mentions the network id
 
         int actionCount = buffer.readUnsignedVarInt();
         List<InventoryTransactionAction> actions = new ArrayList<>(actionCount);

@@ -57,4 +57,24 @@ public class Block {
         this.z = z;
     }
 
+    public World getWorld() {
+        return this.world;
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public int getZ() {
+        return this.z;
+    }
+
+    public Block getSide(BlockFace blockFace) {
+        return this.getWorld().getBlock(this.getLocation().add(blockFace.getOffset()));
+    }
+
 }

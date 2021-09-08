@@ -69,6 +69,14 @@ public class Vector3 {
         return new Vector3i((int)this.x, (int)this.y, (int)this.z);
     }
 
+    public double distanceTo(Vector3i vector3i) {
+        return Math.sqrt(Math.pow(this.getX() - vector3i.getX(), 2) + Math.pow(this.getY() - vector3i.getY(), 2) + Math.pow(this.getZ() - vector3i.getZ(), 2));
+    }
+
+    public double distanceTo(Vector3 vector3) {
+        return Math.sqrt(Math.pow(this.getX() - vector3.getX(), 2) + Math.pow(this.getY() - vector3.getY(), 2) + Math.pow(this.getZ() - vector3.getZ(), 2));
+    }
+
     @Override
     public String toString() {
         return "Vector3(x="+x+",y="+y+",z="+z+")";

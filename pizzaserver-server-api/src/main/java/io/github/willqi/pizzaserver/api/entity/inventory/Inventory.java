@@ -89,6 +89,13 @@ public interface Inventory extends Watchable {
     void sendSlots(Player player);
 
     /**
+     * Send a specific slot of this inventory to a player
+     * @param player the player to send the slot to
+     * @param slot the slot
+     */
+    void sendSlot(Player player, int slot);
+
+    /**
      * Check if this player has permission to open this inventory by themselves
      * @param player if the player has permission to open this inventory
      * @return if the player has permission to open the inventory by themselves

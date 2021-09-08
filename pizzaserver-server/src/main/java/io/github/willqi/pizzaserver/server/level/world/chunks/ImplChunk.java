@@ -143,17 +143,26 @@ public class ImplChunk implements Chunk {
     public int getHighestBlockAt(int x, int z) {
         int chunkBlockX = x >= 0 ? x : 16 + x;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
-
         return this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ);
     }
 
     @Override
-    public Block getBlock(Vector3i blockPosition) {
-        return this.getBlock(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+    public Block getBlock(Vector3i blockCoordinates) {
+        return this.getBlock(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
     }
 
     @Override
     public Block getBlock(int x, int y, int z) {
+        return this.getBlock(x, y, z, 0);
+    }
+
+    @Override
+    public Block getBlock(Vector3i blockCoordinates, int layer) {
+        return this.getBlock(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    @Override
+    public Block getBlock(int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
         }
@@ -161,7 +170,7 @@ public class ImplChunk implements Chunk {
         int chunkBlockX = x >= 0 ? x : 16 + x;
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
-        int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
+        int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ, layer); // Index stored in chunk block cache
         Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
 
         Lock readLock = this.lock.readLock();
@@ -178,7 +187,11 @@ public class ImplChunk implements Chunk {
             }
 
             // Construct new block as none is cached
-            BlockPalette.Entry paletteEntry = this.chunk.getSubChunks().get(subChunkIndex).getLayer(0).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
+            BedrockSubChunk subChunk = this.chunk.getSubChunk(subChunkIndex);
+            if (subChunk.getLayers().size() <= layer) {
+                return BlockRegistry.getBlock(BlockTypeID.AIR); // layer does not exist
+            }
+            BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
             Block block;
             if (BlockRegistry.hasBlockType(paletteEntry.getId())) {
                 // Block id is registered
@@ -217,6 +230,26 @@ public class ImplChunk implements Chunk {
 
     @Override
     public void setBlock(Block block, int x, int y, int z) {
+        this.setBlock(block, x, y, z, 0);
+    }
+
+    @Override
+    public void setBlock(BaseBlockType blockType, Vector3i blockCoordinates, int layer) {
+        this.setBlock(blockType, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    @Override
+    public void setBlock(BaseBlockType blockType, int x, int y, int z, int layer) {
+        this.setBlock(blockType.create(), x, y, z, layer);
+    }
+
+    @Override
+    public void setBlock(Block block, Vector3i blockCoordinates, int layer) {
+        this.setBlock(block, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    @Override
+    public void setBlock(Block block, int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
         }
@@ -224,7 +257,7 @@ public class ImplChunk implements Chunk {
         int chunkBlockX = x >= 0 ? x : 16 + x;
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
-        int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ); // Index stored in chunk block cache
+        int blockIndex = getBlockCacheIndex(chunkBlockX, y, chunkBlockZ, layer); // Index stored in chunk block cache
         Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
 
         block.setLocation(this.getWorld(), blockCoordinates);
@@ -241,7 +274,7 @@ public class ImplChunk implements Chunk {
 
             // Update internal sub chunk
             BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
-            BlockLayer mainBlockLayer = subChunk.getLayer(0);
+            BlockLayer mainBlockLayer = subChunk.getLayer(layer);
             BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
             mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
 
@@ -250,17 +283,66 @@ public class ImplChunk implements Chunk {
             }
 
             // Send update block packet
-            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.setBlock(block);
-            updateBlockPacket.setBlockCoordinates(blockCoordinates);
-            updateBlockPacket.setLayer(0);
-            updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
             for (Player viewer : this.getViewers()) {
-                viewer.sendPacket(updateBlockPacket);
+                this.sendBlock(viewer, chunkBlockX, y, chunkBlockZ, layer);
             }
         } finally {
             writeLock.unlock();
         }
+    }
+
+    /**
+     * Send all the layers of a block to the client
+     * @param player the player being sent the layers
+     * @param blockCoordinates coordinates of the block
+     */
+    public void sendBlock(Player player, Vector3i blockCoordinates) {
+        this.sendBlock(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+    }
+
+    /**
+     * Send all layers of a block to the client
+     * @param player the player being sent the layers
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     */
+    public void sendBlock(Player player, int x, int y, int z) {
+        int subChunkIndex = y / 16;
+        int layers = this.chunk.getSubChunk(subChunkIndex).getLayers().size();
+        for (int layer = 0; layer < layers; layer++) {
+            this.sendBlock(player, x, y, z, layer);
+        }
+    }
+
+    /**
+     * Send a layer of a block to the client
+     * @param player the player being sent the layers
+     * @param blockCoordinates block coordinates
+     * @param layer layer
+     */
+    public void sendBlock(Player player, Vector3i blockCoordinates, int layer) {
+        this.sendBlock(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    /**
+     * Send a layer of a block to the client
+     * @param player the player being sent the layer
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param layer layer
+     */
+    public void sendBlock(Player player, int x, int y, int z, int layer) {
+        int chunkBlockX = x >= 0 ? x : 16 + x;
+        int chunkBlockZ = z >= 0 ? z : 16 + z;
+
+        UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+        updateBlockPacket.setBlock(this.getBlock(chunkBlockX, y, z, layer));
+        updateBlockPacket.setBlockCoordinates(new Vector3i(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
+        updateBlockPacket.setLayer(layer);
+        updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
+        player.sendPacket(updateBlockPacket);
     }
 
     /**
@@ -272,23 +354,24 @@ public class ImplChunk implements Chunk {
         }
     }
 
-    @Override
-    public void sendTo(Player player) {
-        this.sendBlocksTo(player);
+    public void spawnTo(Player player) {
+        this.sendBlocks(player);
         this.getWorld().getServer().getScheduler().prepareTask(() -> {
-            this.sendEntitiesTo(player);
+            this.sendEntities(player);
         }).schedule();
     }
 
     /**
-     * Retrieve the index to store a block in the child map in the cachedBlocks map
+     * Retrieve the unique index to store a block in the child map in the cachedBlocks map
      * @param x x coordinate
      * @param y y coordinate
      * @param z z coordinate
+     * @param layer block layer
      * @return unique hash for the coordinate
      */
-    private static int getBlockCacheIndex(int x, int y, int z) {
-        return (x * 256) + (z * 16) + y; // Index stored in chunk block cache
+    private static int getBlockCacheIndex(int x, int y, int z, int layer) {
+        // each layer is 16 * 16 * 256 blocks.
+        return (layer * 65536) + (x * 256) + (z * 16) + y; // Index stored in chunk block cache
     }
 
     /**
@@ -296,7 +379,7 @@ public class ImplChunk implements Chunk {
      * It is recommended that this is done async as it can take a while to serialize.
      * @param player the {@link Player} to send it to
      */
-    public void sendBlocksTo(Player player) {
+    public void sendBlocks(Player player) {
         Lock readLock = this.lock.writeLock();
         readLock.lock();
 
@@ -331,7 +414,7 @@ public class ImplChunk implements Chunk {
      * This should only be called on the MAIN thread
      * @param player
      */
-    public void sendEntitiesTo(Player player) {
+    public void sendEntities(Player player) {
         for (Entity entity : this.getEntities()) {
             if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity)entity).isHiddenFrom(player))) {
                 continue;

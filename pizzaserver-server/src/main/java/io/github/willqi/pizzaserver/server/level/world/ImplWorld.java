@@ -144,9 +144,19 @@ public class ImplWorld implements Closeable, World {
 
     @Override
     public void setBlock(Block block, int x, int y, int z) {
-        int chunkX = x / 16;
-        int chunkZ = z / 16;
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
         this.getChunkManager().getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
+    }
+
+    public void sendBlock(Player player, Vector3i blockCoordinates) {
+        this.sendBlock(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+    }
+
+    public void sendBlock(Player player, int x, int y, int z) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        this.getChunkManager().getChunk(chunkX, chunkZ).sendBlock(player, x % 16, y, z % 16);
     }
 
     @Override
@@ -179,7 +189,7 @@ public class ImplWorld implements Closeable, World {
             this.players.remove(entity);
         }
         BaseEntity baseEntity = (BaseEntity)entity;
-        ImplChunk chunk = (ImplChunk)baseEntity.getChunk();
+        ImplChunk chunk = baseEntity.getChunk();
         baseEntity.setLocation(null);   // the entity no longer exists in any world
         baseEntity.onDespawned();
         chunk.removeEntity(baseEntity);

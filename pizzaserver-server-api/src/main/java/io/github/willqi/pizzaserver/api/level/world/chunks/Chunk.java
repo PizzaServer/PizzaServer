@@ -71,10 +71,10 @@ public interface Chunk extends Watchable {
 
     /**
      * Retrieve the {@link Block} at these chunk coordinates
-     * @param blockPosition the chunk block coordinates
+     * @param blockCoordinates the chunk block coordinates
      * @return the {@link Block} at these coordinates
      */
-    Block getBlock(Vector3i blockPosition);
+    Block getBlock(Vector3i blockCoordinates);
 
     /**
      * Retrieve the {@link Block} at these chunk coordinates
@@ -86,11 +86,36 @@ public interface Chunk extends Watchable {
     Block getBlock(int x, int y, int z);
 
     /**
+     * Retrieve the {@link Block} at these chunk coordinates
+     * @param blockCoordinates the chunk block coordinates
+     * @param layer layer
+     * @return the {@link Block} at these coordinates
+     */
+    Block getBlock(Vector3i blockCoordinates, int layer);
+
+    /**
+     * Retrieve the {@link Block} at these chunk coordinates
+     * @param x x chunk coordinate
+     * @param y y chunk coordinate
+     * @param z z chunk coordinate
+     * @param layer layer
+     * @return the {@link Block} at these coordinates
+     */
+    Block getBlock(int x, int y, int z, int layer);
+
+    /**
      * Set a block in this chunk
      * @param blockType the {@link BaseBlockType} of the block that should be created here
      * @param blockPosition the chunk position of the block
      */
     void setBlock(BaseBlockType blockType, Vector3i blockPosition);
+
+    /**
+     * Set a block in this chunk
+     * @param block the {@link Block} to be set here
+     * @param blockPosition the chunk position of the block
+     */
+    void setBlock(Block block, Vector3i blockPosition);
 
     /**
      * Set a block in this chunk
@@ -104,13 +129,6 @@ public interface Chunk extends Watchable {
     /**
      * Set a block in this chunk
      * @param block the {@link Block} to be set here
-     * @param blockPosition the chunk position of the block
-     */
-    void setBlock(Block block, Vector3i blockPosition);
-
-    /**
-     * Set a block in this chunk
-     * @param block the {@link Block} to be set here
      * @param x the x coordinate
      * @param y the y coordinate
      * @param z the z coordinate
@@ -118,11 +136,40 @@ public interface Chunk extends Watchable {
     void setBlock(Block block, int x, int y, int z);
 
     /**
-     * Send the chunk and it's entities to the player
-     * Recommended to be called asynchronously
-     * @param player
+     * Set a block in a specific layer of this chunk
+     * @param blockType the {@link BaseBlockType} to be set here
+     * @param blockCoordinates block coordinates
+     * @param layer layer
      */
-    void sendTo(Player player);
+    void setBlock(BaseBlockType blockType, Vector3i blockCoordinates, int layer);
+
+    /**
+     * Set a block in a specific layer of this chunk
+     * @param blockType the {@link BaseBlockType} to be set here
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param layer layer
+     */
+    void setBlock(BaseBlockType blockType, int x, int y, int z, int layer);
+
+    /**
+     * Set a block in a specific layer of this chunk
+     * @param block the {@link Block} to be set here
+     * @param blockCoordinates block coordinates
+     * @param layer layer
+     */
+    void setBlock(Block block, Vector3i blockCoordinates, int layer);
+
+    /**
+     * Set a block in a specific layer of this chunk
+     * @param block the {@link Block} block to be set here
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param layer layer
+     */
+    void setBlock(Block block, int x, int y, int z, int layer);
 
     /**
      * Check if this chunk can be closed

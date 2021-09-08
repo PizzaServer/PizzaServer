@@ -1,7 +1,9 @@
 package io.github.willqi.pizzaserver.api.item.types;
 
+import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -120,8 +122,17 @@ public abstract class BaseItemType {
      * @param player the player
      * @param itemStack the item stack
      * @param block the block interacted with
+     * @param blockFace the block face that was clicked
      */
-    public void onInteract(Player player, ItemStack itemStack, Block block) {}
+    public void onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {}
+
+    /**
+     * Called when the player interacts with an entity using this item
+     * @param player the player
+     * @param itemStack the item stack
+     * @param entity the entity interacted with
+     */
+    public void onInteract(Player player, ItemStack itemStack, Entity entity) {}
 
     /**
      * Create an {@link ItemStack} of this item type

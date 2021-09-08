@@ -50,8 +50,8 @@ public class ItemStack implements Cloneable {
 
     public ItemStack(BaseItemType itemType, int count, int damage, int networkId) {
         this.itemType = count <= 0 ? ItemRegistry.getItemType(BlockTypeID.AIR) : itemType;
-        this.networkId = this.itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : networkId;
-        this.count = this.itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : count;
+        this.networkId = this.isEmpty() ? 0 : networkId;
+        this.count = this.isEmpty() ? 0 : count;
         this.damage = damage;
 
         this.blocksCanBreak = itemType.getOnlyBlocksCanBreak();
@@ -69,7 +69,7 @@ public class ItemStack implements Cloneable {
     }
 
     public void setCount(int count) {
-        if (!this.itemType.getItemId().equals(BlockTypeID.AIR)) {
+        if (!this.isEmpty()) {
             if (count <= 0) {
                 this.count = 0;
                 this.networkId = 0;
@@ -141,7 +141,7 @@ public class ItemStack implements Cloneable {
      * @return new ItemStack with a new network id assigned
      */
     public ItemStack newNetworkStack() {
-        int networkId = this.getItemType().getItemId().equals(BlockTypeID.AIR) ? 0 : ItemStack.ID++;
+        int networkId = this.isEmpty() ? 0 : ItemStack.ID++;
         ItemStack newStack = new ItemStack(this.getItemType(), this.getCount(), this.getDamage(), networkId);
         newStack.setCompoundTag(this.getCompoundTag());
         newStack.setBlocksCanBreak(this.getBlocksCanBreak());
@@ -218,6 +218,10 @@ public class ItemStack implements Cloneable {
         return (otherStack.getItemType().equals(this.getItemType()) &&
                 otherStack.getCompoundTag().equals(this.getCompoundTag()) &&
                 otherStack.getDamage() == this.getDamage()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
+    }
+
+    public boolean isEmpty() {
+        return this.getItemType().getItemId().equals(BlockTypeID.AIR);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
             // the slots must be either of the same type or the destination has to be air
             boolean canMergeItemData = (sourceItemStack.getItemType().equals(destinationItemStack.getItemType()) &&
                                             sourceItemStack.getCompoundTag().equals(destinationItemStack.getCompoundTag()) &&
-                                            sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.getItemType().getItemId().equals(BlockTypeID.AIR);
+                                            sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.isEmpty();
 
             // final destination slot cannot exceed max count
             boolean doesNotExceedMaxCount = action.getCount() > 0 &&
