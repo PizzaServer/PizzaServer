@@ -4,7 +4,6 @@ import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
-import io.github.willqi.pizzaserver.api.item.types.components.DurableItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventoryType;
@@ -55,11 +54,8 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
         // Only broadcast this slot change to other entities if the slot is in the main hand and the change is a visible change.
         boolean isSelectedSlot = slot == this.getSelectedSlot();
-        boolean isSameItemVisually = itemStack.getCompoundTag().equals(oldItemStack.getCompoundTag()) &&
-                (itemStack.getDamage() == oldItemStack.getDamage() || (itemStack.getItemType() instanceof DurableItemComponent)) &&
-                itemStack.getItemType().equals(oldItemStack.getItemType());
-
-        if (isSelectedSlot && !isSameItemVisually) {
+        if (isSelectedSlot && !oldItemStack.visuallyEquals(itemStack)) {
+            // Only broadcast the packet if the item has visually changed for other players.
             this.broadcastMobEquipmentPacket(player, itemStack, slot, true);
         }
     }
@@ -95,16 +91,28 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
     @Override
     public void setSelectedSlot(int slot) {
-        this.setSelectedSlot(slot, true);
+        this.setSelectedSlot(slot, false);
     }
 
-    public void setSelectedSlot(int slot, boolean sendPackets) {
+    /**
+     * Change the selected slot of the player
+     * @param slot slot
+     * @param calledByPlayer if this action was done by the player rather than manually through the server
+     */
+    public void setSelectedSlot(int slot, boolean calledByPlayer) {
         if (slot < 0 || slot >= 9) {
             throw new IllegalArgumentException("The selected slot cannot be a number outside of slots 0-8");
         }
+
+        ItemStack oldItemStack = this.getHeldItem();
         this.selectedSlot = slot;
 
-        if (sendPackets) {
+        if (!oldItemStack.visuallyEquals(this.getHeldItem())) {
+            // Only broadcast the item to others if the item has changed visually for other players.
+            this.broadcastMobEquipmentPacket(this.getEntity(), this.getHeldItem(), 0, true);
+        }
+
+        if (!calledByPlayer) {
             // To select a slot, we need to send a mob equipment packet and then resend the slot we are selecting
             // However, this appears to only work for non-empty slots. Sending this from an empty to another empty slot will not change the slot
             MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();

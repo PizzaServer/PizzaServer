@@ -55,7 +55,5 @@ public class BlockItemType extends BaseItemType {
     }
 
     @Override
-    public void onInteract(Player player, ItemStack itemStack, Entity entity) {
-        player.sendMessage(entity.getId() + " was interacted with using " + itemStack.getItemType().getItemId());
-    }
+    public void onInteract(Player player, ItemStack itemStack, Entity entity) {}
 }

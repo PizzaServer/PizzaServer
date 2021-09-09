@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.item;
 
 import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.components.DurableItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
@@ -220,13 +221,23 @@ public class ItemStack implements Cloneable {
                 otherStack.getDamage() == this.getDamage()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
     }
 
+    /**
+     * Checks if this ItemStack is air
+     * @return if the ItemStack is air
+     */
     public boolean isEmpty() {
         return this.getItemType().getItemId().equals(BlockTypeID.AIR);
     }
 
-    @Override
-    public int hashCode() {
-        return this.getItemType().hashCode() * 73;
+    /**
+     * Checks if an ItemStack looks the same compared to this ItemStack
+     * @param otherItemStack the other ItemStack
+     * @return if they are visually the same
+     */
+    public boolean visuallyEquals(ItemStack otherItemStack) {
+        return otherItemStack.getCompoundTag().equals(this.getCompoundTag()) &&
+                (otherItemStack.getDamage() == this.getDamage() || (otherItemStack.getItemType() instanceof DurableItemComponent)) &&
+                otherItemStack.getItemType().equals(this.getItemType());
     }
 
     @Override
@@ -240,6 +251,11 @@ public class ItemStack implements Cloneable {
                     otherItemStack.getCompoundTag().equals(this.getCompoundTag());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getItemType().hashCode() * 73;
     }
 
     @Override
