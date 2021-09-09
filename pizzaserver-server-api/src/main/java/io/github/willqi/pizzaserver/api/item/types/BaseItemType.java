@@ -123,8 +123,12 @@ public abstract class BaseItemType {
      * @param itemStack the item stack
      * @param block the block interacted with
      * @param blockFace the block face that was clicked
+     *
+     * @return if the interaction was successful. an incorrect interaction will resend the item slot and the blocks interacted with
      */
-    public void onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {}
+    public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
+        return true;
+    }
 
     /**
      * Called when the player interacts with an entity using this item

@@ -260,8 +260,11 @@ public abstract class BaseBlockType {
      * Called when the right click button is used against this block
      * @param player the player who interacted with the block
      * @param block the block interacted with
+     * @return if the item used to interact with this block should be called
      */
-    public void onInteract(Player player, Block block) {}
+    public boolean onInteract(Player player, Block block) {
+        return true;
+    }
 
     /**
      * Called every tick when a player is walking on this block type

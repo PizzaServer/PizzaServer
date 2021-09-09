@@ -95,13 +95,16 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
     @Override
     public void setSelectedSlot(int slot) {
+        this.setSelectedSlot(slot, true);
+    }
+
+    public void setSelectedSlot(int slot, boolean sendPackets) {
         if (slot < 0 || slot >= 9) {
             throw new IllegalArgumentException("The selected slot cannot be a number outside of slots 0-8");
         }
+        this.selectedSlot = slot;
 
-        if (this.selectedSlot != slot && !this.getSlot(slot).isEmpty()) {
-            this.selectedSlot = slot;
-
+        if (sendPackets) {
             // To select a slot, we need to send a mob equipment packet and then resend the slot we are selecting
             // However, this appears to only work for non-empty slots. Sending this from an empty to another empty slot will not change the slot
             MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();

@@ -1,8 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.server.entity.inventory.InventoryID;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionSwapHandler;
@@ -19,6 +23,7 @@ import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     private final ImplPlayer player;
@@ -102,7 +107,15 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     }
 
     @Override
+    public void onPacket(MobEquipmentPacket packet) {
+        if (packet.getSlot() >= 0 && packet.getSlot() <= 8 && packet.getInventoryId() == InventoryID.MAIN_INVENTORY) {
+            this.player.getInventory().setSelectedSlot(packet.getSlot(), false);
+        }
+    }
+
+    @Override
     public void onPacket(InventoryTransactionPacket packet) {
+        ItemStack heldItemStack = this.player.getInventory().getHeldItem();
         switch (packet.getType()) {
             case NORMAL:
                 for (InventoryTransactionAction action : packet.getActions()) {
@@ -112,13 +125,11 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                             action.getSlot() >= 0 && action.getSlot() < 9;
 
                     if (isDropAction) {
-                        ItemStack itemStack = this.player.getInventory().getSlot(action.getSlot());
-                        if (!itemStack.isEmpty()) {
-                            itemStack.setCount(itemStack.getCount() - 1);
-                            this.player.getInventory().setSlot(action.getSlot(), itemStack);
+                        if (!heldItemStack.isEmpty()) {
+                            heldItemStack.setCount(heldItemStack.getCount() - 1);
+                            this.player.getInventory().setSlot(action.getSlot(), heldItemStack);
                         } else {
-                            // Player is attempting to drop an item they don't have.
-                            // Sync their inventory with the server
+                            // Player is attempting to drop an item they don't have. Sync their inventory with the server
                             this.player.getInventory().sendSlots(this.player);
                         }
                     }
@@ -126,45 +137,67 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 break;
             case ITEM_USE:
                 InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData)packet.getData();
-                ItemStack itemStack = this.player.getInventory().getHeldItem();
-                switch (useItemData.getAction()) {
-                    case CLICK_BLOCK:
-                    case CLICK_AIR:
-                        // TODO: account for creative mode reach when gamemodes are implemented
-                        // Mobile clients have a reach of 6 whereas regular clients have a range of 5.
-                        // For interacting with the world we don't really care about the difference.
-                        double distanceToBlock = this.player.getLocation().distanceTo(useItemData.getBlockCoordinates());
-                        if (distanceToBlock <= 6) {
-                            Block block = this.player.getWorld().getBlock(useItemData.getBlockCoordinates());
+                // TODO: account for creative mode reach when gamemodes are implemented
+                // Mobile clients have a reach of 6 whereas regular clients have a range of 5.
+                // For interacting with the world we don't really care about the difference.
+                double distanceToBlock = this.player.getLocation().distanceTo(useItemData.getBlockCoordinates());
+                if (distanceToBlock <= 6) {
+                    Block block = this.player.getWorld().getBlock(useItemData.getBlockCoordinates());
 
-                            PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this.player, block, useItemData.getBlockFace());
-                            this.player.getServer().getEventManager().call(playerInteractEvent);
+                    PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this.player, block, useItemData.getBlockFace());
+                    this.player.getServer().getEventManager().call(playerInteractEvent);
 
-                            if (!playerInteractEvent.isCancelled()) {
-                                itemStack.getItemType().onInteract(this.player, itemStack, block, useItemData.getBlockFace());
-                                return; // We don't need to reset the block
-                            }
-                        }
-
-                        // Reset any clientside modifications to the block
+                    if (playerInteractEvent.isCancelled()) {
+                        // Reset any clientside modifications to the block interacted with
                         this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates());
                         this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates().add(useItemData.getBlockFace().getOffset()));
-                        this.player.getInventory().sendSlot(this.player, useItemData.getHotbarSlot());
-                        break;
+                        this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
+                        return;
+                    }
+
+                    switch (useItemData.getAction()) {
+                        case CLICK_BLOCK:
+                        case CLICK_AIR:
+                            boolean callItemInteract = block.getBlockType().onInteract(this.player, block);
+                            if (callItemInteract) {
+                                boolean successfulInteraction = heldItemStack.getItemType().onInteract(this.player, heldItemStack, block, useItemData.getBlockFace());
+                                if (!successfulInteraction) {
+                                    // Reset any clientside modifications to the block interacted with
+                                    this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates());
+                                    this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates().add(useItemData.getBlockFace().getOffset()));
+                                    this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
+                                }
+                            }
+                            break;
+                    }
                 }
                 break;
             case ITEM_USE_ON_ENTITY:
                 InventoryTransactionUseItemOnEntityData useItemOnEntityData = (InventoryTransactionUseItemOnEntityData)packet.getData();
-                switch (useItemOnEntityData.getAction()) {
-                    case ATTACK:
-                        // TODO: deal damage
-                        break;
-                    case INTERACT:
-                        break;
+
+                // Get the entity targeted
+                Optional<Entity> entity = this.player.getWorld().getEntity(useItemOnEntityData.getEntityRuntimeId());
+                if (!entity.isPresent() || useItemOnEntityData.getEntityRuntimeId() == this.player.getId()) {
+                    return;
                 }
-                // TODO: Call event
-                // TODO: call item method
-                // TODO: durability
+
+                // Mobile clients have a reach of 6 whereas regular clients have a range of 5.
+                // but we want to be fair. So reach must be under or equal to 5 blocks
+                if (entity.get().getLocation().distanceTo(this.player.getLocation()) <= 5) {
+                    switch (useItemOnEntityData.getAction()) {
+                        case ATTACK:
+                            // TODO: deal damage
+                            break;
+                        case INTERACT:
+                            PlayerEntityInteractEvent playerEntityInteractEvent = new PlayerEntityInteractEvent(this.player, entity.get());
+                            this.player.getServer().getEventManager().call(playerEntityInteractEvent);
+
+                            if (!playerEntityInteractEvent.isCancelled()) {
+                                heldItemStack.getItemType().onInteract(this.player, heldItemStack, entity.get());
+                            }
+                            break;
+                    }
+                }
                 break;
             case ITEM_RELEASE:
                 InventoryTransactionReleaseItemData releaseItemData = (InventoryTransactionReleaseItemData)packet.getData();

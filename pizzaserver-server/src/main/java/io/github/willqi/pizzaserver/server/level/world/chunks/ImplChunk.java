@@ -38,9 +38,6 @@ public class ImplChunk implements Chunk {
 
     private final BedrockChunk chunk;
 
-    // subChunkIndex : ( blockIndex : block )
-    private final Map<Integer, Map<Integer, Block>> cachedBlocks = new HashMap<>();
-
     private final World world;
     private final int x;
     private final int z;
@@ -170,23 +167,12 @@ public class ImplChunk implements Chunk {
         int chunkBlockX = x >= 0 ? x : 16 + x;
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
-        int blockIndex = getBlockCacheIndex(chunkBlockX, chunkBlockY, chunkBlockZ, layer); // Index stored in chunk block cache
-        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
+        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
 
         try {
-            if (!this.cachedBlocks.containsKey(subChunkIndex)) {
-                this.cachedBlocks.put(subChunkIndex, new HashMap<>());
-            }
-            Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
-
-            if (subChunkCache.containsKey(blockIndex)) {
-                return subChunkCache.get(blockIndex);
-            }
-
-            // Construct new block as none is cached
             BedrockSubChunk subChunk = this.chunk.getSubChunk(subChunkIndex);
             if (subChunk.getLayers().size() <= layer) {
                 return BlockRegistry.getBlock(BlockTypeID.AIR); // layer does not exist
@@ -206,7 +192,6 @@ public class ImplChunk implements Chunk {
             }
             block.setLocation(this.getWorld(), blockCoordinates);
 
-            subChunkCache.put(blockIndex, block);
             return block;
         } finally {
             readLock.unlock();
@@ -257,8 +242,7 @@ public class ImplChunk implements Chunk {
         int chunkBlockX = x >= 0 ? x : 16 + x;
         int chunkBlockY = y % 16;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
-        int blockIndex = getBlockCacheIndex(chunkBlockX, y, chunkBlockZ, layer); // Index stored in chunk block cache
-        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + x, y, this.getZ() * 16 + z);
+        Vector3i blockCoordinates = new Vector3i(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         block.setLocation(this.getWorld(), blockCoordinates);
 
@@ -266,12 +250,6 @@ public class ImplChunk implements Chunk {
         writeLock.lock();
 
         try {
-            if (!this.cachedBlocks.containsKey(subChunkIndex)) {
-                this.cachedBlocks.put(subChunkIndex, new HashMap<>());
-            }
-            Map<Integer, Block> subChunkCache = this.cachedBlocks.get(subChunkIndex);
-            subChunkCache.put(blockIndex, block);
-
             // Update internal sub chunk
             BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
             BlockLayer mainBlockLayer = subChunk.getLayer(layer);
@@ -284,7 +262,7 @@ public class ImplChunk implements Chunk {
 
             // Send update block packet
             for (Player viewer : this.getViewers()) {
-                this.sendBlock(viewer, chunkBlockX, y, chunkBlockZ, layer);
+                this.sendBlock(viewer, x, y, z, layer);
             }
         } finally {
             writeLock.unlock();
@@ -338,7 +316,7 @@ public class ImplChunk implements Chunk {
         int chunkBlockZ = z >= 0 ? z : 16 + z;
 
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setBlock(this.getBlock(chunkBlockX, y, z, layer));
+        updateBlockPacket.setBlock(this.getBlock(chunkBlockX, y, chunkBlockZ, layer));
         updateBlockPacket.setBlockCoordinates(new Vector3i(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setLayer(layer);
         updateBlockPacket.setFlags(Collections.singleton(UpdateBlockPacket.Flag.NETWORK));
@@ -359,19 +337,6 @@ public class ImplChunk implements Chunk {
         this.getWorld().getServer().getScheduler().prepareTask(() -> {
             this.sendEntities(player);
         }).schedule();
-    }
-
-    /**
-     * Retrieve the unique index to store a block in the child map in the cachedBlocks map
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
-     * @param layer block layer
-     * @return unique hash for the coordinate
-     */
-    private static int getBlockCacheIndex(int x, int y, int z, int layer) {
-        // each layer is 16 * 16 * 256 blocks.
-        return (layer * 65536) + (x * 256) + (z * 16) + y; // Index stored in chunk block cache
     }
 
     /**

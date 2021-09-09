@@ -24,9 +24,7 @@ import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ImplWorld implements Closeable, World {
 
@@ -37,6 +35,7 @@ public class ImplWorld implements Closeable, World {
     private Vector3i spawnCoordinates;
 
     private final Set<Player> players = new HashSet<>();
+    private final Map<Long, Entity> entities = new HashMap<>();
 
 
     public ImplWorld(ImplLevel level, Dimension dimension) {
@@ -171,9 +170,11 @@ public class ImplWorld implements Closeable, World {
         }
         Location location = new Location(this, position);
 
+        this.entities.put(entity.getId(), entity);
         if (entity instanceof Player) {
             this.players.add((Player)entity);
         }
+
         BaseEntity baseEntity = (BaseEntity)entity;
         baseEntity.setLocation(location);
         ((ImplChunk)location.getChunk()).addEntity(entity);
@@ -185,14 +186,27 @@ public class ImplWorld implements Closeable, World {
         if (!this.equals(entity.getWorld())) {
             throw new IllegalStateException("This entity has not been spawned in this world");
         }
+
+        this.entities.remove(entity.getId());
         if (entity instanceof Player) {
             this.players.remove(entity);
         }
+
         BaseEntity baseEntity = (BaseEntity)entity;
         ImplChunk chunk = baseEntity.getChunk();
         baseEntity.setLocation(null);   // the entity no longer exists in any world
         baseEntity.onDespawned();
         chunk.removeEntity(baseEntity);
+    }
+
+    @Override
+    public Map<Long, Entity> getEntities() {
+        return Collections.unmodifiableMap(this.entities);
+    }
+
+    @Override
+    public Optional<Entity> getEntity(long id) {
+        return Optional.ofNullable(this.entities.getOrDefault(id, null));
     }
 
     @Override
