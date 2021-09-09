@@ -139,9 +139,18 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     }
 
     private static boolean isUniquePlayerSlot(Inventory inventory, AuthoritativeInventorySlot slot) {
-        return inventory instanceof PlayerInventory &&
-                (slot.getInventorySlotType() != InventorySlotType.INVENTORY &&
-                        slot.getInventorySlotType() != InventorySlotType.HOTBAR);
+        if (inventory instanceof PlayerInventory) {
+            switch (slot.getInventorySlotType()) {
+                case INVENTORY:
+                case HOTBAR:
+                case PLAYER_INVENTORY:
+                    return false;
+                default:
+                    return true;
+            }
+        } else {
+            return false;
+        }
     }
 
 
