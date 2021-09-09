@@ -3,11 +3,14 @@ package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.tran
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.sources.InventoryTransactionSource;
 
+/**
+ * Represents a change in an inventory slot sent from the client
+ */
 public class InventoryTransactionAction {
     private final InventoryTransactionSource source;
     private final ItemStack oldItemStack;
     private final ItemStack newItemStack;
-    private int slot;
+    private final int slot;
 
 
     public InventoryTransactionAction(InventoryTransactionSource source, int slot, ItemStack oldItemStack, ItemStack newItemStack) {

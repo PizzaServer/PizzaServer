@@ -10,6 +10,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Sent by the client when it modifies/uses the inventory in a way that is not handled by server authoritative inventories.
+ * (e.g. dropping items, using/releasing items)
+ */
 public class InventoryTransactionPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x1e;

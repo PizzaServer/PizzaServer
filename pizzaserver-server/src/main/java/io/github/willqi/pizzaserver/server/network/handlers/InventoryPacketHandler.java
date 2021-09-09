@@ -109,13 +109,14 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     @Override
     public void onPacket(MobEquipmentPacket packet) {
         if (packet.getSlot() >= 0 && packet.getSlot() <= 8 && packet.getInventoryId() == InventoryID.MAIN_INVENTORY) {
-            this.player.getInventory().setSelectedSlot(packet.getSlot(), false);
+            this.player.getInventory().setSelectedSlot(packet.getSlot(), true);
         }
     }
 
     @Override
     public void onPacket(InventoryTransactionPacket packet) {
         ItemStack heldItemStack = this.player.getInventory().getHeldItem();
+
         switch (packet.getType()) {
             case NORMAL:
                 for (InventoryTransactionAction action : packet.getActions()) {
@@ -125,9 +126,11 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                             action.getSlot() >= 0 && action.getSlot() < 9;
 
                     if (isDropAction) {
-                        if (!heldItemStack.isEmpty()) {
-                            heldItemStack.setCount(heldItemStack.getCount() - 1);
-                            this.player.getInventory().setSlot(action.getSlot(), heldItemStack);
+                        // it is possible to drop a stack despite not holding it. (mobile press and hold)
+                        ItemStack droppedStack = this.player.getInventory().getSlot(action.getSlot());
+                        if (!droppedStack.isEmpty()) {
+                            droppedStack.setCount(heldItemStack.getCount() - 1);
+                            this.player.getInventory().setSlot(action.getSlot(), droppedStack);
                         } else {
                             // Player is attempting to drop an item they don't have. Sync their inventory with the server
                             this.player.getInventory().sendSlots(this.player);
@@ -158,8 +161,10 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     switch (useItemData.getAction()) {
                         case CLICK_BLOCK:
                         case CLICK_AIR:
+                            // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
                             boolean callItemInteract = block.getBlockType().onInteract(this.player, block);
                             if (callItemInteract) {
+                                // an unsuccessful interaction will resend the blocks/slot used
                                 boolean successfulInteraction = heldItemStack.getItemType().onInteract(this.player, heldItemStack, block, useItemData.getBlockFace());
                                 if (!successfulInteraction) {
                                     // Reset any clientside modifications to the block interacted with
