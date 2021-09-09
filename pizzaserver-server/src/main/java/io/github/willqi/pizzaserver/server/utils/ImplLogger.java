@@ -1,7 +1,10 @@
 package io.github.willqi.pizzaserver.server.utils;
 
 import io.github.willqi.pizzaserver.api.utils.Logger;
+import io.github.willqi.pizzaserver.server.ImplServer;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class ImplLogger implements Logger {
 
@@ -13,6 +16,10 @@ public class ImplLogger implements Logger {
 
     public ImplLogger(String prefix) {
         this.logger = LogManager.getLogger(prefix);
+
+        if (((ImplServer)ImplServer.getInstance()).getConfig().isDebugMode()) {
+            Configurator.setLevel(this.logger.getName(), Level.DEBUG);
+        }
     }
 
     @Override
@@ -36,13 +43,19 @@ public class ImplLogger implements Logger {
     }
 
     public void error(String message, boolean colored) {
-        if(colored) this.logger.error(ANSI_RED + message + ANSI_RESET);
-        else this.logger.error(message);
+        if (colored) {
+            this.logger.error(ANSI_RED + message + ANSI_RESET);
+        } else {
+            this.logger.error(message);
+        }
     }
 
     public void error(String message, Throwable exception, boolean colored) {
-        if(colored) this.logger.error(ANSI_RED + message + ANSI_RESET, exception);
-        else this.logger.error(message, exception);
+        if (colored) {
+            this.logger.error(ANSI_RED + message + ANSI_RESET, exception);
+        } else {
+            this.logger.error(message, exception);
+        }
     }
 
     @Override

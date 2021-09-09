@@ -46,7 +46,7 @@ public class ImplServer implements Server {
     private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final ImplScheduler scheduler = new ImplScheduler(this, 1);
 
-    private final Logger logger = new ImplLogger("Server");
+    private final Logger logger;
 
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
@@ -67,14 +67,12 @@ public class ImplServer implements Server {
     public ImplServer(String rootDirectory) {
         INSTANCE = this;
         this.rootDirectory = rootDirectory;
-
-        this.getLogger().info("Setting up PizzaServer instance.");
-        Runtime.getRuntime().addShutdownHook(new ServerExitListener());
-
-        // Load required data/files
         this.setupFiles();
 
-        this.getLogger().info("Internal setup complete.");
+        this.logger = new ImplLogger("Server");
+
+        Runtime.getRuntime().addShutdownHook(new ServerExitListener());
+
         // TODO: load plugins
     }
 
@@ -339,7 +337,6 @@ public class ImplServer implements Server {
             new File(this.getRootDirectory() + "/levels").mkdirs();
             new File(this.getRootDirectory() + "/players").mkdirs();
             new File(this.getRootDirectory() + "/resourcepacks").mkdirs();
-            new File(this.getRootDirectory() + "/behaviorpacks").mkdirs();
         } catch (SecurityException exception) {
             throw new RuntimeException(exception);
         }

@@ -84,4 +84,8 @@ public class ServerConfig {
         return this.config.getBoolean("online-mode");
     }
 
+    public boolean isDebugMode() {
+        return this.config.getBoolean("debug");
+    }
+
 }

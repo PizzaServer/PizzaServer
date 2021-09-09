@@ -22,3 +22,6 @@ network-compression-level: 7
 
 # If xbox chains should be verified
 online-mode: true
+
+# If debug messages should be logged
+debug: false
