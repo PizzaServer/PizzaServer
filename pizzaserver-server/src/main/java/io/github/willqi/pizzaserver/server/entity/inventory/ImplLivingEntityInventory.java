@@ -38,6 +38,23 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     @Override
+    public void clear() {
+        super.clear();
+        this.setHeldItem(null);
+        this.setOffhandItem(null);
+        this.setArmour(null, null, null, null);
+    }
+
+    @Override
+    public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+        this.helmet = helmet;
+        this.chestplate = chestplate;
+        this.leggings = leggings;
+        this.boots = boots;
+        this.broadcastMobArmourEquipmentPacket();
+    }
+
+    @Override
     public ItemStack getHelmet() {
         return this.getHelmet(true);
     }
@@ -53,12 +70,12 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public void setHelmet(ItemStack helmet) {
-        this.setHelmet(null, helmet, false);
+        this.setHelmet(helmet, false);
     }
 
-    public void setHelmet(Player player, ItemStack helmet, boolean keepNetworkId) {
+    public void setHelmet(ItemStack helmet, boolean keepNetworkId) {
         this.helmet = keepNetworkId ? ItemStack.ensureItemStackExists(helmet) : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
-        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
@@ -77,12 +94,12 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public void setChestplate(ItemStack chestplate) {
-        this.setChestplate(null, chestplate, false);
+        this.setChestplate(chestplate, false);
     }
 
-    public void setChestplate(Player player, ItemStack chestplate, boolean keepNetworkId) {
+    public void setChestplate(ItemStack chestplate, boolean keepNetworkId) {
         this.chestplate = keepNetworkId ? ItemStack.ensureItemStackExists(chestplate) : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
-        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
@@ -101,12 +118,12 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public void setLeggings(ItemStack leggings) {
-        this.setLeggings(null, leggings, false);
+        this.setLeggings(leggings, false);
     }
 
-    public void setLeggings(Player player, ItemStack leggings, boolean keepNetworkId) {
+    public void setLeggings(ItemStack leggings, boolean keepNetworkId) {
         this.leggings = keepNetworkId ? ItemStack.ensureItemStackExists(leggings) : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
-        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
@@ -125,25 +142,23 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public void setBoots(ItemStack boots) {
-        this.setBoots(null, boots, false);
+        this.setBoots(boots, false);
     }
 
-    public void setBoots(Player player, ItemStack boots, boolean keepNetworkId) {
+    public void setBoots(ItemStack boots, boolean keepNetworkId) {
         this.boots = keepNetworkId ? ItemStack.ensureItemStackExists(boots) : ItemStack.ensureItemStackExists(boots).newNetworkStack();
-        this.broadcastMobArmourEquipmentPacket(player); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
-    protected void broadcastMobArmourEquipmentPacket(Player activatingPlayer) {
+    protected void broadcastMobArmourEquipmentPacket() {
         for (Player player : this.getEntity().getViewers()) {
-            if (!player.equals(activatingPlayer)) {
-                MobArmourEquipmentPacket mobArmourEquipmentPacket = new MobArmourEquipmentPacket();
-                mobArmourEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-                mobArmourEquipmentPacket.setHelmet(this.getHelmet());
-                mobArmourEquipmentPacket.setChestplate(this.getChestplate());
-                mobArmourEquipmentPacket.setLeggings(this.getLeggings());
-                mobArmourEquipmentPacket.setBoots(this.getBoots());
-                player.sendPacket(mobArmourEquipmentPacket);
-            }
+            MobArmourEquipmentPacket mobArmourEquipmentPacket = new MobArmourEquipmentPacket();
+            mobArmourEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
+            mobArmourEquipmentPacket.setHelmet(this.getHelmet());
+            mobArmourEquipmentPacket.setChestplate(this.getChestplate());
+            mobArmourEquipmentPacket.setLeggings(this.getLeggings());
+            mobArmourEquipmentPacket.setBoots(this.getBoots());
+            player.sendPacket(mobArmourEquipmentPacket);
         }
     }
 
@@ -163,12 +178,12 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public void setHeldItem(ItemStack mainHand) {
-        this.setHeldItem(null, mainHand, false);
+        this.setHeldItem(mainHand, false);
     }
 
-    public void setHeldItem(Player player, ItemStack mainHand, boolean keepNetworkId) {
+    public void setHeldItem(ItemStack mainHand, boolean keepNetworkId) {
         this.mainHand = keepNetworkId ? ItemStack.ensureItemStackExists(mainHand) : ItemStack.ensureItemStackExists(mainHand).newNetworkStack();
-        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobEquipmentPacket(this.getHeldItem(), 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
@@ -187,25 +202,29 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public void setOffhandItem(ItemStack offHand) {
-        this.setOffhandItem(null, offHand, false);
+        this.setOffhandItem(offHand, false);
     }
 
-    public void setOffhandItem(Player player, ItemStack offHand, boolean keepNetworkId) {
+    public void setOffhandItem(ItemStack offHand, boolean keepNetworkId) {
         this.offHand = keepNetworkId ? ItemStack.ensureItemStackExists(offHand) : ItemStack.ensureItemStackExists(offHand).newNetworkStack();
-        this.broadcastMobEquipmentPacket(player, this.getHeldItem(), 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobEquipmentPacket(this.getHeldItem(), 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
-    protected void broadcastMobEquipmentPacket(Player activatingPlayer, ItemStack itemStack, int slot, boolean mainHand) {
+    /**
+     * Broadcasts mob equipment packet to all viewers of this entity
+     * @param itemStack the item stack being sent
+     * @param slot the slot to send it as
+     * @param mainHand if the item is in the main hand
+     */
+    protected void broadcastMobEquipmentPacket(ItemStack itemStack, int slot, boolean mainHand) {
         for (Player player : this.getEntity().getViewers()) {
-            if (!player.equals(activatingPlayer)) {
-                MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
-                mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-                mobEquipmentPacket.setInventoryId(mainHand ? InventoryID.MAIN_INVENTORY : InventoryID.OFF_HAND_INVENTORY);
-                mobEquipmentPacket.setSlot(slot);
-                mobEquipmentPacket.setHotbarSlot(slot);
-                mobEquipmentPacket.setEquipment(itemStack);
-                player.sendPacket(mobEquipmentPacket);
-            }
+            MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
+            mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
+            mobEquipmentPacket.setInventoryId(mainHand ? InventoryID.MAIN_INVENTORY : InventoryID.OFF_HAND_INVENTORY);
+            mobEquipmentPacket.setSlot(slot);
+            mobEquipmentPacket.setHotbarSlot(slot);
+            mobEquipmentPacket.setEquipment(ItemStack.ensureItemStackExists(itemStack));
+            player.sendPacket(mobEquipmentPacket);
         }
     }
 

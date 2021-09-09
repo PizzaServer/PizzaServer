@@ -8,8 +8,6 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventoryType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerOpenPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.InventorySlotPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
 
 import java.util.Collections;
@@ -48,16 +46,28 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     }
 
     @Override
+    public void clear() {
+        super.clear();
+        this.setCursor(null);
+    }
+
+    @Override
     public void setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
         ItemStack oldItemStack = this.getSlot(slot);
         super.setSlot(player, slot, itemStack, keepNetworkId);
 
         // Only broadcast this slot change to other entities if the slot is in the main hand and the change is a visible change.
         boolean isSelectedSlot = slot == this.getSelectedSlot();
-        if (isSelectedSlot && !oldItemStack.visuallyEquals(itemStack)) {
+        if (isSelectedSlot && !oldItemStack.visuallyEquals(ItemStack.ensureItemStackExists(itemStack))) {
             // Only broadcast the packet if the item has visually changed for other players.
-            this.broadcastMobEquipmentPacket(player, itemStack, slot, true);
+            this.broadcastMobEquipmentPacket(itemStack, slot, true);
         }
+    }
+
+    @Override
+    public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+        super.setArmour(helmet, chestplate, leggings, boots);
+        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots() }, InventoryID.ARMOR_INVENTORY);
     }
 
     @Override
@@ -109,7 +119,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
         if (!oldItemStack.visuallyEquals(this.getHeldItem())) {
             // Only broadcast the item to others if the item has changed visually for other players.
-            this.broadcastMobEquipmentPacket(this.getEntity(), this.getHeldItem(), 0, true);
+            this.broadcastMobEquipmentPacket(this.getHeldItem(), 0, true);
         }
 
         if (!calledByPlayer) {
@@ -139,11 +149,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public void setOffhandItem(ItemStack offHand) {
         super.setOffhandItem(offHand);
-
-        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-        inventoryContentPacket.setInventoryId(InventoryID.OFF_HAND_INVENTORY);
-        inventoryContentPacket.setContents(new ItemStack[]{ this.getOffhandItem() });
-        this.getEntity().sendPacket(inventoryContentPacket);
+        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getOffhandItem() }, InventoryID.OFF_HAND_INVENTORY);
     }
 
     @Override
@@ -154,11 +160,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     @Override
     public void setCursor(ItemStack cursor) {
         this.setCursor(cursor, false);
-
-        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.setInventoryId(InventoryID.PLAYER_UI);
-        inventorySlotPacket.setItem(this.cursor);
-        this.getEntity().sendPacket(inventorySlotPacket);
+        sendInventorySlot(this.getEntity(), this.cursor, 0, InventoryID.PLAYER_UI);
     }
 
     public void setCursor(ItemStack cursor, boolean keepNetworkId) {

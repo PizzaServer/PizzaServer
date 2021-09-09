@@ -28,6 +28,11 @@ public interface Inventory extends Watchable {
     int getSize();
 
     /**
+     * Clear the inventory
+     */
+    void clear();
+
+    /**
      * Returns a copy of the slots of this inventory
      * @return clone of the slots
      */

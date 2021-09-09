@@ -192,21 +192,21 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
 
                 switch (this.inventorySlot.getInventorySlotType()) {
                     case OFFHAND:
-                        playerInventory.setOffhandItem(this.player, itemStack, true);
+                        playerInventory.setOffhandItem(itemStack, true);
                         break;
                     case ARMOR:
                         switch (this.inventorySlot.getSlot()) {
                             case 0:
-                                playerInventory.setHelmet(this.player, itemStack, true);
+                                playerInventory.setHelmet(itemStack, true);
                                 break;
                             case 1:
-                                playerInventory.setChestplate(this.player, itemStack, true);
+                                playerInventory.setChestplate(itemStack, true);
                                 break;
                             case 2:
-                                playerInventory.setLeggings(this.player, itemStack, true);
+                                playerInventory.setLeggings(itemStack, true);
                                 break;
                             case 3:
-                                playerInventory.setBoots(this.player, itemStack, true);
+                                playerInventory.setBoots(itemStack, true);
                                 break;
                             default:
                                 throw new IllegalArgumentException("Invalid armor slot: " + this.inventorySlot.getSlot());

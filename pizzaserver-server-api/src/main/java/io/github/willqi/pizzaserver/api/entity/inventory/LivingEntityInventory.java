@@ -11,6 +11,15 @@ public interface LivingEntityInventory extends Inventory {
      */
     LivingEntity getEntity();
 
+    /**
+     * Change all pieces of armour
+     * @param helmet new helmet
+     * @param chestplate new chestplate
+     * @param leggings new leggings
+     * @param boots new boots
+     */
+    void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots);
+
     ItemStack getHelmet();
 
     /**

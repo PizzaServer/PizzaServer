@@ -62,6 +62,11 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
+    public void clear() {
+        this.setSlots(new ItemStack[this.size]);
+    }
+
+    @Override
     public ItemStack[] getSlots() {
         ItemStack[] slots = new ItemStack[this.getSize()];
         for (int i = 0; i < this.getSize(); i++) {
@@ -77,7 +82,7 @@ public abstract class BaseInventory implements Inventory {
         }
 
         for (int i = 0 ; i < this.size; i++) {
-            this.slots[i] = slots[i].newNetworkStack();
+            this.slots[i] = ItemStack.ensureItemStackExists(slots[i]).newNetworkStack();
         }
 
         for (Player viewer : this.getViewers()) {
@@ -148,10 +153,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void sendSlots(Player player) {
-        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-        inventoryContentPacket.setInventoryId(this.getId());
-        inventoryContentPacket.setContents(this.getSlots());
-        player.sendPacket(inventoryContentPacket);
+        sendInventorySlots(player, this.getSlots(), this.getId());
     }
 
     @Override
@@ -226,6 +228,19 @@ public abstract class BaseInventory implements Inventory {
         inventorySlotPacket.setSlot(slot);
         inventorySlotPacket.setItem(itemStack);
         player.sendPacket(inventorySlotPacket);
+    }
+
+    /**
+     * Helper method to send slots of an inventory
+     * @param player player to send the slots to
+     * @param slots the slots
+     * @param inventoryId the inventory id
+     */
+    protected static void sendInventorySlots(Player player, ItemStack[] slots, int inventoryId) {
+        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.setInventoryId(inventoryId);
+        inventoryContentPacket.setContents(slots);
+        player.sendPacket(inventoryContentPacket);
     }
 
 }
