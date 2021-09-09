@@ -133,8 +133,31 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Optional<ItemStack> addItem(ItemStack item) {
-        return Optional.empty();
+    public Optional<ItemStack> addItem(ItemStack itemStack) {
+        ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
+        int maxStackCount = itemStack.getItemType().getMaxStackSize();
+
+        for (int slot = 0; slot < this.getSize(); slot++) {
+            ItemStack slotStack = this.getSlot(slot);
+
+            if (slotStack.isEmpty()) {
+                this.setSlot(slot, remainingItemStack);
+                return Optional.empty();
+            } else if (slotStack.hasSameDataAs(remainingItemStack)) {
+                int spaceLeft = maxStackCount - slotStack.getCount();
+                int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+
+                slotStack.setCount(slotStack.getCount() + addedAmount);
+                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+                this.setSlot(slot, slotStack);
+            }
+        }
+
+        if (remainingItemStack.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(remainingItemStack);
+        }
     }
 
     @Override

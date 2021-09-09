@@ -69,7 +69,6 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
                     recipient.sendPlayerMessage(this.player, event.getMessage());
                 }
             }
-
         }
     }
 
