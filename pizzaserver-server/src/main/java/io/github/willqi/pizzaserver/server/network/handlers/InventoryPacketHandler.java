@@ -110,6 +110,11 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     public void onPacket(MobEquipmentPacket packet) {
         if (packet.getSlot() >= 0 && packet.getSlot() <= 8 && packet.getInventoryId() == InventoryID.MAIN_INVENTORY) {
             this.player.getInventory().setSelectedSlot(packet.getSlot(), true);
+
+            // If their item does not match up with the server side item resend the server's slot
+            if (!packet.getEquipment().equals(this.player.getInventory().getSlot(packet.getSlot()))) {
+                this.player.getInventory().sendSlot(this.player, packet.getSlot());
+            }
         }
     }
 
@@ -119,18 +124,23 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
         switch (packet.getType()) {
             case NORMAL:
-                for (InventoryTransactionAction action : packet.getActions()) {
-                    // Dropping items is still handled by this packet despite server authoritative inventories
+                // Dropping items is still handled by this packet despite server authoritative inventories
+                for (int actionIndex = 0; actionIndex < packet.getActions().size() - 1; actionIndex++) {
+                    // The slot of the dropped item is sent in the action right after the world interaction
+                    InventoryTransactionAction action = packet.getActions().get(actionIndex);
+                    InventoryTransactionAction nextAction = packet.getActions().get(actionIndex + 1);
+
                     boolean isDropAction = action.getSource().getType() == InventoryTransactionSourceType.WORLD &&
                             ((InventoryTransactionWorldSource)action.getSource()).getFlag() == InventoryTransactionWorldSource.Flag.DROP_ITEM &&
-                            action.getSlot() >= 0 && action.getSlot() < 9;
+                            nextAction.getSlot() >= 0 && nextAction.getSlot() < 9;
 
                     if (isDropAction) {
-                        // it is possible to drop a stack despite not holding it. (mobile press and hold)
-                        ItemStack droppedStack = this.player.getInventory().getSlot(action.getSlot());
+                        ItemStack droppedStack = this.player.getInventory().getSlot(nextAction.getSlot());
                         if (!droppedStack.isEmpty()) {
-                            droppedStack.setCount(heldItemStack.getCount() - 1);
-                            this.player.getInventory().setSlot(action.getSlot(), droppedStack);
+                            // Update stack with amount dropped
+                            int amountDropped = Math.max(0, Math.min(droppedStack.getCount(), action.getNewItemStack().getCount()));
+                            droppedStack.setCount(droppedStack.getCount() - amountDropped);
+                            this.player.getInventory().setSlot(this.player, nextAction.getSlot(), droppedStack, true);
                         } else {
                             // Player is attempting to drop an item they don't have. Sync their inventory with the server
                             this.player.getInventory().sendSlots(this.player);
