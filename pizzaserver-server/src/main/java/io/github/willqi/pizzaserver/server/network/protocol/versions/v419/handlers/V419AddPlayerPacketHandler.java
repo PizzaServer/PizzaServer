@@ -19,7 +19,7 @@ public class V419AddPlayerPacketHandler extends BaseProtocolPacketHandler<AddPla
         buffer.writeVector3(packet.getPosition());
         buffer.writeVector3(packet.getVelocity());
         buffer.writeVector3(new Vector3(packet.getPitch(), packet.getYaw(), packet.getHeadYaw()));
-        buffer.writeByte(0);    // TODO: item serialization
+        buffer.writeItem(packet.getHeldItem());
         buffer.writeEntityMetadata(packet.getMetaData());
 
         // TODO: write proper adventure settings but here's a placeholder

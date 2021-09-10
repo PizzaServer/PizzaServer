@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -34,7 +35,7 @@ public class AddPlayerPacket extends BaseBedrockPacket {
     private Vector3 velocity;
     private EntityMetaData metaData;
     private Set<EntityLink> entityLinks = Collections.emptySet();
-    // TODO: When items are implemented we require the held item
+    private ItemStack heldItem;
 
 
     public AddPlayerPacket() {
@@ -151,6 +152,14 @@ public class AddPlayerPacket extends BaseBedrockPacket {
 
     public void setEntityLinks(Set<EntityLink> links) {
         this.entityLinks = links;
+    }
+
+    public ItemStack getHeldItem() {
+        return this.heldItem;
+    }
+
+    public void setHeldItem(ItemStack heldItem) {
+        this.heldItem = heldItem;
     }
 
 

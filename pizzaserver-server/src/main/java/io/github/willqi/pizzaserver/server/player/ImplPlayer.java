@@ -673,6 +673,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         addPlayerPacket.setHeadYaw(this.getHeadYaw());
         addPlayerPacket.setMetaData(this.getMetaData());
         addPlayerPacket.setDevice(this.getDevice());
+        addPlayerPacket.setHeldItem(this.getInventory().getHeldItem());
         player.sendPacket(addPlayerPacket);
     }
 
