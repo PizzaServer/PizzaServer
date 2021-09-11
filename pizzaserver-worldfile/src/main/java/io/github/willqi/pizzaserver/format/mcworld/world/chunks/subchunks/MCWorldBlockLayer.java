@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
+import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import net.daporkchop.lib.common.function.io.IOFunction;
@@ -26,7 +27,14 @@ public class MCWorldBlockLayer implements BlockLayer {
 
     @Override
     public BlockPalette.Entry getBlockEntryAt(int x, int y, int z) {
-        return this.blocks[(x << 8) | (z << 4) | y];
+        return this.getBlockEntryByIndex((x << 8) | (z << 4) | y);
+    }
+
+    private BlockPalette.Entry getBlockEntryByIndex(int index) {
+        if (this.blocks[index] == null) {
+            this.blocks[index] = new BlockPalette.EmptyEntry();
+        }
+        return this.blocks[index];
     }
 
     @Override
@@ -43,7 +51,7 @@ public class MCWorldBlockLayer implements BlockLayer {
                 if (pos >= 4096) break;
 
                 int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
-                this.blocks[pos] = palette.getEntry(paletteIndex);
+                this.blocks[pos] = this.palette.getEntry(paletteIndex);
                 pos++;
             }
         }
@@ -73,7 +81,7 @@ public class MCWorldBlockLayer implements BlockLayer {
             int word = 0;
             for (int block = 0; block < blocksPerWord; block++) {
                 if (pos >= 4096) break;
-                word |= (this.palette.getPaletteIndex(this.blocks[pos])) << (bitsPerBlock * block);
+                word |= (this.palette.getPaletteIndex(this.getBlockEntryByIndex(pos))) << (bitsPerBlock * block);
                 pos++;
             }
             buffer.writeIntLE(word);

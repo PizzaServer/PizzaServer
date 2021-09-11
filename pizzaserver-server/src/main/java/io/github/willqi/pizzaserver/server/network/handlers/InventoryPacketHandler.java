@@ -4,7 +4,6 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
-import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.server.entity.inventory.InventoryID;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;

@@ -175,7 +175,10 @@ public class ImplChunk implements Chunk {
         try {
             BedrockSubChunk subChunk = this.chunk.getSubChunk(subChunkIndex);
             if (subChunk.getLayers().size() <= layer) {
-                return BlockRegistry.getBlock(BlockTypeID.AIR); // layer does not exist
+                // layer does not exist: return air block
+                Block block = BlockRegistry.getBlock(BlockTypeID.AIR);
+                block.setLocation(this.getWorld(), blockCoordinates);
+                return block;
             }
             BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
             Block block;
@@ -287,7 +290,10 @@ public class ImplChunk implements Chunk {
      */
     public void sendBlock(Player player, int x, int y, int z) {
         int subChunkIndex = y / 16;
-        int layers = this.chunk.getSubChunk(subChunkIndex).getLayers().size();
+
+        // Ensure that at least the foremost layer is sent to the client
+        int layers = Math.max(this.chunk.getSubChunk(subChunkIndex).getLayers().size(), 1);
+
         for (int layer = 0; layer < layers; layer++) {
             this.sendBlock(player, x, y, z, layer);
         }

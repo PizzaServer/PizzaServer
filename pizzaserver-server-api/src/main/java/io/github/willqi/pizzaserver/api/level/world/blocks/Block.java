@@ -47,6 +47,10 @@ public class Block {
         return new BlockLocation(this.world, this.x, this.y, this.z);
     }
 
+    public void setLocation(BlockLocation location) {
+        this.setLocation(location.getWorld(), location.getX(), location.getY(), location.getZ());
+    }
+
     public void setLocation(World world, Vector3i vector3i) {
         this.setLocation(world, vector3i.getX(), vector3i.getY(), vector3i.getZ());
     }
@@ -75,7 +79,8 @@ public class Block {
     }
 
     public Block getSide(BlockFace blockFace) {
-        return this.getWorld().getBlock(this.getLocation().add(blockFace.getOffset()));
+        BlockLocation location = this.getLocation();
+        return this.getWorld().getBlock(location.add(blockFace.getOffset()));
     }
 
     public boolean isAir() {

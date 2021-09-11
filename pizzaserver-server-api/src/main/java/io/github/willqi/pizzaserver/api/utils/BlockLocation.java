@@ -3,12 +3,17 @@ package io.github.willqi.pizzaserver.api.utils;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
 public class BlockLocation extends Vector3i {
 
     private final World world;
 
+
+    public BlockLocation(World world, Vector3i vector3i) {
+        this(world, vector3i.getX(), vector3i.getY(), vector3i.getZ());
+    }
 
     public BlockLocation(World world, int x, int y, int z) {
         super(x, y, z);
@@ -33,6 +38,26 @@ public class BlockLocation extends Vector3i {
 
     public int getChunkZ() {
         return (int)Math.floor(this.getZ() / 16d);
+    }
+
+    @Override
+    public BlockLocation add(int x, int y, int z) {
+        return new BlockLocation(this.world, this.getX() + x, this.getY() + y, this.getZ() + z);
+    }
+
+    @Override
+    public BlockLocation subtract(int x, int y, int z) {
+        return new BlockLocation(this.world, this.getX() - x, this.getY() - y, this.getZ() - z);
+    }
+
+    @Override
+    public BlockLocation multiply(int x, int y, int z) {
+        return new BlockLocation(this.world, this.getX() * x, this.getY() * y, this.getZ() * z);
+    }
+
+    @Override
+    public BlockLocation divide(int x, int y, int z) {
+        return new BlockLocation(this.world, this.getX() / x, this.getY() / y, this.getZ() / z);
     }
 
 }
