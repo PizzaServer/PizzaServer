@@ -3,8 +3,8 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.level.world.World;
@@ -277,7 +277,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     // Send item components for custom items
                     ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
                     Set<ItemComponentPacket.Entry> itemComponents = new HashSet<>();
-                    for (BaseItemType customItemType : ItemRegistry.getCustomTypes()) {
+                    for (ItemType customItemType : ItemRegistry.getCustomTypes()) {
                         if (!(customItemType instanceof BlockItemType)) {   // we don't need to send the item equivalent for each custom block
                             itemComponents.add(new ItemComponentPacket.Entry(customItemType, this.player.getVersion().getItemRuntimeId(customItemType.getItemId())));
                         }

@@ -7,8 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
@@ -140,7 +140,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
             // Register custom items
-            for (BaseItemType itemType : ItemRegistry.getCustomTypes()) {
+            for (ItemType itemType : ItemRegistry.getCustomTypes()) {
                 if (!(itemType instanceof BlockItemType)) { // We register item representations of custom blocks later
                     int runtimeId = customItemIdStart++;
                     this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);

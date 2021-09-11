@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.item.types.ItemTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
@@ -247,7 +247,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
         if (runtimeId == 0) {
             return ItemRegistry.getItem(BlockTypeID.AIR);
         }
-        BaseItemType itemType = ItemRegistry.getItemType(this.getVersion().getItemName(runtimeId));
+        ItemType itemType = ItemRegistry.getItemType(this.getVersion().getItemName(runtimeId));
 
         // get count + damage
         int itemData = this.readVarInt();

@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
@@ -127,7 +127,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
      * @param slotType the slot type
      * @return if the item type can be placed in the slot type
      */
-    protected static boolean canPutItemTypeInSlot(BaseItemType itemType, InventorySlotType slotType) {
+    protected static boolean canPutItemTypeInSlot(ItemType itemType, InventorySlotType slotType) {
         switch (slotType) {
             case ARMOR:
                 return itemType instanceof ArmorItemComponent;

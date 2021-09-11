@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.item.types.components.*;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemComponentPacket;
@@ -27,7 +27,7 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
         }
     }
 
-    protected void writeComponents(BaseItemType itemType, NBTCompound components) {
+    protected void writeComponents(ItemType itemType, NBTCompound components) {
         NBTCompound properties = new NBTCompound();
         this.writeItemProperties(itemType, properties);
         components.putCompound("item_properties", properties);
@@ -68,7 +68,7 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
      * @param itemType
      * @param properties
      */
-    protected void writeItemProperties(BaseItemType itemType, NBTCompound properties) {
+    protected void writeItemProperties(ItemType itemType, NBTCompound properties) {
         properties.putBoolean("allow_off_hand", itemType.isAllowedInOffHand())
                 .putInteger("creative_category", 2)
                 .putInteger("damage", itemType.getDamage())

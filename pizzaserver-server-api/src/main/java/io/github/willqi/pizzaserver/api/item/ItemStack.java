@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.item;
 
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.item.types.components.DurableItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
@@ -16,13 +16,13 @@ public class ItemStack implements Cloneable {
     public static int ID = 1;
 
     private int networkId;
-    private BaseItemType itemType;
-    private int count;
-    private int damage;
-    private NBTCompound compound = new NBTCompound();
+    protected ItemType itemType;
+    protected int count;
+    protected int damage;
+    protected NBTCompound compound = new NBTCompound();
 
-    private Set<BaseBlockType> blocksCanBreak;
-    private Set<BaseBlockType> blocksCanPlaceOn = Collections.emptySet();
+    protected Set<BaseBlockType> blocksCanBreak;
+    protected Set<BaseBlockType> blocksCanPlaceOn = Collections.emptySet();
 
 
     public ItemStack(String itemId) {
@@ -33,23 +33,23 @@ public class ItemStack implements Cloneable {
         this(ItemRegistry.getItemType(itemId), count);
     }
 
-    public ItemStack(String  itemId, int count, int damage) {
+    public ItemStack(String itemId, int count, int damage) {
         this(ItemRegistry.getItemType(itemId), count, damage);
     }
 
-    public ItemStack(BaseItemType itemType) {
+    public ItemStack(ItemType itemType) {
         this(itemType, 1);
     }
 
-    public ItemStack(BaseItemType itemType, int count) {
+    public ItemStack(ItemType itemType, int count) {
         this(itemType, count, 0);
     }
 
-    public ItemStack(BaseItemType itemType, int count, int damage) {
+    public ItemStack(ItemType itemType, int count, int damage) {
         this(itemType, count, damage, itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : -1);
     }
 
-    public ItemStack(BaseItemType itemType, int count, int damage, int networkId) {
+    public ItemStack(ItemType itemType, int count, int damage, int networkId) {
         this.itemType = count <= 0 ? ItemRegistry.getItemType(BlockTypeID.AIR) : itemType;
         this.networkId = this.isEmpty() ? 0 : networkId;
         this.count = this.isEmpty() ? 0 : count;
@@ -61,7 +61,7 @@ public class ItemStack implements Cloneable {
         }
     }
 
-    public BaseItemType getItemType() {
+    public ItemType getItemType() {
         return this.itemType;
     }
 

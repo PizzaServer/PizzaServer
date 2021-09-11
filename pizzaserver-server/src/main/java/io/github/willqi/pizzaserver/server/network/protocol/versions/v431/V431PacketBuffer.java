@@ -2,15 +2,13 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v431;
 
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.item.types.ItemTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
-import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
-import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
@@ -20,9 +18,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -131,7 +127,7 @@ public class V431PacketBuffer extends V428PacketBuffer {
         if (runtimeId == 0) {
             return ItemRegistry.getItem(BlockTypeID.AIR);
         }
-        BaseItemType itemType = ItemRegistry.getItemType(this.getVersion().getItemName(runtimeId));
+        ItemType itemType = ItemRegistry.getItemType(this.getVersion().getItemName(runtimeId));
 
         // get count + damage
         int count = this.readShortLE();

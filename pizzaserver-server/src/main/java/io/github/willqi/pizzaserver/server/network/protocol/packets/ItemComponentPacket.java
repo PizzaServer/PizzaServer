@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.api.item.types.BaseItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 import java.util.Collections;
@@ -33,16 +33,16 @@ public class ItemComponentPacket extends BaseBedrockPacket {
 
     public static class Entry {
 
-        private final BaseItemType customItemType;
+        private final ItemType customItemType;
         private final int runtimeId;
 
 
-        public Entry(BaseItemType customItemType, int runtimeId) {
+        public Entry(ItemType customItemType, int runtimeId) {
             this.customItemType = customItemType;
             this.runtimeId = runtimeId;
         }
 
-        public BaseItemType getCustomItemType() {
+        public ItemType getCustomItemType() {
             return this.customItemType;
         }
 
