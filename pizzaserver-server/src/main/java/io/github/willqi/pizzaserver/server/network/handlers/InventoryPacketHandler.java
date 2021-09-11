@@ -150,8 +150,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
             case ITEM_USE:
                 InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData)packet.getData();
                 // TODO: account for creative mode reach when gamemodes are implemented
-                // Mobile clients have a reach of 6 whereas regular clients have a range of 5.
-                // For interacting with the world we don't really care about the difference.
+                // Mobile clients have a reach of 6 whereas regular clients have a range of 5 when placing blocks.
                 double distanceToBlock = this.player.getLocation().distanceTo(useItemData.getBlockCoordinates());
                 if (distanceToBlock <= 6) {
                     Block block = this.player.getWorld().getBlock(useItemData.getBlockCoordinates());
@@ -195,8 +194,6 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     return;
                 }
 
-                // Mobile clients have a reach of 6 whereas regular clients have a range of 5.
-                // but we want to be fair. So reach must be under or equal to 5 blocks
                 if (entity.get().getLocation().distanceTo(this.player.getLocation()) <= 5) {
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
