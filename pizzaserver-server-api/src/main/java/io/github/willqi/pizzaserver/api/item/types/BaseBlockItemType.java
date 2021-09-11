@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.item.types;
 
+import io.github.willqi.pizzaserver.api.event.type.block.BlockPlaceEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
@@ -43,9 +44,17 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
         // Handle placing a block
         // TODO: Account for entity collision
         if (!block.isAir() && block.getSide(blockFace).isAir()) {
+            Block placedBlock = this.getBlockType().create(itemStack.getDamage());
+            placedBlock.setLocation(block.getWorld(), block.getSide(blockFace).getLocation());
+
+            BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);
+            if (blockPlaceEvent.isCancelled()) {
+                return false;
+            }
+
             itemStack.setCount(itemStack.getCount() - 1);
             player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
-            block.getWorld().setBlock(this.getBlockType().create(itemStack.getDamage()), block.getSide(blockFace).getLocation());
+            block.getWorld().setBlock(placedBlock, placedBlock.getLocation());
             return true;
         } else {
             return itemStack.isEmpty(); // air blocks don't change the world at all and cannot really be placed.
