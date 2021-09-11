@@ -123,7 +123,7 @@ public abstract class BaseInventory implements Inventory {
      * @param keepNetworkId if the network id of the ItemStack should be kept or if a new one should be generated
      */
     public void setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
-        this.slots[slot] = keepNetworkId ? ItemStack.ensureItemStackExists(itemStack) : ItemStack.ensureItemStackExists(itemStack).newNetworkStack();
+        this.slots[slot] = keepNetworkId ? itemStack : ItemStack.ensureItemStackExists(itemStack).newNetworkStack();
 
         for (Player viewer : this.getViewers()) {
             if (!viewer.equals(player)) {
@@ -135,15 +135,17 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Optional<ItemStack> addItem(ItemStack itemStack) {
         ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
-        int maxStackCount = itemStack.getItemType().getMaxStackSize();
 
         for (int slot = 0; slot < this.getSize(); slot++) {
             ItemStack slotStack = this.getSlot(slot);
 
             if (slotStack.isEmpty()) {
+                // empty available slot
                 this.setSlot(slot, remainingItemStack);
                 return Optional.empty();
             } else if (slotStack.hasSameDataAs(remainingItemStack)) {
+                // Add as much of the remaining item stack to this slot as possible
+                int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
                 int spaceLeft = maxStackCount - slotStack.getCount();
                 int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
 

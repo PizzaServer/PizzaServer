@@ -1,5 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions;
 
+/**
+ * Used in inventory transactions
+ * Describes all slots that were affected by an inventory transactionn
+ */
 public class InventoryTransactionSlotChange {
 
     private final int inventoryId;

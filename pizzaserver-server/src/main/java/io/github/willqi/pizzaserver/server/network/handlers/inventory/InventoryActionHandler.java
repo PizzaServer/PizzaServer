@@ -155,7 +155,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
 
 
     /**
-     * Wrapper to make changing slots and registering slot responses easier
+     * Helper class to make changing slots and registering slot responses easier
      */
     protected static class SlotLocation {
 
@@ -164,6 +164,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
         private final Inventory inventory;
         private final AuthoritativeInventorySlot inventorySlot;
         private ItemStack itemStack;
+
 
         public SlotLocation(ItemStackResponsePacket.Response response, Player player, AuthoritativeInventorySlot inventorySlot) {
             this.response = response;

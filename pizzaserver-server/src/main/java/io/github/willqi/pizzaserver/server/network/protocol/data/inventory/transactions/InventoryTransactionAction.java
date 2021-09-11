@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.sources.InventoryTransactionSource;
 
 /**
+ * Used in inventory transactions
  * Represents a change in an inventory slot sent from the client
  */
 public class InventoryTransactionAction {

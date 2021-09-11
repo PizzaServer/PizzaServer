@@ -25,10 +25,6 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
             this.add(InventorySlotType.PLAYER_INVENTORY);
             this.add(InventorySlotType.CURSOR);
             this.add(InventorySlotType.OFFHAND);
-
-            // TODO: uncomment when crafting inventory related slots are implemented
-//            this.add(InventorySlotType.CRAFTING_ITEM);
-//            this.add(InventorySlotType.CRAFTING_RESULT);
         }
     };
 
@@ -117,11 +113,12 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
         ItemStack oldItemStack = this.getHeldItem();
         this.selectedSlot = slot;
 
+        // Only broadcast the item to others if the item has changed visually for other players.
         if (!oldItemStack.visuallyEquals(this.getHeldItem())) {
-            // Only broadcast the item to others if the item has changed visually for other players.
             this.broadcastMobEquipmentPacket(this.getHeldItem(), 0, true);
         }
 
+        // if this not a player action, we need to change the client's slot
         if (!calledByPlayer) {
             // To select a slot, we need to send a mob equipment packet and then resend the slot we are selecting
             // However, this appears to only work for non-empty slots. Sending this from an empty to another empty slot will not change the slot

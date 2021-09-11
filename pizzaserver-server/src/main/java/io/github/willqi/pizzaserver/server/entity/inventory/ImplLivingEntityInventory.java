@@ -47,10 +47,14 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
-        this.helmet = helmet;
-        this.chestplate = chestplate;
-        this.leggings = leggings;
-        this.boots = boots;
+        this.setArmour(helmet, chestplate, leggings, boots, false);
+    }
+
+    public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, boolean keepNetworkId) {
+        this.helmet = keepNetworkId ? helmet : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
+        this.chestplate = keepNetworkId ? chestplate : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
+        this.leggings = keepNetworkId ? leggings : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
+        this.boots = keepNetworkId ? boots : ItemStack.ensureItemStackExists(boots).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket();
     }
 
@@ -74,7 +78,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     public void setHelmet(ItemStack helmet, boolean keepNetworkId) {
-        this.helmet = keepNetworkId ? ItemStack.ensureItemStackExists(helmet) : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
+        this.helmet = keepNetworkId ? helmet : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
@@ -98,7 +102,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     public void setChestplate(ItemStack chestplate, boolean keepNetworkId) {
-        this.chestplate = keepNetworkId ? ItemStack.ensureItemStackExists(chestplate) : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
+        this.chestplate = keepNetworkId ? chestplate : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
@@ -122,7 +126,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     public void setLeggings(ItemStack leggings, boolean keepNetworkId) {
-        this.leggings = keepNetworkId ? ItemStack.ensureItemStackExists(leggings) : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
+        this.leggings = keepNetworkId ? leggings : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
@@ -146,7 +150,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     public void setBoots(ItemStack boots, boolean keepNetworkId) {
-        this.boots = keepNetworkId ? ItemStack.ensureItemStackExists(boots) : ItemStack.ensureItemStackExists(boots).newNetworkStack();
+        this.boots = keepNetworkId ? boots : ItemStack.ensureItemStackExists(boots).newNetworkStack();
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
@@ -182,7 +186,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     public void setHeldItem(ItemStack mainHand, boolean keepNetworkId) {
-        this.mainHand = keepNetworkId ? ItemStack.ensureItemStackExists(mainHand) : ItemStack.ensureItemStackExists(mainHand).newNetworkStack();
+        this.mainHand = keepNetworkId ? mainHand : ItemStack.ensureItemStackExists(mainHand).newNetworkStack();
         this.broadcastMobEquipmentPacket(this.getHeldItem(), 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
@@ -206,7 +210,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     public void setOffhandItem(ItemStack offHand, boolean keepNetworkId) {
-        this.offHand = keepNetworkId ? ItemStack.ensureItemStackExists(offHand) : ItemStack.ensureItemStackExists(offHand).newNetworkStack();
+        this.offHand = keepNetworkId ? offHand : ItemStack.ensureItemStackExists(offHand).newNetworkStack();
         this.broadcastMobEquipmentPacket(this.getHeldItem(), 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
