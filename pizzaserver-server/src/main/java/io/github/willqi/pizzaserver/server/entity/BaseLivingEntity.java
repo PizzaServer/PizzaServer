@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.HashSet;
@@ -118,6 +119,16 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     public void setHeadYaw(float headYaw) {
         this.moveUpdate = true;
         this.headYaw = headYaw;
+    }
+
+    @Override
+    public Vector3 getDirectionVector() {
+        double cosPitch = Math.cos(Math.toRadians(this.getPitch()));
+        double x = Math.sin(Math.toRadians(this.getYaw())) * -cosPitch;
+        double y = -Math.sin(Math.toRadians(this.getPitch()));
+        double z = Math.cos(Math.toRadians(this.getYaw())) * cosPitch;
+
+        return new Vector3((float)x, (float)y, (float)z).normalize();
     }
 
     @Override

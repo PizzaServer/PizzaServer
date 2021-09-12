@@ -5,7 +5,6 @@ import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryDropItemEv
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerInteractEvent;
-import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.server.entity.inventory.InventoryID;
@@ -180,16 +179,15 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData)packet.getData();
                 // TODO: account for creative mode reach when gamemodes are implemented
 
-                // Mobile clients have a reach of 6 whereas regular clients have a range of 5 when placing blocks.
-                double distanceToBlock = this.player.getLocation().distanceTo(useItemData.getBlockCoordinates());
 
+                double distanceToBlock = this.player.getLocation().distanceBetween(useItemData.getBlockCoordinates().toVector3()); // distance to middle of block
                 if (distanceToBlock > 50) {
                     // Prevent malicious clients from causing a OutOfMemory error by sending a transaction
                     // to every single chunk regardless of the distance which would load chunks unnecessarily
                     return;
                 }
 
-                if (distanceToBlock <= 6) {
+                if (this.player.canReach(useItemData.getBlockCoordinates())) {
                     Block block = this.player.getWorld().getBlock(useItemData.getBlockCoordinates());
 
                     boolean isCurrentSelectedSlot = useItemData.getHotbarSlot() == this.player.getInventory().getSelectedSlot();
@@ -236,7 +234,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     return;
                 }
 
-                if (entity.get().getLocation().distanceTo(this.player.getLocation()) <= 5) {
+                if (this.player.canReach(entity.get().getLocation())) {
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
                             // TODO: deal damage

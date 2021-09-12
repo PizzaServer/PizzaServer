@@ -11,15 +11,16 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
-import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
@@ -162,6 +163,26 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         return 1.62f;
     }
 
+    public boolean canReach(Vector3i vector3i) {
+        return this.canReach(vector3i.toVector3());
+    }
+
+    public boolean canReach(Vector3 vector3) {
+        Vector3 position = this.getLocation().add(0, this.getEyeHeight(), 0);
+
+        // Distance check
+        // TODO: take into account creative mode when gamemodes are implemented
+        double distance = position.distanceBetween(vector3);
+        if (distance > 7) {
+            return false;
+        }
+
+        // Direction check
+        Vector3 playerDirectionVector = this.getDirectionVector();
+        Vector3 targetDirectionVector = vector3.subtract(this.getLocation()).normalize();
+        return playerDirectionVector.dot(targetDirectionVector) > 0;    // Must be in same direction
+    }
+
     @Override
     public void setMetaData(EntityMetaData metaData) {
         super.setMetaData(metaData);
@@ -230,7 +251,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public boolean save() {
         if (this.hasSpawned()) {
             PlayerData playerData = new PlayerData.Builder()
-                    .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
+                    .setLevelName(this.getLevel().getProvider().getFileName())
                     .setDimension(this.getLocation().getWorld().getDimension())
                     .setPosition(this.getLocation())
                     .setPitch(this.getPitch())
