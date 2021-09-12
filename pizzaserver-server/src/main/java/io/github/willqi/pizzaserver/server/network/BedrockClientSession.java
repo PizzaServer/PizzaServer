@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class BedrockClientSession extends Thread {
+public class BedrockClientSession {
 
     private final BedrockNetworkServer server;
     private final RakNetServerSession serverSession;
@@ -76,6 +76,10 @@ public class BedrockClientSession extends Thread {
 
     public boolean isDisconnected() {
         return this.disconnected;
+    }
+
+    public long getPing() {
+        return this.serverSession.getPing();
     }
 
     public void queueSendPacket(BaseBedrockPacket packet) {

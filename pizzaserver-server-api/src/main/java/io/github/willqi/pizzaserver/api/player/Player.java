@@ -177,6 +177,12 @@ public interface Player extends LivingEntity {
     boolean isConnected();
 
     /**
+     * Returns the player ping
+     * @return player ping
+     */
+    long getPing();
+
+    /**
      * Queue a packet to be sent to this player
      * @param packet the packet to send
      */

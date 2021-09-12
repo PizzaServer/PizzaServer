@@ -496,6 +496,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
+    public long getPing() {
+        return this.session.getPing();
+    }
+
+    @Override
     public void sendPacket(BaseBedrockPacket packet) {
         this.session.queueSendPacket(packet);
     }
