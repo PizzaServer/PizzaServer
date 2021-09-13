@@ -1,27 +1,30 @@
-server-ip: 0.0.0.0
-server-port: 19132
-server-motd: PizzaServer - Bedrock v1.16.100
-player-max: 20
-player-force-packs: false
+server:
+  motd: PizzaServer - Bedrock v1.16.100
+  max-players: 20
+  force-packs: false
+  online-mode: true
 
-# Name of the default world to load
-world-default: world
-# Active chunk radius around players
-world-chunk-radius: 8
-# Direction to assign players who first join the server
-world-default-yaw: 0
-world-default-pitch: 0
+network:
+  ip: 0.0.0.0
+  port: 19132
+  compression-level: 7
 
-# Maximum amount of chunks that can be requested per tick
-chunk-requests-per-tick: 16
-# Maximum amount of requests that can be queued directly to the asynchronous chunk thread instead of waiting to be queued in
-chunk-requests-processing-cap: 64
+world:
+  # Name of the default world to load
+  default-name: world
+  # Direction to assign players who first join the server
+  default-yaw: 0
+  default-pitch: 0
 
-# To what degree should packets be compressed
-network-compression-level: 7
+  # Chunk settings
+  chunk:
+    # Active chunk radius around players
+    radius: 8
+    # Maximum amount of chunks that can be requested per tick
+    requests-per-tick: 16
+    # Maximum amount of requests that can be queued directly into the ChunkQueue to be processed rather than wait to be queued
+    processing-queue-cap: 64
 
-# If xbox chains should be verified
-online-mode: true
-
-# If debug messages should be logged
-debug: false
+debug:
+  # If debug messages should be printed
+  messages: false
