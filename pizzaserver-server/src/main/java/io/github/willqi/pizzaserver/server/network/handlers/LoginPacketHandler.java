@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.level.world.World;
@@ -31,10 +34,7 @@ import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +51,15 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
     public LoginPacketHandler(ImplServer server, BedrockClientSession session) {
         this.server = server;
         this.session = session;
+    }
+
+    /**
+     * Called when the login process is complete
+     */
+    private void addGamePacketHandlers() {
+        this.session.addPacketHandler(new ChunkBlockPacketHandler(this.player));
+        this.session.addPacketHandler(new PlayerEntityPacketHandler(this.player));
+        this.session.addPacketHandler(new InventoryPacketHandler(this.player));
     }
 
     @Override
@@ -265,6 +274,17 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
                     this.player.sendPacket(this.getStartGamePacket(world, playerPreSpawnEvent.getStartLocation(), new Vector2(playerPreSpawnEvent.getPitch(), playerPreSpawnEvent.getYaw())));
 
+                    // Send item components for custom items
+                    ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
+                    Set<ItemComponentPacket.Entry> itemComponents = new HashSet<>();
+                    for (ItemType customItemType : ItemRegistry.getCustomTypes()) {
+                        if (!(customItemType instanceof BlockItemType)) {   // we don't need to send the item equivalent for each custom block
+                            itemComponents.add(new ItemComponentPacket.Entry(customItemType, this.player.getVersion().getItemRuntimeId(customItemType.getItemId())));
+                        }
+                    }
+                    itemComponentPacket.setEntries(itemComponents);
+                    this.player.sendPacket(itemComponentPacket);
+
                     // TODO: Add creative contents to prevent mobile clients from crashing
                     CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
                     this.player.sendPacket(creativeContentPacket);
@@ -282,8 +302,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
                     location.getWorld().addEntity(this.player, location);
                     this.session.removePacketHandler(this);
-                    this.session.addPacketHandler(new ChunkBlockPacketHandler(this.player));
-                    this.session.addPacketHandler(new PlayerEntityPacketHandler(this.player));
+                    this.addGamePacketHandlers();
 
                     PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(this.player);
                     this.player.getServer().getEventManager().call(playerSpawnEvent);

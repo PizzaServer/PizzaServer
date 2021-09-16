@@ -1,17 +1,24 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
+import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
+import io.github.willqi.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
@@ -37,9 +44,10 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     private final ImplServer server;
 
-    private NBTCompound biomesDefinitions;
-    private final Map<Integer, Integer> blockStates = new HashMap<>();
-    private Set<io.github.willqi.pizzaserver.server.network.protocol.data.ItemState> itemStates;
+    protected NBTCompound biomesDefinitions;
+    protected final Map<Integer, Integer> blockStates = new HashMap<>();
+    protected final BiMap<String, Integer> itemRuntimeIds = HashBiMap.create();
+    protected final Set<StartGamePacket.ItemState> itemStates = new HashSet<>();
 
 
     public BaseMinecraftVersion(ImplServer server) throws IOException {
@@ -72,24 +80,11 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     }
 
     public void loadBlockStates() throws IOException {
-        this.blockStates.clear();
         try (NBTInputStream blockStatesNBTStream = new NBTInputStream(
                 new VarIntDataInputStream(this.getProtocolResourceStream("block_states.nbt"))
         )) {
             // keySet returns in ascending rather than descending so we have to reverse it
-            SortedMap<String, List<NBTCompound>> sortedBlockRuntimeStates = new TreeMap<>(Collections.reverseOrder((fullBlockIdA, fullBlockIdB) -> {
-                // Runtime ids are mapped by their part b first before part a (e.g. b:b goes before b:c and a:d)
-                String blockIdA = fullBlockIdA.substring(fullBlockIdA.indexOf(":") + 1);
-                String blockIdB = fullBlockIdB.substring(fullBlockIdB.indexOf(":") + 1);
-                int blockIdComparison = blockIdB.compareTo(blockIdA);
-                if (blockIdComparison != 0) {
-                    return blockIdComparison;
-                }
-                // Compare by namespace
-                String namespaceA = fullBlockIdA.substring(0, fullBlockIdA.indexOf(":"));
-                String namespaceB = fullBlockIdB.substring(0, fullBlockIdB.indexOf(":"));
-                return namespaceB.compareTo(namespaceA);
-            }));
+            SortedMap<String, List<NBTCompound>> sortedBlockRuntimeStates = new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
 
             // Parse block states
             while (blockStatesNBTStream.available() > 0) {
@@ -129,16 +124,40 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         try (Reader itemStatesReader = new InputStreamReader(this.getProtocolResourceStream("runtime_item_states.json"))) {
             JsonArray jsonItemStates = GSON.fromJson(itemStatesReader, JsonArray.class);
 
-            Set<io.github.willqi.pizzaserver.server.network.protocol.data.ItemState> itemStates = new HashSet<>(jsonItemStates.size());
-            for (int i = 0; i < jsonItemStates.size(); i++) {
-                JsonObject jsonItemState = jsonItemStates.get(i).getAsJsonObject();
+            int customItemIdStart = 0;  // Custom items can be assigned any id as long as it does not conflict with an existing item
 
-                itemStates.add(new io.github.willqi.pizzaserver.server.network.protocol.data.ItemState(
-                        jsonItemState.get("name").getAsString(),
-                        jsonItemState.get("id").getAsInt(),
-                        false));
+            // Register Vanilla items
+            for (JsonElement element : jsonItemStates) {
+                JsonObject itemState = element.getAsJsonObject();
+
+                String itemId = itemState.get("name").getAsString();
+                int runtimeId = itemState.get("id").getAsInt();
+                customItemIdStart = Math.max(customItemIdStart, runtimeId + 1);
+
+                this.itemRuntimeIds.put(itemId, runtimeId);
+                this.itemStates.add(new StartGamePacket.ItemState(itemId, runtimeId, false));
             }
-            this.itemStates = itemStates;
+            this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
+
+            // Register custom items
+            for (ItemType itemType : ItemRegistry.getCustomTypes()) {
+                if (!(itemType instanceof BlockItemType)) { // We register item representations of custom blocks later
+                    int runtimeId = customItemIdStart++;
+                    this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
+                    this.itemStates.add(new StartGamePacket.ItemState(itemType.getItemId(), runtimeId, true));
+                }
+            }
+
+            //Register custom block items
+            int customBlockIdStart = 1000;
+            // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
+            // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
+            // So we will sort it the same way here
+            SortedSet<BaseBlockType> sortedCustomBlockTypes = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+            sortedCustomBlockTypes.addAll(BlockRegistry.getCustomTypes());
+            for (BaseBlockType customBlockType : sortedCustomBlockTypes) {
+                this.itemRuntimeIds.put(customBlockType.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+            }
         }
     }
 
@@ -157,13 +176,29 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     }
 
     @Override
-    public Set<ItemState> getItemStates() {
-        return Collections.unmodifiableSet(this.itemStates);
+    public int getItemRuntimeId(String itemName) {
+        try {
+            return this.itemRuntimeIds.get(itemName);
+        } catch (NullPointerException exception) {
+            throw new IllegalStateException("Attempted to retrieve runtime id for non-existent item: " + itemName);
+        }
     }
 
     @Override
+    public String getItemName(int runtimeId) {
+        try {
+            return this.itemRuntimeIds.inverse().get(runtimeId);
+        } catch (NullPointerException exception) {
+            throw new IllegalStateException("Attempted to retrieve item name for non-existent runtime id: " + runtimeId);
+        }
+    }
+
     public NBTCompound getBiomeDefinitions() {
         return this.biomesDefinitions;
+    }
+
+    public Set<StartGamePacket.ItemState> getItemStates() {
+        return Collections.unmodifiableSet(this.itemStates);
     }
 
 }

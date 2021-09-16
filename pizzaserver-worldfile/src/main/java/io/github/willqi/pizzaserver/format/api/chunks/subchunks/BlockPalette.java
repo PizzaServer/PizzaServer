@@ -99,4 +99,26 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
         }
     }
 
+    /**
+     * Helper class that represents an empty air entry
+     */
+    class EmptyEntry extends Entry {
+
+        @Override
+        public String getId() {
+            return "minecraft:air";
+        }
+
+        @Override
+        public int getVersion() {
+            return 0;
+        }
+
+        @Override
+        public NBTCompound getState() {
+            return new NBTCompound("states");
+        }
+
+    }
+
 }

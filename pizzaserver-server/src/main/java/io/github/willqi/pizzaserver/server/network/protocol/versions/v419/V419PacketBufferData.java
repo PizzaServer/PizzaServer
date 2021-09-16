@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
 
 public class V419PacketBufferData extends BasePacketBufferData {
@@ -232,6 +233,21 @@ public class V419PacketBufferData extends BasePacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.HITBOX, 117)
             .registerEntityProperty(EntityMetaPropertyName.IS_BUOYANT, 118)
             .registerEntityProperty(EntityMetaPropertyName.BUOYANCY_DATA, 119);
+
+        this.registerInventoryActionType(InventoryActionType.TAKE, 0);
+        this.registerInventoryActionType(InventoryActionType.PLACE, 1);
+        this.registerInventoryActionType(InventoryActionType.SWAP, 2);
+        this.registerInventoryActionType(InventoryActionType.DROP, 3);
+        this.registerInventoryActionType(InventoryActionType.DESTROY, 4);
+        this.registerInventoryActionType(InventoryActionType.CONSUME, 5);
+        this.registerInventoryActionType(InventoryActionType.CREATE, 6);
+        this.registerInventoryActionType(InventoryActionType.LAB_TABLE_COMBINE, 7);
+        this.registerInventoryActionType(InventoryActionType.BEACON_PAYMENT, 8);
+        this.registerInventoryActionType(InventoryActionType.CRAFT_RECIPE, 9);
+        this.registerInventoryActionType(InventoryActionType.AUTO_CRAFT_RECIPE, 10);
+        this.registerInventoryActionType(InventoryActionType.CRAFT_CREATIVE, 11);
+        this.registerInventoryActionType(InventoryActionType.CRAFT_NOT_IMPLEMENTED, 12);
+        this.registerInventoryActionType(InventoryActionType.CRAFT_RESULTS_DEPRECATED, 13);
     }
 
 }

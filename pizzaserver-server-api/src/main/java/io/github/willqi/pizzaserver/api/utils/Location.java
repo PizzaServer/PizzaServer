@@ -49,4 +49,9 @@ public class Location extends Vector3 {
         return (int)Math.floor(this.getZ() / 16d);
     }
 
+    @Override
+    public String toString() {
+        return "Location(level=" + this.getWorld().getLevel().getName() + ", world=" + this.getWorld().getDimension() + ", x=" + this.getX() +",y=" + this.getY() + ",z=" + this.getZ() + ")";
+    }
+
 }

@@ -59,8 +59,38 @@ public class Vector2i {
         return new Vector2i(this.getX() / x, this.getY() / y);
     }
 
+    public double distanceBetween(Vector2i vector2i) {
+        return Math.sqrt(Math.pow(this.getX() - vector2i.getX(), 2) + Math.pow(this.getY() - vector2i.getY(), 2));
+    }
+
+    public double distanceBetween(Vector2 vector2) {
+        return Math.sqrt(Math.pow(this.getX() - vector2.getX(), 2) + Math.pow(this.getY() - vector2.getY(), 2));
+    }
+
+    public double getLength() {
+        return Math.sqrt(Math.pow(this.getX(), 2) + Math.pow(this.getY(), 2));
+    }
+
+    public Vector2 normalize() {
+        double length = this.getLength();
+        return new Vector2((float)(this.getX() / length), (float)(this.getY() / length));
+    }
+
+    public double dot(Vector2 vector2) {
+        return (this.getX() * vector2.getX()) + (this.getY() * vector2.getY());
+    }
+
+    public double dot(Vector2i vector2i) {
+        return (this.getX() * vector2i.getX()) + (this.getY() * vector2i.getY());
+    }
+
     public Vector2 toVector2() {
         return new Vector2(this.x, this.y);
+    }
+
+    @Override
+    public String toString() {
+        return "Vector2i(x=" + this.x +",y=" + this.y + ")";
     }
 
 }

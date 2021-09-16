@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
@@ -104,10 +103,10 @@ public class V419StartGamePacketHandler extends BaseProtocolPacketHandler<StartG
 
         // Item states
         buffer.writeUnsignedVarInt(packet.getItemStates().size());
-        for (ItemState itemState : packet.getItemStates()) {
-            buffer.writeString(itemState.getItemId());
-            buffer.writeShortLE(itemState.getId());
-            buffer.writeBoolean(itemState.isComponentBased());
+        for (StartGamePacket.ItemState itemType : packet.getItemStates()) {
+            buffer.writeString(itemType.getItemId());
+            buffer.writeShortLE(itemType.getRuntimeId());
+            buffer.writeBoolean(itemType.isComponentBased());
         }
 
         buffer.writeString(packet.getMultiplayerId().toString());

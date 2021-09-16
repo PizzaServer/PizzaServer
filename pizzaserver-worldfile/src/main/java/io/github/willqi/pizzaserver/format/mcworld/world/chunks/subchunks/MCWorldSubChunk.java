@@ -3,6 +3,8 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
+import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
+import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -25,7 +27,11 @@ public class MCWorldSubChunk implements BedrockSubChunk {
     @Override
     public BlockLayer getLayer(int layer) {
         while (layer >= this.getLayers().size()) {
-            this.addLayer(new MCWorldBlockLayer(new MCWorldBlockPalette()));
+            MCWorldBlockPalette blockPalette = new MCWorldBlockPalette();
+            blockPalette.add(new BlockPalette.EmptyEntry());    // ensure the palette has air
+
+            BlockLayer blockLayer = new MCWorldBlockLayer(blockPalette);
+            this.addLayer(blockLayer);
         }
         return this.layers.get(layer);
     }

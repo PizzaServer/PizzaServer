@@ -37,12 +37,12 @@ public class V440MinecraftVersion extends BaseMinecraftVersion {
 
     @Override
     public BasePacketBuffer createPacketBuffer(ByteBuf buf) {
-        return new V440PacketBuffer(buf);
+        return new V440PacketBuffer(this, buf);
     }
 
     @Override
     public BasePacketBuffer createPacketBuffer(int initialCapacity) {
-        return new V440PacketBuffer(initialCapacity);
+        return new V440PacketBuffer(this, initialCapacity);
     }
 
 }

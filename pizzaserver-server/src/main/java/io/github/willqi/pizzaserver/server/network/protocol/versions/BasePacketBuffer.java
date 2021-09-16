@@ -2,17 +2,23 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions;
 
 import com.nukkitx.network.VarInts;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
+import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.server.item.Item;
 import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryAction;
+import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.util.ByteProcessor;
 
 import java.io.ByteArrayOutputStream;
@@ -35,25 +41,39 @@ import java.util.UUID;
 public class BasePacketBuffer extends ByteBuf {
 
     private final ByteBuf buffer;
+    private BaseMinecraftVersion version;
 
 
-    public BasePacketBuffer() {
-        this.buffer = ByteBufAllocator.DEFAULT.buffer();
+    public BasePacketBuffer(BaseMinecraftVersion version) {
+        this(version, 256);
     }
 
-    public BasePacketBuffer(int initialCapacity) {
-        this.buffer = ByteBufAllocator.DEFAULT.buffer(initialCapacity);
+    public BasePacketBuffer(BaseMinecraftVersion version, int initialCapacity) {
+        this(version, ByteBufAllocator.DEFAULT.buffer(initialCapacity));
     }
 
-    public BasePacketBuffer(ByteBuf buffer) {
+    public BasePacketBuffer(BaseMinecraftVersion version, ByteBuf buffer) {
         this.buffer = buffer;
+        this.version = version;
     }
 
     protected BasePacketBuffer createInstance(ByteBuf buffer) {
-        return new BasePacketBuffer(buffer);
+        return new BasePacketBuffer(null, buffer);
     }
 
-    protected BasePacketBufferData getData() {
+    public BaseMinecraftVersion getVersion() {
+        if (this.version == null) {
+            throw new IllegalStateException("Called getVersion() before version was assigned");
+        } else {
+            return this.version;
+        }
+    }
+
+    public void setVersion(BaseMinecraftVersion version) {
+        this.version = version;
+    }
+
+    public BasePacketBufferData getData() {
         throw new IllegalStateException("Called getData() before version was assigned");
     }
 
@@ -677,8 +697,38 @@ public class BasePacketBuffer extends ByteBuf {
         );
     }
 
+    public NBTCompound readNBTCompound() {
+        NBTInputStream nbtOutputStream = new NBTInputStream(new VarIntDataInputStream(new ByteBufInputStream(this)));
+        try {
+            return nbtOutputStream.readCompound();
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to read NBTCompound", exception);
+        }
+    }
+
+    public NBTCompound readLENBTCompound() {
+        NBTInputStream nbtOutputStream = new NBTInputStream(new ByteBufInputStream(this));
+        try {
+            return nbtOutputStream.readCompound();
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to read NBTCompound", exception);
+        }
+    }
+
     public Skin readSkin() {
         throw new IllegalStateException("Called readSkin() before version was assigned.");
+    }
+
+    public ItemStack readItem() {
+        throw new IllegalStateException("Called readItem() before version was assigned.");
+    }
+
+    public InventoryAction readInventoryAction(InventoryActionType actionType) {
+        throw new IllegalStateException("Called readInventoryAction() before version was assigned.");
+    }
+
+    public AuthoritativeInventorySlot readInventorySlot() {
+        throw new IllegalStateException("Called readInventorySlot() before version was assigned.");
     }
 
     @Override
@@ -861,6 +911,13 @@ public class BasePacketBuffer extends ByteBuf {
         return this.writeByteArray(string.getBytes(StandardCharsets.UTF_8));
     }
 
+    public BasePacketBuffer writeStringLE(String string) {
+        byte[] strBytes = string.getBytes(StandardCharsets.UTF_8);
+        this.writeShortLE(strBytes.length);
+        this.writeBytes(strBytes);
+        return this;
+    }
+
     public BasePacketBuffer writeUUID(UUID uuid) {
         this.buffer.writeLongLE(uuid.getMostSignificantBits());
         this.buffer.writeLongLE(uuid.getLeastSignificantBits());
@@ -898,6 +955,17 @@ public class BasePacketBuffer extends ByteBuf {
         return this;
     }
 
+    public BasePacketBuffer writeLENBTCompound(NBTCompound compound) {
+        ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+        try (NBTOutputStream nbtOutputStream = new NBTOutputStream(resultStream)) {
+            nbtOutputStream.writeCompound(compound);
+            this.writeBytes(resultStream.toByteArray());
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to write NBTCompound", exception);
+        }
+        return this;
+    }
+
     public BasePacketBuffer writeExperiments(Set<Experiment> experiments) {
         this.writeIntLE(experiments.size());
         for (Experiment experiment : experiments) {
@@ -907,12 +975,20 @@ public class BasePacketBuffer extends ByteBuf {
         return this;
     }
 
-    public BasePacketBuffer writeItem(Item item) {
-        throw new IllegalStateException("Called writeItem(Item item) before version was assigned.");
+    public BasePacketBuffer writeItem(ItemStack data) {
+        throw new UnsupportedOperationException("This operation is not supported.");
     }
 
     public BasePacketBuffer writeSkin(Skin skin) {
         throw new IllegalStateException("Called writeSkin(Skin skin) before version was assigned.");
+    }
+
+    public BasePacketBuffer writeInventoryAction(InventoryAction action) {
+        throw new IllegalStateException("Called writeInventoryAction() before version was assigned.");
+    }
+
+    public BasePacketBuffer writeInventorySlot(AuthoritativeInventorySlot data) {
+        throw new IllegalStateException("Called readInventorySlot() before version was assigned.");
     }
 
     public BasePacketBuffer writeEntityMetadata(EntityMetaData entityMetaData) {

@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks;
 
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.item.types.BaseBlockItemType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 
 import java.util.*;
@@ -30,6 +32,8 @@ public class BlockRegistry {
             customTypes.add(blockType);
         }
         types.put(blockType.getBlockId(), blockType);
+
+        ItemRegistry.register(new BaseBlockItemType(blockType));    // Register the item representation of this block
     }
 
     /**

@@ -1,10 +1,10 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.item.Item;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Sent with all of the creative items in the creative inventory
@@ -13,19 +13,19 @@ public class CreativeContentPacket extends BaseBedrockPacket {
 
     public static final int ID = 0x91;
 
-    private Collection<Item> items = new HashSet<>();
+    private List<ItemStack> entries = new ArrayList<>();
 
 
     public CreativeContentPacket() {
         super(ID);
     }
 
-    public Collection<Item> getItems() {
-        return this.items;
+    public List<ItemStack> getEntries() {
+        return this.entries;
     }
 
-    public void setItems(Collection<Item> items) {
-        this.items = items;
+    public void setEntries(List<ItemStack> entries) {
+        this.entries = entries;
     }
 
 }

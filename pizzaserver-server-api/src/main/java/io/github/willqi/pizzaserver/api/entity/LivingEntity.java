@@ -1,6 +1,9 @@
 package io.github.willqi.pizzaserver.api.entity;
 
+import io.github.willqi.pizzaserver.api.entity.MovingEntity;
+import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 /**
  * An entity which can be treated as alive.
@@ -47,6 +50,10 @@ public interface LivingEntity extends MovingEntity {
     float getHeadYaw();
 
     void setHeadYaw(float headYaw);
+
+    Vector3 getDirectionVector();
+
+    LivingEntityInventory getInventory();
 
     /**
      * This entity will be shown to the player when the player is within range

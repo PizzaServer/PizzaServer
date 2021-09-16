@@ -38,7 +38,7 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
                 if (this.session.getVersion() != null) {
                     inflatedBuffer = this.session.getVersion().createPacketBuffer(Zlib.decompressBuffer(buffer));
                 } else {
-                    inflatedBuffer = new BasePacketBuffer(Zlib.decompressBuffer(buffer));
+                    inflatedBuffer = new BasePacketBuffer(null, Zlib.decompressBuffer(buffer));
                 }
             } catch (DataFormatException exception) {
                 this.session.disconnect();

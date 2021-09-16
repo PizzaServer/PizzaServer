@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.api.item.ItemToolType;
+import io.github.willqi.pizzaserver.api.item.data.ItemToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 
 import java.util.*;

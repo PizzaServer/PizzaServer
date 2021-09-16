@@ -11,27 +11,17 @@ import java.util.Map;
 
 public class V419UpdateBlockPacketHandler extends BaseProtocolPacketHandler<UpdateBlockPacket> {
 
-    protected final Map<UpdateBlockPacket.Flag, Integer> flagValues = new HashMap<UpdateBlockPacket.Flag, Integer>(){
-        {
-            this.put(UpdateBlockPacket.Flag.NEIGHBOURS, 0x01);
-            this.put(UpdateBlockPacket.Flag.NETWORK, 0x02);
-            this.put(UpdateBlockPacket.Flag.NO_GRAPHIC, 0x04);
-            this.put(UpdateBlockPacket.Flag.PRIORITY, 0x08);
-        }
-    };
-
     @Override
     public void encode(UpdateBlockPacket packet, BasePacketBuffer buffer) {
         buffer.writeVector3i(packet.getBlockCoordinates());
 
-        int blockRuntimeId = ServerProtocol.VERSIONS
-                .get(V419MinecraftVersion.PROTOCOL)
+        int blockRuntimeId = buffer.getVersion()
                 .getBlockRuntimeId(packet.getBlock().getBlockType().getBlockId(), packet.getBlock().getBlockState());
         buffer.writeUnsignedVarInt(blockRuntimeId);
 
         int flags = 0;
         for (UpdateBlockPacket.Flag flag : packet.getFlags()) {
-            flags ^= 1 << this.flagValues.get(flag);
+            flags ^= 1 << flag.ordinal();
         }
         buffer.writeUnsignedVarInt(flags);
 

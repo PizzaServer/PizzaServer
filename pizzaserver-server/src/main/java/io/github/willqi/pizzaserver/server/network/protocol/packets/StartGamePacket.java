@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.commons.server.Difficulty;
 import io.github.willqi.pizzaserver.commons.world.Dimension;
@@ -15,6 +14,7 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.commons.world.WorldType;
 import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
+import io.github.willqi.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.util.*;
 
@@ -64,7 +64,7 @@ public class StartGamePacket extends BaseBedrockPacket {
     private UUID eduUuid;
     private ServerOrigin serverOrigin;
 
-    private Set<BaseBlockType> blockProperties = new HashSet<>();
+    private SortedSet<BaseBlockType> blockProperties = Collections.emptySortedSet();
     private Set<ItemState> itemStates = new HashSet<>();
 
     private Set<Experiment> experiments = new HashSet<>();
@@ -364,12 +364,18 @@ public class StartGamePacket extends BaseBedrockPacket {
         this.serverOrigin = serverOrigin;
     }
 
-    public Set<BaseBlockType> getBlockProperties() {
-        return Collections.unmodifiableSet(this.blockProperties);
+    public SortedSet<BaseBlockType> getBlockProperties() {
+        return Collections.unmodifiableSortedSet(this.blockProperties);
     }
 
+    /**
+     * The block properties provided will be internally sorted by their full minecraft namespace id
+     * as the block item runtime id is dependent on the order of the block properties sent
+     * @param blockProperties custom block properties
+     */
     public void setBlockProperties(Set<BaseBlockType> blockProperties) {
-        this.blockProperties = blockProperties;
+        this.blockProperties = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+        this.blockProperties.addAll(blockProperties);
     }
 
     public Set<ItemState> getItemStates() {
@@ -591,6 +597,34 @@ public class StartGamePacket extends BaseBedrockPacket {
 
     public void setServerEngine(String engine) {
         this.serverEngine = engine;
+    }
+
+
+    public static class ItemState {
+
+        private final String itemId;
+        private final int runtimeId;
+        private final boolean componentBased;
+
+
+        public ItemState(String itemId, int runtimeId, boolean componentBased) {
+            this.itemId = itemId;
+            this.runtimeId = runtimeId;
+            this.componentBased = componentBased;
+        }
+
+        public String getItemId() {
+            return this.itemId;
+        }
+
+        public int getRuntimeId() {
+            return this.runtimeId;
+        }
+
+        public boolean isComponentBased() {
+            return this.componentBased;
+        }
+
     }
 
 }

@@ -62,6 +62,7 @@ public class UpdateBlockPacket extends BaseBedrockPacket {
         NEIGHBOURS, // Most likely sends a block state update to nearby blocks
         NETWORK,
         NO_GRAPHIC,
+        NOT_USED,
         PRIORITY
     }
 

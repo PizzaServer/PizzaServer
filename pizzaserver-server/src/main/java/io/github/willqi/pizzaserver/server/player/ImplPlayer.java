@@ -1,23 +1,26 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
-import io.github.willqi.pizzaserver.server.level.ImplLevel;
+import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
+import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
@@ -52,6 +55,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
+    private Inventory openInventory = null;
+
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
         this.server = server;
@@ -64,12 +69,13 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.username = loginPacket.getUsername();
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
+        this.inventory = new ImplPlayerInventory(this);
 
         this.chunkRequestsLeft.set(server.getConfig().getChunkRequestsPerTick());
     }
 
     @Override
-    public MinecraftVersion getVersion() {
+    public BaseMinecraftVersion getVersion() {
         return this.version;
     }
 
@@ -157,6 +163,26 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         return 1.62f;
     }
 
+    public boolean canReach(Vector3i vector3i) {
+        return this.canReach(vector3i.toVector3());
+    }
+
+    public boolean canReach(Vector3 vector3) {
+        Vector3 position = this.getLocation().add(0, this.getEyeHeight(), 0);
+
+        // Distance check
+        // TODO: take into account creative mode when gamemodes are implemented
+        double distance = position.distanceBetween(vector3);
+        if (distance > 7) {
+            return false;
+        }
+
+        // Direction check
+        Vector3 playerDirectionVector = this.getDirectionVector();
+        Vector3 targetDirectionVector = vector3.subtract(this.getLocation()).normalize();
+        return playerDirectionVector.dot(targetDirectionVector) > 0;    // Must be in same direction
+    }
+
     @Override
     public void setMetaData(EntityMetaData metaData) {
         super.setMetaData(metaData);
@@ -172,6 +198,38 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     public ImplServer getServer() {
         return this.server;
+    }
+
+    @Override
+    public ImplPlayerInventory getInventory() {
+        return (ImplPlayerInventory)this.inventory;
+    }
+
+    @Override
+    public Optional<Inventory> getOpenInventory() {
+        return Optional.ofNullable(this.openInventory);
+    }
+
+    @Override
+    public boolean closeOpenInventory() {
+        Optional<Inventory> openInventory = this.getOpenInventory();
+        if (openInventory.isPresent() && !((BaseInventory)openInventory.get()).closeFor(this)) {
+            return false;
+        } else {
+            this.openInventory = null;
+            return true;
+        }
+    }
+
+    @Override
+    public boolean openInventory(Inventory inventory) {
+        this.closeOpenInventory();
+        if (((BaseInventory)inventory).openFor(this)) {
+            this.openInventory = inventory;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -193,7 +251,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     public boolean save() {
         if (this.hasSpawned()) {
             PlayerData playerData = new PlayerData.Builder()
-                    .setLevelName(((ImplLevel)this.getLevel()).getProvider().getFileName())
+                    .setLevelName(this.getLevel().getProvider().getFileName())
                     .setDimension(this.getLocation().getWorld().getDimension())
                     .setPosition(this.getLocation())
                     .setPitch(this.getPitch())
@@ -215,6 +273,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
      */
     public void onDisconnect() {
         if (this.hasSpawned()) {
+            this.closeOpenInventory();
+
             Location location = this.getLocation();
 
             if (this.canAutoSave()) {
@@ -570,6 +630,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     private void completeLogin() {
+        this.getInventory().sendSlots(this);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);
@@ -637,6 +698,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         addPlayerPacket.setHeadYaw(this.getHeadYaw());
         addPlayerPacket.setMetaData(this.getMetaData());
         addPlayerPacket.setDevice(this.getDevice());
+        addPlayerPacket.setHeldItem(this.getInventory().getHeldItem());
         player.sendPacket(addPlayerPacket);
     }
 

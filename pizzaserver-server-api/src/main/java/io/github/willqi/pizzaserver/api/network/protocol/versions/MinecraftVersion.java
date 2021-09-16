@@ -1,10 +1,6 @@
 package io.github.willqi.pizzaserver.api.network.protocol.versions;
 
-import io.github.willqi.pizzaserver.api.network.protocol.data.ItemState;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
-import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-
-import java.util.Set;
 
 /**
  * Represents a specific Minecraft version
@@ -20,15 +16,17 @@ public interface MinecraftVersion extends BlockRuntimeMapper {
     String getVersion();
 
     /**
-     * All of the {@link ItemState}s supported in this version
-     * @return supported {@link ItemState}s
+     * Resolves the runtime id of an item given its item id
+     * @param itemName item id
+     * @return item runtime id
      */
-    Set<ItemState> getItemStates();
+    int getItemRuntimeId(String itemName);
 
     /**
-     * Retrieve the biomes implemented in this version
-     * @return {@link NBTCompound} containing all biomes
+     * Resolve a item name by its runtime id
+     * @param runtimeId runtime id
+     * @return the item name or null if no name could be found
      */
-    NBTCompound getBiomeDefinitions();
+    String getItemName(int runtimeId);
 
 }
