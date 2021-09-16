@@ -12,27 +12,27 @@ public class ServerConfig {
     }
 
     public String getIp() {
-        return this.config.getString("server-ip");
+        return this.config.getString("network.ip");
     }
 
     public int getPort() {
-        return this.config.getInteger("server-port");
+        return this.config.getInteger("network.port");
     }
 
     public int getMaximumPlayers() {
-        return this.config.getInteger("player-max");
+        return this.config.getInteger("server.max-players");
     }
 
     public String getMotd() {
-        return this.config.getString("server-motd");
+        return this.config.getString("server.motd");
     }
 
     public boolean arePacksForced() {
-        return this.config.getBoolean("player-force-packs");
+        return this.config.getBoolean("server.force-packs");
     }
 
     public int getChunkRadius() {
-        return this.config.getInteger("world-chunk-radius");
+        return this.config.getInteger("world.chunk.radius");
     }
 
     /**
@@ -41,7 +41,7 @@ public class ServerConfig {
      * @return
      */
     public int getChunkRequestsPerTick() {
-        return this.config.getInteger("chunk-requests-per-tick");
+        return this.config.getInteger("world.chunk.requests-per-tick");
     }
 
     /**
@@ -49,11 +49,11 @@ public class ServerConfig {
      * @return max chunk queue count
      */
     public int getChunkProcessingCap() {
-        return this.config.getInteger("chunk-requests-processing-cap");
+        return this.config.getInteger("world.chunk.processing-queue-cap");
     }
 
     public String getDefaultWorldName() {
-        return this.config.getString("world-default");
+        return this.config.getString("world.default-name");
     }
 
     /**
@@ -61,7 +61,7 @@ public class ServerConfig {
      * @return default yaw
      */
     public float getDefaultYaw() {
-        return (float)this.config.getDouble("world-default-yaw");
+        return (float)this.config.getDouble("world.default-yaw");
     }
 
     /**
@@ -69,11 +69,23 @@ public class ServerConfig {
      * @return default pitch
      */
     public float getDefaultPitch() {
-        return (float)this.config.getDouble("world-default-pitch");
+        return (float)this.config.getDouble("world.default-pitch");
     }
 
     public int getNetworkCompressionLevel() {
-        return this.config.getInteger("network-compression-level");
+        return this.config.getInteger("network.compression-level");
+    }
+
+    /**
+     * Returns if xbox chains should be verified
+     * @return if xbox chains should be verified
+     */
+    public boolean isOnlineMode() {
+        return this.config.getBoolean("server.online-mode");
+    }
+
+    public boolean isDebugLoggingEnabled() {
+        return this.config.getBoolean("debug.messages");
     }
 
 }

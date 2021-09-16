@@ -82,7 +82,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             return;
         }
 
-        if (!loginPacket.isAuthenticated()) {
+        if (!loginPacket.isAuthenticated() && this.server.getConfig().isOnlineMode()) {
             this.session.disconnect();
             return;
         }

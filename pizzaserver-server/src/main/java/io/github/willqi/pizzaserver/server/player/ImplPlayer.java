@@ -296,7 +296,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                 for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
                     // Chunk radius is circular
                     int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
-                    if (this.chunkRadius < distance) {
+                    if (this.chunkRadius > distance) {
                         ImplChunk chunk = (ImplChunk)location.getWorld().getChunkManager().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
                         chunk.despawnFrom(this);
                     }
@@ -477,7 +477,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void setChunkRadiusRequested(int radius) {
-        int oldRadius = this.chunkRadius;
+        int oldRadius = this.getChunkRadius();
         this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
 
         if (this.hasSpawned()) {
@@ -531,14 +531,13 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         int currentPlayerChunkZ = this.getLocation().getChunkZ();
         for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
             for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
-                if (chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
-                    continue;   // We don't need to send this chunk because it's already rendered to us
-                }
-
                 // Chunk radius is circular
                 int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
                 if (this.getChunkRadius() > distance) {
-                    this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
+                    // Ensure that this chunk is not already visible
+                    if (!chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
+                        this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
+                    }
                 }
             }
         }
@@ -554,6 +553,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public boolean isConnected() {
         return !this.session.isDisconnected();
+    }
+
+    @Override
+    public long getPing() {
+        return this.session.getPing();
     }
 
     @Override

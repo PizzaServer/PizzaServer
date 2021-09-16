@@ -17,121 +17,175 @@ public class ConfigGroup {
         this.properties = properties;
     }
 
-    public void setString(String name, String value) {
-        this.properties.put(name, value);
+    public void setString(String key, String value) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), value);
     }
 
-    public String getString(String name) {
-        return String.valueOf(this.properties.get(name));
+    public String getString(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return (String)group.getProperties().get(getPropertyFromKey(key));
     }
 
-    public void setStringList(String name, List<String> list) {
-        this.properties.put(name, list);
+    public void setStringList(String key, List<String> list) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), list);
     }
 
-    public List<String> getStringList(String name) {
-        return ((List<String>)this.properties.get(name))
+    public List<String> getStringList(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return ((List<String>)group.getProperties().get(getPropertyFromKey(key)))
                 .stream()
                 .map(Object::toString)
                 .collect(Collectors.toList());
     }
 
-    public void setBoolean(String name, boolean value) {
-        this.properties.put(name, value);
+    public void setBoolean(String key, boolean value) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), value);
     }
 
-    public boolean getBoolean(String name) {
-        return Boolean.parseBoolean(this.properties.get(name).toString());
+    public boolean getBoolean(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return (Boolean)group.getProperties().get(getPropertyFromKey(key));
     }
 
-    public void setBooleanList(String name, List<Boolean> list) {
-        this.properties.put(name, list);
+    public void setBooleanList(String key, List<Boolean> list) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), list);
     }
 
-    public List<Boolean> getBooleanList(String name) {
-        return ((List<Boolean>)this.properties.get(name))
+    public List<Boolean> getBooleanList(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return ((List<Boolean>)group.getProperties().get(getPropertyFromKey(key)))
                 .stream()
                 .map(obj -> Boolean.valueOf(obj.toString()))
                 .collect(Collectors.toList());
     }
 
-    public void setInteger(String name, int value) {
-        this.properties.put(name, value);
+    public void setInteger(String key, int value) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), value);
     }
 
-    public int getInteger(String name) {
-        return Integer.parseInt(this.properties.get(name).toString());
+    public int getInteger(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return (Integer)group.getProperties().get(getPropertyFromKey(key));
     }
 
-    public void setIntegerList(String name, List<Integer> list) {
-        this.properties.put(name, list);
+    public void setIntegerList(String key, List<Integer> list) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), list);
     }
 
-    public List<Integer> getIntegerList(String name) {
-        return ((List<Integer>)this.properties.get(name))
+    public List<Integer> getIntegerList(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return ((List<Integer>)group.getProperties().get(getPropertyFromKey(key)))
                 .stream()
                 .mapToInt(obj -> Integer.parseInt(obj.toString()))
                 .boxed()
                 .collect(Collectors.toList());
     }
 
-    public void setDouble(String name, double value) {
-        this.properties.put(name, value);
+    public void setDouble(String key, double value) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), value);
     }
 
-    public double getDouble(String name) {
-        return Double.parseDouble(this.properties.get(name).toString());
+    public double getDouble(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return Double.parseDouble(group.getProperties().get(getPropertyFromKey(key)).toString());
     }
 
-    public void setDoubleList(String name, List<Double> list) {
-        this.properties.put(name, list);
+    public void setDoubleList(String key, List<Double> list) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), list);
     }
 
-    public List<Double> getDoubleList(String name) {
-        return ((List<Double>)this.properties.get(name))
+    public List<Double> getDoubleList(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return ((List<Object>)group.getProperties().get(getPropertyFromKey(key)))
                 .stream()
                 .mapToDouble(obj -> Double.parseDouble(obj.toString()))
                 .boxed()
                 .collect(Collectors.toList());
     }
 
-    public void setLong(String name, long value) {
-        this.properties.put(name, value);
-    }
-    public long getLong(String name) {
-        return Long.parseLong(this.properties.get(name).toString());
+    public void setLong(String key, long value) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), value);
     }
 
-    public void setLongList(String name, List<Long> list) {
-        this.properties.put(name, list);
+    public long getLong(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return (Long)group.getProperties().get(getPropertyFromKey(key));
     }
 
-    public List<Long> getLongList(String name) {
-        return ((List<Long>)this.properties.get(name))
+    public void setLongList(String key, List<Long> list) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), list);
+    }
+
+    public List<Long> getLongList(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return ((List<Object>)group.getProperties().get(getPropertyFromKey(key)))
                 .stream()
                 .mapToLong(obj -> Long.parseLong(obj.toString()))
                 .boxed()
                 .collect(Collectors.toList());
     }
 
-    public void setGroup(String name, ConfigGroup group) {
-        this.properties.put(name, group);
+    public void setGroup(String key, ConfigGroup newGroup) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.getProperties().put(getPropertyFromKey(key), newGroup);
     }
 
-    public ConfigGroup getGroup(String name) {
-        return new ConfigGroup((Map<String, Object>)this.properties.get(name));
+    public ConfigGroup getGroup(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return new ConfigGroup((Map<String, Object>) group.getProperties().get(getPropertyFromKey(key)));
     }
 
-    public void remove(String name) {
-        this.properties.remove(name);
+    public void remove(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        group.remove(getPropertyFromKey(key));
     }
 
-    public boolean has(String name) {
-        return this.properties.containsKey(name);
+    public boolean has(String key) {
+        ConfigGroup group = this.getParentGroupFromKey(key);
+        return group.getProperties().containsKey(getPropertyFromKey(key));
     }
 
     protected Map<String, Object> getProperties() {
         return Collections.unmodifiableMap(this.properties);
+    }
+
+    /**
+     * Given a string such as root.subroot.property
+     * This will return the ConfigGroup of root.subroot
+     * @param key key to fetch the parent group of
+     * @return parent config group of key provided
+     */
+    protected ConfigGroup getParentGroupFromKey(String key) {
+        String[] parts = key.split("\\.");
+        if (parts.length == 1) {
+            return this;
+        }
+
+        Map<String, Object> contents = (Map<String, Object>)this.properties.get(parts[0]);
+        for (int i = 1; i < parts.length - 1; i++) {    // the last part is the property
+            contents = (Map<String, Object>)contents.get(parts[i]);
+        }
+        return new ConfigGroup(contents);
+    }
+
+    /**
+     * Given a string such as root.subroot.property
+     * This will return the ending part of the string (in this case, property)
+     * @param key key to fetch the property part of
+     * @return property part
+     */
+    protected static String getPropertyFromKey(String key) {
+        return key.substring(key.lastIndexOf('.') + 1);
     }
 
     @Override
@@ -147,4 +201,5 @@ public class ConfigGroup {
             return false;
         }
     }
+
 }

@@ -27,7 +27,7 @@ public class MCWorldBlockPalette implements BlockPalette {
 
     @Override
     public Entry create(String name, NBTCompound states, int version) {
-        return new MCWorldEntry(name, states, version);
+        return new MCWorldBlockPaletteEntry(name, states, version);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class MCWorldBlockPalette implements BlockPalette {
         try {
             for (int i = 0; i < paletteLength; i++) {
                 NBTCompound compound = inputStream.readCompound();
-                this.add(new MCWorldEntry(compound));
+                this.add(new MCWorldBlockPaletteEntry(compound));
             }
         } catch (IOException exception) {
             throw new ChunkParseException("Failed to parse chunk palette.", exception);
@@ -148,20 +148,20 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
 
-    public static class MCWorldEntry extends Entry {
+    public static class MCWorldBlockPaletteEntry extends Entry {
 
         private final String name;
         private final int version;
         private final NBTCompound state;
 
 
-        public MCWorldEntry(NBTCompound data) {
+        public MCWorldBlockPaletteEntry(NBTCompound data) {
             this.name = data.getString("name");
             this.version = data.getInteger("version");
             this.state = data.getCompound("states");
         }
 
-        public MCWorldEntry(String name, NBTCompound states, int version) {
+        public MCWorldBlockPaletteEntry(String name, NBTCompound states, int version) {
             this.name = name;
             this.state = states;
             this.version = version;
@@ -182,7 +182,19 @@ public class MCWorldBlockPalette implements BlockPalette {
             return this.state;
         }
 
+        @Override
+        public int hashCode() {
+            return (53 * this.name.hashCode()) + (53 * this.state.hashCode());
+        }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof MCWorldBlockPaletteEntry) {
+                MCWorldBlockPaletteEntry otherEntry = (MCWorldBlockPaletteEntry)obj;
+                return otherEntry.getId().equals(this.getId()) && otherEntry.getState().equals(this.getState());
+            }
+            return false;
+        }
     }
 
 }
