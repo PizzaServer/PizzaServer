@@ -4,22 +4,23 @@ import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCChunkDatabase;
 import io.github.willqi.pizzaserver.format.mcworld.world.info.MCWorldInfo;
 import net.daporkchop.ldbjni.LevelDB;
 import org.iq80.leveldb.Options;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
- * Represents a Bedrock world file
+ * Represents a Bedrock world file.
  */
 public class MCWorld {
 
-    private final static String DB_PATH = "db";
-    private final static String LEVEL_DAT_PATH = "level.dat";
+    private static final String DB_PATH = "db";
+    private static final String LEVEL_DAT_PATH = "level.dat";
 
     private final File mcWorldDirectory;
 
 
     /**
-     * Read the contents in a exported Bedrock world file
+     * Read the contents in a exported Bedrock world file.
      * @param mcWorldDirectory Folder of the unzipped contents in the .mcworld file
      */
     public MCWorld(File mcWorldDirectory) {
@@ -27,6 +28,7 @@ public class MCWorld {
     }
 
     public MCChunkDatabase openChunkDatabase() throws IOException {
+
         File dbDirectory = new File(this.mcWorldDirectory.getAbsolutePath(), DB_PATH);
         if (!(dbDirectory.exists() && dbDirectory.isDirectory())) {
             throw new FileNotFoundException("Could not find db directory");
@@ -34,7 +36,6 @@ public class MCWorld {
         return new MCChunkDatabase(
                 LevelDB.PROVIDER.open(dbDirectory, new Options().blockSize(64 * 1024))
         );
-
     }
 
     public void setWorldInfo(MCWorldInfo worldInfo) {
@@ -46,7 +47,6 @@ public class MCWorld {
      * @throws IOException if file cannot be read
      */
     public MCWorldInfo getWorldInfo() throws IOException {
-
         File levelDatFile = new File(this.mcWorldDirectory.getAbsolutePath(), LEVEL_DAT_PATH);
         if (!levelDatFile.exists()) {
             throw new FileNotFoundException("Could not find level.dat file");
@@ -54,7 +54,6 @@ public class MCWorld {
         return new MCWorldInfo(
                 levelDatFile
         );
-
     }
 
 }

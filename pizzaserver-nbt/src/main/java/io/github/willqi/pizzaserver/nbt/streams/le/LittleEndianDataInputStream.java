@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Bedrock NBT reading stream for NBT read from the disk
+ * Bedrock NBT reading stream for NBT read from the disk.
  */
 public class LittleEndianDataInputStream extends InputStream implements DataInput {
 

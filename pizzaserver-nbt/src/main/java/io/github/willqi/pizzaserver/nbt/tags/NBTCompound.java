@@ -24,7 +24,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public byte getByte(String name) {
-        return ((byte)this.data.get(name));
+        return ((byte) this.data.get(name));
     }
 
     public NBTCompound putByte(String name, byte value) {
@@ -37,11 +37,11 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public NBTCompound putBoolean(String name, boolean value) {
-        return this.putByte(name, (byte)(value ? 1 : 0));
+        return this.putByte(name, (byte) (value ? 1 : 0));
     }
 
     public short getShort(String name) {
-        return (short)this.data.get(name);
+        return ((short) this.data.get(name));
     }
 
     public NBTCompound putShort(String name, short value) {
@@ -50,7 +50,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public int getInteger(String name) {
-        return (int)this.data.get(name);
+        return ((int) this.data.get(name));
     }
 
     public NBTCompound putInteger(String name, int value) {
@@ -59,7 +59,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public long getLong(String name) {
-        return (long)this.data.get(name);
+        return ((long) this.data.get(name));
     }
 
     public NBTCompound putLong(String name, long value) {
@@ -68,7 +68,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public float getFloat(String name) {
-        return (float)this.data.get(name);
+        return ((float) this.data.get(name));
     }
 
     public NBTCompound putFloat(String name, float value) {
@@ -77,7 +77,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public double getDouble(String name) {
-        return (double)this.data.get(name);
+        return ((double) this.data.get(name));
     }
 
     public NBTCompound putDouble(String name, double value) {
@@ -86,7 +86,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public String getString(String name) {
-        return (String)this.data.get(name);
+        return ((String) this.data.get(name));
     }
 
     public NBTCompound putString(String name, String value) {
@@ -95,7 +95,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public <T> NBTList<T> getList(String name) {
-        return ((NBTList<T>)this.data.get(name));
+        return ((NBTList<T>) this.data.get(name));
     }
 
     public <T> NBTCompound putList(String name, NBTList<T> value) {
@@ -104,7 +104,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public NBTCompound getCompound(String name) {
-        return (NBTCompound)this.data.get(name);
+        return ((NBTCompound) this.data.get(name));
     }
 
     public NBTCompound putCompound(String name, NBTCompound value) {
@@ -115,7 +115,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public byte[] getByteArray(String name) {
-        return (byte[])this.data.get(name);
+        return ((byte[]) this.data.get(name));
     }
 
     public NBTCompound putByteArray(String name, byte[] value) {
@@ -124,7 +124,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public int[] getIntegerArray(String name) {
-        return (int[])this.data.get(name);
+        return ((int[]) this.data.get(name));
     }
 
     public NBTCompound putIntegerArray(String name, int[] value) {
@@ -133,7 +133,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     }
 
     public long[] getLongArray(String name) {
-        return (long[])this.data.get(name);
+        return ((long[]) this.data.get(name));
     }
 
     public NBTCompound putLongArray(String name, long[] value) {
@@ -161,12 +161,12 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     @Override
     public void setDepth(int depth) {
         this.depth = depth;
-        if (this.depth > 512) {
-            throw new NBTLimitException("Reached maximum depth of 512.");
+        if (this.depth > NBTContainer.MAX_DEPTH) {
+            throw new NBTLimitException("Reached maximum depth of " + NBTContainer.MAX_DEPTH);
         }
         this.data.forEach((name, tag) -> {
             if (tag instanceof NBTContainer) {
-                ((NBTContainer)tag).setDepth(this.getDepth() + 1);
+                ((NBTContainer) tag).setDepth(this.getDepth() + 1);
             }
         });
     }
@@ -196,7 +196,7 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NBTCompound) {
-            NBTCompound nbtCompound = (NBTCompound)obj;
+            NBTCompound nbtCompound = ((NBTCompound) obj);
             if ((nbtCompound.size() != this.size()) || !(nbtCompound.getName().equals(this.getName()))) {
                 return false;
             }
@@ -212,15 +212,15 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
                 // We can't call .equals directly on the maps since it uses .equal regardless of if it's an array or not.
                 // So we have to handle arrays manually
                 if (element instanceof byte[] && otherElement instanceof byte[]) {
-                    if (!Arrays.equals((byte[])element, (byte[])otherElement)) {
+                    if (!Arrays.equals(((byte[]) element), ((byte[]) otherElement))) {
                         return false;
                     }
                 } else if (element instanceof int[] && otherElement instanceof int[]) {
-                    if (!Arrays.equals((int[])element, (int[])otherElement)) {
+                    if (!Arrays.equals(((int[]) element), ((int[]) otherElement))) {
                         return false;
                     }
                 } else if (element instanceof long[] && otherElement instanceof long[]) {
-                    if (!Arrays.equals((long[])element, (long[])otherElement)) {
+                    if (!Arrays.equals(((long[]) element), ((long[]) otherElement))) {
                         return false;
                     }
                 } else if (!element.equals(otherElement)) { // the elements were not an array or were both not of the same time
@@ -240,9 +240,9 @@ public class NBTCompound extends NBTContainer implements Iterable<String>, Clone
         for (String key : this.data.keySet()) {
             Object obj = this.data.get(key);
             if (obj instanceof NBTCompound) {
-                clonedData.put(key, ((NBTCompound)obj).clone());
+                clonedData.put(key, ((NBTCompound) obj).clone());
             } else if (obj instanceof NBTList) {
-                clonedData.put(key, ((NBTList<?>)obj).clone());
+                clonedData.put(key, ((NBTList<?>) obj).clone());
             } else {
                 clonedData.put(key, obj);
             }

@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Bedrock NBT writing stream for NBT written to the disk
+ * Bedrock NBT writing stream for NBT written to the disk.
  */
 public class LittleEndianDataOutputStream extends OutputStream implements DataOutput {
 
@@ -47,12 +47,12 @@ public class LittleEndianDataOutputStream extends OutputStream implements DataOu
 
     @Override
     public void writeShort(int value) throws IOException {
-        this.stream.writeShort(Short.reverseBytes((short)value));
+        this.stream.writeShort(Short.reverseBytes((short) value));
     }
 
     @Override
     public void writeChar(int value) throws IOException {
-        this.stream.writeChar(Character.reverseBytes((char)value));
+        this.stream.writeChar(Character.reverseBytes((char) value));
     }
 
     @Override
