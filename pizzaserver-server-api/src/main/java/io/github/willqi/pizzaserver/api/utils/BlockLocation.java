@@ -33,11 +33,11 @@ public class BlockLocation extends Vector3i {
     }
 
     public int getChunkX() {
-        return (int)Math.floor(this.getX() / 16d);
+        return ((int) Math.floor(this.getX() / 16d));
     }
 
     public int getChunkZ() {
-        return (int)Math.floor(this.getZ() / 16d);
+        return ((int) Math.floor(this.getZ() / 16d));
     }
 
     @Override
@@ -62,7 +62,11 @@ public class BlockLocation extends Vector3i {
 
     @Override
     public String toString() {
-        return "BlockLocation(level=" + this.getLevel().getName() + ", world=" + this.getWorld().getDimension() + ", x=" + this.getX() +",y=" + this.getY() + ",z=" + this.getZ() + ")";
+        return "BlockLocation(level=" + this.getLevel().getName()
+                + ", world=" + this.getWorld().getDimension()
+                + ", x=" + this.getX()
+                + ", y=" + this.getY()
+                + ", z=" + this.getZ() + ")";
     }
 
 }

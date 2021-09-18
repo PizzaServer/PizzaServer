@@ -128,7 +128,7 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
         double y = -Math.sin(Math.toRadians(this.getPitch()));
         double z = Math.cos(Math.toRadians(this.getYaw())) * cosPitch;
 
-        return new Vector3((float)x, (float)y, (float)z).normalize();
+        return new Vector3((float) x, (float) y, (float) z).normalize();
     }
 
     @Override
@@ -140,12 +140,12 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     public void moveTo(float x, float y, float z) {
         this.moveUpdate = true;
 
-        ImplChunk currentChunk = (ImplChunk)this.getChunk();
+        ImplChunk currentChunk = this.getChunk();
         this.x = x;
         this.y = y;
         this.z = z;
 
-        ImplChunk newChunk = (ImplChunk)this.getWorld().getChunkManager().getChunk((int)Math.floor(this.x / 16), (int)Math.floor(this.z / 16));
+        ImplChunk newChunk = this.getWorld().getChunkManager().getChunk((int) Math.floor(this.x / 16), (int) Math.floor(this.z / 16));
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
             currentChunk.removeEntity(this);
             newChunk.addEntity(this);

@@ -42,16 +42,20 @@ public class Location extends Vector3 {
     }
 
     public int getChunkX() {
-        return (int)Math.floor(this.getX() / 16d);
+        return (int) Math.floor(this.getX() / 16d);
     }
 
     public int getChunkZ() {
-        return (int)Math.floor(this.getZ() / 16d);
+        return (int) Math.floor(this.getZ() / 16d);
     }
 
     @Override
     public String toString() {
-        return "Location(level=" + this.getWorld().getLevel().getName() + ", world=" + this.getWorld().getDimension() + ", x=" + this.getX() +",y=" + this.getY() + ",z=" + this.getZ() + ")";
+        return "Location(level=" + this.getWorld().getLevel().getName()
+                + ", world=" + this.getWorld().getDimension()
+                + ", x=" + this.getX()
+                + ", y=" + this.getY()
+                + ", z=" + this.getZ() + ")";
     }
 
 }

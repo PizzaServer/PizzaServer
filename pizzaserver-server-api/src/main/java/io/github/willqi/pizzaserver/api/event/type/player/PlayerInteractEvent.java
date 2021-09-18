@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 /**
- * Called when the player interacts with a block in the world
+ * Called when the player interacts with a block in the world.
  */
 public class PlayerInteractEvent extends BasePlayerEvent.Cancellable {
 

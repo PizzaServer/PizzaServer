@@ -10,36 +10,36 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Represents the player list a player currently has
+ * Represents the player list a player currently has.
  */
 public interface PlayerList {
 
     /**
-     * Add a new entry to the player's player list
+     * Add a new entry to the player's player list.
      * @param entry player list entry
      */
     void addEntry(Entry entry);
 
     /**
-     * Add multiple entries to the player's player list
+     * Add multiple entries to the player's player list.
      * @param entries player list entries
      */
     void addEntries(Collection<Entry> entries);
 
     /**
-     * Remove a entry from the player's player list
+     * Remove a entry from the player's player list.
      * @param entry player list entry
      */
     void removeEntry(Entry entry);
 
     /**
-     * Remove multiple entries from the player's player list
+     * Remove multiple entries from the player's player list.
      * @param entries player list entries
      */
     void removeEntries(Collection<Entry> entries);
 
     /**
-     * Retrieve the entries a player is currently shown
+     * Retrieve the entries a player is currently shown.
      * @return player list entries
      */
     List<Entry> getEntries();
@@ -58,6 +58,7 @@ public interface PlayerList {
         // Edu only properties
         private final boolean teacher;
         private final boolean host;
+
 
         private Entry(UUID uuid,
                       long entityRuntimeId,
@@ -96,7 +97,7 @@ public interface PlayerList {
         }
 
         /**
-         * Used on specific platforms to limit who can see messages sent by this player
+         * Used on specific platforms to limit who can see messages sent by this player.
          * @return platform chat id
          */
         public String getPlatformChatId() {
@@ -104,7 +105,7 @@ public interface PlayerList {
         }
 
         /**
-         * Get the device of the player
+         * Get the device of the player.
          * @return player's device
          */
         public Device getDevice() {
@@ -125,26 +126,26 @@ public interface PlayerList {
 
         @Override
         public int hashCode() {
-            return (43 * this.getUUID().hashCode()) +
-                    (int)(43 * this.getEntityRuntimeId()) +
-                    (43 * this.getUsername().hashCode()) +
-                    (43 * this.getXUID().hashCode()) +
-                    (43 * this.getPlatformChatId().hashCode()) +
-                    (43 * this.getDevice().hashCode()) +
-                    (43 * this.getSkin().hashCode());
+            return (43 * this.getUUID().hashCode())
+                    + (int) (43 * this.getEntityRuntimeId())
+                    + (43 * this.getUsername().hashCode())
+                    + (43 * this.getXUID().hashCode())
+                    + (43 * this.getPlatformChatId().hashCode())
+                    + (43 * this.getDevice().hashCode())
+                    + (43 * this.getSkin().hashCode());
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof PlayerList.Entry) {
-                PlayerList.Entry otherEntry = (PlayerList.Entry)obj;
-                return otherEntry.getUUID().equals(this.getUUID()) &&
-                        NumberUtils.isNearlyEqual(otherEntry.getEntityRuntimeId(), this.getEntityRuntimeId()) &&
-                        otherEntry.getUsername().equals(this.getUsername()) &&
-                        otherEntry.getXUID().equals(this.getXUID()) &&
-                        otherEntry.getPlatformChatId().equals(this.getPlatformChatId()) &&
-                        otherEntry.getDevice().equals(this.getDevice()) &&
-                        otherEntry.getSkin().equals(this.getSkin());
+                PlayerList.Entry otherEntry = (PlayerList.Entry) obj;
+                return otherEntry.getUUID().equals(this.getUUID())
+                        && NumberUtils.isNearlyEqual(otherEntry.getEntityRuntimeId(), this.getEntityRuntimeId())
+                        && otherEntry.getUsername().equals(this.getUsername())
+                        && otherEntry.getXUID().equals(this.getXUID())
+                        && otherEntry.getPlatformChatId().equals(this.getPlatformChatId())
+                        && otherEntry.getDevice().equals(this.getDevice())
+                        && otherEntry.getSkin().equals(this.getSkin());
             }
             return false;
         }

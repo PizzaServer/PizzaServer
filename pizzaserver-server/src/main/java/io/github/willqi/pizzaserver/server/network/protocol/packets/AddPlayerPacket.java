@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Used to spawn player entities
+ * Used to spawn player entities.
  */
 public class AddPlayerPacket extends BaseBedrockPacket {
 

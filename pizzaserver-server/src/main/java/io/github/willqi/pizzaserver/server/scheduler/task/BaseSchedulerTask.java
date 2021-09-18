@@ -16,11 +16,17 @@ public abstract class BaseSchedulerTask implements SchedulerTask {
     }
 
     @Override
-    public final void cancel() { this.isCancelled = true; }
+    public final void cancel() {
+        this.isCancelled = true;
+    }
 
     @Override
-    public UUID getTaskID() { return this.taskID; }
+    public UUID getTaskID() {
+        return this.taskID;
+    }
 
     @Override
-    public final boolean isCancelled() { return isCancelled; }
+    public final boolean isCancelled() {
+        return this.isCancelled;
+    }
 }

@@ -6,13 +6,13 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 public interface LivingEntityInventory extends Inventory {
 
     /**
-     * Get the entity who owns this inventory
+     * Get the entity who owns this inventory.
      * @return the entity who owns this inventory
      */
     LivingEntity getEntity();
 
     /**
-     * Change all pieces of armour
+     * Change all pieces of armour.
      * @param helmet new helmet
      * @param chestplate new chestplate
      * @param leggings new leggings
@@ -23,7 +23,7 @@ public interface LivingEntityInventory extends Inventory {
     ItemStack getHelmet();
 
     /**
-     * Change the helmet of this entity
+     * Change the helmet of this entity.
      * @param helmet the helmet to change it to
      */
     void setHelmet(ItemStack helmet);
@@ -31,7 +31,7 @@ public interface LivingEntityInventory extends Inventory {
     ItemStack getChestplate();
 
     /**
-     * Change the chestplate of this entity
+     * Change the chestplate of this entity.
      * @param chestplate the chestplate to change it to
      */
     void setChestplate(ItemStack chestplate);
@@ -39,7 +39,7 @@ public interface LivingEntityInventory extends Inventory {
     ItemStack getLeggings();
 
     /**
-     * Change the leggings of this entity
+     * Change the leggings of this entity.
      * @param leggings the leggings to change it to
      */
     void setLeggings(ItemStack leggings);
@@ -47,31 +47,31 @@ public interface LivingEntityInventory extends Inventory {
     ItemStack getBoots();
 
     /**
-     * Change the boots of this entity
+     * Change the boots of this entity.
      * @param boots the boots to change it to
      */
     void setBoots(ItemStack boots);
 
     /**
-     * Get the item the entity is holding
+     * Get the item the entity is holding.
      * @return item the entity is holding
      */
     ItemStack getHeldItem();
 
     /**
-     * Change the item the entity is holding
+     * Change the item the entity is holding.
      * @param mainHand item the entity should hold
      */
     void setHeldItem(ItemStack mainHand);
 
     /**
-     * Change the item that is in the offhand of the entity
+     * Change the item that is in the offhand of the entity.
      * @return item in the offhand of the entity
      */
     ItemStack getOffhandItem();
 
     /**
-     * Set the item that is in the offhand of the entity
+     * Set the item that is in the offhand of the entity.
      * @param offHand item in the offhand of the entity
      */
     void setOffhandItem(ItemStack offHand);

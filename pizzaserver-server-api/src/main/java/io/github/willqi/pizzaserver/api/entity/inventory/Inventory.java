@@ -14,13 +14,13 @@ public interface Inventory extends Watchable {
     int getId();
 
     /**
-     * Get all slot types this inventory has
+     * Get all slot types this inventory has.
      * @return all possible slot types this inventory has
      */
     Set<InventorySlotType> getSlotTypes();
 
     /**
-     * Get the entity who owns this inventory
+     * Get the entity who owns this inventory.
      * @return the entity who owns this inventory
      */
     Entity getEntity();
@@ -28,25 +28,25 @@ public interface Inventory extends Watchable {
     int getSize();
 
     /**
-     * Clear the inventory
+     * Clear the inventory.
      */
     void clear();
 
     /**
-     * Returns a copy of the slots of this inventory
+     * Returns a copy of the slots of this inventory.
      * @return clone of the slots
      */
     ItemStack[] getSlots();
 
     /**
-     * Returns a copy of the slot in this inventory
+     * Returns a copy of the slot in this inventory.
      * @param slot the slot
      * @return clone of the slot
      */
     ItemStack getSlot(int slot);
 
     /**
-     * Change all the slots in this inventory
+     * Change all the slots in this inventory.
      * The slots provided must be the same size as the existing slots
      * ItemStacks will be cloned when setting
      * @param slots new slots
@@ -54,7 +54,7 @@ public interface Inventory extends Watchable {
     void setSlots(ItemStack[] slots);
 
     /**
-     * Change a single slot
+     * Change a single slot.
      * @param slot the slot to change
      * @param itemStack the item to place in it (this will be cloned)
      */
@@ -88,20 +88,20 @@ public interface Inventory extends Watchable {
     Set<ItemStack> addItems(Collection<ItemStack> itemStacks);
 
     /**
-     * Send this inventory to a player
+     * Send this inventory to a player.
      * @param player the player to send this inventory to
      */
     void sendSlots(Player player);
 
     /**
-     * Send a specific slot of this inventory to a player
+     * Send a specific slot of this inventory to a player.
      * @param player the player to send the slot to
      * @param slot the slot
      */
     void sendSlot(Player player, int slot);
 
     /**
-     * Check if this player has permission to open this inventory by themselves
+     * Check if this player has permission to open this inventory by themselves.
      * @param player if the player has permission to open this inventory
      * @return if the player has permission to open the inventory by themselves
      */

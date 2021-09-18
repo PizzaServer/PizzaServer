@@ -17,7 +17,7 @@ public abstract class BaseBlockEvent extends Event {
     }
 
 
-    public static abstract class Cancellable extends BaseBlockEvent implements CancellableType {
+    public abstract static class Cancellable extends BaseBlockEvent implements CancellableType {
 
         protected boolean isCancelled;
 
@@ -28,7 +28,7 @@ public abstract class BaseBlockEvent extends Event {
 
         @Override
         public boolean isCancelled() {
-            return isCancelled;
+            return this.isCancelled;
         }
 
         @Override

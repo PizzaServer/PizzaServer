@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.entity.inventory;
 
 /**
- * All the possible inventory slot types an inventory can have
+ * All the possible inventory slot types an inventory can have.
  */
 public enum InventorySlotType {
     ANVIL_ITEM(0),
@@ -79,7 +79,7 @@ public enum InventorySlotType {
     }
 
     /**
-     * Check if the slot provided is a slot this slot type supports
+     * Check if the slot provided is a slot this slot type supports.
      * @param slot slot number
      * @return if the slot number is valid for this type
      */

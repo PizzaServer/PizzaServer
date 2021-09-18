@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 
 /**
- * Called when the player changes their skin in-game
+ * Called when the player changes their skin in-game.
  */
 public class PlayerSkinUpdateEvent extends BasePlayerEvent.Cancellable {
 
