@@ -73,7 +73,7 @@ public class Vector2i {
 
     public Vector2 normalize() {
         double length = this.getLength();
-        return new Vector2((float)(this.getX() / length), (float)(this.getY() / length));
+        return new Vector2((float) (this.getX() / length), (float) (this.getY() / length));
     }
 
     public double dot(Vector2 vector2) {
@@ -90,7 +90,7 @@ public class Vector2i {
 
     @Override
     public String toString() {
-        return "Vector2i(x=" + this.x +",y=" + this.y + ")";
+        return "Vector2i(x=" + this.x + ", y=" + this.y + ")";
     }
 
 }

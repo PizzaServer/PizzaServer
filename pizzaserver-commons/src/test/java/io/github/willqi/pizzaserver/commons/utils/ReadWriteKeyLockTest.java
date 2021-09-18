@@ -48,8 +48,8 @@ public class ReadWriteKeyLockTest {
 
         CountDownLatch latch = new CountDownLatch(1);
         new Thread(() -> {
-             lock.readLock(1);
-             latch.countDown();
+            lock.readLock(1);
+            latch.countDown();
         }).start();
         latch.await();
 
@@ -67,7 +67,8 @@ public class ReadWriteKeyLockTest {
         }).start();
         latch.await();
 
-        assertTrue(lock.tryReadLock(1), "Was unable to acquire read lock on another thread while holding one on the main thread despite no write locks");
+        assertTrue(lock.tryReadLock(1),
+                "Was unable to acquire read lock on another thread while holding one on the main thread despite no write locks");
     }
 
     @Test
