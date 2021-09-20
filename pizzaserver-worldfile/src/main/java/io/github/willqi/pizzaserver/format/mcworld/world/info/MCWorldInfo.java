@@ -164,12 +164,12 @@ public class MCWorldInfo implements LevelData, Cloneable {
             this.setLastPlayed(compound.getLong("LastPlayed"));
             this.setMinimumCompatibleClientVersion(
                     Arrays.stream(compound.getList("MinimumCompatibleClientVersion").getContents())
-                            .mapToInt(i -> (Integer)i)
+                            .mapToInt(i -> (Integer) i)
                             .toArray()
             );
             this.setLastOpenedWithVersion(
                     Arrays.stream(compound.getList("lastOpenedWithVersion").getContents())
-                            .mapToInt(i -> (Integer)i)
+                            .mapToInt(i -> (Integer) i)
                             .toArray()
             );
             this.setPlatform(compound.getInteger("Platform"));
@@ -198,7 +198,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
                             .setWalkSpeed(abilities.getFloat("walkSpeed"))
             );
 
-            this.setGameRules(new HashMap<GameRuleID, GameRule<?>>(){
+            this.setGameRules(new HashMap<GameRuleID, GameRule<?>>() {
                 {
                     put(GameRuleID.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleID.COMMAND_BLOCK_OUTPUT, compound.getBoolean("commandblockoutput")));
                     put(GameRuleID.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleID.COMMAND_BLOCKS_ENABLED, compound.getBoolean("commandblocksenabled")));
@@ -272,7 +272,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
     }
 
     /**
-     * This is subject to change and will change when experiments are explored
+     * This is subject to change and will change when experiments are explored.
      * @return experiments
      */
     public NBTCompound getExperiments() {
@@ -280,9 +280,8 @@ public class MCWorldInfo implements LevelData, Cloneable {
     }
 
     /**
-     * This is subject to change and will change when experiments are explored
-     * @param experiments
-     * @return self for chaining
+     * This is subject to change and will change when experiments are explored.
+     * @param experiments experiments
      */
     public void setExperiments(NBTCompound experiments) {
         this.experiments = experiments;
@@ -731,7 +730,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
     @Override
     public MCWorldInfo clone() {
         try {
-            return (MCWorldInfo)super.clone();
+            return (MCWorldInfo) super.clone();
         } catch (CloneNotSupportedException exception) {
             return null;
         }

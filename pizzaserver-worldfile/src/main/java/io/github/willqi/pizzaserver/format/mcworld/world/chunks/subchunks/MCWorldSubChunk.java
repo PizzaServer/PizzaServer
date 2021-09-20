@@ -78,14 +78,14 @@ public class MCWorldSubChunk implements BedrockSubChunk {
 
     /**
      * Construct a sub chunk based on data retrieved from the level database.
-     * @param buffer
-     * @throws IOException
+     * @param buffer buffer to parse
+     * @throws IOException if parsing failed
      */
     public void parse(ByteBuf buffer) throws IOException {
         this.subChunkVersion = buffer.readByte();
         int totalLayers;
 
-        switch (subChunkVersion) {
+        switch (this.subChunkVersion) {
             case 8:
                 totalLayers = buffer.readByte();
                 break;
@@ -93,13 +93,13 @@ public class MCWorldSubChunk implements BedrockSubChunk {
                 totalLayers = 1;
                 break;
             default:
-                throw new UnsupportedEncodingException("Missing implementation for v" + subChunkVersion + " chunks");
+                throw new UnsupportedEncodingException("Missing implementation for v" + this.subChunkVersion + " chunks");
         }
 
         for (int layerI = 0; layerI < totalLayers; layerI++) {
             int bitsPerBlock = buffer.readByte() >> 1;
             int blocksPerWord = 32 / bitsPerBlock;
-            int wordsPerChunk = (int)Math.ceil(4096d / blocksPerWord);
+            int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
 
             // We want to read the palette first so we can translate what blocks are immediately.
             int chunkBlocksIndex = buffer.readerIndex();

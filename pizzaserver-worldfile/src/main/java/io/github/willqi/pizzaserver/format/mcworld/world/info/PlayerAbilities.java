@@ -143,7 +143,7 @@ public class PlayerAbilities {
     }
 
     public PlayerAbilities setIsLightning(boolean isLightning) {
-        this.lightning = lightning;
+        this.lightning = isLightning;
         return this;
     }
 
