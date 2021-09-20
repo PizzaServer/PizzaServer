@@ -97,8 +97,11 @@ public class ImplServer implements Server {
 
         int currentTps = 0;
         long nextTpsRecording = 0;
-        long sleepTime = 0;    // The amount of nanoseconds to sleep for
-                               // This fluctuates depending on if we were at a slower/faster tps before
+
+        // The amount of nanoseconds to sleep for
+        // This fluctuates depending on if we were at a slower/faster tps before
+        long sleepTime = 0;
+
         while (this.running) {
             long idealNanoSleepPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
 
@@ -118,10 +121,12 @@ public class ImplServer implements Server {
                 this.stop();
                 return;
             }
-            sleepTime -= System.nanoTime() - sleepStart;    // How long did it actually take to sleep?
-                                                            // If we didn't sleep for the correct amount,
-                                                            // take that into account for the next sleep by
-                                                            // leaving extra/less for the next sleep.
+
+            // How long did it actually take to sleep?
+            // If we didn't sleep for the correct amount,
+            // take that into account for the next sleep by
+            // leaving extra/less for the next sleep.
+            sleepTime -= System.nanoTime() - sleepStart;
 
             // Record TPS every second
             if (System.nanoTime() > nextTpsRecording) {
@@ -147,7 +152,7 @@ public class ImplServer implements Server {
     }
 
     /**
-     * Processes incoming and outgoing packets
+     * Processes incoming and outgoing packets.
      */
     private void processPackets() {
         synchronized (this.sessions) {
@@ -295,7 +300,9 @@ public class ImplServer implements Server {
     }
 
     public void syncScheduler(ImplScheduler scheduler) {
-        if(scheduler.isRunning()) this.syncedSchedulers.add(scheduler);
+        if (scheduler.isRunning()) {
+            this.syncedSchedulers.add(scheduler);
+        }
     }
 
     public boolean desyncScheduler(ImplScheduler scheduler) {
@@ -303,7 +310,7 @@ public class ImplServer implements Server {
     }
 
     /**
-     * Retrieve the {@link PlayerDataProvider} used to save and store player data
+     * Retrieve the {@link PlayerDataProvider} used to save and store player data.
      * @return {@link PlayerDataProvider}
      */
     public PlayerDataProvider getPlayerProvider() {

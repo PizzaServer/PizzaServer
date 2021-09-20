@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 
 /**
- * Handles any packets regarding chunk/block interactions
+ * Handles any packets regarding chunk/block interactions.
  */
 public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
 

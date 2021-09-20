@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions;
 
 /**
- * Used in inventory transactions
+ * Used in inventory transactions.
  * All transactions have a type associated with them that determines the action that was done
  * and the data the transaction will contain
  */

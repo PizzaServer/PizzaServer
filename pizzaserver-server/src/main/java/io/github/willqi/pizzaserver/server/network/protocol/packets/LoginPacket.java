@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import java.util.UUID;
 
 /**
- * Sent by the client to authenticate itself to the server
+ * Sent by the client to authenticate itself to the server.
  */
 public class LoginPacket extends BaseBedrockPacket {
 
@@ -29,7 +29,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Network protocol the client is on
+     * Network protocol the client is on.
      * @return game protocol
      */
     public int getProtocol() {
@@ -37,7 +37,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the game protocol of the player
+     * Change the game protocol of the player.
      * @param protocol game protocol
      */
     public void setProtocol(int protocol) {
@@ -45,7 +45,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * If the player is xbox authenticated
+     * If the player is xbox authenticated.
      * @return if the player is authenticated
      */
     public boolean isAuthenticated() {
@@ -53,7 +53,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change if the player is xbox authenticated
+     * Change if the player is xbox authenticated.
      * @param authenticated if the player is authenticated
      */
     public void setAuthenticated(boolean authenticated) {
@@ -61,7 +61,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * xbox id of the player if the client is authenticated
+     * xbox id of the player if the client is authenticated.
      * @return xbox id
      */
     public String getXUID() {
@@ -69,7 +69,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the xbox id of the player
+     * Change the xbox id of the player.
      * @param xuid xbox id
      */
     public void setXUID(String xuid) {
@@ -85,7 +85,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the device the player is playing on
+     * Get the device the player is playing on.
      * @return device the player is on
      */
     public Device getDevice() {
@@ -93,7 +93,7 @@ public class LoginPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the device the player is on
+     * Change the device the player is on.
      * @param device device the player is on
      */
     public void setDevice(Device device) {

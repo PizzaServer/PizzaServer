@@ -19,7 +19,9 @@ public class V428PlayerActionPacketHandler extends V419PlayerActionPacketHandler
         packet.setEntityRuntimeID(buffer.readUnsignedVarLong());
         int action = buffer.readVarInt();
         packet.setActionType(this.actions.inverse().get(action));
-        if(packet.getActionType() == null) ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
+        if (packet.getActionType() == null) {
+            ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
+        }
         packet.setVector3(buffer.readVector3i());
         packet.setFace(buffer.readVarInt());
         return packet;

@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the client to notify the server that the client can be sent all packets
+ * Sent by the client to notify the server that the client can be sent all packets.
  */
 public class SetLocalPlayerAsInitializedPacket extends BaseBedrockPacket {
 

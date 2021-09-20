@@ -1117,6 +1117,11 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     @Override
+    public BasePacketBuffer slice(int index, int length) {
+        return this.createInstance(this.buffer.slice(index, length));
+    }
+
+    @Override
     public BasePacketBuffer retainedSlice() {
         return this.createInstance(this.buffer.retainedSlice());
     }
@@ -1124,11 +1129,6 @@ public class BasePacketBuffer extends ByteBuf {
     @Override
     public BasePacketBuffer retainedSlice(int index, int length) {
         return this.createInstance(this.buffer.retainedSlice(index, length));
-    }
-
-    @Override
-    public BasePacketBuffer slice(int index, int length) {
-        return this.createInstance(this.buffer.slice(index, length));
     }
 
     @Override

@@ -53,7 +53,7 @@ public class BedrockRakNetConnectionListener implements RakNetSessionListener {
                 // Packets start with a header that contains the client id (used for split screen) and the packet id
                 int packetId = packet.readUnsignedVarInt() & 0x3ff;
                 try {
-                    session.handlePacket(packetId, packet);
+                    this.session.handlePacket(packetId, packet);
                 } catch (Exception exception) {
                     throw new RuntimeException("Failed to parse packet (id: " + packetId + ")", exception);
                 }

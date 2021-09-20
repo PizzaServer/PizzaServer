@@ -22,11 +22,11 @@ public class ImplScheduler implements Scheduler {
 
     protected int tickDelay; // The amount of server ticks between each scheduler tick.
 
-    private final ExecutorService threadPool = Executors.newCachedThreadPool(runnable -> new Thread(runnable){
+    private final ExecutorService threadPool = Executors.newCachedThreadPool(runnable -> new Thread(runnable) {
         @Override
         public void interrupt() {
-            synchronized (activeThreads) {
-                activeThreads.remove(this);
+            synchronized (ImplScheduler.this.activeThreads) {
+                ImplScheduler.this.activeThreads.remove(this);
             }
             super.interrupt();
         }
@@ -39,7 +39,7 @@ public class ImplScheduler implements Scheduler {
     public ImplScheduler(Server server, int tickDelay) {
         this.schedulerID = UUID.randomUUID();
 
-        this.server = (ImplServer)server;
+        this.server = (ImplServer) server;
 
         this.syncedTick = 0;
         this.schedulerTick = 0;
@@ -52,12 +52,17 @@ public class ImplScheduler implements Scheduler {
 
     // -- Control --
 
-    /** Enables ticking on the scheduler */
-    public synchronized boolean startScheduler() { return this.startScheduler(true); }
+    /** Enables ticking on the scheduler. */
+    public synchronized boolean startScheduler() {
+        return this.startScheduler(true);
+    }
+
     public synchronized boolean startScheduler(boolean tickWithServer) {
-        if(!isRunning) {
+        if (!this.isRunning) {
             this.isRunning = true;
-            if(tickWithServer) this.server.syncScheduler(this);
+            if (tickWithServer) {
+                this.server.syncScheduler(this);
+            }
             return true;
         }
         return false;
@@ -68,15 +73,15 @@ public class ImplScheduler implements Scheduler {
      * @return true if the scheduler was initially running and then stopped.
      */
     public synchronized boolean stopScheduler() {
-        if(isRunning) {
-            pauseScheduler();
-            clearQueuedSchedulerTasks();
+        if (this.isRunning) {
+            this.pauseScheduler();
+            this.clearQueuedSchedulerTasks();
             return true;
         }
         return false;
     }
 
-    /** Removes scheduler's hook to the server tick whilst clearing the queue */
+    /** Removes scheduler's hook to the server tick whilst clearing the queue. */
     public synchronized void pauseScheduler() {
         this.isRunning = false;
         this.server.desyncScheduler(this);
@@ -84,10 +89,10 @@ public class ImplScheduler implements Scheduler {
 
     /** Clears all the tasks queued in the scheduler. */
     public synchronized void clearQueuedSchedulerTasks() {
-       for(SchedulerTaskEntry entry: new ArrayList<>(schedulerTasks)) {
-           entry.getTask().cancel(); // For the runnable to use? idk
-           this.schedulerTasks.remove(entry);
-       }
+        for (SchedulerTaskEntry entry : new ArrayList<>(this.schedulerTasks)) {
+            entry.getTask().cancel(); // For the runnable to use? idk
+            this.schedulerTasks.remove(entry);
+        }
     }
 
 
@@ -100,11 +105,11 @@ public class ImplScheduler implements Scheduler {
      * @return true is a scheduler tick is triggered as a result.
      */
     public synchronized boolean serverTick() { // Should only be done on the main thread
-        syncedTick++;
+        this.syncedTick++;
 
         // Check if synced is a multiple of the delay
-        if((syncedTick % tickDelay) == 0) {
-            schedulerTick();
+        if ((this.syncedTick % this.tickDelay) == 0) {
+            this.schedulerTick();
             return true;
         }
         return false;
@@ -112,20 +117,22 @@ public class ImplScheduler implements Scheduler {
 
     /** Executes a scheduler tick, running any tasks due to run on this tick. */
     public synchronized void schedulerTick() {
-        if(isRunning) {
+        if (this.isRunning) {
 
             // To avoid stopping the scheduler from inside a task making it scream, use ArrayList wrapping
-            for(SchedulerTaskEntry task: new ArrayList<>(schedulerTasks)) {
+            for (SchedulerTaskEntry task : new ArrayList<>(this.schedulerTasks)) {
                 long taskTick = task.getNextTick();
 
-                if(taskTick == schedulerTick) {
+                if (taskTick == this.schedulerTick) {
 
                     // Cancelled tasks shouldn't be in the scheduler queue anyway.
-                    if(!task.getTask().isCancelled()) {
+                    if (!task.getTask().isCancelled()) {
 
-                        if(task.isAsynchronous()) {
+                        if (task.isAsynchronous()) {
                             this.threadPool.submit(() -> {
-                                synchronized (activeThreads) { activeThreads.add(Thread.currentThread()); }
+                                synchronized (this.activeThreads) {
+                                    this.activeThreads.add(Thread.currentThread());
+                                }
 
                                 try {
                                     task.getTask().run();
@@ -135,7 +142,9 @@ public class ImplScheduler implements Scheduler {
                                     err.printStackTrace();
                                 }
 
-                                synchronized (activeThreads) { activeThreads.remove(Thread.currentThread()); }
+                                synchronized (this.activeThreads) {
+                                    this.activeThreads.remove(Thread.currentThread());
+                                }
                             }); // Start async task and move on.
 
                         } else {
@@ -152,38 +161,40 @@ public class ImplScheduler implements Scheduler {
 
 
                         // Not cancelled by the call of #run() + it's a repeat task.
-                        if(task.isRepeating() && (!task.getTask().isCancelled())) {
+                        if (task.isRepeating() && (!task.getTask().isCancelled())) {
                             long targetTick = taskTick + task.getRepeatInterval();
 
                             SchedulerTaskEntry newTask = new SchedulerTaskEntry(task.getTask(), task.getRepeatInterval(), targetTick, task.isAsynchronous());
-                            queueTaskEntry(newTask);
+                            this.queueTaskEntry(newTask);
                         }
                     }
 
-                } else if(taskTick > schedulerTick) {
+                } else if (taskTick > this.schedulerTick) {
                     // Upcoming task, do not remove from queue! :)
                     break;
                 }
 
-                schedulerTasks.remove(0); // Operate like a queue.
+                this.schedulerTasks.remove(0); // Operate like a queue.
                 // Remove from the start as long as it isn't an upcoming task.
                 // If a task is somehow scheduled *before* the current tick, it should
                 // be removed anyway.
             }
-            schedulerTick++; // Tick after so tasks can be ran without a delay.
+            this.schedulerTick++; // Tick after so tasks can be ran without a delay.
         }
     }
 
 
     // -- Task Control --
 
-    protected synchronized void queueTaskEntry(SchedulerTaskEntry entry){
-        if(entry.getNextTick() <= schedulerTick) throw new IllegalStateException("Task cannot be scheduled before the current tick.");
+    protected synchronized void queueTaskEntry(SchedulerTaskEntry entry) {
+        if (entry.getNextTick() <= this.schedulerTick) {
+            throw new IllegalStateException("Task cannot be scheduled before the current tick.");
+        }
 
-        int size = schedulerTasks.size();
-        for(int i = 0; i < size; i++) {
+        int size = this.schedulerTasks.size();
+        for (int i = 0; i < size; i++) {
             // Entry belongs before task? Insert into it's position
-            if(schedulerTasks.get(i).getNextTick() > entry.getNextTick()) {
+            if (this.schedulerTasks.get(i).getNextTick() > entry.getNextTick()) {
                 this.schedulerTasks.add(i, entry);
                 return;
             }
@@ -197,8 +208,8 @@ public class ImplScheduler implements Scheduler {
 
     @Override
     public PendingEntryBuilder prepareTask(Runnable task) {
-        BaseSchedulerTask rTask = new RunnableTypeTask(task);
-        return new ImplPendingEntryBuilder(this, rTask);
+        BaseSchedulerTask runnableTask = new RunnableTypeTask(task);
+        return new ImplPendingEntryBuilder(this, runnableTask);
     }
 
     @Override
@@ -209,18 +220,45 @@ public class ImplScheduler implements Scheduler {
     // -- Getters --
 
     /** The unique ID of this scheduler. */
-    public UUID getSchedulerID() { return schedulerID; }
+    public UUID getSchedulerID() {
+        return this.schedulerID;
+    }
 
-    /** @return the amount of server ticks this scheduler has been running for. */
-    public long getSyncedTick() { return syncedTick; }
-    /** @return the amount of ticks this scheduler has executed. */
-    public long getSchedulerTick() { return schedulerTick; }
-    /** @return the amount of server ticks between each scheduler tick. */
-    public int getTickDelay() { return tickDelay; }
-    /** @return a list of active async task threads */
-    public Set<Thread> getActiveThreads() { return new HashSet<>(activeThreads); }
+    /**
+     * Retrieve amount of server ticks this scheduler has been running for.
+     * @return the amount of server ticks this scheduler has been running for.
+     */
+    public long getSyncedTick() {
+        return this.syncedTick;
+    }
 
-    public boolean isRunning() { return isRunning; }
+    /**
+     * Retrieve the amount of ticks this scheduler has executed.
+     * @return the amount of ticks this scheduler has executed.
+     */
+    public long getSchedulerTick() {
+        return this.schedulerTick;
+    }
+
+    /**
+     * Retrieve the amount of server ticks between each scheduler tick.
+     * @return the amount of server ticks between each scheduler tick.
+     */
+    public int getTickDelay() {
+        return this.tickDelay;
+    }
+
+    /**
+     * Retrieve a set of active async task threads.
+     * @return a set of active async task threads
+     */
+    public Set<Thread> getActiveThreads() {
+        return new HashSet<>(this.activeThreads);
+    }
+
+    public boolean isRunning() {
+        return this.isRunning;
+    }
 
     // -- Setters --
 
@@ -250,28 +288,28 @@ public class ImplScheduler implements Scheduler {
 
         @Override
         public SchedulerTask schedule() {
-            synchronized (scheduler) {
-                long nextTick = scheduler.schedulerTick + delay + 1;
-                SchedulerTaskEntry entry = new SchedulerTaskEntry(task, interval, nextTick, isAsynchronous);
-                scheduler.queueTaskEntry(entry);
+            synchronized (this.scheduler) {
+                long nextTick = this.scheduler.schedulerTick + this.delay + 1;
+                SchedulerTaskEntry entry = new SchedulerTaskEntry(this.task, this.interval, nextTick, this.isAsynchronous);
+                this.scheduler.queueTaskEntry(entry);
             }
-            return task;
+            return this.task;
         }
 
 
         @Override
         public int getInterval() {
-            return interval;
+            return this.interval;
         }
 
         @Override
         public int getDelay() {
-            return delay;
+            return this.delay;
         }
 
         @Override
         public boolean isAsynchronous() {
-            return isAsynchronous;
+            return this.isAsynchronous;
         }
 
         @Override

@@ -13,7 +13,7 @@ public class V448MinecraftVersion extends BaseMinecraftVersion {
 
     public static final int PROTOCOL = 448;
     public static final String VERSION = "1.17.10";
-    private final BasePacketRegistry PACKET_REGISTRY = new V448PacketRegistry();
+    private static final BasePacketRegistry PACKET_REGISTRY = new V448PacketRegistry();
 
 
     public V448MinecraftVersion(ImplServer server) throws IOException {

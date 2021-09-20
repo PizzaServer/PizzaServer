@@ -186,7 +186,7 @@ public class V419PacketBuffer extends BasePacketBuffer {
                     .setSkinHeight(this.readIntLE())
                     .setSkinData(this.readByteArray())
                     .setType(this.readIntLE())
-                    .setFrame((int)this.readFloatLE())
+                    .setFrame((int) this.readFloatLE())
                     .setExpressionType(this.readIntLE())
                     .build();
             animations.add(skinAnimation);
@@ -407,32 +407,32 @@ public class V419PacketBuffer extends BasePacketBuffer {
             this.writeUnsignedVarInt(propertyName.getType().ordinal());
             switch (propertyName.getType()) {
                 case BYTE:
-                    this.writeByte((Byte)properties.get(propertyName).getValue());
+                    this.writeByte((Byte) properties.get(propertyName).getValue());
                     break;
                 case SHORT:
-                    this.writeShortLE((Short)properties.get(propertyName).getValue());
+                    this.writeShortLE((Short) properties.get(propertyName).getValue());
                     break;
                 case INTEGER:
-                    this.writeVarInt((Integer)properties.get(propertyName).getValue());
+                    this.writeVarInt((Integer) properties.get(propertyName).getValue());
                     break;
                 case FLOAT:
-                    this.writeFloatLE((Float)properties.get(propertyName).getValue());
+                    this.writeFloatLE((Float) properties.get(propertyName).getValue());
                     break;
                 case LONG:
-                    this.writeVarLong((Long)properties.get(propertyName).getValue());
+                    this.writeVarLong((Long) properties.get(propertyName).getValue());
                     break;
                 case STRING:
-                    this.writeString((String)properties.get(propertyName).getValue());
+                    this.writeString((String) properties.get(propertyName).getValue());
                     break;
                 case NBT:
-                    this.writeNBTCompound((NBTCompound)properties.get(propertyName).getValue());
+                    this.writeNBTCompound((NBTCompound) properties.get(propertyName).getValue());
                     break;
                 case VECTOR3I:
-                    Vector3i vector3i = (Vector3i)properties.get(propertyName).getValue();
+                    Vector3i vector3i = (Vector3i) properties.get(propertyName).getValue();
                     this.writeVector3i(vector3i);
                     break;
                 case VECTOR3:
-                    Vector3 vector3 = (Vector3)properties.get(propertyName).getValue();
+                    Vector3 vector3 = (Vector3) properties.get(propertyName).getValue();
                     this.writeVector3(vector3);
                     break;
                 default:

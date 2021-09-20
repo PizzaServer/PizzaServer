@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.TeleportationCa
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 /**
- * Sent by the server and client to move a player entity
+ * Sent by the server and client to move a player entity.
  */
 public class MovePlayerPacket extends BaseBedrockPacket {
 

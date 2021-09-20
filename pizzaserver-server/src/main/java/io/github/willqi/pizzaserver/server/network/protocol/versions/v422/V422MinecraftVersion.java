@@ -12,7 +12,7 @@ public class V422MinecraftVersion extends BaseMinecraftVersion {
 
     public static final int PROTOCOL = 422;
     public static final String VERSION = "1.16.200";
-    private final BasePacketRegistry PACKET_REGISTRY = new V422PacketRegistry();
+    private static final BasePacketRegistry PACKET_REGISTRY = new V422PacketRegistry();
 
 
     public V422MinecraftVersion(ImplServer server) throws IOException {

@@ -60,7 +60,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((Byte)this.getProperty(propertyName, EntityMetaPropertyType.BYTE).getValue());
+        return ((Byte) this.getProperty(propertyName, EntityMetaPropertyType.BYTE).getValue());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((Short)this.getProperty(propertyName, EntityMetaPropertyType.SHORT).getValue());
+        return ((Short) this.getProperty(propertyName, EntityMetaPropertyType.SHORT).getValue());
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((Integer)this.getProperty(propertyName, EntityMetaPropertyType.INTEGER).getValue());
+        return ((Integer) this.getProperty(propertyName, EntityMetaPropertyType.INTEGER).getValue());
     }
 
     @Override
@@ -102,7 +102,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((Float)this.getProperty(propertyName, EntityMetaPropertyType.FLOAT).getValue());
+        return ((Float) this.getProperty(propertyName, EntityMetaPropertyType.FLOAT).getValue());
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return 0;
         }
 
-        return ((Long)this.getProperty(propertyName, EntityMetaPropertyType.LONG).getValue());
+        return ((Long) this.getProperty(propertyName, EntityMetaPropertyType.LONG).getValue());
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return null;
         }
 
-        return ((String)this.getProperty(propertyName, EntityMetaPropertyType.STRING).getValue());
+        return ((String) this.getProperty(propertyName, EntityMetaPropertyType.STRING).getValue());
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return null;
         }
 
-        return ((NBTCompound)this.getProperty(propertyName, EntityMetaPropertyType.NBT).getValue());
+        return ((NBTCompound) this.getProperty(propertyName, EntityMetaPropertyType.NBT).getValue());
     }
 
     @Override
@@ -158,7 +158,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return null;
         }
 
-        return ((Vector3i)this.getProperty(propertyName, EntityMetaPropertyType.VECTOR3I).getValue());
+        return ((Vector3i) this.getProperty(propertyName, EntityMetaPropertyType.VECTOR3I).getValue());
     }
 
     @Override
@@ -172,7 +172,7 @@ public class ImplEntityMetaData implements EntityMetaData {
             return null;
         }
 
-        return ((Vector3)this.getProperty(propertyName, EntityMetaPropertyType.VECTOR3).getValue());
+        return ((Vector3) this.getProperty(propertyName, EntityMetaPropertyType.VECTOR3).getValue());
     }
 
     @Override

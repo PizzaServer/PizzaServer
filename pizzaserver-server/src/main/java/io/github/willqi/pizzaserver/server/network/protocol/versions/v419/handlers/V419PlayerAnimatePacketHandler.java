@@ -29,7 +29,9 @@ public class V419PlayerAnimatePacketHandler extends BaseProtocolPacketHandler<Pl
         AnimationAction action = this.actions.inverse().get(buffer.readVarInt());
         playerAnimatePacket.setAction(action);
         playerAnimatePacket.setEntityRuntimeID(buffer.readUnsignedVarLong());
-        if(action == AnimationAction.ROW_LEFT || action == AnimationAction.ROW_RIGHT) playerAnimatePacket.setRowingTime(buffer.readFloatLE());
+        if (action == AnimationAction.ROW_LEFT || action == AnimationAction.ROW_RIGHT) {
+            playerAnimatePacket.setRowingTime(buffer.readFloatLE());
+        }
         return playerAnimatePacket;
     }
 
@@ -37,7 +39,9 @@ public class V419PlayerAnimatePacketHandler extends BaseProtocolPacketHandler<Pl
     public void encode(PlayerAnimatePacket packet, BasePacketBuffer buffer) {
         buffer.writeVarInt(this.actions.get(packet.getAction()));
         buffer.writeUnsignedVarLong(packet.getEntityRuntimeID());
-        if(packet.getAction() == AnimationAction.ROW_LEFT || packet.getAction() == AnimationAction.ROW_RIGHT) buffer.writeFloatLE(packet.getRowingTime());
+        if (packet.getAction() == AnimationAction.ROW_LEFT || packet.getAction() == AnimationAction.ROW_RIGHT) {
+            buffer.writeFloatLE(packet.getRowingTime());
+        }
     }
 
 }

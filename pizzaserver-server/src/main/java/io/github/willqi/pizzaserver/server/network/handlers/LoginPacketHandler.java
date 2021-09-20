@@ -38,8 +38,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Handles preparing/authenticating a client to becoming a valid player
- * Includes Login > Packs > Starting Packets > PlayStatus - Player Spawn
+ * Handles preparing/authenticating a client to becoming a valid player.
+ * Includes Login > Packs > Starting Packets
  */
 public class LoginPacketHandler extends BaseBedrockPacketHandler {
 
@@ -54,7 +54,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
     }
 
     /**
-     * Called when the login process is complete
+     * Called when the login process is complete.
      */
     private void addGamePacketHandlers() {
         this.session.addPacketHandler(new ChunkBlockPacketHandler(this.player));
@@ -208,13 +208,13 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         ResourcePackChunkDataPacket chunkDataPacket = new ResourcePackChunkDataPacket();
         chunkDataPacket.setUUID(pack.getUuid());
         chunkDataPacket.setChunkIndex(packet.getChunkIndex());
-        chunkDataPacket.setChunkProgress((long)packet.getChunkIndex() * pack.getMaxChunkLength());  // Where to continue the download process from
+        chunkDataPacket.setChunkProgress((long) packet.getChunkIndex() * pack.getMaxChunkLength());  // Where to continue the download process from
         chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));
         this.player.sendPacket(chunkDataPacket);
     }
 
     /**
-     * Called when the client confirms they have all the packs
+     * Called when the client confirms they have all the packs.
      */
     private void sendResourcePackStackPacket() {
         ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
@@ -265,7 +265,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                         location = new Location(world, data.getPosition());
                     }
 
-                    PlayerPreSpawnEvent playerPreSpawnEvent = new PlayerPreSpawnEvent(player, location, data.getPitch(), data.getYaw());
+                    PlayerPreSpawnEvent playerPreSpawnEvent = new PlayerPreSpawnEvent(this.player, location, data.getPitch(), data.getYaw());
                     this.player.getServer().getEventManager().call(playerPreSpawnEvent);
                     if (playerPreSpawnEvent.isCancelled()) {
                         this.player.disconnect();
@@ -313,7 +313,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
     }
 
     /**
-     * Construct the StartGamePacket for the player
+     * Construct the StartGamePacket for the player.
      * @param world The world the player is spawning in
      * @param position the position the player is spawning at
      * @param direction the direction the player is spawning with

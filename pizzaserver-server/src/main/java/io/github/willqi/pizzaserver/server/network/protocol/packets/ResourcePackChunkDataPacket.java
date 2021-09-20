@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import java.util.UUID;
 
 /**
- * Contains a portion of the data of a resource pack
+ * Contains a portion of the data of a resource pack.
  * Sent in response to a ResourcePackChunkRequest packet
  */
 public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
@@ -23,7 +23,7 @@ public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the UUID of the resource pack
+     * Get the UUID of the resource pack.
      * @return UUID of the resource pack
      */
     public UUID getUUID() {
@@ -31,7 +31,7 @@ public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the UUID of the resource pack
+     * Change the UUID of the resource pack.
      * @param uuid UUID of the resource pack
      */
     public void setUUID(UUID uuid) {
@@ -39,7 +39,7 @@ public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the section of the resource pack this packet represents
+     * Change the section of the resource pack this packet represents.
      * @return section of the resource pack
      */
     public int getChunkIndex() {
@@ -47,7 +47,7 @@ public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the section this resource pack represents
+     * Change the section this resource pack represents.
      * @param index section of the resource pack
      */
     public void setChunkIndex(int index) {
@@ -55,7 +55,7 @@ public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the offset of the resource pack this packet represents
+     * Get the offset of the resource pack this packet represents.
      * @return pack offset
      */
     public long getChunkProgress() {
@@ -63,7 +63,7 @@ public class ResourcePackChunkDataPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Set the offset of the resource pack this packet represents
+     * Set the offset of the resource pack this packet represents.
      * @param progress pack offset
      */
     public void setChunkProgress(long progress) {

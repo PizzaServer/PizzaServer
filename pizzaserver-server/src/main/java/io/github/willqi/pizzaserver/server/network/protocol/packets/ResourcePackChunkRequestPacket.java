@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import java.util.UUID;
 
 /**
- * Sent by the client to request a chunk of a resource pack
+ * Sent by the client to request a chunk of a resource pack.
  */
 public class ResourcePackChunkRequestPacket extends BaseBedrockPacket {
 
@@ -20,7 +20,7 @@ public class ResourcePackChunkRequestPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the UUID of the resource pack requested
+     * Get the UUID of the resource pack requested.
      * @return UUID
      */
     public UUID getUUID() {
@@ -28,15 +28,15 @@ public class ResourcePackChunkRequestPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the UUID of the resource pack requested
-     * @param uuid
+     * Change the UUID of the resource pack requested.
+     * @param uuid UUID
      */
     public void setUUID(UUID uuid) {
         this.uuid = uuid;
     }
 
     /**
-     * Get the section of the pack the client is requesting
+     * Get the section of the pack the client is requesting.
      * @return section index
      */
     public int getChunkIndex() {
@@ -44,7 +44,7 @@ public class ResourcePackChunkRequestPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change thes ection of the pack that the client is requesting
+     * Change thes ection of the pack that the client is requesting.
      * @param index section index
      */
     public void setChunkIndex(int index) {

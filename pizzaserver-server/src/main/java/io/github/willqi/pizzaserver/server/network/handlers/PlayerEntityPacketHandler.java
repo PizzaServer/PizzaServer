@@ -9,7 +9,7 @@ import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 
 /**
- * Handles any packets regarding the player entity itself
+ * Handles any packets regarding the player entity itself.
  */
 public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 

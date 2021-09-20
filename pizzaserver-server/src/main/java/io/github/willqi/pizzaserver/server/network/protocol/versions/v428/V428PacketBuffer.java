@@ -126,7 +126,7 @@ public class V428PacketBuffer extends V422PacketBuffer {
                     .setSkinHeight(this.readIntLE())
                     .setSkinData(this.readByteArray())
                     .setType(this.readIntLE())
-                    .setFrame((int)this.readFloatLE())
+                    .setFrame((int) this.readFloatLE())
                     .setExpressionType(this.readIntLE())
                     .build();
             animations.add(skinAnimation);

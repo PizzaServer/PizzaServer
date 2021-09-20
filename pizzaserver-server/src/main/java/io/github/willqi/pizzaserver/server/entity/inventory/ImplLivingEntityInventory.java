@@ -34,7 +34,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
 
     @Override
     public LivingEntity getEntity() {
-        return (LivingEntity)super.getEntity();
+        return (LivingEntity) super.getEntity();
     }
 
     @Override
@@ -215,7 +215,7 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     }
 
     /**
-     * Broadcasts mob equipment packet to all viewers of this entity
+     * Broadcasts mob equipment packet to all viewers of this entity.
      * @param itemStack the item stack being sent
      * @param slot the slot to send it as
      * @param mainHand if the item is in the main hand

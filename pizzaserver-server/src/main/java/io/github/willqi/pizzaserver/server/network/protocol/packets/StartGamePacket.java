@@ -19,7 +19,7 @@ import io.github.willqi.pizzaserver.server.network.utils.MinecraftNamespaceCompa
 import java.util.*;
 
 /**
- * Sent by the server to inform the client about the server details
+ * Sent by the server to inform the client about the server details.
  */
 public class StartGamePacket extends BaseBedrockPacket {
 
@@ -370,7 +370,7 @@ public class StartGamePacket extends BaseBedrockPacket {
 
     /**
      * The block properties provided will be internally sorted by their full minecraft namespace id
-     * as the block item runtime id is dependent on the order of the block properties sent
+     * as the block item runtime id is dependent on the order of the block properties sent.
      * @param blockProperties custom block properties
      */
     public void setBlockProperties(Set<BaseBlockType> blockProperties) {

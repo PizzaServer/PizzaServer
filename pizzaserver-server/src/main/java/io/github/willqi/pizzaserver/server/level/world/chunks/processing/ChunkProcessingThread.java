@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.server.level.world.chunks.processing.request
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Handles unloading and sending chunks to players on another Thread
+ * Handles unloading and sending chunks to players on another Thread.
  */
 public class ChunkProcessingThread extends Thread {
 
@@ -24,8 +24,8 @@ public class ChunkProcessingThread extends Thread {
     }
 
     /**
-     * Add a request to the queue
-     * @param request
+     * Add a request to the queue.
+     * @param request chunk request
      */
     public void addRequest(ChunkRequest request) {
         this.requests.add(request);
@@ -43,7 +43,7 @@ public class ChunkProcessingThread extends Thread {
 
             if (request instanceof PlayerChunkRequest) {
                 // send chunk request
-                PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest)request;
+                PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest) request;
                 this.chunkManager.sendPlayerChunk(playerChunkRequest.getPlayer(), request.getX(), request.getZ());
             } else {
                 // unload request

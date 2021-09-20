@@ -57,7 +57,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
     }
 
     /**
-     * Extract the relevant JWT data from the chain/skin chains
+     * Extract the relevant JWT data from the chain/skin chains.
      * @param data the string
      * @return the JSON data object
      */
@@ -122,7 +122,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
                 if (!payload.containsKey("identityPublicKey")) {
                     return false;   // We need to ensure that each part is signed by the next.
                 }
-                prevKey = getKey((String)payload.get("identityPublicKey")); // used to validate x5u key/chain contents
+                prevKey = getKey((String) payload.get("identityPublicKey")); // used to validate x5u key/chain contents
             }
         } catch (ParseException | JOSEException | NoSuchAlgorithmException | InvalidKeySpecException exception) {
             return false;
@@ -133,7 +133,7 @@ public class V419LoginPacketHandler extends BaseProtocolPacketHandler<LoginPacke
 
 
     /**
-     * Parse the chain and set all relevant properties in the LoginPacket
+     * Parse the chain and set all relevant properties in the LoginPacket.
      * @param packet the LoginPacket
      * @param chainDataString chain string
      */

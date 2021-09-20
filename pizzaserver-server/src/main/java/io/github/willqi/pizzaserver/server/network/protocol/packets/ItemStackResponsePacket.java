@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import java.util.*;
 
 /**
- * Used to respond to a ItemStackRequestPacket
+ * Used to respond to a ItemStackRequestPacket.
  */
 public class ItemStackResponsePacket extends BaseBedrockPacket {
 

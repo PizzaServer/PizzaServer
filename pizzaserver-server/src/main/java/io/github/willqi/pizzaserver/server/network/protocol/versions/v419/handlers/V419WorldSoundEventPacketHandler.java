@@ -331,7 +331,7 @@ public class V419WorldSoundEventPacketHandler extends BaseProtocolPacketHandler<
     @Override
     public WorldSoundEventPacket decode(BasePacketBuffer buffer) {
         WorldSoundEventPacket packet = new WorldSoundEventPacket();
-        packet.setSound(sounds.inverse().get(buffer.readUnsignedVarInt()));
+        packet.setSound(this.sounds.inverse().get(buffer.readUnsignedVarInt()));
         packet.setVector3(buffer.readVector3());
         packet.setBlockID(buffer.readVarInt());
         packet.setEntityType(buffer.readString());
@@ -342,7 +342,7 @@ public class V419WorldSoundEventPacketHandler extends BaseProtocolPacketHandler<
 
     @Override
     public void encode(WorldSoundEventPacket packet, BasePacketBuffer buffer) {
-        buffer.writeUnsignedVarInt(sounds.get(packet.getSound()));
+        buffer.writeUnsignedVarInt(this.sounds.get(packet.getSound()));
         buffer.writeVector3(packet.getVector3());
         buffer.writeVarInt(packet.getBlockID());
         buffer.writeString(packet.getEntityType());

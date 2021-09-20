@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 
 /**
- * Sent to the server when the client does an action
+ * Sent to the server when the client does an action.
  */
 public class PlayerActionPacket extends BaseBedrockPacket {
 
@@ -22,7 +22,7 @@ public class PlayerActionPacket extends BaseBedrockPacket {
     }
 
     public long getEntityRuntimeID() {
-        return entityRuntimeID;
+        return this.entityRuntimeID;
     }
 
     public void setEntityRuntimeID(long entityRuntimeID) {
@@ -30,7 +30,7 @@ public class PlayerActionPacket extends BaseBedrockPacket {
     }
 
     public PlayerAction getActionType() {
-        return actionType;
+        return this.actionType;
     }
 
     public void setActionType(PlayerAction actionType) {
@@ -38,7 +38,7 @@ public class PlayerActionPacket extends BaseBedrockPacket {
     }
 
     public Vector3i getVector3() {
-        return vector3;
+        return this.vector3;
     }
 
     public void setVector3(Vector3i vector3) {
@@ -46,12 +46,12 @@ public class PlayerActionPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Does not return the face of the block on a value of 0-5, it returns the clients calculation of the face
+     * Does not return the face of the block on a value of 0-5, it returns the clients calculation of the face.
      * @return Face calculated by client
      */
     @Deprecated
     public int getFace() {
-        return face;
+        return this.face;
     }
 
     //Will need this method later once some way of faces are planned

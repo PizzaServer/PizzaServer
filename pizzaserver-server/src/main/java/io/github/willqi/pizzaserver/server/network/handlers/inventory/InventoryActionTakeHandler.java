@@ -21,10 +21,10 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<Inventory
         Optional<ItemStack> destinationStack = getItemStack(player, action.getDestination());
 
         // Validate the slots exist and that the player is requesting a valid slot/amount
-        boolean valid = sourceStack.isPresent() &&
-                destinationStack.isPresent() &&
-                action.getDestination().getInventorySlotType() == InventorySlotType.CURSOR &&
-                action.getCount() > 0;
+        boolean valid = sourceStack.isPresent()
+                && destinationStack.isPresent()
+                && action.getDestination().getInventorySlotType() == InventorySlotType.CURSOR
+                && action.getCount() > 0;
         if (valid) {
             // (Verify that either the destination is air or the source can be merged with the destination)
             boolean underStackLimit = destinationStack.get().getCount() + Math.min(action.getCount(), sourceStack.get().getCount()) <= sourceStack.get().getItemType().getMaxStackSize();

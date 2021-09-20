@@ -25,16 +25,16 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
             ItemStack destinationItemStack = destination.get();
 
             // the slots must be either of the same type or the destination has to be air
-            boolean canMergeItemData = (sourceItemStack.getItemType().equals(destinationItemStack.getItemType()) &&
-                                            sourceItemStack.getCompoundTag().equals(destinationItemStack.getCompoundTag()) &&
-                                            sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.isEmpty();
+            boolean canMergeItemData = (sourceItemStack.getItemType().equals(destinationItemStack.getItemType())
+                    && sourceItemStack.getCompoundTag().equals(destinationItemStack.getCompoundTag())
+                    && sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.isEmpty();
 
             // final destination slot cannot exceed max count
-            boolean doesNotExceedMaxCount = action.getCount() > 0 &&
-                                                destinationItemStack.getCount() + action.getCount() <= sourceItemStack.getItemType().getMaxStackSize();
+            boolean doesNotExceedMaxCount = action.getCount() > 0
+                    && destinationItemStack.getCount() + action.getCount() <= sourceItemStack.getItemType().getMaxStackSize();
 
-            boolean canPutItemTypeInSlot = canPutItemTypeInSlot(sourceItemStack.getItemType(), action.getDestination().getInventorySlotType()) &&
-                                                action.getDestination().getInventorySlotType() != InventorySlotType.CURSOR;
+            boolean canPutItemTypeInSlot = canPutItemTypeInSlot(sourceItemStack.getItemType(), action.getDestination().getInventorySlotType())
+                    && action.getDestination().getInventorySlotType() != InventorySlotType.CURSOR;
 
             return canMergeItemData && doesNotExceedMaxCount && canPutItemTypeInSlot;
         } else {

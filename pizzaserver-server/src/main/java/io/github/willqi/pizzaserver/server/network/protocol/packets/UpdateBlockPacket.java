@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Sent by the server to update a single block in the world
+ * Sent by the server to update a single block in the world.
  */
 public class UpdateBlockPacket extends BaseBedrockPacket {
 

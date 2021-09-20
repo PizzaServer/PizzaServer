@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent to the server to notify it if the client supports chunk caching
+ * Sent to the server to notify it if the client supports chunk caching.
  */
 public class ClientCacheStatusPacket extends BaseBedrockPacket {
 

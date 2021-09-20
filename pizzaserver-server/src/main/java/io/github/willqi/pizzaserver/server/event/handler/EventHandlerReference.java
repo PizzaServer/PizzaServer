@@ -14,7 +14,12 @@ public final class EventHandlerReference {
         this.method = method;
     }
 
-    public EventHandler getAnnotation() { return annotation; }
-    public Method getMethod() { return method; }
+    public EventHandler getAnnotation() {
+        return this.annotation;
+    }
+
+    public Method getMethod() {
+        return this.method;
+    }
 
 }
