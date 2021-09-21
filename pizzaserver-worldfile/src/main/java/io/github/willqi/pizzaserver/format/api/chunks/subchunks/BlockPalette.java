@@ -97,6 +97,7 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
             }
             return false;
         }
+
     }
 
     /**
@@ -104,9 +105,11 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
      */
     class EmptyEntry extends Entry {
 
+        public static final String ID = "minecraft:air";
+
         @Override
         public String getId() {
-            return "minecraft:air";
+            return ID;
         }
 
         @Override

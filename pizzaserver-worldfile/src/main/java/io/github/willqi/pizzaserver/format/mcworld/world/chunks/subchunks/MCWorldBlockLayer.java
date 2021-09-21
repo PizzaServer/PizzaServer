@@ -13,7 +13,7 @@ import java.util.*;
 public class MCWorldBlockLayer implements BlockLayer {
 
     private final MCWorldBlockPalette palette;
-    private final BlockPalette.Entry[] blocks = new BlockPalette.Entry[4096];
+    private final int[] blocks = new int[4096];
 
 
     public MCWorldBlockLayer(MCWorldBlockPalette palette) {
@@ -27,20 +27,28 @@ public class MCWorldBlockLayer implements BlockLayer {
 
     @Override
     public BlockPalette.Entry getBlockEntryAt(int x, int y, int z) {
-        return this.getBlockEntryByIndex((x << 8) | (z << 4) | y);
-    }
-
-    private BlockPalette.Entry getBlockEntryByIndex(int index) {
-        if (this.blocks[index] == null) {
-            this.blocks[index] = new BlockPalette.EmptyEntry();
+        if (this.palette.getPaletteSize() == 0) {
+            // if the palette is empty, then add an air entry in order to make this.blocks accurately return air for all 0s.
+            this.palette.add(new BlockPalette.EmptyEntry());
         }
-        return this.blocks[index];
+
+        return this.palette.getEntry(this.blocks[this.getBlockIndex(x, y, z)]);
     }
 
     @Override
     public void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry) {
-        this.blocks[(x << 8) | (z << 4) | y] = entry;
+        if (this.palette.getPaletteSize() == 0) {
+            // If the palette is empty, then add an air entry to make every 0 in this.blocks return air.
+            // Otherwise, when this method calls this.palette.add(entry), every 0 in this.blocks will be assigned that block.
+            this.palette.add(new BlockPalette.EmptyEntry());
+        }
+
         this.palette.add(entry);
+        this.blocks[this.getBlockIndex(x, y, z)] = this.palette.getPaletteIndex(entry);
+    }
+
+    private int getBlockIndex(int x, int y, int z) {
+        return (x << 8) | (z << 4) | y;
     }
 
     public void parse(ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
@@ -53,7 +61,7 @@ public class MCWorldBlockLayer implements BlockLayer {
                 }
 
                 int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
-                this.blocks[pos] = this.palette.getEntry(paletteIndex);
+                this.blocks[pos] = paletteIndex;
                 pos++;
             }
         }
@@ -86,7 +94,7 @@ public class MCWorldBlockLayer implements BlockLayer {
                     break;
                 }
 
-                word |= (this.palette.getPaletteIndex(this.getBlockEntryByIndex(pos))) << (bitsPerBlock * block);
+                word |= this.blocks[pos] << (bitsPerBlock * block);
                 pos++;
             }
             buffer.writeIntLE(word);
@@ -104,12 +112,21 @@ public class MCWorldBlockLayer implements BlockLayer {
      * Remove palette entries that are no longer used in this chunk.
      */
     private void cleanUpPalette() {
-        Set<BlockPalette.Entry> usedEntries = new HashSet<>(Arrays.asList(this.blocks));
+        // Get all the palette indexes being used
+        Set<Integer> usedEntries = new HashSet<>();
+        for (int paletteIndex : this.blocks) {
+            usedEntries.add(paletteIndex);
+        }
 
+        // Remove unused palette entries
         Iterator<BlockPalette.Entry> entryIterator = new HashSet<>(this.palette.getAllEntries()).iterator();
         while (entryIterator.hasNext()) {
             BlockPalette.Entry entry = entryIterator.next();
-            if (!usedEntries.contains(entry)) {
+            int paletteIndex = this.palette.getPaletteIndex(entry);
+
+            // Air occupies the first element of the block palette and CANNOT be removed or else empty elements of
+            // this.blocks will not resolve to air. Any other palette entry can be removed.
+            if (!usedEntries.contains(paletteIndex) && !entry.getId().equals(BlockPalette.EmptyEntry.ID)) {
                 entryIterator.remove();
                 this.palette.removeEntry(entry, false);
             }

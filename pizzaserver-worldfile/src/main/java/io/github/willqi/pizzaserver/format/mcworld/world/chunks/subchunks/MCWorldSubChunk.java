@@ -99,9 +99,9 @@ public class MCWorldSubChunk implements BedrockSubChunk {
         for (int layerI = 0; layerI < totalLayers; layerI++) {
             int bitsPerBlock = buffer.readByte() >> 1;
             int blocksPerWord = 32 / bitsPerBlock;
-            int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+            int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord); // there are 4096 blocks in a chunk stored in x words
 
-            // We want to read the palette first so we can translate what blocks are immediately.
+            // We want to read the palette first so that we can translate what blocks are immediately.
             int chunkBlocksIndex = buffer.readerIndex();
             buffer.setIndex(chunkBlocksIndex + (wordsPerChunk * 4), buffer.writerIndex());
 

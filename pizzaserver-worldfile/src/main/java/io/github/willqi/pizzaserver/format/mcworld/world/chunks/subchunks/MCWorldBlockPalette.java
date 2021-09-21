@@ -187,14 +187,6 @@ public class MCWorldBlockPalette implements BlockPalette {
             return (53 * this.name.hashCode()) + (53 * this.state.hashCode());
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof MCWorldBlockPaletteEntry) {
-                MCWorldBlockPaletteEntry otherEntry = (MCWorldBlockPaletteEntry) obj;
-                return otherEntry.getId().equals(this.getId()) && otherEntry.getState().equals(this.getState());
-            }
-            return false;
-        }
     }
 
 }
