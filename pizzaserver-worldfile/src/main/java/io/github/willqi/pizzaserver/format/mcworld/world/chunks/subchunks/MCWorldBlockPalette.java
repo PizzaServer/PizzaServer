@@ -25,6 +25,28 @@ public class MCWorldBlockPalette implements BlockPalette {
     private int paletteEntries = 0;
 
 
+    public MCWorldBlockPalette() {}
+
+    /**
+     * Create a palette based on palette data serialized for disk.
+     * @param buffer disk buffer
+     * @throws IOException if it failed to read the disk serialized block palette
+     */
+    public MCWorldBlockPalette(ByteBuf buffer) throws IOException {
+        int paletteLength = buffer.readIntLE();
+        NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
+        MCWorldBlockPalette palette = new MCWorldBlockPalette();
+        try {
+            for (int i = 0; i < paletteLength; i++) {
+                NBTCompound compound = inputStream.readCompound();
+                palette.add(new MCWorldBlockPaletteEntry(compound));
+            }
+        } catch (IOException exception) {
+            throw new ChunkParseException("Failed to parse chunk palette.", exception);
+        }
+    }
+
+
     @Override
     public Entry create(String name, NBTCompound states, int version) {
         return new MCWorldBlockPaletteEntry(name, states, version);
@@ -100,7 +122,7 @@ public class MCWorldBlockPalette implements BlockPalette {
 
     @Override
     public byte[] serializeForDisk() throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         Set<BlockPalette.Entry> entries = this.getEntries();
         buffer.writeIntLE(entries.size());
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
@@ -133,24 +155,6 @@ public class MCWorldBlockPalette implements BlockPalette {
         buffer.release();
 
         return serialized;
-    }
-
-    /**
-     * Retrieve a block palette from chunk data at the correct index.
-     * @param buffer buffer to read
-     * @throws IOException if it failed to read the buffer
-     */
-    public void parse(ByteBuf buffer) throws IOException {
-        int paletteLength = buffer.readIntLE();
-        NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
-        try {
-            for (int i = 0; i < paletteLength; i++) {
-                NBTCompound compound = inputStream.readCompound();
-                this.add(new MCWorldBlockPaletteEntry(compound));
-            }
-        } catch (IOException exception) {
-            throw new ChunkParseException("Failed to parse chunk palette.", exception);
-        }
     }
 
 

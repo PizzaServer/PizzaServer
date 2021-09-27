@@ -91,10 +91,9 @@ public class MCWorldChunk implements BedrockChunk {
             ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(subChunkBytes.length);
             buffer.writeBytes(subChunkBytes);
 
-            MCWorldSubChunk subChunk = new MCWorldSubChunk();
-            subChunk.parse(buffer);
-            buffer.release();
+            MCWorldSubChunk subChunk = new MCWorldSubChunk(buffer);
             this.subChunks.add(subChunk);
+            buffer.release();
         }
     }
 

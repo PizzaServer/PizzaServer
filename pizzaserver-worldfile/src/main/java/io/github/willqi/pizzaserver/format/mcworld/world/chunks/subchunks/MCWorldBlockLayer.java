@@ -19,6 +19,31 @@ public class MCWorldBlockLayer implements BlockLayer {
         this.palette = palette;
     }
 
+    /**
+     * Create a block layer based off of mcworld data.
+     * @param palette the block palette
+     * @param buffer the buffer that needs to be parsed (mcworld data)
+     * @param bitsPerBlock amount of bits per block
+     * @param blocksPerWord amount of minecraft blocks that are in each word
+     * @param wordsPerChunk amount of LE ints that contain all the blocks in this layer
+     */
+    public MCWorldBlockLayer(MCWorldBlockPalette palette, ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
+        this(palette);
+        int pos = 0;
+        for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
+            int word = buffer.readIntLE();  // This integer can store multiple minecraft blocks.
+            for (int block = 0; block < blocksPerWord; block++) {
+                if (pos >= 4096) {
+                    return;
+                }
+
+                int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
+                this.blocks[pos] = paletteIndex;
+                pos++;
+            }
+        }
+    }
+
     @Override
     public BlockPalette getPalette() {
         return this.palette;
@@ -44,22 +69,6 @@ public class MCWorldBlockLayer implements BlockLayer {
 
         this.palette.add(entry);
         this.blocks[getBlockIndex(x, y, z)] = this.palette.getPaletteIndex(entry);
-    }
-
-    public void parse(ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
-        int pos = 0;
-        for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
-            int word = buffer.readIntLE();  // This integer can store multiple blocks.
-            for (int block = 0; block < blocksPerWord; block++) {
-                if (pos >= 4096) {
-                    return;
-                }
-
-                int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
-                this.blocks[pos] = paletteIndex;
-                pos++;
-            }
-        }
     }
 
     @Override
