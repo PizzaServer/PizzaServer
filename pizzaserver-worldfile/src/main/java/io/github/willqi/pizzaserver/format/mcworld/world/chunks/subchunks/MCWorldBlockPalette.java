@@ -38,7 +38,7 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
     @Override
-    public int getPaletteSize() {
+    public int size() {
         return this.entries.size();
     }
 
@@ -59,6 +59,11 @@ public class MCWorldBlockPalette implements BlockPalette {
         }
     }
 
+
+    /**
+     * Resize modifies the block palette indexes in order to take as less space as possible.
+     * Unused palette entries are shifted.
+     */
     public void resize() {
         int resizeStartingIndex = -1;   // The first entry index that we need to relocate
         for (int index = 0; index < this.paletteEntries; index++) {
@@ -97,7 +102,7 @@ public class MCWorldBlockPalette implements BlockPalette {
     @Override
     public byte[] serializeForDisk() throws IOException {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        buffer.writeIntLE(this.getPaletteSize());
+        buffer.writeIntLE(this.size());
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
         for (BlockPalette.Entry data : this.getAllEntries()) {
             NBTCompound compound = new NBTCompound();
@@ -180,11 +185,6 @@ public class MCWorldBlockPalette implements BlockPalette {
         @Override
         public NBTCompound getState() {
             return this.state;
-        }
-
-        @Override
-        public int hashCode() {
-            return (53 * this.name.hashCode()) + (53 * this.state.hashCode());
         }
 
     }

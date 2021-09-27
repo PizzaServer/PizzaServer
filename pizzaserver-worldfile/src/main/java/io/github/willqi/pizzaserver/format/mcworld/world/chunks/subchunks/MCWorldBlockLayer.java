@@ -3,7 +3,6 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks.subchunks;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
-import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import net.daporkchop.lib.common.function.io.IOFunction;
@@ -27,7 +26,7 @@ public class MCWorldBlockLayer implements BlockLayer {
 
     @Override
     public BlockPalette.Entry getBlockEntryAt(int x, int y, int z) {
-        if (this.palette.getPaletteSize() == 0) {
+        if (this.palette.size() == 0) {
             // if the palette is empty, then add an air entry in order to make this.blocks accurately return air for all 0s.
             this.palette.add(new BlockPalette.EmptyEntry());
         }
@@ -37,7 +36,7 @@ public class MCWorldBlockLayer implements BlockLayer {
 
     @Override
     public void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry) {
-        if (this.palette.getPaletteSize() == 0) {
+        if (this.palette.size() == 0) {
             // If the palette is empty, then add an air entry to make every 0 in this.blocks return air.
             // Otherwise, when this method calls this.palette.add(entry), every 0 in this.blocks will be assigned that block.
             this.palette.add(new BlockPalette.EmptyEntry());
@@ -69,6 +68,7 @@ public class MCWorldBlockLayer implements BlockLayer {
 
     @Override
     public byte[] serializeForDisk() {
+        this.cleanUpPalette();
         return this.serialize(MCWorldBlockPalette::serializeForDisk);
     }
 
@@ -78,7 +78,6 @@ public class MCWorldBlockLayer implements BlockLayer {
     }
 
     private byte[] serialize(IOFunction<MCWorldBlockPalette, byte[]> paletteSerializer) {
-        this.cleanUpPalette();
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
         int bitsPerBlock = Math.max((int) Math.ceil(Math.log(this.palette.getAllEntries().size()) / Math.log(2)), 1);
         int blocksPerWord = 32 / bitsPerBlock;
@@ -113,9 +112,9 @@ public class MCWorldBlockLayer implements BlockLayer {
      */
     private void cleanUpPalette() {
         // Get all the palette indexes being used
-        Set<Integer> usedEntries = new HashSet<>();
+        Map<Integer, BlockPalette.Entry> usedEntries = new HashMap<>();
         for (int paletteIndex : this.blocks) {
-            usedEntries.add(paletteIndex);
+            usedEntries.put(paletteIndex, this.palette.getEntry(paletteIndex));
         }
 
         // Remove unused palette entries
@@ -126,12 +125,19 @@ public class MCWorldBlockLayer implements BlockLayer {
 
             // Air occupies the first element of the block palette and CANNOT be removed or else empty elements of
             // this.blocks will not resolve to air. Any other palette entry can be removed.
-            if (!usedEntries.contains(paletteIndex) && !entry.getId().equals(BlockPalette.EmptyEntry.ID)) {
+            if (!usedEntries.containsKey(paletteIndex) && !entry.getId().equals(BlockPalette.EmptyEntry.ID)) {
                 entryIterator.remove();
                 this.palette.removeEntry(entry, false);
             }
         }
+
+        // Shift entries in the palette as far down as possible
         this.palette.resize();
+
+        // Update our blocks with the new palette indexes
+        for (int i = 0; i < this.blocks.length; i++) {
+            this.blocks[i] = this.palette.getPaletteIndex(usedEntries.get(this.blocks[i]));
+        }
     }
 
 }

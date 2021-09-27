@@ -31,7 +31,7 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
      * Retrieve the total palette size.
      * @return length of the palette
      */
-    int getPaletteSize();
+    int size();
 
     /**
      * Retrieve all of the current palette {@link BlockPalette.Entry}s.
