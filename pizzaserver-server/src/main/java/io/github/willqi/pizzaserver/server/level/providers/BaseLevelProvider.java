@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Handles world operations regarding loading/saving
+ * Handles world operations regarding loading/saving.
  */
 public abstract class BaseLevelProvider implements Closeable {
 
@@ -21,13 +21,13 @@ public abstract class BaseLevelProvider implements Closeable {
     }
 
     /**
-     * Retrieve information about the level
+     * Retrieve information about the level.
      * @return {@link LevelData}
      */
     public abstract LevelData getLevelData();
 
     /**
-     * Retrieve a chunk by it's x and z coordinates
+     * Retrieve a chunk by it's x and z coordinates.
      * @param x chunk x
      * @param z chunk z
      * @return the chunk
@@ -35,7 +35,7 @@ public abstract class BaseLevelProvider implements Closeable {
     public abstract BedrockChunk getChunk(int x, int z, Dimension dimension) throws IOException;
 
     /**
-     * Get the name of the file for this level
+     * Get the name of the file for this level.
      * @return name of the file for this level
      */
     public String getFileName() {

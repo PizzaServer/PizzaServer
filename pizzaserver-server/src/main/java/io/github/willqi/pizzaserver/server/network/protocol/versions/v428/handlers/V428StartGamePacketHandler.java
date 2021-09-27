@@ -51,13 +51,13 @@ public class V428StartGamePacketHandler extends V419StartGamePacketHandler {
             buffer.writeUnsignedVarInt(rule.getType().getId());
             switch (rule.getType()) {
                 case BOOLEAN:
-                    buffer.writeBoolean(((GameRule<Boolean>)rule).getValue());
+                    buffer.writeBoolean(((GameRule<Boolean>) rule).getValue());
                     break;
                 case INT:
-                    buffer.writeUnsignedVarInt(((GameRule<Integer>)rule).getValue());
+                    buffer.writeUnsignedVarInt(((GameRule<Integer>) rule).getValue());
                     break;
                 case FLOAT:
-                    buffer.writeFloatLE(((GameRule<Float>)rule).getValue());
+                    buffer.writeFloatLE(((GameRule<Float>) rule).getValue());
                     break;
                 default:
                     throw new AssertionError("Tried to encode unknown gamerule type: " + rule.getType());

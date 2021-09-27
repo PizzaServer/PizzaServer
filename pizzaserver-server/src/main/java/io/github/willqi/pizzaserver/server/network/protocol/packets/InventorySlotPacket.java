@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the server to update a single slot in a inventory the player has open
+ * Sent by the server to update a single slot in a inventory the player has open.
  */
 public class InventorySlotPacket extends BaseBedrockPacket {
 

@@ -26,7 +26,7 @@ public class PlayerData {
     }
 
     /**
-     * Retrieve the name of the {@link io.github.willqi.pizzaserver.api.level.Level} the player is in
+     * Retrieve the name of the {@link io.github.willqi.pizzaserver.api.level.Level} the player is in.
      * @return world name
      */
     public String getLevelName() {

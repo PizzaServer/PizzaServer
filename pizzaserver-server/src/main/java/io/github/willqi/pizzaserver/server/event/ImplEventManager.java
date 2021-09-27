@@ -53,30 +53,33 @@ public class ImplEventManager implements EventManager {
         // And this is the part where it's probably the least efficient.
         // Would be great to bake this but then I can't really use the FilteredListener.
         // Could maybe filter each method as I go?
-        for(Object listener: listeners) {
+        for (Object listener : this.listeners) {
             HashMap<Class<? extends Event>, ArrayList<EventHandlerReference>> ref = listenerReference.get(listener.getClass());
 
-            for(EventHandlerReference pair : ref.getOrDefault(event.getClass(), new ArrayList<>())) {
+            for (EventHandlerReference pair : ref.getOrDefault(event.getClass(), new ArrayList<>())) {
 
                 // Handles generics in class parameters.
                 // These would be a nightmare to integrate into the listener's map.
                 TypeVariable<? extends Class<?>>[] source = event.getClass().getTypeParameters();
                 TypeVariable<? extends Class<?>>[] target = pair.getMethod().getParameterTypes()[0].getTypeParameters();
-                if(!(source.length == target.length)) continue; // Not even the right length!
+                if (!(source.length == target.length)) {
+                    continue; // Not even the right length!
+                }
 
                 boolean fail = false;
-                for(int i = 0; i < source.length; i++) {
+                for (int i = 0; i < source.length; i++) {
                     TypeVariable<? extends Class<?>> sourceType = source[i];
                     TypeVariable<? extends Class<?>> targetType = target[i];
 
-                    if(!sourceType.getGenericDeclaration().isAssignableFrom(targetType.getGenericDeclaration())){
+                    if (!sourceType.getGenericDeclaration().isAssignableFrom(targetType.getGenericDeclaration())) {
                         fail = true;
                         break;
                     }
                 }
 
-                if(fail) continue;
-
+                if (fail) {
+                    continue;
+                }
                 // ^ should just be skipped if generics aren't found ^
 
 
@@ -84,10 +87,10 @@ public class ImplEventManager implements EventManager {
                 int pairPriority = pair.getAnnotation().priority().getValue();
                 int originalSize = callList.size();
 
-                for(int i = 0; i < originalSize; i++) {
+                for (int i = 0; i < originalSize; i++) {
                     EventHandlerReference p = callList.get(i);
 
-                    if(pairPriority > p.getAnnotation().priority().getValue()) {
+                    if (pairPriority > p.getAnnotation().priority().getValue()) {
                         callList.add(i, pair);
                         callListeners.add(i, listener);
                         added = true;
@@ -95,7 +98,7 @@ public class ImplEventManager implements EventManager {
                     }
                 }
 
-                if(!added){
+                if (!added) {
                     callList.add(pair);
                     callListeners.add(listener);
                 }
@@ -103,7 +106,7 @@ public class ImplEventManager implements EventManager {
         }
 
         // Separating them to save a tiny bit more time on each iteration.
-        if(event instanceof CancellableType) {
+        if (event instanceof CancellableType) {
             CancellableType cancellable = (CancellableType) event;
 
             for (int i = 0; i < callList.size(); i++) {
@@ -111,8 +114,10 @@ public class ImplEventManager implements EventManager {
                 Object sourceListener = callListeners.get(i);
 
                 // Skip if cancelled and ignoring cancelled.
-                if(cancellable.isCancelled() && methodPair.getAnnotation().ignoreIfCancelled()) continue;
-                invokeEvent(sourceListener, event, methodPair);
+                if (cancellable.isCancelled() && methodPair.getAnnotation().ignoreIfCancelled()) {
+                    continue;
+                }
+                this.invokeEvent(sourceListener, event, methodPair);
             }
 
         } else {
@@ -121,7 +126,7 @@ public class ImplEventManager implements EventManager {
                 EventHandlerReference methodPair = callList.get(i);
                 Object sourceListener = callListeners.get(i);
 
-                invokeEvent(sourceListener, event, methodPair);
+                this.invokeEvent(sourceListener, event, methodPair);
             }
         }
 
@@ -132,7 +137,7 @@ public class ImplEventManager implements EventManager {
     public EventManager createChild(EventFilter... filters) {
         ImplEventManager child = new ImplEventManager(this.server, filters);
 
-        synchronized (children) {
+        synchronized (this.children) {
             this.children.add(child);
         }
 
@@ -147,30 +152,30 @@ public class ImplEventManager implements EventManager {
 
     @Override
     public synchronized Object addListener(Object listener) {
-        removeListener(listener, true);
-        listeners.add(listener);
+        this.removeListener(listener, true);
+        this.listeners.add(listener);
 
         // Generate reference for the listener's type if one doesn't already exist
-        if(!listenerReference.containsKey(listener.getClass())) {
+        if (!listenerReference.containsKey(listener.getClass())) {
             HashMap<Class<? extends Event>, ArrayList<EventHandlerReference>> listenerMethods = new HashMap<>();
 
             // Get event listening methods.
-            for(Method method : listener.getClass().getMethods()) {
+            for (Method method : listener.getClass().getMethods()) {
 
-                if(method.isAnnotationPresent(EventHandler.class)) {
+                if (method.isAnnotationPresent(EventHandler.class)) {
                     EventHandler annotation = method.getAnnotation(EventHandler.class);
                     Parameter[] parameters = method.getParameters();
 
-                    if(parameters.length == 1){
+                    if (parameters.length == 1) {
                         Class<?> type = parameters[0].getType();
                         ArrayList<Class<? extends Event>> eventClasses = new ArrayList<>();
 
                         EventHandlerReference pair = new EventHandlerReference(annotation, method);
                         adoptSuperclasses(type, eventClasses); // Get all the categories this method would be in.
 
-                        for(Class<? extends Event> cls: eventClasses) {
+                        for (Class<? extends Event> cls : eventClasses) {
 
-                            if(!listenerMethods.containsKey(cls)){
+                            if (!listenerMethods.containsKey(cls)) {
                                 listenerMethods.put(cls, new ArrayList<>()); // Create new handler list if it doesn't exist.
                             }
                             listenerMethods.get(cls).add(pair);
@@ -187,16 +192,16 @@ public class ImplEventManager implements EventManager {
 
     @Override
     public synchronized void removeListener(Object listener) {
-        removeListener(listener, true);
+        this.removeListener(listener, true);
     }
 
     @Override
     public synchronized void removeListener(Object listener, boolean removeFromChildren) {
-        listeners.remove(listener);
+        this.listeners.remove(listener);
 
-        if(removeFromChildren) {
+        if (removeFromChildren) {
 
-            for (ImplEventManager child : children) {
+            for (ImplEventManager child : this.children) {
                 child.removeListener(listener, true); // Ensure children don't include it either.
             }
         }
@@ -222,20 +227,30 @@ public class ImplEventManager implements EventManager {
      */
     @SuppressWarnings("unchecked") // It's checked with Class#isAssaignableFrom() :)
     private static void adoptSuperclasses(Class<?> classIn, ArrayList<Class<? extends Event>> list) {
-        if(classIn == null) return;
+        if (classIn == null) {
+            return;
+        }
 
-        if(Event.class.isAssignableFrom(classIn)){
+        if (Event.class.isAssignableFrom(classIn)) {
             list.add((Class<? extends Event>) classIn);
             adoptSuperclasses(classIn.getSuperclass(), list);
 
-            for(Class<?> cls: classIn.getInterfaces()) {
+            for (Class<?> cls : classIn.getInterfaces()) {
                 adoptSuperclasses(cls, list);
             }
         }
     }
 
-    public synchronized EventFilter[] getFilters() { return filters.toArray(new EventFilter[0]); }
-    public synchronized Object[] getListeners() { return listeners.toArray(); }
-    public synchronized ImplEventManager[] getChildren() { return children.toArray(new ImplEventManager[0]); }
+    public synchronized EventFilter[] getFilters() {
+        return this.filters.toArray(new EventFilter[0]);
+    }
+
+    public synchronized Object[] getListeners() {
+        return this.listeners.toArray();
+    }
+
+    public synchronized ImplEventManager[] getChildren() {
+        return this.children.toArray(new ImplEventManager[0]);
+    }
 
 }

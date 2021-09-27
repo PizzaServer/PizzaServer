@@ -20,7 +20,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     protected InventoryActionHandler() {}
 
     /**
-     * Returns if the action is valid (slots exist and action makes sense to be sent)
+     * Returns if the action is valid. (slots exist and action makes sense to be sent)
      * @param player player who sent the request
      * @param action action being validated
      * @return if the action is valid
@@ -28,8 +28,8 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     public abstract boolean isValid(Player player, T action);
 
     /**
-     * Returns if the action went through
-     * The action is validated before this is called
+     * Run the action after validating it.
+     * The action should be validated before this is called
      * @param response response container
      * @param player player who sent the request
      * @param action action being validated
@@ -38,7 +38,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     public abstract boolean runAction(ItemStackResponsePacket.Response response, Player player, T action);
 
     /**
-     * Validates the action before running it
+     * Validates the action before running it.
      * @param response response container
      * @param player player who sent the request
      * @param action action being validated
@@ -49,7 +49,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     }
 
     /**
-     * Returns the inventory of the slot provided or none if it doesn't exist
+     * Returns the inventory of the slot provided or none if it doesn't exist.
      * @param player the player who requested the slot
      * @param inventorySlot the slot requested
      * @return the inventory or none if it doesn't exist
@@ -65,7 +65,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     }
 
     /**
-     * Returns the item stack at the specified slot or none if it doesn't exist
+     * Returns the item stack at the specified slot or none if it doesn't exist.
      * @param player the player who requested the slot
      * @param inventorySlot the slot requested
      * @return the item stack or none if it doesn't exist
@@ -81,7 +81,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
 
         if (isUniquePlayerSlot(inventory, inventorySlot)) {
             // Call the correct getter as getSlot is not sufficient
-            ImplPlayerInventory playerInventory = (ImplPlayerInventory)inventory;
+            ImplPlayerInventory playerInventory = (ImplPlayerInventory) inventory;
 
             switch (inventorySlot.getInventorySlotType()) {
                 case OFFHAND:
@@ -110,19 +110,19 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
     }
 
     /**
-     * Returns if a stack has a matching network id at a slot
+     * Returns if a stack has a matching network id at a slot.
      * @param player the player who requested the check
      * @param inventorySlot the slot requested
      * @return if the stacks match
      */
     protected static boolean stackExists(Player player, AuthoritativeInventorySlot inventorySlot) {
         Optional<ItemStack> itemStack = getItemStack(player, inventorySlot);
-        return itemStack.isPresent() &&
-                itemStack.get().getNetworkId() == inventorySlot.getNetworkStackId();
+        return itemStack.isPresent()
+                && itemStack.get().getNetworkId() == inventorySlot.getNetworkStackId();
     }
 
     /**
-     * Returns if an item type can be placed in a specific slot
+     * Returns if an item type can be placed in a specific slot.
      * @param itemType the item type
      * @param slotType the slot type
      * @return if the item type can be placed in the slot type
@@ -155,7 +155,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
 
 
     /**
-     * Helper class to make changing slots and registering slot responses easier
+     * Helper class to make changing slots and registering slot responses easier.
      */
     protected static class SlotLocation {
 
@@ -198,7 +198,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
             // Change the slot
             if (isUniquePlayerSlot(this.inventory, this.inventorySlot)) {
                 // Call the correct setter as setSlot is not sufficient
-                ImplPlayerInventory playerInventory = (ImplPlayerInventory)this.getInventory();
+                ImplPlayerInventory playerInventory = (ImplPlayerInventory) this.getInventory();
 
                 switch (this.inventorySlot.getInventorySlotType()) {
                     case OFFHAND:
@@ -229,7 +229,7 @@ public abstract class InventoryActionHandler<T extends InventoryAction> {
                         throw new IllegalArgumentException("Missing unique player slot handler: " + this.inventorySlot.getInventorySlotType());
                 }
             } else {
-                ((BaseInventory)this.getInventory()).setSlot(this.player, this.inventorySlot.getSlot(), this.itemStack, true);
+                ((BaseInventory) this.getInventory()).setSlot(this.player, this.inventorySlot.getSlot(), this.itemStack, true);
             }
 
             // Record the change to be sent in the ItemStackResponsePacket

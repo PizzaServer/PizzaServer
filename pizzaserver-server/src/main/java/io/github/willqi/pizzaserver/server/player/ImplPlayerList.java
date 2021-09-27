@@ -61,7 +61,7 @@ public class ImplPlayerList implements PlayerList {
     }
 
     /**
-     * Send a PlayerListPacket to this player
+     * Send a PlayerListPacket to this player.
      * @param actionType action type
      * @param entries entries to send
      */

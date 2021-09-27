@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import java.util.*;
 
 /**
- * Sent to the client to forcefully animate an entity
+ * Sent to the client to forcefully animate an entity.
  */
 public class AnimateEntityPacket extends BaseBedrockPacket {
 
@@ -23,7 +23,7 @@ public class AnimateEntityPacket extends BaseBedrockPacket {
     }
 
     public String getAnimation() {
-        return animation;
+        return this.animation;
     }
 
     public void setAnimation(String animation) {
@@ -31,7 +31,7 @@ public class AnimateEntityPacket extends BaseBedrockPacket {
     }
 
     public String getNextState() {
-        return nextState;
+        return this.nextState;
     }
 
     public void setNextState(String nextState) {
@@ -39,7 +39,7 @@ public class AnimateEntityPacket extends BaseBedrockPacket {
     }
 
     public String getStopExpression() {
-        return stopExpression;
+        return this.stopExpression;
     }
 
     public void setStopExpression(String stopExpression) {
@@ -47,7 +47,7 @@ public class AnimateEntityPacket extends BaseBedrockPacket {
     }
 
     public String getController() {
-        return controller;
+        return this.controller;
     }
 
     public void setController(String controller) {
@@ -55,7 +55,7 @@ public class AnimateEntityPacket extends BaseBedrockPacket {
     }
 
     public float getBlendOutTime() {
-        return blendOutTime;
+        return this.blendOutTime;
     }
 
     public void setBlendOutTime(float blendOutTime) {
@@ -63,7 +63,7 @@ public class AnimateEntityPacket extends BaseBedrockPacket {
     }
 
     public Set<Long> getEntityRuntimeIDs() {
-        return entityRuntimeIDs;
+        return this.entityRuntimeIDs;
     }
 
     public AnimateEntityPacket addEntityRuntimeID(long entityRuntimeID) {

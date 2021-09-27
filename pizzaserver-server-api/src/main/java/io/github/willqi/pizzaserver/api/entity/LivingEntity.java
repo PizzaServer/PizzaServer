@@ -27,14 +27,14 @@ public interface LivingEntity extends MovingEntity {
     void setMaxAbsorption(float maxAbsorption);
 
     /**
-     * Retrieve the entity's current movement speed per tick
+     * Retrieve the entity's current movement speed per tick.
      * This is used to determine how far this entity's input can move per tick
      * @return movement speed of a entity
      */
     float getMovementSpeed();
 
     /**
-     * Change the entity's movement speed input per tick
+     * Change the entity's movement speed input per tick.
      * @param movementSpeed new movement speed
      */
     void setMovementSpeed(float movementSpeed);
@@ -56,21 +56,21 @@ public interface LivingEntity extends MovingEntity {
     LivingEntityInventory getInventory();
 
     /**
-     * This entity will be shown to the player when the player is within range
+     * This entity will be shown to the player when the player is within range.
      * If the player is already in range and has not seen the entity, it will be spawned for the player
      * @param player player to show the entity to
      */
     void showTo(Player player);
 
     /**
-     * This entity will not be shown to the player when the player is within range
+     * This entity will not be shown to the player when the player is within range.
      * If the player is already in range and sees the entity, it will be despawned from the player
      * @param player player to hide the entity from
      */
     void hideFrom(Player player);
 
     /**
-     * Checks if this entity can be shown to a player
+     * Checks if this entity can be shown to a player.
      * @param player the player in question
      * @return if the entity is supposed to be hidden from the player
      */

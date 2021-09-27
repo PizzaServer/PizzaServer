@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Sent with all of the creative items in the creative inventory
+ * Sent with all the creative items in the creative inventory.
  */
 public class CreativeContentPacket extends BaseBedrockPacket {
 

@@ -97,16 +97,16 @@ public class Vector2 {
 
     public Vector2 normalize() {
         double length = this.getLength();
-        return new Vector2((float)(this.getX() / length), (float)(this.getY() / length));
+        return new Vector2((float) (this.getX() / length), (float) (this.getY() / length));
     }
 
     public Vector2i toVector2i() {
-        return new Vector2i((int)this.x, (int)this.y);
+        return new Vector2i((int) this.x, (int) this.y);
     }
 
     @Override
     public String toString() {
-        return "Vector2(x=" + this.x +",y=" + this.y + ")";
+        return "Vector2(x=" + this.x + ", y=" + this.y + ")";
     }
 
 }

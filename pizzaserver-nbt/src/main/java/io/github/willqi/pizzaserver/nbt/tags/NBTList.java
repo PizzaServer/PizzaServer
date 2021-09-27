@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
 
-    private T[] list = (T[])new Object[0];
+    private T[] list = (T[]) new Object[0];
     private final int childrenTypeId;
     private int depth;
 
@@ -25,7 +25,7 @@ public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
         this.list = list;
         for (Object tag : list) {
             if (tag instanceof NBTContainer) {
-                ((NBTContainer)tag).setDepth(this.getDepth() + 1);
+                ((NBTContainer) tag).setDepth(this.getDepth() + 1);
             }
         }
     }
@@ -46,12 +46,12 @@ public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
     @Override
     public void setDepth(int depth) {
         this.depth = depth;
-        if (this.depth > 512) {
-            throw new NBTLimitException("Reached maximum depth of 512.");
+        if (this.depth > NBTContainer.MAX_DEPTH) {
+            throw new NBTLimitException("Reached maximum depth of " + NBTContainer.MAX_DEPTH);
         }
         for (Object childTag : this.list) {
             if (childTag instanceof NBTContainer) {
-                ((NBTContainer)childTag).setDepth(this.getDepth() + 1);
+                ((NBTContainer) childTag).setDepth(this.getDepth() + 1);
             }
         }
     }
@@ -64,10 +64,10 @@ public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NBTList) {
-            NBTList<T> nbtList = (NBTList<T>)obj;
-            return Arrays.equals(nbtList.getContents(), this.getContents()) &&
-                    nbtList.getName().equals(this.getName()) &&
-                    nbtList.getChildrenTypeId() == this.getChildrenTypeId();
+            NBTList<T> nbtList = (NBTList<T>) obj;
+            return Arrays.equals(nbtList.getContents(), this.getContents())
+                    && nbtList.getName().equals(this.getName())
+                    && nbtList.getChildrenTypeId() == this.getChildrenTypeId();
         }
         return false;
     }
@@ -84,9 +84,9 @@ public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
         for (int i = 0; i < elements.length; i++) {
             Object element = this.getContents()[i];
             if (element instanceof NBTCompound) {
-                elements[i] = ((NBTCompound)element).clone();
+                elements[i] = ((NBTCompound) element).clone();
             } else if (element instanceof NBTList) {
-                elements[i] = ((NBTList<T>)element).clone();
+                elements[i] = ((NBTList<T>) element).clone();
             } else {
                 elements[i] = element;
             }
@@ -94,7 +94,7 @@ public class NBTList<T> extends NBTContainer implements Iterable<T>, Cloneable {
 
         NBTList<T> clone = new NBTList<>(this.childrenTypeId);
         clone.setDepth(this.getDepth());
-        clone.setContents((T[])elements);
+        clone.setContents((T[]) elements);
         return clone;
     }
 }

@@ -17,12 +17,24 @@ public final class SchedulerTaskEntry {
         this.isAsynchronous = isAsynchronous;
     }
 
-    public SchedulerTask getTask() { return task; }
+    public SchedulerTask getTask() {
+        return this.task;
+    }
 
-    public boolean isRepeating() { return repeatInterval > 0; }
-    public boolean isAsynchronous() { return isAsynchronous; }
+    public boolean isRepeating() {
+        return this.repeatInterval > 0;
+    }
 
-    public int getRepeatInterval() { return repeatInterval; }
-    public long getNextTick() { return nextTick; }
+    public boolean isAsynchronous() {
+        return this.isAsynchronous;
+    }
+
+    public int getRepeatInterval() {
+        return this.repeatInterval;
+    }
+
+    public long getNextTick() {
+        return this.nextTick;
+    }
 
 }

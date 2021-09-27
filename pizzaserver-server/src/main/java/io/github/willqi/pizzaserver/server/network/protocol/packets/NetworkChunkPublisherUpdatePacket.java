@@ -5,7 +5,6 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 
 /**
  * Should be sent when the player's chunk coordinates update. (failing to update this will render no new chunks)
- *
  * Contrary to the name of the packet, the radius represents blocks rather than chunks
  */
 public class NetworkChunkPublisherUpdatePacket extends BaseBedrockPacket {
@@ -29,7 +28,7 @@ public class NetworkChunkPublisherUpdatePacket extends BaseBedrockPacket {
     }
 
     /**
-     * Amount of blocks to keep loaded
+     * Amount of blocks to keep loaded.
      * @return blocks to keep loaded
      */
     public int getRadius() {
@@ -37,7 +36,7 @@ public class NetworkChunkPublisherUpdatePacket extends BaseBedrockPacket {
     }
 
     /**
-     * Set the amount of blocks to keep loaded
+     * Set the amount of blocks to keep loaded.
      * @param radius blocks to keep loaded
      */
     public void setRadius(int radius) {

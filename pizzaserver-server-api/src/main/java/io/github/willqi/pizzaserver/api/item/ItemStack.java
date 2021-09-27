@@ -57,7 +57,7 @@ public class ItemStack implements Cloneable {
 
         this.blocksCanBreak = itemType.getOnlyBlocksCanBreak();
         if (itemType instanceof BlockItemType) {
-            this.blocksCanPlaceOn = ((BlockItemType)itemType).getBlockType().getPlaceableOnlyOn();
+            this.blocksCanPlaceOn = ((BlockItemType) itemType).getBlockType().getPlaceableOnlyOn();
         }
     }
 
@@ -90,10 +90,10 @@ public class ItemStack implements Cloneable {
     }
 
     public boolean hasCustomName() {
-        return this.getCompoundTag().containsKey("display") &&
-                this.getCompoundTag().get("display") instanceof NBTCompound &&
-                this.getCompoundTag().getCompound("display").containsKey("Name") &&
-                this.getCompoundTag().getCompound("display").get("Name") instanceof String;
+        return this.getCompoundTag().containsKey("display")
+                && this.getCompoundTag().get("display") instanceof NBTCompound
+                && this.getCompoundTag().getCompound("display").containsKey("Name")
+                && this.getCompoundTag().getCompound("display").get("Name") instanceof String;
     }
 
     public String getCustomName() {
@@ -121,15 +121,15 @@ public class ItemStack implements Cloneable {
     }
 
     public boolean hasLore() {
-        return this.getCompoundTag().containsKey("display") &&
-                this.getCompoundTag().get("display") instanceof NBTCompound &&
-                this.getCompoundTag().getCompound("display").containsKey("Lore") &&
-                this.getCompoundTag().getCompound("display").get("Lore") instanceof NBTList &&
-                this.getCompoundTag().getCompound("display").getList("Lore").getChildrenTypeId() == NBTTag.STRING_TAG_ID;
+        return this.getCompoundTag().containsKey("display")
+                && this.getCompoundTag().get("display") instanceof NBTCompound
+                && this.getCompoundTag().getCompound("display").containsKey("Lore")
+                && this.getCompoundTag().getCompound("display").get("Lore") instanceof NBTList
+                && this.getCompoundTag().getCompound("display").getList("Lore").getChildrenTypeId() == NBTTag.STRING_TAG_ID;
     }
 
     /**
-     * Returns the id of this stack as represented over the network
+     * Returns the id of this stack as represented over the network.
      * An id of -1 means that this stack has not been assigned a network id
      * @return stack id
      */
@@ -138,7 +138,7 @@ public class ItemStack implements Cloneable {
     }
 
     /**
-     * Create a copy of this ItemStack but with a new network id assigned
+     * Create a copy of this ItemStack but with a new network id assigned.
      * @return new ItemStack with a new network id assigned
      */
     public ItemStack newNetworkStack() {
@@ -195,7 +195,7 @@ public class ItemStack implements Cloneable {
     }
 
     /**
-     * Only applicable for ItemStacks that have an item type that can place blocks
+     * Only applicable for ItemStacks that have an item type that can place blocks.
      * @return all of the blocks that this item can be placed on
      */
     public Set<BaseBlockType> getBlocksCanPlaceOn() {
@@ -203,7 +203,7 @@ public class ItemStack implements Cloneable {
     }
 
     /**
-     * Only applicable for ItemStacks that have an item type that can place blocks
+     * Only applicable for ItemStacks that have an item type that can place blocks.
      * @param blocksCanPlaceOn the blocks that this item can be placed on
      */
     public void setBlocksCanPlaceOn(Set<BaseBlockType> blocksCanPlaceOn) {
@@ -211,18 +211,18 @@ public class ItemStack implements Cloneable {
     }
 
     /**
-     * Checks if this ItemStack has the same data as another ItemStack
+     * Checks if this ItemStack has the same data as another ItemStack.
      * @param otherStack the other ItemStack we are trying to check
      * @return if the two stacks have the same data
      */
     public boolean hasSameDataAs(ItemStack otherStack) {
-        return (otherStack.getItemType().equals(this.getItemType()) &&
-                otherStack.getCompoundTag().equals(this.getCompoundTag()) &&
-                otherStack.getDamage() == this.getDamage()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
+        return (otherStack.getItemType().equals(this.getItemType())
+                && otherStack.getCompoundTag().equals(this.getCompoundTag())
+                && otherStack.getDamage() == this.getDamage()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
     }
 
     /**
-     * Checks if this ItemStack is air
+     * Checks if this ItemStack is air.
      * @return if the ItemStack is air
      */
     public boolean isEmpty() {
@@ -230,25 +230,25 @@ public class ItemStack implements Cloneable {
     }
 
     /**
-     * Checks if an ItemStack looks the same compared to this ItemStack
+     * Checks if an ItemStack looks the same compared to this ItemStack.
      * @param otherItemStack the other ItemStack
      * @return if they are visually the same
      */
     public boolean visuallyEquals(ItemStack otherItemStack) {
-        return otherItemStack.getCompoundTag().equals(this.getCompoundTag()) &&
-                (otherItemStack.getDamage() == this.getDamage() || (otherItemStack.getItemType() instanceof DurableItemComponent)) &&
-                otherItemStack.getItemType().equals(this.getItemType());
+        return otherItemStack.getCompoundTag().equals(this.getCompoundTag())
+                && (otherItemStack.getDamage() == this.getDamage() || (otherItemStack.getItemType() instanceof DurableItemComponent))
+                && otherItemStack.getItemType().equals(this.getItemType());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ItemStack) {
-            ItemStack otherItemStack = (ItemStack)obj;;
+            ItemStack otherItemStack = (ItemStack) obj;
 
-            return otherItemStack.getItemType().equals(this.getItemType()) &&
-                    otherItemStack.getDamage() == this.getDamage() &&
-                    otherItemStack.getCount() == this.getCount() &&
-                    otherItemStack.getCompoundTag().equals(this.getCompoundTag());
+            return otherItemStack.getItemType().equals(this.getItemType())
+                    && otherItemStack.getDamage() == this.getDamage()
+                    && otherItemStack.getCount() == this.getCount()
+                    && otherItemStack.getCompoundTag().equals(this.getCompoundTag());
         }
         return false;
     }
@@ -261,7 +261,7 @@ public class ItemStack implements Cloneable {
     @Override
     public ItemStack clone() {
         try {
-            ItemStack clone = (ItemStack)super.clone();
+            ItemStack clone = (ItemStack) super.clone();
             clone.setCompoundTag(this.getCompoundTag().clone());
             clone.setBlocksCanBreak(new HashSet<>(this.getBlocksCanBreak()));
             clone.setBlocksCanPlaceOn(new HashSet<>(this.getBlocksCanPlaceOn()));
@@ -273,7 +273,7 @@ public class ItemStack implements Cloneable {
 
 
     /**
-     * Ensures that the ItemStack provided will exist
+     * Ensures that the ItemStack provided will exist.
      * If the ItemStack provided is null, it will return an air ItemStack
      * @param itemStack nullable item stack
      * @return item stack

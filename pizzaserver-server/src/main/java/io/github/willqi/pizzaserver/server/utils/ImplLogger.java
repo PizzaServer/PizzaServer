@@ -17,7 +17,7 @@ public class ImplLogger implements Logger {
     public ImplLogger(String prefix) {
         this.logger = LogManager.getLogger(prefix);
 
-        if (((ImplServer)ImplServer.getInstance()).getConfig().isDebugLoggingEnabled()) {
+        if (((ImplServer) ImplServer.getInstance()).getConfig().isDebugLoggingEnabled()) {
             Configurator.setLevel(this.logger.getName(), Level.DEBUG);
         }
     }
@@ -29,7 +29,7 @@ public class ImplLogger implements Logger {
 
     @Override
     public void error(String message) {
-        error(message, true);
+        this.error(message, true);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ImplLogger implements Logger {
 
     @Override
     public void error(String message, Throwable exception) {
-        error(message, exception, true);
+        this.error(message, exception, true);
     }
 
     public void error(String message, boolean colored) {
@@ -60,12 +60,15 @@ public class ImplLogger implements Logger {
 
     @Override
     public void warn(String message) {
-        warn(message, true);
+        this.warn(message, true);
     }
 
     public void warn(String message, boolean colored) {
-        if(colored) this.logger.warn(ANSI_YELLOW + message + ANSI_RESET);
-        else this.logger.warn(message);
+        if (colored) {
+            this.logger.warn(ANSI_YELLOW + message + ANSI_RESET);
+        } else {
+            this.logger.warn(message);
+        }
     }
 
     @Override

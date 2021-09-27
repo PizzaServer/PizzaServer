@@ -7,9 +7,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Unlike Java, Bedrock uses VarInts to serialize their ints and longs.
- * VarInt implementation from Cloudburst's.
+ * VarInt implementation from Cloudburst's
  * https://github.com/CloudburstMC/NBT/blob/master/src/main/java/com/nukkitx/nbt/util/VarInts.java
- *
  * This is to be used when writing NBT that is to be sent over the network.
  */
 public class VarIntDataOutputStream extends LittleEndianDataOutputStream {
@@ -20,7 +19,7 @@ public class VarIntDataOutputStream extends LittleEndianDataOutputStream {
 
     @Override
     public void writeInt(int v) throws IOException {
-        this.writeEncoded(((long)v << 1) ^ (v >> 31));
+        this.writeEncoded(((long) v << 1) ^ (v >> 31));
     }
 
     public void writeUnsignedInt(int value) throws IOException {

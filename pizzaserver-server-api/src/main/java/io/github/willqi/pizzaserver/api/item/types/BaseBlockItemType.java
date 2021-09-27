@@ -8,7 +8,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 /**
- * Any block ItemStack is an instance of this class to prevent the need to create thousands of item classes for each block
+ * Any block ItemStack is an instance of this class to prevent the need to create thousands of item classes for each block.
  */
 public class BaseBlockItemType extends BaseItemType implements BlockItemType {
 
@@ -57,9 +57,10 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
             block.getWorld().setBlock(placedBlock, placedBlock.getLocation());
             return true;
         } else {
-            return itemStack.isEmpty(); // air blocks don't change the world at all and cannot really be placed.
-                                        // but for all other blocks return false since the block should not have
-                                        // been placed clientside.
+            // air blocks don't change the world at all and cannot really be placed.
+            // but for all other blocks return false since the block should not have
+            // been placed clientside.
+            return itemStack.isEmpty();
         }
     }
 

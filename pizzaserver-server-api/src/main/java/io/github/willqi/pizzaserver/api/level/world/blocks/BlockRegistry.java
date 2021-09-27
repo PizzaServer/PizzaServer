@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import java.util.*;
 
 /**
- * Contains every single block retrievable via the API
+ * Contains every single block retrievable via the API.
  */
 public class BlockRegistry {
 
@@ -19,7 +19,7 @@ public class BlockRegistry {
 
 
     /**
-     * Register a {@link BaseBlockType} to the server
+     * Register a {@link BaseBlockType} to the server.
      * Custom blocks will need to register their {@link BaseBlockType} in order to be used and for the world to render correctly
      * @param blockType {@link BaseBlockType} that needs to be registered
      */
@@ -49,7 +49,7 @@ public class BlockRegistry {
     }
 
     /**
-     * Check if a block id was registered
+     * Check if a block id was registered.
      * @param blockId the id of the block (e.g. minecraft:air)
      * @return if the block was registered or not
      */
@@ -58,7 +58,7 @@ public class BlockRegistry {
     }
 
     /**
-     * Retrieve all non-Vanilla {@link BaseBlockType}s that are registered
+     * Retrieve all non-Vanilla {@link BaseBlockType}s that are registered.
      * @return registered non-Vanilla {@link BaseBlockType}s
      */
     public static Set<BaseBlockType> getCustomTypes() {

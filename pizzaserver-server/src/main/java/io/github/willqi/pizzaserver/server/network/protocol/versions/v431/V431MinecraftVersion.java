@@ -12,7 +12,7 @@ public class V431MinecraftVersion extends BaseMinecraftVersion {
 
     public static final int PROTOCOL = 431;
     public static final String VERSION = "1.16.220";
-    private final BasePacketRegistry PACKET_REGISTRY = new V431PacketRegistry();
+    private static final BasePacketRegistry PACKET_REGISTRY = new V431PacketRegistry();
 
 
     public V431MinecraftVersion(ImplServer server) throws IOException {

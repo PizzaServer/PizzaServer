@@ -12,6 +12,6 @@ public final class RunnableTypeTask extends BaseSchedulerTask {
 
     @Override
     public void run() {
-        taskRunnable.run();
+        this.taskRunnable.run();
     }
 }

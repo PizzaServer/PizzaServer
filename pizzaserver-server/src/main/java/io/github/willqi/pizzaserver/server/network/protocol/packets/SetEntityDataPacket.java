@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the server to change properties about an entity
+ * Sent by the server to change properties about an entity.
  */
 public class SetEntityDataPacket extends BaseBedrockPacket {
 

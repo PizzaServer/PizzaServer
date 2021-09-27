@@ -130,9 +130,9 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
     /**
-     * Retrieve a block palette from chunk data at the correct index
-     * @param buffer
-     * @throws IOException
+     * Retrieve a block palette from chunk data at the correct index.
+     * @param buffer buffer to read
+     * @throws IOException if it failed to read the buffer
      */
     public void parse(ByteBuf buffer) throws IOException {
         int paletteLength = buffer.readIntLE();
@@ -190,7 +190,7 @@ public class MCWorldBlockPalette implements BlockPalette {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof MCWorldBlockPaletteEntry) {
-                MCWorldBlockPaletteEntry otherEntry = (MCWorldBlockPaletteEntry)obj;
+                MCWorldBlockPaletteEntry otherEntry = (MCWorldBlockPaletteEntry) obj;
                 return otherEntry.getId().equals(this.getId()) && otherEntry.getState().equals(this.getState());
             }
             return false;

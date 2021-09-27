@@ -28,7 +28,7 @@ public class ImplLevel implements Level, Closeable {
     }
 
     /**
-     * Ticks all dimensions of this level
+     * Ticks all dimensions of this level.
      */
     public void tick() {
         for (ImplWorld world : this.dimensions.values()) {

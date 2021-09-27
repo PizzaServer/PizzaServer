@@ -98,7 +98,7 @@ public class NBTListReader<T> extends NBTReader<NBTList<T>> {
                 throw new UnsupportedOperationException("Unsupported/invalid NBT tag id found when reading contents in NBTListReader. Id: " + nbtId);
         }
 
-        list.setContents((T[])contents);
+        list.setContents((T[]) contents);
         return list;
     }
 

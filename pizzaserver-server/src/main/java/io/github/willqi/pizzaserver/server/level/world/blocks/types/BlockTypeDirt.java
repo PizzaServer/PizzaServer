@@ -11,7 +11,7 @@ import java.util.List;
 
 public class BlockTypeDirt extends BaseBlockType {
 
-    private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
+    private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>() {
         {
             List<String> dirtTypes = Arrays.asList("normal", "coarse");
             int stateIndex = 0;

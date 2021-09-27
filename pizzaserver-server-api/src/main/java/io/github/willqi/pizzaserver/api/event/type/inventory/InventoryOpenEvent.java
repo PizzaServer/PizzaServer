@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 /**
- * Called when an inventory is about to be opened for a player
+ * Called when an inventory is about to be opened for a player.
  */
 public class InventoryOpenEvent extends BaseInventoryEvent.Cancellable {
 

@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Sent to inform the client of all packs the server has
+ * Sent to inform the client of all packs the server has.
  */
 public class ResourcePacksInfoPacket extends BaseBedrockPacket {
 

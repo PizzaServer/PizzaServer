@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent to disconnect a player from the server with an optional message
+ * Sent to disconnect a player from the server with an optional message.
  */
 public class DisconnectPacket extends BaseBedrockPacket {
 
@@ -18,7 +18,7 @@ public class DisconnectPacket extends BaseBedrockPacket {
 
     /**
      * If the player should be sent directly to the server list rather than the
-     * disconnect screen
+     * disconnect screen.
      * @return if it should hide the disconnect screen
      */
     public boolean isHidingDisconnectScreen() {
@@ -27,7 +27,7 @@ public class DisconnectPacket extends BaseBedrockPacket {
 
     /**
      * Change if the disconnect should direct the player directly to the server list
-     * or if it should show the message
+     * or if it should show the message.
      * @param hide if it should hide the disconenct screen
      */
     public void setHideDisconnectScreen(boolean hide) {

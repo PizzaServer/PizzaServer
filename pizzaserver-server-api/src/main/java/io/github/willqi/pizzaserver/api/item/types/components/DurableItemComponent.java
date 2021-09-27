@@ -1,12 +1,12 @@
 package io.github.willqi.pizzaserver.api.item.types.components;
 
 /**
- * Represents an item that has durability
+ * Represents an item that has durability.
  */
 public interface DurableItemComponent {
 
     /**
-     * Max durability of this item type
+     * Max durability of this item type.
      * Returning -1 means this item has infinite durability.
      * @return max durability
      */

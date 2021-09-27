@@ -28,7 +28,7 @@ public abstract class BasePlayerEvent extends Event {
 
         @Override
         public boolean isCancelled() {
-            return isCancelled;
+            return this.isCancelled;
         }
 
         @Override

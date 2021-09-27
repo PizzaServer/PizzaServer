@@ -19,8 +19,8 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<Inventory
         Optional<ItemStack> destinationItemStack = getItemStack(player, action.getDestination());
         if (sourceItemStack.isPresent() && destinationItemStack.isPresent()) {
             // Ensure that the source and destination items are allowed in their new slots
-            return canPutItemTypeInSlot(sourceItemStack.get().getItemType(), action.getDestination().getInventorySlotType()) &&
-                    canPutItemTypeInSlot(destinationItemStack.get().getItemType(), action.getSource().getInventorySlotType());
+            return canPutItemTypeInSlot(sourceItemStack.get().getItemType(), action.getDestination().getInventorySlotType())
+                    && canPutItemTypeInSlot(destinationItemStack.get().getItemType(), action.getSource().getInventorySlotType());
         } else {
             return false;
         }

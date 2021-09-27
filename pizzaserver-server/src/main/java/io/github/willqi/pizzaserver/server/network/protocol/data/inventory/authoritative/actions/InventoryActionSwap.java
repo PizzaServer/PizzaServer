@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.auth
 import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
 
 /**
- * Used for server authoritative inventories
+ * Used for server authoritative inventories.
  * Created when a player tries to swap a slot with another slot
  */
 public class InventoryActionSwap implements InventoryAction {

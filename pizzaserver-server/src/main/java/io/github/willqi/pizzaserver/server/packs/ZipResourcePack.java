@@ -73,9 +73,9 @@ public class ZipResourcePack implements ResourcePack {
     }
 
     /**
-     * Cache uuid and version of resource pack
+     * Cache uuid and version of resource pack.
      * @param file the resource pack zipped file
-     * @throws IOException
+     * @throws IOException if it fails to parse the manifest file
      */
     private void parseManifestFile(File file) throws IOException {
         ZipFile zipFile = new ZipFile(file);
@@ -101,14 +101,14 @@ public class ZipResourcePack implements ResourcePack {
     }
 
     /**
-     * Cache resource pack chunks to be sent to client
+     * Cache resource pack chunks to be sent to client.
      * @param file the resource pack zipped file
-     * @throws IOException
+     * @throws IOException if it fails to read the file
      */
     private void parsePackData(File file) throws IOException {
         this.dataLength = file.length();
 
-        int chunksLength = (int)Math.ceil((float)this.dataLength / this.getMaxChunkLength());
+        int chunksLength = (int) Math.ceil((float) this.dataLength / this.getMaxChunkLength());
         this.chunks = new byte[chunksLength][];
 
         try (InputStream stream = new FileInputStream(file)) {
@@ -117,7 +117,7 @@ public class ZipResourcePack implements ResourcePack {
             }
 
             // The last data chunk doesn't use as much space
-            byte[] data = parseDataChunk(stream, new byte[(int)(this.dataLength - (chunksLength - 1) * this.getMaxChunkLength())]);
+            byte[] data = parseDataChunk(stream, new byte[(int) (this.dataLength - (chunksLength - 1) * this.getMaxChunkLength())]);
             this.chunks[chunksLength - 1] = data;
 
         }

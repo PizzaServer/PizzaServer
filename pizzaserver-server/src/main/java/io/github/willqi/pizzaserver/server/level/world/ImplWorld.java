@@ -42,13 +42,13 @@ public class ImplWorld implements Closeable, World {
         this.level = level;
         this.dimension = dimension;
 
-        Vector3i spawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
-        if (spawnCoordinates.getY() > 255) {    // Hack to get around Minecraft worlds having REALLY high y spawn coordinates in the level.dat
-            spawnCoordinates = new Vector3i(spawnCoordinates.getX(),
-                    this.getHighestBlockAt(spawnCoordinates.getX(), spawnCoordinates.getZ()),
-                    spawnCoordinates.getZ());
+        Vector3i worldSpawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
+        if (worldSpawnCoordinates.getY() > 255) {    // Hack to get around Minecraft worlds having REALLY high y spawn coordinates in the level.dat
+            worldSpawnCoordinates = new Vector3i(worldSpawnCoordinates.getX(),
+                    this.getHighestBlockAt(worldSpawnCoordinates.getX(), worldSpawnCoordinates.getZ()),
+                    worldSpawnCoordinates.getZ());
         }
-        this.setSpawnCoordinates(spawnCoordinates);
+        this.setSpawnCoordinates(worldSpawnCoordinates);
     }
 
     @Override
@@ -172,12 +172,12 @@ public class ImplWorld implements Closeable, World {
 
         this.entities.put(entity.getId(), entity);
         if (entity instanceof Player) {
-            this.players.add((Player)entity);
+            this.players.add((Player) entity);
         }
 
-        BaseEntity baseEntity = (BaseEntity)entity;
+        BaseEntity baseEntity = (BaseEntity) entity;
         baseEntity.setLocation(location);
-        ((ImplChunk)location.getChunk()).addEntity(entity);
+        ((ImplChunk) location.getChunk()).addEntity(entity);
         baseEntity.onSpawned();
     }
 
@@ -192,7 +192,7 @@ public class ImplWorld implements Closeable, World {
             this.players.remove(entity);
         }
 
-        BaseEntity baseEntity = (BaseEntity)entity;
+        BaseEntity baseEntity = (BaseEntity) entity;
         ImplChunk chunk = baseEntity.getChunk();
         baseEntity.setLocation(null);   // the entity no longer exists in any world
         baseEntity.onDespawned();
@@ -219,16 +219,16 @@ public class ImplWorld implements Closeable, World {
         packet.setEntityType(entityType);
         packet.setBlockID(blockID);
         WorldSoundEvent event = new WorldSoundEvent(this, sound, vector3, isGlobal, isBaby, entityType, blockID);
-        getServer().getEventManager().call(event);
-        if(!event.isCancelled()) {
-            for(Player player : getPlayers()) {
+        this.getServer().getEventManager().call(event);
+        if (!event.isCancelled()) {
+            for (Player player : this.getPlayers()) {
                 player.sendPacket(packet);
             }
         }
     }
 
     /**
-     * Retrieve the default save data for a player spawning in this world
+     * Retrieve the default save data for a player spawning in this world.
      * @return default {@link PlayerData} for players spawning in this world
      */
     public PlayerData getDefaultPlayerData() {
@@ -254,14 +254,14 @@ public class ImplWorld implements Closeable, World {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ImplWorld) {
-            ImplWorld otherWorld = (ImplWorld)obj;
+            ImplWorld otherWorld = (ImplWorld) obj;
             return otherWorld.getDimension().equals(this.getDimension()) && otherWorld.getLevel().equals(this.getLevel());
         }
         return false;
     }
 
     private static int getChunkCoordinate(int i) {
-        return (int)Math.floor(i / 16d);
+        return (int) Math.floor(i / 16d);
     }
 
 }

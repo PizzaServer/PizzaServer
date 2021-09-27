@@ -37,23 +37,23 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
 
         // Write non-required components if present
         if (itemType instanceof ArmorItemComponent) {
-            ArmorItemComponent armorItemComponent = (ArmorItemComponent)itemType;
+            ArmorItemComponent armorItemComponent = (ArmorItemComponent) itemType;
             components.putCompound("minecraft:armor", new NBTCompound()
                     .putInteger("protection", armorItemComponent.getProtection()));
         }
         if (itemType instanceof CooldownItemComponent) {
-            CooldownItemComponent cooldownItemComponent = (CooldownItemComponent)itemType;
+            CooldownItemComponent cooldownItemComponent = (CooldownItemComponent) itemType;
             components.putCompound("minecraft:cooldown", new NBTCompound()
                     .putString("category", cooldownItemComponent.getCooldownCategory())
                     .putFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f));
         }
         if (itemType instanceof DurableItemComponent) {
-            DurableItemComponent durableItemComponent = (DurableItemComponent)itemType;
+            DurableItemComponent durableItemComponent = (DurableItemComponent) itemType;
             components.putCompound("minecraft:durability", new NBTCompound()
                     .putInteger("max_durability", durableItemComponent.getMaxDurability()));
         }
         if (itemType instanceof FoodItemComponent) {
-            FoodItemComponent foodItemComponent = (FoodItemComponent)itemType;
+            FoodItemComponent foodItemComponent = (FoodItemComponent) itemType;
             components.putCompound("minecraft:food", new NBTCompound()
                     .putBoolean("can_always_eat", foodItemComponent.canAlwaysBeEaten()));
         }
@@ -65,8 +65,8 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
     /**
      * Writes all item properties for an item
      * https://wiki.vg/Bedrock_Protocol#Item_Component
-     * @param itemType
-     * @param properties
+     * @param itemType item type to write to use
+     * @param properties NBTCompound to write properties to
      */
     protected void writeItemProperties(ItemType itemType, NBTCompound properties) {
         properties.putBoolean("allow_off_hand", itemType.isAllowedInOffHand())

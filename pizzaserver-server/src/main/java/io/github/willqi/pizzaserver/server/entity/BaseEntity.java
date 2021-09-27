@@ -59,17 +59,17 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public int getFloorX() {
-        return (int)Math.floor(this.x);
+        return (int) Math.floor(this.x);
     }
 
     @Override
     public int getFloorY() {
-        return (int)Math.floor(this.y);
+        return (int) Math.floor(this.y);
     }
 
     @Override
     public int getFloorZ() {
-        return (int)Math.floor(this.z);
+        return (int) Math.floor(this.z);
     }
 
     @Override
@@ -78,7 +78,7 @@ public abstract class BaseEntity implements Entity {
     }
 
     /**
-     * Set the location of the entity
+     * Set the location of the entity.
      * Used internally to setup and to clean up the entity
      * @param location entity location
      */
@@ -103,22 +103,22 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public ImplChunk getChunk() {
-        return (ImplChunk)this.getLocation().getChunk();
+        return (ImplChunk) this.getLocation().getChunk();
     }
 
     @Override
     public ImplWorld getWorld() {
-        return (ImplWorld)this.getLocation().getWorld();
+        return (ImplWorld) this.getLocation().getWorld();
     }
 
     @Override
     public ImplLevel getLevel() {
-        return (ImplLevel)this.getLocation().getLevel();
+        return (ImplLevel) this.getLocation().getLevel();
     }
 
     @Override
     public ImplServer getServer() {
-        return (ImplServer)ImplServer.getInstance();
+        return (ImplServer) ImplServer.getInstance();
     }
 
     @Override
@@ -128,7 +128,7 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public void setMetaData(EntityMetaData metaData) {
-        this.metaData = (ImplEntityMetaData)metaData;
+        this.metaData = (ImplEntityMetaData) metaData;
 
         SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
         entityDataPacket.setRuntimeId(this.getId());
@@ -147,7 +147,7 @@ public abstract class BaseEntity implements Entity {
     }
 
     /**
-     * Called when the entity is completely despawned
+     * Called when the entity is completely despawned.
      */
     public void onDespawned() {
         this.spawned = false;
@@ -189,13 +189,13 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public int hashCode() {
-        return 43 * (int)this.id;
+        return 43 * (int) this.id;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof BaseEntity) {
-            return NumberUtils.isNearlyEqual(((BaseEntity)obj).getId(), this.getId());
+            return NumberUtils.isNearlyEqual(((BaseEntity) obj).getId(), this.getId());
         }
         return false;
     }

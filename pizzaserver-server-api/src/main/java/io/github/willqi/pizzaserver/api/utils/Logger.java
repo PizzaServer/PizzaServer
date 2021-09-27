@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.utils;
 
 /**
- * Utility interface for logging messages
+ * Utility interface for logging messages.
  */
 public interface Logger {
 

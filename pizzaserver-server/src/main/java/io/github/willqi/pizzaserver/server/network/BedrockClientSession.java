@@ -100,7 +100,7 @@ public class BedrockClientSession {
             minecraftPacketBuffer.writeUnsignedVarInt(header);
 
             // Serialize the BedrockPacket to the minecraftPacketBuffer
-            BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>)this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
+            BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>) this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
             if (handler == null) {
                 this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
                 return;
@@ -113,7 +113,8 @@ public class BedrockClientSession {
             packetWrapperBuffer.writeBytes(minecraftPacketBuffer);
 
             // Compress the prefixed buffer and write it to the raknet buffer to send off!
-            ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer, this.getServer().getPizzaServer().getConfig().getNetworkCompressionLevel());
+            int compressionLevel = this.getServer().getPizzaServer().getConfig().getNetworkCompressionLevel();
+            ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer, compressionLevel);
             rakNetBuffer.writeBytes(compressedBuffer);
             this.serverSession.send(rakNetBuffer);
 
@@ -155,7 +156,7 @@ public class BedrockClientSession {
     }
 
     /**
-     * Handles incoming packets from the client to the server
+     * Handles incoming packets from the client to the server.
      * @param packetId id of the packet sent
      * @param minecraftPacket contents of the packet we need to deserialize
      */
@@ -179,7 +180,7 @@ public class BedrockClientSession {
                 this.version = ServerProtocol.VERSIONS.get(protocol);
                 minecraftPacket.setVersion(this.version);
                 try {
-                    loginPacket = (LoginPacket)this.version.getPacketRegistry().getPacketHandler(packetId).decode(minecraftPacket);
+                    loginPacket = (LoginPacket) this.version.getPacketRegistry().getPacketHandler(packetId).decode(minecraftPacket);
                 } catch (RuntimeException exception) {
                     this.server.getPizzaServer().getLogger().error("Error while decoding packet from client.", exception);
                     this.serverSession.disconnect(DisconnectReason.BAD_PACKET);

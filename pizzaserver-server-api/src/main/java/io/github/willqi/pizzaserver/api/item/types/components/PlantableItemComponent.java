@@ -10,13 +10,13 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 public interface PlantableItemComponent {
 
     /**
-     * Get the block to be placed when this item is used
+     * Get the block to be placed when this item is used.
      * @return block to be placed
      */
     Block getPlacedBlock();
 
     /**
-     * Get the block types this item can be used on
+     * Get the block types this item can be used on.
      * @return block types this item can be used on
      */
     BaseBlockType[] getPlaceableBlockTypes();

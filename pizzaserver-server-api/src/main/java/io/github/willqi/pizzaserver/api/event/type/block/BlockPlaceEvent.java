@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 /**
- * Called when the player places a block down
+ * Called when the player places a block down.
  */
 public class BlockPlaceEvent extends BaseBlockEvent.Cancellable {
 

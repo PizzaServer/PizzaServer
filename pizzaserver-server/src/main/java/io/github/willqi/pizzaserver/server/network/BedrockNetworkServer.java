@@ -80,15 +80,15 @@ public class BedrockNetworkServer {
         @Override
         public byte[] onQuery(InetSocketAddress inetSocketAddress) {
             BedrockPong pong = BedrockNetworkServer.this.getPong();
-            return (pong.getEdition() + ";" +
-                    pong.getMotd() + ";" +
-                    pong.getProtocol() + ";" +
-                    pong.getGameVersion() + ";" +
-                    pong.getOnlinePlayerCount() + ";" +
-                    pong.getMaxPlayerCount() + ";" +
-                    BedrockNetworkServer.this.rakNetServer.getGuid() + ";" +
-                    pong.getSubMotd() + ";" +
-                    pong.getGamemode().getName()).getBytes(StandardCharsets.UTF_8);
+            return (pong.getEdition() + ";"
+                    + pong.getMotd() + ";"
+                    + pong.getProtocol() + ";"
+                    + pong.getGameVersion() + ";"
+                    + pong.getOnlinePlayerCount() + ";"
+                    + pong.getMaxPlayerCount() + ";"
+                    + BedrockNetworkServer.this.rakNetServer.getGuid() + ";"
+                    + pong.getSubMotd() + ";"
+                    + pong.getGamemode().getName()).getBytes(StandardCharsets.UTF_8);
         }
 
         @Override

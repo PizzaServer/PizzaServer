@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Remove an entity
+ * Sent to remove an entity.
  */
 public class RemoveEntityPacket extends BaseBedrockPacket {
 

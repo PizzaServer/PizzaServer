@@ -12,7 +12,7 @@ public class EntityMetaProperty<T> {
     }
 
     /**
-     * Get the type of this property
+     * Get the type of this property.
      * @return a {@link EntityMetaPropertyType}
      */
     public EntityMetaPropertyType getType() {
@@ -20,7 +20,7 @@ public class EntityMetaProperty<T> {
     }
 
     /**
-     * Retrieve the value associated with this property
+     * Retrieve the value associated with this property.
      * @return the value
      */
     public T getValue() {

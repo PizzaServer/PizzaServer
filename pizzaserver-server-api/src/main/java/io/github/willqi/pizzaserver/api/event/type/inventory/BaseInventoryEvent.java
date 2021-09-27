@@ -17,7 +17,7 @@ public class BaseInventoryEvent extends Event {
     }
 
 
-    public static abstract class Cancellable extends BaseInventoryEvent implements CancellableType {
+    public abstract static class Cancellable extends BaseInventoryEvent implements CancellableType {
 
         protected boolean isCancelled;
 
@@ -28,7 +28,7 @@ public class BaseInventoryEvent extends Event {
 
         @Override
         public boolean isCancelled() {
-            return isCancelled;
+            return this.isCancelled;
         }
 
         @Override

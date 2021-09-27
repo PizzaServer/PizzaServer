@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the client when it changes the item being held
+ * Sent by the client when it changes the item being held.
  * Sent by the server when it wants to change the item being held by an entity
  */
 public class MobEquipmentPacket extends BaseBedrockPacket {

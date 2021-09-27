@@ -31,7 +31,7 @@ public class ImplChunkManager implements ChunkManager {
     }
 
     /**
-     * Tick all chunks and the chunk queue
+     * Tick all chunks and the chunk queue.
      */
     public void tick() {
         this.chunkQueue.tick();
@@ -73,7 +73,7 @@ public class ImplChunkManager implements ChunkManager {
                     BedrockChunk internalChunk = this.getWorld().getLevel().getProvider().getChunk(x, z, this.getWorld().getDimension());
 
                     chunk = new ImplChunk.Builder()
-                            .setWorld(world)
+                            .setWorld(this.world)
                             .setX(internalChunk.getX())
                             .setZ(internalChunk.getZ())
                             .setChunk(internalChunk)
@@ -125,7 +125,7 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public void sendPlayerChunk(Player player, int x, int z, boolean async) {
         if (async) {
-            this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer)player, x, z));
+            this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer) player, x, z));
         } else {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.readLock(key);

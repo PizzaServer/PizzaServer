@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.network.BedrockPong;
 
 /**
- * Called every time the server's pong is being updated
+ * Called every time the server's pong is being updated.
  */
 public class ServerPongUpdateEvent extends BaseServerEvent.Cancellable {
 

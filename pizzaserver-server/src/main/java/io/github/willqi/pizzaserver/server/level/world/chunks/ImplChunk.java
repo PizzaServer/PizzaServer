@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Represents a 16x16 chunk of blocks on the server
+ * Represents a 16x16 chunk of blocks on the server.
  */
 public class ImplChunk implements Chunk {
 
@@ -77,8 +77,8 @@ public class ImplChunk implements Chunk {
 
     @Override
     public boolean canBeVisibleTo(Player player) {
-        return (player.getChunkRadius() + player.getLocation().getChunkX() >= this.getX()) && (player.getLocation().getChunkX() - player.getChunkRadius() <= this.getX()) &&
-                (player.getChunkRadius() + player.getLocation().getChunkZ() >= this.getZ()) && (player.getLocation().getChunkZ() - player.getChunkRadius() <= this.getZ());
+        return (player.getChunkRadius() + player.getLocation().getChunkX() >= this.getX()) && (player.getLocation().getChunkX() - player.getChunkRadius() <= this.getX())
+                && (player.getChunkRadius() + player.getLocation().getChunkZ() >= this.getZ()) && (player.getLocation().getChunkZ() - player.getChunkRadius() <= this.getZ());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Add this entity to be spawned for viewers of this chunk
+     * Add this entity to be spawned for viewers of this chunk.
      * Called when the entity is in this chunk
      * @param entity the entity to spawn
      */
@@ -99,9 +99,9 @@ public class ImplChunk implements Chunk {
         for (Player player : this.getViewers()) {
             // an entity cannot be spawned to a player if it is the entity,
             // has already been spawned, or if the entity is hidden from the player.
-            boolean canSpawnToPlayer = !entity.equals(player) &&
-                    !entity.hasSpawnedTo(player) &&
-                    (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isHiddenFrom(player));
+            boolean canSpawnToPlayer = !entity.equals(player)
+                    && !entity.hasSpawnedTo(player)
+                    && (!(entity instanceof LivingEntity) || !((LivingEntity) entity).isHiddenFrom(player));
 
             if (canSpawnToPlayer) {
                 entity.spawnTo(player);
@@ -110,7 +110,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Remove this entity from the set of entities that are spawned to viewers
+     * Remove this entity from the set of entities that are spawned to viewers.
      * Called when the entity is moved to another chunk or is despawned
      * @param entity the entity to spawn
      */
@@ -273,7 +273,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send all the layers of a block to the client
+     * Send all the layers of a block to the client.
      * @param player the player being sent the layers
      * @param blockCoordinates coordinates of the block
      */
@@ -282,7 +282,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send all layers of a block to the client
+     * Send all layers of a block to the client.
      * @param player the player being sent the layers
      * @param x x coordinate
      * @param y y coordinate
@@ -300,7 +300,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send a layer of a block to the client
+     * Send a layer of a block to the client.
      * @param player the player being sent the layers
      * @param blockCoordinates block coordinates
      * @param layer layer
@@ -310,7 +310,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send a layer of a block to the client
+     * Send a layer of a block to the client.
      * @param player the player being sent the layer
      * @param x x coordinate
      * @param y y coordinate
@@ -330,7 +330,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * run block updates and tick entities in this chunk
+     * run block updates and tick entities in this chunk.
      */
     public void tick() {
         for (Entity entity : this.getEntities()) {
@@ -346,7 +346,7 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send the chunk blocks to a {@link Player}
+     * Send the chunk blocks to a {@link Player}.
      * It is recommended that this is done async as it can take a while to serialize.
      * @param player the {@link Player} to send it to
      */
@@ -381,13 +381,13 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Send the {@link BaseEntity}s of this chunk to a {@link Player}
+     * Send the {@link BaseEntity}s of this chunk to a {@link Player}.
      * This should only be called on the MAIN thread
-     * @param player
+     * @param player the player to send the entities to
      */
     public void sendEntities(Player player) {
         for (Entity entity : this.getEntities()) {
-            if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity)entity).isHiddenFrom(player))) {
+            if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity) entity).isHiddenFrom(player))) {
                 continue;
             }
             entity.spawnTo(player);
@@ -432,7 +432,7 @@ public class ImplChunk implements Chunk {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ImplChunk) {
-            ImplChunk otherChunk = (ImplChunk)obj;
+            ImplChunk otherChunk = (ImplChunk) obj;
             return (otherChunk.getX() == this.getX()) && (otherChunk.getZ() == this.getZ()) && (otherChunk.getWorld().equals(this.getWorld()));
         }
         return false;

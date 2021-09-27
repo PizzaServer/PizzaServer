@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.data.AnimationAction;
 
 /**
- * Called when a player triggers a player animation
+ * Called when a player triggers a player animation.
  */
 public class PlayerAnimationEvent extends BasePlayerEvent.Cancellable {
 

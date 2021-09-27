@@ -16,8 +16,11 @@ public final class Check {
      * @return the parameter "obj"
      */
     public static <T> T missingProperty(T obj, String loc, String name) {
-        if(isNull(obj)) throw new MissingPropertyException(String.format("%s is missing a valid '%s' property.", loc, name));
-        return obj;
+        if (isNull(obj)) {
+            throw new MissingPropertyException(String.format("%s is missing a valid '%s' property.", loc, name));
+        } else {
+            return obj;
+        }
     }
 
     /**
@@ -28,8 +31,11 @@ public final class Check {
      * @return the parameter "obj"
      */
     public static <T> T nullParam(T obj, String name) {
-        if(isNull(obj)) throw new IllegalArgumentException(String.format("'%s' cannot be null.", name));
-        return obj;
+        if (isNull(obj)) {
+            throw new IllegalArgumentException(String.format("'%s' cannot be null.", name));
+        } else {
+            return obj;
+        }
     }
 
     /**
@@ -48,13 +54,19 @@ public final class Check {
     }
 
     public static int inclusiveLowerBound(int val, int bound, String name) {
-        if(val < bound) throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Lower = %s)", name, val, bound));
-        return val;
+        if (val < bound) {
+            throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Lower = %s)", name, val, bound));
+        } else {
+            return val;
+        }
     }
 
     public static int inclusiveUpperBound(int val, int bound, String name) {
-        if(val > bound) throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Upper = %s)", name, val, bound));
-        return val;
+        if (val > bound) {
+            throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Upper = %s)", name, val, bound));
+        } else {
+            return val;
+        }
     }
 
     public static boolean isNull(Object obj) {

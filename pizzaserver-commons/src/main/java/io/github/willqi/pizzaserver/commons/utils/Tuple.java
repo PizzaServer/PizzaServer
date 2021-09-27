@@ -27,7 +27,7 @@ public class Tuple<A, B> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Tuple) {
-            Tuple<?, ?> tuple = (Tuple<?, ?>)obj;
+            Tuple<?, ?> tuple = (Tuple<?, ?>) obj;
             return tuple.getObjectA().equals(this.getObjectA()) && tuple.getObjectB().equals(this.getObjectB());
         }
         return false;

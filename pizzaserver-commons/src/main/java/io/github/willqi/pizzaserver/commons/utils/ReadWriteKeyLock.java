@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Similar to the {@link ReadWriteLock}, however, this lock locks based off of keys rather than a singular object
+ * Similar to the {@link ReadWriteLock}, however, this lock locks based off of keys rather than a singular object.
  * @param <K> key type
  */
 public class ReadWriteKeyLock<K> {
@@ -18,7 +18,7 @@ public class ReadWriteKeyLock<K> {
 
 
     /**
-     * Obtain a read lock
+     * Obtain a read lock.
      * @param key key of the lock
      */
     public void readLock(K key) {
@@ -32,7 +32,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Try to obtain a read lock
+     * Try to obtain a read lock.
      * @param key key of the lock
      * @return if the lock was obtained
      */
@@ -48,7 +48,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Release a hold on a read lock
+     * Release a hold on a read lock.
      * @param key key of the lock
      */
     public void readUnlock(K key) {
@@ -65,7 +65,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Increment the amount of holds on the read lock of a key
+     * Increment the amount of holds on the read lock of a key.
      * @param key key of the lock
      */
     private void incrementReadCount(K key) {
@@ -81,7 +81,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Decrement the amount of holds on the read lock by a key
+     * Decrement the amount of holds on the read lock by a key.
      * It is required to ensure that the key exists in readLockCount and also in locks
      * @param key key of the lock
      */
@@ -101,7 +101,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Obtain a write lock
+     * Obtain write lock.
      * @param key the key to obtain the lock on
      */
     public void writeLock(K key) {
@@ -115,7 +115,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Try to obtain a write lock
+     * Try to obtain write lock.
      * @param key the key to obtain the lock on
      * @return if the lock was obtained
      */
@@ -131,7 +131,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Unlock a write lock held under ak ey
+     * Unlock write lock held under a key.
      * @param key the key of the lock being released
      */
     public void writeUnlock(K key) {
@@ -148,7 +148,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Increment the amount of holds on the write lock of a key
+     * Increment the amount of holds on a write lock of a key.
      * @param key key of the lock
      */
     private void incrementWriteCount(K key) {
@@ -164,7 +164,7 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Decrement the amount of holds on the write lock by a key
+     * Decrement the amount of holds on the write lock by a key.
      * It is required to ensure that the key exists in writeLockCount and also in locks
      * @param key key of the lock
      */
@@ -185,8 +185,8 @@ public class ReadWriteKeyLock<K> {
     }
 
     /**
-     * Remove the lock from the locks cache if the lock count for both read and writes are 0
-     * @param key
+     * Remove the lock from the locks cache if the lock count for both read and writes are 0.
+     * @param key key of the lock
      */
     private void tryRemovingLock(K key) {
         boolean writeIsEmpty = !this.writeLockCount.containsKey(key) || this.writeLockCount.get(key).isEmpty();

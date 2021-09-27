@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import io.github.willqi.pizzaserver.api.player.data.AnimationAction;
 
 /**
- * Sent by the client and server to trigger a {@link AnimationAction}
+ * Sent by the client and server to trigger a {@link AnimationAction}.
  */
 public class PlayerAnimatePacket extends BaseBedrockPacket {
 
@@ -19,7 +19,7 @@ public class PlayerAnimatePacket extends BaseBedrockPacket {
     }
 
     public AnimationAction getAction() {
-        return action;
+        return this.action;
     }
 
     public void setAction(AnimationAction action) {
@@ -27,7 +27,7 @@ public class PlayerAnimatePacket extends BaseBedrockPacket {
     }
 
     public long getEntityRuntimeID() {
-        return entityRuntimeID;
+        return this.entityRuntimeID;
     }
 
     public void setEntityRuntimeID(long entityRuntimeID) {
@@ -35,7 +35,7 @@ public class PlayerAnimatePacket extends BaseBedrockPacket {
     }
 
     public float getRowingTime() {
-        return rowingTime;
+        return this.rowingTime;
     }
 
     public void setRowingTime(float rowingTime) {

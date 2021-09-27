@@ -52,8 +52,8 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     /**
-     * Parses height maps and biome data of a chunk
-     * @param data2d
+     * Parses height maps and biome data of a chunk.
+     * @param data2d height + biome data of the chunk
      */
     private void parseData2d(byte[] data2d) {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(512);
@@ -67,10 +67,10 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     /**
-     * Parses block entities and regular entities of a chunk
-     * @param blockEntityData
-     * @param entityData
-     * @throws IOException
+     * Parses block entities and regular entities of a chunk.
+     * @param blockEntityData block entities in this chunk
+     * @param entityData entities in this chunk
+     * @throws IOException if it failed to parse the entity NBT
      */
     private void parseEntityNBT(byte[] blockEntityData, byte[] entityData) throws IOException {
         NBTInputStream blockEntityNBTInputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteArrayInputStream(blockEntityData)));

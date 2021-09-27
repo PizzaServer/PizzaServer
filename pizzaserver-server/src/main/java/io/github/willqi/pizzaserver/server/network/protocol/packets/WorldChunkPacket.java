@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the server to render chunks in the players world
+ * Sent by the server to render chunks in the players world.
  * a NetworkChunkPublisherUpdatePacket is REQUIRED in order for these chunks to show up
  */
 public class WorldChunkPacket extends BaseBedrockPacket {
@@ -40,7 +40,7 @@ public class WorldChunkPacket extends BaseBedrockPacket {
         return this.subChunkCount;
     }
 
-    public void setSubChunkCount(int subChunkCount){
+    public void setSubChunkCount(int subChunkCount) {
         this.subChunkCount = subChunkCount;
     }
 

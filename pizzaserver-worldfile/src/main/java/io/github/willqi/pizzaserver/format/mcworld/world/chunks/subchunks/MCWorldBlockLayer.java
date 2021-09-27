@@ -48,7 +48,9 @@ public class MCWorldBlockLayer implements BlockLayer {
         for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
             int word = buffer.readIntLE();  // This integer can store multiple blocks.
             for (int block = 0; block < blocksPerWord; block++) {
-                if (pos >= 4096) break;
+                if (pos >= 4096) {
+                    break;
+                }
 
                 int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
                 this.blocks[pos] = this.palette.getEntry(paletteIndex);
@@ -70,9 +72,9 @@ public class MCWorldBlockLayer implements BlockLayer {
     private byte[] serialize(IOFunction<MCWorldBlockPalette, byte[]> paletteSerializer) {
         this.cleanUpPalette();
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        int bitsPerBlock = Math.max((int)Math.ceil(Math.log(this.palette.getAllEntries().size()) / Math.log(2)), 1);
+        int bitsPerBlock = Math.max((int) Math.ceil(Math.log(this.palette.getAllEntries().size()) / Math.log(2)), 1);
         int blocksPerWord = 32 / bitsPerBlock;
-        int wordsPerChunk = (int)Math.ceil(4096d / blocksPerWord);
+        int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
 
         buffer.writeByte((bitsPerBlock << 1) | 1);
 
@@ -80,7 +82,10 @@ public class MCWorldBlockLayer implements BlockLayer {
         for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
             int word = 0;
             for (int block = 0; block < blocksPerWord; block++) {
-                if (pos >= 4096) break;
+                if (pos >= 4096) {
+                    break;
+                }
+
                 word |= (this.palette.getPaletteIndex(this.getBlockEntryByIndex(pos))) << (bitsPerBlock * block);
                 pos++;
             }
@@ -96,7 +101,7 @@ public class MCWorldBlockLayer implements BlockLayer {
     }
 
     /**
-     * Remove palette entries that are no longer used in this chunk
+     * Remove palette entries that are no longer used in this chunk.
      */
     private void cleanUpPalette() {
         Set<BlockPalette.Entry> usedEntries = new HashSet<>(Arrays.asList(this.blocks));
