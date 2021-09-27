@@ -37,7 +37,7 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
      * Retrieve all of the current palette {@link BlockPalette.Entry}s.
      * @return set of all block palette entries in this palette
      */
-    Set<Entry> getAllEntries();
+    Set<Entry> getEntries();
 
     /**
      * Remove a {@link BlockPalette.Entry} from the palette.

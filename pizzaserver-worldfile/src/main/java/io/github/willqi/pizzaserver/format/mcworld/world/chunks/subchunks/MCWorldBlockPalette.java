@@ -31,7 +31,7 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
     @Override
-    public void add(Entry entry) {
+    public synchronized void add(Entry entry) {
         if (!this.entries.inverse().containsKey(entry)) {
             this.entries.put(this.paletteEntries++, entry);
         }
@@ -43,7 +43,7 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
     @Override
-    public Set<Entry> getAllEntries() {
+    public synchronized Set<Entry> getEntries() {
         return Collections.unmodifiableSet(this.entries.values());
     }
 
@@ -52,19 +52,18 @@ public class MCWorldBlockPalette implements BlockPalette {
         this.removeEntry(entry, true);
     }
 
-    public void removeEntry(Entry entry, boolean resize) {
+    public synchronized void removeEntry(Entry entry, boolean resize) {
         this.entries.inverse().remove(entry);
         if (resize) {
             this.resize();
         }
     }
 
-
     /**
      * Resize modifies the block palette indexes in order to take as less space as possible.
      * Unused palette entries are shifted.
      */
-    public void resize() {
+    public synchronized void resize() {
         int resizeStartingIndex = -1;   // The first entry index that we need to relocate
         for (int index = 0; index < this.paletteEntries; index++) {
             if (!this.entries.containsKey(index)) {
@@ -90,21 +89,22 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
     @Override
-    public Entry getEntry(int index) {
+    public synchronized Entry getEntry(int index) {
         return this.entries.get(index);
     }
 
     @Override
-    public int getPaletteIndex(Entry entry) {
+    public synchronized int getPaletteIndex(Entry entry) {
         return this.entries.inverse().get(entry);
     }
 
     @Override
     public byte[] serializeForDisk() throws IOException {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        buffer.writeIntLE(this.size());
+        Set<BlockPalette.Entry> entries = this.getEntries();
+        buffer.writeIntLE(entries.size());
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
-        for (BlockPalette.Entry data : this.getAllEntries()) {
+        for (BlockPalette.Entry data : entries) {
             NBTCompound compound = new NBTCompound();
             compound.putString("name", data.getId())
                     .putInteger("version", data.getVersion())
@@ -122,8 +122,9 @@ public class MCWorldBlockPalette implements BlockPalette {
     @Override
     public byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        VarInts.writeInt(buffer, this.getAllEntries().size());
-        for (BlockPalette.Entry data : this.getAllEntries()) {
+        Set<BlockPalette.Entry> entries = this.getEntries();
+        VarInts.writeInt(buffer, entries.size());
+        for (BlockPalette.Entry data : entries) {
             int id = runtimeMapper.getBlockRuntimeId(data.getId(), data.getState());
             VarInts.writeInt(buffer, id);
         }

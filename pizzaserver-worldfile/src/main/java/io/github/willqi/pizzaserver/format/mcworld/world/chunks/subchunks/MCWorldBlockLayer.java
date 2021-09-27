@@ -25,17 +25,17 @@ public class MCWorldBlockLayer implements BlockLayer {
     }
 
     @Override
-    public BlockPalette.Entry getBlockEntryAt(int x, int y, int z) {
+    public synchronized BlockPalette.Entry getBlockEntryAt(int x, int y, int z) {
         if (this.palette.size() == 0) {
             // if the palette is empty, then add an air entry in order to make this.blocks accurately return air for all 0s.
             this.palette.add(new BlockPalette.EmptyEntry());
         }
 
-        return this.palette.getEntry(this.blocks[this.getBlockIndex(x, y, z)]);
+        return this.palette.getEntry(this.blocks[getBlockIndex(x, y, z)]);
     }
 
     @Override
-    public void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry) {
+    public synchronized void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry) {
         if (this.palette.size() == 0) {
             // If the palette is empty, then add an air entry to make every 0 in this.blocks return air.
             // Otherwise, when this method calls this.palette.add(entry), every 0 in this.blocks will be assigned that block.
@@ -43,11 +43,7 @@ public class MCWorldBlockLayer implements BlockLayer {
         }
 
         this.palette.add(entry);
-        this.blocks[this.getBlockIndex(x, y, z)] = this.palette.getPaletteIndex(entry);
-    }
-
-    private int getBlockIndex(int x, int y, int z) {
-        return (x << 8) | (z << 4) | y;
+        this.blocks[getBlockIndex(x, y, z)] = this.palette.getPaletteIndex(entry);
     }
 
     public void parse(ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
@@ -56,7 +52,7 @@ public class MCWorldBlockLayer implements BlockLayer {
             int word = buffer.readIntLE();  // This integer can store multiple blocks.
             for (int block = 0; block < blocksPerWord; block++) {
                 if (pos >= 4096) {
-                    break;
+                    return;
                 }
 
                 int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
@@ -77,9 +73,9 @@ public class MCWorldBlockLayer implements BlockLayer {
         return this.serialize(palette -> this.palette.serializeForNetwork(runtimeMapper));
     }
 
-    private byte[] serialize(IOFunction<MCWorldBlockPalette, byte[]> paletteSerializer) {
+    private synchronized byte[] serialize(IOFunction<MCWorldBlockPalette, byte[]> paletteSerializer) {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        int bitsPerBlock = Math.max((int) Math.ceil(Math.log(this.palette.getAllEntries().size()) / Math.log(2)), 1);
+        int bitsPerBlock = Math.max((int) Math.ceil(Math.log(this.palette.getEntries().size()) / Math.log(2)), 1);
         int blocksPerWord = 32 / bitsPerBlock;
         int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
 
@@ -110,7 +106,7 @@ public class MCWorldBlockLayer implements BlockLayer {
     /**
      * Remove palette entries that are no longer used in this chunk.
      */
-    private void cleanUpPalette() {
+    private synchronized void cleanUpPalette() {
         // Get all the palette indexes being used
         Map<Integer, BlockPalette.Entry> usedEntries = new HashMap<>();
         for (int paletteIndex : this.blocks) {
@@ -118,7 +114,7 @@ public class MCWorldBlockLayer implements BlockLayer {
         }
 
         // Remove unused palette entries
-        Iterator<BlockPalette.Entry> entryIterator = new HashSet<>(this.palette.getAllEntries()).iterator();
+        Iterator<BlockPalette.Entry> entryIterator = new HashSet<>(this.palette.getEntries()).iterator();
         while (entryIterator.hasNext()) {
             BlockPalette.Entry entry = entryIterator.next();
             int paletteIndex = this.palette.getPaletteIndex(entry);
@@ -138,6 +134,10 @@ public class MCWorldBlockLayer implements BlockLayer {
         for (int i = 0; i < this.blocks.length; i++) {
             this.blocks[i] = this.palette.getPaletteIndex(usedEntries.get(this.blocks[i]));
         }
+    }
+
+    private static int getBlockIndex(int x, int y, int z) {
+        return (x << 8) | (z << 4) | y;
     }
 
 }
