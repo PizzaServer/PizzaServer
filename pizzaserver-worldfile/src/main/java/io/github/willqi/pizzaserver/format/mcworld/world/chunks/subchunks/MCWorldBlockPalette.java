@@ -35,11 +35,10 @@ public class MCWorldBlockPalette implements BlockPalette {
     public MCWorldBlockPalette(ByteBuf buffer) throws IOException {
         int paletteLength = buffer.readIntLE();
         NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
-        MCWorldBlockPalette palette = new MCWorldBlockPalette();
         try {
             for (int i = 0; i < paletteLength; i++) {
                 NBTCompound compound = inputStream.readCompound();
-                palette.add(new MCWorldBlockPaletteEntry(compound));
+                this.add(new MCWorldBlockPaletteEntry(compound));
             }
         } catch (IOException exception) {
             throw new ChunkParseException("Failed to parse chunk palette.", exception);

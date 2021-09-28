@@ -34,7 +34,7 @@ public class MCWorldBlockLayer implements BlockLayer {
             int word = buffer.readIntLE();  // This integer can store multiple minecraft blocks.
             for (int block = 0; block < blocksPerWord; block++) {
                 if (pos >= 4096) {
-                    return;
+                    break;
                 }
 
                 int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);

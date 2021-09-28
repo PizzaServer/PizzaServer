@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.format.mcworld;
 
-import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCChunkDatabase;
+import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCWorldChunkProvider;
 import io.github.willqi.pizzaserver.format.mcworld.world.info.MCWorldInfo;
 import net.daporkchop.ldbjni.LevelDB;
 import org.iq80.leveldb.Options;
@@ -20,22 +20,20 @@ public class MCWorld {
 
 
     /**
-     * Read the contents in a exported Bedrock world file.
+     * Read the contents in an exported Bedrock world file.
      * @param mcWorldDirectory Folder of the unzipped contents in the .mcworld file
      */
     public MCWorld(File mcWorldDirectory) {
         this.mcWorldDirectory = mcWorldDirectory;
     }
 
-    public MCChunkDatabase openChunkDatabase() throws IOException {
-
+    public MCWorldChunkProvider openChunkProvider() throws IOException {
         File dbDirectory = new File(this.mcWorldDirectory.getAbsolutePath(), DB_PATH);
         if (!(dbDirectory.exists() && dbDirectory.isDirectory())) {
             throw new FileNotFoundException("Could not find db directory");
         }
-        return new MCChunkDatabase(
-                LevelDB.PROVIDER.open(dbDirectory, new Options().blockSize(64 * 1024))
-        );
+
+        return new MCWorldChunkProvider(LevelDB.PROVIDER.open(dbDirectory, new Options()));
     }
 
     public void setWorldInfo(MCWorldInfo worldInfo) {
@@ -51,9 +49,7 @@ public class MCWorld {
         if (!levelDatFile.exists()) {
             throw new FileNotFoundException("Could not find level.dat file");
         }
-        return new MCWorldInfo(
-                levelDatFile
-        );
+        return new MCWorldInfo(levelDatFile);
     }
 
 }

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class MCChunkDatabase implements Closeable {
+public class MCWorldChunkProvider implements Closeable {
 
     private final DB database;
 
@@ -29,7 +29,7 @@ public class MCChunkDatabase implements Closeable {
     };
 
 
-    public MCChunkDatabase(DB database) {
+    public MCWorldChunkProvider(DB database) {
         this.database = database;
     }
 

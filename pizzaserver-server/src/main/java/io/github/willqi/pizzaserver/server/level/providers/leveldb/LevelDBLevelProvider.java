@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.mcworld.MCWorld;
 import io.github.willqi.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
 import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCWorldChunk;
-import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCChunkDatabase;
+import io.github.willqi.pizzaserver.format.mcworld.world.chunks.MCWorldChunkProvider;
 import io.github.willqi.pizzaserver.format.mcworld.world.info.MCWorldInfo;
 import io.github.willqi.pizzaserver.server.level.providers.BaseLevelProvider;
 
@@ -17,14 +17,14 @@ public class LevelDBLevelProvider extends BaseLevelProvider {
 
     private final MCWorld mcWorld;
     private final MCWorldInfo worldInfo;
-    private final MCChunkDatabase chunkDatabase;
+    private final MCWorldChunkProvider chunkDatabase;
 
 
     public LevelDBLevelProvider(File worldFile) throws IOException {
         super(worldFile);
         this.mcWorld = new MCWorld(worldFile);
         this.worldInfo = this.mcWorld.getWorldInfo();
-        this.chunkDatabase = this.mcWorld.openChunkDatabase();
+        this.chunkDatabase = this.mcWorld.openChunkProvider();
     }
 
     @Override

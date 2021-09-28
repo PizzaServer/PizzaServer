@@ -91,7 +91,7 @@ public class MCWorldSubChunk implements BedrockSubChunk {
 
     @Override
     public byte[] serializeForDisk() throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(1);
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(2);
         buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
         buffer.writeByte(this.layers.size());
         for (BlockLayer layer : this.layers) {
