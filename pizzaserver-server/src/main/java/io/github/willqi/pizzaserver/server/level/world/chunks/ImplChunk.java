@@ -363,7 +363,7 @@ public class ImplChunk implements Chunk {
             // Packets are sent on the main thread
             final int packetSubChunkCount = subChunkCount;
             this.getWorld().getServer().getScheduler().prepareTask(() -> {
-                if (player.getLocation().getWorld().equals(this.getWorld())) {
+                if (player.isConnected() && player.getLocation().getWorld().equals(this.getWorld())) {
                     // TODO: Supposedly tile entities are also packaged here
                     WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
                     worldChunkPacket.setX(this.getX());
@@ -386,7 +386,7 @@ public class ImplChunk implements Chunk {
      * @param player the player to send the entities to
      */
     public void sendEntities(Player player) {
-        if (player.getLocation().getWorld().equals(this.getWorld())) {
+        if (player.isConnected() && player.getLocation().getWorld().equals(this.getWorld())) {
             for (Entity entity : this.getEntities()) {
                 if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity) entity).isHiddenFrom(player))) {
                     continue;
