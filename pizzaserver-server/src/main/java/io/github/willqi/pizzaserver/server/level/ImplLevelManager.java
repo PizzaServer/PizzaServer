@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.level.LevelManager;
 import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.level.processing.LevelChunkProcessorManager;
 import io.github.willqi.pizzaserver.server.level.providers.BaseLevelProvider;
 import io.github.willqi.pizzaserver.server.level.providers.ProviderType;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ImplLevelManager implements LevelManager, Closeable {
 
     private final ImplServer server;
+    private final LevelChunkProcessorManager levelChunkProcessorManager;
 
     // fileName : Level
     private final Map<String, ImplLevel> levels = new ConcurrentHashMap<>();
@@ -26,10 +28,15 @@ public class ImplLevelManager implements LevelManager, Closeable {
 
     public ImplLevelManager(ImplServer server) {
         this.server = server;
+        this.levelChunkProcessorManager = new LevelChunkProcessorManager(this);
     }
 
     public ImplServer getServer() {
         return this.server;
+    }
+
+    public LevelChunkProcessorManager getProcessorManager() {
+        return this.levelChunkProcessorManager;
     }
 
     /**
@@ -39,6 +46,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
         for (ImplLevel level : this.levels.values()) {
             level.tick();
         }
+        this.levelChunkProcessorManager.tick();
     }
 
     @Override
@@ -95,7 +103,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
             return null;
         }
         this.server.getLogger().info("Successfully loaded level " + name);
-        return new ImplLevel(this.server, provider);
+        return new ImplLevel(this, provider);
     }
 
     @Override
@@ -141,5 +149,6 @@ public class ImplLevelManager implements LevelManager, Closeable {
         for (ImplLevel level : this.levels.values()) {
             this.unloadLevel(level.getProvider().getFileName());
         }
+        this.levelChunkProcessorManager.close();
     }
 }

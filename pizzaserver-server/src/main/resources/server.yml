@@ -20,10 +20,10 @@ world:
   chunk:
     # Active chunk radius around players
     radius: 8
-    # Maximum amount of chunks that can be requested per tick
-    requests-per-tick: 16
-    # Maximum amount of requests that can be queued directly into the ChunkQueue to be processed rather than wait to be queued
-    processing-queue-cap: 64
+    # Maximum amount of chunk processing threads
+    threads: 4
+    # Maximum amount of requests that can be processed in each chunk processing thread per tick
+    thread-processing-cap: 64
 
 debug:
   # If debug messages should be printed

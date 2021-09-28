@@ -31,25 +31,20 @@ public class ServerConfig {
         return this.config.getBoolean("server.force-packs");
     }
 
+    public int getMaxChunkThreads() {
+        return this.config.getInteger("world.chunk.threads");
+    }
+
     public int getChunkRadius() {
         return this.config.getInteger("world.chunk.radius");
     }
 
     /**
-     * Max chunks that be requested per player each tick to be sent to itself.
-     * Additionally, this makes up the max chunks that be offloaded per tick
-     * @return max chunks that be requested per player each tick to be sent to itself
+     * Max amount of chunk requests a level chunk processing thread can handle per tick.
+     * @return max chunk request processing count per tick
      */
-    public int getChunkRequestsPerTick() {
-        return this.config.getInteger("world.chunk.requests-per-tick");
-    }
-
-    /**
-     * Max chunks that be queued to the ChunkProcessingThread for each player/for unloading.
-     * @return max chunk queue count
-     */
-    public int getChunkProcessingCap() {
-        return this.config.getInteger("world.chunk.processing-queue-cap");
+    public int getMaxChunkProcessingCountPerTick() {
+        return this.config.getInteger("world.chunk.thread-processing-cap");
     }
 
     public String getDefaultWorldName() {

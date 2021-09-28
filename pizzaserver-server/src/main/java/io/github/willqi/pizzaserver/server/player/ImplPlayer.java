@@ -11,7 +11,6 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -31,7 +30,6 @@ import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.io.IOException;
 
 public class ImplPlayer extends BaseLivingEntity implements Player {
@@ -51,7 +49,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private Skin skin;
 
     private int chunkRadius = 3;
-    private final AtomicInteger chunkRequestsLeft = new AtomicInteger();    // Reset every tick
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
@@ -70,8 +67,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
         this.inventory = new ImplPlayerInventory(this);
-
-        this.chunkRequestsLeft.set(server.getConfig().getChunkRequestsPerTick());
     }
 
     @Override
@@ -490,15 +485,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, true);
     }
 
-    /**
-     * Check if a player can be sent a chunk this tick.
-     * Requests are reset during an entity's tick
-     * @return whether or not the player should be sent a chunk this tick
-     */
-    public boolean acknowledgeChunkSendRequest() {
-        return this.chunkRequestsLeft.getAndDecrement() > 0;
-    }
-
     private void sendNetworkChunkPublisher() {
         NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
         packet.setCoordinates(this.getLocation().toVector3i());
@@ -590,8 +576,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void tick() {
-        this.chunkRequestsLeft.set(this.getServer().getConfig().getChunkRequestsPerTick()); // Reset amount of chunks that we can be sent this tick
-
         if (this.moveUpdate) {
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setEntityRuntimeId(this.getId());

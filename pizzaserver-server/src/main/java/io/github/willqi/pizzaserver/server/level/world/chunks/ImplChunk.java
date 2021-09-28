@@ -386,14 +386,15 @@ public class ImplChunk implements Chunk {
      * @param player the player to send the entities to
      */
     public void sendEntities(Player player) {
-        for (Entity entity : this.getEntities()) {
-            if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity) entity).isHiddenFrom(player))) {
-                continue;
+        if (player.getLocation().getWorld().equals(this.getWorld())) {
+            for (Entity entity : this.getEntities()) {
+                if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity) entity).isHiddenFrom(player))) {
+                    continue;
+                }
+                entity.spawnTo(player);
             }
-            entity.spawnTo(player);
+            this.spawnedTo.add(player);
         }
-
-        this.spawnedTo.add(player);
     }
 
     @Override

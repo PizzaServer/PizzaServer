@@ -9,9 +9,8 @@ import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
-import io.github.willqi.pizzaserver.server.level.world.chunks.processing.ChunkQueue;
-import io.github.willqi.pizzaserver.server.level.world.chunks.processing.requests.PlayerChunkRequest;
-import io.github.willqi.pizzaserver.server.level.world.chunks.processing.requests.UnloadChunkRequest;
+import io.github.willqi.pizzaserver.server.level.processing.requests.PlayerChunkRequest;
+import io.github.willqi.pizzaserver.server.level.processing.requests.UnloadChunkRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,8 +22,6 @@ public class ImplChunkManager implements ChunkManager {
     private final Map<Tuple<Integer, Integer>, ImplChunk> chunks = new ConcurrentHashMap<>();
     private final ReadWriteKeyLock<Tuple<Integer, Integer>> lock = new ReadWriteKeyLock<>();
 
-    private final ChunkQueue chunkQueue = new ChunkQueue(this);
-
 
     public ImplChunkManager(ImplWorld world) {
         this.world = world;
@@ -34,7 +31,6 @@ public class ImplChunkManager implements ChunkManager {
      * Tick all chunks and the chunk queue.
      */
     public void tick() {
-        this.chunkQueue.tick();
         for (ImplChunk chunk : this.chunks.values()) {
             chunk.tick();
         }
@@ -98,7 +94,10 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public void unloadChunk(int x, int z, boolean async, boolean force) {
         if (async) {
-            this.chunkQueue.addRequest(new UnloadChunkRequest(x, z));
+            this.getWorld().getLevel()
+                    .getLevelManager()
+                    .getProcessorManager()
+                    .addRequest(new UnloadChunkRequest(this.getWorld(), x, z));
         } else {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.writeLock(key);
@@ -125,7 +124,11 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public void sendPlayerChunk(Player player, int x, int z, boolean async) {
         if (async) {
-            this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer) player, x, z));
+            this.getWorld()
+                    .getLevel()
+                    .getLevelManager()
+                    .getProcessorManager()
+                    .addRequest(new PlayerChunkRequest((ImplPlayer) player, x, z));
         } else {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.readLock(key);
@@ -140,7 +143,6 @@ public class ImplChunkManager implements ChunkManager {
 
     @Override
     public void close() throws IOException {
-        this.chunkQueue.close();
         for (Chunk chunk : this.chunks.values()) {
             this.unloadChunk(chunk.getX(), chunk.getZ(), false, true);
         }

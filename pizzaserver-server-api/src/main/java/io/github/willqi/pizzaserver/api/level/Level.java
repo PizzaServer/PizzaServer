@@ -8,6 +8,8 @@ import java.io.IOException;
 
 public interface Level {
 
+    LevelManager getLevelManager();
+
     String getName();
 
     Server getServer();
