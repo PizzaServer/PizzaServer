@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.level.world;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
-import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
@@ -18,19 +17,18 @@ import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
-import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunkManager;
+import io.github.willqi.pizzaserver.server.level.world.chunks.WorldChunkManager;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
-public class ImplWorld implements Closeable, World {
+public class ImplWorld implements World {
 
     private final ImplLevel level;
     private final Dimension dimension;
-    private final ImplChunkManager chunkManager = new ImplChunkManager(this);
+    private final WorldChunkManager chunkManager = new WorldChunkManager(this);
 
     private Vector3i spawnCoordinates;
 
@@ -72,11 +70,6 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
-    public ImplChunkManager getChunkManager() {
-        return this.chunkManager;
-    }
-
-    @Override
     public Vector3i getSpawnCoordinates() {
         return this.spawnCoordinates;
     }
@@ -87,8 +80,38 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
-    public Chunk getChunk(int x, int z) {
-        return this.getChunkManager().getChunk(x, z);
+    public boolean isChunkLoaded(int x, int z) {
+        return this.chunkManager.isChunkLoaded(x, z);
+    }
+
+    @Override
+    public ImplChunk getChunk(int x, int z) {
+        return this.chunkManager.getChunk(x, z);
+    }
+
+    @Override
+    public ImplChunk getChunk(int x, int z, boolean loadFromProvider) {
+        return this.chunkManager.getChunk(x, z, loadFromProvider);
+    }
+
+    @Override
+    public void unloadChunk(int x, int z) {
+        this.chunkManager.unloadChunk(x, z);
+    }
+
+    @Override
+    public void unloadChunk(int x, int z, boolean async, boolean force) {
+        this.chunkManager.unloadChunk(x, z, async, force);
+    }
+
+    @Override
+    public void sendPlayerChunk(Player player, int x, int z) {
+        this.sendPlayerChunk(player, x, z, true);
+    }
+
+    @Override
+    public void sendPlayerChunk(Player player, int x, int z, boolean async) {
+        this.chunkManager.sendPlayerChunk(player, x, z, async);
     }
 
     @Override
@@ -112,7 +135,7 @@ public class ImplWorld implements Closeable, World {
     public Block getBlock(int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        return this.getChunkManager().getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
+        return this.getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
     }
 
     @Override
@@ -145,7 +168,7 @@ public class ImplWorld implements Closeable, World {
     public void setBlock(Block block, int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        this.getChunkManager().getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
+        this.getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
     }
 
     public void sendBlock(Player player, Vector3i blockCoordinates) {
@@ -155,7 +178,7 @@ public class ImplWorld implements Closeable, World {
     public void sendBlock(Player player, int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        this.getChunkManager().getChunk(chunkX, chunkZ).sendBlock(player, x % 16, y, z % 16);
+        this.getChunk(chunkX, chunkZ).sendBlock(player, x % 16, y, z % 16);
     }
 
     @Override
@@ -210,6 +233,11 @@ public class ImplWorld implements Closeable, World {
     }
 
     @Override
+    public void tick() {
+        this.chunkManager.tick();
+    }
+
+    @Override
     public void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID) {
         WorldSoundEventPacket packet = new WorldSoundEventPacket();
         packet.setSound(sound);
@@ -243,7 +271,7 @@ public class ImplWorld implements Closeable, World {
 
     @Override
     public void close() throws IOException {
-        this.getChunkManager().close();
+        this.chunkManager.close();
     }
 
     @Override

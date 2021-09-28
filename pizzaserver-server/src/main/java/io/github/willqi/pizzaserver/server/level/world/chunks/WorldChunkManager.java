@@ -16,14 +16,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ImplChunkManager implements ChunkManager {
+public class WorldChunkManager implements ChunkManager {
 
     private final ImplWorld world;
     private final Map<Tuple<Integer, Integer>, ImplChunk> chunks = new ConcurrentHashMap<>();
     private final ReadWriteKeyLock<Tuple<Integer, Integer>> lock = new ReadWriteKeyLock<>();
 
 
-    public ImplChunkManager(ImplWorld world) {
+    public WorldChunkManager(ImplWorld world) {
         this.world = world;
     }
 
@@ -66,7 +66,7 @@ public class ImplChunkManager implements ChunkManager {
                 // Load chunk from provider
                 ImplChunk chunk = null;
                 try {
-                    BedrockChunk internalChunk = this.getWorld().getLevel().getProvider().getChunk(x, z, this.getWorld().getDimension());
+                    BedrockChunk internalChunk = this.world.getLevel().getProvider().getChunk(x, z, this.world.getDimension());
 
                     chunk = new ImplChunk.Builder()
                             .setWorld(this.world)
@@ -75,7 +75,7 @@ public class ImplChunkManager implements ChunkManager {
                             .setChunk(internalChunk)
                             .build();
                 } catch (IOException exception) {
-                    this.getWorld().getServer().getLogger().error(String.format("Failed to retrieve chunk (%s, %s) from provider", x, z), exception);
+                    this.world.getServer().getLogger().error(String.format("Failed to retrieve chunk (%s, %s) from provider", x, z), exception);
                 }
                 return chunk;
             });
@@ -94,10 +94,10 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public void unloadChunk(int x, int z, boolean async, boolean force) {
         if (async) {
-            this.getWorld().getLevel()
+            this.world.getLevel()
                     .getLevelManager()
                     .getProcessorManager()
-                    .addRequest(new UnloadChunkRequest(this.getWorld(), x, z));
+                    .addRequest(new UnloadChunkRequest(this.world, x, z));
         } else {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.writeLock(key);
@@ -124,8 +124,7 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public void sendPlayerChunk(Player player, int x, int z, boolean async) {
         if (async) {
-            this.getWorld()
-                    .getLevel()
+            this.world.getLevel()
                     .getLevelManager()
                     .getProcessorManager()
                     .addRequest(new PlayerChunkRequest((ImplPlayer) player, x, z));
@@ -146,11 +145,6 @@ public class ImplChunkManager implements ChunkManager {
         for (Chunk chunk : this.chunks.values()) {
             this.unloadChunk(chunk.getX(), chunk.getZ(), false, true);
         }
-    }
-
-    @Override
-    public ImplWorld getWorld() {
-        return this.world;
     }
 
 }

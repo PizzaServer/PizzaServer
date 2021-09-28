@@ -412,7 +412,7 @@ public class ImplChunk implements Chunk {
 
             if (this.canBeClosed()) {
                 // Attempt to unload this chunk
-                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ(), true, false);
+                this.getWorld().unloadChunk(this.getX(), this.getZ(), true, false);
             }
         }
     }

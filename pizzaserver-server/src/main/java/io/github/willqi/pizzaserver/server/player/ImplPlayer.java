@@ -292,7 +292,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                     // Chunk radius is circular
                     int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
                     if (this.chunkRadius > distance) {
-                        ImplChunk chunk = (ImplChunk) location.getWorld().getChunkManager().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
+                        ImplChunk chunk = (ImplChunk) location.getWorld().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
                         chunk.despawnFrom(this);
                     }
                 }
@@ -481,8 +481,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void requestSendChunk(int x, int z) {
-        this.getLocation().getWorld().getChunkManager().sendPlayerChunk(this, x, z, true);
+    public void sendChunk(int x, int z) {
+        this.getLocation().getWorld().sendPlayerChunk(this, x, z);
     }
 
     private void sendNetworkChunkPublisher() {
@@ -522,7 +522,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
                 if (this.getChunkRadius() > distance) {
                     // Ensure that this chunk is not already visible
                     if (!chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
-                        this.requestSendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
+                        this.sendChunk(currentPlayerChunkX + x, currentPlayerChunkZ + z);
                     }
                 }
             }
@@ -530,7 +530,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
         // Remove each chunk we shouldn't get packets from
         for (Tuple<Integer, Integer> key : chunksToRemove) {
-            ((ImplChunk) this.getLocation().getWorld().getChunkManager().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
+            ((ImplChunk) this.getLocation().getWorld().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
         }
 
         this.sendNetworkChunkPublisher();

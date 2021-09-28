@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.api.level.world.chunks;
 
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.level.world.World;
 
 import java.io.Closeable;
 
@@ -22,7 +21,7 @@ public interface ChunkManager extends Closeable {
      * If it is not cached, it may load from the provider
      * @param x chunk x
      * @param z chunk z
-     * @param loadFromProvider whether or not to load from world provider
+     * @param loadFromProvider should it load from the world provider if not cached
      * @return {@link Chunk}
      */
     Chunk getChunk(int x, int z, boolean loadFromProvider);
@@ -39,7 +38,7 @@ public interface ChunkManager extends Closeable {
      * @param x x chunk coordinate
      * @param z z chunk coordinate
      * @param async if this should be done on a separate thread
-     * @param force Forcefully unload a chunk regardless of whether or not it can be closed
+     * @param force Forcefully unload a chunk regardless of if it can be closed
      */
     void unloadChunk(int x, int z, boolean async, boolean force);
 
@@ -60,7 +59,5 @@ public interface ChunkManager extends Closeable {
      * @param async if this should be done on a separate thread
      */
     void sendPlayerChunk(Player player, int x, int z, boolean async);
-
-    World getWorld();
 
 }

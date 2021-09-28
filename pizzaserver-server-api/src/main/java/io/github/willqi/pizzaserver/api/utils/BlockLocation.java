@@ -21,7 +21,7 @@ public class BlockLocation extends Vector3i {
     }
 
     public Chunk getChunk() {
-        return this.getWorld().getChunkManager().getChunk(this.getChunkX(), this.getChunkZ());
+        return this.getWorld().getChunk(this.getChunkX(), this.getChunkZ());
     }
 
     public World getWorld() {

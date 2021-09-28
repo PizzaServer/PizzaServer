@@ -194,7 +194,7 @@ public interface Player extends LivingEntity {
      * @param x chunk x coordinate
      * @param z chunk z coordinate
      */
-    void requestSendChunk(int x, int z);
+    void sendChunk(int x, int z);
 
     /**
      * If this session is still active.

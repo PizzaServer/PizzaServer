@@ -33,7 +33,7 @@ public class ImplLevel implements Level, Closeable {
      */
     public void tick() {
         for (ImplWorld world : this.dimensions.values()) {
-            world.getChunkManager().tick();
+            world.tick();
         }
     }
 
