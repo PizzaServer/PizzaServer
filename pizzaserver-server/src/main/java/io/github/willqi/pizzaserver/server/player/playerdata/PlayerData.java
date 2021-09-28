@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.player.playerdata;
 
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 
 public class PlayerData {
 

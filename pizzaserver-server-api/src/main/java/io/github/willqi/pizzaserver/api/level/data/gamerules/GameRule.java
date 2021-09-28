@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.commons.world.gamerules;
+package io.github.willqi.pizzaserver.api.level.data.gamerules;
 
 public abstract class GameRule<T> {
 

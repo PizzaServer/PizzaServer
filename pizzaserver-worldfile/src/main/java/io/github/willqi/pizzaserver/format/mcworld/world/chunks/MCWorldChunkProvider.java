@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.format.mcworld.world.chunks;
 
-import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
@@ -12,39 +11,31 @@ import org.iq80.leveldb.DB;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class MCWorldChunkProvider implements Closeable {
 
-    private final DB database;
+    private final static int OVERWORLD_DIMENSION = 0;
 
-    private final Map<Dimension, Integer> dimensionIntegerMap = new HashMap<Dimension, Integer>() {
-        {
-            this.put(Dimension.OVERWORLD, null);
-            this.put(Dimension.NETHER, 1);
-            this.put(Dimension.END, 2);
-        }
-    };
+    private final DB database;
 
 
     public MCWorldChunkProvider(DB database) {
         this.database = database;
     }
 
-    public MCWorldChunk getChunk(int x, int z, Dimension dimension) throws IOException {
+    public MCWorldChunk getChunk(int x, int z, int dimension) throws IOException {
         // First extract the chunk version
         byte[] versionData = this.database.get(ifOverworld(
                 dimension,
                 () -> ChunkKey.VERSION.getLevelDBKey(x, z),
-                () -> ChunkKey.VERSION.getLevelDBKeyWithDimension(x, z, this.dimensionIntegerMap.get(dimension))));
+                () -> ChunkKey.VERSION.getLevelDBKeyWithDimension(x, z, dimension)));
 
         if (versionData == null) {
             versionData = this.database.get(ifOverworld(
                     dimension,
                     () -> ChunkKey.OLD_VERSION.getLevelDBKey(x, z),
-                    () -> ChunkKey.OLD_VERSION.getLevelDBKeyWithDimension(x, z, this.dimensionIntegerMap.get(dimension))));
+                    () -> ChunkKey.OLD_VERSION.getLevelDBKeyWithDimension(x, z, dimension)));
             if (versionData == null) {
                 throw new NoChunkFoundException("Could not find a chunk at (" + x + ", " + z + ")");
             }
@@ -55,13 +46,13 @@ public class MCWorldChunkProvider implements Closeable {
         byte[] heightAndBiomeData = this.database.get(ifOverworld(
                 dimension,
                 () -> ChunkKey.DATA_2D.getLevelDBKey(x, z),
-                () -> ChunkKey.DATA_2D.getLevelDBKeyWithDimension(x, z, this.dimensionIntegerMap.get(dimension))));
+                () -> ChunkKey.DATA_2D.getLevelDBKeyWithDimension(x, z, dimension)));
 
         // Extract block entities within this chunk
         byte[] blockEntityData = this.database.get(ifOverworld(
                 dimension,
                 () -> ChunkKey.BLOCK_ENTITIES.getLevelDBKey(x, z),
-                () -> ChunkKey.BLOCK_ENTITIES.getLevelDBKeyWithDimension(x, z, this.dimensionIntegerMap.get(dimension))));
+                () -> ChunkKey.BLOCK_ENTITIES.getLevelDBKeyWithDimension(x, z, dimension)));
         if (blockEntityData == null) {
             blockEntityData = new byte[0];  // Not all chunks will have block entities.
         }
@@ -70,7 +61,7 @@ public class MCWorldChunkProvider implements Closeable {
         byte[] entityData = this.database.get(ifOverworld(
                 dimension,
                 () -> ChunkKey.ENTITIES.getLevelDBKey(x, z),
-                () -> ChunkKey.ENTITIES.getLevelDBKeyWithDimension(x, z, this.dimensionIntegerMap.get(dimension))));
+                () -> ChunkKey.ENTITIES.getLevelDBKeyWithDimension(x, z, dimension)));
         if (entityData == null) {
             entityData = new byte[0];   // Not all chunks have entities.
         }
@@ -82,7 +73,7 @@ public class MCWorldChunkProvider implements Closeable {
             byte[] subChunk = this.database.get(ifOverworld(
                     dimension,
                     () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(x, z, subChunkY),
-                    () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKeyWithDimension(x, z, this.dimensionIntegerMap.get(dimension), subChunkY)));
+                    () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKeyWithDimension(x, z, dimension, subChunkY)));
             if (subChunk == null) {
                 subChunks[y] = new byte[]{8, 0};    // empty v8 chunk
             } else {
@@ -109,7 +100,7 @@ public class MCWorldChunkProvider implements Closeable {
                 () -> ChunkKey.VERSION.getLevelDBKeyWithDimension(
                         bedrockChunk.getX(),
                         bedrockChunk.getZ(),
-                        this.dimensionIntegerMap.get(bedrockChunk.getDimension())));
+                        bedrockChunk.getDimension()));
         this.database.put(chunkVersionKey, new byte[]{ (byte) bedrockChunk.getChunkVersion() });
 
 
@@ -130,7 +121,7 @@ public class MCWorldChunkProvider implements Closeable {
                 () -> ChunkKey.DATA_2D.getLevelDBKeyWithDimension(
                         bedrockChunk.getX(),
                         bedrockChunk.getZ(),
-                        this.dimensionIntegerMap.get(bedrockChunk.getDimension())));
+                        bedrockChunk.getDimension()));
         this.database.put(data2DKey, heightAndBiomeData);
 
 
@@ -147,7 +138,7 @@ public class MCWorldChunkProvider implements Closeable {
                 () -> ChunkKey.BLOCK_ENTITIES.getLevelDBKeyWithDimension(
                         bedrockChunk.getX(),
                         bedrockChunk.getZ(),
-                        this.dimensionIntegerMap.get(bedrockChunk.getDimension())));
+                        bedrockChunk.getDimension()));
         this.database.put(blockEntitiesKey, blockEntityOutput.toByteArray());
 
 
@@ -164,7 +155,7 @@ public class MCWorldChunkProvider implements Closeable {
                 () -> ChunkKey.ENTITIES.getLevelDBKeyWithDimension(
                         bedrockChunk.getX(),
                         bedrockChunk.getZ(),
-                        this.dimensionIntegerMap.get(bedrockChunk.getDimension())));
+                        bedrockChunk.getDimension()));
         this.database.put(entityKey, entityOutput.toByteArray());
 
 
@@ -179,7 +170,7 @@ public class MCWorldChunkProvider implements Closeable {
                     () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKeyWithDimension(
                             bedrockChunk.getX(),
                             bedrockChunk.getZ(),
-                            this.dimensionIntegerMap.get(bedrockChunk.getDimension()),
+                            bedrockChunk.getDimension(),
                             chunkY));
             this.database.put(subChunkKey, subChunk);
         }
@@ -193,8 +184,8 @@ public class MCWorldChunkProvider implements Closeable {
      * @param otherCallback if this dimension isn't an overworld
      * @return bytes representative of the key
      */
-    private static byte[] ifOverworld(Dimension dimension, Supplier<byte[]> overworldCallback, Supplier<byte[]> otherCallback) {
-        return dimension == Dimension.OVERWORLD ? overworldCallback.get() : otherCallback.get();
+    private static byte[] ifOverworld(int dimension, Supplier<byte[]> overworldCallback, Supplier<byte[]> otherCallback) {
+        return dimension == OVERWORLD_DIMENSION ? overworldCallback.get() : otherCallback.get();
     }
 
     @Override

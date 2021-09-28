@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v428.handlers;
 
+import io.github.willqi.pizzaserver.api.level.data.gamerules.GameRule;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.V419StartGamePacketHandler;

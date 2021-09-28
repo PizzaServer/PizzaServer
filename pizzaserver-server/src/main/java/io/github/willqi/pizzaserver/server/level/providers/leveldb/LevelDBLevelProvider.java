@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.level.providers.leveldb;
 
-import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.format.api.LevelData;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.mcworld.MCWorld;
@@ -36,7 +36,7 @@ public class LevelDBLevelProvider extends BaseLevelProvider {
     public BedrockChunk getChunk(int x, int z, Dimension dimension) throws IOException {
         MCWorldChunk internalChunk;
         try {
-            internalChunk = this.chunkDatabase.getChunk(x, z, dimension);
+            internalChunk = this.chunkDatabase.getChunk(x, z, dimension.ordinal());
         } catch (NoChunkFoundException exception) {
             // Empty chunk. Create the empty chunk data.
             byte[][] subChunks = new byte[16][];
@@ -48,7 +48,7 @@ public class LevelDBLevelProvider extends BaseLevelProvider {
                     .setX(x)
                     .setZ(z)
                     .setSubChunks(subChunks)
-                    .setDimension(dimension)
+                    .setDimension(dimension.ordinal())
                     .build();
         }
         return internalChunk;

@@ -1,10 +1,8 @@
 package io.github.willqi.pizzaserver.server.level;
 
-import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.LevelManager;
-import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
-import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.level.providers.BaseLevelProvider;
 import io.github.willqi.pizzaserver.server.level.providers.ProviderType;

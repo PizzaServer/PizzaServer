@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.level;
 
 import io.github.willqi.pizzaserver.api.level.world.World;
-import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 
 public interface LevelManager {
 

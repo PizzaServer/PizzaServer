@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.level.providers;
 
-import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.format.api.LevelData;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 

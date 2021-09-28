@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.api.network;
 
-import io.github.willqi.pizzaserver.commons.server.Gamemode;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 
 public class BedrockPong {
 
