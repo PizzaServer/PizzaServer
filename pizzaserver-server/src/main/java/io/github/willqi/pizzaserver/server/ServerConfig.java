@@ -47,6 +47,15 @@ public class ServerConfig {
         return this.config.getInteger("world.chunk.thread-processing-cap");
     }
 
+    /**
+     * Returns the amount of seconds it takes for a chunk with no chunk loaders
+     * (caused by plugins fetching a block in an unloaded chunk) to be automatically unloaded.
+     * @return amount of seconds
+     */
+    public int getChunkExpiryTime() {
+        return this.config.getInteger("world.chunk.expiry-time");
+    }
+
     public String getDefaultWorldName() {
         return this.config.getString("world.default-name");
     }

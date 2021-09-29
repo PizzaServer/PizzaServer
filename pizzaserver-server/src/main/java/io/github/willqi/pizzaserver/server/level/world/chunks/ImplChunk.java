@@ -38,9 +38,11 @@ public class ImplChunk implements Chunk {
 
     private final BedrockChunk chunk;
 
-    private final World world;
+    private final ImplWorld world;
     private final int x;
     private final int z;
+
+    private int expiryTimer;
 
     // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
@@ -49,7 +51,7 @@ public class ImplChunk implements Chunk {
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
 
 
-    protected ImplChunk(World world, int x, int z, BedrockChunk chunk) {
+    protected ImplChunk(ImplWorld world, int x, int z, BedrockChunk chunk) {
         if (chunk.getSubChunks().size() != 16) {
             throw new IllegalArgumentException("Tried to construct chunk with only " + chunk.getSubChunks().size() + " subchunks instead of 16.");
         }
@@ -58,6 +60,7 @@ public class ImplChunk implements Chunk {
         this.x = x;
         this.z = z;
         this.chunk = chunk;
+        this.resetExpiryTime();
     }
 
     @Override
@@ -336,6 +339,15 @@ public class ImplChunk implements Chunk {
         for (Entity entity : this.getEntities()) {
             entity.tick();
         }
+
+        // Chunk expiry
+        if (this.expiryTimer > 0 && this.canBeClosed()) {
+            this.expiryTimer--;
+
+            if (this.expiryTimer == 0) {
+                this.close(true, false);
+            }
+        }
     }
 
     public void spawnTo(Player player) {
@@ -394,6 +406,9 @@ public class ImplChunk implements Chunk {
                 entity.spawnTo(player);
             }
             this.spawnedTo.add(player);
+            this.resetExpiryTime();
+            this.getWorld().getChunk(0, 0);
+            this.getWorld().getChunk(100, 100);
         }
     }
 
@@ -412,9 +427,16 @@ public class ImplChunk implements Chunk {
 
             if (this.canBeClosed()) {
                 // Attempt to unload this chunk
-                this.getWorld().unloadChunk(this.getX(), this.getZ(), true, false);
+                this.close(true, false);
             }
         }
+    }
+
+    /**
+     * Resets the expiry time for this chunk to request to be unloaded.
+     */
+    private void resetExpiryTime() {
+        this.expiryTimer = this.world.getServer().getConfig().getChunkExpiryTime() * 20;
     }
 
     @Override
@@ -423,7 +445,13 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        this.close(true, true);
+    }
+
+    public void close(boolean async, boolean force) {
+        ((ImplWorld) this.getWorld()).getChunkManager().unloadChunk(this.getX(), this.getZ(), async, force);
+    }
 
     @Override
     public int hashCode() {

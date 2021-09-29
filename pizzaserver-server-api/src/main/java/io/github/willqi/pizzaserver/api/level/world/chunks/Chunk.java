@@ -178,8 +178,7 @@ public interface Chunk extends Watchable {
     boolean canBeClosed();
 
     /**
-     * Stops operations of this chunk and saves it to the provider.
-     * Recommended to be called asynchronously
+     * Stops operations of this chunk and saves it to the provider asynchronously.
      */
     void close();
 

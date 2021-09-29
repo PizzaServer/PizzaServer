@@ -27,22 +27,6 @@ public interface ChunkManager extends Closeable {
     Chunk getChunk(int x, int z, boolean loadFromProvider);
 
     /**
-     * Try to unload a {@link Chunk} and save it to disk immediately.
-     * @param x x chunk coordinate
-     * @param z z chunk coordinate
-     */
-    void unloadChunk(int x, int z);
-
-    /**
-     * Try to unload a {@link Chunk} and save it to disk.
-     * @param x x chunk coordinate
-     * @param z z chunk coordinate
-     * @param async if this should be done on a separate thread
-     * @param force Forcefully unload a chunk regardless of if it can be closed
-     */
-    void unloadChunk(int x, int z, boolean async, boolean force);
-
-    /**
      * Send a {@link Chunk} to a {@link Player} immediately.
      * The chunk will be fetched if it is not cached
      * @param player the {@link Player}

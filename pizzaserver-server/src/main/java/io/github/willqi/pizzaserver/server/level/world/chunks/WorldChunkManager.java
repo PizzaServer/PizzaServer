@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.level.world.chunks;
 
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.level.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
@@ -86,12 +85,10 @@ public class WorldChunkManager implements ChunkManager {
         }
     }
 
-    @Override
     public void unloadChunk(int x, int z) {
         this.unloadChunk(x, z, false, false);
     }
 
-    @Override
     public void unloadChunk(int x, int z, boolean async, boolean force) {
         if (async) {
             this.world.getLevel()
@@ -103,13 +100,12 @@ public class WorldChunkManager implements ChunkManager {
             this.lock.writeLock(key);
 
             try {
-                Chunk chunk = this.chunks.getOrDefault(key, null);
+                ImplChunk chunk = this.chunks.getOrDefault(key, null);
                 if (Check.isNull(chunk) || (!chunk.canBeClosed() && !force)) {
                     return;
                 }
 
                 this.chunks.remove(key);
-                chunk.close();
             } finally {
                 this.lock.writeUnlock(key);
             }
@@ -142,8 +138,8 @@ public class WorldChunkManager implements ChunkManager {
 
     @Override
     public void close() throws IOException {
-        for (Chunk chunk : this.chunks.values()) {
-            this.unloadChunk(chunk.getX(), chunk.getZ(), false, true);
+        for (ImplChunk chunk : this.chunks.values()) {
+            chunk.close(false, true);
         }
     }
 

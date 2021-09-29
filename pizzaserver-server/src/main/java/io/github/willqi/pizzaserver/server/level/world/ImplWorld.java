@@ -79,29 +79,23 @@ public class ImplWorld implements World {
         this.spawnCoordinates = coordinates;
     }
 
+    public WorldChunkManager getChunkManager() {
+        return this.chunkManager;
+    }
+
     @Override
     public boolean isChunkLoaded(int x, int z) {
-        return this.chunkManager.isChunkLoaded(x, z);
+        return this.getChunkManager().isChunkLoaded(x, z);
     }
 
     @Override
     public ImplChunk getChunk(int x, int z) {
-        return this.chunkManager.getChunk(x, z);
+        return this.getChunkManager().getChunk(x, z);
     }
 
     @Override
     public ImplChunk getChunk(int x, int z, boolean loadFromProvider) {
-        return this.chunkManager.getChunk(x, z, loadFromProvider);
-    }
-
-    @Override
-    public void unloadChunk(int x, int z) {
-        this.chunkManager.unloadChunk(x, z);
-    }
-
-    @Override
-    public void unloadChunk(int x, int z, boolean async, boolean force) {
-        this.chunkManager.unloadChunk(x, z, async, force);
+        return this.getChunkManager().getChunk(x, z, loadFromProvider);
     }
 
     @Override
@@ -217,8 +211,11 @@ public class ImplWorld implements World {
 
         BaseEntity baseEntity = (BaseEntity) entity;
         ImplChunk chunk = baseEntity.getChunk();
+
+        // Remove the location first to signify that the entity is gone and not just moving to another chunk.
         baseEntity.setLocation(null);   // the entity no longer exists in any world
         baseEntity.onDespawned();
+
         chunk.removeEntity(baseEntity);
     }
 

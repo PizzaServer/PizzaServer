@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.level.processing;
 
 import io.github.willqi.pizzaserver.server.level.processing.requests.ChunkRequest;
 import io.github.willqi.pizzaserver.server.level.processing.requests.PlayerChunkRequest;
+import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,7 +40,7 @@ public class LevelChunkProcessor implements Runnable {
                     request.getWorld().sendPlayerChunk(playerChunkRequest.getPlayer(), request.getX(), request.getZ(), false);
                 } else {
                     // unload request
-                    request.getWorld().unloadChunk(request.getX(), request.getZ(), false, false);
+                    ((ImplWorld) request.getWorld()).getChunkManager().unloadChunk(request.getX(), request.getZ(), false, false);
                 }
             } catch (InterruptedException ignored) {
                 return;
