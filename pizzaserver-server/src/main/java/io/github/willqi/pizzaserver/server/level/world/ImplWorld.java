@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.level.world;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -106,6 +107,16 @@ public class ImplWorld implements World {
     @Override
     public void sendPlayerChunk(Player player, int x, int z, boolean async) {
         this.chunkManager.sendPlayerChunk(player, x, z, async);
+    }
+
+    @Override
+    public boolean addChunkLoader(ChunkLoader chunkLoader) {
+        return this.chunkManager.addChunkLoader(chunkLoader);
+    }
+
+    @Override
+    public boolean removeChunkLoader(ChunkLoader chunkLoader) {
+        return this.chunkManager.removeChunkLoader(chunkLoader);
     }
 
     @Override

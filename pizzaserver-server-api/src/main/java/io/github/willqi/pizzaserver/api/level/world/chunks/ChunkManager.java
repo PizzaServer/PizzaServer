@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.level.world.chunks;
 
+import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 import java.io.Closeable;
@@ -43,5 +44,19 @@ public interface ChunkManager extends Closeable {
      * @param async if this should be done on a separate thread
      */
     void sendPlayerChunk(Player player, int x, int z, boolean async);
+
+    /**
+     * Add a {@link ChunkLoader} that keeps chunks loaded and ticking.
+     * @param chunkLoader chunk loader
+     * @return if the chunk loader was added
+     */
+    boolean addChunkLoader(ChunkLoader chunkLoader);
+
+    /**
+     * Remove a {@link ChunkLoader} that keeps chunks loaded and ticking.
+     * @param chunkLoader chunk loader
+     * @return if the chunk loader was removed
+     */
+    boolean removeChunkLoader(ChunkLoader chunkLoader);
 
 }

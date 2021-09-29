@@ -43,6 +43,7 @@ public class ImplChunk implements Chunk {
     private final int z;
 
     private int expiryTimer;
+    private int activeChunkLoaders;
 
     // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
@@ -407,8 +408,6 @@ public class ImplChunk implements Chunk {
             }
             this.spawnedTo.add(player);
             this.resetExpiryTime();
-            this.getWorld().getChunk(0, 0);
-            this.getWorld().getChunk(100, 100);
         }
     }
 
@@ -432,6 +431,14 @@ public class ImplChunk implements Chunk {
         }
     }
 
+    public void addChunkLoader() {
+        this.activeChunkLoaders++;
+    }
+
+    public void removeChunkLoader() {
+        this.activeChunkLoaders--;
+    }
+
     /**
      * Resets the expiry time for this chunk to request to be unloaded.
      */
@@ -441,7 +448,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public boolean canBeClosed() {
-        return this.spawnedTo.size() == 0;
+        return this.spawnedTo.size() == 0 && this.activeChunkLoaders == 0;
     }
 
     @Override
