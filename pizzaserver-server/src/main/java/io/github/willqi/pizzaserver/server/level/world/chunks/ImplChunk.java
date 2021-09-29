@@ -423,11 +423,6 @@ public class ImplChunk implements Chunk {
                     entity.despawnFrom(player);
                 }
             }
-
-            if (this.canBeClosed()) {
-                // Attempt to unload this chunk
-                this.close(true, false);
-            }
         }
     }
 

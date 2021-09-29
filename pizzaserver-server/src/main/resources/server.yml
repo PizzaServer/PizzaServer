@@ -24,7 +24,7 @@ world:
     threads: 4
     # Maximum amount of requests that can be processed in each chunk processing thread per tick
     thread-processing-cap: 64
-    # How many seconds does it take for a chunk with no chunk loaders to automatically unload? (caused by plugins requesting blocks in chunks with no viewers)
+    # How many seconds does it take before an unused chunk unloads
     expiry-time: 60
 
 
