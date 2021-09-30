@@ -20,6 +20,8 @@ world:
   chunk:
     # Active chunk radius around players
     radius: 8
+    # At what chunk radius should entities be rendered
+    entity-render-radius: 4
     # Maximum amount of chunk processing threads
     threads: 4
     # Maximum amount of requests that can be processed in each chunk processing thread per tick

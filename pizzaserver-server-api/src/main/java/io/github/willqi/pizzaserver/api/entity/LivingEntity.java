@@ -1,8 +1,6 @@
 package io.github.willqi.pizzaserver.api.entity;
 
-import io.github.willqi.pizzaserver.api.entity.MovingEntity;
 import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
-import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 /**
@@ -54,26 +52,5 @@ public interface LivingEntity extends MovingEntity {
     Vector3 getDirectionVector();
 
     LivingEntityInventory getInventory();
-
-    /**
-     * This entity will be shown to the player when the player is within range.
-     * If the player is already in range and has not seen the entity, it will be spawned for the player
-     * @param player player to show the entity to
-     */
-    void showTo(Player player);
-
-    /**
-     * This entity will not be shown to the player when the player is within range.
-     * If the player is already in range and sees the entity, it will be despawned from the player
-     * @param player player to hide the entity from
-     */
-    void hideFrom(Player player);
-
-    /**
-     * Checks if this entity can be shown to a player.
-     * @param player the player in question
-     * @return if the entity is supposed to be hidden from the player
-     */
-    boolean isHiddenFrom(Player player);
 
 }

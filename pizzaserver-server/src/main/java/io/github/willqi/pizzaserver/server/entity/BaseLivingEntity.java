@@ -149,13 +149,6 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
             currentChunk.removeEntity(this);
             newChunk.addEntity(this);
-
-            // Remove entity from players who are in other chunks and can no longer see this entity
-            for (Player player : this.getViewers()) {
-                if (!this.getChunk().canBeVisibleTo(player)) {
-                    this.despawnFrom(player);
-                }
-            }
         }
     }
 
@@ -180,9 +173,19 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     }
 
     @Override
+    public boolean spawnTo(Player player) {
+        if (this.isHiddenFrom(player)) {
+            // The entity is being spawned to the player. Unhide the entity.
+            this.hiddenFrom.remove(player);
+        }
+
+        return super.spawnTo(player);
+    }
+
+    @Override
     public void showTo(Player player) {
         this.hiddenFrom.remove(player);
-        if (this.getChunk().canBeVisibleTo(player) && !this.getViewers().contains(player)) {
+        if (this.getChunk().canBeVisibleTo(player) && this.withinEntityRenderDistanceTo(player) && !this.hasSpawnedTo(player)) {
             this.spawnTo(player);
         }
     }

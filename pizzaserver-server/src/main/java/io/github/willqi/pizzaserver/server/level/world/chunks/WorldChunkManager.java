@@ -101,7 +101,7 @@ public class WorldChunkManager implements ChunkManager {
             this.world.getLevel()
                     .getLevelManager()
                     .getProcessorManager()
-                    .addRequest(new UnloadChunkRequest(this.world, x, z));  // TODO: force
+                    .addRequest(new UnloadChunkRequest(this.world, x, z, force));
         } else {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.writeLock(key);

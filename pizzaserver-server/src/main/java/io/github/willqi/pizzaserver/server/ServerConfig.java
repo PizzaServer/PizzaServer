@@ -39,6 +39,10 @@ public class ServerConfig {
         return this.config.getInteger("world.chunk.radius");
     }
 
+    public int getEntityChunkRenderDistance() {
+        return this.config.getInteger("world.chunk.entity-render-radius");
+    }
+
     /**
      * Max amount of chunk requests a level chunk processing thread can handle per tick.
      * @return max chunk request processing count per tick
