@@ -135,7 +135,14 @@ public class ImplServer implements Server {
 
     private void tick() {
         this.processPackets();
-        this.getLevelManager().tick();
+
+        try {
+            this.getLevelManager().tick();
+        } catch (Exception exception) {
+            this.getLogger().error("Error occurred while ticking", exception);
+            this.stop();
+            return;
+        }
 
         for (ImplScheduler scheduler : this.syncedSchedulers) {
             try {
@@ -156,7 +163,7 @@ public class ImplServer implements Server {
             while (sessions.hasNext()) {
                 BedrockClientSession session = sessions.next();
                 try {
-                    session.processPackets();
+                    session.processIncomingPackets();
                 } catch (Exception exception) {
                     session.disconnect();
                     this.getLogger().error("Disconnecting session due to failure in processing packets", exception);

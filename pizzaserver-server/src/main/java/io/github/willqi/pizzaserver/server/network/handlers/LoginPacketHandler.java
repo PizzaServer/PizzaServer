@@ -78,7 +78,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
             } else {
                 loginFailPacket.setStatus(PlayStatusPacket.PlayStatus.OUTDATED_CLIENT);
             }
-            this.session.queueSendPacket(loginFailPacket);
+            this.session.sendPacket(loginFailPacket);
             return;
         }
 

@@ -11,7 +11,6 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -562,7 +561,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void sendPacket(BaseBedrockPacket packet) {
-        this.session.queueSendPacket(packet);
+        this.session.sendPacket(packet);
     }
 
     @Override
