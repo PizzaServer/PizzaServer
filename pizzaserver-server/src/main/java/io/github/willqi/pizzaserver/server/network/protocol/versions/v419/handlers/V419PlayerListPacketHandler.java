@@ -9,8 +9,7 @@ public class V419PlayerListPacketHandler extends BaseProtocolPacketHandler<Playe
 
     @Override
     public void encode(PlayerListPacket packet, BasePacketBuffer buffer) {
-        buffer.writeByte(packet.getActionType().ordinal()); // If more options are added, this will have to be modified
-                                                            // to throw an error.
+        buffer.writeByte(packet.getActionType().ordinal());
         buffer.writeUnsignedVarInt(packet.getEntries().size());
         switch (packet.getActionType()) {
             case ADD:

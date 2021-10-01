@@ -13,7 +13,7 @@ public class EqualityTest {
         nbtList.setContents(new Short[]{ 1, 2 });
 
         NBTCompound compound = new NBTCompound("name")
-                .putByte("byte", (byte)0)
+                .putByte("byte", (byte) 0)
                 .putByteArray("byte_array", new byte[]{ 0, 1, 2 })
                 .putCompound("compound", new NBTCompound("inner_compound"))
                 .putDouble("double", 12d)
@@ -23,11 +23,11 @@ public class EqualityTest {
                 .putLong("long", 2L)
                 .putLongArray("long_array", new long[]{ 1L, 2L, 3L })
                 .putIntegerArray("int_list", new int[]{1, 2, 3})
-                .putShort("short", (short)5)
-                .putString("string","string content");
+                .putShort("short", (short) 5)
+                .putString("string", "string content");
 
         NBTCompound otherCompound = new NBTCompound("name")
-                .putByte("byte", (byte)0)
+                .putByte("byte", (byte) 0)
                 .putByteArray("byte_array", new byte[]{ 0, 1, 2 })
                 .putCompound("compound", new NBTCompound("inner_compound"))
                 .putDouble("double", 12d)
@@ -37,8 +37,8 @@ public class EqualityTest {
                 .putLong("long", 2L)
                 .putLongArray("long_array", new long[]{ 1L, 2L, 3L })
                 .putIntegerArray("int_list", new int[]{1, 2, 3})
-                .putShort("short", (short)5)
-                .putString("string","string content");
+                .putShort("short", (short) 5)
+                .putString("string", "string content");
 
         assertEquals(compound, otherCompound);
     }

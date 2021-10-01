@@ -14,7 +14,7 @@ public class NBTInputStream extends InputStream {
 
     public NBTInputStream(InputStream stream) {
         if (stream instanceof LittleEndianDataInputStream) {
-            this.stream = (LittleEndianDataInputStream)stream;
+            this.stream = ((LittleEndianDataInputStream) stream);
         } else {
             this.stream = new LittleEndianDataInputStream(stream);
         }

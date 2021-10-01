@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class V419ResourcePackDataInfoPacketHandler extends BaseProtocolPacketHandler<ResourcePackDataInfoPacket> {
 
-    protected final Map<ResourcePackDataInfoPacket.PackType, Integer> packType = new HashMap<ResourcePackDataInfoPacket.PackType, Integer>(){
+    protected final Map<ResourcePackDataInfoPacket.PackType, Integer> packType = new HashMap<ResourcePackDataInfoPacket.PackType, Integer>() {
         {
             this.put(ResourcePackDataInfoPacket.PackType.INVALID, 0);
             this.put(ResourcePackDataInfoPacket.PackType.BEHAVIOR_PACK, 4);

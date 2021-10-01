@@ -201,7 +201,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public ImplPlayerInventory getInventory() {
-        return (ImplPlayerInventory)this.inventory;
+        return (ImplPlayerInventory) this.inventory;
     }
 
     @Override
@@ -212,7 +212,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public boolean closeOpenInventory() {
         Optional<Inventory> openInventory = this.getOpenInventory();
-        if (openInventory.isPresent() && !((BaseInventory)openInventory.get()).closeFor(this)) {
+        if (openInventory.isPresent() && !((BaseInventory) openInventory.get()).closeFor(this)) {
             return false;
         } else {
             this.openInventory = null;
@@ -223,7 +223,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public boolean openInventory(Inventory inventory) {
         this.closeOpenInventory();
-        if (((BaseInventory)inventory).openFor(this)) {
+        if (((BaseInventory) inventory).openFor(this)) {
             this.openInventory = inventory;
             return true;
         } else {
@@ -237,7 +237,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     /**
-     * Fetch the SAVED player data from the {@link io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider} if any exists
+     * Fetch the SAVED player data from the {@link io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider} if any exists.
      * @return saved player data
      * @throws IOException if an exception occurred while reading the data
      */
@@ -294,9 +294,9 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
                 for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
                     // Chunk radius is circular
-                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                    int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
                     if (this.chunkRadius > distance) {
-                        ImplChunk chunk = (ImplChunk)location.getWorld().getChunkManager().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
+                        ImplChunk chunk = (ImplChunk) location.getWorld().getChunkManager().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
                         chunk.despawnFrom(this);
                     }
                 }
@@ -313,15 +313,15 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.sendAttributes(this.attributes.getAttributes());
     }
 
-    private void sendAttribute(Attribute attribute) {
-        this.sendAttributes(Collections.singleton(attribute));
-    }
-
     private void sendAttributes(Set<Attribute> attributes) {
         UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
         updateAttributesPacket.setRuntimeEntityId(this.getId());
         updateAttributesPacket.setAttributes(attributes);
         this.sendPacket(updateAttributesPacket);
+    }
+
+    private void sendAttribute(Attribute attribute) {
+        this.sendAttributes(Collections.singleton(attribute));
     }
 
     @Override
@@ -440,7 +440,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     @Override
     public int getExperienceLevel() {
         Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
-        return (int)attribute.getCurrentValue();
+        return (int) attribute.getCurrentValue();
     }
 
     @Override
@@ -490,7 +490,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     /**
-     * Check if a player can be sent a chunk this tick
+     * Check if a player can be sent a chunk this tick.
      * Requests are reset during an entity's tick
      * @return whether or not the player should be sent a chunk this tick
      */
@@ -506,7 +506,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     /**
-     * Sends and removes chunks the player can and cannot see
+     * Sends and removes chunks the player can and cannot see.
      */
     private void updateVisibleChunks(Location oldLocation, int oldChunkRadius) {
         Set<Tuple<Integer, Integer>> chunksToRemove = new HashSet<>();
@@ -517,7 +517,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
                 for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
                     // Chunk radius is circular
-                    int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                    int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
                     if (oldChunkRadius > distance) {
                         chunksToRemove.add(new Tuple<>(oldPlayerChunkX + x, oldPlayerChunkZ + z));
                     }
@@ -531,7 +531,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
             for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
                 // Chunk radius is circular
-                int distance = (int)Math.round(Math.sqrt((x * x) + (z * z)));
+                int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
                 if (this.getChunkRadius() > distance) {
                     // Ensure that this chunk is not already visible
                     if (!chunksToRemove.remove(new Tuple<>((currentPlayerChunkX + x), (currentPlayerChunkZ + z)))) {
@@ -543,7 +543,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
         // Remove each chunk we shouldn't get packets from
         for (Tuple<Integer, Integer> key : chunksToRemove) {
-            ((ImplChunk)this.getLocation().getWorld().getChunkManager().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
+            ((ImplChunk) this.getLocation().getWorld().getChunkManager().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
         }
 
         this.sendNetworkChunkPublisher();

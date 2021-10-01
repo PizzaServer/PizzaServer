@@ -13,7 +13,7 @@ public class V440MinecraftVersion extends BaseMinecraftVersion {
 
     public static final int PROTOCOL = 440;
     public static final String VERSION = "1.17.0";
-    private final BasePacketRegistry PACKET_REGISTRY = new V440PacketRegistry();
+    private static final BasePacketRegistry PACKET_REGISTRY = new V440PacketRegistry();
 
 
     public V440MinecraftVersion(ImplServer server) throws IOException {

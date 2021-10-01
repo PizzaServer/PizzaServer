@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Sent by the client to notify the server as to its current status for resource packs
+ * Sent by the client to notify the server as to its current status for resource packs.
  */
 public class ResourcePackResponsePacket extends BaseBedrockPacket {
 
@@ -43,22 +43,22 @@ public class ResourcePackResponsePacket extends BaseBedrockPacket {
         NONE,   // No idea what this is
 
         /**
-         * When the client refuses to accept the packs
+         * When the client refuses to accept the packs.
          */
         REFUSED,
 
         /**
-         * Request the server to send resource packs it is missing
+         * Request the server to send resource packs it is missing.
          */
         SEND_PACKS,
 
         /**
-         * Called when the client has all the resource packs
+         * Called when the client has all the resource packs.
          */
         HAVE_ALL_PACKS,
 
         /**
-         * Called when the client is finished the resource pack process
+         * Called when the client is finished the resource pack process.
          */
         COMPLETED
     }

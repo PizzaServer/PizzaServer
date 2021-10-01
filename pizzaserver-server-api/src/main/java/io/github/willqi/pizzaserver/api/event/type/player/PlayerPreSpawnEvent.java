@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 
 /**
- * Called after the client sends the SetLocalPlayerAsInitializedPacket but before the entity is spawned
+ * Called after the client sends the SetLocalPlayerAsInitializedPacket but before the entity is spawned.
  */
 public class PlayerPreSpawnEvent extends BasePlayerEvent.Cancellable {
 

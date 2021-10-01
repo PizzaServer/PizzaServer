@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Stores version specific data that PacketBuffers use
+ * Stores version specific data that generic PacketBuffers use.
  */
 public abstract class BasePacketBufferData {
 

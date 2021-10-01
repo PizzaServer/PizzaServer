@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 /**
- * Sent by the client when they interact with an entity
+ * Sent by the client when they interact with an entity.
  */
 public class InteractPacket extends BaseBedrockPacket {
 

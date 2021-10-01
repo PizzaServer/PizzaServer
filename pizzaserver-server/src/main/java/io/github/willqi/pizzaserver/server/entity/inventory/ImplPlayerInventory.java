@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class ImplPlayerInventory extends ImplLivingEntityInventory implements PlayerInventory {
 
-    private static final Set<InventorySlotType> PLAYER_SLOT_TYPES = new HashSet<InventorySlotType>(){
+    private static final Set<InventorySlotType> PLAYER_SLOT_TYPES = new HashSet<InventorySlotType>() {
         {
             this.add(InventorySlotType.ARMOR);
             this.add(InventorySlotType.INVENTORY);
@@ -38,7 +38,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
 
     @Override
     public Player getEntity() {
-        return (Player)super.getEntity();
+        return (Player) super.getEntity();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ImplPlayerInventory extends ImplLivingEntityInventory implements Pl
     }
 
     /**
-     * Change the selected slot of the player
+     * Change the selected slot of the player.
      * @param slot slot
      * @param calledByPlayer if this action was done by the player rather than manually through the server
      */

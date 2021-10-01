@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 /**
- * Called when a player interacts with an entity
+ * Called when a player interacts with an entity.
  */
 public class PlayerEntityInteractEvent extends BasePlayerEvent.Cancellable {
 

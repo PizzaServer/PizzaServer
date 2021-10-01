@@ -63,13 +63,13 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
                 switch (action.getType()) {
                     case TAKE:
-                        continueActions = InventoryActionTakeHandler.INSTANCE.tryAction(response, this.player, (InventoryActionTake)action);
+                        continueActions = InventoryActionTakeHandler.INSTANCE.tryAction(response, this.player, (InventoryActionTake) action);
                         break;
                     case PLACE:
-                        continueActions = InventoryActionPlaceHandler.INSTANCE.tryAction(response, this.player, (InventoryActionPlace)action);
+                        continueActions = InventoryActionPlaceHandler.INSTANCE.tryAction(response, this.player, (InventoryActionPlace) action);
                         break;
                     case SWAP:
-                        continueActions = InventoryActionSwapHandler.INSTANCE.tryAction(response, this.player, (InventoryActionSwap)action);
+                        continueActions = InventoryActionSwapHandler.INSTANCE.tryAction(response, this.player, (InventoryActionSwap) action);
                         break;
                     case DROP:
                         break;
@@ -94,9 +94,6 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     case CRAFT_NOT_IMPLEMENTED:
                         break;
                     case CRAFT_RESULTS_DEPRECATED:
-                        break;
-                    default:
-                        this.player.getServer().getLogger().warn("Unhandled inventory item stack request type: " + action.getType());
                         break;
                 }
                 responses.add(response);
@@ -144,9 +141,9 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     InventoryTransactionAction action = packet.getActions().get(actionIndex);
                     InventoryTransactionAction nextAction = packet.getActions().get(actionIndex + 1);
 
-                    boolean isDropAction = action.getSource().getType() == InventoryTransactionSourceType.WORLD &&
-                            ((InventoryTransactionWorldSource)action.getSource()).getFlag() == InventoryTransactionWorldSource.Flag.DROP_ITEM &&
-                            nextAction.getSlot() >= 0 && nextAction.getSlot() < 9;
+                    boolean isDropAction = action.getSource().getType() == InventoryTransactionSourceType.WORLD
+                            && ((InventoryTransactionWorldSource) action.getSource()).getFlag() == InventoryTransactionWorldSource.Flag.DROP_ITEM
+                            && nextAction.getSlot() >= 0 && nextAction.getSlot() < 9;
 
                     if (isDropAction) {
                         ItemStack itemStack = this.player.getInventory().getSlot(nextAction.getSlot());
@@ -176,7 +173,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 }
                 break;
             case ITEM_USE:
-                InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData)packet.getData();
+                InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData) packet.getData();
                 // TODO: account for creative mode reach when gamemodes are implemented
 
 
@@ -226,7 +223,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
                 break;
             case ITEM_USE_ON_ENTITY:
-                InventoryTransactionUseItemOnEntityData useItemOnEntityData = (InventoryTransactionUseItemOnEntityData)packet.getData();
+                InventoryTransactionUseItemOnEntityData useItemOnEntityData = (InventoryTransactionUseItemOnEntityData) packet.getData();
 
                 // Get the entity targeted
                 Optional<Entity> entity = this.player.getWorld().getEntity(useItemOnEntityData.getEntityRuntimeId());
@@ -251,7 +248,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 }
                 break;
             case ITEM_RELEASE:
-                InventoryTransactionReleaseItemData releaseItemData = (InventoryTransactionReleaseItemData)packet.getData();
+                InventoryTransactionReleaseItemData releaseItemData = (InventoryTransactionReleaseItemData) packet.getData();
                 // TODO: Implement
                 break;
         }

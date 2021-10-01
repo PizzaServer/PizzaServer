@@ -12,6 +12,12 @@ public enum Priority {
 
     private int value;
 
-    Priority(int value) { this.value = value; }
-    public int getValue() { return value; }
+    Priority(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return this.value;
+    }
+
 }

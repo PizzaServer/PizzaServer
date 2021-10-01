@@ -20,7 +20,7 @@ public class MCChunkDatabase implements Closeable {
 
     private final DB database;
 
-    private final Map<Dimension, Integer> dimensionIntegerMap = new HashMap<Dimension, Integer>(){
+    private final Map<Dimension, Integer> dimensionIntegerMap = new HashMap<Dimension, Integer>() {
         {
             this.put(Dimension.OVERWORLD, null);
             this.put(Dimension.NETHER, 1);
@@ -110,7 +110,7 @@ public class MCChunkDatabase implements Closeable {
                         bedrockChunk.getX(),
                         bedrockChunk.getZ(),
                         this.dimensionIntegerMap.get(bedrockChunk.getDimension())));
-        this.database.put(chunkVersionKey, new byte[]{ (byte)bedrockChunk.getChunkVersion() });
+        this.database.put(chunkVersionKey, new byte[]{ (byte) bedrockChunk.getChunkVersion() });
 
 
         // Data2D (height map + biome)
@@ -187,7 +187,7 @@ public class MCChunkDatabase implements Closeable {
     }
 
     /**
-     * Returns a chunk key depending on whether or not the dimension is an overworld
+     * Returns a chunk key depending on whether or not the dimension is an overworld.
      * @param dimension dimension we are checking
      * @param overworldCallback if this dimension is an overworld
      * @param otherCallback if this dimension isn't an overworld

@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 /**
- * Contains all registered Vanilla block ids
+ * Contains all registered Vanilla block ids.
  */
 public class BlockTypeID {
 

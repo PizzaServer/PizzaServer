@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent in response to a RequestChunkRadiusPacket with the server's desired chunk radius for the client
+ * Sent in response to a RequestChunkRadiusPacket with the server's desired chunk radius for the client.
  */
 public class ChunkRadiusUpdatedPacket extends BaseBedrockPacket {
 

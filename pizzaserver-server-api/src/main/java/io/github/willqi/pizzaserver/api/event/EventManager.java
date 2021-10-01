@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.api.event;
 import io.github.willqi.pizzaserver.api.event.filter.EventFilter;
 
 /**
- * Handles registering event listeners and calling events
+ * Handles registering event listeners and calling events.
  */
 public interface EventManager {
 
@@ -12,7 +12,6 @@ public interface EventManager {
     /**
      * Creates a child EventManager which passes all the events its
      * parent EventManager receives, applying its own filters.
-     *
      * Events called on the child EventManager are only called on itself
      * and its own children.
      */
@@ -26,14 +25,14 @@ public interface EventManager {
     void removeChild(EventManager child);
 
     /**
-     * Registers a listener to this EventManager
+     * Registers a listener to this EventManager.
      * @param listener the listener to be registered.
      * @return listener for storing an instance.
      */
     Object addListener(Object listener);
 
     /**
-     * Removes listener from this EventManager and any child EventManager's
+     * Removes listener from this EventManager and any child EventManager's.
      * @param listener the listener to be removed.
      */
     void removeListener(Object listener);

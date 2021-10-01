@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the server to change the hotbar position of the player
+ * Sent by the server to change the hotbar position of the player.
  */
 public class PlayerHotbarPacket extends BaseBedrockPacket {
 

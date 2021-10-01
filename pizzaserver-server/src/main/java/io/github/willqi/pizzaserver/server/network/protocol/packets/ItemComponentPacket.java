@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Used to send the components of custom items
+ * Used to send the components of custom items.
  * Required to be sent for custom items to properly work
  */
 public class ItemComponentPacket extends BaseBedrockPacket {

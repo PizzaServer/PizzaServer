@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 /**
- * Sent by the client and server to send a sound to each other
+ * Sent by the client and server to send a sound to each other.
  */
 public class WorldSoundEventPacket extends BaseBedrockPacket {
 
@@ -27,7 +27,7 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
     }
 
     public WorldSound getSound() {
-        return sound;
+        return this.sound;
     }
 
     public void setSound(WorldSound sound) {
@@ -35,7 +35,7 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
     }
 
     public Vector3 getVector3() {
-        return vector3;
+        return this.vector3;
     }
 
     public void setVector3(Vector3 vector3) {
@@ -43,7 +43,7 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
     }
 
     public int getBlockID() {
-        return blockID;
+        return this.blockID;
     }
 
     public void setBlockID(int blockID) {
@@ -51,7 +51,7 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
     }
 
     public String getEntityType() {
-        return entityType;
+        return this.entityType;
     }
 
     public void setEntityType(String entityID) {
@@ -59,18 +59,19 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
     }
 
     public boolean isBaby() {
-        return isBaby;
+        return this.isBaby;
     }
 
     public void setBaby(boolean baby) {
-        isBaby = baby;
+        this.isBaby = baby;
     }
 
     public boolean isGlobal() {
-        return isGlobal;
+        return this.isGlobal;
     }
 
     public void setGlobal(boolean global) {
-        isGlobal = global;
+        this.isGlobal = global;
     }
+
 }

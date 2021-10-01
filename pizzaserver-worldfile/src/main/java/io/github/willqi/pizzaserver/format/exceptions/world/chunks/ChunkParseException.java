@@ -8,7 +8,7 @@ public class ChunkParseException extends IOException {
         super(message);
     }
 
-    public ChunkParseException(String message,Throwable throwable) {
+    public ChunkParseException(String message, Throwable throwable) {
         super(message, throwable);
     }
 

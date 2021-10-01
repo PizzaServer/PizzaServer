@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Wrapper around {@link ByteBuf} that adds additional methods to parse Minecraft Bedrock packets
+ * Wrapper around {@link ByteBuf} that adds additional methods to parse Minecraft Bedrock packets.
  */
 public class BasePacketBuffer extends ByteBuf {
 
@@ -672,7 +672,7 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     public UUID readUUID() {
-        return new UUID(buffer.readLongLE(), buffer.readLongLE());
+        return new UUID(this.buffer.readLongLE(), this.buffer.readLongLE());
     }
 
     public byte[] readByteArray() {
@@ -737,13 +737,8 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     @Override
-    public BasePacketBuffer readSlice(int length) {
-        return this.createInstance(this.buffer.readSlice(length));
-    }
-
-    @Override
-    public BasePacketBuffer readRetainedSlice(int length) {
-        return this.createInstance(this.buffer.readRetainedSlice(length));
+    public int readBytes(FileChannel fileChannel, long length, int index) throws IOException {
+        return this.buffer.readBytes(fileChannel, length, index);
     }
 
     @Override
@@ -794,13 +789,18 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     @Override
-    public CharSequence readCharSequence(int index, Charset charSet) {
-        return this.buffer.readCharSequence(index, charSet);
+    public BasePacketBuffer readSlice(int length) {
+        return this.createInstance(this.buffer.readSlice(length));
     }
 
     @Override
-    public int readBytes(FileChannel fileChannel, long length, int index) throws IOException {
-        return this.buffer.readBytes(fileChannel, length, index);
+    public BasePacketBuffer readRetainedSlice(int length) {
+        return this.createInstance(this.buffer.readRetainedSlice(length));
+    }
+
+    @Override
+    public CharSequence readCharSequence(int index, Charset charSet) {
+        return this.buffer.readCharSequence(index, charSet);
     }
 
     @Override
@@ -1117,13 +1117,13 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     @Override
-    public BasePacketBuffer retainedSlice() {
-        return this.createInstance(this.buffer.retainedSlice());
+    public BasePacketBuffer slice(int index, int length) {
+        return this.createInstance(this.buffer.slice(index, length));
     }
 
     @Override
-    public BasePacketBuffer slice(int index, int length) {
-        return this.createInstance(this.buffer.slice(index, length));
+    public BasePacketBuffer retainedSlice() {
+        return this.createInstance(this.buffer.retainedSlice());
     }
 
     @Override
@@ -1207,6 +1207,11 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     @Override
+    public String toString() {
+        return this.buffer.toString();
+    }
+
+    @Override
     public int hashCode() {
         return (37 * this.buffer.hashCode());
     }
@@ -1214,7 +1219,7 @@ public class BasePacketBuffer extends ByteBuf {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof BasePacketBuffer) {
-            return ((BasePacketBuffer)obj).buffer.equals(this.buffer);
+            return ((BasePacketBuffer) obj).buffer.equals(this.buffer);
         }
         return false;
     }
@@ -1222,11 +1227,6 @@ public class BasePacketBuffer extends ByteBuf {
     @Override
     public int compareTo(ByteBuf byteBuf) {
         return this.buffer.compareTo(byteBuf);
-    }
-
-    @Override
-    public String toString() {
-        return this.buffer.toString();
     }
 
     @Override

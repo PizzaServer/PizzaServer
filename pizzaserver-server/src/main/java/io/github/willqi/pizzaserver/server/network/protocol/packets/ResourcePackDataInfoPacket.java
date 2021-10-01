@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import java.util.UUID;
 
 /**
- * Sent when the client requests the information about a resource pack
+ * Sent when the client requests the information about a resource pack.
  */
 public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
 
@@ -27,7 +27,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the UUID of the resource pack found in the resource pack's manifest
+     * Get the UUID of the resource pack found in the resource pack's manifest.
      * @return UUID
      */
     public UUID getUUID() {
@@ -35,7 +35,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the UUID of the the resource pack
+     * Change the UUID of the the resource pack.
      * @param uuid UUID
      */
     public void setUUID(UUID uuid) {
@@ -43,7 +43,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the version of the resource pack found in the resource pack's manifest
+     * Get the version of the resource pack found in the resource pack's manifest.
      * @return version of the pack (e.g. 1.0.0)
      */
     public String getVersion() {
@@ -51,7 +51,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the version of the resource pack
+     * Change the version of the resource pack.
      * @param version version of the pack (e.g. 1.0.0)
      */
     public void setVersion(String version) {
@@ -59,7 +59,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * What type of downloadable content is this
+     * What type of downloadable content is this.
      * @return the downloaded content type
      */
     public PackType getType() {
@@ -67,7 +67,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the type of downloadable content this is
+     * Change the type of downloadable content this is.
      * @param type new type
      */
     public void setType(PackType type) {
@@ -75,7 +75,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * SHA-256 of the pack's contents
+     * SHA-256 of the pack's contents.
      * @return byte array of the hash
      */
     public byte[] getHash() {
@@ -83,7 +83,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the SHA-256 of the pack's contents
+     * Change the SHA-256 of the pack's contents.
      * @param hash byte array of the hash
      */
     public void setHash(byte[] hash) {
@@ -99,7 +99,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the size of the resource pack
+     * Get the size of the resource pack.
      * @return size of the pack
      */
     public long getCompressedPackageSize() {
@@ -107,7 +107,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the size of the resource pack
+     * Change the size of the resource pack.
      * @param size size of the pack
      */
     public void setCompressedPackageSize(long size) {
@@ -115,7 +115,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the maximum size a ResourcePackChunkDataPacket would return for a chunk
+     * Get the maximum size a ResourcePackChunkDataPacket would return for a chunk.
      * @return maximum size returned
      */
     public int getMaxChunkSize() {
@@ -123,7 +123,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the maximum size a ResourcePackChunkDataPacket would return for a chunk
+     * Change the maximum size a ResourcePackChunkDataPacket would return for a chunk.
      * @param maxChunkSize maximum size
      */
     public void setMaxChunkSize(int maxChunkSize) {
@@ -131,7 +131,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Get the amount of chunks this pack is split into
+     * Get the amount of chunks this pack is split into.
      * @return amount of chunks
      */
     public int getChunkCount() {
@@ -139,7 +139,7 @@ public class ResourcePackDataInfoPacket extends BaseBedrockPacket {
     }
 
     /**
-     * Change the amount of chunks this pack is split into
+     * Change the amount of chunks this pack is split into.
      * @param count amount of chunks
      */
     public void setChunkCount(int count) {

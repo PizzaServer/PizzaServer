@@ -24,7 +24,7 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     }
 
     public WorldSound getSound() {
-        return sound;
+        return this.sound;
     }
 
     public void setSound(WorldSound sound) {
@@ -32,7 +32,7 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     }
 
     public Vector3 getLocation() {
-        return location;
+        return this.location;
     }
 
     public void setLocation(Vector3 location) {
@@ -40,7 +40,7 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     }
 
     public boolean isGlobal() {
-        return global;
+        return this.global;
     }
 
     public void setGlobal(boolean global) {
@@ -48,7 +48,7 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     }
 
     public boolean isBaby() {
-        return baby;
+        return this.baby;
     }
 
     public void setBaby(boolean baby) {
@@ -56,7 +56,7 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     }
 
     public String getEntityIdentifier() {
-        return entityIdentifier;
+        return this.entityIdentifier;
     }
 
     public void setEntityIdentifier(String entityIdentifier) {
@@ -64,7 +64,7 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     }
 
     public int getBlockID() {
-        return blockID;
+        return this.blockID;
     }
 
     public void setBlockID(int blockID) {

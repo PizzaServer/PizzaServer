@@ -14,7 +14,7 @@ public class NBTOutputStream extends OutputStream {
 
     public NBTOutputStream(OutputStream stream) {
         if (stream instanceof LittleEndianDataOutputStream) {
-            this.stream = (LittleEndianDataOutputStream)stream;
+            this.stream = ((LittleEndianDataOutputStream) stream);
         } else {
             this.stream = new LittleEndianDataOutputStream(stream);
         }

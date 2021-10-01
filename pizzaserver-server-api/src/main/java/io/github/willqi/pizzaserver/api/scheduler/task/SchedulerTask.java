@@ -4,16 +4,26 @@ import java.util.UUID;
 
 public interface SchedulerTask {
 
-    /** Executes the task. */
+    /**
+     * Executes the task.
+     */
     void run();
 
-    /** Sets the task as cancelled. */
+    /**
+     * Sets the task as cancelled.
+     */
     void cancel();
 
-    /** @return the unique id of the task. */
+    /**
+     * Retrieve the unique id of the task.
+     * @return the unique id of the task.
+     */
     UUID getTaskID();
 
-    /** @return true if the task has been cancelled. */
+    /**
+     * Retrieves if the task was cancelled.
+     * @return true if the task has been cancelled.
+     */
     boolean isCancelled();
 
 }

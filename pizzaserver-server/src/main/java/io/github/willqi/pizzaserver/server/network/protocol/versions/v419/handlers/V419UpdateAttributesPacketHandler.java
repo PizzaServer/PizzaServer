@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class V419UpdateAttributesPacketHandler extends BaseProtocolPacketHandler<UpdateAttributesPacket> {
 
-    protected final Map<AttributeType, String> attributeIds = new HashMap<AttributeType, String>(){
+    protected final Map<AttributeType, String> attributeIds = new HashMap<AttributeType, String>() {
         {
             this.put(AttributeType.HEALTH, "minecraft:health");
             this.put(AttributeType.ABSORPTION, "minecraft:absorption");

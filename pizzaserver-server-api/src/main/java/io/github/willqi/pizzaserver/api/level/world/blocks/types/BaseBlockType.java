@@ -15,7 +15,7 @@ import java.util.Set;
 
 public abstract class BaseBlockType implements BlockType {
 
-    private static final HashBiMap<NBTCompound, Integer> EMPTY_BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>(){
+    private static final HashBiMap<NBTCompound, Integer> EMPTY_BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>() {
         {
             this.put(new NBTCompound("states"), 0);
         }

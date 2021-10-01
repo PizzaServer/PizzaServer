@@ -8,26 +8,26 @@ public interface PlayerInventory extends LivingEntityInventory {
     Player getEntity();
 
     /**
-     * Get the current selected slot for the player
+     * Get the current selected slot for the player.
      * @return current selected slot
      */
     int getSelectedSlot();
 
     /**
-     * Change the current selected slot for the player
+     * Change the current selected slot for the player.
      * This will not work for going from a empty slot to another empty slot
      * @param slot new selected slot
      */
     void setSelectedSlot(int slot);
 
     /**
-     * Get the item held by the cursor
+     * Get the item held by the cursor.
      * @return item held by the player's cursor
      */
     ItemStack getCursor();
 
     /**
-     * Change the item held by the player's cursor
+     * Change the item held by the player's cursor.
      * @param item item held by the player's cursor
      */
     void setCursor(ItemStack item);

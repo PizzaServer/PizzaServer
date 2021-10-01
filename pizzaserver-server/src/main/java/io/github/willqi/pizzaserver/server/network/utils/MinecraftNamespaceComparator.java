@@ -1,9 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.utils;
 
 /**
- * Minecraft namespaces are sorted by their child key before the parent key
+ * Minecraft namespaces are sorted by their child key before the parent key.
  * bananas:cow goes before apples:dog
- *
  * This is not a Comparator because we use methods internally to sort by non-string objects that contain a Minecraft namespace.
  * (e.g. sending block properties in the StartGamePacket)
  */

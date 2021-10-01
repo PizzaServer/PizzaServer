@@ -7,7 +7,7 @@ import io.netty.buffer.ByteBuf;
 public class VarInts {
 
     public static void writeInt(ByteBuf buffer, int value) {
-        encode(buffer, ((value << 1) ^ (value >> 31)) & 0xFFFFFFFFL);
+        encode(buffer, (((long) value << 1) ^ (value >> 31)) & 0xFFFFFFFFL);
     }
 
     public static int readInt(ByteBuf buffer) {

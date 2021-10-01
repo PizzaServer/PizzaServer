@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.nbt.tags;
 
 public class NBTTag {
-
     public static final int END_TAG_ID = 0;
     public static final int BYTE_TAG_ID = 1;
     public static final int SHORT_TAG_ID = 2;
@@ -15,5 +14,4 @@ public class NBTTag {
     public static final int COMPOUND_TAG_ID = 10;
     public static final int INT_ARRAY_TAG_ID = 11;
     public static final int LONG_ARRAY_TAG_ID = 12;
-
 }

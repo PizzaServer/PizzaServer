@@ -34,20 +34,20 @@ public class ChunkQueue implements Closeable {
     }
 
     /**
-     * Add a request to the queue for this world
+     * Add a request to the queue for this world.
      * @param request The {@link ChunkRequest} to add to the queue
      */
     public void addRequest(ChunkRequest request) {
         if (request instanceof PlayerChunkRequest) {
-            ImplPlayer player = ((PlayerChunkRequest)request).getPlayer();
+            ImplPlayer player = ((PlayerChunkRequest) request).getPlayer();
             this.queuedSendRequests.computeIfAbsent(player, ignored -> ConcurrentHashMap.newKeySet());
 
             Set<PlayerChunkRequest> playerSendRequests = this.queuedSendRequests.getOrDefault(player, null);
             if (playerSendRequests != null) {
-                playerSendRequests.add((PlayerChunkRequest)request);
+                playerSendRequests.add((PlayerChunkRequest) request);
             }
         } else {
-            this.queuedUnloadChunkRequests.add((UnloadChunkRequest)request);
+            this.queuedUnloadChunkRequests.add((UnloadChunkRequest) request);
         }
     }
 
@@ -61,9 +61,9 @@ public class ChunkQueue implements Closeable {
 
             // Check if we should push player chunk requests to the processor
             if (
-                    playerSendRequests.size() > 0 &&
-                    player.isConnected() &&
-                    player.getLocation().getWorld().equals(this.chunkManager.getWorld())
+                    playerSendRequests.size() > 0
+                            && player.isConnected()
+                            && player.getLocation().getWorld().equals(this.chunkManager.getWorld())
             ) {  // Send the amount of chunks we can send this for this player during this tick
                 Iterator<PlayerChunkRequest> requestsInterator = playerSendRequests.iterator();
 
@@ -81,7 +81,7 @@ public class ChunkQueue implements Closeable {
         if (this.queuedUnloadChunkRequests.size() > 0) {
             Iterator<UnloadChunkRequest> iterator = this.queuedUnloadChunkRequests.iterator();
             // Check how many chunks we can offload per tick
-            int queueLeft = ((ImplServer)this.chunkManager.getWorld().getServer()).getConfig().getChunkRequestsPerTick();
+            int queueLeft = ((ImplServer) this.chunkManager.getWorld().getServer()).getConfig().getChunkRequestsPerTick();
             while (iterator.hasNext() && queueLeft > 0 && this.hasRoomToUnloadChunk()) {
                 UnloadChunkRequest request = iterator.next();
                 this.activeUnloadChunkRequests.getAndIncrement();
@@ -92,7 +92,7 @@ public class ChunkQueue implements Closeable {
     }
 
     /**
-     * Checks if there is enough room in the chunk's current queue to send a chunk to a player
+     * Checks if there is enough room in the chunk's current queue to send a chunk to a player.
      * The player's queue cannot exceed the configured chunk tick count
      * @param player the player to send a chunk to
      * @return if there is room
@@ -102,7 +102,7 @@ public class ChunkQueue implements Closeable {
     }
 
     /**
-     * Notes to the internal queue that a player has a pending chunk request
+     * Notes to the internal queue that a player has a pending chunk request.
      * Players cannot exceed the configured chunk tick count
      * @param player the player to send a chunk to
      */
@@ -117,17 +117,17 @@ public class ChunkQueue implements Closeable {
     }
 
     private boolean hasRoomToUnloadChunk() {
-        return this.activeUnloadChunkRequests.get() < ((ImplServer)ImplServer.getInstance()).getConfig().getChunkProcessingCap();
+        return this.activeUnloadChunkRequests.get() < ((ImplServer) ImplServer.getInstance()).getConfig().getChunkProcessingCap();
     }
 
     /**
-     * Called by the {@link ChunkProcessingThread} to notify that chunk request has been completed
+     * Called by the {@link ChunkProcessingThread} to notify that chunk request has been completed.
      * Removes a chunk from the internal queue count
      * @param request the request that was completed
      */
     void onRequestCompletion(ChunkRequest request) {
         if (request instanceof PlayerChunkRequest) {
-            PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest)request;
+            PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest) request;
             AtomicInteger playerChunkCount = this.activeChunkSendRequests.getOrDefault(playerChunkRequest.getPlayer(), null);
             if (playerChunkCount != null) {
                 playerChunkCount.getAndDecrement();

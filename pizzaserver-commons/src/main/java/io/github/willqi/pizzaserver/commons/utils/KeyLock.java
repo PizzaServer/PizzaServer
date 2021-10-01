@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Locks a key preventing other threads from acquiring that key until the Thread holding that lock unlocks it
+ * Locks a key preventing other threads from acquiring that key until the Thread holding that lock unlocks it.
  */
 public class KeyLock<K> {
 
@@ -85,7 +85,7 @@ public class KeyLock<K> {
 
 
     /**
-     * Unlock a lock the current Thread has obtained using the key given
+     * Unlock a lock the current Thread has obtained using the key given.
      * @param key key the lock was assigned under
      */
     public void unlock(K key) {

@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class V419PlayerActionPacketHandler extends BaseProtocolPacketHandler<PlayerActionPacket> {
 
 
-    protected final BiMap<PlayerAction, Integer> actions = HashBiMap.create(new HashMap<PlayerAction, Integer>(){
+    protected final BiMap<PlayerAction, Integer> actions = HashBiMap.create(new HashMap<PlayerAction, Integer>() {
         {
             this.put(PlayerAction.START_BREAK, 0);
             this.put(PlayerAction.ABORT_BREAK, 1);
@@ -49,7 +49,9 @@ public class V419PlayerActionPacketHandler extends BaseProtocolPacketHandler<Pla
         packet.setEntityRuntimeID(buffer.readUnsignedVarLong());
         int action = buffer.readVarInt();
         packet.setActionType(this.actions.inverse().get(action));
-        if(packet.getActionType() == null) ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
+        if (packet.getActionType() == null) {
+            ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
+        }
         packet.setVector3(buffer.readVector3i());
         packet.setFace(buffer.readVarInt());
         return packet;

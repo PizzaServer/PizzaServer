@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.data;
 
 /**
- * Represents an experiment in a Minecraft world
+ * Represents an experiment in a Minecraft world.
  */
 public enum Experiment {
 

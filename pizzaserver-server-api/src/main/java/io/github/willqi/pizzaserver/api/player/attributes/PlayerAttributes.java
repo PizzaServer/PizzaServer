@@ -4,7 +4,7 @@ import java.util.*;
 
 public class PlayerAttributes {
 
-    private final Map<AttributeType, Attribute> attributes = new HashMap<AttributeType, Attribute>(){
+    private final Map<AttributeType, Attribute> attributes = new HashMap<AttributeType, Attribute>() {
         {
             this.put(AttributeType.HEALTH, new Attribute(AttributeType.HEALTH, 0f, 20f, 20f, 20f));
             this.put(AttributeType.ABSORPTION, new Attribute(AttributeType.ABSORPTION, 0f, 0f, 0f, 0f));

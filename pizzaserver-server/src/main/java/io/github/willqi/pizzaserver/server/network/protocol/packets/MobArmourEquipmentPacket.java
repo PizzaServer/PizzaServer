@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the server to update the armor of an entity
+ * Sent by the server to update the armor of an entity.
  */
 public class MobArmourEquipmentPacket extends BaseBedrockPacket {
 

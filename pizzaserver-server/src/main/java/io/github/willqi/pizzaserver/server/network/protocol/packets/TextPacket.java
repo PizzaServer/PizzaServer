@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Sent by the server and client to send/display text messages to one another
+ * Sent by the server and client to send/display text messages to one another.
  */
 public class TextPacket extends BaseBedrockPacket {
 

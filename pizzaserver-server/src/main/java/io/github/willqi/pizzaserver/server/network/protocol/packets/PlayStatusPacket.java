@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.packets;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 
 /**
- * Sent by the server to change the player's ability to play
+ * Sent by the server to change the player's ability to play.
  */
 public class PlayStatusPacket extends BaseBedrockPacket {
 
@@ -33,7 +33,7 @@ public class PlayStatusPacket extends BaseBedrockPacket {
         OUTDATED_SERVER,
 
         /**
-         * Sent when the player can be shown the world
+         * Sent when the player can be shown the world.
          */
         PLAYER_SPAWN,
 

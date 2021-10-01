@@ -35,7 +35,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     /**
-     * Ticks all the levels loaded
+     * Ticks all the levels loaded.
      */
     public void tick() {
         for (ImplLevel level : this.levels.values()) {

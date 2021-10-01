@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions;
 
 /**
- * Used for server authoritative inventories (v422+)
+ * Used for server authoritative inventories. (v422+)
  * Used for crafting recipes that contain a name input
  */
 public class InventoryActionCraftRecipeOptional implements InventoryAction {

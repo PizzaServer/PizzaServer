@@ -59,22 +59,22 @@ public class Attribute {
 
     @Override
     public int hashCode() {
-        return (int)(37 * this.type.hashCode() +
-                        (37 * this.getCurrentValue()) +
-                        (37 * this.getDefaultValue()) +
-                        (37 * this.getMaximumValue()) +
-                        (37 * this.getMinimumValue()));
+        return ((int) (37 * this.type.hashCode()
+                + (37 * this.getCurrentValue())
+                + (37 * this.getDefaultValue())
+                + (37 * this.getMaximumValue())
+                + (37 * this.getMinimumValue())));
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Attribute) {
-            Attribute otherAttribute = (Attribute)obj;
-            return otherAttribute.getType().equals(this.getType()) &&
-                    NumberUtils.isNearlyEqual(otherAttribute.getCurrentValue(), this.getCurrentValue()) &&
-                    NumberUtils.isNearlyEqual(otherAttribute.getDefaultValue(), this.getDefaultValue()) &&
-                    NumberUtils.isNearlyEqual(otherAttribute.getMaximumValue(), this.getMaximumValue()) &&
-                    NumberUtils.isNearlyEqual(otherAttribute.getMinimumValue(), this.getMinimumValue());
+            Attribute otherAttribute = (Attribute) obj;
+            return otherAttribute.getType().equals(this.getType())
+                    && NumberUtils.isNearlyEqual(otherAttribute.getCurrentValue(), this.getCurrentValue())
+                    && NumberUtils.isNearlyEqual(otherAttribute.getDefaultValue(), this.getDefaultValue())
+                    && NumberUtils.isNearlyEqual(otherAttribute.getMaximumValue(), this.getMaximumValue())
+                    && NumberUtils.isNearlyEqual(otherAttribute.getMinimumValue(), this.getMinimumValue());
         }
         return false;
     }

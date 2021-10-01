@@ -70,7 +70,7 @@ public class V431PacketBuffer extends V428PacketBuffer {
 
         // write block runtime id
         if (itemStack.getItemType() instanceof BlockItemType) {
-            BlockItemType blockItemType = (BlockItemType)itemStack.getItemType();
+            BlockItemType blockItemType = (BlockItemType) itemStack.getItemType();
 
             String blockId = blockItemType.getBlockType().getBlockId();
             NBTCompound state = blockItemType.getBlockType().getBlockState(itemStack.getDamage());

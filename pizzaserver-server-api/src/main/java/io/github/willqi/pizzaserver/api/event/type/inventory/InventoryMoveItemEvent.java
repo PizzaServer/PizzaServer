@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 
 /**
- * Called when an entity tries to move an item into an inventory slot
+ * Called when an entity tries to move an item into an inventory slot.
  */
 public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
 

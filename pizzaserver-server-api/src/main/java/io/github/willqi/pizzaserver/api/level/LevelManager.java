@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.commons.world.Dimension;
 public interface LevelManager {
 
     /**
-     * Check if a {@link Level} is currently loaded and being ticked
+     * Check if a {@link Level} is currently loaded and being ticked.
      * @param name name of the level in the levels directory
      * @return name of the level
      */
@@ -21,7 +21,7 @@ public interface LevelManager {
     Level getLevel(String name);
 
     /**
-     * Get a specific {@link Dimension} belonging to a {@link Level}
+     * Get a specific {@link Dimension} belonging to a {@link Level}.
      * If the level is not currently loaded, it will fetch the level from the file system
      * @param levelName name of the level
      * @param dimension dimension type
@@ -30,13 +30,13 @@ public interface LevelManager {
     World getLevelDimension(String levelName, Dimension dimension);
 
     /**
-     * Unload a {@link Level} back to the file system
+     * Unload a {@link Level} back to the file system.
      * @param name name of the level
      */
     void unloadLevel(String name);
 
     /**
-     * Unload a {@link Level} back to the file system
+     * Unload a {@link Level} back to the file system.
      * @param name name of the level
      * @param async if this should be done asynchronously
      */

@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 /**
- * Called when the player drops an item from an inventory
+ * Called when the player drops an item from an inventory.
  */
 public class InventoryDropItemEvent extends BaseInventoryEvent.Cancellable {
 

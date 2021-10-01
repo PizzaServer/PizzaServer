@@ -9,16 +9,16 @@ import java.util.UUID;
 public interface PlayerDataProvider {
 
     /**
-     * Save {@link PlayerData} to a provider
+     * Save {@link PlayerData} to a provider.
      * @param uuid The {@link UUID} of the player we are saving the data of
      * @param data the {@link PlayerData} of the player
      */
     void save(UUID uuid, PlayerData data) throws IOException;
 
     /**
-     * Load the data of a player's {@link UUID}
+     * Load the data of a player's {@link UUID}.
      * @param uuid the {@link UUID} of the player we are retrieving the data of
-     * @return {@link Optional<PlayerData>} player data if any is present
+     * @return player data if any is present
      */
     Optional<PlayerData> load(UUID uuid) throws IOException;
 

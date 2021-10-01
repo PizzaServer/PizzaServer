@@ -7,9 +7,9 @@ import java.util.Set;
 public interface Watchable {
 
     /**
-     * Retrieve all of the {@link Player}s who can see this
-     * @return a {@link Set< Player >} containing those who can see this
-      */
+     * Retrieve all of the {@link Player}s who can see this.
+     * @return a set of all players containing those who can see this.
+     */
     Set<Player> getViewers();
 
 }

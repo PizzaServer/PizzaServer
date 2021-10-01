@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions;
 
 /**
- * Used for server authoritative inventories
+ * Used for server authoritative inventories.
  * Created when a player retrieves an item from the creative menu
  * Contains the network id retrieved from the creative content packet
  */

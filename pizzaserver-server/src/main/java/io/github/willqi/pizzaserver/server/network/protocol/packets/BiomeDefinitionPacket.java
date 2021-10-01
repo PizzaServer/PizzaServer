@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPack
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
 /**
- * Contains all the biomes that are possible on the server
+ * Contains all the biomes that are possible on the server.
  */
 public class BiomeDefinitionPacket extends BaseBedrockPacket {
 

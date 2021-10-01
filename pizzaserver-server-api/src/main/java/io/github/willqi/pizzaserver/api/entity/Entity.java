@@ -11,7 +11,7 @@ import io.github.willqi.pizzaserver.api.utils.Watchable;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 
 /**
- * Represents a entity on Minecraft
+ * Represents a entity on Minecraft.
  */
 public interface Entity extends Watchable {
 
@@ -30,31 +30,31 @@ public interface Entity extends Watchable {
     int getFloorZ();
 
     /**
-     * Retrieve the {@link Server} this entity is in
+     * Retrieve the {@link Server} this entity is in.
      * @return {@link Server}
      */
     Server getServer();
 
     /**
-     * Retrieve the {@link Level} this entity is in
+     * Retrieve the {@link Level} this entity is in.
      * @return {@link Level}
      */
     Level getLevel();
 
     /**
-     * Retrieve the {@link World} this entity is in
+     * Retrieve the {@link World} this entity is in.
      * @return {@link World}
      */
     World getWorld();
 
     /**
-     * Retrieve the {@link Chunk} the entity is in
+     * Retrieve the {@link Chunk} the entity is in.
      * @return the {@link Chunk}
      */
     Chunk getChunk();
 
     /**
-     * Retrieve the {@link Location} of the entity
+     * Retrieve the {@link Location} of the entity.
      * @return the {@link Location}
      */
     Location getLocation();
@@ -72,12 +72,12 @@ public interface Entity extends Watchable {
     Inventory getInventory();
 
     /**
-     * Called every server tick
+     * Called every server tick.
      */
     void tick();
 
     /**
-     * Check if the entity has been spawned into a world yet
+     * Check if the entity has been spawned into a world yet.
      * @return if the entity has been spawned into a world
      */
     boolean hasSpawned();

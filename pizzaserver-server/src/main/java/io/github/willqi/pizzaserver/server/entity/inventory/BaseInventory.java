@@ -81,7 +81,7 @@ public abstract class BaseInventory implements Inventory {
             throw new IllegalArgumentException("The slots provided must be " + this.size + " in length.");
         }
 
-        for (int i = 0 ; i < this.size; i++) {
+        for (int i = 0; i < this.size; i++) {
             this.slots[i] = ItemStack.ensureItemStackExists(slots[i]).newNetworkStack();
         }
 
@@ -96,7 +96,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     /**
-     * Get a slot in the inventory
+     * Get a slot in the inventory.
      * @param slot the slot
      * @param clone if the ItemStack should be cloned or if it should retrieve the actual object
      * @return ItemStack in that slot
@@ -116,7 +116,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     /**
-     * Change a slot in the inventory
+     * Change a slot in the inventory.
      * @param player the player who is changing the slot if any exists
      * @param slot the slot changed
      * @param itemStack the new item stack
@@ -192,7 +192,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     /**
-     * Tries to open the inventory
+     * Tries to open the inventory.
      * @param player the player to open this inventory to
      * @return if the inventory was opened
      */
@@ -215,7 +215,7 @@ public abstract class BaseInventory implements Inventory {
     protected abstract void sendContainerOpenPacket(Player player);
 
     /**
-     * Close this inventory for a player
+     * Close this inventory for a player.
      * @param player the player to close this inventory for
      * @return if the inventory was closed
      */
@@ -241,7 +241,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     /**
-     * Helper method to send a slot of an inventory
+     * Helper method to send a slot of an inventory.
      * @param player player to send the slot to
      * @param itemStack the item stack to send
      * @param slot the slot
@@ -256,7 +256,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     /**
-     * Helper method to send slots of an inventory
+     * Helper method to send slots of an inventory.
      * @param player player to send the slots to
      * @param slots the slots
      * @param inventoryId the inventory id

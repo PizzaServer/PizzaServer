@@ -12,18 +12,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Entities have metadata which gives them special properties about how they are rendered to the Minecraft client
+ * Entities have metadata which gives them special properties about how they are rendered to the Minecraft client.
  */
 public interface EntityMetaData {
 
     /**
-     * Retrieve all enabled entity flags
+     * Retrieve all enabled entity flags.
      * @return all enabled entity flags
      */
     Map<EntityMetaFlagCategory, Set<EntityMetaFlag>> getFlags();
 
     /**
-     * Check if the metadata has {@link EntityMetaFlag} enabled under the {@link EntityMetaFlagCategory}
+     * Check if the metadata has {@link EntityMetaFlag} enabled under the {@link EntityMetaFlagCategory}.
      * @param flagCategory the category the flag falls under
      * @param flag the flag to check
      * @return if the flag is enabled
@@ -31,7 +31,7 @@ public interface EntityMetaData {
     boolean hasFlag(EntityMetaFlagCategory flagCategory, EntityMetaFlag flag);
 
     /**
-     * Change the status of a {@link EntityMetaFlag} under a {@link EntityMetaFlagCategory}
+     * Change the status of a {@link EntityMetaFlag} under a {@link EntityMetaFlagCategory}.
      * @param flagCategory the category the flag falls under
      * @param flag the flag to check
      * @param enabled if the flag should be enabled
@@ -39,13 +39,13 @@ public interface EntityMetaData {
     void setFlag(EntityMetaFlagCategory flagCategory, EntityMetaFlag flag, boolean enabled);
 
     /**
-     * Get all of entity data properties set
+     * Get all of entity data properties set.
      * @return a map of all properties
      */
     Map<EntityMetaPropertyName, EntityMetaProperty<?>> getProperties();
 
     /**
-     * Check if the metadata has a property set
+     * Check if the metadata has a property set.
      * @param propertyName the {@link EntityMetaPropertyName} we are checking
      * @return if it is set
      */

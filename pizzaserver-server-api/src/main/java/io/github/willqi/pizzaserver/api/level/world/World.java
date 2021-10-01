@@ -37,14 +37,14 @@ public interface World {
     Chunk getChunk(int x, int z);
 
     /**
-     * Get the highest block y coordinate at a chunk column
+     * Get the highest block y coordinate at a chunk column.
      * @param coordinates chunk column coordinates
      * @return y coordinate
      */
     int getHighestBlockAt(Vector2i coordinates);
 
     /**
-     * Get the highest block y coordinate at a chunk column
+     * Get the highest block y coordinate at a chunk column.
      * @param x chunk column x coordinates
      * @param z chunk column z coordinates
      * @return y coordinate
@@ -68,41 +68,41 @@ public interface World {
     void setBlock(Block block, int x, int y, int z);
 
     /**
-     * Add a {@link Entity} to this world and spawn it
+     * Add a {@link Entity} to this world and spawn it.
      * @param entity The {@link Entity} to spawn
      * @param position The position to spawn it in this world
      */
     void addEntity(Entity entity, Vector3 position);
 
     /**
-     * Despawn a {@link Entity} from this world
+     * Despawn a {@link Entity} from this world.
      * @param entity the {@link Entity} to despawn
      */
     void removeEntity(Entity entity);
 
     /**
-     * Retrieve all entities in this world
+     * Retrieve all entities in this world.
      * @return the entities in this world
      */
     Map<Long, Entity> getEntities();
 
     /**
-     * Retrieve an entity in this world
+     * Retrieve an entity in this world.
      * @param id the entity id
      * @return the entity if it exists
      */
     Optional<Entity> getEntity(long id);
 
     default void playSound(WorldSound sound, Vector3 vector3) {
-        playSound(sound, vector3, true);
+        this.playSound(sound, vector3, true);
     }
 
     default void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal) {
-        playSound(sound, vector3, isGlobal, false, "");
+        this.playSound(sound, vector3, isGlobal, false, "");
     }
 
     default void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType) {
-        playSound(sound, vector3, isGlobal, isBaby, entityType, 0);
+        this.playSound(sound, vector3, isGlobal, isBaby, entityType, 0);
     }
 
     void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID);

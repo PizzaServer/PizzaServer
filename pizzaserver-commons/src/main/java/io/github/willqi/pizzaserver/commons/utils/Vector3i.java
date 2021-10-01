@@ -66,20 +66,26 @@ public class Vector3i {
     }
 
     public double distanceBetween(Vector3i vector3i) {
-        return Math.sqrt(Math.pow(this.getX() - vector3i.getX(), 2) + Math.pow(this.getY() - vector3i.getY(), 2) + Math.pow(this.getZ() - vector3i.getZ(), 2));
+        return Math.sqrt(Math.pow(this.getX() - vector3i.getX(), 2)
+                + Math.pow(this.getY() - vector3i.getY(), 2)
+                + Math.pow(this.getZ() - vector3i.getZ(), 2));
     }
 
     public double distanceBetween(Vector3 vector3) {
-        return Math.sqrt(Math.pow(this.getX() - vector3.getX(), 2) + Math.pow(this.getY() - vector3.getY(), 2) + Math.pow(this.getZ() - vector3.getZ(), 2));
+        return Math.sqrt(Math.pow(this.getX() - vector3.getX(), 2)
+                + Math.pow(this.getY() - vector3.getY(), 2)
+                + Math.pow(this.getZ() - vector3.getZ(), 2));
     }
 
     public double getLength() {
-        return Math.sqrt(Math.pow(this.getX(), 2) + Math.pow(this.getY(), 2) + Math.pow(this.getZ(), 2));
+        return Math.sqrt(Math.pow(this.getX(), 2)
+                + Math.pow(this.getY(), 2)
+                + Math.pow(this.getZ(), 2));
     }
 
     public Vector3 normalize() {
         double length = this.getLength();
-        return new Vector3((float)(this.getX() / length), (float)(this.getY() / length), (float)(this.getZ() / length));
+        return new Vector3((float) (this.getX() / length), (float) (this.getY() / length), (float) (this.getZ() / length));
     }
 
     public double dot(Vector3 vector3) {
@@ -96,6 +102,6 @@ public class Vector3i {
 
     @Override
     public String toString() {
-        return "Vector3i(x=" + this.x +",y=" + this.y + ",z=" + this.z + ")";
+        return "Vector3i(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ")";
     }
 }
