@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.scheduler;
+package io.github.willqi.pizzaserver.api.scheduler;
 
 import io.github.willqi.pizzaserver.api.scheduler.task.SchedulerTask;
 import io.github.willqi.pizzaserver.commons.utils.Check;

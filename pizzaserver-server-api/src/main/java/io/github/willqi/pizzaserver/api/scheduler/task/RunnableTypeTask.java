@@ -1,8 +1,8 @@
-package io.github.willqi.pizzaserver.server.scheduler.task;
+package io.github.willqi.pizzaserver.api.scheduler.task;
 
 import io.github.willqi.pizzaserver.commons.utils.Check;
 
-public final class RunnableTypeTask extends BaseSchedulerTask {
+public final class RunnableTypeTask extends SchedulerTask {
 
     private final Runnable taskRunnable;
 
@@ -14,4 +14,5 @@ public final class RunnableTypeTask extends BaseSchedulerTask {
     public void run() {
         this.taskRunnable.run();
     }
+
 }

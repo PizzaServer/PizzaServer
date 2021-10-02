@@ -17,7 +17,6 @@ import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProvider;
 import io.github.willqi.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.willqi.pizzaserver.server.plugin.ImplPluginManager;
-import io.github.willqi.pizzaserver.server.scheduler.ImplScheduler;
 import io.github.willqi.pizzaserver.server.utils.Config;
 import io.github.willqi.pizzaserver.server.utils.ImplLogger;
 import io.github.willqi.pizzaserver.server.utils.TimeUtils;
@@ -43,8 +42,8 @@ public class ImplServer implements Server {
     private final ImplLevelManager levelManager = new ImplLevelManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
 
-    private final Set<ImplScheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
-    private final ImplScheduler scheduler = new ImplScheduler(this, 1);
+    private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
+    private final Scheduler scheduler = new Scheduler(this, 1);
 
     private final Logger logger;
 
@@ -149,7 +148,7 @@ public class ImplServer implements Server {
             return;
         }
 
-        for (ImplScheduler scheduler : this.syncedSchedulers) {
+        for (Scheduler scheduler : this.syncedSchedulers) {
             try {
                 scheduler.serverTick();
             } catch (Exception exception) {
@@ -302,17 +301,20 @@ public class ImplServer implements Server {
         return this.scheduler;
     }
 
+    @Override
     public Set<Scheduler> getSyncedSchedulers() {
         return Collections.unmodifiableSet(this.syncedSchedulers);
     }
 
-    public void syncScheduler(ImplScheduler scheduler) {
+    @Override
+    public void syncScheduler(Scheduler scheduler) {
         if (scheduler.isRunning()) {
             this.syncedSchedulers.add(scheduler);
         }
     }
 
-    public boolean desyncScheduler(ImplScheduler scheduler) {
+    @Override
+    public boolean desyncScheduler(Scheduler scheduler) {
         return this.syncedSchedulers.remove(scheduler);
     }
 

@@ -79,6 +79,21 @@ public interface Server {
 
     Scheduler getScheduler();
 
+    Set<Scheduler> getSyncedSchedulers();
+
+    /**
+     * Sync a {@link Scheduler} to the server tick.
+     * @param scheduler scheduler to sync
+     */
+    void syncScheduler(Scheduler scheduler);
+
+    /**
+     * Desync a {@link Scheduler} from the server tick.
+     * @param scheduler scheduler to desync
+     * @return if the scheduler was desynced
+     */
+    boolean desyncScheduler(Scheduler scheduler);
+
     Logger getLogger();
 
     /**
