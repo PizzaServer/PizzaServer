@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
@@ -156,6 +157,11 @@ public abstract class BaseBlockType implements BlockType {
     @Override
     public Set<BaseBlockType> getPlaceableOnlyOn() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public Block getResultantBlock() {
+        return BlockRegistry.getBlock(BlockTypeID.AIR);
     }
 
     @Override

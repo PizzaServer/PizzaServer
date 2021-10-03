@@ -191,6 +191,12 @@ public interface BlockType {
     Set<BaseBlockType> getPlaceableOnlyOn();
 
     /**
+     * Retrieve the block to replace blocks of this block type with when mined.
+     * @return the block to replace this block with after it is mined.
+     */
+    Block getResultantBlock();
+
+    /**
      * Called when the right click button is used against this block.
      * @param player the player who interacted with the block
      * @param block the block interacted with

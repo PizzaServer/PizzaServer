@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.api.player;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
@@ -77,6 +78,12 @@ public interface Player extends LivingEntity {
      * @param sneaking sneaking status
      */
     void setSneaking(boolean sneaking);
+
+    /**
+     * Retrieve the current block the player is breaking.
+     * @return the block the player is breaking if any exists
+     */
+    Optional<Block> getBlockBreaking();
 
     /**
      * Get the player list of a player.

@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 
@@ -15,7 +15,7 @@ public class PlayerActionPacket extends BaseBedrockPacket {
     private long entityRuntimeID;
     private PlayerAction actionType;
     private Vector3i vector3;
-    private int face;
+    private BlockFace face;
 
     public PlayerActionPacket() {
         super(ID);
@@ -45,21 +45,11 @@ public class PlayerActionPacket extends BaseBedrockPacket {
         this.vector3 = vector3;
     }
 
-    /**
-     * Does not return the face of the block on a value of 0-5, it returns the clients calculation of the face.
-     * @return Face calculated by client
-     */
-    @Deprecated
-    public int getFace() {
+    public BlockFace getFace() {
         return this.face;
     }
 
-    //Will need this method later once some way of faces are planned
-    //public static BlockFace fromIndex(int index) {
-    //    return VALUES[MathHelper.abs(index % VALUES.length)];
-    //}
-
-    public void setFace(int face) {
+    public void setFace(BlockFace face) {
         this.face = face;
     }
 }

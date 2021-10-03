@@ -4,6 +4,9 @@ import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -22,6 +25,7 @@ import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
+import io.github.willqi.pizzaserver.server.network.protocol.data.WorldEventType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
@@ -55,6 +59,9 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private final PlayerAttributes attributes = new PlayerAttributes();
 
     private Inventory openInventory = null;
+
+    private Vector3i blockBreakingCoordinates;
+    private int blockBreakingTicksLeft;
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -144,6 +151,48 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         if (updateSneakingData) {
             this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
             this.setMetaData(this.getMetaData());
+        }
+    }
+
+    public void setBlockBreaking(Vector3i blockCoordinates) {
+        if (this.blockBreakingCoordinates != null && !this.blockBreakingCoordinates.equals(blockCoordinates)) {
+            // Stop breaking the previous block
+            Block previouslyMiningBlock = this.getWorld().getBlock(this.blockBreakingCoordinates);
+            if (!previouslyMiningBlock.isAir()) { // In case someone breaks the block we're breaking
+                this.sendMessage("stopped breaking previous block");
+                WorldEventPacket breakStopPacket = new WorldEventPacket();
+                breakStopPacket.setType(WorldEventType.EVENT_BLOCK_STOP_BREAK);
+                breakStopPacket.setPosition(this.blockBreakingCoordinates.toVector3());
+                for (Player player : this.getChunk().getViewers()) {
+                    player.sendPacket(breakStopPacket);
+                }
+            }
+        }
+
+        this.blockBreakingCoordinates = blockCoordinates;
+        this.blockBreakingTicksLeft = 0;
+
+        if (this.blockBreakingCoordinates != null) {
+            // TODO: calculate amount of ticks it takes to break this block
+            this.blockBreakingTicksLeft = 10;
+            this.sendMessage("started to break new block");
+
+            WorldEventPacket breakStartPacket = new WorldEventPacket();
+            breakStartPacket.setType(WorldEventType.EVENT_BLOCK_STOP_BREAK);
+            breakStartPacket.setPosition(this.blockBreakingCoordinates.toVector3());
+            breakStartPacket.setData(20);
+            for (Player player : this.getChunk().getViewers()) {
+                player.sendPacket(breakStartPacket);
+            }
+        }
+    }
+
+    @Override
+    public Optional<Block> getBlockBreaking() {
+        if (this.blockBreakingCoordinates != null) {
+            return Optional.of(this.world.getBlock(this.blockBreakingCoordinates));
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -603,6 +652,22 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
             for (Player player : this.getViewers()) {
                 player.sendPacket(movePlayerPacket);
+            }
+        }
+
+        Optional<Block> miningBlock = this.getBlockBreaking();
+        if (miningBlock.isPresent()) {
+            if (this.canReach(miningBlock.get().getLocation())) {
+                this.sendMessage("can reach and ticks = " + this.blockBreakingTicksLeft);
+                if (this.blockBreakingTicksLeft-- <= 0) {
+                    this.getWorld().setBlock(miningBlock.get().getBlockType().getResultantBlock(), this.blockBreakingCoordinates);
+                    this.setBlockBreaking(null);
+                    this.sendMessage("mined!");
+                }
+            } else {
+                // The block we're trying to mine is too far from us.
+                this.setBlockBreaking(null);
+                this.sendMessage("can on longer reach");
             }
         }
 
