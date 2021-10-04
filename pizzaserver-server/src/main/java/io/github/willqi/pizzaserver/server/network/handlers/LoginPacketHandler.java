@@ -339,7 +339,6 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setGameVersion(ServerProtocol.GAME_VERSION);
         startGamePacket.setServerName(world.getLevel().getName());
         startGamePacket.setMovementType(PlayerMovementType.CLIENT_AUTHORITATIVE);
-        startGamePacket.setServerAuthoritativeBlockBreaking(true);
         startGamePacket.setServerAuthoritativeInventory(true);
         startGamePacket.setResourcePacksRequired(this.server.getResourcePackManager().arePacksRequired());
         startGamePacket.setServerOrigin(ServerOrigin.NONE);

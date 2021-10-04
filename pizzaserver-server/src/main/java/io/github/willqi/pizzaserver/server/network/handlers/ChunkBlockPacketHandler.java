@@ -35,12 +35,14 @@ public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
                     Block block = this.player.getWorld().getBlock(packet.getVector3());
                     if (block.getBlockType().isSolid()) {
                         this.player.setBlockBreaking(packet.getVector3());
+                    } else {
+                        this.player.getWorld().sendBlock(this.player, packet.getVector3());
                     }
                 }
                 break;
             case STOP_BREAK:
             case ABORT_BREAK:
-                this.player.sendMessage(packet.getActionType().toString());
+                this.player.sendMessage(packet.getActionType().toString() + " " + packet.getVector3());
                 this.player.setBlockBreaking(null);
                 break;
         }
