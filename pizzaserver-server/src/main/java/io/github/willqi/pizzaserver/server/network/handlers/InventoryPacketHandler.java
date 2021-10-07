@@ -174,11 +174,9 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 break;
             case ITEM_USE:
                 InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData) packet.getData();
-                // TODO: account for creative mode reach when gamemodes are implemented
 
-
-                double distanceToBlock = this.player.getLocation().distanceBetween(useItemData.getBlockCoordinates().toVector3()); // distance to middle of block
-                if (distanceToBlock > 50) {
+                double distanceToBlock = this.player.getLocation().distanceBetween(useItemData.getBlockCoordinates().toVector3());
+                if (distanceToBlock > this.player.getChunkRadius() * 16) {
                     // Prevent malicious clients from causing a OutOfMemory error by sending a transaction
                     // to every single chunk regardless of the distance which would load chunks unnecessarily
                     return;
@@ -216,8 +214,8 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     }
                 }
 
-                // By getting to this point, it means that the action failed/was not valid
-                // Reset any clientside modifications to the world/player
+                // By getting to this point, it means that the action failed/was not valid/they broke a block.
+                // Resend the data stored server-side.
                 this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates());
                 this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates().add(useItemData.getBlockFace().getOffset()));
                 this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());

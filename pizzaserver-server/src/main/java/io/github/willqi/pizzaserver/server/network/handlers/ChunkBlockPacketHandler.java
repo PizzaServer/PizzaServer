@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
-import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
@@ -33,16 +32,16 @@ public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
             case START_BREAK:
                 if (this.player.canReach(packet.getVector3())) {
                     Block block = this.player.getWorld().getBlock(packet.getVector3());
-                    if (block.getBlockType().isSolid()) {
+                    if (block.isSolid()) {
                         this.player.setBlockBreaking(packet.getVector3());
                     } else {
+                        // The player is trying to break a non-solid block?...
                         this.player.getWorld().sendBlock(this.player, packet.getVector3());
                     }
                 }
                 break;
             case STOP_BREAK:
             case ABORT_BREAK:
-                this.player.sendMessage(packet.getActionType().toString() + " " + packet.getVector3());
                 this.player.setBlockBreaking(null);
                 break;
         }

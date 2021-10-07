@@ -2,11 +2,12 @@ package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.event.type.block.BlockBreakEvent;
+import io.github.willqi.pizzaserver.api.event.type.block.BlockStartBreakEvent;
+import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
-import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -156,33 +157,41 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     public void setBlockBreaking(Vector3i blockCoordinates) {
         if (this.blockBreakingCoordinates != null && !this.blockBreakingCoordinates.equals(blockCoordinates)) {
-            // Stop breaking the previous block
+            // Send packet to stop breaking the previous block
             Block previouslyMiningBlock = this.getWorld().getBlock(this.blockBreakingCoordinates);
-            if (!previouslyMiningBlock.isAir()) { // In case someone breaks the block we're breaking
-                this.sendMessage("stopped breaking previous block");
-                WorldEventPacket breakStopPacket = new WorldEventPacket();
-                breakStopPacket.setType(WorldEventType.EVENT_BLOCK_STOP_BREAK);
-                breakStopPacket.setPosition(this.blockBreakingCoordinates.toVector3());
-                for (Player player : this.getChunk().getViewers()) {
-                    player.sendPacket(breakStopPacket);
-                }
+
+            BlockStopBreakEvent stopBreakEvent = new BlockStopBreakEvent(this, previouslyMiningBlock);
+            this.getServer().getEventManager().call(stopBreakEvent);
+
+            WorldEventPacket breakStopPacket = new WorldEventPacket();
+            breakStopPacket.setType(WorldEventType.EVENT_BLOCK_STOP_BREAK);
+            breakStopPacket.setPosition(this.blockBreakingCoordinates.toVector3());
+            for (Player player : this.getChunk().getViewers()) {
+                player.sendPacket(breakStopPacket);
             }
         }
 
-        this.blockBreakingCoordinates = blockCoordinates;
-        this.blockBreakingTicksLeft = 0;
+        if (blockCoordinates == null) {
+            // Stopped breaking a block
+            this.blockBreakingCoordinates = null;
+            this.blockBreakingTicksLeft = 0;
+        } else {
+            // Started breaking a block
+            BlockStartBreakEvent startBreakEvent = new BlockStartBreakEvent(this, this.getWorld().getBlock(blockCoordinates));
+            this.getServer().getEventManager().call(startBreakEvent);
 
-        if (this.blockBreakingCoordinates != null) {
-            // TODO: calculate amount of ticks it takes to break this block
-            this.blockBreakingTicksLeft = 10;
-            this.sendMessage("started to break new block");
+            if (!startBreakEvent.isCancelled()) {
+                // TODO: calculate amount of ticks it takes to break this block
+                this.blockBreakingCoordinates = blockCoordinates;
+                this.blockBreakingTicksLeft = 10;
 
-            WorldEventPacket breakStartPacket = new WorldEventPacket();
-            breakStartPacket.setType(WorldEventType.EVENT_BLOCK_STOP_BREAK);
-            breakStartPacket.setPosition(this.blockBreakingCoordinates.toVector3());
-            breakStartPacket.setData(20);
-            for (Player player : this.getChunk().getViewers()) {
-                player.sendPacket(breakStartPacket);
+                WorldEventPacket breakStartPacket = new WorldEventPacket();
+                breakStartPacket.setType(WorldEventType.EVENT_BLOCK_START_BREAK);
+                breakStartPacket.setPosition(this.blockBreakingCoordinates.toVector3());
+                breakStartPacket.setData(65535 / this.blockBreakingTicksLeft);
+                for (Player player : this.getChunk().getViewers()) {
+                    player.sendPacket(breakStartPacket);
+                }
             }
         }
     }
@@ -658,16 +667,19 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         Optional<Block> miningBlock = this.getBlockBreaking();
         if (miningBlock.isPresent()) {
             if (this.canReach(miningBlock.get().getLocation())) {
-                this.sendMessage("can reach and ticks = " + this.blockBreakingTicksLeft);
-                if (this.blockBreakingTicksLeft-- <= 0) {
-                    this.getWorld().setBlock(miningBlock.get().getBlockType().getResultantBlock(), this.blockBreakingCoordinates);
+                if (--this.blockBreakingTicksLeft <= 0) {
+                    // The block should be broken
+                    BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this, miningBlock.get());
+                    this.getServer().getEventManager().call(blockBreakEvent);
+                    if (!blockBreakEvent.isCancelled()) {
+                        // Block is to be broken
+                        this.getWorld().setBlock(miningBlock.get().getBlockType().getResultBlock(), this.blockBreakingCoordinates);
+                    }
                     this.setBlockBreaking(null);
-                    this.sendMessage("mined!");
                 }
             } else {
                 // The block we're trying to mine is too far from us.
                 this.setBlockBreaking(null);
-                this.sendMessage("can on longer reach");
             }
         }
 

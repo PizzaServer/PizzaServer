@@ -194,7 +194,7 @@ public interface BlockType {
      * Retrieve the block to replace blocks of this block type with when mined.
      * @return the block to replace this block with after it is mined.
      */
-    Block getResultantBlock();
+    Block getResultBlock();
 
     /**
      * Called when the right click button is used against this block.

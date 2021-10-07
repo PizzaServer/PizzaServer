@@ -160,7 +160,7 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public Block getResultantBlock() {
+    public Block getResultBlock() {
         return BlockRegistry.getBlock(BlockTypeID.AIR);
     }
 
