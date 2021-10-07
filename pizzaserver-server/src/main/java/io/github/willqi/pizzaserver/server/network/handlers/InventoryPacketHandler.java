@@ -206,6 +206,10 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                                         return; // block cancelled the item interaction. Returning ensures the interaction does not get reset
                                     }
                                     break;
+                                case BREAK_BLOCK:
+                                    if (this.player.getBlockBreaking().isPresent()) {
+                                        this.player.getServer().getLogger().debug(String.format("%s tried to break a block too early.", this.player.getUsername()));
+                                    }
                             }
                         }
                     } else {
