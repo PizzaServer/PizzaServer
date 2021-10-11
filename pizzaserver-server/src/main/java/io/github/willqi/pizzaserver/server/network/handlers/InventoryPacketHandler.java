@@ -120,7 +120,17 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
                 if (!playerHotbarSelectEvent.isCancelled()) {
                     // Server approves of hotbar slot change.
+
+                    // Check if we need to recalculate our break time for the block we may be breaking.
+                    boolean differentItemTypes = !this.player.getInventory().getHeldItem().getItemType().equals(this.player.getInventory().getSlot(packet.getSlot()).getItemType());
+                    boolean needToRecalculateBlockBreakTime = this.player.getBlockBreakData().isBreakingBlock()
+                            && differentItemTypes;
+
                     this.player.getInventory().setSelectedSlot(packet.getSlot(), true);
+
+                    if (needToRecalculateBlockBreakTime) {
+                        this.player.getBlockBreakData().onChangedHeldItemWhileBreaking();
+                    }
                 } else {
                     // Reset their selected slot back to the old slot
                     this.player.getInventory().setSelectedSlot(this.player.getInventory().getSelectedSlot());
@@ -177,7 +187,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
                 double distanceToBlock = this.player.getLocation().distanceBetween(useItemData.getBlockCoordinates().toVector3());
                 if (distanceToBlock > this.player.getChunkRadius() * 16) {
-                    // Prevent malicious clients from causing a OutOfMemory error by sending a transaction
+                    // Prevent malicious clients from causing an OutOfMemory error by sending a transaction
                     // to every single chunk regardless of the distance which would load chunks unnecessarily
                     return;
                 }
@@ -206,10 +216,6 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                                         return; // block cancelled the item interaction. Returning ensures the interaction does not get reset
                                     }
                                     break;
-                                case BREAK_BLOCK:
-                                    if (this.player.getBlockBreaking().isPresent()) {
-                                        this.player.getServer().getLogger().debug(String.format("%s tried to break a block too early.", this.player.getUsername()));
-                                    }
                             }
                         }
                     } else {

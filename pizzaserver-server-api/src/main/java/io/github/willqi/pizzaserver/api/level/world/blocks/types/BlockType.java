@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
-import io.github.willqi.pizzaserver.api.item.data.ItemToolType;
+import io.github.willqi.pizzaserver.api.item.data.ToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
@@ -175,7 +175,7 @@ public interface BlockType {
      * in order for the item drops to spawn when the block is broken
      * @return tools that will result in a block drop
      */
-    Set<ItemToolType> getCorrectTools();
+    Set<ToolType> getCorrectTools();
 
     /**
      * Retrieve the loot that should be dropped when this block is broken.

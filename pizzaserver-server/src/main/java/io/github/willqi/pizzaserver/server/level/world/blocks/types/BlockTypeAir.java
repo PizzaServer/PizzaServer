@@ -19,4 +19,10 @@ public class BlockTypeAir extends BaseBlockType {
     public boolean isSolid() {
         return false;
     }
+
+    @Override
+    public float getToughness() {
+        return 0;
+    }
+
 }

@@ -2,12 +2,9 @@ package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.api.event.type.block.BlockBreakEvent;
-import io.github.willqi.pizzaserver.api.event.type.block.BlockStartBreakEvent;
-import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
-import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -26,7 +23,6 @@ import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
-import io.github.willqi.pizzaserver.server.network.protocol.data.WorldEventType;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
@@ -61,8 +57,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private Inventory openInventory = null;
 
-    private Vector3i blockBreakingCoordinates;
-    private int blockBreakingTicksLeft;
+    private final BreakingData breakingData = new BreakingData(this);
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -155,54 +150,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         }
     }
 
-    public void setBlockBreaking(Vector3i blockCoordinates) {
-        if (this.blockBreakingCoordinates != null && !this.blockBreakingCoordinates.equals(blockCoordinates)) {
-            // Send packet to stop breaking the previous block
-            Block previouslyMiningBlock = this.getWorld().getBlock(this.blockBreakingCoordinates);
-
-            BlockStopBreakEvent stopBreakEvent = new BlockStopBreakEvent(this, previouslyMiningBlock);
-            this.getServer().getEventManager().call(stopBreakEvent);
-
-            WorldEventPacket breakStopPacket = new WorldEventPacket();
-            breakStopPacket.setType(WorldEventType.EVENT_BLOCK_STOP_BREAK);
-            breakStopPacket.setPosition(this.blockBreakingCoordinates.toVector3());
-            for (Player player : this.getChunk().getViewers()) {
-                player.sendPacket(breakStopPacket);
-            }
-        }
-
-        if (blockCoordinates == null) {
-            // Stopped breaking a block
-            this.blockBreakingCoordinates = null;
-            this.blockBreakingTicksLeft = 0;
-        } else {
-            // Started breaking a block
-            BlockStartBreakEvent startBreakEvent = new BlockStartBreakEvent(this, this.getWorld().getBlock(blockCoordinates));
-            this.getServer().getEventManager().call(startBreakEvent);
-
-            if (!startBreakEvent.isCancelled()) {
-                // TODO: calculate amount of ticks it takes to break this block
-                this.blockBreakingCoordinates = blockCoordinates;
-                this.blockBreakingTicksLeft = 10;
-
-                WorldEventPacket breakStartPacket = new WorldEventPacket();
-                breakStartPacket.setType(WorldEventType.EVENT_BLOCK_START_BREAK);
-                breakStartPacket.setPosition(this.blockBreakingCoordinates.toVector3());
-                breakStartPacket.setData(65535 / this.blockBreakingTicksLeft);
-                for (Player player : this.getChunk().getViewers()) {
-                    player.sendPacket(breakStartPacket);
-                }
-            }
-        }
-    }
-
-    @Override
-    public Optional<Block> getBlockBreaking() {
-        if (this.blockBreakingCoordinates != null) {
-            return Optional.of(this.world.getBlock(this.blockBreakingCoordinates));
-        } else {
-            return Optional.empty();
-        }
+    public BreakingData getBlockBreakData() {
+        return this.breakingData;
     }
 
     @Override
@@ -525,6 +474,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         textPacket.setMessage(message);
         textPacket.setXuid(sender.getXUID());
         this.sendPacket(textPacket);
+        this.getInventory().addItem(ItemRegistry.getItem("minecraft:wooden_pickaxe"));
     }
 
     @Override
@@ -662,24 +612,10 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             for (Player player : this.getViewers()) {
                 player.sendPacket(movePlayerPacket);
             }
-        }
 
-        Optional<Block> miningBlock = this.getBlockBreaking();
-        if (miningBlock.isPresent()) {
-            if (this.canReach(miningBlock.get().getLocation())) {
-                if (--this.blockBreakingTicksLeft <= 0) {
-                    // The block should be broken
-                    BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this, miningBlock.get());
-                    this.getServer().getEventManager().call(blockBreakEvent);
-                    if (!blockBreakEvent.isCancelled()) {
-                        // Block is to be broken
-                        this.getWorld().setBlock(miningBlock.get().getBlockType().getResultBlock(), this.blockBreakingCoordinates);
-                    }
-                    this.setBlockBreaking(null);
-                }
-            } else {
-                // The block we're trying to mine is too far from us.
-                this.setBlockBreaking(null);
+            // Make sure that the block we're breaking is within reach too!
+            if (this.getBlockBreakData().getBlock().isPresent() && !this.canReach(this.getBlockBreakData().getBlock().get().getLocation())) {
+                this.getBlockBreakData().stopBreaking();
             }
         }
 

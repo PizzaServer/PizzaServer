@@ -8,7 +8,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.api.item.data.ItemToolType;
+import io.github.willqi.pizzaserver.api.item.data.ToolType;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,11 +72,6 @@ public abstract class BaseBlockType implements BlockType {
     @Override
     public boolean isSolid() {
         return true;
-    }
-
-    @Override
-    public float getToughness() {
-        return 0;
     }
 
     @Override
@@ -145,8 +140,8 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public Set<ItemToolType> getCorrectTools() {
-        return Collections.singleton(ItemToolType.ANY);
+    public Set<ToolType> getCorrectTools() {
+        return Collections.singleton(ToolType.NONE);
     }
 
     @Override
