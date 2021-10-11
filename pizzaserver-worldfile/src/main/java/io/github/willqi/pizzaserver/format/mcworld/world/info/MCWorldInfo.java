@@ -1,14 +1,8 @@
 package io.github.willqi.pizzaserver.format.mcworld.world.info;
 
-import io.github.willqi.pizzaserver.commons.server.Difficulty;
-import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
-import io.github.willqi.pizzaserver.commons.world.WorldType;
-import io.github.willqi.pizzaserver.commons.world.gamerules.BooleanGameRule;
-import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
-import io.github.willqi.pizzaserver.commons.world.gamerules.GameRuleID;
-import io.github.willqi.pizzaserver.commons.world.gamerules.IntegerGameRule;
 import io.github.willqi.pizzaserver.format.api.LevelData;
+import io.github.willqi.pizzaserver.format.api.LevelGameRules;
 import io.github.willqi.pizzaserver.nbt.streams.le.LittleEndianDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
@@ -17,8 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Representative of the information in the level.dat file
@@ -64,10 +56,10 @@ public class MCWorldInfo implements LevelData, Cloneable {
     private boolean bonusChestEnabled;
     private boolean bonusChestSpawned;
     private boolean centerMapsToOrigin;
-    private Gamemode defaultGamemode;
-    private Difficulty difficulty;
+    private int defaultGamemode;
+    private int difficulty;
     private String flatWorldLayers;
-    private Map<GameRuleID, GameRule<?>> gameRules = new HashMap<>();
+    private LevelGameRules gameRules;
     private float lightningLevel;
     private int lightningTime;
     private Vector3i limitedWorldCoordinates;
@@ -79,7 +71,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
     private Vector3i spawnCoordinates;
     private boolean startWithMapEnabled;
     private long time;
-    private WorldType worldType;
+    private int worldType;
 
     // metrics
     private String baseGameVersion;
@@ -137,8 +129,8 @@ public class MCWorldInfo implements LevelData, Cloneable {
             this.setBonusChestEnabled(compound.getBoolean("bonusChestEnabled"));
             this.setBonusChestSpawned(compound.getBoolean("bonusChestSpawned"));
             this.setCenterMapsToOrigin(compound.getBoolean("CenterMapsToOrigin"));
-            this.setDefaultGamemode(Gamemode.values()[compound.getInteger("GameType")]);
-            this.setDifficulty(Difficulty.values()[compound.getInteger("Difficulty")]);
+            this.setDefaultGamemode(compound.getInteger("GameType"));
+            this.setDifficulty(compound.getInteger("Difficulty"));
             this.setFlatWorldLayers(compound.getString("FlatWorldLayers"));
             this.setLightningLevel(compound.getFloat("lightningLevel"));
             this.setLightningTime(compound.getInteger("lightningTime"));
@@ -158,7 +150,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
             ));
             this.setStartWithMapEnabled(compound.getBoolean("startWithMapEnabled"));
             this.setTime(compound.getLong("Time"));
-            this.setWorldType(WorldType.values()[compound.getInteger("Generator")]);
+            this.setWorldType(compound.getInteger("Generator"));
             this.setBaseGameVersion(compound.getString("baseGameVersion"));
             this.setInventoryVersion(compound.getString("InventoryVersion"));
             this.setLastPlayed(compound.getLong("LastPlayed"));
@@ -198,36 +190,34 @@ public class MCWorldInfo implements LevelData, Cloneable {
                             .setWalkSpeed(abilities.getFloat("walkSpeed"))
             );
 
-            this.setGameRules(new HashMap<GameRuleID, GameRule<?>>() {
-                {
-                    put(GameRuleID.COMMAND_BLOCK_OUTPUT, new BooleanGameRule(GameRuleID.COMMAND_BLOCK_OUTPUT, compound.getBoolean("commandblockoutput")));
-                    put(GameRuleID.COMMAND_BLOCKS_ENABLED, new BooleanGameRule(GameRuleID.COMMAND_BLOCKS_ENABLED, compound.getBoolean("commandblocksenabled")));
-                    put(GameRuleID.DO_DAYLIGHT_CYCLE, new BooleanGameRule(GameRuleID.DO_DAYLIGHT_CYCLE, compound.getBoolean("dodaylightcycle")));
-                    put(GameRuleID.DO_ENTITY_DROPS, new BooleanGameRule(GameRuleID.DO_ENTITY_DROPS, compound.getBoolean("doentitydrops")));
-                    put(GameRuleID.DO_FIRE_TICK, new BooleanGameRule(GameRuleID.DO_FIRE_TICK, compound.getBoolean("dofiretick")));
-                    put(GameRuleID.DO_IMMEDIATE_RESPAWN, new BooleanGameRule(GameRuleID.DO_IMMEDIATE_RESPAWN, compound.getBoolean("doimmediaterespawn")));
-                    put(GameRuleID.DO_INSOMNIA, new BooleanGameRule(GameRuleID.DO_INSOMNIA, compound.getBoolean("doinsomnia")));
-                    put(GameRuleID.DO_MOB_LOOT, new BooleanGameRule(GameRuleID.DO_MOB_LOOT, compound.getBoolean("domobloot")));
-                    put(GameRuleID.DO_MOB_SPAWNING, new BooleanGameRule(GameRuleID.DO_MOB_SPAWNING, compound.getBoolean("domobspawning")));
-                    put(GameRuleID.DO_TILE_DROPS, new BooleanGameRule(GameRuleID.DO_TILE_DROPS, compound.getBoolean("dotiledrops")));
-                    put(GameRuleID.DO_WEATHER_CYCLE, new BooleanGameRule(GameRuleID.DO_WEATHER_CYCLE, compound.getBoolean("doweathercycle")));
-                    put(GameRuleID.DROWNING_DAMAGE, new BooleanGameRule(GameRuleID.DROWNING_DAMAGE, compound.getBoolean("drowningdamage")));
-                    put(GameRuleID.FALL_DAMAGE, new BooleanGameRule(GameRuleID.FALL_DAMAGE, compound.getBoolean("falldamage")));
-                    put(GameRuleID.FIRE_DAMAGE, new BooleanGameRule(GameRuleID.FIRE_DAMAGE, compound.getBoolean("firedamage")));
-                    put(GameRuleID.KEEP_INVENTORY, new BooleanGameRule(GameRuleID.KEEP_INVENTORY, compound.getBoolean("keepinventory")));
-                    put(GameRuleID.MAX_COMMAND_CHAIN_LENGTH, new IntegerGameRule(GameRuleID.MAX_COMMAND_CHAIN_LENGTH, compound.getInteger("maxcommandchainlength")));
-                    put(GameRuleID.MOB_GRIEFING, new BooleanGameRule(GameRuleID.MOB_GRIEFING, compound.getBoolean("mobgriefing")));
-                    put(GameRuleID.NATURAL_REGENERATION, new BooleanGameRule(GameRuleID.NATURAL_REGENERATION, compound.getBoolean("naturalregeneration")));
-                    put(GameRuleID.PVP, new BooleanGameRule(GameRuleID.PVP, compound.getBoolean("pvp")));
-                    put(GameRuleID.RANDOM_TICK_SPEED, new IntegerGameRule(GameRuleID.RANDOM_TICK_SPEED, compound.getInteger("randomtickspeed")));
-                    put(GameRuleID.SEND_COMMAND_FEEDBACK, new BooleanGameRule(GameRuleID.SEND_COMMAND_FEEDBACK, compound.getBoolean("sendcommandfeedback")));
-                    put(GameRuleID.SHOW_COORDINATES, new BooleanGameRule(GameRuleID.SHOW_COORDINATES, compound.getBoolean("showcoordinates")));
-                    put(GameRuleID.SHOW_DEATH_MESSAGES, new BooleanGameRule(GameRuleID.SHOW_DEATH_MESSAGES, compound.getBoolean("showdeathmessages")));
-                    put(GameRuleID.SHOW_ITEM_TAGS, new BooleanGameRule(GameRuleID.SHOW_ITEM_TAGS, compound.getBoolean("showtags")));
-                    put(GameRuleID.SPAWN_RADIUS, new IntegerGameRule(GameRuleID.SPAWN_RADIUS, compound.getInteger("spawnradius")));
-                    put(GameRuleID.TNT_EXPLODES, new BooleanGameRule(GameRuleID.TNT_EXPLODES, compound.getBoolean("tntexplodes")));
-                }
-            });
+            LevelGameRules gameRules = new LevelGameRules();
+            gameRules.setCommandBlockOutputEnabled(compound.getBoolean("commandblockoutput"));
+            gameRules.setCommandBlocksEnabled(compound.getBoolean("commandblocksenabled"));
+            gameRules.setDaylightCycle(compound.getBoolean("dodaylightcycle"));
+            gameRules.setEntityDropsEnabled(compound.getBoolean("doentitydrops"));
+            gameRules.setFireTickEnabled(compound.getBoolean("dofiretick"));
+            gameRules.setImmediateRespawnEnabled(compound.getBoolean("doimmediaterespawn"));
+            gameRules.setInsomniaEnabled(compound.getBoolean("doinsomnia"));
+            gameRules.setMobLootEnabled(compound.getBoolean("domobloot"));
+            gameRules.setMobSpawningEnabled(compound.getBoolean("domobspawning"));
+            gameRules.setTileDropsEnabled(compound.getBoolean("dotiledrops"));
+            gameRules.setWeatherCycleEnabled(compound.getBoolean("doweathercycle"));
+            gameRules.setDrowningDamageEnabled(compound.getBoolean("drowningdamage"));
+            gameRules.setFallDamageEnabled(compound.getBoolean("falldamage"));
+            gameRules.setFireDamageEnabled(compound.getBoolean("firedamage"));
+            gameRules.setKeepInventoryEnabled(compound.getBoolean("keepinventory"));
+            gameRules.setMaxCommandChainLength(compound.getInteger("maxcommandchainlength"));
+            gameRules.setMobGriefingEnabled(compound.getBoolean("mobgriefing"));
+            gameRules.setNaturalRegenerationEnabled(compound.getBoolean("naturalregeneration"));
+            gameRules.setPVPEnabled(compound.getBoolean("pvp"));
+            gameRules.setRandomTickSpeed(compound.getInteger("randomtickspeed"));
+            gameRules.setSendCommandFeedbackEnabled(compound.getBoolean("sendcommandfeedback"));
+            gameRules.setShowCoordinatesEnabled(compound.getBoolean("showcoordinates"));
+            gameRules.setShowDeathMessagesEnabled(compound.getBoolean("showdeathmessages"));
+            gameRules.setShowItemTagsEnabled(compound.getBoolean("showtags"));
+            gameRules.setSpawnRadius(compound.getInteger("spawnradius"));
+            gameRules.setTNTExplodesEnabled(compound.getBoolean("tntexplodes"));
+            this.setGameRules(gameRules);
         }
     }
 
@@ -516,22 +506,22 @@ public class MCWorldInfo implements LevelData, Cloneable {
     }
 
     @Override
-    public Gamemode getDefaultGamemode() {
+    public int getDefaultGamemode() {
         return this.defaultGamemode;
     }
 
     @Override
-    public void setDefaultGamemode(Gamemode defaultGamemode) {
+    public void setDefaultGamemode(int defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
     }
 
     @Override
-    public Difficulty getDifficulty() {
+    public int getDifficulty() {
         return this.difficulty;
     }
 
     @Override
-    public void setDifficulty(Difficulty difficulty) {
+    public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
     }
 
@@ -544,12 +534,12 @@ public class MCWorldInfo implements LevelData, Cloneable {
     }
 
     @Override
-    public Map<GameRuleID, GameRule<?>> getGameRules() {
+    public LevelGameRules getGameRules() {
         return this.gameRules;
     }
 
     @Override
-    public void setGameRules(Map<GameRuleID, GameRule<?>> gameRules) {
+    public void setGameRules(LevelGameRules gameRules) {
         this.gameRules = gameRules;
     }
 
@@ -653,11 +643,11 @@ public class MCWorldInfo implements LevelData, Cloneable {
         this.time = time;
     }
 
-    public WorldType getWorldType() {
+    public int getWorldType() {
         return this.worldType;
     }
 
-    public void setWorldType(WorldType worldType) {
+    public void setWorldType(int worldType) {
         this.worldType = worldType;
     }
 

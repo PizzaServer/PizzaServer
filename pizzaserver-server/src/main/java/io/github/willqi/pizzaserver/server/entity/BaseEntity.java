@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -153,6 +154,24 @@ public abstract class BaseEntity implements Entity {
         this.spawned = false;
     }
 
+    public boolean withinEntityRenderDistanceTo(Player player) {
+        int chunkDistanceToViewer = (int) Math.round(Math.sqrt(Math.pow(player.getChunk().getX() - this.getChunk().getX(), 2) + Math.pow(player.getChunk().getZ() - this.getChunk().getZ(), 2)));
+        return chunkDistanceToViewer < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance();
+    }
+
+    public boolean canBeSpawnedTo(Player player) {
+        return !this.equals(player)
+                && !this.hasSpawnedTo(player)
+                && (!(this instanceof LivingEntity) || !((LivingEntity) this).isHiddenFrom(player))
+                && this.withinEntityRenderDistanceTo(player)
+                && this.getChunk().canBeVisibleTo(player);
+    }
+
+    public boolean shouldBeDespawnedFrom(Player player) {
+        return (this.getChunk() == null || !this.getChunk().canBeVisibleTo(player) || !this.withinEntityRenderDistanceTo(player))
+                && this.hasSpawnedTo(player);
+    }
+
     @Override
     public boolean hasSpawned() {
         return this.spawned;
@@ -164,16 +183,23 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
-    public void spawnTo(Player player) {
-        this.spawnedTo.add(player);
+    public boolean spawnTo(Player player) {
+        if (!this.withinEntityRenderDistanceTo(player)) {
+            return false;
+        }
+
+        return this.spawnedTo.add(player);
     }
 
     @Override
-    public void despawnFrom(Player player) {
+    public boolean despawnFrom(Player player) {
         if (this.spawnedTo.remove(player)) {
             RemoveEntityPacket entityPacket = new RemoveEntityPacket();
             entityPacket.setUniqueEntityId(this.getId());
             player.sendPacket(entityPacket);
+            return true;
+        } else {
+            return false;
         }
     }
 

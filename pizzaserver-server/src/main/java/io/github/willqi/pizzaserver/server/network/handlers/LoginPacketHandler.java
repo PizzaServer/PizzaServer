@@ -11,9 +11,9 @@ import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.commons.world.Dimension;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.commons.server.Difficulty;
+import io.github.willqi.pizzaserver.api.level.data.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
@@ -26,10 +26,10 @@ import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementT
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
-import io.github.willqi.pizzaserver.commons.server.Gamemode;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
-import io.github.willqi.pizzaserver.commons.world.WorldType;
+import io.github.willqi.pizzaserver.api.level.world.data.WorldType;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.IOException;

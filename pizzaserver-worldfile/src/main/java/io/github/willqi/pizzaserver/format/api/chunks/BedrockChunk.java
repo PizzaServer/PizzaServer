@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.format.api.chunks;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
-import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public interface BedrockChunk extends BedrockNetworkDiskSerializable {
 
     int getZ();
 
-    Dimension getDimension();
+    int getDimension();
 
     /**
      * A height map is a array of 256 (16 * 16) integers that stores the highest blocks in a chunk.
@@ -89,6 +88,10 @@ public interface BedrockChunk extends BedrockNetworkDiskSerializable {
      */
     void setBiomeAt(int x, int z, byte biome);
 
+    /**
+     * Return (the index of the first nonempty subchunk from the top) + 1.
+     * @return (index of the first nonempty subchunk from the top) + 1
+     */
     int getSubChunkCount();
 
     /**

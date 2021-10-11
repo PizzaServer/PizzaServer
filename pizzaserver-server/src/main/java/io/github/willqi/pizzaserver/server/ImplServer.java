@@ -39,8 +39,8 @@ public class ImplServer implements Server {
 
     private final PluginManager pluginManager = new ImplPluginManager(this);
     private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
-    private final ImplLevelManager levelManager = new ImplLevelManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
+    private final ImplLevelManager levelManager;
 
     private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final Scheduler scheduler = new Scheduler(this, 1);
@@ -70,8 +70,16 @@ public class ImplServer implements Server {
 
         this.logger = new ImplLogger("Server");
 
-        Runtime.getRuntime().addShutdownHook(new ServerExitListener());
+        this.ip = this.config.getIp();
+        this.port = this.config.getPort();
 
+        this.setMotd(this.config.getMotd());
+        this.setMaximumPlayerCount(this.config.getMaximumPlayers());
+
+        this.levelManager = new ImplLevelManager(this);
+        this.dataPackManager.setPacksRequired(this.config.arePacksForced());
+
+        Runtime.getRuntime().addShutdownHook(new ServerExitListener());
         // TODO: load plugins
     }
 
@@ -373,13 +381,6 @@ public class ImplServer implements Server {
         }
 
         this.config = new ServerConfig(config);
-
-        this.ip = this.config.getIp();
-        this.port = this.config.getPort();
-
-        this.setMotd(this.config.getMotd());
-        this.setMaximumPlayerCount(this.config.getMaximumPlayers());
-        this.dataPackManager.setPacksRequired(this.config.arePacksForced());
     }
 
 

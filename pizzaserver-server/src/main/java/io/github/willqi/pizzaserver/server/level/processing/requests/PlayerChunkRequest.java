@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.level.world.chunks.processing.requests;
+package io.github.willqi.pizzaserver.server.level.processing.requests;
 
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
@@ -8,7 +8,7 @@ public class PlayerChunkRequest extends ChunkRequest {
 
 
     public PlayerChunkRequest(ImplPlayer player, int x, int z) {
-        super(x, z);
+        super(player.getWorld(), x, z);
         this.player = player;
     }
 

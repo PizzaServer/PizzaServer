@@ -25,25 +25,46 @@ public class MCWorldBlockPalette implements BlockPalette {
     private int paletteEntries = 0;
 
 
+    public MCWorldBlockPalette() {}
+
+    /**
+     * Create a palette based on palette data serialized for disk.
+     * @param buffer disk buffer
+     * @throws IOException if it failed to read the disk serialized block palette
+     */
+    public MCWorldBlockPalette(ByteBuf buffer) throws IOException {
+        int paletteLength = buffer.readIntLE();
+        NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
+        try {
+            for (int i = 0; i < paletteLength; i++) {
+                NBTCompound compound = inputStream.readCompound();
+                this.add(new MCWorldBlockPaletteEntry(compound));
+            }
+        } catch (IOException exception) {
+            throw new ChunkParseException("Failed to parse chunk palette.", exception);
+        }
+    }
+
+
     @Override
     public Entry create(String name, NBTCompound states, int version) {
         return new MCWorldBlockPaletteEntry(name, states, version);
     }
 
     @Override
-    public void add(Entry entry) {
+    public synchronized void add(Entry entry) {
         if (!this.entries.inverse().containsKey(entry)) {
             this.entries.put(this.paletteEntries++, entry);
         }
     }
 
     @Override
-    public int getPaletteSize() {
+    public int size() {
         return this.entries.size();
     }
 
     @Override
-    public Set<Entry> getAllEntries() {
+    public synchronized Set<Entry> getEntries() {
         return Collections.unmodifiableSet(this.entries.values());
     }
 
@@ -52,14 +73,18 @@ public class MCWorldBlockPalette implements BlockPalette {
         this.removeEntry(entry, true);
     }
 
-    public void removeEntry(Entry entry, boolean resize) {
+    public synchronized void removeEntry(Entry entry, boolean resize) {
         this.entries.inverse().remove(entry);
         if (resize) {
             this.resize();
         }
     }
 
-    public void resize() {
+    /**
+     * Resize modifies the block palette indexes in order to take as less space as possible.
+     * Unused palette entries are shifted.
+     */
+    public synchronized void resize() {
         int resizeStartingIndex = -1;   // The first entry index that we need to relocate
         for (int index = 0; index < this.paletteEntries; index++) {
             if (!this.entries.containsKey(index)) {
@@ -85,21 +110,22 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
     @Override
-    public Entry getEntry(int index) {
+    public synchronized Entry getEntry(int index) {
         return this.entries.get(index);
     }
 
     @Override
-    public int getPaletteIndex(Entry entry) {
+    public synchronized int getPaletteIndex(Entry entry) {
         return this.entries.inverse().get(entry);
     }
 
     @Override
     public byte[] serializeForDisk() throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        buffer.writeIntLE(this.getPaletteSize());
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        Set<BlockPalette.Entry> entries = this.getEntries();
+        buffer.writeIntLE(entries.size());
         NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
-        for (BlockPalette.Entry data : this.getAllEntries()) {
+        for (BlockPalette.Entry data : entries) {
             NBTCompound compound = new NBTCompound();
             compound.putString("name", data.getId())
                     .putInteger("version", data.getVersion())
@@ -117,8 +143,9 @@ public class MCWorldBlockPalette implements BlockPalette {
     @Override
     public byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        VarInts.writeInt(buffer, this.getAllEntries().size());
-        for (BlockPalette.Entry data : this.getAllEntries()) {
+        Set<BlockPalette.Entry> entries = this.getEntries();
+        VarInts.writeInt(buffer, entries.size());
+        for (BlockPalette.Entry data : entries) {
             int id = runtimeMapper.getBlockRuntimeId(data.getId(), data.getState());
             VarInts.writeInt(buffer, id);
         }
@@ -127,24 +154,6 @@ public class MCWorldBlockPalette implements BlockPalette {
         buffer.release();
 
         return serialized;
-    }
-
-    /**
-     * Retrieve a block palette from chunk data at the correct index.
-     * @param buffer buffer to read
-     * @throws IOException if it failed to read the buffer
-     */
-    public void parse(ByteBuf buffer) throws IOException {
-        int paletteLength = buffer.readIntLE();
-        NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
-        try {
-            for (int i = 0; i < paletteLength; i++) {
-                NBTCompound compound = inputStream.readCompound();
-                this.add(new MCWorldBlockPaletteEntry(compound));
-            }
-        } catch (IOException exception) {
-            throw new ChunkParseException("Failed to parse chunk palette.", exception);
-        }
     }
 
 
@@ -182,19 +191,6 @@ public class MCWorldBlockPalette implements BlockPalette {
             return this.state;
         }
 
-        @Override
-        public int hashCode() {
-            return (53 * this.name.hashCode()) + (53 * this.state.hashCode());
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof MCWorldBlockPaletteEntry) {
-                MCWorldBlockPaletteEntry otherEntry = (MCWorldBlockPaletteEntry) obj;
-                return otherEntry.getId().equals(this.getId()) && otherEntry.getState().equals(this.getState());
-            }
-            return false;
-        }
     }
 
 }

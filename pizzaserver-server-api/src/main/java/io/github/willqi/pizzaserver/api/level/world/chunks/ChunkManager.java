@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.level.world.chunks;
 
+import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.level.world.World;
 
 import java.io.Closeable;
 
@@ -22,26 +22,10 @@ public interface ChunkManager extends Closeable {
      * If it is not cached, it may load from the provider
      * @param x chunk x
      * @param z chunk z
-     * @param loadFromProvider whether or not to load from world provider
+     * @param loadFromProvider should it load from the world provider if not cached
      * @return {@link Chunk}
      */
     Chunk getChunk(int x, int z, boolean loadFromProvider);
-
-    /**
-     * Try to unload a {@link Chunk} and save it to disk immediately.
-     * @param x x chunk coordinate
-     * @param z z chunk coordinate
-     */
-    void unloadChunk(int x, int z);
-
-    /**
-     * Try to unload a {@link Chunk} and save it to disk.
-     * @param x x chunk coordinate
-     * @param z z chunk coordinate
-     * @param async if this should be done on a separate thread
-     * @param force Forcefully unload a chunk regardless of whether or not it can be closed
-     */
-    void unloadChunk(int x, int z, boolean async, boolean force);
 
     /**
      * Send a {@link Chunk} to a {@link Player} immediately.
@@ -61,6 +45,18 @@ public interface ChunkManager extends Closeable {
      */
     void sendPlayerChunk(Player player, int x, int z, boolean async);
 
-    World getWorld();
+    /**
+     * Add a {@link ChunkLoader} that keeps chunks loaded and ticking.
+     * @param chunkLoader chunk loader
+     * @return if the chunk loader was added
+     */
+    boolean addChunkLoader(ChunkLoader chunkLoader);
+
+    /**
+     * Remove a {@link ChunkLoader} that keeps chunks loaded and ticking.
+     * @param chunkLoader chunk loader
+     * @return if the chunk loader was removed
+     */
+    boolean removeChunkLoader(ChunkLoader chunkLoader);
 
 }

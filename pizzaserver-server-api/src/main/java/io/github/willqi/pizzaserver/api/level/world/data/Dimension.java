@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.commons.world;
+package io.github.willqi.pizzaserver.api.level.world.data;
 
 public enum Dimension {
 

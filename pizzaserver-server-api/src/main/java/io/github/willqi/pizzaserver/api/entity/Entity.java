@@ -84,9 +84,19 @@ public interface Entity extends Watchable {
 
     boolean hasSpawnedTo(Player player);
 
-    void spawnTo(Player player);
+    /**
+     * Spawns an entity to a player.
+     * @param player the player the entity is being spawned to
+     * @return if the entity was spawned
+     */
+    boolean spawnTo(Player player);
 
-    void despawnFrom(Player player);
+    /**
+     * Despawns an entity from a player.
+     * @param player the player the entity is being despawned from
+     * @return if the entity was despawned
+     */
+    boolean despawnFrom(Player player);
 
     void despawn();
 

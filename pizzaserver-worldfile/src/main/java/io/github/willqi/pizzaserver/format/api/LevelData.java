@@ -1,12 +1,6 @@
 package io.github.willqi.pizzaserver.format.api;
 
-import io.github.willqi.pizzaserver.commons.server.Difficulty;
-import io.github.willqi.pizzaserver.commons.server.Gamemode;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
-import io.github.willqi.pizzaserver.commons.world.gamerules.GameRule;
-import io.github.willqi.pizzaserver.commons.world.gamerules.GameRuleID;
-
-import java.util.Map;
 
 public interface LevelData {
 
@@ -14,17 +8,17 @@ public interface LevelData {
 
     void setName(String name);
 
-    Gamemode getDefaultGamemode();
+    int getDefaultGamemode();
 
-    void setDefaultGamemode(Gamemode gamemode);
+    void setDefaultGamemode(int gamemode);
 
-    Difficulty getDifficulty();
+    int getDifficulty();
 
-    void setDifficulty(Difficulty difficulty);
+    void setDifficulty(int difficulty);
 
-    Map<GameRuleID, GameRule<?>> getGameRules();
+    LevelGameRules getGameRules();
 
-    void setGameRules(Map<GameRuleID, GameRule<?>> gameRules);
+    void setGameRules(LevelGameRules rules);
 
     Vector3i getWorldSpawn();
 

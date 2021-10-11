@@ -31,13 +31,13 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
      * Retrieve the total palette size.
      * @return length of the palette
      */
-    int getPaletteSize();
+    int size();
 
     /**
      * Retrieve all of the current palette {@link BlockPalette.Entry}s.
      * @return set of all block palette entries in this palette
      */
-    Set<Entry> getAllEntries();
+    Set<Entry> getEntries();
 
     /**
      * Remove a {@link BlockPalette.Entry} from the palette.
@@ -97,6 +97,7 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
             }
             return false;
         }
+
     }
 
     /**
@@ -104,9 +105,11 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
      */
     class EmptyEntry extends Entry {
 
+        public static final String ID = "minecraft:air";
+
         @Override
         public String getId() {
-            return "minecraft:air";
+            return ID;
         }
 
         @Override

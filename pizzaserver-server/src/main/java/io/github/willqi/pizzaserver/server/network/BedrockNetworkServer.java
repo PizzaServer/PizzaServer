@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.event.type.server.ServerPongUpdateEvent;
 import io.github.willqi.pizzaserver.api.network.BedrockPong;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.commons.server.Gamemode;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 

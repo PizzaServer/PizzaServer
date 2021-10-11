@@ -31,25 +31,33 @@ public class ServerConfig {
         return this.config.getBoolean("server.force-packs");
     }
 
+    public int getMaxChunkThreads() {
+        return this.config.getInteger("world.chunk.threads");
+    }
+
     public int getChunkRadius() {
         return this.config.getInteger("world.chunk.radius");
     }
 
-    /**
-     * Max chunks that be requested per player each tick to be sent to itself.
-     * Additionally, this makes up the max chunks that be offloaded per tick
-     * @return max chunks that be requested per player each tick to be sent to itself
-     */
-    public int getChunkRequestsPerTick() {
-        return this.config.getInteger("world.chunk.requests-per-tick");
+    public int getEntityChunkRenderDistance() {
+        return this.config.getInteger("world.chunk.entity-render-radius");
     }
 
     /**
-     * Max chunks that be queued to the ChunkProcessingThread for each player/for unloading.
-     * @return max chunk queue count
+     * Max amount of chunk requests a level chunk processing thread can handle per tick.
+     * @return max chunk request processing count per tick
      */
-    public int getChunkProcessingCap() {
-        return this.config.getInteger("world.chunk.processing-queue-cap");
+    public int getMaxChunkProcessingCountPerTick() {
+        return this.config.getInteger("world.chunk.thread-processing-cap");
+    }
+
+    /**
+     * Returns the amount of seconds it takes for a chunk with no chunk loaders
+     * (caused by plugins fetching a block in an unloaded chunk) to be automatically unloaded.
+     * @return amount of seconds
+     */
+    public int getChunkExpiryTime() {
+        return this.config.getInteger("world.chunk.expiry-time");
     }
 
     public String getDefaultWorldName() {

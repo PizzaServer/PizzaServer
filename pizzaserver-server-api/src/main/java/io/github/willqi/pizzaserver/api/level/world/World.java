@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.chunks.ChunkManager;
@@ -12,13 +12,12 @@ import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
-import io.github.willqi.pizzaserver.commons.world.Dimension;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public interface World {
+public interface World extends ChunkManager {
 
     Server getServer();
 
@@ -28,13 +27,9 @@ public interface World {
 
     Set<Player> getPlayers();
 
-    ChunkManager getChunkManager();
-
     Vector3i getSpawnCoordinates();
 
     void setSpawnCoordinates(Vector3i coordinates);
-
-    Chunk getChunk(int x, int z);
 
     /**
      * Get the highest block y coordinate at a chunk column.
@@ -92,6 +87,8 @@ public interface World {
      * @return the entity if it exists
      */
     Optional<Entity> getEntity(long id);
+
+    void tick();
 
     default void playSound(WorldSound sound, Vector3 vector3) {
         this.playSound(sound, vector3, true);

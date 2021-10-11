@@ -1,32 +1,35 @@
 package io.github.willqi.pizzaserver.server.level.world.chunks;
 
-import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
+import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
+import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.chunks.ChunkManager;
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
+import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
-import io.github.willqi.pizzaserver.server.level.world.chunks.processing.ChunkQueue;
-import io.github.willqi.pizzaserver.server.level.world.chunks.processing.requests.PlayerChunkRequest;
-import io.github.willqi.pizzaserver.server.level.world.chunks.processing.requests.UnloadChunkRequest;
+import io.github.willqi.pizzaserver.server.level.processing.requests.PlayerChunkRequest;
+import io.github.willqi.pizzaserver.server.level.processing.requests.UnloadChunkRequest;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ImplChunkManager implements ChunkManager {
+public class WorldChunkManager implements ChunkManager {
 
     private final ImplWorld world;
     private final Map<Tuple<Integer, Integer>, ImplChunk> chunks = new ConcurrentHashMap<>();
     private final ReadWriteKeyLock<Tuple<Integer, Integer>> lock = new ReadWriteKeyLock<>();
 
-    private final ChunkQueue chunkQueue = new ChunkQueue(this);
+    private final Set<ChunkLoader> chunkLoaders = new HashSet<>();
 
 
-    public ImplChunkManager(ImplWorld world) {
+    public WorldChunkManager(ImplWorld world) {
         this.world = world;
     }
 
@@ -34,7 +37,6 @@ public class ImplChunkManager implements ChunkManager {
      * Tick all chunks and the chunk queue.
      */
     public void tick() {
-        this.chunkQueue.tick();
         for (ImplChunk chunk : this.chunks.values()) {
             chunk.tick();
         }
@@ -70,7 +72,7 @@ public class ImplChunkManager implements ChunkManager {
                 // Load chunk from provider
                 ImplChunk chunk = null;
                 try {
-                    BedrockChunk internalChunk = this.getWorld().getLevel().getProvider().getChunk(x, z, this.getWorld().getDimension());
+                    BedrockChunk internalChunk = this.world.getLevel().getProvider().getChunk(x, z, this.world.getDimension());
 
                     chunk = new ImplChunk.Builder()
                             .setWorld(this.world)
@@ -79,7 +81,7 @@ public class ImplChunkManager implements ChunkManager {
                             .setChunk(internalChunk)
                             .build();
                 } catch (IOException exception) {
-                    this.getWorld().getServer().getLogger().error(String.format("Failed to retrieve chunk (%s, %s) from provider", x, z), exception);
+                    this.world.getServer().getLogger().error(String.format("Failed to retrieve chunk (%s, %s) from provider", x, z), exception);
                 }
                 return chunk;
             });
@@ -90,27 +92,27 @@ public class ImplChunkManager implements ChunkManager {
         }
     }
 
-    @Override
     public void unloadChunk(int x, int z) {
         this.unloadChunk(x, z, false, false);
     }
 
-    @Override
     public void unloadChunk(int x, int z, boolean async, boolean force) {
         if (async) {
-            this.chunkQueue.addRequest(new UnloadChunkRequest(x, z));
+            this.world.getLevel()
+                    .getLevelManager()
+                    .getProcessorManager()
+                    .addRequest(new UnloadChunkRequest(this.world, x, z, force));
         } else {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.writeLock(key);
 
             try {
-                Chunk chunk = this.chunks.getOrDefault(key, null);
+                ImplChunk chunk = this.chunks.getOrDefault(key, null);
                 if (Check.isNull(chunk) || (!chunk.canBeClosed() && !force)) {
                     return;
                 }
 
                 this.chunks.remove(key);
-                chunk.close();
             } finally {
                 this.lock.writeUnlock(key);
             }
@@ -125,7 +127,10 @@ public class ImplChunkManager implements ChunkManager {
     @Override
     public void sendPlayerChunk(Player player, int x, int z, boolean async) {
         if (async) {
-            this.chunkQueue.addRequest(new PlayerChunkRequest((ImplPlayer) player, x, z));
+            this.world.getLevel()
+                    .getLevelManager()
+                    .getProcessorManager()
+                    .addRequest(new PlayerChunkRequest((ImplPlayer) player, x, z));
         } else {
             Tuple<Integer, Integer> key = new Tuple<>(x, z);
             this.lock.readLock(key);
@@ -139,16 +144,37 @@ public class ImplChunkManager implements ChunkManager {
     }
 
     @Override
-    public void close() throws IOException {
-        this.chunkQueue.close();
-        for (Chunk chunk : this.chunks.values()) {
-            this.unloadChunk(chunk.getX(), chunk.getZ(), false, true);
+    public boolean addChunkLoader(ChunkLoader chunkLoader) {
+        if (this.chunkLoaders.add(chunkLoader)) {
+            for (Vector2i coordinate : chunkLoader.getCoordinates()) {
+                this.getChunk(coordinate.getX(), coordinate.getY()).addChunkLoader();
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    public ImplWorld getWorld() {
-        return this.world;
+    public boolean removeChunkLoader(ChunkLoader chunkLoader) {
+        if (this.chunkLoaders.remove(chunkLoader)) {
+            for (Vector2i coordinate : chunkLoader.getCoordinates()) {
+                Chunk chunk = this.getChunk(coordinate.getX(), coordinate.getY(), false);
+                if (chunk != null) {
+                    this.getChunk(coordinate.getX(), coordinate.getY()).removeChunkLoader();
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        for (ImplChunk chunk : this.chunks.values()) {
+            chunk.close(false, true);
+        }
     }
 
 }

@@ -4,7 +4,6 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
@@ -25,6 +24,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -38,9 +38,12 @@ public class ImplChunk implements Chunk {
 
     private final BedrockChunk chunk;
 
-    private final World world;
+    private final ImplWorld world;
     private final int x;
     private final int z;
+
+    private int expiryTimer;
+    private AtomicInteger activeChunkLoaders = new AtomicInteger(0);
 
     // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
@@ -49,7 +52,7 @@ public class ImplChunk implements Chunk {
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
 
 
-    protected ImplChunk(World world, int x, int z, BedrockChunk chunk) {
+    protected ImplChunk(ImplWorld world, int x, int z, BedrockChunk chunk) {
         if (chunk.getSubChunks().size() != 16) {
             throw new IllegalArgumentException("Tried to construct chunk with only " + chunk.getSubChunks().size() + " subchunks instead of 16.");
         }
@@ -58,10 +61,11 @@ public class ImplChunk implements Chunk {
         this.x = x;
         this.z = z;
         this.chunk = chunk;
+        this.resetExpiryTime();
     }
 
     @Override
-    public World getWorld() {
+    public ImplWorld getWorld() {
         return this.world;
     }
 
@@ -90,37 +94,34 @@ public class ImplChunk implements Chunk {
     }
 
     /**
-     * Add this entity to be spawned for viewers of this chunk.
-     * Called when the entity is in this chunk
+     * Add this entity this chunk.
+     * The entity is also spawned to any viewers of this chunk within render distance.
      * @param entity the entity to spawn
      */
     public void addEntity(Entity entity) {
-        this.entities.add(entity);
-        for (Player player : this.getViewers()) {
-            // an entity cannot be spawned to a player if it is the entity,
-            // has already been spawned, or if the entity is hidden from the player.
-            boolean canSpawnToPlayer = !entity.equals(player)
-                    && !entity.hasSpawnedTo(player)
-                    && (!(entity instanceof LivingEntity) || !((LivingEntity) entity).isHiddenFrom(player));
-
-            if (canSpawnToPlayer) {
-                entity.spawnTo(player);
+        if (!this.entities.contains(entity)) {
+            for (Player player : this.getViewers()) {
+                if (((BaseEntity) entity).canBeSpawnedTo(player)) {
+                    entity.spawnTo(player);
+                }
             }
+
+            this.entities.add(entity);
         }
     }
 
     /**
-     * Remove this entity from the set of entities that are spawned to viewers.
-     * Called when the entity is moved to another chunk or is despawned
+     * Remove this entity from this chunk.
+     * The entity is also despawned from any viewers of this chunk who are no longer within render distance.
      * @param entity the entity to spawn
      */
     public void removeEntity(Entity entity) {
         if (this.entities.remove(entity)) {
             for (Player player : this.getViewers()) {
-                // Entities are despawned from a viewer if it no longer has a location or if
-                // it is not visible to the entity in its new location.
-                if ((entity.getChunk() == null || !entity.getChunk().canBeVisibleTo(player)) && entity.hasSpawnedTo(player)) {
-                    entity.despawnFrom(player);
+                if (!player.equals(entity)) {
+                    if (((BaseEntity) entity).shouldBeDespawnedFrom(player)) {
+                        entity.despawnFrom(player);
+                    }
                 }
             }
         }
@@ -336,34 +337,29 @@ public class ImplChunk implements Chunk {
         for (Entity entity : this.getEntities()) {
             entity.tick();
         }
+
+        // Chunk expiry
+        if (this.expiryTimer > 0 && this.canBeClosed()) {
+            this.expiryTimer--;
+
+            if (this.expiryTimer == 0) {
+                this.close(true, false);
+            }
+        }
     }
 
     public void spawnTo(Player player) {
-        this.sendBlocks(player);
-        this.getWorld().getServer().getScheduler().prepareTask(() -> {
-            this.sendEntities(player);
-        }).schedule();
-    }
-
-    /**
-     * Send the chunk blocks to a {@link Player}.
-     * It is recommended that this is done async as it can take a while to serialize.
-     * @param player the {@link Player} to send it to
-     */
-    public void sendBlocks(Player player) {
+        // Send the blocks to the player
         Lock readLock = this.lock.writeLock();
         readLock.lock();
-
         try {
             int subChunkCount = this.chunk.getSubChunkCount();
             byte[] data = this.chunk.serializeForNetwork(player.getVersion());
 
-            this.spawnedTo.add(player);
-
-            // Packets are sent on the main thread
+            // Ran on the main thread in order because player.getLocation() is not thread safe
             final int packetSubChunkCount = subChunkCount;
             this.getWorld().getServer().getScheduler().prepareTask(() -> {
-                if (player.getLocation().getWorld().equals(this.getWorld())) {
+                if (player.isConnected() && player.getLocation().getWorld().equals(this.getWorld())) {
                     // TODO: Supposedly tile entities are also packaged here
                     WorldChunkPacket worldChunkPacket = new WorldChunkPacket();
                     worldChunkPacket.setX(this.getX());
@@ -371,6 +367,16 @@ public class ImplChunk implements Chunk {
                     worldChunkPacket.setSubChunkCount(packetSubChunkCount);
                     worldChunkPacket.setData(data);
                     player.sendPacket(worldChunkPacket);
+
+                    this.spawnedTo.add(player);
+                    this.resetExpiryTime();
+                }
+
+                // Send the entities of this chunk to the player
+                for (Entity entity : this.getEntities()) {
+                    if (((BaseEntity) entity).canBeSpawnedTo(player)) {
+                        entity.spawnTo(player);
+                    }
                 }
             }).schedule();
         } catch (IOException exception) {
@@ -378,22 +384,6 @@ public class ImplChunk implements Chunk {
         } finally {
             readLock.unlock();
         }
-    }
-
-    /**
-     * Send the {@link BaseEntity}s of this chunk to a {@link Player}.
-     * This should only be called on the MAIN thread
-     * @param player the player to send the entities to
-     */
-    public void sendEntities(Player player) {
-        for (Entity entity : this.getEntities()) {
-            if (player.equals(entity) || (entity instanceof LivingEntity && ((LivingEntity) entity).isHiddenFrom(player))) {
-                continue;
-            }
-            entity.spawnTo(player);
-        }
-
-        this.spawnedTo.add(player);
     }
 
     @Override
@@ -404,25 +394,42 @@ public class ImplChunk implements Chunk {
     public void despawnFrom(Player player) {
         if (this.spawnedTo.remove(player)) {
             for (Entity entity : this.getEntities()) {
-                if (!entity.equals(player)) {
+                if (!entity.equals(player) && entity.hasSpawnedTo(player)) {
                     entity.despawnFrom(player);
                 }
-            }
-
-            if (this.canBeClosed()) {
-                // Attempt to unload this chunk
-                this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ(), true, false);
             }
         }
     }
 
-    @Override
-    public boolean canBeClosed() {
-        return this.spawnedTo.size() == 0;
+    public void addChunkLoader() {
+        this.activeChunkLoaders.getAndIncrement();
+        this.resetExpiryTime();
+    }
+
+    public void removeChunkLoader() {
+        this.activeChunkLoaders.getAndDecrement();
+    }
+
+    /**
+     * Resets the expiry time for this chunk to request to be unloaded.
+     */
+    private void resetExpiryTime() {
+        this.expiryTimer = this.world.getServer().getConfig().getChunkExpiryTime() * 20;
     }
 
     @Override
-    public void close() {}
+    public boolean canBeClosed() {
+        return this.spawnedTo.size() == 0 && this.activeChunkLoaders.get() == 0;
+    }
+
+    @Override
+    public void close() {
+        this.close(true, true);
+    }
+
+    public void close(boolean async, boolean force) {
+        ((ImplWorld) this.getWorld()).getChunkManager().unloadChunk(this.getX(), this.getZ(), async, force);
+    }
 
     @Override
     public int hashCode() {

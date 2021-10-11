@@ -2,7 +2,6 @@ package io.github.willqi.pizzaserver.format.mcworld.world.chunks;
 
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
-import io.github.willqi.pizzaserver.commons.world.Dimension;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
@@ -21,7 +20,7 @@ public class MCWorldChunk implements BedrockChunk {
 
     private final int x;
     private final int z;
-    private final Dimension dimension;
+    private final int dimension;
     private final int chunkVersion;
 
     private final int[] heightMap = new int[256];
@@ -34,7 +33,7 @@ public class MCWorldChunk implements BedrockChunk {
     private MCWorldChunk(
             int x,
             int z,
-            Dimension dimension,
+            int dimension,
             int chunkVersion,
             byte[] data2d,
             byte[] blockEntityData,
@@ -59,11 +58,14 @@ public class MCWorldChunk implements BedrockChunk {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(512);
         buffer.writeBytes(data2d);
 
-        for (int i = 0; i < this.heightMap.length; i++) {
-            this.heightMap[i] = buffer.readUnsignedShortLE();
+        // Ensure data is written to main memory
+        synchronized (this.heightMap) {
+            for (int i = 0; i < this.heightMap.length; i++) {
+                this.heightMap[i] = buffer.readUnsignedShortLE();
+            }
+            buffer.readBytes(this.biomeData);
+            buffer.release();
         }
-        buffer.readBytes(this.biomeData);
-        buffer.release();
     }
 
     /**
@@ -89,12 +91,14 @@ public class MCWorldChunk implements BedrockChunk {
         for (int i = 0; i < subChunks.length; i++) {
             byte[] subChunkBytes = subChunks[i];
             ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(subChunkBytes.length);
-            buffer.writeBytes(subChunkBytes);
+            try {
+                buffer.writeBytes(subChunkBytes);
 
-            MCWorldSubChunk subChunk = new MCWorldSubChunk();
-            subChunk.parse(buffer);
-            buffer.release();
-            this.subChunks.add(subChunk);
+                MCWorldSubChunk subChunk = new MCWorldSubChunk(buffer);
+                this.subChunks.add(subChunk);
+            } finally {
+                buffer.release();
+            }
         }
     }
 
@@ -109,7 +113,7 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public Dimension getDimension() {
+    public int getDimension() {
         return this.dimension;
     }
 
@@ -126,7 +130,7 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public int[] getHeightMap() {
+    public synchronized int[] getHeightMap() {
         return this.heightMap;
     }
 
@@ -136,7 +140,7 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public int getHighestBlockAt(int x, int y) {
+    public synchronized int getHighestBlockAt(int x, int y) {
         return this.heightMap[y * 16 + x];
     }
 
@@ -146,12 +150,12 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public void setHighestBlockAt(int x, int z, int newHeight) {
+    public synchronized void setHighestBlockAt(int x, int z, int newHeight) {
         this.heightMap[z * 16 + x] = newHeight;
     }
 
     @Override
-    public byte[] getBiomeData() {
+    public synchronized byte[] getBiomeData() {
         return this.biomeData;
     }
 
@@ -161,7 +165,7 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public byte getBiomeAt(int x, int z) {
+    public synchronized byte getBiomeAt(int x, int z) {
         return this.biomeData[z * 16 + x];
     }
 
@@ -171,7 +175,7 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public void setBiomeAt(int x, int z, byte biome) {
+    public synchronized void setBiomeAt(int x, int z, byte biome) {
         this.biomeData[z * 16 + x] = biome;
     }
 
@@ -193,6 +197,7 @@ public class MCWorldChunk implements BedrockChunk {
         return Collections.unmodifiableList(this.subChunks);
     }
 
+    @Override
     public BedrockSubChunk getSubChunk(int index) {
         if (index < this.subChunks.size()) {
             return this.subChunks.get(index);
@@ -203,7 +208,7 @@ public class MCWorldChunk implements BedrockChunk {
 
     @Override
     public byte[] serializeForDisk() {
-        throw new UnsupportedOperationException("Cannot serialize MCWorldChunk. Serialize subchunks individually instead");
+        throw new UnsupportedOperationException("Cannot serialize MCWorldChunk for disk. Serialize subchunks individually instead");
     }
 
     @Override
@@ -235,7 +240,7 @@ public class MCWorldChunk implements BedrockChunk {
 
         private int x;
         private int z;
-        private Dimension dimension;
+        private int dimension;
 
         private int chunkVersion;
 
@@ -256,7 +261,7 @@ public class MCWorldChunk implements BedrockChunk {
             return this;
         }
 
-        public Builder setDimension(Dimension dimension) {
+        public Builder setDimension(int dimension) {
             this.dimension = dimension;
             return this;
         }
