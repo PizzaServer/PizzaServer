@@ -2,6 +2,8 @@ package io.github.willqi.pizzaserver.server.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;
@@ -46,7 +48,12 @@ public class BlockTypeStone extends BaseBlockType {
 
     @Override
     public Set<ToolType> getCorrectTools() {
-        return Collections.singleton(ToolType.WOOD_PICKAXE);
+        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.WOOD_PICKAXE));
+    }
+
+    @Override
+    public Set<ToolType> getBestTools() {
+        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.WOOD_PICKAXE));
     }
 
 }

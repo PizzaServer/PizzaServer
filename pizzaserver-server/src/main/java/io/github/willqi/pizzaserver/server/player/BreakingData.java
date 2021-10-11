@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.BlockLocation;
@@ -51,10 +52,13 @@ public class BreakingData {
     }
 
     public int getBreakTicks(Block block) {
-        boolean isCorrectTool = block.getBlockType().getCorrectTools().contains(this.player.getInventory().getHeldItem().getItemType().getToolType());
+        ItemStack heldItem = this.player.getInventory().getHeldItem();
+
+        boolean isCorrectTool = heldItem.getItemType().getToolType().isCorrectTool(block);
         float breakTime = block.getBlockType().getToughness() * (isCorrectTool ? 1.5f : 5f);
 
-        if (isCorrectTool) {
+        boolean isBestTool = heldItem.getItemType().getToolType().isBestTool(block);
+        if (isBestTool) {
             breakTime /= this.player.getInventory().getHeldItem().getItemType().getToolStrength(block);
         }
         // TODO: haste/mining fatigue checks

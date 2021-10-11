@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.server.level.world.blocks.types;
 
+import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;
+import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 
@@ -27,7 +29,12 @@ public class BlockTypeGrass extends BaseBlockType {
 
     @Override
     public Set<ToolType> getCorrectTools() {
-        return new HashSet<>(Arrays.asList(ToolType.NONE, ToolType.WOOD_SHOVEL));
+        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
+    }
+
+    @Override
+    public Set<ToolType> getBestTools() {
+        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 
 }

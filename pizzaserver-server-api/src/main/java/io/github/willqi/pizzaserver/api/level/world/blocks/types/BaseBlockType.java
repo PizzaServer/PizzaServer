@@ -2,6 +2,8 @@ package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
@@ -141,7 +143,12 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public Set<ToolType> getCorrectTools() {
-        return Collections.singleton(ToolType.NONE);
+        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
+    }
+
+    @Override
+    public Set<ToolType> getBestTools() {
+        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
     }
 
     @Override

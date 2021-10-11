@@ -4,7 +4,6 @@ import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
-import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -474,7 +473,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         textPacket.setMessage(message);
         textPacket.setXuid(sender.getXUID());
         this.sendPacket(textPacket);
-        this.getInventory().addItem(ItemRegistry.getItem("minecraft:wooden_pickaxe"));
     }
 
     @Override

@@ -171,11 +171,17 @@ public interface BlockType {
     float getFallDamageReduction();
 
     /**
-     * Retrieve the item tool types that should be used against this block.
-     * in order for the item drops to spawn when the block is broken
+     * Retrieve the item tool types that should be used against this block
+     * in order for the item drops to spawn when the block is broken.
      * @return tools that will result in a block drop
      */
     Set<ToolType> getCorrectTools();
+
+    /**
+     * Retrieve the item tool types that are the most effective against this block.
+     * @return tools that are very effective against this block
+     */
+    Set<ToolType> getBestTools();
 
     /**
      * Retrieve the loot that should be dropped when this block is broken.
