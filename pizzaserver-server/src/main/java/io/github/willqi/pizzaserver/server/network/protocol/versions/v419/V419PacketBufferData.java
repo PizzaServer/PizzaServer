@@ -116,10 +116,10 @@ public class V419PacketBufferData extends BasePacketBufferData {
 
 
         // Commented lines represent properties with unknown types
-        this.registerEntityProperty(EntityMetaPropertyName.VARIANT, 2)
-            .registerEntityProperty(EntityMetaPropertyName.HEALTH, 1)
-            .registerEntityProperty(EntityMetaPropertyName.NAMETAG, 4)
+        this.registerEntityProperty(EntityMetaPropertyName.HEALTH, 1)
+            .registerEntityProperty(EntityMetaPropertyName.VARIANT, 2)
             .registerEntityProperty(EntityMetaPropertyName.COLOR, 3)
+            .registerEntityProperty(EntityMetaPropertyName.NAMETAG, 4)
             .registerEntityProperty(EntityMetaPropertyName.OWNER_EID, 5)
             .registerEntityProperty(EntityMetaPropertyName.TARGET_EID, 6)
             .registerEntityProperty(EntityMetaPropertyName.AIR, 7)
@@ -154,8 +154,8 @@ public class V419PacketBufferData extends BasePacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.POTION_AUX_VALUE, 36)
             .registerEntityProperty(EntityMetaPropertyName.LEAD_HOLDER_EID, 37)
             .registerEntityProperty(EntityMetaPropertyName.SCALE, 38)
-            .registerEntityProperty(EntityMetaPropertyName.INTERACTIVE_TAG, 39)
-            .registerEntityProperty(EntityMetaPropertyName.NPC_SKIN_INDEX, 40)
+            .registerEntityProperty(EntityMetaPropertyName.HAS_NPC_COMPONENT, 39)
+            // npc data
             // url tag
             .registerEntityProperty(EntityMetaPropertyName.MAX_AIR_SUPPLY, 42)
             .registerEntityProperty(EntityMetaPropertyName.MARK_VARIANT, 43)
@@ -212,7 +212,7 @@ public class V419PacketBufferData extends BasePacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.AREA_EFFECT_CLOUD_CHANGE_RATE, 96)
             .registerEntityProperty(EntityMetaPropertyName.AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP, 97)
             // pickup count
-            // interact text
+            .registerEntityProperty(EntityMetaPropertyName.INTERACTIVE_TAG, 99)
             .registerEntityProperty(EntityMetaPropertyName.TRADE_TIER, 100)
             .registerEntityProperty(EntityMetaPropertyName.MAX_TRADE_TIER, 101)
             .registerEntityProperty(EntityMetaPropertyName.TRADE_XP, 102)
@@ -234,20 +234,20 @@ public class V419PacketBufferData extends BasePacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.IS_BUOYANT, 118)
             .registerEntityProperty(EntityMetaPropertyName.BUOYANCY_DATA, 119);
 
-        this.registerInventoryActionType(InventoryActionType.TAKE, 0);
-        this.registerInventoryActionType(InventoryActionType.PLACE, 1);
-        this.registerInventoryActionType(InventoryActionType.SWAP, 2);
-        this.registerInventoryActionType(InventoryActionType.DROP, 3);
-        this.registerInventoryActionType(InventoryActionType.DESTROY, 4);
-        this.registerInventoryActionType(InventoryActionType.CONSUME, 5);
-        this.registerInventoryActionType(InventoryActionType.CREATE, 6);
-        this.registerInventoryActionType(InventoryActionType.LAB_TABLE_COMBINE, 7);
-        this.registerInventoryActionType(InventoryActionType.BEACON_PAYMENT, 8);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_RECIPE, 9);
-        this.registerInventoryActionType(InventoryActionType.AUTO_CRAFT_RECIPE, 10);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_CREATIVE, 11);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_NOT_IMPLEMENTED, 12);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_RESULTS_DEPRECATED, 13);
+        this.registerInventoryActionType(InventoryActionType.TAKE, 0)
+            .registerInventoryActionType(InventoryActionType.PLACE, 1)
+            .registerInventoryActionType(InventoryActionType.SWAP, 2)
+            .registerInventoryActionType(InventoryActionType.DROP, 3)
+            .registerInventoryActionType(InventoryActionType.DESTROY, 4)
+            .registerInventoryActionType(InventoryActionType.CONSUME, 5)
+            .registerInventoryActionType(InventoryActionType.CREATE, 6)
+            .registerInventoryActionType(InventoryActionType.LAB_TABLE_COMBINE, 7)
+            .registerInventoryActionType(InventoryActionType.BEACON_PAYMENT, 8)
+            .registerInventoryActionType(InventoryActionType.CRAFT_RECIPE, 9)
+            .registerInventoryActionType(InventoryActionType.AUTO_CRAFT_RECIPE, 10)
+            .registerInventoryActionType(InventoryActionType.CRAFT_CREATIVE, 11)
+            .registerInventoryActionType(InventoryActionType.CRAFT_NOT_IMPLEMENTED, 12)
+            .registerInventoryActionType(InventoryActionType.CRAFT_RESULTS_DEPRECATED, 13);
     }
 
 }
