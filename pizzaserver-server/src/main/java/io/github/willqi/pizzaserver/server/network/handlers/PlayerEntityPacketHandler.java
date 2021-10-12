@@ -2,22 +2,32 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerAnimationEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerLocallyInitializedEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSkinUpdateEvent;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
 /**
  * Handles any packets regarding the player entity itself.
  */
 public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
-    private final Player player;
+    private final ImplPlayer player;
 
 
-    public PlayerEntityPacketHandler(Player player) {
+    public PlayerEntityPacketHandler(ImplPlayer player) {
         this.player = player;
+    }
+
+    @Override
+    public void onPacket(SetLocalPlayerAsInitializedPacket packet) {
+        this.player.setLocallyInitialized(true);
+
+        PlayerLocallyInitializedEvent playerLocallyInitializedEvent = new PlayerLocallyInitializedEvent(this.player);
+        this.player.getServer().getEventManager().call(playerLocallyInitializedEvent);
     }
 
     @Override
