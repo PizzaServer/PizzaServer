@@ -1,11 +1,9 @@
 package io.github.willqi.pizzaserver.server.player;
 
-import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
-import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -14,10 +12,8 @@ import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
@@ -30,7 +26,6 @@ import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
-import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
 import java.io.IOException;
@@ -39,6 +34,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private final ImplServer server;
     private final BedrockClientSession session;
+    private boolean locallyInitialized;
     private boolean autoSave = true;
 
     private final BaseMinecraftVersion version;
@@ -51,7 +47,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     private final PlayerList playerList = new ImplPlayerList(this);
     private Skin skin;
 
-    private int chunkRadius = 3;
+    private final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
@@ -144,6 +140,15 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
             this.setMetaData(this.getMetaData());
         }
+    }
+
+    @Override
+    public boolean isLocallyInitialized() {
+        return this.locallyInitialized;
+    }
+
+    public void setLocallyInitialized(boolean initialized) {
+        this.locallyInitialized = initialized;
     }
 
     @Override
@@ -273,7 +278,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         if (this.hasSpawned()) {
             this.closeOpenInventory();
 
-            Location location = this.getLocation();
+            this.getChunkManager().onDisconnect();
 
             if (this.canAutoSave()) {
                 this.getServer().getScheduler().prepareTask(() -> {
@@ -287,18 +292,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             // remove the player from the player list of others
             for (Player player : this.getServer().getPlayers()) {
                 player.getPlayerList().removeEntry(this.getPlayerListEntry());
-            }
-
-            // Remove player from chunks they can observe
-            for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
-                for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
-                    // Chunk radius is circular
-                    int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
-                    if (this.chunkRadius > distance) {
-                        ImplChunk chunk = (ImplChunk) location.getWorld().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
-                        chunk.despawnFrom(this);
-                    }
-                }
             }
         }
     }
@@ -468,128 +461,18 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.sendPacket(textPacket);
     }
 
+    public PlayerChunkManager getChunkManager() {
+        return this.chunkManager;
+    }
+
     @Override
     public int getChunkRadius() {
-        return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
+        return this.getChunkManager().getChunkRadius();
     }
 
     @Override
-    public void setChunkRadiusRequested(int radius) {
-        int oldRadius = this.getChunkRadius();
-        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
-
-        if (this.hasSpawned()) {
-            this.updateChunks(this.getLocation(), oldRadius);
-        }
-    }
-
-    @Override
-    public void sendChunk(int x, int z) {
-        this.getLocation().getWorld().sendPlayerChunk(this, x, z);
-    }
-
-    private void sendNetworkChunkPublisher() {
-        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(this.getLocation().toVector3i());
-        packet.setRadius(this.getChunkRadius() * 16);
-        this.sendPacket(packet);
-    }
-
-    /**
-     * Called whenever the player moves to a new chunk.
-     * Sends the new chunks the player can see and removes the player from chunks it can no longer see.
-     * Is also responsible for rendering entities within render distance when this player moves to a new chunk.
-     */
-    private void updateChunks(Location oldLocation, int oldChunkRadius) {
-        Set<Tuple<Integer, Integer>> chunksVisibleInOldLocation = new HashSet<>();
-        if (oldLocation != null) {
-            // What were our previous chunks loaded?
-            int oldPlayerChunkX = oldLocation.getChunkX();
-            int oldPlayerChunkZ = oldLocation.getChunkZ();
-            for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
-                for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
-                    // Chunk radius is circular
-                    int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
-                    if (oldChunkRadius > distance) {
-                        int chunkX = oldPlayerChunkX + x;
-                        int chunkZ = oldPlayerChunkZ + z;
-                        chunksVisibleInOldLocation.add(new Tuple<>(chunkX, chunkZ));
-
-                        // Entity render distance is handled differently from chunk render distance.
-                        // Therefore we have to check the entity render distance every single time we enter a new chunk.
-                        // For each old chunk, check if the entities should be despawned from the player.
-                        // If it is renderable with the old location, but it is not with the new location, despawn the entities.
-                        int oldChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(oldLocation.getChunkX() - chunkX, 2) + Math.pow(oldLocation.getChunkZ() - chunkZ, 2)));
-                        boolean oldChunkLocationEntitiesVisible = oldChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                && oldChunkLocationEntityDistance < oldChunkRadius;
-
-                        int newChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(this.getLocation().getChunkX() - chunkX, 2) + Math.pow(this.getLocation().getChunkZ() - chunkZ, 2)));
-                        boolean newChunkLocationEntitiesVisible = newChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                && newChunkLocationEntityDistance < this.getChunkRadius();
-
-                        if (oldChunkLocationEntitiesVisible && !newChunkLocationEntitiesVisible) {
-                            Chunk chunk = this.getWorld().getChunk(chunkX, chunkZ);
-                            for (Entity entity : chunk.getEntities()) {
-                                if (entity.hasSpawnedTo(this)) {
-                                    entity.despawnFrom(this);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // What are our new chunks loaded?
-        int currentPlayerChunkX = this.getLocation().getChunkX();
-        int currentPlayerChunkZ = this.getLocation().getChunkZ();
-        for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
-            for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
-                // Chunk radius is circular
-                int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
-                if (this.getChunkRadius() > distance) {
-                    // Ensure that this chunk is not already visible
-                    int chunkX = currentPlayerChunkX + x;
-                    int chunkZ = currentPlayerChunkZ + z;
-                    if (!chunksVisibleInOldLocation.remove(new Tuple<>(chunkX, chunkZ))) {
-                        // Sending a chunk also sends all the entities within render distance in that chunk
-                        this.sendChunk(chunkX, chunkZ);
-                    } else {
-                        // This is a chunk already rendered to us. So we need to check the entity render distance for entities in that chunk.
-                        // Entity render distance is handled differently from chunk render distance.
-                        // Therefore we have to check the entity render distance every single time we enter a new chunk.
-                        // For each chunk, check if the entities can now be rendered to this player.
-                        // If it was not renderable with the old location, but it can be with the new location, spawn the entities.
-                        boolean oldChunkLocationEntitiesVisible = false;
-                        if (oldLocation != null) {
-                            int oldChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(oldLocation.getChunkX() - chunkX, 2) + Math.pow(oldLocation.getChunkZ() - chunkZ, 2)));
-                            oldChunkLocationEntitiesVisible = oldChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                    && oldChunkLocationEntityDistance < oldChunkRadius;
-                        }
-
-                        int newChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(this.getLocation().getChunkX() - chunkX, 2) + Math.pow(this.getLocation().getChunkZ() - chunkZ, 2)));
-                        boolean newChunkLocationEntitiesVisible = newChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                && newChunkLocationEntityDistance < this.getChunkRadius();
-
-                        if (!oldChunkLocationEntitiesVisible && newChunkLocationEntitiesVisible) {
-                            Chunk chunk = this.getWorld().getChunk(chunkX, chunkZ);
-                            for (Entity entity : chunk.getEntities()) { // TODO: fix so that you don't double send entities
-                                if (((BaseEntity) entity).canBeSpawnedTo(this)) {
-                                    entity.spawnTo(this);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove each chunk we shouldn't get packets from
-        for (Tuple<Integer, Integer> key : chunksVisibleInOldLocation) {
-            ((ImplChunk) this.getLocation().getWorld().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
-        }
-
-        this.sendNetworkChunkPublisher();
+    public void setChunkRadius(int radius) {
+        this.getChunkManager().setChunkRadius(radius);
     }
 
     @Override
@@ -656,16 +539,14 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         super.moveTo(x, y, z);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
-            this.updateChunks(oldLocation, this.getChunkRadius());
+            this.getChunkManager().onEnterNewChunk(oldLocation);
         }
     }
 
     @Override
     public void onSpawned() {
         super.onSpawned();
-        this.sendNetworkChunkPublisher();   // Load chunks sent during initial login handshake
-
-        this.updateChunks(null, this.chunkRadius);
+        this.getChunkManager().onSpawned();
         this.completeLogin();
     }
 

@@ -78,6 +78,8 @@ public interface Player extends LivingEntity {
      */
     void setSneaking(boolean sneaking);
 
+    boolean isLocallyInitialized();
+
     /**
      * Get the player list of a player.
      * @return player list of a player
@@ -187,14 +189,7 @@ public interface Player extends LivingEntity {
      * Set the chunk radius requested for this player.
      * @param radius chunk radius
      */
-    void setChunkRadiusRequested(int radius);
-
-    /**
-     * Request the server to send a chunk to the player.
-     * @param x chunk x coordinate
-     * @param z chunk z coordinate
-     */
-    void sendChunk(int x, int z);
+    void setChunkRadius(int radius);
 
     /**
      * If this session is still active.
