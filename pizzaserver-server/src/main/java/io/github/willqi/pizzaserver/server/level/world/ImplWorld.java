@@ -100,13 +100,13 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public void sendPlayerChunk(Player player, int x, int z) {
-        this.sendPlayerChunk(player, x, z, true);
+    public void sendChunk(Player player, int x, int z) {
+        this.sendChunk(player, x, z, true);
     }
 
     @Override
-    public void sendPlayerChunk(Player player, int x, int z, boolean async) {
-        this.chunkManager.sendPlayerChunk(player, x, z, async);
+    public void sendChunk(Player player, int x, int z, boolean async) {
+        this.chunkManager.sendChunk(player, x, z, async);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class ImplWorld implements World {
 
         BaseEntity baseEntity = (BaseEntity) entity;
         baseEntity.setLocation(location);
-        ((ImplChunk) location.getChunk()).addEntity(entity);
+        ((ImplChunk) location.getChunk()).addEntity(baseEntity);
         baseEntity.onSpawned();
     }
 

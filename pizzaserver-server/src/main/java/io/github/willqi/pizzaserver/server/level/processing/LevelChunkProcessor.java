@@ -38,7 +38,7 @@ public class LevelChunkProcessor implements Runnable {
                 if (request instanceof PlayerChunkRequest) {
                     // send chunk request
                     PlayerChunkRequest playerChunkRequest = (PlayerChunkRequest) request;
-                    request.getWorld().sendPlayerChunk(playerChunkRequest.getPlayer(), request.getX(), request.getZ(), false);
+                    request.getWorld().sendChunk(playerChunkRequest.getPlayer(), request.getX(), request.getZ(), false);
                 } else {
                     // unload request
                     ((ImplWorld) request.getWorld()).getChunkManager().unloadChunk(request.getX(), request.getZ(), false, ((UnloadChunkRequest) request).isForced());

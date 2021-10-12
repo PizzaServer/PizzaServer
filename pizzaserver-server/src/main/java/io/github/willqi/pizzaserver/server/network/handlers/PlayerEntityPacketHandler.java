@@ -24,10 +24,12 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(SetLocalPlayerAsInitializedPacket packet) {
-        this.player.setLocallyInitialized(true);
+        if (!this.player.isLocallyInitialized()) {
+            this.player.onInitialized();
 
-        PlayerLocallyInitializedEvent playerLocallyInitializedEvent = new PlayerLocallyInitializedEvent(this.player);
-        this.player.getServer().getEventManager().call(playerLocallyInitializedEvent);
+            PlayerLocallyInitializedEvent playerLocallyInitializedEvent = new PlayerLocallyInitializedEvent(this.player);
+            this.player.getServer().getEventManager().call(playerLocallyInitializedEvent);
+        }
     }
 
     @Override

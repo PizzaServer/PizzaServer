@@ -120,12 +120,12 @@ public class WorldChunkManager implements ChunkManager {
     }
 
     @Override
-    public void sendPlayerChunk(Player player, int x, int z) {
-        this.sendPlayerChunk(player, x, z, false);
+    public void sendChunk(Player player, int x, int z) {
+        this.sendChunk(player, x, z, false);
     }
 
     @Override
-    public void sendPlayerChunk(Player player, int x, int z, boolean async) {
+    public void sendChunk(Player player, int x, int z, boolean async) {
         if (async) {
             this.world.getLevel()
                     .getLevelManager()

@@ -46,7 +46,7 @@ public class ImplChunk implements Chunk {
     private AtomicInteger activeChunkLoaders = new AtomicInteger(0);
 
     // Entities in this chunk
-    private final Set<Entity> entities = new HashSet<>();
+    private final Set<BaseEntity> entities = new HashSet<>();
 
     // The players who can see this chunk
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
@@ -98,10 +98,10 @@ public class ImplChunk implements Chunk {
      * The entity is also spawned to any viewers of this chunk within render distance.
      * @param entity the entity to spawn
      */
-    public void addEntity(Entity entity) {
+    public void addEntity(BaseEntity entity) {
         if (!this.entities.contains(entity)) {
             for (Player player : this.getViewers()) {
-                if (((BaseEntity) entity).canBeSpawnedTo(player)) {
+                if (entity.canBeSpawnedTo(player)) {
                     entity.spawnTo(player);
                 }
             }
@@ -373,9 +373,11 @@ public class ImplChunk implements Chunk {
                 }
 
                 // Send the entities of this chunk to the player
-                for (Entity entity : this.getEntities()) {
-                    if (((BaseEntity) entity).canBeSpawnedTo(player)) {
-                        entity.spawnTo(player);
+                if (player.isLocallyInitialized()) {
+                    for (Entity entity : this.getEntities()) {
+                        if (((BaseEntity) entity).canBeSpawnedTo(player)) {
+                            entity.spawnTo(player);
+                        }
                     }
                 }
             }).schedule();

@@ -1,9 +1,11 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -11,6 +13,7 @@ import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
@@ -19,6 +22,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
+import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
@@ -147,8 +151,16 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         return this.locallyInitialized;
     }
 
-    public void setLocallyInitialized(boolean initialized) {
-        this.locallyInitialized = initialized;
+    public void onInitialized() {
+        this.locallyInitialized = true;
+
+        for (Player player : this.getServer().getPlayers()) {
+            if (!this.isHiddenFrom(player) && !player.equals(this)) {
+                player.getPlayerList().addEntry(this.getPlayerListEntry());
+            }
+        }
+
+        this.getChunkManager().onLocallyInitialized();
     }
 
     @Override
@@ -557,13 +569,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
-
-        // Update every other player's player list to include this player
-        for (Player player : this.getServer().getPlayers()) {
-            if (!this.isHiddenFrom(player) && !player.equals(this)) {
-                player.getPlayerList().addEntry(this.getPlayerListEntry());
-            }
-        }
 
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
