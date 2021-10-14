@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.AddPlayerPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.data.EntityLink;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.AddPlayerPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 

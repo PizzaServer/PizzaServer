@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v431.handlers;
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionAction;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.sources.*;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.InventoryTransactionAction;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.sources.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.V419InventoryTransactionPacketHandler;
 

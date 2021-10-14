@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import io.github.willqi.pizzaserver.api.item.types.ItemType;
 import io.github.willqi.pizzaserver.api.item.types.components.*;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemComponentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ItemComponentPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 

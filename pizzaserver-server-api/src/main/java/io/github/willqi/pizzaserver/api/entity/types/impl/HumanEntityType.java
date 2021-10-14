@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.api.entity.types.impl;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
-import io.github.willqi.pizzaserver.api.entity.HumanEntity;
 import io.github.willqi.pizzaserver.api.entity.types.BaseEntityType;
 import io.github.willqi.pizzaserver.api.entity.types.behaviour.impl.HumanEntityBehaviour;
 

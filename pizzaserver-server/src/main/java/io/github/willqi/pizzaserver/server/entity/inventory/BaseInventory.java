@@ -9,9 +9,9 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerClosePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.InventorySlotPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ContainerClosePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.InventoryContentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.InventorySlotPacket;
 
 import java.util.*;
 

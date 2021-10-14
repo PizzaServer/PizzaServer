@@ -1,9 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v428;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackResponsePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerActionPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ItemStackResponsePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.PlayerActionPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.StartGamePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.V422PacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v428.handlers.V428ItemStackResponsePacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v428.handlers.V428PlayerActionPacketHandler;

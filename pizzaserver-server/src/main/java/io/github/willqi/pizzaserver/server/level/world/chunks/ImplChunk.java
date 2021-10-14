@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.level.world.chunks;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
-import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
@@ -16,8 +15,8 @@ import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldChunkPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldChunkPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.UpdateBlockPacket;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 

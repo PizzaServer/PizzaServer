@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.MobEquipmentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 
 public abstract class BaseBedrockPacketHandler {
 

@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.MobEquipmentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.*;
 

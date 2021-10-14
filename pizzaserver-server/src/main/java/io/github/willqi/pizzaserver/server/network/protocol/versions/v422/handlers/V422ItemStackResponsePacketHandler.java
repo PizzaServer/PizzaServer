@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v422.handlers;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackResponsePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ItemStackResponsePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.V419ItemStackResponsePacketHandler;
 

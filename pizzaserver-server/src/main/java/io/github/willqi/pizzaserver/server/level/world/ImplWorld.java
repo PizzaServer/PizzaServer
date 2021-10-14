@@ -17,7 +17,7 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.level.world.chunks.WorldChunkManager;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;

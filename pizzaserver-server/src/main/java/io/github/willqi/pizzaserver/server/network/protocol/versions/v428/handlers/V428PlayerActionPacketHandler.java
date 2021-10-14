@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v428.handlers;
 
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerActionPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.data.PlayerAction;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.PlayerActionPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.V419PlayerActionPacketHandler;
 

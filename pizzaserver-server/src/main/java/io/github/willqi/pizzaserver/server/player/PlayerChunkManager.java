@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.server.entity.BaseEntity;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.NetworkChunkPublisherUpdatePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.NetworkChunkPublisherUpdatePacket;
 
 import java.util.Collections;
 import java.util.HashSet;

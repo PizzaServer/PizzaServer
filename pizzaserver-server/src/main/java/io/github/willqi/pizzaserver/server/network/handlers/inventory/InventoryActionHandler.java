@@ -9,9 +9,9 @@ import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryAction;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackResponsePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.InventoryAction;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ItemStackResponsePacket;
 
 import java.util.Optional;
 

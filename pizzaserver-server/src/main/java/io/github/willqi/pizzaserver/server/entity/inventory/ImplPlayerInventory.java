@@ -6,9 +6,9 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.InventoryType;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerOpenPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.InventoryType;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ContainerOpenPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.MobEquipmentPacket;
 
 import java.util.Collections;
 import java.util.HashSet;

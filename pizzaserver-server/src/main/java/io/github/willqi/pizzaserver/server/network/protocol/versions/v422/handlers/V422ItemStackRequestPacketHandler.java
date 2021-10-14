@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v422.handlers;
 
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryAction;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ItemStackRequestPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.InventoryAction;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ItemStackRequestPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.V419ItemStackRequestPacketHandler;
 

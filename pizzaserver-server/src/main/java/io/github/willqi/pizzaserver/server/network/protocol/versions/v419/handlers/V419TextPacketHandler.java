@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.TextPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.TextPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 

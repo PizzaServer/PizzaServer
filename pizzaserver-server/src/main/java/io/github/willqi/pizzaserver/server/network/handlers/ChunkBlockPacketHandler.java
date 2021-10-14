@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
 /**

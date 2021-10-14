@@ -7,7 +7,7 @@ import io.github.willqi.pizzaserver.api.event.type.player.PlayerSkinUpdateEvent;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
 /**

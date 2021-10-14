@@ -1,13 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.UpdateBlockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
-import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.V419MinecraftVersion;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class V419UpdateBlockPacketHandler extends BaseProtocolPacketHandler<UpdateBlockPacket> {
 

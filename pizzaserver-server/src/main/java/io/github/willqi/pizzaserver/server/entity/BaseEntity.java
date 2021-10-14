@@ -13,8 +13,8 @@ import io.github.willqi.pizzaserver.server.entity.meta.ImplEntityMetaData;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.RemoveEntityPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.SetEntityDataPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.RemoveEntityPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.SetEntityDataPacket;
 
 import java.util.HashSet;
 import java.util.Set;

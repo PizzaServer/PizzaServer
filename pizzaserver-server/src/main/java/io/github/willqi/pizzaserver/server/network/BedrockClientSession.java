@@ -4,7 +4,7 @@ import com.nukkitx.network.raknet.RakNetServerSession;
 import com.nukkitx.network.util.DisconnectReason;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
