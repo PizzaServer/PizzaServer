@@ -15,9 +15,6 @@ public class ItemRegistry {
 
 
     public static void register(ItemType itemType) {
-        if (types.containsKey(itemType.getItemId())) {
-            throw new IllegalArgumentException("Item id " + itemType.getItemId() + " was already registered.");
-        }
         if (!itemType.getItemId().startsWith("minecraft:")) {
             customItemTypes.add(itemType);
         }

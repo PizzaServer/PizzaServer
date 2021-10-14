@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.api.entity;
 import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.types.behaviour.EntityBehaviour;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -70,6 +71,10 @@ public interface Entity extends Watchable {
     void setMetaData(EntityMetaData metaData);
 
     Inventory getInventory();
+
+    EntityBehaviour getEntityBehaviour();
+
+    void setEntityBehaviour(EntityBehaviour behaviour);
 
     /**
      * Called every server tick.

@@ -1,13 +1,12 @@
 package io.github.willqi.pizzaserver.api.player;
 
+import io.github.willqi.pizzaserver.api.entity.HumanEntity;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
-import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
 import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.api.player.skin.Skin;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +14,7 @@ import java.util.UUID;
 /**
  * Represents a player on the Minecraft server.
  */
-public interface Player extends LivingEntity {
+public interface Player extends HumanEntity {
 
     /**
      * Retrieve the Minecraft version this player is on.
@@ -54,30 +53,6 @@ public interface Player extends LivingEntity {
      */
     String getLanguageCode();
 
-    /**
-     * Retrieve the current {@link Skin} of the player.
-     * @return {@link Skin} of the player
-     */
-    Skin getSkin();
-
-    /**
-     * Change the skin of the player with the provided {@link Skin}.
-     * @param skin New skin
-     */
-    void setSkin(Skin skin);
-
-    /**
-     * Check if the player is sneaking.
-     * @return sneaking status
-     */
-    boolean isSneaking();
-
-    /**
-     * Change if the player is sneaking.
-     * @param sneaking sneaking status
-     */
-    void setSneaking(boolean sneaking);
-
     boolean isLocallyInitialized();
 
     /**
@@ -85,9 +60,6 @@ public interface Player extends LivingEntity {
      * @return player list of a player
      */
     PlayerList getPlayerList();
-
-    // TODO: move to EntityHuman
-    PlayerList.Entry getPlayerListEntry();
 
     PlayerInventory getInventory();
 
