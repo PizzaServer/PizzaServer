@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerAction;
 import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerActionPacket;
@@ -53,7 +54,7 @@ public class V419PlayerActionPacketHandler extends BaseProtocolPacketHandler<Pla
             ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
         }
         packet.setVector3(buffer.readVector3i());
-        packet.setFace(buffer.readVarInt());
+        packet.setFace(BlockFace.resolve(buffer.readVarInt()));
         return packet;
     }
 }

@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.utils;
 
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
@@ -18,6 +19,10 @@ public class BlockLocation extends Vector3i {
     public BlockLocation(World world, int x, int y, int z) {
         super(x, y, z);
         this.world = world;
+    }
+
+    public Block getBlock() {
+        return this.getWorld().getBlock(this);
     }
 
     public Chunk getChunk() {

@@ -87,4 +87,8 @@ public class Block {
         return this.getBlockType().getBlockId().equals(BlockTypeID.AIR);
     }
 
+    public boolean isSolid() {
+        return this.getBlockType().isSolid();
+    }
+
 }

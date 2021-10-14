@@ -2,12 +2,15 @@ package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.api.item.data.ItemToolType;
+import io.github.willqi.pizzaserver.api.item.data.ToolType;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,11 +74,6 @@ public abstract class BaseBlockType implements BlockType {
     @Override
     public boolean isSolid() {
         return true;
-    }
-
-    @Override
-    public float getToughness() {
-        return 0;
     }
 
     @Override
@@ -144,8 +142,13 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public Set<ItemToolType> getCorrectTools() {
-        return Collections.singleton(ItemToolType.ANY);
+    public Set<ToolType> getCorrectTools() {
+        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
+    }
+
+    @Override
+    public Set<ToolType> getBestTools() {
+        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
     }
 
     @Override
@@ -156,6 +159,11 @@ public abstract class BaseBlockType implements BlockType {
     @Override
     public Set<BaseBlockType> getPlaceableOnlyOn() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public Block getResultBlock() {
+        return BlockRegistry.getBlock(BlockTypeID.AIR);
     }
 
     @Override

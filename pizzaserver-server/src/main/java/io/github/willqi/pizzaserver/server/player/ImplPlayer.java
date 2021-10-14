@@ -57,6 +57,8 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     private Inventory openInventory = null;
 
+    private final BreakingData breakingData = new BreakingData(this);
+
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
         this.server = server;
@@ -146,6 +148,10 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         }
     }
 
+    public BreakingData getBlockBreakData() {
+        return this.breakingData;
+    }
+
     @Override
     public float getHeight() {
         return 1.8f;
@@ -177,7 +183,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
         // Direction check
         Vector3 playerDirectionVector = this.getDirectionVector();
-        Vector3 targetDirectionVector = vector3.subtract(this.getLocation()).normalize();
+        Vector3 targetDirectionVector = vector3.subtract(this.getLocation().add(0, this.getEyeHeight(), 0)).normalize();
         return playerDirectionVector.dot(targetDirectionVector) > 0;    // Must be in same direction
     }
 
@@ -644,6 +650,11 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
             for (Player player : this.getViewers()) {
                 player.sendPacket(movePlayerPacket);
+            }
+
+            // Make sure that the block we're breaking is within reach too!
+            if (this.getBlockBreakData().getBlock().isPresent() && !this.canReach(this.getBlockBreakData().getBlock().get().getLocation())) {
+                this.getBlockBreakData().stopBreaking();
             }
         }
 

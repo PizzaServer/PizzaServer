@@ -93,4 +93,18 @@ public class Vector2i {
         return "Vector2i(x=" + this.x + ", y=" + this.y + ")";
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Vector2i) {
+            Vector2i otherVector = (Vector2i) obj;
+            return otherVector.getX() == this.getX() && otherVector.getY() == this.getY();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (43 * this.getX()) + (43 * this.getY());
+    }
+
 }

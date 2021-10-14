@@ -29,12 +29,8 @@ public class V419UpdateAttributesPacketHandler extends BaseProtocolPacketHandler
     public void encode(UpdateAttributesPacket packet, BasePacketBuffer buffer) {
         buffer.writeUnsignedVarLong(packet.getRuntimeEntityId());
 
-        Set<Attribute> validAttributes = packet.getAttributes()
-                .stream().filter(attribute -> this.attributeIds.containsKey(attribute.getType()))
-                .collect(Collectors.toSet());
-
-        buffer.writeUnsignedVarInt(validAttributes.size());
-        for (Attribute attribute : validAttributes) {
+        buffer.writeUnsignedVarInt(packet.getAttributes().size());
+        for (Attribute attribute : packet.getAttributes()) {
             buffer.writeFloatLE(attribute.getMinimumValue());
             buffer.writeFloatLE(attribute.getMaximumValue());
             buffer.writeFloatLE(attribute.getCurrentValue());

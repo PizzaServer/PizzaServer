@@ -69,6 +69,12 @@ public interface Server {
      */
     int getCurrentTps();
 
+    /**
+     * Get the current server tick.
+     * @return server tick
+     */
+    long getTick();
+
     PluginManager getPluginManager();
 
     ResourcePackManager getResourcePackManager();

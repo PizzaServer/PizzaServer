@@ -120,7 +120,17 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
                 if (!playerHotbarSelectEvent.isCancelled()) {
                     // Server approves of hotbar slot change.
+
+                    // Check if we need to recalculate our break time for the block we may be breaking.
+                    boolean differentItemTypes = !this.player.getInventory().getHeldItem().getItemType().equals(this.player.getInventory().getSlot(packet.getSlot()).getItemType());
+                    boolean needToRecalculateBlockBreakTime = this.player.getBlockBreakData().isBreakingBlock()
+                            && differentItemTypes;
+
                     this.player.getInventory().setSelectedSlot(packet.getSlot(), true);
+
+                    if (needToRecalculateBlockBreakTime) {
+                        this.player.getBlockBreakData().onChangedHeldItemWhileBreaking();
+                    }
                 } else {
                     // Reset their selected slot back to the old slot
                     this.player.getInventory().setSelectedSlot(this.player.getInventory().getSelectedSlot());
@@ -174,12 +184,10 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 break;
             case ITEM_USE:
                 InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData) packet.getData();
-                // TODO: account for creative mode reach when gamemodes are implemented
 
-
-                double distanceToBlock = this.player.getLocation().distanceBetween(useItemData.getBlockCoordinates().toVector3()); // distance to middle of block
-                if (distanceToBlock > 50) {
-                    // Prevent malicious clients from causing a OutOfMemory error by sending a transaction
+                double distanceToBlock = this.player.getLocation().distanceBetween(useItemData.getBlockCoordinates().toVector3());
+                if (distanceToBlock > this.player.getChunkRadius() * 16) {
+                    // Prevent malicious clients from causing an OutOfMemory error by sending a transaction
                     // to every single chunk regardless of the distance which would load chunks unnecessarily
                     return;
                 }
@@ -216,8 +224,8 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     }
                 }
 
-                // By getting to this point, it means that the action failed/was not valid
-                // Reset any clientside modifications to the world/player
+                // By getting to this point, it means that the action failed/was not valid/they broke a block.
+                // Resend the data stored server-side.
                 this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates());
                 this.player.getWorld().sendBlock(this.player, useItemData.getBlockCoordinates().add(useItemData.getBlockFace().getOffset()));
                 this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
