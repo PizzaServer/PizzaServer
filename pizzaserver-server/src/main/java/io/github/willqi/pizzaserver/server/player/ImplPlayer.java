@@ -1,26 +1,24 @@
 package io.github.willqi.pizzaserver.server.player;
 
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
+import io.github.willqi.pizzaserver.api.entity.types.impl.HumanEntityType;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
-import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.server.entity.ImplHumanEntity;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
-import io.github.willqi.pizzaserver.api.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
@@ -30,31 +28,31 @@ import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
 import java.util.*;
 import java.io.IOException;
 
-public class ImplPlayer extends BaseLivingEntity implements Player {
+public class ImplPlayer extends ImplHumanEntity implements Player {
 
-    private final ImplServer server;
-    private final BedrockClientSession session;
-    private boolean locallyInitialized;
-    private boolean autoSave = true;
+    protected final ImplServer server;
+    protected final BedrockClientSession session;
+    protected boolean locallyInitialized;
+    protected boolean autoSave = true;
 
-    private final BaseMinecraftVersion version;
-    private final Device device;
-    private final String xuid;
-    private final UUID uuid;
-    private final String username;
-    private final String languageCode;
+    protected final BaseMinecraftVersion version;
+    protected final Device device;
+    protected final String xuid;
+    protected final UUID uuid;
+    protected final String username;
+    protected final String languageCode;
 
-    private final PlayerList playerList = new ImplPlayerList(this);
-    private Skin skin;
+    protected final PlayerList playerList = new ImplPlayerList(this);
 
-    private final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
+    protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
 
-    private final PlayerAttributes attributes = new PlayerAttributes();
+    protected final PlayerAttributes attributes = new PlayerAttributes();
 
-    private Inventory openInventory = null;
+    protected Inventory openInventory = null;
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
+        super((HumanEntityType) EntityRegistry.getEntityType(HumanEntityType.ID));
         this.server = server;
         this.session = session;
 
@@ -99,50 +97,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public Skin getSkin() {
-        return this.skin;
-    }
-
-    @Override
-    public void setSkin(Skin newSkin) {
-        this.skin = newSkin;
-        PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
-        playerSkinPacket.setPlayerUUID(this.getUUID());
-        playerSkinPacket.setSkin(newSkin);
-        playerSkinPacket.setTrusted(newSkin.isTrusted());
-
-        for (Player viewer : this.getViewers()) {
-            viewer.sendPacket(playerSkinPacket);
-        }
-        this.sendPacket(playerSkinPacket);
-    }
-
-    @Override
-    public boolean isSneaking() {
-        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING);
-    }
-
-    @Override
-    public void setSneaking(boolean sneaking) {
-        boolean isCurrentlySneaking = this.isSneaking();
-        boolean updateSneakingData = false;
-        if (sneaking && !isCurrentlySneaking) {
-            PlayerStartSneakingEvent event = new PlayerStartSneakingEvent(this);
-            this.getServer().getEventManager().call(event);
-            updateSneakingData = true;
-        } else if (!sneaking && isCurrentlySneaking) {
-            PlayerStopSneakingEvent event = new PlayerStopSneakingEvent(this);
-            this.getServer().getEventManager().call(event);
-            updateSneakingData = true;
-        }
-
-        if (updateSneakingData) {
-            this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
-            this.setMetaData(this.getMetaData());
-        }
-    }
-
-    @Override
     public boolean isLocallyInitialized() {
         return this.locallyInitialized;
     }
@@ -157,21 +111,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         }
 
         this.getChunkManager().onLocallyInitialized();
-    }
-
-    @Override
-    public float getHeight() {
-        return 1.8f;
-    }
-
-    @Override
-    public float getWidth() {
-        return 0.6f;
-    }
-
-    @Override
-    public float getEyeHeight() {
-        return 1.62f;
     }
 
     public boolean canReach(Vector3i vector3i) {
@@ -201,9 +140,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
         setEntityDataPacket.setRuntimeId(this.getId());
         setEntityDataPacket.setData(this.getMetaData());
-        for (Player player : this.getViewers()) {
-            player.sendPacket(setEntityDataPacket);
-        }
         this.sendPacket(setEntityDataPacket);
     }
 
@@ -522,26 +458,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public void tick() {
-        if (this.moveUpdate) {
-            MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setEntityRuntimeId(this.getId());
-            movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
-            movePlayerPacket.setPitch(this.getPitch());
-            movePlayerPacket.setYaw(this.getYaw());
-            movePlayerPacket.setHeadYaw(this.getHeadYaw());
-            movePlayerPacket.setMode(MovementMode.NORMAL);
-            movePlayerPacket.setOnGround(false);
-
-            for (Player player : this.getViewers()) {
-                player.sendPacket(movePlayerPacket);
-            }
-        }
-
-        super.tick();
-    }
-
-    @Override
     public void moveTo(float x, float y, float z) {
         Location oldLocation = new Location(this.world, new Vector3(this.x, this.y, this.z));
         super.moveTo(x, y, z);
@@ -569,19 +485,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
         this.sendPacket(playStatusPacket);
-
-    }
-
-    @Override
-    public PlayerList.Entry getPlayerListEntry() {
-        return new PlayerList.Entry.Builder()
-                .setUUID(this.getUUID())
-                .setXUID(this.getXUID())
-                .setUsername(this.getUsername())
-                .setEntityRuntimeId(this.getId())
-                .setDevice(this.getDevice())
-                .setSkin(this.getSkin())
-                .build();
     }
 
     @Override
@@ -601,29 +504,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             if (player.hasSpawned()) {  // we only need to remove the entry if we were spawned
                 player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
-        }
-    }
-
-    @Override
-    public boolean spawnTo(Player player) {
-        if (super.spawnTo(player)) {
-            AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-            addPlayerPacket.setUUID(this.getUUID());
-            addPlayerPacket.setUsername(this.getUsername());
-            addPlayerPacket.setEntityRuntimeId(this.getId());
-            addPlayerPacket.setEntityUniqueId(this.getId());
-            addPlayerPacket.setPosition(new Vector3(this.getX(), this.getY(), this.getZ()));
-            addPlayerPacket.setVelocity(new Vector3(0, 0, 0));
-            addPlayerPacket.setPitch(this.getPitch());
-            addPlayerPacket.setYaw(this.getYaw());
-            addPlayerPacket.setHeadYaw(this.getHeadYaw());
-            addPlayerPacket.setMetaData(this.getMetaData());
-            addPlayerPacket.setDevice(this.getDevice());
-            addPlayerPacket.setHeldItem(this.getInventory().getHeldItem());
-            player.sendPacket(addPlayerPacket);
-            return true;
-        } else {
-            return false;
         }
     }
 

@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.api.level.data.Difficulty;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.api.network.protocol.data.PlayerMovementType;
+import io.github.willqi.pizzaserver.api.network.protocol.utils.MinecraftNamespaceComparator;
 import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
@@ -13,7 +14,6 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldType;
-import io.github.willqi.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.util.*;
 

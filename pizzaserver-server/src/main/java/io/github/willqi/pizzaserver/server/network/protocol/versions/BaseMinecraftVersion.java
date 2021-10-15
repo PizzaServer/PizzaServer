@@ -18,7 +18,7 @@ import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.StartGamePacket;
-import io.github.willqi.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
+import io.github.willqi.pizzaserver.api.network.protocol.utils.MinecraftNamespaceComparator;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;

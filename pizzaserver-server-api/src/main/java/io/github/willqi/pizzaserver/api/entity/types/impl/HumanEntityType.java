@@ -6,9 +6,11 @@ import io.github.willqi.pizzaserver.api.entity.types.behaviour.impl.HumanEntityB
 
 public class HumanEntityType extends BaseEntityType {
 
+    public static final String ID = "minecraft:player";
+
     @Override
     public String getEntityId() {
-        return "minecraft:player";
+        return ID;
     }
 
     @Override

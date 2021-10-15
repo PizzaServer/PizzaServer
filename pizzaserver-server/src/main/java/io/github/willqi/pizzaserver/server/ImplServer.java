@@ -1,11 +1,13 @@
 package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.event.EventManager;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.plugin.PluginManager;
 import io.github.willqi.pizzaserver.api.scheduler.Scheduler;
 import io.github.willqi.pizzaserver.api.utils.Logger;
+import io.github.willqi.pizzaserver.server.entity.EntityConstructor;
 import io.github.willqi.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.willqi.pizzaserver.server.event.ImplEventManager;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
@@ -77,6 +79,8 @@ public class ImplServer implements Server {
 
         this.levelManager = new ImplLevelManager(this);
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
+
+        EntityRegistry.setEntityConstructor(new EntityConstructor(this));
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
         // TODO: load plugins

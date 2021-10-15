@@ -1,9 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerAnimationEvent;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerChatEvent;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerLocallyInitializedEvent;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerSkinUpdateEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
@@ -62,10 +59,18 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
     public void onPacket(PlayerActionPacket packet) {
         switch (packet.getActionType()) {
             case START_SNEAK:
-                this.player.setSneaking(true);
+                if (!this.player.isSneaking()) {
+                    PlayerStartSneakingEvent startSneakingEvent = new PlayerStartSneakingEvent(this.player);
+                    this.player.getServer().getEventManager().call(startSneakingEvent);
+                    this.player.setSneaking(true);
+                }
                 break;
             case STOP_SNEAK:
-                this.player.setSneaking(false);
+                if (this.player.isSneaking()) {
+                    PlayerStartSneakingEvent stopSneakingEvent = new PlayerStartSneakingEvent(this.player);
+                    this.player.getServer().getEventManager().call(stopSneakingEvent);
+                    this.player.setSneaking(false);
+                }
                 break;
         }
     }

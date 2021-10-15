@@ -23,31 +23,6 @@ public interface Player extends HumanEntity {
     MinecraftVersion getVersion();
 
     /**
-     * Retrieve the device the player is playing on.
-     * @return {@link Device} of the player
-     */
-    Device getDevice();
-
-    /**
-     * Retrieve the xuid of the player.
-     * This is unique to every player authenticated to Xbox Live
-     * @return xuid
-     */
-    String getXUID();
-
-    /**
-     * Retrieve the UUID of the player.
-     * @return {@link UUID} of the player
-     */
-    UUID getUUID();
-
-    /**
-     * Retrieve the username of the player.
-     * @return username of the player
-     */
-    String getUsername();
-
-    /**
      * Retrieve the language code of the player.
      * @return language code (e.g. en_US)
      */

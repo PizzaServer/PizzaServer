@@ -9,6 +9,8 @@ public interface EntityType {
 
     EntitySpawnRules getSpawnRules();
 
+    Entity create();
+
     void onCreation(Entity entity);
 
 }

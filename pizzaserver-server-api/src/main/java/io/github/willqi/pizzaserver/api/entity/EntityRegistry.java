@@ -1,14 +1,17 @@
 package io.github.willqi.pizzaserver.api.entity;
 
+import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.types.EntityType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class EntityRegistry {
 
     private static final Map<String, EntityType> types = new HashMap<>();
 
+    private static Function<EntityType, Entity> entityConstructor;
 
     public static void register(EntityType entityType) {
         types.put(entityType.getEntityId(), entityType);
@@ -25,10 +28,18 @@ public class EntityRegistry {
         return types.containsKey(entityId);
     }
 
-    public static Entity createEntity(String entityId) {
-        // TODO: implement
+    public static Entity getEntity(String entityId) {
         EntityType entityType = getEntityType(entityId);
-        throw new UnsupportedOperationException();
+        return entityConstructor.apply(entityType);
+    }
+
+    /**
+     * Called internally to set the entity constructor to use.
+     * Used to abstract internal server workings away from plugin api.
+     * @param constructor entity constructor
+     */
+    public static void setEntityConstructor(Function<EntityType, Entity> constructor) {
+        entityConstructor = constructor;
     }
 
 }

@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.network.utils;
+package io.github.willqi.pizzaserver.api.network.protocol.utils;
 
 /**
  * Minecraft namespaces are sorted by their child key before the parent key.

@@ -25,6 +25,7 @@ public class VanillaContentLoader {
     }
 
     private static void loadEntities() {
+        EntityRegistry.register(new HumanEntityType());
         EntityRegistry.register(new CowEntityType());
     }
 
