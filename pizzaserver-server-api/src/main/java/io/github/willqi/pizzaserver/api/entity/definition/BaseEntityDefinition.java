@@ -1,0 +1,57 @@
+package io.github.willqi.pizzaserver.api.entity.definition;
+
+import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
+import io.github.willqi.pizzaserver.api.entity.definition.spawnrules.EntitySpawnRules;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class BaseEntityDefinition implements EntityDefinition {
+
+    private final Map<String, EntityComponentGroup> componentGroups = new HashMap<>();
+    private final Map<String, MinecraftComponentEvent> events = new HashMap<>();
+
+    @Override
+    public EntityComponentGroup getComponentGroup(String groupId) {
+        EntityComponentGroup group = this.componentGroups.getOrDefault(groupId, null);
+        if (group == null) {
+            throw new NullPointerException("There is no registered component group by that id.");
+        }
+
+        return group;
+    }
+
+    public void registerComponentGroup(EntityComponentGroup group) {
+        this.componentGroups.put(group.getGroupId(), group);
+    }
+
+    @Override
+    public MinecraftComponentEvent getEvent(String eventId) {
+        MinecraftComponentEvent event = this.events.getOrDefault(eventId, null);
+        if (event == null) {
+            throw new NullPointerException("There is no registered event by that id.");
+        }
+
+        return event;
+    }
+
+    public void registerEvent(MinecraftComponentEvent event) {
+        this.events.put(event.getId(), event);
+    }
+
+    @Override
+    public EntitySpawnRules getSpawnRules() {
+        return null;
+    }
+
+    @Override
+    public Entity create() {
+        return EntityRegistry.getEntity(this.getEntityId());
+    }
+
+    @Override
+    public void onCreation(Entity entity) {}
+
+}

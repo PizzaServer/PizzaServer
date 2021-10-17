@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.player;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.api.entity.types.impl.HumanEntityType;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -52,7 +52,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
-        super((HumanEntityType) EntityRegistry.getEntityType(HumanEntityType.ID));
+        super((HumanEntityDefinition) EntityRegistry.getDefinition(HumanEntityDefinition.ID));
         this.server = server;
         this.session = session;
 

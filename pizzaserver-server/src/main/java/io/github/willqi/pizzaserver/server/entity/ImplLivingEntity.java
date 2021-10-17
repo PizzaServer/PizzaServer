@@ -2,15 +2,9 @@ package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
-import io.github.willqi.pizzaserver.api.entity.types.EntityType;
-import io.github.willqi.pizzaserver.api.level.world.World;
-import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public abstract class BaseLivingEntity extends BaseEntity implements LivingEntity {
+public class ImplLivingEntity extends ImplEntity implements LivingEntity {
 
     protected float health;
     protected float maxHealth;
@@ -21,8 +15,8 @@ public abstract class BaseLivingEntity extends BaseEntity implements LivingEntit
     protected LivingEntityInventory inventory = null;
 
 
-    public BaseLivingEntity(EntityType entityType) {
-        super(entityType);
+    public ImplLivingEntity(EntityDefinition entityDefinition) {
+        super(entityDefinition);
     }
 
     @Override

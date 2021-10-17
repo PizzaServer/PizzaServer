@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.entity;
 import io.github.willqi.pizzaserver.api.entity.HumanEntity;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
-import io.github.willqi.pizzaserver.api.entity.types.impl.HumanEntityType;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.AddPlayerPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.MovePlayerPacket;
@@ -16,14 +16,14 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 import java.util.UUID;
 
-public class ImplHumanEntity extends BaseLivingEntity implements HumanEntity {
+public class ImplHumanEntity extends ImplLivingEntity implements HumanEntity {
 
     protected Skin skin;
 
     protected final UUID uuid;
 
 
-    public ImplHumanEntity(HumanEntityType entityType) {
+    public ImplHumanEntity(HumanEntityDefinition entityType) {
         super(entityType);
         this.uuid = UUID.randomUUID();
     }

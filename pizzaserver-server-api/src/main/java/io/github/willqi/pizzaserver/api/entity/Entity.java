@@ -1,10 +1,11 @@
 package io.github.willqi.pizzaserver.api.entity;
 
 import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.api.entity.types.EntityType;
-import io.github.willqi.pizzaserver.api.entity.types.behaviour.EntityBehaviour;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -20,7 +21,23 @@ public interface Entity extends Watchable {
 
     long getId();
 
-    EntityType getEntityType();
+    EntityDefinition getEntityDefinition();
+
+    boolean addComponentGroup(String groupId);
+
+    boolean addComponentGroup(EntityComponentGroup group);
+
+    boolean removeComponentGroup(String groupId);
+
+    boolean removeComponentGroup(EntityComponentGroup group);
+
+    /**
+     * Retrieves the most recent entity component from its component groups that matches the component requested.
+     * If no component is found, the default component is returned.
+     * @param componentClazz component class
+     * @return entity component
+     */
+    <T extends EntityComponent> T getComponent(Class<T> componentClazz);
 
     float getX();
 
@@ -109,11 +126,11 @@ public interface Entity extends Watchable {
 
     void setMetaData(EntityMetaData metaData);
 
+    boolean hasAI();
+
+    void setAI(boolean hasAI);
+
     Inventory getInventory();
-
-    EntityBehaviour getEntityBehaviour();
-
-    void setEntityBehaviour(EntityBehaviour behaviour);
 
     /**
      * Called every server tick.

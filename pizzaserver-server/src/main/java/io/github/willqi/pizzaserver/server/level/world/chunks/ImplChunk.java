@@ -13,7 +13,7 @@ import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
-import io.github.willqi.pizzaserver.server.entity.BaseEntity;
+import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldChunkPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.UpdateBlockPacket;
@@ -45,7 +45,7 @@ public class ImplChunk implements Chunk {
     private AtomicInteger activeChunkLoaders = new AtomicInteger(0);
 
     // Entities in this chunk
-    private final Set<BaseEntity> entities = new HashSet<>();
+    private final Set<ImplEntity> entities = new HashSet<>();
 
     // The players who can see this chunk
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
@@ -97,7 +97,7 @@ public class ImplChunk implements Chunk {
      * The entity is also spawned to any viewers of this chunk within render distance.
      * @param entity the entity to spawn
      */
-    public void addEntity(BaseEntity entity) {
+    public void addEntity(ImplEntity entity) {
         if (!this.entities.contains(entity)) {
             for (Player player : this.getViewers()) {
                 if (entity.canBeSpawnedTo(player)) {
@@ -118,7 +118,7 @@ public class ImplChunk implements Chunk {
         if (this.entities.remove(entity)) {
             for (Player player : this.getViewers()) {
                 if (!player.equals(entity)) {
-                    if (((BaseEntity) entity).shouldBeDespawnedFrom(player)) {
+                    if (((ImplEntity) entity).shouldBeDespawnedFrom(player)) {
                         entity.despawnFrom(player);
                     }
                 }
@@ -374,7 +374,7 @@ public class ImplChunk implements Chunk {
                 // Send the entities of this chunk to the player
                 if (player.isLocallyInitialized()) {
                     for (Entity entity : this.getEntities()) {
-                        if (((BaseEntity) entity).canBeSpawnedTo(player)) {
+                        if (((ImplEntity) entity).canBeSpawnedTo(player)) {
                             entity.spawnTo(player);
                         }
                     }

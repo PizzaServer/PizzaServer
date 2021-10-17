@@ -3,12 +3,12 @@ package io.github.willqi.pizzaserver.server.entity;
 import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
-import io.github.willqi.pizzaserver.api.entity.types.EntityType;
-import io.github.willqi.pizzaserver.api.entity.types.impl.HumanEntityType;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 
 import java.util.function.Function;
 
-public class EntityConstructor implements Function<EntityType, Entity> {
+public class EntityConstructor implements Function<EntityDefinition, Entity> {
 
     private final Server server;
 
@@ -18,12 +18,11 @@ public class EntityConstructor implements Function<EntityType, Entity> {
     }
 
     @Override
-    public Entity apply(EntityType entityType) {
-        switch (entityType.getEntityId()) {
-            case HumanEntityType.ID:
-                return new ImplHumanEntity((HumanEntityType) EntityRegistry.getEntityType(HumanEntityType.ID));
-            default:
-                return null;
+    public Entity apply(EntityDefinition entityDefinition) {
+        if (entityDefinition.getEntityId().equals(HumanEntityDefinition.ID)) {
+            return new ImplHumanEntity((HumanEntityDefinition) EntityRegistry.getDefinition(HumanEntityDefinition.ID));
+        } else {
+            return new ImplLivingEntity(entityDefinition);
         }
     }
 

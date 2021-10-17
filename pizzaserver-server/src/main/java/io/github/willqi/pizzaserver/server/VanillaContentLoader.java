@@ -1,7 +1,8 @@
 package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
-import io.github.willqi.pizzaserver.api.entity.types.impl.*;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.level.world.blocks.types.*;
 
@@ -25,8 +26,8 @@ public class VanillaContentLoader {
     }
 
     private static void loadEntities() {
-        EntityRegistry.register(new HumanEntityType());
-        EntityRegistry.register(new CowEntityType());
+        EntityRegistry.registerDefinition(new HumanEntityDefinition());
+        EntityRegistry.registerDefinition(new CowEntityDefinition());
     }
 
 }

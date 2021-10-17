@@ -4,7 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
-import io.github.willqi.pizzaserver.server.entity.BaseEntity;
+import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.NetworkChunkPublisherUpdatePacket;
 
@@ -60,7 +60,7 @@ public class PlayerChunkManager {
 
             if (isWithinEntityRenderDistance && isChunkLoaded) {
                 for (Entity entity : this.player.getWorld().getChunk(chunkCoordinates.getX(), chunkCoordinates.getY()).getEntities()) {
-                    if (((BaseEntity) entity).canBeSpawnedTo(this.player)) {
+                    if (((ImplEntity) entity).canBeSpawnedTo(this.player)) {
                         entity.spawnTo(this.player);
                     }
                 }
@@ -193,7 +193,7 @@ public class PlayerChunkManager {
 
         if (!oldChunkLocationEntitiesVisible && newChunkLocationEntitiesVisible && this.player.isLocallyInitialized()) {
             for (Entity entity : chunk.getEntities()) {
-                if (((BaseEntity) entity).canBeSpawnedTo(this.player)) {
+                if (((ImplEntity) entity).canBeSpawnedTo(this.player)) {
                     entity.spawnTo(this.player);
                 }
             }

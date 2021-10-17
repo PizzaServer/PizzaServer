@@ -1,11 +1,14 @@
 package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
+import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
-import io.github.willqi.pizzaserver.api.entity.types.EntityType;
-import io.github.willqi.pizzaserver.api.entity.types.behaviour.EntityBehaviour;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
@@ -19,10 +22,9 @@ import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.RemoveEntityPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.SetEntityDataPacket;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-public abstract class BaseEntity implements Entity {
+public class ImplEntity implements Entity {
 
     public static long ID = 1;
 
@@ -39,8 +41,9 @@ public abstract class BaseEntity implements Entity {
     protected float yaw;
     protected float headYaw;
 
-    protected EntityBehaviour behaviour;
-    protected final EntityType entityType;
+    protected boolean hasAI;
+    protected final EntityDefinition entityDefinition;
+    protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
     protected EntityMetaData metaData = new ImplEntityMetaData();
 
@@ -49,9 +52,9 @@ public abstract class BaseEntity implements Entity {
     protected final Set<Player> hiddenFrom = new HashSet<>();
 
 
-    public BaseEntity(EntityType entityType) {
+    public ImplEntity(EntityDefinition entityDefinition) {
         this.id = ID++;
-        this.entityType = entityType;
+        this.entityDefinition = entityDefinition;
     }
 
     @Override
@@ -60,8 +63,44 @@ public abstract class BaseEntity implements Entity {
     }
 
     @Override
-    public EntityType getEntityType() {
-        return this.entityType;
+    public EntityDefinition getEntityDefinition() {
+        return this.entityDefinition;
+    }
+
+    @Override
+    public boolean addComponentGroup(String groupId) {
+        return this.addComponentGroup(this.getEntityDefinition().getComponentGroup(groupId));
+    }
+
+    @Override
+    public boolean addComponentGroup(EntityComponentGroup group) {
+        if (this.componentGroups.contains(group)) {
+            return false;
+        }
+
+        this.componentGroups.addFirst(group);
+        return true;
+    }
+
+    @Override
+    public boolean removeComponentGroup(String groupId) {
+        return this.removeComponentGroup(this.getEntityDefinition().getComponentGroup(groupId));
+    }
+
+    @Override
+    public boolean removeComponentGroup(EntityComponentGroup group) {
+        return this.componentGroups.remove(group);
+    }
+
+    @Override
+    public <T extends EntityComponent> T getComponent(Class<T> componentClazz) {
+        for (EntityComponentGroup group : this.componentGroups) {
+            if (group.hasComponent(componentClazz)) {
+                return group.getComponent(componentClazz);
+            }
+        }
+
+        return EntityRegistry.getDefaultComponent(componentClazz);
     }
 
     @Override
@@ -97,6 +136,16 @@ public abstract class BaseEntity implements Entity {
     @Override
     public Location getLocation() {
         return new Location(this.world, new Vector3(this.getX(), this.getY(), this.getZ()));
+    }
+
+    @Override
+    public float getHeight() {
+        return 0;
+    }
+
+    @Override
+    public float getWidth() {
+        return 0;
     }
 
     /**
@@ -239,6 +288,21 @@ public abstract class BaseEntity implements Entity {
         }
     }
 
+    @Override
+    public boolean hasAI() {
+        return this.hasAI;
+    }
+
+    @Override
+    public void setAI(boolean hasAI) {
+        this.hasAI = hasAI;
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return null;
+    }
+
     public void moveTo(float x, float y, float z) {
         this.moveUpdate = true;
 
@@ -257,16 +321,6 @@ public abstract class BaseEntity implements Entity {
     @Override
     public void tick() {
         this.moveUpdate = false;
-    }
-
-    @Override
-    public EntityBehaviour getEntityBehaviour() {
-        return this.behaviour;
-    }
-
-    @Override
-    public void setEntityBehaviour(EntityBehaviour behaviour) {
-        this.behaviour = behaviour;
     }
 
     /**
@@ -376,8 +430,8 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof BaseEntity) {
-            return NumberUtils.isNearlyEqual(((BaseEntity) obj).getId(), this.getId());
+        if (obj instanceof ImplEntity) {
+            return NumberUtils.isNearlyEqual(((ImplEntity) obj).getId(), this.getId());
         }
         return false;
     }

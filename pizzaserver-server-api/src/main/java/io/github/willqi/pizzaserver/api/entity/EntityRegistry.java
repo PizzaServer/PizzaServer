@@ -1,7 +1,10 @@
 package io.github.willqi.pizzaserver.api.entity;
 
-import io.github.willqi.pizzaserver.api.Server;
-import io.github.willqi.pizzaserver.api.entity.types.EntityType;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,28 +12,68 @@ import java.util.function.Function;
 
 public class EntityRegistry {
 
-    private static final Map<String, EntityType> types = new HashMap<>();
+    private static final Map<String, EntityDefinition> definitions = new HashMap<>();
+    private static final Map<Class<? extends EntityComponent>, EntityComponentHandler<?>> componentHandlers = new HashMap<>();
+    private static final Map<Class<? extends EntityComponent>, EntityComponent> defaultComponents = new HashMap<>();
 
-    private static Function<EntityType, Entity> entityConstructor;
+    private static Function<EntityDefinition, Entity> entityConstructor;
 
-    public static void register(EntityType entityType) {
-        types.put(entityType.getEntityId(), entityType);
+    /**
+     * Register an entity type.
+     * @param entityDefinition definition class
+     */
+    public static void registerDefinition(EntityDefinition entityDefinition) {
+        definitions.put(entityDefinition.getEntityId(), entityDefinition);
     }
 
-    public static EntityType getEntityType(String entityId) {
-        if (!types.containsKey(entityId)) {
-            throw new NullPointerException("Could not find a entity type by the id of " + entityId);
+    /**
+     * Register a new entity component.
+     * @param componentClazz class of the component
+     * @param defaultComponent default settings component
+     * @param handler handles applying/removing said component
+     */
+    public static <T extends EntityComponent> void registerComponent(Class<T> componentClazz, T defaultComponent, EntityComponentHandler<T> handler) {
+        componentHandlers.put(componentClazz, handler);
+        defaultComponents.put(componentClazz, defaultComponent);
+    }
+
+    public static EntityDefinition getDefinition(String entityId) {
+        if (!definitions.containsKey(entityId)) {
+            throw new NullPointerException("Could not find a entity definition by the id of " + entityId);
         }
-        return types.get(entityId);
+        return definitions.get(entityId);
     }
 
-    public static boolean hasEntityType(String entityId) {
-        return types.containsKey(entityId);
+    public static boolean hasEntityDefinition(String entityId) {
+        return definitions.containsKey(entityId);
+    }
+
+    public static <T extends EntityComponent> EntityComponentHandler<T> getComponentHandler(Class<T> componentClazz) {
+        EntityComponentHandler<T> handler = (EntityComponentHandler<T>) componentHandlers.getOrDefault(componentClazz, null);
+        if (handler == null) {
+            throw new NullPointerException("Misconfigured component. The requested component does not have a component handler.");
+        }
+
+        return handler;
+    }
+
+    public static <T extends EntityComponent> T getDefaultComponent(Class<T> componentClazz) {
+        T defaultComponent = (T) defaultComponents.getOrDefault(componentClazz, null);
+        if (defaultComponent == null) {
+            throw new NullPointerException("Misconfigured component. The requested component does not have a default component.");
+        }
+
+        return defaultComponent;
     }
 
     public static Entity getEntity(String entityId) {
-        EntityType entityType = getEntityType(entityId);
-        return entityConstructor.apply(entityType);
+        EntityDefinition entityDefinition = getDefinition(entityId);
+        return entityConstructor.apply(entityDefinition);
+    }
+
+    public static ItemEntity getItemEntity(ItemStack itemStack) {
+        ItemEntity entity = (ItemEntity) getEntity(ItemEntityDefinition.ID);
+        return entity;
     }
 
     /**
@@ -38,7 +81,7 @@ public class EntityRegistry {
      * Used to abstract internal server workings away from plugin api.
      * @param constructor entity constructor
      */
-    public static void setEntityConstructor(Function<EntityType, Entity> constructor) {
+    public static void setEntityConstructor(Function<EntityDefinition, Entity> constructor) {
         entityConstructor = constructor;
     }
 
