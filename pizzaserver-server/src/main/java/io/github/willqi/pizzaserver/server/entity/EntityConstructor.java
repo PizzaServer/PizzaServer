@@ -19,6 +19,7 @@ public class EntityConstructor implements Function<EntityDefinition, Entity> {
 
     @Override
     public Entity apply(EntityDefinition entityDefinition) {
+        // TODO: ImplEntity creation if it is not alive
         if (entityDefinition.getEntityId().equals(HumanEntityDefinition.ID)) {
             return new ImplHumanEntity((HumanEntityDefinition) EntityRegistry.getDefinition(HumanEntityDefinition.ID));
         } else {

@@ -1,8 +1,11 @@
-package io.github.willqi.pizzaserver.api.player.attributes;
+package io.github.willqi.pizzaserver.server.entity;
+
+import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 
 import java.util.*;
 
-public class PlayerAttributes {
+public class EntityAttributes {
 
     private final Map<AttributeType, Attribute> attributes = new HashMap<AttributeType, Attribute>() {
         {

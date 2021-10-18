@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.api.network.protocol.packets;
 
-import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 
 import java.util.Collections;
 import java.util.Set;

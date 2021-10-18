@@ -5,11 +5,8 @@ import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
-import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
-import io.github.willqi.pizzaserver.api.player.data.Device;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Represents a player on the Minecraft server.
@@ -58,12 +55,6 @@ public interface Player extends HumanEntity {
      * @return if the inventory was opened
      */
     boolean openInventory(Inventory inventory);
-
-    /**
-     * Get the player attributes of the player.
-     * @return {@link PlayerAttributes}
-     */
-    PlayerAttributes getAttributes();
 
     /**
      * Get the amount of food strength the player has.

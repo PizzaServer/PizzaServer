@@ -1,6 +1,8 @@
 package io.github.willqi.pizzaserver.api.entity;
 
 import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
@@ -13,6 +15,8 @@ import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+
+import java.util.Set;
 
 /**
  * Represents an entity on Minecraft.
@@ -91,9 +95,13 @@ public interface Entity extends Watchable {
 
     float getEyeHeight();
 
+    String getDisplayName();
+
     void setDisplayName(String name);
 
-    String getDisplayName();
+    Set<Attribute> getAttributes();
+
+    Attribute getAttribute(AttributeType type);
 
     /**
      * Retrieve the entity's current movement speed per tick.

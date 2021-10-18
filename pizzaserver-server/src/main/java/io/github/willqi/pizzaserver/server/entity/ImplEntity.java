@@ -3,6 +3,8 @@ package io.github.willqi.pizzaserver.server.entity;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
@@ -11,12 +13,12 @@ import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.AddEntityPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.entity.meta.ImplEntityMetaData;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
@@ -36,7 +38,7 @@ public class ImplEntity implements Entity {
     protected volatile World world;
     protected boolean moveUpdate;
 
-    protected float movementSpeed;
+    protected final EntityAttributes attributes = new EntityAttributes();
 
     protected float pitch;
     protected float yaw;
@@ -46,7 +48,7 @@ public class ImplEntity implements Entity {
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
-    protected EntityMetaData metaData = new ImplEntityMetaData();
+    protected EntityMetaData metaData = new EntityMetaData();
     protected boolean metaDataUpdate;
 
     protected boolean spawned;
@@ -220,23 +222,35 @@ public class ImplEntity implements Entity {
     }
 
     @Override
-    public void setDisplayName(String name) {
-        this.getMetaData().setStringProperty(EntityMetaPropertyName.NAMETAG, name);
-    }
-
-    @Override
     public String getDisplayName() {
         return this.getMetaData().getStringProperty(EntityMetaPropertyName.NAMETAG);
     }
 
     @Override
+    public void setDisplayName(String name) {
+        this.getMetaData().setStringProperty(EntityMetaPropertyName.NAMETAG, name);
+    }
+
+    @Override
+    public Set<Attribute> getAttributes() {
+        return this.attributes.getAttributes();
+    }
+
+    @Override
+    public Attribute getAttribute(AttributeType type) {
+        return this.attributes.getAttribute(type);
+    }
+
+    @Override
     public float getMovementSpeed() {
-        return this.movementSpeed;
+        return this.getAttribute(AttributeType.MOVEMENT_SPEED).getCurrentValue();
     }
 
     @Override
     public void setMovementSpeed(float movementSpeed) {
-        this.movementSpeed = Math.max(0, movementSpeed);
+        Attribute attribute = this.getAttribute(AttributeType.MOVEMENT_SPEED);
+        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), movementSpeed));
+        attribute.setDefaultValue(Math.max(attribute.getMinimumValue(), movementSpeed));
     }
 
     @Override
@@ -416,16 +430,25 @@ public class ImplEntity implements Entity {
 
     @Override
     public boolean spawnTo(Player player) {
-        if (!this.withinEntityRenderDistanceTo(player)) {
+        if (this.canBeSpawnedTo(player)) {
+            this.spawnedTo.add(player);
+
+            AddEntityPacket addEntityPacket = new AddEntityPacket();
+            addEntityPacket.setEntityUniqueId(this.getId());
+            addEntityPacket.setEntityRuntimeId(this.getId());
+            addEntityPacket.setEntityType(this.getEntityDefinition().getEntityId());
+            addEntityPacket.setPosition(this.getLocation());
+            addEntityPacket.setVelocity(new Vector3(0, 0, 0));
+            addEntityPacket.setPitch(this.getPitch());
+            addEntityPacket.setYaw(this.getYaw());
+            addEntityPacket.setHeadYaw(this.getHeadYaw());
+            addEntityPacket.setMetaData(this.getMetaData());
+            player.sendPacket(addEntityPacket);
+
+            return true;
+        } else {
             return false;
         }
-
-        if (this.isHiddenFrom(player)) {
-            // The entity is being spawned to the player. Unhide the entity.
-            this.hiddenFrom.remove(player);
-        }
-
-        return this.spawnedTo.add(player);
     }
 
     @Override

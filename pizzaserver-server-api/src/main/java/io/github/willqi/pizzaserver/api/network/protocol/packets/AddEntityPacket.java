@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -8,6 +9,8 @@ import java.util.Collections;
 import java.util.Set;
 
 public class AddEntityPacket extends BaseBedrockPacket {
+
+    public static final int ID = 0x0d;
 
     private long entityUniqueId;
     private long entityRuntimeId;
@@ -21,10 +24,11 @@ public class AddEntityPacket extends BaseBedrockPacket {
     private float headYaw;
 
     private EntityMetaData metaData;
+    private Set<Attribute> attributes = Collections.emptySet();
     private Set<EntityLink> entityLinks = Collections.emptySet();
 
     public AddEntityPacket() {
-        super(1);
+        super(ID);
     }
 
     public long getEntityUniqueId() {
@@ -97,6 +101,14 @@ public class AddEntityPacket extends BaseBedrockPacket {
 
     public void setMetaData(EntityMetaData metaData) {
         this.metaData = metaData;
+    }
+
+    public Set<Attribute> getAttributes() {
+        return this.attributes;
+    }
+
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
     }
 
     public Set<EntityLink> getEntityLinks() {

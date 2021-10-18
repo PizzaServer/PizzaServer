@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.api.entity;
 
 import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 /**
  * An entity which can be treated as alive.

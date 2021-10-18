@@ -131,7 +131,9 @@ public class ImplHumanEntity extends ImplLivingEntity implements HumanEntity {
 
     @Override
     public boolean spawnTo(Player player) {
-        if (super.spawnTo(player)) {
+        if (this.canBeSpawnedTo(player)) {
+            this.spawnedTo.add(player);
+
             player.getPlayerList().addEntry(this.getPlayerListEntry());
 
             AddPlayerPacket addPlayerPacket = new AddPlayerPacket();

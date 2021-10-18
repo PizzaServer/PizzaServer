@@ -5,9 +5,11 @@ import io.github.willqi.pizzaserver.api.entity.definition.BaseEntityDefinition;
 
 public class CowEntityDefinition extends BaseEntityDefinition {
 
+    public static final String ID = "minecraft:cow";
+
     @Override
     public String getEntityId() {
-        return "minecraft:cow";
+        return ID;
     }
 
     @Override
