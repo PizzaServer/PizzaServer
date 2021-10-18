@@ -97,6 +97,7 @@ public class BedrockClientSession {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void sendPacketOverNetwork(BaseBedrockPacket packet, boolean immediate) {
         // Packets begin with the RakNet game packet id
         ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();

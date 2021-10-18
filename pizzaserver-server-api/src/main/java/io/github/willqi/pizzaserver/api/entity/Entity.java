@@ -130,6 +130,10 @@ public interface Entity extends Watchable {
 
     void setAI(boolean hasAI);
 
+    float getScale();
+
+    void setScale(float scale);
+
     Inventory getInventory();
 
     /**

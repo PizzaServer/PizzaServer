@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.api.entity.definition.components.impl;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 
 /**
- * Minecraft entity component to adjust the size of the entity.
+ * Entity component to adjust the size of the entity.
  */
 public class EntityScaleComponent extends EntityComponent {
 

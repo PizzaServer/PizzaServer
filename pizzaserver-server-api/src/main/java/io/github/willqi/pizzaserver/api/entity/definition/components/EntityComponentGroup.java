@@ -34,11 +34,12 @@ public class EntityComponentGroup {
         return this.components.containsKey(componentClazz);
     }
 
-    public Collection<EntityComponent> getComponents() {
+    public Collection<? extends EntityComponent> getComponents() {
         return this.components.values();
     }
 
-    public <T extends EntityComponent> T getComponent(Class<? extends EntityComponent> componentClazz) {
+    @SuppressWarnings("unchecked")
+    public <T extends EntityComponent> T getComponent(Class<T> componentClazz) {
         if (!this.hasComponent(componentClazz)) {
             throw new NullPointerException("This component group does not have the provided component.");
         }

@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
@@ -46,6 +47,7 @@ public class ImplEntity implements Entity {
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
     protected EntityMetaData metaData = new ImplEntityMetaData();
+    protected boolean metaDataUpdate;
 
     protected boolean spawned;
     protected final Set<Player> spawnedTo = new HashSet<>();
@@ -73,9 +75,25 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public boolean addComponentGroup(EntityComponentGroup group) {
         if (this.componentGroups.contains(group)) {
             return false;
+        }
+
+        // Unregister previous active components and register new active components
+        for (EntityComponent newComponent : group.getComponents()) {
+            Class<? extends EntityComponent> newComponentClazz = newComponent.getClass();
+            EntityComponentHandler handler = EntityRegistry.getComponentHandler(newComponentClazz);
+
+            for (EntityComponentGroup existingComponentGroup : this.componentGroups) {
+                if (existingComponentGroup.hasComponent(newComponentClazz)) {
+                    handler.onUnregistered(this, existingComponentGroup.getComponent(newComponentClazz));
+                    break;
+                }
+            }
+
+            handler.onRegistered(this, group.getComponent(newComponentClazz));
         }
 
         this.componentGroups.addFirst(group);
@@ -88,8 +106,22 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public boolean removeComponentGroup(EntityComponentGroup group) {
-        return this.componentGroups.remove(group);
+        if (this.componentGroups.remove(group)) {
+            // Unregister components of the group from this entity and then find and apply the new active components of the same types.
+            for (EntityComponent removeComponent : group.getComponents()) {
+                Class<? extends EntityComponent> removeComponentClazz = removeComponent.getClass();
+                EntityComponentHandler handler = EntityRegistry.getComponentHandler(removeComponentClazz);
+
+                handler.onUnregistered(this, group.getComponent(removeComponentClazz));
+                handler.onRegistered(this, this.getComponent(removeComponentClazz));
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -279,13 +311,7 @@ public class ImplEntity implements Entity {
     @Override
     public void setMetaData(EntityMetaData metaData) {
         this.metaData = metaData;
-
-        SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
-        entityDataPacket.setRuntimeId(this.getId());
-        entityDataPacket.setData(this.getMetaData());
-        for (Player player : this.getViewers()) {
-            player.sendPacket(entityDataPacket);
-        }
+        this.metaDataUpdate = true;
     }
 
     @Override
@@ -296,6 +322,18 @@ public class ImplEntity implements Entity {
     @Override
     public void setAI(boolean hasAI) {
         this.hasAI = hasAI;
+    }
+
+    @Override
+    public float getScale() {
+        return this.getMetaData().getFloatProperty(EntityMetaPropertyName.SCALE);
+    }
+
+    @Override
+    public void setScale(float scale) {
+        EntityMetaData data = this.getMetaData();
+        data.setFloatProperty(EntityMetaPropertyName.SCALE, scale);
+        this.setMetaData(data);
     }
 
     @Override
@@ -321,6 +359,16 @@ public class ImplEntity implements Entity {
     @Override
     public void tick() {
         this.moveUpdate = false;
+
+        if (this.metaDataUpdate) {
+            this.metaDataUpdate = false;
+            SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
+            entityDataPacket.setRuntimeId(this.getId());
+            entityDataPacket.setData(this.getMetaData());
+            for (Player player : this.getViewers()) {
+                player.sendPacket(entityDataPacket);
+            }
+        }
     }
 
     /**
