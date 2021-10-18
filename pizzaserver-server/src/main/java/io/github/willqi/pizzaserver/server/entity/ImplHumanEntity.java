@@ -13,10 +13,46 @@ import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.api.player.skin.Skin;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.server.ImplServer;
 
+import java.io.*;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ImplHumanEntity extends ImplLivingEntity implements HumanEntity {
+
+    public static Skin DEFAULT_STEVE;
+
+    static {
+        try {
+            InputStream defaultGeometryStream = ImplServer.class.getResourceAsStream("/skin/steve/geometry.json");
+            String defaultGeometryString = new BufferedReader(new InputStreamReader(defaultGeometryStream))
+                    .lines().collect(Collectors.joining("\n"));
+
+            InputStream defaultResourcePatchStream = ImplServer.class.getResourceAsStream("/skin/steve/resource_patch.json");
+            String defaultResourcePatchString = new BufferedReader(new InputStreamReader(defaultResourcePatchStream))
+                    .lines().collect(Collectors.joining("\n"));
+
+            InputStream defaultSkinDataStream = ImplServer.class.getResourceAsStream("/skin/steve/skin_data");
+            ByteArrayOutputStream skinDataBufferStream = new ByteArrayOutputStream();
+            int b;
+            while ((b = defaultSkinDataStream.read()) != -1) {
+                skinDataBufferStream.write(b);
+            }
+            byte[] skinData = skinDataBufferStream.toByteArray();
+
+            DEFAULT_STEVE = new Skin.Builder()
+                    .setSkinResourcePatch(defaultResourcePatchString)
+                    .setGeometryData(defaultGeometryString)
+                    .setSkinData(skinData)
+                    .setSkinHeight(64)
+                    .setSkinWidth(64)
+                    .build();
+        } catch (IOException exception) {
+            throw new AssertionError("Failed to parse default skin");
+        }
+    }
+
 
     protected Skin skin;
 
@@ -26,6 +62,7 @@ public class ImplHumanEntity extends ImplLivingEntity implements HumanEntity {
     public ImplHumanEntity(HumanEntityDefinition entityType) {
         super(entityType);
         this.uuid = UUID.randomUUID();
+        this.skin = DEFAULT_STEVE;
     }
 
     @Override

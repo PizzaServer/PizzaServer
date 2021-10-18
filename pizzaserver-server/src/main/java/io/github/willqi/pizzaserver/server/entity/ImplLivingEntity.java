@@ -5,7 +5,9 @@ import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.willqi.pizzaserver.server.entity.inventory.ImplLivingEntityInventory;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class ImplLivingEntity extends ImplEntity implements LivingEntity {
@@ -15,6 +17,7 @@ public class ImplLivingEntity extends ImplEntity implements LivingEntity {
 
     public ImplLivingEntity(EntityDefinition entityDefinition) {
         super(entityDefinition);
+        this.inventory = new ImplLivingEntityInventory(this, Collections.emptySet(), 36);   // TODO: Change when inventory component is implemented
     }
 
     @Override

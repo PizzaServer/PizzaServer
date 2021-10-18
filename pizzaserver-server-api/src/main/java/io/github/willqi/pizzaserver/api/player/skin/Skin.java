@@ -308,24 +308,24 @@ public class Skin {
 
     public static class Builder {
 
-        private String skinId;
-        private String fullSkinId;
-        private String playFabId;
+        private String skinId = "";
+        private String fullSkinId = "";
+        private String playFabId = "";
         private String skinResourcePatch;
         private String geometryData;
         private int skinHeight;
         private int skinWidth;
-        private byte[] skinData;
+        private byte[] skinData = new byte[0];
 
         private int capeHeight;
         private int capeWidth;
-        private byte[] capeData;
-        private String capeId;
+        private byte[] capeData = new byte[0];
+        private String capeId = "";
         private boolean capeOnClassic;
 
-        private String animationData;
-        private String armSize;
-        private String skinColor;
+        private String animationData = "";
+        private String armSize = "";
+        private String skinColor = "";
         private List<SkinAnimation> animations = new ArrayList<>();
         private List<SkinPersonaPiece> pieces = new ArrayList<>();
         private List<SkinPersonaPieceTint> tints = new ArrayList<>();
