@@ -99,9 +99,9 @@ public interface World extends ChunkManager {
     }
 
     default void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType) {
-        this.playSound(sound, vector3, isGlobal, isBaby, entityType, 0);
+        this.playSound(sound, vector3, isGlobal, isBaby, entityType, null);
     }
 
-    void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID);
+    void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, Block block);
 
 }

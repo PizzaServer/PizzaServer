@@ -9,8 +9,10 @@ import com.google.gson.JsonObject;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.item.types.ItemType;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockType;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
@@ -19,6 +21,7 @@ import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.api.network.protocol.utils.MinecraftNamespaceComparator;
+import io.github.willqi.pizzaserver.server.network.protocol.exceptions.ProtocolException;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
@@ -40,12 +43,12 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     // for the tuple and its properties since multiple versions
     // no longer have to recreate a tuple that would use more space
     // than an integer
-    protected static final Map<Tuple<String, NBTCompound>, Integer> GLOBAL_BLOCK_STATES = new HashMap<>();
+    protected static final BiMap<Tuple<String, NBTCompound>, Integer> GLOBAL_BLOCK_STATES = HashBiMap.create();
 
     private final ImplServer server;
 
     protected NBTCompound biomesDefinitions;
-    protected final Map<Integer, Integer> blockStates = new HashMap<>();
+    protected final BiMap<Integer, Integer> blockStates = HashBiMap.create();
     protected final BiMap<String, Integer> itemRuntimeIds = HashBiMap.create();
     protected final Set<StartGamePacket.ItemState> itemStates = new HashSet<>();
 
@@ -173,7 +176,20 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             int blockStateLookupId = GLOBAL_BLOCK_STATES.get(new Tuple<>(name, state));
             return this.blockStates.get(blockStateLookupId);
         } catch (NullPointerException exception) {
-            throw new NullPointerException("Failed to find block runtime id for a state of " + name);
+            throw new ProtocolException(this, "Failed to find block runtime id for a state of " + name);
+        }
+    }
+
+    @Override
+    public Block getBlockFromRuntimeId(int blockRuntimeId) {
+        try {
+            int blockStateLookupId = this.blockStates.inverse().get(blockRuntimeId);
+            Tuple<String, NBTCompound> blockData = GLOBAL_BLOCK_STATES.inverse().get(blockStateLookupId);
+
+            BlockType blockType = BlockRegistry.getBlockType(blockData.getObjectA());
+            return blockType.create(blockType.getBlockStateIndex(blockData.getObjectB()));
+        } catch (NullPointerException exception) {
+            throw new ProtocolException(this, "Failed to resolve block from block runtime id of " + blockRuntimeId);
         }
     }
 
@@ -182,7 +198,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         try {
             return this.itemRuntimeIds.get(itemName);
         } catch (NullPointerException exception) {
-            throw new IllegalStateException("Attempted to retrieve runtime id for non-existent item: " + itemName);
+            throw new ProtocolException(this, "Attempted to retrieve runtime id for non-existent item: " + itemName);
         }
     }
 
@@ -191,7 +207,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         try {
             return this.itemRuntimeIds.inverse().get(runtimeId);
         } catch (NullPointerException exception) {
-            throw new IllegalStateException("Attempted to retrieve item name for non-existent runtime id: " + runtimeId);
+            throw new ProtocolException(this, "Attempted to retrieve item name for non-existent runtime id: " + runtimeId);
         }
     }
 

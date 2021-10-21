@@ -246,15 +246,15 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID) {
+    public void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, Block block) {
         WorldSoundEventPacket packet = new WorldSoundEventPacket();
         packet.setSound(sound);
         packet.setVector3(vector3);
         packet.setGlobal(isGlobal);
         packet.setBaby(isBaby);
         packet.setEntityType(entityType);
-        packet.setBlockID(blockID);
-        WorldSoundEvent event = new WorldSoundEvent(this, sound, vector3, isGlobal, isBaby, entityType, blockID);
+        packet.setBlock(block);
+        WorldSoundEvent event = new WorldSoundEvent(this, sound, vector3, isGlobal, isBaby, entityType, block);
         this.getServer().getEventManager().call(event);
         if (!event.isCancelled()) {
             for (Player player : this.getPlayers()) {

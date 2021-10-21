@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.network.protocol.versions;
 
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.format.BlockRuntimeMapper;
 
 /**
@@ -23,10 +24,17 @@ public interface MinecraftVersion extends BlockRuntimeMapper {
     int getItemRuntimeId(String itemName);
 
     /**
-     * Resolve a item name by its runtime id.
+     * Resolve an item name by its runtime id.
      * @param runtimeId runtime id
-     * @return the item name or null if no name could be found
+     * @return the item name
      */
     String getItemName(int runtimeId);
+
+    /**
+     * Resolve a block by its runtime id.
+     * @param blockRuntimeId runtime id
+     * @return the block
+     */
+    Block getBlockFromRuntimeId(int blockRuntimeId);
 
 }

@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.api.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
@@ -12,7 +13,7 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
 
     private WorldSound sound;
     private Vector3 vector3;
-    private int blockID;
+    private Block block;
     private String entityType; //Entity type (identifier:type, i.e. minecraft:player)
     private boolean isBaby;
     private boolean isGlobal;
@@ -41,12 +42,12 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
         this.vector3 = vector3;
     }
 
-    public int getBlockID() {
-        return this.blockID;
+    public Block getBlock() {
+        return this.block;
     }
 
-    public void setBlockID(int blockID) {
-        this.blockID = blockID;
+    public void setBlock(Block block) {
+        this.block = block;
     }
 
     public String getEntityType() {
