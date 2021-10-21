@@ -43,6 +43,13 @@ public interface Entity extends Watchable {
      */
     <T extends EntityComponent> T getComponent(Class<T> componentClazz);
 
+    /**
+     * Check if this entity has any component group with this component defined.
+     * @param componentClazz component class
+     * @return if it exists
+     */
+    boolean hasComponent(Class<? extends EntityComponent> componentClazz);
+
     float getX();
 
     float getY();

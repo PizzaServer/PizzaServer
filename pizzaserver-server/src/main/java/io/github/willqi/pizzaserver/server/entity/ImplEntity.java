@@ -138,6 +138,16 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public boolean hasComponent(Class<? extends EntityComponent> componentClazz) {
+        for (EntityComponentGroup group : this.componentGroups) {
+            if (group.hasComponent(componentClazz)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public float getX() {
         return this.x;
     }
