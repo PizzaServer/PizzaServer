@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.api.item.types;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.willqi.pizzaserver.api.item.data.ToolType;
+import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
@@ -63,8 +66,13 @@ public abstract class BaseItemType implements ItemType {
     }
 
     @Override
-    public int getMiningSpeed() {
-        return 1;
+    public ToolType getToolType() {
+        return ToolTypeRegistry.getToolType(ToolTypeID.NONE);
+    }
+
+    @Override
+    public float getToolStrength(Block block) {
+        return this.getToolType().getStrength();
     }
 
     @Override

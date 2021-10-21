@@ -109,4 +109,19 @@ public class Vector2 {
         return "Vector2(x=" + this.x + ", y=" + this.y + ")";
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Vector2) {
+            Vector2 otherVector = (Vector2) obj;
+            return NumberUtils.isNearlyEqual(otherVector.getX(), this.getX())
+                    && NumberUtils.isNearlyEqual(otherVector.getY(), this.getY());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) ((43 * this.getX()) + (43 * this.getY()));
+    }
+
 }

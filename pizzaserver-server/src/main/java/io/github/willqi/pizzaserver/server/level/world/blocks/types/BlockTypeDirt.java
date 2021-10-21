@@ -2,12 +2,14 @@ package io.github.willqi.pizzaserver.server.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.willqi.pizzaserver.api.item.data.ToolType;
+import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+
+import java.util.*;
 
 public class BlockTypeDirt extends BaseBlockType {
 
@@ -37,6 +39,21 @@ public class BlockTypeDirt extends BaseBlockType {
     @Override
     public BiMap<NBTCompound, Integer> getBlockStates() {
         return BLOCK_STATES;
+    }
+
+    @Override
+    public float getToughness() {
+        return 0.5f;
+    }
+
+    @Override
+    public Set<ToolType> getCorrectTools() {
+        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
+    }
+
+    @Override
+    public Set<ToolType> getBestTools() {
+        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 
 }

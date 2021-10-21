@@ -104,4 +104,21 @@ public class Vector3i {
     public String toString() {
         return "Vector3i(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ")";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Vector3i) {
+            Vector3i otherVector = (Vector3i) obj;
+            return otherVector.getX() == this.getX()
+                    && otherVector.getY() == this.getY()
+                    && otherVector.getZ() == this.getZ();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (43 * this.getX()) + (43 * this.getY()) + (43 * this.getZ());
+    }
+
 }

@@ -94,17 +94,17 @@ public class Vector2i {
     }
 
     @Override
-    public int hashCode() {
-        return (43 * this.getY()) + (43 * this.getX());
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Vector2i) {
             Vector2i otherVector2i = (Vector2i) obj;
             return otherVector2i.getX() == this.getX() && otherVector2i.getY() == this.getY();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (43 * this.getY()) + (43 * this.getX());
     }
 
 }

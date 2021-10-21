@@ -4,17 +4,18 @@ import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.api.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
-import io.github.willqi.pizzaserver.server.entity.EntityAttributes;
 import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.server.entity.EntityAttributes;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
-import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.server.entity.ImplHumanEntity;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
@@ -49,6 +50,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected final EntityAttributes attributes = new EntityAttributes();
 
     protected Inventory openInventory = null;
+
+    private final BreakingData breakingData = new BreakingData(this);
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -113,6 +116,10 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.getChunkManager().onLocallyInitialized();
     }
 
+    public BreakingData getBlockBreakData() {
+        return this.breakingData;
+    }
+
     public boolean canReach(Vector3i vector3i) {
         return this.canReach(vector3i.toVector3());
     }
@@ -129,7 +136,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
         // Direction check
         Vector3 playerDirectionVector = this.getDirectionVector();
-        Vector3 targetDirectionVector = vector3.subtract(this.getLocation()).normalize();
+        Vector3 targetDirectionVector = vector3.subtract(this.getLocation().add(0, this.getEyeHeight(), 0)).normalize();
         return playerDirectionVector.dot(targetDirectionVector) > 0;    // Must be in same direction
     }
 
@@ -405,6 +412,31 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     @Override
     public boolean canAutoSave() {
         return this.autoSave;
+    }
+
+    @Override
+    public void tick() {
+        if (this.moveUpdate) {
+            MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
+            movePlayerPacket.setEntityRuntimeId(this.getId());
+            movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
+            movePlayerPacket.setPitch(this.getPitch());
+            movePlayerPacket.setYaw(this.getYaw());
+            movePlayerPacket.setHeadYaw(this.getHeadYaw());
+            movePlayerPacket.setMode(MovementMode.NORMAL);
+            movePlayerPacket.setOnGround(false);
+
+            for (Player player : this.getViewers()) {
+                player.sendPacket(movePlayerPacket);
+            }
+
+            // Make sure that the block we're breaking is within reach too!
+            if (this.getBlockBreakData().getBlock().isPresent() && !this.canReach(this.getBlockBreakData().getBlock().get().getLocation())) {
+                this.getBlockBreakData().stopBreaking();
+            }
+        }
+
+        super.tick();
     }
 
     @Override

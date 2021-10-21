@@ -52,6 +52,7 @@ public class ImplServer implements Server {
 
     private int targetTps;
     private int currentTps;
+    private long currentTick;
     private volatile boolean running;
     private final String rootDirectory;
 
@@ -117,6 +118,7 @@ public class ImplServer implements Server {
             // Figure out how long it took to tick
             long startTickTime = System.nanoTime();
             this.tick();
+            this.currentTick++;
             currentTps++;
             long timeTakenToTick = System.nanoTime() - startTickTime;
 
@@ -284,6 +286,11 @@ public class ImplServer implements Server {
     @Override
     public int getCurrentTps() {
         return this.currentTps;
+    }
+
+    @Override
+    public long getTick() {
+        return this.currentTick;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v428.handlers;
 
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.api.network.protocol.data.PlayerAction;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.PlayerActionPacket;
@@ -23,7 +24,7 @@ public class V428PlayerActionPacketHandler extends V419PlayerActionPacketHandler
             ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
         }
         packet.setVector3(buffer.readVector3i());
-        packet.setFace(buffer.readVarInt());
+        packet.setFace(BlockFace.resolve(buffer.readVarInt()));
         return packet;
     }
 }

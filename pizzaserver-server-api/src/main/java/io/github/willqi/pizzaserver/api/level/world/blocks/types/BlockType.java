@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
-import io.github.willqi.pizzaserver.api.item.data.ItemToolType;
+import io.github.willqi.pizzaserver.api.item.data.ToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
@@ -171,11 +171,17 @@ public interface BlockType {
     float getFallDamageReduction();
 
     /**
-     * Retrieve the item tool types that should be used against this block.
-     * in order for the item drops to spawn when the block is broken
+     * Retrieve the item tool types that should be used against this block
+     * in order for the item drops to spawn when the block is broken.
      * @return tools that will result in a block drop
      */
-    Set<ItemToolType> getCorrectTools();
+    Set<ToolType> getCorrectTools();
+
+    /**
+     * Retrieve the item tool types that are the most effective against this block.
+     * @return tools that are very effective against this block
+     */
+    Set<ToolType> getBestTools();
 
     /**
      * Retrieve the loot that should be dropped when this block is broken.
@@ -189,6 +195,12 @@ public interface BlockType {
      * @return all the block types that this block can be placed on
      */
     Set<BaseBlockType> getPlaceableOnlyOn();
+
+    /**
+     * Retrieve the block to replace blocks of this block type with when mined.
+     * @return the block to replace this block with after it is mined.
+     */
+    Block getResultBlock();
 
     /**
      * Called when the right click button is used against this block.

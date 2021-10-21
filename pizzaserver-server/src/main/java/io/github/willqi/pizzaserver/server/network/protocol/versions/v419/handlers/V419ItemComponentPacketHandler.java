@@ -76,7 +76,7 @@ public class V419ItemComponentPacketHandler extends BaseProtocolPacketHandler<It
                 .putBoolean("hand_equipped", itemType.isHandEquipped())
                 .putBoolean("liquid_clipped", itemType.canClickOnLiquids())
                 .putInteger("max_stack_size", itemType.getMaxStackSize())
-                .putFloat("mining_speed", itemType.getMiningSpeed())
+                .putFloat("mining_speed", 0)  // Block breaking is handled server-side. Doing this gives greater block break control in the item type class
                 .putBoolean("mirrored_art", itemType.isMirroredArt())
                 .putBoolean("stacked_by_data", itemType.isStackedByDamage())
                 .putInteger("use_animation", itemType.getUseAnimationType().ordinal())

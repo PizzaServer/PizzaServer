@@ -121,4 +121,20 @@ public class Vector3 {
         return "Vector3(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ")";
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Vector3) {
+            Vector3 otherVector = (Vector3) obj;
+            return NumberUtils.isNearlyEqual(otherVector.getX(), this.getX())
+                    && NumberUtils.isNearlyEqual(otherVector.getY(), this.getY())
+                    && NumberUtils.isNearlyEqual(otherVector.getZ(), this.getZ());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) ((43 * this.getX()) + (43 * this.getY()) + (43 * this.getZ()));
+    }
+
 }

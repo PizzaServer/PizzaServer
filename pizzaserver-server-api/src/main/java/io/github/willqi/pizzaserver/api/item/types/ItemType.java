@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.item.types;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
+import io.github.willqi.pizzaserver.api.item.data.ToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
@@ -83,10 +84,16 @@ public interface ItemType {
     int getDamage();
 
     /**
-     * Returns the level of mining speed this item provides.
-     * @return level of mining speed this item provides
+     * Get the tool type this item is considered as.
+     * @return tool type
      */
-    int getMiningSpeed();
+    ToolType getToolType();
+
+    /**
+     * Returns the strength of the tool against a block.
+     * @return level of mining speed this item provides against a block
+     */
+    float getToolStrength(Block block);
 
     /**
      * Get the only blocks that this item can break.
