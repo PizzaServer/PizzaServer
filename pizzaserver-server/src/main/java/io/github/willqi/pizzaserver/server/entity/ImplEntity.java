@@ -44,6 +44,9 @@ public class ImplEntity implements Entity {
     protected float yaw;
     protected float headYaw;
 
+    protected float width;
+    protected float height;
+
     protected boolean hasAI;
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
@@ -184,12 +187,22 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getHeight() {
-        return 0;
+        return this.height;
+    }
+
+    @Override
+    public void setHeight(float height) {
+        this.height = height;
     }
 
     @Override
     public float getWidth() {
-        return 0;
+        return this.width;
+    }
+
+    @Override
+    public void setWidth(float width) {
+        this.width = width;
     }
 
     /**

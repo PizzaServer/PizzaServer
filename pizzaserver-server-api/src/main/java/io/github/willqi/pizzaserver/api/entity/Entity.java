@@ -98,7 +98,11 @@ public interface Entity extends Watchable {
 
     float getHeight();
 
+    void setHeight(float height);
+
     float getWidth();
+
+    void setWidth(float width);
 
     float getEyeHeight();
 
