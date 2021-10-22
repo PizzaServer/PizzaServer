@@ -142,10 +142,12 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     public void setMetaData(EntityMetaData metaData) {
         super.setMetaData(metaData);
 
-        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
-        setEntityDataPacket.setRuntimeId(this.getId());
-        setEntityDataPacket.setData(this.getMetaData());
-        this.sendPacket(setEntityDataPacket);
+        if (this.hasSpawned()) {
+            SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+            setEntityDataPacket.setRuntimeId(this.getId());
+            setEntityDataPacket.setData(this.getMetaData());
+            this.sendPacket(setEntityDataPacket);
+        }
     }
 
     public ImplServer getServer() {

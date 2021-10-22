@@ -107,7 +107,7 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
                 packet.isGlobal(),
                 packet.isBaby(),
                 packet.getEntityType(),
-                packet.getBlock());
+                packet.getBlock().orElse(null));
         this.player.getServer().getEventManager().call(event);
 
         if (!event.isCancelled()) {
@@ -116,7 +116,7 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
                     packet.isGlobal(),
                     packet.isBaby(),
                     packet.getEntityType(),
-                    packet.getBlock());
+                    packet.getBlock().orElse(null));
 
             for (Player viewer : this.player.getViewers()) {
                 if (!viewer.getUUID().equals(this.player.getUUID())) {

@@ -4,6 +4,8 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
+import java.util.Optional;
+
 /**
  * Sent by the client and server to send a sound to each other.
  */
@@ -42,8 +44,8 @@ public class WorldSoundEventPacket extends BaseBedrockPacket {
         this.vector3 = vector3;
     }
 
-    public Block getBlock() {
-        return this.block;
+    public Optional<Block> getBlock() {
+        return Optional.ofNullable(this.block);
     }
 
     public void setBlock(Block block) {

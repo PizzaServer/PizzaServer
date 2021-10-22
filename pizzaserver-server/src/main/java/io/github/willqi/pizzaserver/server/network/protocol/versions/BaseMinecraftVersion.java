@@ -173,48 +173,47 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     @Override
     public int getBlockRuntimeId(String name, NBTCompound state) {
-        Tuple<String, NBTCompound> blockStateKey = new Tuple<>(name, state);
-        try {
-            int blockStateLookupId = GLOBAL_BLOCK_STATES.get(new Tuple<>(name, state));
-            return this.blockStates.get(blockStateLookupId);
-        } catch (NullPointerException exception) {
-            throw new ProtocolException(this, "Failed to find block runtime id for a state of " + name);
+        Tuple<String, NBTCompound> key = new Tuple<>(name, state);
+
+        if (!GLOBAL_BLOCK_STATES.containsKey(key)) {
+            throw new ProtocolException(this, "No such block runtime id exists for: " + name);
         }
+
+        int blockStateLookupId = GLOBAL_BLOCK_STATES.get(new Tuple<>(name, state));
+        return this.blockStates.get(blockStateLookupId);
     }
 
     @Override
     public Block getBlockFromRuntimeId(int blockRuntimeId) {
-        try {
-            int blockStateLookupId = this.blockStates.inverse().get(blockRuntimeId);
-            Tuple<String, NBTCompound> blockData = GLOBAL_BLOCK_STATES.inverse().get(blockStateLookupId);
+        if (!this.blockStates.inverse().containsKey(blockRuntimeId)) {
+            throw new ProtocolException(this, "No such block state exists for runtime id: " + blockRuntimeId);
+        }
 
-            BlockType blockType;
-            if (BlockRegistry.hasBlockType(blockData.getObjectA())) {
-                blockType = BlockRegistry.getBlockType(blockData.getObjectA());
-            } else {
-                blockType = BlockRegistry.getBlockType(BlockTypeID.AIR);
-                this.server.getLogger().warn("Attempted to retrieve block type of unimplemented block: " + blockData.getObjectA());
-            }
+        int blockStateLookupId = this.blockStates.inverse().get(blockRuntimeId);
+        Tuple<String, NBTCompound> blockData = GLOBAL_BLOCK_STATES.inverse().get(blockStateLookupId);
+
+        if (BlockRegistry.hasBlockType(blockData.getObjectA())) {
+            BlockType blockType = BlockRegistry.getBlockType(blockData.getObjectA());
             return blockType.create(blockType.getBlockStateIndex(blockData.getObjectB()));
-        } catch (NullPointerException exception) {
-            throw new ProtocolException(this, "Failed to resolve block from block runtime id of " + blockRuntimeId);
+        } else {
+            return null;
         }
     }
 
     @Override
     public int getItemRuntimeId(String itemName) {
-        try {
+        if (this.itemRuntimeIds.containsKey(itemName)) {
             return this.itemRuntimeIds.get(itemName);
-        } catch (NullPointerException exception) {
+        } else {
             throw new ProtocolException(this, "Attempted to retrieve runtime id for non-existent item: " + itemName);
         }
     }
 
     @Override
     public String getItemName(int runtimeId) {
-        try {
+        if (this.itemRuntimeIds.inverse().containsKey(runtimeId)) {
             return this.itemRuntimeIds.inverse().get(runtimeId);
-        } catch (NullPointerException exception) {
+        } else {
             throw new ProtocolException(this, "Attempted to retrieve item name for non-existent runtime id: " + runtimeId);
         }
     }

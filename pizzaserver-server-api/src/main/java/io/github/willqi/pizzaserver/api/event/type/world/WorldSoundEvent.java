@@ -5,6 +5,8 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
+import java.util.Optional;
+
 public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
 
     private WorldSound sound;
@@ -64,8 +66,8 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
         this.entityIdentifier = entityIdentifier;
     }
 
-    public Block getBlock() {
-        return this.block;
+    public Optional<Block> getBlock() {
+        return Optional.ofNullable(this.block);
     }
 
     public void setBlock(Block block) {

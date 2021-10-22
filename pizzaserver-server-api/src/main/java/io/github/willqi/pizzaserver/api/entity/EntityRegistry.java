@@ -6,8 +6,10 @@ import io.github.willqi.pizzaserver.api.entity.definition.components.EntityCompo
 import io.github.willqi.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 public class EntityRegistry {
@@ -66,6 +68,10 @@ public class EntityRegistry {
         }
 
         return defaultComponent;
+    }
+
+    public static Set<Class<? extends EntityComponent>> getComponentClasses() {
+        return Collections.unmodifiableSet(componentHandlers.keySet());
     }
 
     public static Entity getEntity(String entityId) {

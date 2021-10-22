@@ -7,7 +7,6 @@ import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
-import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
@@ -61,9 +60,16 @@ public class ImplEntity implements Entity {
     protected final Set<Player> hiddenFrom = new HashSet<>();
 
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public ImplEntity(EntityDefinition entityDefinition) {
         this.id = ID++;
         this.entityDefinition = entityDefinition;
+
+        // Apply default components to the entity
+        EntityRegistry.getComponentClasses().forEach(clazz -> {
+            EntityComponentHandler handler = EntityRegistry.getComponentHandler(clazz);
+            handler.onRegistered(this, EntityRegistry.getDefaultComponent(clazz));
+        });
     }
 
     @Override
