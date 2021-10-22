@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
@@ -37,6 +38,7 @@ public class ImplEntity implements Entity {
     protected volatile World world;
     protected boolean moveUpdate;
 
+    protected boolean vulnerable;
     protected final EntityAttributes attributes = new EntityAttributes();
 
     protected float pitch;
@@ -255,6 +257,16 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public boolean isVulnerable() {
+        return this.vulnerable;
+    }
+
+    @Override
+    public void setVulnerable(boolean vulnerable) {
+        this.vulnerable = vulnerable;
+    }
+
+    @Override
     public Set<Attribute> getAttributes() {
         return this.attributes.getAttributes();
     }
@@ -318,11 +330,10 @@ public class ImplEntity implements Entity {
     @Override
     public void setHealth(float health) {
         Attribute attribute = this.getAttribute(AttributeType.HEALTH);
+        attribute.setMaximumValue(Math.max(attribute.getMaximumValue(), health));
+        attribute.setCurrentValue(Math.max(0, health));
 
-        float newHealth = Math.max(attribute.getMinimumValue(), Math.min(health, this.getMaxHealth()));
-        attribute.setCurrentValue(newHealth);
-
-        if (this.getHealth() <= 0) {
+        if (this.getHealth() < 0) {
             // TODO: kill
         }
     }

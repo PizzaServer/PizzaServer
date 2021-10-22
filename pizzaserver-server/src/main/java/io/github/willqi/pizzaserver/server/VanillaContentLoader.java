@@ -2,8 +2,10 @@ package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.EntityCollisionBoxComponentHandler;
+import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.EntityHealthComponentHandler;
 import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.EntityScaleComponentHandler;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityCollisionBoxComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityScaleComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
@@ -33,6 +35,7 @@ public class VanillaContentLoader {
     private static void loadEntityComponents() {
         EntityRegistry.registerComponent(EntityScaleComponent.class, new EntityScaleComponent(1), new EntityScaleComponentHandler());
         EntityRegistry.registerComponent(EntityCollisionBoxComponent.class, new EntityCollisionBoxComponent(0f, 0f), new EntityCollisionBoxComponentHandler());
+        EntityRegistry.registerComponent(EntityHealthComponent.class, new EntityHealthComponent(0, 0, 0), new EntityHealthComponentHandler());
     }
 
     private static void loadEntities() {

@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
@@ -88,6 +90,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         }
 
         ImplPlayer player = new ImplPlayer(this.server, this.session, loginPacket);
+        EntityRegistry.getDefinition(HumanEntityDefinition.ID).onCreation(player);
+
         this.player = player;
 
         PlayerPreLoginEvent event = new PlayerPreLoginEvent(player);

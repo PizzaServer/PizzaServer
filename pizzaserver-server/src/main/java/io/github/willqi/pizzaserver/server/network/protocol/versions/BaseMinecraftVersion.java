@@ -13,6 +13,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.willqi.pizzaserver.commons.utils.Tuple;
 import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTInputStream;
@@ -172,6 +173,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     @Override
     public int getBlockRuntimeId(String name, NBTCompound state) {
+        Tuple<String, NBTCompound> blockStateKey = new Tuple<>(name, state);
         try {
             int blockStateLookupId = GLOBAL_BLOCK_STATES.get(new Tuple<>(name, state));
             return this.blockStates.get(blockStateLookupId);
@@ -186,7 +188,13 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             int blockStateLookupId = this.blockStates.inverse().get(blockRuntimeId);
             Tuple<String, NBTCompound> blockData = GLOBAL_BLOCK_STATES.inverse().get(blockStateLookupId);
 
-            BlockType blockType = BlockRegistry.getBlockType(blockData.getObjectA());
+            BlockType blockType;
+            if (BlockRegistry.hasBlockType(blockData.getObjectA())) {
+                blockType = BlockRegistry.getBlockType(blockData.getObjectA());
+            } else {
+                blockType = BlockRegistry.getBlockType(BlockTypeID.AIR);
+                this.server.getLogger().warn("Attempted to retrieve block type of unimplemented block: " + blockData.getObjectA());
+            }
             return blockType.create(blockType.getBlockStateIndex(blockData.getObjectB()));
         } catch (NullPointerException exception) {
             throw new ProtocolException(this, "Failed to resolve block from block runtime id of " + blockRuntimeId);

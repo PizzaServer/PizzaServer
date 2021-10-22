@@ -48,6 +48,7 @@ public class EntityRegistry {
         return definitions.containsKey(entityId);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends EntityComponent> EntityComponentHandler<T> getComponentHandler(Class<T> componentClazz) {
         EntityComponentHandler<T> handler = (EntityComponentHandler<T>) componentHandlers.getOrDefault(componentClazz, null);
         if (handler == null) {
@@ -57,6 +58,7 @@ public class EntityRegistry {
         return handler;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends EntityComponent> T getDefaultComponent(Class<T> componentClazz) {
         T defaultComponent = (T) defaultComponents.getOrDefault(componentClazz, null);
         if (defaultComponent == null) {
@@ -68,7 +70,10 @@ public class EntityRegistry {
 
     public static Entity getEntity(String entityId) {
         EntityDefinition entityDefinition = getDefinition(entityId);
-        return entityConstructor.apply(entityDefinition);
+        Entity entity = entityConstructor.apply(entityDefinition);
+
+        entityDefinition.onCreation(entity);
+        return entity;
     }
 
     public static ItemEntity getItemEntity(ItemStack itemStack) {

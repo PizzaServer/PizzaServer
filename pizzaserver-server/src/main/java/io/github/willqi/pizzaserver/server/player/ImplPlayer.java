@@ -47,8 +47,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
 
-    protected final EntityAttributes attributes = new EntityAttributes();
-
     protected Inventory openInventory = null;
 
     private final BreakingData breakingData = new BreakingData(this);
@@ -247,19 +245,21 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         }
     }
 
-    public void sendAttributes() {
+    private void sendAttribute(Attribute attribute) {
+        this.sendAttributes(Collections.singleton(attribute));
+    }
+
+    private void sendAttributes() {
         this.sendAttributes(this.attributes.getAttributes());
     }
 
     private void sendAttributes(Set<Attribute> attributes) {
-        UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
-        updateAttributesPacket.setRuntimeEntityId(this.getId());
-        updateAttributesPacket.setAttributes(attributes);
-        this.sendPacket(updateAttributesPacket);
-    }
-
-    private void sendAttribute(Attribute attribute) {
-        this.sendAttributes(Collections.singleton(attribute));
+        if (this.hasSpawned()) {
+            UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
+            updateAttributesPacket.setRuntimeEntityId(this.getId());
+            updateAttributesPacket.setAttributes(attributes);
+            this.sendPacket(updateAttributesPacket);
+        }
     }
 
     @Override

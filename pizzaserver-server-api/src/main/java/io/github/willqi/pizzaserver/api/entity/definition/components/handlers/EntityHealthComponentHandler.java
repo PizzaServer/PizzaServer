@@ -8,12 +8,15 @@ public class EntityHealthComponentHandler extends EntityComponentHandler<EntityH
 
     @Override
     public void onRegistered(Entity entity, EntityHealthComponent component) {
+        entity.setMaxHealth(component.getMaximumHealth());
 
-    }
+        // Only set the health of the entity if the entity did not have a previous health entity component
+        if (!entity.hasComponent(EntityHealthComponent.class)) {
+            float minimumHealth = component.getHealthRange()[0];
+            float maximumHealth = component.getHealthRange()[1];
 
-    @Override
-    public void onUnregistered(Entity entity, EntityHealthComponent component) {
-
+            entity.setHealth((float) Math.floor(Math.random() * (maximumHealth - minimumHealth) + minimumHealth));
+        }
     }
 
 }
