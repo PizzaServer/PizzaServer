@@ -6,7 +6,7 @@ import io.github.willqi.pizzaserver.api.player.skin.Skin;
 
 import java.util.UUID;
 
-public interface HumanEntity extends LivingEntity {
+public interface HumanEntity extends Entity {
 
     /**
      * Retrieve the device the player is playing on.

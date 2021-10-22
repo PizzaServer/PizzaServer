@@ -2,13 +2,12 @@ package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
-import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
-import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
@@ -51,6 +50,7 @@ public class ImplEntity implements Entity {
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
+    protected EntityInventory inventory = null;
     protected EntityMetaData metaData = new EntityMetaData();
     protected boolean metaDataUpdate;
 
@@ -186,6 +186,11 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public float getEyeHeight() {
+        return this.getHeight() / 2 + 0.1f;
+    }
+
+    @Override
     public float getHeight() {
         return this.height;
     }
@@ -237,11 +242,6 @@ public class ImplEntity implements Entity {
         this.y = y;
         this.z = z;
         this.world = world;
-    }
-
-    @Override
-    public float getEyeHeight() {
-        return this.getHeight() / 2 + 0.1f;
     }
 
     @Override
@@ -311,6 +311,64 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public float getHealth() {
+        return this.getAttribute(AttributeType.HEALTH).getCurrentValue();
+    }
+
+    @Override
+    public void setHealth(float health) {
+        Attribute attribute = this.getAttribute(AttributeType.HEALTH);
+
+        float newHealth = Math.max(attribute.getMinimumValue(), Math.min(health, this.getMaxHealth()));
+        attribute.setCurrentValue(newHealth);
+
+        if (this.getHealth() <= 0) {
+            // TODO: kill
+        }
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return this.getAttribute(AttributeType.HEALTH).getMaximumValue();
+    }
+
+    @Override
+    public void setMaxHealth(float maxHealth) {
+        Attribute attribute = this.getAttribute(AttributeType.HEALTH);
+
+        float newMaxHealth = Math.max(attribute.getMinimumValue(), maxHealth);
+        attribute.setMaximumValue(newMaxHealth);
+        attribute.setCurrentValue(Math.min(this.getHealth(), this.getMaxHealth()));
+    }
+
+    @Override
+    public float getAbsorption() {
+        return this.getAttribute(AttributeType.ABSORPTION).getCurrentValue();
+    }
+
+    @Override
+    public void setAbsorption(float absorption) {
+        Attribute attribute = this.getAttribute(AttributeType.ABSORPTION);
+
+        float newAbsorption = Math.max(attribute.getMinimumValue(), Math.min(absorption, this.getMaxAbsorption()));
+        attribute.setCurrentValue(newAbsorption);
+    }
+
+    @Override
+    public float getMaxAbsorption() {
+        return this.getAttribute(AttributeType.ABSORPTION).getMaximumValue();
+    }
+
+    @Override
+    public void setMaxAbsorption(float maxAbsorption) {
+        Attribute attribute = this.getAttribute(AttributeType.ABSORPTION);
+
+        float newMaxAbsorption = Math.max(attribute.getMinimumValue(), maxAbsorption);
+        attribute.setMaximumValue(newMaxAbsorption);
+        attribute.setCurrentValue(Math.min(this.getAbsorption(), this.getMaxAbsorption()));
+    }
+
+    @Override
     public Vector3 getDirectionVector() {
         double cosPitch = Math.cos(Math.toRadians(this.getPitch()));
         double x = Math.sin(Math.toRadians(this.getYaw())) * -cosPitch;
@@ -374,8 +432,8 @@ public class ImplEntity implements Entity {
     }
 
     @Override
-    public Inventory getInventory() {
-        return null;
+    public EntityInventory getInventory() {
+        return this.inventory;
     }
 
     public void moveTo(float x, float y, float z) {
@@ -431,7 +489,7 @@ public class ImplEntity implements Entity {
     public boolean canBeSpawnedTo(Player player) {
         return !this.equals(player)
                 && !this.hasSpawnedTo(player)
-                && (!(this instanceof LivingEntity) || !((LivingEntity) this).isHiddenFrom(player))
+                && this.isHiddenFrom(player)
                 && this.withinEntityRenderDistanceTo(player)
                 && this.getChunk().canBeVisibleTo(player);
     }

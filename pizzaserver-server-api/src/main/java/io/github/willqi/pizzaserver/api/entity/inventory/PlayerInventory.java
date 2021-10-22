@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.api.entity.inventory;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.Player;
 
-public interface PlayerInventory extends LivingEntityInventory {
+public interface PlayerInventory extends EntityInventory {
 
     Player getEntity();
 

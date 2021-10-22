@@ -5,7 +5,7 @@ import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
-import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.level.Level;
@@ -139,6 +139,22 @@ public interface Entity extends Watchable {
 
     void setHeadYaw(float headYaw);
 
+    float getHealth();
+
+    void setHealth(float health);
+
+    float getMaxHealth();
+
+    void setMaxHealth(float maxHealth);
+
+    float getAbsorption();
+
+    void setAbsorption(float absorption);
+
+    float getMaxAbsorption();
+
+    void setMaxAbsorption(float maxAbsorption);
+
     Vector3 getDirectionVector();
 
     EntityMetaData getMetaData();
@@ -153,7 +169,7 @@ public interface Entity extends Watchable {
 
     void setScale(float scale);
 
-    Inventory getInventory();
+    EntityInventory getInventory();
 
     /**
      * Called every server tick.

@@ -1,15 +1,15 @@
 package io.github.willqi.pizzaserver.api.entity.inventory;
 
-import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 
-public interface LivingEntityInventory extends Inventory {
+public interface EntityInventory extends Inventory {
 
     /**
      * Get the entity who owns this inventory.
      * @return the entity who owns this inventory
      */
-    LivingEntity getEntity();
+    Entity getEntity();
 
     /**
      * Change all pieces of armour.

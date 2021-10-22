@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class ImplPlayerInventory extends ImplLivingEntityInventory implements PlayerInventory {
+public class ImplPlayerInventory extends ImplEntityInventory implements PlayerInventory {
 
     private static final Set<InventorySlotType> PLAYER_SLOT_TYPES = new HashSet<InventorySlotType>() {
         {

@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.entity.inventory;
 
-import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
-import io.github.willqi.pizzaserver.api.entity.inventory.LivingEntityInventory;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
@@ -13,7 +13,9 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.MobEquipmentPac
 import java.util.Optional;
 import java.util.Set;
 
-public class ImplLivingEntityInventory extends BaseInventory implements LivingEntityInventory {
+public class ImplEntityInventory extends BaseInventory implements EntityInventory {
+
+    protected final Entity entity;
 
     protected ItemStack helmet = null;
     protected ItemStack chestplate = null;
@@ -24,17 +26,14 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
     protected ItemStack offHand = null;
 
 
-    public ImplLivingEntityInventory(LivingEntity entity, Set<InventorySlotType> slotTypes, int size) {
-        super(entity, slotTypes, size);
+    public ImplEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size) {
+        super(slotTypes, size);
+        this.entity = entity;
     }
 
-    public ImplLivingEntityInventory(LivingEntity entity, Set<InventorySlotType> slotTypes, int size, int id) {
-        super(entity, slotTypes, size, id);
-    }
-
-    @Override
-    public LivingEntity getEntity() {
-        return (LivingEntity) super.getEntity();
+    public ImplEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size, int id) {
+        super(slotTypes, size, id);
+        this.entity = entity;
     }
 
     @Override
@@ -43,6 +42,11 @@ public class ImplLivingEntityInventory extends BaseInventory implements LivingEn
         this.setHeldItem(null);
         this.setOffhandItem(null);
         this.setArmour(null, null, null, null);
+    }
+
+    @Override
+    public Entity getEntity() {
+        return this.entity;
     }
 
     @Override

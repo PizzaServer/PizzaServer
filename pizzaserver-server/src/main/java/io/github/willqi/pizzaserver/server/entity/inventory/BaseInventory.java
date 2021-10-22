@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.server.entity.inventory;
 
-import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
@@ -12,6 +11,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.ContainerClosePacket;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.InventoryContentPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.InventorySlotPacket;
+import io.github.willqi.pizzaserver.server.ImplServer;
 
 import java.util.*;
 
@@ -19,7 +19,6 @@ public abstract class BaseInventory implements Inventory {
 
     public static int ID = 1;
 
-    protected final Entity entity;
     protected final int id;
     protected final int size;
 
@@ -29,12 +28,11 @@ public abstract class BaseInventory implements Inventory {
     private final Set<Player> viewers = new HashSet<>();
 
 
-    public BaseInventory(Entity entity, Set<InventorySlotType> slotTypes, int size) {
-        this(entity, slotTypes, size, ID++);
+    public BaseInventory(Set<InventorySlotType> slotTypes, int size) {
+        this(slotTypes, size, ID++);
     }
 
-    public BaseInventory(Entity entity, Set<InventorySlotType> slotTypes, int size, int id) {
-        this.entity = entity;
+    public BaseInventory(Set<InventorySlotType> slotTypes, int size, int id) {
         this.size = size;
         this.id = id;
         this.slotTypes = slotTypes;
@@ -49,11 +47,6 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Set<InventorySlotType> getSlotTypes() {
         return this.slotTypes;
-    }
-
-    @Override
-    public Entity getEntity() {
-        return this.entity;
     }
 
     @Override
@@ -199,7 +192,7 @@ public abstract class BaseInventory implements Inventory {
     public boolean openFor(Player player) {
         if (!this.viewers.contains(player)) {
             InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(player, this);
-            this.getEntity().getServer().getEventManager().call(inventoryOpenEvent);
+            ImplServer.getInstance().getEventManager().call(inventoryOpenEvent);
             if (inventoryOpenEvent.isCancelled()) {
                 return false;
             }
@@ -226,7 +219,7 @@ public abstract class BaseInventory implements Inventory {
             player.sendPacket(containerClosePacket);
 
             InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
-            this.getEntity().getServer().getEventManager().call(inventoryCloseEvent);
+            ImplServer.getInstance().getEventManager().call(inventoryCloseEvent);
 
             this.viewers.remove(player);
             return true;

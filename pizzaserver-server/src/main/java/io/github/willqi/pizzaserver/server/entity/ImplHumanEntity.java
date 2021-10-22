@@ -19,7 +19,7 @@ import java.io.*;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ImplHumanEntity extends ImplLivingEntity implements HumanEntity {
+public class ImplHumanEntity extends ImplEntity implements HumanEntity {
 
     public static Skin DEFAULT_STEVE;
 

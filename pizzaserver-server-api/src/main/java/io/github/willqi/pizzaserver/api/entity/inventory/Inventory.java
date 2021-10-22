@@ -19,12 +19,6 @@ public interface Inventory extends Watchable {
      */
     Set<InventorySlotType> getSlotTypes();
 
-    /**
-     * Get the entity who owns this inventory.
-     * @return the entity who owns this inventory
-     */
-    Entity getEntity();
-
     int getSize();
 
     /**

@@ -81,7 +81,7 @@ public class ImplServer implements Server {
         this.levelManager = new ImplLevelManager(this);
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
-        EntityRegistry.setEntityConstructor(new EntityConstructor(this));
+        EntityRegistry.setEntityConstructor(new EntityConstructor());
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
         // TODO: load plugins
