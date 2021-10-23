@@ -34,6 +34,10 @@ public class EntityComponentGroup {
         return this.components.containsKey(componentClazz);
     }
 
+    public Collection<Class<? extends EntityComponent>> getComponentClasses() {
+        return this.components.keySet();
+    }
+
     public Collection<? extends EntityComponent> getComponents() {
         return this.components.values();
     }

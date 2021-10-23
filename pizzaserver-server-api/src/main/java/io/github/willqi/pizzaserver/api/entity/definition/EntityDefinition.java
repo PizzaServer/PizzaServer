@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.entity.definition;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentEvent;
 import io.github.willqi.pizzaserver.api.entity.definition.spawnrules.EntitySpawnRules;
 
 public interface EntityDefinition {
@@ -10,7 +11,7 @@ public interface EntityDefinition {
 
     EntityComponentGroup getComponentGroup(String groupId);
 
-    MinecraftComponentEvent getEvent(String eventId);
+    EntityComponentEvent getEvent(String eventId);
 
     EntitySpawnRules getSpawnRules();
 

@@ -118,17 +118,17 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         return this.breakingData;
     }
 
-    public boolean canReach(Vector3i vector3i) {
-        return this.canReach(vector3i.toVector3());
+    public boolean canReach(Vector3i vector3i, float maxDistance) {
+        return this.canReach(vector3i.toVector3(), maxDistance);
     }
 
-    public boolean canReach(Vector3 vector3) {
+    public boolean canReach(Vector3 vector3, float maxDistance) {
         Vector3 position = this.getLocation().add(0, this.getEyeHeight(), 0);
 
         // Distance check
         // TODO: take into account creative mode when gamemodes are implemented
         double distance = position.distanceBetween(vector3);
-        if (distance > 7) {
+        if (distance > maxDistance) {
             return false;
         }
 
@@ -433,7 +433,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             }
 
             // Make sure that the block we're breaking is within reach too!
-            if (this.getBlockBreakData().getBlock().isPresent() && !this.canReach(this.getBlockBreakData().getBlock().get().getLocation())) {
+            if (this.getBlockBreakData().getBlock().isPresent() && !this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), 7)) {
                 this.getBlockBreakData().stopBreaking();
             }
         }

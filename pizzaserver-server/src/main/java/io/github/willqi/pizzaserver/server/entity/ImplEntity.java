@@ -120,15 +120,32 @@ public class ImplEntity implements Entity {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public boolean removeComponentGroup(EntityComponentGroup group) {
-        if (this.componentGroups.remove(group)) {
+    public boolean removeComponentGroup(EntityComponentGroup removingComponentGroup) {
+        if (this.componentGroups.contains(removingComponentGroup)) {
+            // Find components that are in groups higher than the removed group so that we don't treat all the components
+            // in the removed group as the current active ones.
+            Set<Class<? extends EntityComponent>> activeHigherComponents = new HashSet<>();
+
+            Iterator<EntityComponentGroup> groupIterator = this.componentGroups.iterator();
+            while (groupIterator.hasNext()) {
+                EntityComponentGroup iteratedGroup = groupIterator.next();
+                if (iteratedGroup.getGroupId().equals(removingComponentGroup.getGroupId())) {
+                    groupIterator.remove();
+                    break;
+                } else {
+                    activeHigherComponents.addAll(iteratedGroup.getComponentClasses());
+                }
+            }
+
             // Unregister components of the group from this entity and then find and apply the new active components of the same types.
-            for (EntityComponent removeComponent : group.getComponents()) {
+            for (EntityComponent removeComponent : removingComponentGroup.getComponents()) {
                 Class<? extends EntityComponent> removeComponentClazz = removeComponent.getClass();
                 EntityComponentHandler handler = EntityRegistry.getComponentHandler(removeComponentClazz);
 
-                handler.onUnregistered(this, group.getComponent(removeComponentClazz));
-                handler.onRegistered(this, this.getComponent(removeComponentClazz));
+                if (!activeHigherComponents.contains(removeComponentClazz)) {
+                    handler.onUnregistered(this, removingComponentGroup.getComponent(removeComponentClazz));
+                    handler.onRegistered(this, this.getComponent(removeComponentClazz));
+                }
             }
 
             return true;

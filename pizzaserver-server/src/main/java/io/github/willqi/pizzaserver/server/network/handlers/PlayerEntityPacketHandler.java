@@ -2,6 +2,8 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
@@ -27,6 +29,7 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
             PlayerLocallyInitializedEvent playerLocallyInitializedEvent = new PlayerLocallyInitializedEvent(this.player);
             this.player.getServer().getEventManager().call(playerLocallyInitializedEvent);
         }
+        this.player.getInventory().addItem(ItemRegistry.getItem("minecraft:stone"));
     }
 
     @Override

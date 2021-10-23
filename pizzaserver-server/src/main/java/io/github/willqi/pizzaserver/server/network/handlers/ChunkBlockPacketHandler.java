@@ -37,7 +37,7 @@ public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(PlayerActionPacket packet) {
-        if (this.player.canReach(packet.getVector3())) {
+        if (this.player.canReach(packet.getVector3(), 12)) {
             Block block = this.player.getWorld().getBlock(packet.getVector3());
             switch (packet.getActionType()) {
                 case START_BREAK:
@@ -76,7 +76,7 @@ public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
         if (packet.getType() == InventoryTransactionType.ITEM_USE) {
             InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData) packet.getData();
 
-            boolean isValidBreakBlockRequest = this.player.canReach(useItemData.getBlockCoordinates().toVector3())
+            boolean isValidBreakBlockRequest = this.player.canReach(useItemData.getBlockCoordinates().toVector3(), 7)
                     && useItemData.getAction() == InventoryTransactionUseItemData.Action.BREAK_BLOCK;
 
             if (isValidBreakBlockRequest) {

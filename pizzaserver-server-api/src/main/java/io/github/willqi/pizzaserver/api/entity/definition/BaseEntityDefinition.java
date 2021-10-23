@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.api.entity.definition;
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
+import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentEvent;
 import io.github.willqi.pizzaserver.api.entity.definition.spawnrules.EntitySpawnRules;
 
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Map;
 public abstract class BaseEntityDefinition implements EntityDefinition {
 
     private final Map<String, EntityComponentGroup> componentGroups = new HashMap<>();
-    private final Map<String, MinecraftComponentEvent> events = new HashMap<>();
+    private final Map<String, EntityComponentEvent> events = new HashMap<>();
 
     @Override
     public EntityComponentGroup getComponentGroup(String groupId) {
@@ -28,8 +29,8 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
     }
 
     @Override
-    public MinecraftComponentEvent getEvent(String eventId) {
-        MinecraftComponentEvent event = this.events.getOrDefault(eventId, null);
+    public EntityComponentEvent getEvent(String eventId) {
+        EntityComponentEvent event = this.events.getOrDefault(eventId, null);
         if (event == null) {
             throw new NullPointerException("There is no registered event by that id.");
         }
@@ -37,7 +38,7 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
         return event;
     }
 
-    public void registerEvent(MinecraftComponentEvent event) {
+    public void registerEvent(EntityComponentEvent event) {
         this.events.put(event.getId(), event);
     }
 

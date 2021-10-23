@@ -192,7 +192,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     return;
                 }
 
-                if (this.player.canReach(useItemData.getBlockCoordinates())) {
+                if (this.player.canReach(useItemData.getBlockCoordinates(), 7)) {
                     Block block = this.player.getWorld().getBlock(useItemData.getBlockCoordinates());
 
                     boolean isCurrentSelectedSlot = useItemData.getHotbarSlot() == this.player.getInventory().getSelectedSlot();
@@ -239,7 +239,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     return;
                 }
 
-                if (this.player.canReach(entity.get().getLocation())) {
+                if (this.player.canReach(entity.get().getLocation(), 6)) {
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
                             // TODO: deal damage
