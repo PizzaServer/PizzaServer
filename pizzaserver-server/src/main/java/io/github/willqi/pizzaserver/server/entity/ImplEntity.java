@@ -4,15 +4,22 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
+import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.filter.EntityFilter;
+import io.github.willqi.pizzaserver.api.entity.definition.components.filter.EntityFilterData;
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.AddEntityPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.EntityEventPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
@@ -37,8 +44,9 @@ public class ImplEntity implements Entity {
     protected volatile World world;
     protected boolean moveUpdate;
 
-    protected boolean vulnerable;
+    protected boolean vulnerable = true;
     protected final EntityAttributes attributes = new EntityAttributes();
+    protected int deathAnimationTicks = -1;
 
     protected float pitch;
     protected float yaw;
@@ -355,10 +363,6 @@ public class ImplEntity implements Entity {
         Attribute attribute = this.getAttribute(AttributeType.HEALTH);
         attribute.setMaximumValue(Math.max(attribute.getMaximumValue(), health));
         attribute.setCurrentValue(Math.max(0, health));
-
-        if (this.getHealth() < 0) {
-            // TODO: kill
-        }
     }
 
     @Override
@@ -470,6 +474,35 @@ public class ImplEntity implements Entity {
         return this.inventory;
     }
 
+    @Override
+    public void hurt(float damage) {
+        this.setHealth(this.getHealth() - damage);
+        EntityEventPacket entityEventPacket = new EntityEventPacket();
+        entityEventPacket.setRuntimeEntityId(this.getId());
+        entityEventPacket.setType(EntityEventType.HURT);
+
+        for (Player player : this.getViewers()) {
+            player.sendPacket(entityEventPacket);
+        }
+    }
+
+    @Override
+    public void kill() {
+        this.setHealth(0);
+        if (this.hasSpawned()) {
+            this.setAI(false);
+            this.deathAnimationTicks = 20;
+
+            EntityEventPacket deathEventPacket = new EntityEventPacket();
+            deathEventPacket.setRuntimeEntityId(this.getId());
+            deathEventPacket.setType(EntityEventType.DEATH);
+
+            for (Player player : this.getViewers()) {
+                player.sendPacket(deathEventPacket);
+            }
+        }
+    }
+
     public void moveTo(float x, float y, float z) {
         this.moveUpdate = true;
 
@@ -498,6 +531,89 @@ public class ImplEntity implements Entity {
                 player.sendPacket(entityDataPacket);
             }
         }
+
+        if (this.deathAnimationTicks != -1) {
+            if (--this.deathAnimationTicks <= 0) {
+                EntityEventPacket smokeDeathPacket = new EntityEventPacket();
+                smokeDeathPacket.setRuntimeEntityId(this.getId());
+                smokeDeathPacket.setType(EntityEventType.DEATH_SMOKE_CLOUD);
+                for (Player player : this.getViewers()) {
+                    player.sendPacket(smokeDeathPacket);
+                }
+
+                this.despawn();
+            }
+        }
+        if (this.getHealth() <= 0 && this.isVulnerable()) {
+            this.kill();
+        }
+    }
+
+    /**
+     * Called when this entity is to attack another entity.
+     * @return if the attack went through
+     */
+    public boolean attack(Entity entity) {
+        if (!entity.isVulnerable() || entity.getHealth() <= 0) {
+            return false;
+        }
+
+        // TODO: take into account armour points
+        float damage = this.getInventory().getHeldItem().getItemType().getDamage();
+        String attackSound = null;
+
+        EntityFilterData damageFilterData = new EntityFilterData.Builder()
+                .setSelf(entity)
+                .setOther(this)
+                .build();
+
+        EntityDamageSensorComponent damageSensorComponent = entity.getComponent(EntityDamageSensorComponent.class);
+        if (damageSensorComponent.getSensors().length > 0) {
+            // Check entity's damage sensors to ensure we can attack the entity
+            for (EntityDamageSensorComponent.Sensor sensor : damageSensorComponent.getSensors()) {
+                boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(DamageCause.ATTACK)).isPresent() || !sensor.getCause().isPresent();
+
+                if (isAttackSensor) {
+                    for (EntityFilter filter : sensor.getFilters()) {
+                        if (filter.test(damageFilterData)) {
+                            if (!sensor.dealsDamage()) {
+                                return false;
+                            }
+
+                            damage *= sensor.getDamageMultiplier();
+                            damage += sensor.getDamageModifier();
+                            attackSound = sensor.getSound().orElse(null);
+
+                            EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(entity, this, DamageCause.ATTACK, damage);
+                            this.getServer().getEventManager().call(damageByEntityEvent);
+
+                            if (damageByEntityEvent.isCancelled()) {
+                                return false;
+                            }
+
+                            if (filter.getTriggerEventId().isPresent()) {
+                                entity.getEntityDefinition().getEvent(filter.getTriggerEventId().get()).trigger(entity);
+                            }
+
+                            entity.hurt(damage);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        } else {
+            // No damage sensors preventing the entity from attacking the entity.
+            EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(entity, this, DamageCause.ATTACK, damage);
+            this.getServer().getEventManager().call(damageByEntityEvent);
+
+            if (damageByEntityEvent.isCancelled()) {
+                return false;
+            }
+            entity.hurt(damage);
+            return true;
+        }
     }
 
     /**
@@ -523,7 +639,7 @@ public class ImplEntity implements Entity {
     public boolean canBeSpawnedTo(Player player) {
         return !this.equals(player)
                 && !this.hasSpawnedTo(player)
-                && this.isHiddenFrom(player)
+                && !this.isHiddenFrom(player)
                 && this.withinEntityRenderDistanceTo(player)
                 && this.getChunk().canBeVisibleTo(player);
     }

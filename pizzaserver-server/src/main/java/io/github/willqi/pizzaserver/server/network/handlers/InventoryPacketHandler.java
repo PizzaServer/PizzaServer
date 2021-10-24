@@ -238,11 +238,15 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 if (!entity.isPresent() || useItemOnEntityData.getEntityRuntimeId() == this.player.getId()) {
                     return;
                 }
+                if (entity.get().isHiddenFrom(this.player)) {
+                    this.player.getServer().getLogger().warn(this.player.getUsername() + " tried to hit a entity that was hidden to them");
+                    return;
+                }
 
                 if (this.player.canReach(entity.get().getLocation(), 6)) {
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
-                            // TODO: deal damage
+                            this.player.attack(entity.get());
                             break;
                         case INTERACT:
                             PlayerEntityInteractEvent playerEntityInteractEvent = new PlayerEntityInteractEvent(this.player, entity.get());

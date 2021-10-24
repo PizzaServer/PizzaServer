@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.api.entity.definition.filter;
+package io.github.willqi.pizzaserver.api.entity.definition.components.filter;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;

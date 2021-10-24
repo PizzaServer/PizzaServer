@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.api.entity.definition.components.impl;
 
 import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
-import io.github.willqi.pizzaserver.api.entity.definition.filter.EntityFilter;
+import io.github.willqi.pizzaserver.api.entity.definition.components.filter.EntityFilter;
 
 import java.util.*;
 

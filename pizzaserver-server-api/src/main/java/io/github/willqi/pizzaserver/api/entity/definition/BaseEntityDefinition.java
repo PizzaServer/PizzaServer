@@ -18,7 +18,7 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
     public EntityComponentGroup getComponentGroup(String groupId) {
         EntityComponentGroup group = this.componentGroups.getOrDefault(groupId, null);
         if (group == null) {
-            throw new NullPointerException("There is no registered component group by that id.");
+            throw new NullPointerException("There is no registered component group by the id: " + groupId);
         }
 
         return group;
@@ -32,7 +32,7 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
     public EntityComponentEvent getEvent(String eventId) {
         EntityComponentEvent event = this.events.getOrDefault(eventId, null);
         if (event == null) {
-            throw new NullPointerException("There is no registered event by that id.");
+            throw new NullPointerException("There is no registered event by the id: " + eventId);
         }
 
         return event;

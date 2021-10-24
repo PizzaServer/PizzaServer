@@ -118,7 +118,7 @@ public interface Entity extends Watchable {
 
     /**
      * Change the vulnerability status fo the entity.
-     * @param vulnerable if the entity is vulnerable and can be hurt.
+     * @param vulnerable if the entity is vulnerable and can be hurt/die.
      */
     void setVulnerable(boolean vulnerable);
 
@@ -182,6 +182,10 @@ public interface Entity extends Watchable {
     void setScale(float scale);
 
     EntityInventory getInventory();
+
+    void hurt(float damage);
+
+    void kill();
 
     /**
      * Called every server tick.
