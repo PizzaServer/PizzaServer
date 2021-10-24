@@ -10,8 +10,8 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
     protected Entity attacker;
 
-    public EntityDamageByEntityEvent(Entity entity, Entity attacker, DamageCause cause, float damage) {
-        super(entity, cause, damage);
+    public EntityDamageByEntityEvent(Entity entity, Entity attacker, DamageCause cause, float damage, int noHitTicks) {
+        super(entity, cause, damage, noHitTicks);
         this.attacker = attacker;
     }
 

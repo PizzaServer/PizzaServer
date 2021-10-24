@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
@@ -246,7 +247,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 if (this.player.canReach(entity.get().getLocation(), 6)) {
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
-                            this.player.attack(entity.get());
+                            this.player.damage(entity.get(), DamageCause.ATTACK, this.player.getInventory().getHeldItem().getItemType().getDamage());
                             break;
                         case INTERACT:
                             PlayerEntityInteractEvent playerEntityInteractEvent = new PlayerEntityInteractEvent(this.player, entity.get());

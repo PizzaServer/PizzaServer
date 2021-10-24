@@ -183,9 +183,14 @@ public interface Entity extends Watchable {
 
     EntityInventory getInventory();
 
+    int getNoHitTicks();
+
+    void setNoHitTicks(int ticks);
+
     void hurt(float damage);
 
     void kill();
+
 
     /**
      * Called every server tick.

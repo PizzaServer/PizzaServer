@@ -45,8 +45,10 @@ public class ImplEntity implements Entity {
     protected boolean moveUpdate;
 
     protected boolean vulnerable = true;
-    protected final EntityAttributes attributes = new EntityAttributes();
     protected int deathAnimationTicks = -1;
+    protected int noHitTicks;
+
+    protected final EntityAttributes attributes = new EntityAttributes();
 
     protected float pitch;
     protected float yaw;
@@ -475,6 +477,16 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public int getNoHitTicks() {
+        return this.noHitTicks;
+    }
+
+    @Override
+    public void setNoHitTicks(int ticks) {
+        this.noHitTicks = Math.max(0, ticks);
+    }
+
+    @Override
     public void hurt(float damage) {
         this.setHealth(this.getHealth() - damage);
         EntityEventPacket entityEventPacket = new EntityEventPacket();
@@ -483,6 +495,9 @@ public class ImplEntity implements Entity {
 
         for (Player player : this.getViewers()) {
             player.sendPacket(entityEventPacket);
+        }
+        if (this instanceof Player) {
+            ((Player) this).sendPacket(entityEventPacket);
         }
     }
 
@@ -532,6 +547,10 @@ public class ImplEntity implements Entity {
             }
         }
 
+        if (this.getNoHitTicks() > 0) {
+            this.setNoHitTicks(this.getNoHitTicks() - 1);
+        }
+
         if (this.deathAnimationTicks != -1) {
             if (--this.deathAnimationTicks <= 0) {
                 EntityEventPacket smokeDeathPacket = new EntityEventPacket();
@@ -553,25 +572,31 @@ public class ImplEntity implements Entity {
      * Called when this entity is to attack another entity.
      * @return if the attack went through
      */
-    public boolean attack(Entity entity) {
-        if (!entity.isVulnerable() || entity.getHealth() <= 0) {
+    public boolean damage(Entity victim, DamageCause damageCause, float damage) {
+        if (!victim.isVulnerable() || victim.getHealth() <= 0) {
             return false;
         }
 
         // TODO: take into account armour points
-        float damage = this.getInventory().getHeldItem().getItemType().getDamage();
+        float finalDamage = damage;
+        int noHitTicks = 10;
         String attackSound = null;
 
+        // Damage can go through no hit if the damage just received surpasses the damage taken before the no hit delay was added.
+        if (victim.getNoHitTicks() > 0) {
+            return false;
+        }
+
         EntityFilterData damageFilterData = new EntityFilterData.Builder()
-                .setSelf(entity)
+                .setSelf(victim)
                 .setOther(this)
                 .build();
 
-        EntityDamageSensorComponent damageSensorComponent = entity.getComponent(EntityDamageSensorComponent.class);
+        EntityDamageSensorComponent damageSensorComponent = victim.getComponent(EntityDamageSensorComponent.class);
         if (damageSensorComponent.getSensors().length > 0) {
             // Check entity's damage sensors to ensure we can attack the entity
             for (EntityDamageSensorComponent.Sensor sensor : damageSensorComponent.getSensors()) {
-                boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(DamageCause.ATTACK)).isPresent() || !sensor.getCause().isPresent();
+                boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(damageCause)).isPresent() || !sensor.getCause().isPresent();
 
                 if (isAttackSensor) {
                     for (EntityFilter filter : sensor.getFilters()) {
@@ -580,11 +605,11 @@ public class ImplEntity implements Entity {
                                 return false;
                             }
 
-                            damage *= sensor.getDamageMultiplier();
-                            damage += sensor.getDamageModifier();
+                            finalDamage *= sensor.getDamageMultiplier();
+                            finalDamage += sensor.getDamageModifier();
                             attackSound = sensor.getSound().orElse(null);
 
-                            EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(entity, this, DamageCause.ATTACK, damage);
+                            EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(victim, this, damageCause, finalDamage, noHitTicks);
                             this.getServer().getEventManager().call(damageByEntityEvent);
 
                             if (damageByEntityEvent.isCancelled()) {
@@ -592,10 +617,11 @@ public class ImplEntity implements Entity {
                             }
 
                             if (filter.getTriggerEventId().isPresent()) {
-                                entity.getEntityDefinition().getEvent(filter.getTriggerEventId().get()).trigger(entity);
+                                victim.getEntityDefinition().getEvent(filter.getTriggerEventId().get()).trigger(victim);
                             }
 
-                            entity.hurt(damage);
+                            victim.setNoHitTicks(damageByEntityEvent.getNoHitTicks());
+                            victim.hurt(damageByEntityEvent.getDamage());
                             return true;
                         }
                     }
@@ -605,13 +631,15 @@ public class ImplEntity implements Entity {
             return false;
         } else {
             // No damage sensors preventing the entity from attacking the entity.
-            EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(entity, this, DamageCause.ATTACK, damage);
+            EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(victim, this, damageCause, finalDamage, noHitTicks);
             this.getServer().getEventManager().call(damageByEntityEvent);
 
             if (damageByEntityEvent.isCancelled()) {
                 return false;
             }
-            entity.hurt(damage);
+
+            victim.setNoHitTicks(damageByEntityEvent.getNoHitTicks());
+            victim.hurt(damageByEntityEvent.getDamage());
             return true;
         }
     }
