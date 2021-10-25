@@ -12,7 +12,8 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.server.entity.EntityAttributes;
+import io.github.willqi.pizzaserver.api.utils.TextMessage;
+import io.github.willqi.pizzaserver.api.utils.TextType;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
@@ -53,7 +54,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
-        super((HumanEntityDefinition) EntityRegistry.getDefinition(HumanEntityDefinition.ID));
+        super(EntityRegistry.getDefinition(HumanEntityDefinition.ID));
         this.server = server;
         this.session = session;
 
@@ -65,6 +66,11 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
         this.inventory = new ImplPlayerInventory(this);
+
+        this.setDisplayName(this.getUsername());
+
+        // Players will die at any health lower than 0.5
+        this.getAttribute(AttributeType.HEALTH).setMinimumValue(0.5f);
     }
 
     @Override
@@ -347,21 +353,34 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(TextMessage message) {
         TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.RAW);
-        textPacket.setMessage(message);
+        textPacket.setType(message.getType());
+        textPacket.setMessage(message.getMessage());
+        textPacket.setRequiresTranslation(message.requiresTranslation());
+        textPacket.setSourceName(message.getSourceName());
+        textPacket.setParameters(message.getParameters());
+        textPacket.setXuid(message.getXuid());
+        textPacket.setPlatformChatId(message.getPlatformChatId());
         this.sendPacket(textPacket);
     }
 
     @Override
+    public void sendMessage(String message) {
+        this.sendMessage(new TextMessage.Builder()
+                .setType(TextType.RAW)
+                .setMessage(message)
+                .build());
+    }
+
+    @Override
     public void sendPlayerMessage(Player sender, String message) {
-        TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.CHAT);
-        textPacket.setSourceName(sender.getUsername());
-        textPacket.setMessage(message);
-        textPacket.setXuid(sender.getXUID());
-        this.sendPacket(textPacket);
+        this.sendMessage(new TextMessage.Builder()
+                        .setType(TextType.CHAT)
+                        .setSourceName(sender.getUsername())
+                        .setMessage(message)
+                        .setXUID(sender.getXUID())
+                        .build());
     }
 
     public PlayerChunkManager getChunkManager() {

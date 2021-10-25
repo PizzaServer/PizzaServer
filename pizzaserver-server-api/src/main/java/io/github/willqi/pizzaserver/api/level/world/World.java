@@ -2,6 +2,8 @@ package io.github.willqi.pizzaserver.api.level.world;
 
 import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.ItemEntity;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
@@ -61,6 +63,13 @@ public interface World extends ChunkManager {
     void setBlock(Block block, Vector3i position);
 
     void setBlock(Block block, int x, int y, int z);
+
+    /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemStack {@link ItemStack} to spawn as an entity
+     * @param position The position to spawn it in this world
+     */
+    void addItemEntity(ItemStack itemStack, Vector3 position);
 
     /**
      * Add a {@link Entity} to this world and spawn it.

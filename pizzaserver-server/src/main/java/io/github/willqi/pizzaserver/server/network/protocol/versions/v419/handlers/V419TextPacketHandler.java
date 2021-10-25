@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.TextPacket;
+import io.github.willqi.pizzaserver.api.utils.TextType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 
@@ -13,19 +14,19 @@ import java.util.List;
 public class V419TextPacketHandler extends BaseProtocolPacketHandler<TextPacket> {
 
     // In case a new text type is introduced in later versions
-    protected final BiMap<TextPacket.TextType, Byte> typeValues = HashBiMap.create(new HashMap<TextPacket.TextType, Byte>() {
+    protected final BiMap<TextType, Byte> typeValues = HashBiMap.create(new HashMap<TextType, Byte>() {
         {
-            this.put(TextPacket.TextType.RAW, (byte) 0);
-            this.put(TextPacket.TextType.CHAT, (byte) 1);
-            this.put(TextPacket.TextType.TRANSLATION, (byte) 2);
-            this.put(TextPacket.TextType.POPUP, (byte) 3);
-            this.put(TextPacket.TextType.JUKEBOX_POPUP, (byte) 4);
-            this.put(TextPacket.TextType.TIP, (byte) 5);
-            this.put(TextPacket.TextType.SYSTEM, (byte) 6);
-            this.put(TextPacket.TextType.WHISPER, (byte) 7);
-            this.put(TextPacket.TextType.ANNOUNCEMENT, (byte) 8);
-            this.put(TextPacket.TextType.OBJECT, (byte) 9);
-            this.put(TextPacket.TextType.OBJECT_WHISPER, (byte) 10);
+            this.put(TextType.RAW, (byte) 0);
+            this.put(TextType.CHAT, (byte) 1);
+            this.put(TextType.TRANSLATION, (byte) 2);
+            this.put(TextType.POPUP, (byte) 3);
+            this.put(TextType.JUKEBOX_POPUP, (byte) 4);
+            this.put(TextType.TIP, (byte) 5);
+            this.put(TextType.SYSTEM, (byte) 6);
+            this.put(TextType.WHISPER, (byte) 7);
+            this.put(TextType.ANNOUNCEMENT, (byte) 8);
+            this.put(TextType.OBJECT, (byte) 9);
+            this.put(TextType.OBJECT_WHISPER, (byte) 10);
         }
     });
 
@@ -40,18 +41,18 @@ public class V419TextPacketHandler extends BaseProtocolPacketHandler<TextPacket>
         textPacket.setType(this.typeValues.inverse().get(textTypeByte));
         textPacket.setRequiresTranslation(buffer.readBoolean());
 
-        boolean hasSourceName = textPacket.getType() == TextPacket.TextType.CHAT
-                || textPacket.getType() == TextPacket.TextType.WHISPER
-                || textPacket.getType() == TextPacket.TextType.ANNOUNCEMENT;
+        boolean hasSourceName = textPacket.getType() == TextType.CHAT
+                || textPacket.getType() == TextType.WHISPER
+                || textPacket.getType() == TextType.ANNOUNCEMENT;
         if (hasSourceName) {
             textPacket.setSourceName(buffer.readString());
         }
 
         textPacket.setMessage(buffer.readString());
 
-        boolean hasParameters = textPacket.getType() == TextPacket.TextType.TRANSLATION
-                || textPacket.getType() == TextPacket.TextType.POPUP
-                || textPacket.getType() == TextPacket.TextType.JUKEBOX_POPUP;
+        boolean hasParameters = textPacket.getType() == TextType.TRANSLATION
+                || textPacket.getType() == TextType.POPUP
+                || textPacket.getType() == TextType.JUKEBOX_POPUP;
         if (hasParameters) {
             int parametersSize = buffer.readUnsignedVarInt();
             List<String> parameters = new ArrayList<>(parametersSize);
@@ -70,24 +71,24 @@ public class V419TextPacketHandler extends BaseProtocolPacketHandler<TextPacket>
     @Override
     public void encode(TextPacket packet, BasePacketBuffer buffer) {
         if (!this.typeValues.containsKey(packet.getType())) {
-            packet.setType(TextPacket.TextType.RAW);
+            packet.setType(TextType.RAW);
         }
 
         buffer.writeByte(this.typeValues.get(packet.getType()));
         buffer.writeBoolean(packet.requiresTranslation());
 
-        boolean hasSourceName = packet.getType() == TextPacket.TextType.CHAT
-                || packet.getType() == TextPacket.TextType.WHISPER
-                || packet.getType() == TextPacket.TextType.ANNOUNCEMENT;
+        boolean hasSourceName = packet.getType() == TextType.CHAT
+                || packet.getType() == TextType.WHISPER
+                || packet.getType() == TextType.ANNOUNCEMENT;
         if (hasSourceName) {
             buffer.writeString(packet.getSourceName());
         }
 
         buffer.writeString(packet.getMessage());
 
-        boolean hasParameters = packet.getType() == TextPacket.TextType.TRANSLATION
-                || packet.getType() == TextPacket.TextType.POPUP
-                || packet.getType() == TextPacket.TextType.JUKEBOX_POPUP;
+        boolean hasParameters = packet.getType() == TextType.TRANSLATION
+                || packet.getType() == TextType.POPUP
+                || packet.getType() == TextType.JUKEBOX_POPUP;
         if (hasParameters) {
             buffer.writeUnsignedVarInt(packet.getParameters().size());
             for (String parameter : packet.getParameters()) {

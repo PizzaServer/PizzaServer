@@ -1,5 +1,7 @@
 package io.github.willqi.pizzaserver.api.network.protocol.packets;
 
+import io.github.willqi.pizzaserver.api.utils.TextType;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -81,19 +83,5 @@ public class TextPacket extends BaseBedrockPacket {
         this.platformChatId = platformChatId;
     }
 
-
-    public enum TextType {
-        RAW,
-        CHAT,
-        TRANSLATION,
-        POPUP,
-        JUKEBOX_POPUP,
-        TIP,
-        SYSTEM,
-        WHISPER,
-        ANNOUNCEMENT,
-        OBJECT,
-        OBJECT_WHISPER
-    }
 
 }

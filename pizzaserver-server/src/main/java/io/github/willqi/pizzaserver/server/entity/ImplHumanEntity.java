@@ -1,9 +1,9 @@
 package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.HumanEntity;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
-import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.AddPlayerPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.MovePlayerPacket;
@@ -59,7 +59,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     protected final UUID uuid;
 
 
-    public ImplHumanEntity(HumanEntityDefinition entityType) {
+    public ImplHumanEntity(EntityDefinition entityType) {
         super(entityType);
         this.uuid = UUID.randomUUID();
         this.skin = DEFAULT_STEVE;
@@ -97,7 +97,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
 
     @Override
     public String getUsername() {
-        return this.getDisplayName();
+        return this.getDisplayName().orElse("");
     }
 
     @Override
@@ -145,6 +145,9 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
                 .setSkin(this.getSkin())
                 .build();
     }
+
+    @Override
+    protected void endDeathAnimation() {}
 
     @Override
     public void tick() {

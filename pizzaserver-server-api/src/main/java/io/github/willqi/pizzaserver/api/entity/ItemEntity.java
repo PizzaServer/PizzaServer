@@ -6,4 +6,6 @@ public interface ItemEntity extends Entity {
 
     ItemStack getItem();
 
+    void setItem(ItemStack item);
+
 }

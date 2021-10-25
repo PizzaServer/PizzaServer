@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.components.EntityCompo
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -16,6 +17,8 @@ import io.github.willqi.pizzaserver.api.utils.Watchable;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -106,7 +109,14 @@ public interface Entity extends Watchable {
 
     float getEyeHeight();
 
-    String getDisplayName();
+    /**
+     * Retrieves the display name if present.
+     * Otherwise it falls back to the name of the entity.
+     * @return name of the entity
+     */
+    String getName();
+
+    Optional<String> getDisplayName();
 
     void setDisplayName(String name);
 
@@ -151,6 +161,8 @@ public interface Entity extends Watchable {
 
     void setHeadYaw(float headYaw);
 
+    boolean isAlive();
+
     float getHealth();
 
     void setHealth(float health);
@@ -181,7 +193,13 @@ public interface Entity extends Watchable {
 
     void setScale(float scale);
 
+    List<ItemStack> getLoot();
+
+    void setLoot(List<ItemStack> loot);
+
     EntityInventory getInventory();
+
+    int getArmourPoints();
 
     int getNoHitTicks();
 
@@ -191,6 +209,9 @@ public interface Entity extends Watchable {
 
     void kill();
 
+    void setShowDeathMessages(boolean enabled);
+
+    boolean showDeathMessages();
 
     /**
      * Called every server tick.

@@ -1,19 +1,16 @@
 package io.github.willqi.pizzaserver.server;
 
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
-import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.EmptyEntityComponentHandler;
-import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.EntityCollisionBoxComponentHandler;
-import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.EntityHealthComponentHandler;
-import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.EntityScaleComponentHandler;
-import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityCollisionBoxComponent;
-import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
-import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
-import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityScaleComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.handlers.*;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.*;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.server.level.world.blocks.types.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class VanillaContentLoader {
 
@@ -40,6 +37,8 @@ public class VanillaContentLoader {
         EntityRegistry.registerComponent(EntityCollisionBoxComponent.class, new EntityCollisionBoxComponent(0f, 0f), new EntityCollisionBoxComponentHandler());
         EntityRegistry.registerComponent(EntityHealthComponent.class, new EntityHealthComponent(0, 0, 0), new EntityHealthComponentHandler());
         EntityRegistry.registerComponent(EntityDamageSensorComponent.class, new EntityDamageSensorComponent(new EntityDamageSensorComponent.Sensor[0]), new EmptyEntityComponentHandler<>());
+        EntityRegistry.registerComponent(EntityLootComponent.class, new EntityLootComponent(new ArrayList<>()), new EntityLootComponentHandler());
+        EntityRegistry.registerComponent(EntityDeathMessageComponent.class, new EntityDeathMessageComponent(false), new EntityDeathMessageComponentHandler());
     }
 
     private static void loadEntities() {

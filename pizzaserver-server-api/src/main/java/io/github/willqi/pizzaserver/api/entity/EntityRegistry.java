@@ -25,7 +25,7 @@ public class EntityRegistry {
      * @param entityDefinition definition class
      */
     public static void registerDefinition(EntityDefinition entityDefinition) {
-        definitions.put(entityDefinition.getEntityId(), entityDefinition);
+        definitions.put(entityDefinition.getId(), entityDefinition);
     }
 
     /**
@@ -84,6 +84,7 @@ public class EntityRegistry {
 
     public static ItemEntity getItemEntity(ItemStack itemStack) {
         ItemEntity entity = (ItemEntity) getEntity(ItemEntityDefinition.ID);
+        entity.setItem(itemStack);
         return entity;
     }
 

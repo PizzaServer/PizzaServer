@@ -7,7 +7,9 @@ import io.github.willqi.pizzaserver.api.entity.definition.spawnrules.EntitySpawn
 
 public interface EntityDefinition {
 
-    String getEntityId();
+    String getId();
+
+    String getName();
 
     EntityComponentGroup getComponentGroup(String groupId);
 

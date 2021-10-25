@@ -2,12 +2,15 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
+import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
+import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.entity.inventory.InventoryID;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
@@ -245,9 +248,12 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 }
 
                 if (this.player.canReach(entity.get().getLocation(), 6)) {
+                    ImplEntity implEntity = (ImplEntity) entity.get();
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
-                            this.player.damage(entity.get(), DamageCause.ATTACK, this.player.getInventory().getHeldItem().getItemType().getDamage());
+                            float damage = this.player.getInventory().getHeldItem().getItemType().getDamage();
+                            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(), this.player, DamageCause.ATTACK, damage, 10);
+                            implEntity.damage(damageEvent);
                             break;
                         case INTERACT:
                             PlayerEntityInteractEvent playerEntityInteractEvent = new PlayerEntityInteractEvent(this.player, entity.get());

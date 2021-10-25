@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.utils.TextType;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
@@ -77,7 +78,7 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(TextPacket packet) {
-        if (packet.getType() == TextPacket.TextType.CHAT) {
+        if (packet.getType() == TextType.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
 
             this.player.getServer().getEventManager().call(event);

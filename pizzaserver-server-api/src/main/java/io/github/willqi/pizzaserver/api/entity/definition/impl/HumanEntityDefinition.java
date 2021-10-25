@@ -19,8 +19,13 @@ public class HumanEntityDefinition extends BaseEntityDefinition {
     }
 
     @Override
-    public String getEntityId() {
+    public String getId() {
         return ID;
+    }
+
+    @Override
+    public String getName() {
+        return "Human";
     }
 
     @Override

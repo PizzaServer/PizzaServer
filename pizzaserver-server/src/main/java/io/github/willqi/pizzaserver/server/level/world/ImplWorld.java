@@ -1,6 +1,9 @@
 package io.github.willqi.pizzaserver.server.level.world;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.ItemEntity;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
@@ -174,6 +177,14 @@ public class ImplWorld implements World {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
         this.getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
+    }
+
+    @Override
+    public void addItemEntity(ItemStack itemStack, Vector3 position) {
+        ItemEntity itemEntity = EntityRegistry.getItemEntity(itemStack);
+        if (!itemStack.isEmpty()) {
+            this.addEntity(itemEntity, position);
+        }
     }
 
     public void sendBlock(Player player, Vector3i blockCoordinates) {

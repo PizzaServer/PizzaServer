@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.BaseEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityCollisionBoxComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 
 public class CowEntityDefinition extends BaseEntityDefinition {
@@ -15,12 +16,18 @@ public class CowEntityDefinition extends BaseEntityDefinition {
     public CowEntityDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
                 new EntityCollisionBoxComponent(0.9f, 1.3f),
-                new EntityHealthComponent(10f, 10f) }));
+                new EntityHealthComponent(10f, 10f),
+                new EntityDeathMessageComponent(true) }));
     }
 
     @Override
-    public String getEntityId() {
+    public String getId() {
         return ID;
+    }
+
+    @Override
+    public String getName() {
+        return "Cow";
     }
 
     @Override

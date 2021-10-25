@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.willqi.pizzaserver.api.utils.TextMessage;
 
 import java.util.Optional;
 
@@ -103,6 +104,12 @@ public interface Player extends HumanEntity {
      * @param experienceLevel experience level
      */
     void setExperienceLevel(int experienceLevel);
+
+    /**
+     * Send a message to this player.
+     * @param message the message to send
+     */
+    void sendMessage(TextMessage message);
 
     /**
      * Send a text message to this player.
