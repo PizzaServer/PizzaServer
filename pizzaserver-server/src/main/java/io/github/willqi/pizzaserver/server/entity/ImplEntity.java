@@ -4,7 +4,6 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
-import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
@@ -13,6 +12,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.components.filter.Enti
 import io.github.willqi.pizzaserver.api.entity.definition.components.filter.EntityFilterData;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
@@ -32,6 +32,7 @@ import io.github.willqi.pizzaserver.api.utils.TextType;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.entity.inventory.ImplEntityInventory;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
@@ -68,7 +69,7 @@ public class ImplEntity implements Entity {
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
-    protected EntityInventory inventory = null;
+    protected EntityInventory inventory = new ImplEntityInventory(this, Collections.singleton(InventorySlotType.INVENTORY), 0);
     protected List<ItemStack> loot = new ArrayList<>();
     protected EntityMetaData metaData = new EntityMetaData();
     protected boolean metaDataUpdate;

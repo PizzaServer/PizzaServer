@@ -32,6 +32,10 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(MovePlayerPacket packet) {
+        if (!this.player.isAlive()) {
+            return;
+        }
+
         if (this.player.hasSpawned()) {
             this.player.setPitch(packet.getPitch());
             this.player.setYaw(packet.getYaw());
@@ -42,6 +46,10 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(PlayerAnimatePacket packet) {
+        if (!this.player.isAlive()) {
+            return;
+        }
+
         PlayerAnimationEvent event = new PlayerAnimationEvent(this.player, packet.getAction());
         this.player.getServer().getEventManager().call(event);
 
@@ -58,6 +66,10 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(PlayerActionPacket packet) {
+        if (!this.player.isAlive()) {
+            return;
+        }
+
         switch (packet.getActionType()) {
             case START_SNEAK:
                 if (!this.player.isSneaking()) {

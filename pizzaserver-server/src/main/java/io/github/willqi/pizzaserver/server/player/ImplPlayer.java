@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.willqi.pizzaserver.api.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -452,7 +453,12 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             }
 
             // Make sure that the block we're breaking is within reach too!
-            if (this.getBlockBreakData().getBlock().isPresent() && !this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), 7)) {
+            boolean stopBreakingBlock = this.getBlockBreakData().getBlock().isPresent()
+                    && (!this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), 7) || !this.isAlive());
+            if (stopBreakingBlock) {
+                BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakData().getBlock().get());
+                this.getServer().getEventManager().call(blockStopBreakEvent);
+
                 this.getBlockBreakData().stopBreaking();
             }
         }

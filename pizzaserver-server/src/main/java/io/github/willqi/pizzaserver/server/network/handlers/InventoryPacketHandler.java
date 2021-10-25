@@ -40,6 +40,10 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(InteractPacket packet) {
+        if (!this.player.isAlive()) {
+            return;
+        }
+
         if (packet.getAction() == InteractPacket.Type.OPEN_INVENTORY && !this.player.getOpenInventory().isPresent()) {
             this.player.openInventory(this.player.getInventory());
         }
@@ -146,6 +150,10 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     @Override
     public void onPacket(InventoryTransactionPacket packet) {
         ItemStack heldItemStack = this.player.getInventory().getHeldItem();
+
+        if (!this.player.isAlive()) {
+            return;
+        }
 
         switch (packet.getType()) {
             case NORMAL:
