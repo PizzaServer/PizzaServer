@@ -873,7 +873,7 @@ public class ImplEntity implements Entity {
     }
 
     public boolean shouldBeDespawnedFrom(Player player) {
-        return (this.getChunk() == null || !this.getChunk().canBeVisibleTo(player) || !this.withinEntityRenderDistanceTo(player))
+        return (!this.hasSpawned() || !this.getChunk().canBeVisibleTo(player) || !this.withinEntityRenderDistanceTo(player))
                 && this.hasSpawnedTo(player);
     }
 
