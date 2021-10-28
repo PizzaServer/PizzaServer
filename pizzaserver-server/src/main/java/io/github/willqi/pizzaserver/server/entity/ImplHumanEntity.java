@@ -152,6 +152,8 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     @Override
     public void tick() {
         if (this.moveUpdate) {
+            this.moveUpdate = false;
+
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setEntityRuntimeId(this.getId());
             movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));

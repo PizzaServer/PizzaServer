@@ -437,29 +437,14 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     @Override
     public void tick() {
-        if (this.moveUpdate) {
-            MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setEntityRuntimeId(this.getId());
-            movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
-            movePlayerPacket.setPitch(this.getPitch());
-            movePlayerPacket.setYaw(this.getYaw());
-            movePlayerPacket.setHeadYaw(this.getHeadYaw());
-            movePlayerPacket.setMode(MovementMode.NORMAL);
-            movePlayerPacket.setOnGround(false);
+        // Make sure that the block we're breaking is within reach!
+        boolean stopBreakingBlock = this.getBlockBreakData().getBlock().isPresent()
+                && (!this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), 7) || !this.isAlive());
+        if (stopBreakingBlock) {
+            BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakData().getBlock().get());
+            this.getServer().getEventManager().call(blockStopBreakEvent);
 
-            for (Player player : this.getViewers()) {
-                player.sendPacket(movePlayerPacket);
-            }
-
-            // Make sure that the block we're breaking is within reach too!
-            boolean stopBreakingBlock = this.getBlockBreakData().getBlock().isPresent()
-                    && (!this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), 7) || !this.isAlive());
-            if (stopBreakingBlock) {
-                BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakData().getBlock().get());
-                this.getServer().getEventManager().call(blockStopBreakEvent);
-
-                this.getBlockBreakData().stopBreaking();
-            }
+            this.getBlockBreakData().stopBreaking();
         }
 
         super.tick();
@@ -498,6 +483,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     @Override
     public void onDespawned() {
+        super.onDespawned();
         this.getChunkManager().onDespawn();
     }
 

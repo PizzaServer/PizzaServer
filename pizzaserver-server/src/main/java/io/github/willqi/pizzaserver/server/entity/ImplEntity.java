@@ -729,7 +729,7 @@ public class ImplEntity implements Entity {
 
             MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
             moveEntityPacket.setEntityRuntimeId(this.getId());
-            moveEntityPacket.setPosition(this.getLocation());
+            moveEntityPacket.setPosition(this.getLocation().add(0, this.getEyeHeight(), 0));
             moveEntityPacket.setPitch(this.getPitch());
             moveEntityPacket.setYaw(this.getYaw());
             moveEntityPacket.setHeadYaw(this.getHeadYaw());
@@ -874,7 +874,7 @@ public class ImplEntity implements Entity {
     }
 
     /**
-     * Called when the entity is completely despawned.
+     * Called when the entity is about to be despawned.
      */
     public void onDespawned() {
         this.spawned = false;

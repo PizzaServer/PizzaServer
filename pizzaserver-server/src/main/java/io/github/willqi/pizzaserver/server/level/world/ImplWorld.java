@@ -199,7 +199,7 @@ public class ImplWorld implements World {
 
     @Override
     public void addEntity(Entity entity, Vector3 position) {
-        if (entity.getWorld() != null) {
+        if (entity.hasSpawned()) {
             throw new IllegalArgumentException("The provided entity was already spawned in a world.");
         }
         Location location = new Location(this, position);
@@ -229,10 +229,7 @@ public class ImplWorld implements World {
         ImplEntity implEntity = (ImplEntity) entity;
         ImplChunk chunk = implEntity.getChunk();
 
-        // Remove the location first to signify that the entity is gone and not just moving to another chunk.
-        implEntity.setLocation(null);   // the entity no longer exists in any world
         implEntity.onDespawned();
-
         chunk.removeEntity(implEntity);
     }
 
