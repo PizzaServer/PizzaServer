@@ -91,6 +91,8 @@ public interface Entity extends Watchable {
 
     void teleport(float x, float y, float z);
 
+    void teleport(Location location);
+
     void teleport(World world, float x, float y, float z);
 
     /**

@@ -23,8 +23,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.AddEntityPacket;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.EntityEventPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.TextMessage;
@@ -36,8 +35,6 @@ import io.github.willqi.pizzaserver.server.entity.inventory.ImplEntityInventory;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.RemoveEntityPacket;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.SetEntityDataPacket;
 
 import java.util.*;
 
@@ -287,13 +284,24 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public void teleport(Location location) {
+        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ());
+    }
+
+    @Override
     public void teleport(World world, float x, float y, float z) {
+        World oldWorld = this.getWorld();
         this.moveUpdate = true;
 
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.world = world;
+        if (!world.equals(oldWorld)) {
+            oldWorld.removeEntity(this);
+            world.addEntity(this, new Vector3(x, y, z));
+        } else {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.world = world;
+        }
     }
 
     @Override
@@ -716,7 +724,20 @@ public class ImplEntity implements Entity {
 
     @Override
     public void tick() {
-        this.moveUpdate = false;
+        if (this.moveUpdate) {
+            this.moveUpdate = false;
+
+            MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+            moveEntityPacket.setEntityRuntimeId(this.getId());
+            moveEntityPacket.setPosition(this.getLocation());
+            moveEntityPacket.setPitch(this.getPitch());
+            moveEntityPacket.setYaw(this.getYaw());
+            moveEntityPacket.setHeadYaw(this.getHeadYaw());
+            moveEntityPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
+            for (Player player : this.getViewers()) {
+                player.sendPacket(moveEntityPacket);
+            }
+        }
 
         if (this.metaDataUpdate) {
             this.metaDataUpdate = false;

@@ -1,10 +1,12 @@
 package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.commons.utils.Vector2i;
 import io.github.willqi.pizzaserver.server.entity.ImplEntity;
+import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.NetworkChunkPublisherUpdatePacket;
 
@@ -17,6 +19,7 @@ public class PlayerChunkManager {
     private final ImplPlayer player;
     private int chunkRadius = 3;
 
+    private ImplWorld managedWorld = null;
     private Set<Vector2i> currentVisibleChunkCoordinates = Collections.emptySet();
 
 
@@ -37,21 +40,18 @@ public class PlayerChunkManager {
         }
     }
 
-    public Set<Vector2i> getVisibleChunkCoordinates() {
-        return this.currentVisibleChunkCoordinates;
-    }
-
     public void onEnterNewChunk(Location oldLocation) {
         this.updateChunks(oldLocation, this.getChunkRadius());
     }
 
     public void onSpawned() {
+        this.managedWorld = this.player.getWorld();
         this.updateChunks(null, this.getChunkRadius());
     }
 
     public void onLocallyInitialized() {
         // Spawn entities in chunks that have been sent to us
-        for (Vector2i chunkCoordinates : this.getVisibleChunkCoordinates()) {
+        for (Vector2i chunkCoordinates : this.currentVisibleChunkCoordinates) {
             int chunkToPlayerDistance = (int) Math.round(Math.sqrt(Math.pow(this.player.getLocation().getChunkX() - chunkCoordinates.getX(), 2)
                     + Math.pow(this.player.getLocation().getChunkZ() - chunkCoordinates.getY(), 2)));
 
@@ -71,12 +71,14 @@ public class PlayerChunkManager {
     /**
      * Removes the player from all chunks they were a viewer to.
      */
-    public void onDisconnect() {
-        for (Vector2i chunkCoordinate : this.getVisibleChunkCoordinates()) {
-            if (this.player.getWorld().isChunkLoaded(chunkCoordinate.getX(), chunkCoordinate.getY())) {
-                this.player.getWorld().getChunk(chunkCoordinate.getX(), chunkCoordinate.getY()).despawnFrom(this.player);
+    public void onDespawn() {
+        for (Vector2i chunkCoordinate : this.currentVisibleChunkCoordinates) {
+            if (this.managedWorld.isChunkLoaded(chunkCoordinate.getX(), chunkCoordinate.getY())) {
+                this.managedWorld.getChunk(chunkCoordinate.getX(), chunkCoordinate.getY()).despawnFrom(this.player);
             }
         }
+        this.currentVisibleChunkCoordinates.clear();
+        this.managedWorld = null;
     }
 
     /**
@@ -99,7 +101,7 @@ public class PlayerChunkManager {
      * @param oldRadius old chunk radius or the existing one if it was not changed
      */
     private void despawnEntitiesFromOldLocation(Location oldLocation, int oldRadius) {
-        for (Vector2i oldChunkCoordinate : this.getVisibleChunkCoordinates()) {
+        for (Vector2i oldChunkCoordinate : this.currentVisibleChunkCoordinates) {
             int chunkX = oldChunkCoordinate.getX();
             int chunkZ = oldChunkCoordinate.getY();
 
@@ -133,7 +135,7 @@ public class PlayerChunkManager {
      * @param oldRadius old radius if it was changed, otherwise the existing one
      */
     private void updateVisibleChunks(Location oldLocation, int oldRadius) {
-        Set<Vector2i> previouslyVisibleChunks = new HashSet<>(this.getVisibleChunkCoordinates());
+        Set<Vector2i> previouslyVisibleChunks = new HashSet<>(this.currentVisibleChunkCoordinates);
         Set<Vector2i> visibleChunkCoordinates = new HashSet<>();
 
         // What are our new chunks loaded?

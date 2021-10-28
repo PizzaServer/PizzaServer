@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefini
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
+import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -235,8 +236,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     public void onDisconnect() {
         if (this.hasSpawned()) {
             this.closeOpenInventory();
-
-            this.getChunkManager().onDisconnect();
 
             if (this.canAutoSave()) {
                 this.getServer().getScheduler().prepareTask(() -> {
@@ -467,6 +466,20 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     }
 
     @Override
+    public void teleport(World world, float x, float y, float z) {
+        super.teleport(world, x, y, z);
+
+        MoveEntityAbsolutePacket teleportPacket = new MoveEntityAbsolutePacket();
+        teleportPacket.setEntityRuntimeId(this.getId());
+        teleportPacket.setPosition(this.getLocation());
+        teleportPacket.setPitch(this.getPitch());
+        teleportPacket.setYaw(this.getYaw());
+        teleportPacket.setHeadYaw(this.getHeadYaw());
+        teleportPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
+        this.sendPacket(teleportPacket);
+    }
+
+    @Override
     public void moveTo(float x, float y, float z) {
         Location oldLocation = new Location(this.world, new Vector3(this.x, this.y, this.z));
         super.moveTo(x, y, z);
@@ -481,6 +494,11 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         super.onSpawned();
         this.getChunkManager().onSpawned();
         this.completeLogin();
+    }
+
+    @Override
+    public void onDespawned() {
+        this.getChunkManager().onDespawn();
     }
 
     private void completeLogin() {

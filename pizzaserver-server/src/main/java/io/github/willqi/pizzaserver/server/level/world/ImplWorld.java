@@ -199,13 +199,8 @@ public class ImplWorld implements World {
 
     @Override
     public void addEntity(Entity entity, Vector3 position) {
-        // Check if we need to despawn the entity from its old world first
         if (entity.getWorld() != null) {
-            if (entity.getWorld().equals(this)) {
-                throw new IllegalStateException("This entity already exists in this world.");
-            } else {
-                entity.getWorld().removeEntity(entity);
-            }
+            throw new IllegalArgumentException("The provided entity was already spawned in a world.");
         }
         Location location = new Location(this, position);
 
@@ -222,7 +217,7 @@ public class ImplWorld implements World {
 
     @Override
     public void removeEntity(Entity entity) {
-        if (!this.equals(entity.getWorld())) {
+        if (!this.entities.containsKey(entity.getId())) {
             throw new IllegalStateException("This entity has not been spawned in this world");
         }
 
