@@ -25,6 +25,7 @@ import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.TextMessage;
 import io.github.willqi.pizzaserver.api.utils.TextType;
@@ -59,8 +60,7 @@ public class ImplEntity implements Entity {
     protected float yaw;
     protected float headYaw;
 
-    protected float width;
-    protected float height;
+    protected BoundingBox boundingBox = new BoundingBox();
 
     protected boolean hasAI;
     protected final EntityDefinition entityDefinition;
@@ -230,6 +230,11 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
+    }
+
+    @Override
     public float getEyeHeight() {
         return this.getHeight() / 2 + 0.1f;
     }
@@ -241,41 +246,43 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getHeight() {
-        return this.height;
+        return this.getBoundingBox().getHeight() / this.getScale();
     }
 
     @Override
     public void setHeight(float height) {
-        this.height = height;
+        this.getBoundingBox().setHeight(height * this.getScale());
     }
 
     @Override
     public float getWidth() {
-        return this.width;
+        return this.getBoundingBox().getWidth() / this.getScale();
     }
 
     @Override
     public void setWidth(float width) {
-        this.width = width;
+        this.getBoundingBox().setWidth(width * this.getScale());
     }
 
     /**
-     * Set the location of the entity.
+     * Set the internal position of the entity.
      * Used internally to setup and to clean up the entity
      * @param location entity location
      */
-    public void setLocation(Location location) {
+    public void setPosition(Location location) {
         if (location != null) {
-            this.x = location.getX();
-            this.y = location.getY();
-            this.z = location.getZ();
-            this.world = location.getWorld();
+            this.setPosition(location.getWorld(), location.getX(), location.getY(), location.getZ());
         } else {
-            this.x = 0;
-            this.y = 0;
-            this.z = 0;
-            this.world = null;
+            this.setPosition(null, 0, 0, 0);
         }
+    }
+
+    public void setPosition(World world, float x, float y, float z) {
+        this.world = world;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.getBoundingBox().setPosition(x, y, z);
     }
 
     @Override
@@ -297,10 +304,7 @@ public class ImplEntity implements Entity {
             oldWorld.removeEntity(this);
             world.addEntity(this, new Vector3(x, y, z));
         } else {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.world = world;
+            this.setPosition(new Location(this.world, this.x, this.y, this.z));
         }
     }
 
@@ -359,7 +363,6 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getYaw() {
-        this.moveUpdate = true;
         return this.yaw;
     }
 
@@ -496,6 +499,9 @@ public class ImplEntity implements Entity {
 
     @Override
     public void setScale(float scale) {
+        this.getBoundingBox().setWidth(this.getWidth() * scale);
+        this.getBoundingBox().setHeight(this.getHeight() * scale);
+
         EntityMetaData data = this.getMetaData();
         data.setFloatProperty(EntityMetaPropertyName.SCALE, scale);
         this.setMetaData(data);
@@ -711,9 +717,7 @@ public class ImplEntity implements Entity {
         this.moveUpdate = true;
 
         ImplChunk currentChunk = this.getChunk();
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.setPosition(this.getWorld(), x, y, z);
 
         ImplChunk newChunk = this.getWorld().getChunk((int) Math.floor(this.x / 16), (int) Math.floor(this.z / 16));
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk

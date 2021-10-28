@@ -12,6 +12,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
 import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
@@ -100,6 +101,8 @@ public interface Entity extends Watchable {
      * @return the {@link Location}
      */
     Location getLocation();
+
+    BoundingBox getBoundingBox();
 
     float getHeight();
 

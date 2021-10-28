@@ -8,7 +8,6 @@ import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.willqi.pizzaserver.api.level.world.World;
-import io.github.willqi.pizzaserver.api.network.protocol.data.MovementMode;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;

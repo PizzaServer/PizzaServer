@@ -97,22 +97,22 @@ public class Vector3 {
                 + Math.pow(this.getZ() - vector3.getZ(), 2));
     }
 
-    public double getLength() {
-        return Math.sqrt(Math.pow(this.getX(), 2)
+    public float getLength() {
+        return (float) Math.sqrt(Math.pow(this.getX(), 2)
                 + Math.pow(this.getY(), 2)
                 + Math.pow(this.getZ(), 2));
     }
 
     public Vector3 normalize() {
-        double length = this.getLength();
-        return new Vector3((float) (this.getX() / length), (float) (this.getY() / length), (float) (this.getZ() / length));
+        float length = this.getLength();
+        return new Vector3(this.getX() / length, this.getY() / length, this.getZ() / length);
     }
 
-    public double dot(Vector3 vector3) {
+    public float dot(Vector3 vector3) {
         return (this.getX() * vector3.getX()) + (this.getY() * vector3.getY()) + (this.getZ() * vector3.getZ());
     }
 
-    public double dot(Vector3i vector3i) {
+    public float dot(Vector3i vector3i) {
         return (this.getX() * vector3i.getX()) + (this.getY() * vector3i.getY()) + (this.getZ() * vector3i.getZ());
     }
 

@@ -210,7 +210,7 @@ public class ImplWorld implements World {
         }
 
         ImplEntity implEntity = (ImplEntity) entity;
-        implEntity.setLocation(location);
+        implEntity.setPosition(location);
         ((ImplChunk) location.getChunk()).addEntity(implEntity);
         implEntity.onSpawned();
     }
