@@ -2,9 +2,9 @@ package io.github.willqi.pizzaserver.commons.utils;
 
 public class Vector3 {
 
-    private final float x;
-    private final float y;
-    private final float z;
+    private float x;
+    private float y;
+    private float z;
 
 
     public Vector3(float x, float y, float z) {
@@ -17,12 +17,24 @@ public class Vector3 {
         return this.x;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
     public float getY() {
         return this.y;
     }
 
+    public void setY(float y) {
+        this.y = y;
+    }
+
     public float getZ() {
         return this.z;
+    }
+
+    public void setZ(float z) {
+        this.z = z;
     }
 
     public Vector3 add(Vector3 vector3) {

@@ -69,6 +69,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.inventory = new ImplPlayerInventory(this);
 
         this.setDisplayName(this.getUsername());
+        this.physicsEngine.setPositionUpdate(false);
 
         // Players will die at any health lower than 0.5
         this.getAttribute(AttributeType.HEALTH).setMinimumValue(0.5f);
@@ -471,6 +472,15 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         if (!oldLocation.getChunk().equals(this.getChunk())) {
             this.getChunkManager().onEnterNewChunk(oldLocation);
         }
+    }
+
+    @Override
+    public void setVelocity(Vector3 velocity) {
+        super.setVelocity(velocity);
+
+        SetEntityVelocityPacket velocityPacket = new SetEntityVelocityPacket();
+        velocityPacket.setVelocity(this.getVelocity().multiply(0.98f));
+        this.sendPacket(velocityPacket);
     }
 
     @Override

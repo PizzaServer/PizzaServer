@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.commons.utils;
 
 public class Vector2 {
 
-    private final float x;
-    private final float y;
+    private float x;
+    private float y;
 
 
     public Vector2(float x, float y) {
@@ -15,8 +15,16 @@ public class Vector2 {
         return this.x;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
     public float getY() {
         return this.y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
     }
 
     public Vector2 add(Vector2 vector) {

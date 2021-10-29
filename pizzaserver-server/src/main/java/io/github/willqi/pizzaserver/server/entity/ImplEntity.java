@@ -30,6 +30,7 @@ import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.TextMessage;
 import io.github.willqi.pizzaserver.api.utils.TextType;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
+import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplEntityInventory;
@@ -49,6 +50,7 @@ public class ImplEntity implements Entity {
     protected volatile float z;
     protected volatile World world;
     protected boolean moveUpdate;
+    protected EntityPhysicsEngine physicsEngine = new EntityPhysicsEngine(this);
 
     protected boolean vulnerable = true;
     protected int deathAnimationTicks = -1;
@@ -306,6 +308,16 @@ public class ImplEntity implements Entity {
         } else {
             this.setPosition(new Location(this.world, this.x, this.y, this.z));
         }
+    }
+
+    @Override
+    public Vector3 getVelocity() {
+        return this.physicsEngine.getVelocity();
+    }
+
+    @Override
+    public void setVelocity(Vector3 velocity) {
+        this.physicsEngine.setVelocity(velocity);
     }
 
     @Override
@@ -580,8 +592,9 @@ public class ImplEntity implements Entity {
 
             TextMessage deathMessage = null;
             if (this.getComponent(EntityDeathMessageComponent.class).showDeathMessages()) {
-                deathMessage = this.getDeathMessage();
+                deathMessage = this.getDeathMessage().orElse(null);
             }
+
             EntityDeathEvent deathEvent = new EntityDeathEvent(this, this.getLoot(), deathMessage, this.getServer().getPlayers());
             this.getServer().getEventManager().call(deathEvent);
 
@@ -607,9 +620,9 @@ public class ImplEntity implements Entity {
         return this.showDeathMessages;
     }
 
-    protected TextMessage getDeathMessage() {
+    protected Optional<TextMessage> getDeathMessage() {
         if (this.lastDamageEvent == null) {
-            return null;
+            return Optional.empty();
         }
 
         TextMessage.Builder textBuilder = new TextMessage.Builder()
@@ -617,13 +630,16 @@ public class ImplEntity implements Entity {
                 .setTranslationRequired(true)
                 .addParameter(this.getName());
 
+        if (this.lastDamageEvent instanceof EntityDamageByEntityEvent) {
+            textBuilder.addParameter(((EntityDamageByEntityEvent) this.lastDamageEvent).getAttacker().getName());
+        }
+
         switch (this.lastDamageEvent.getCause()) {
             case ANVIL:
                 textBuilder.setMessage("death.attack.anvil");
                 break;
             case ATTACK:
-                textBuilder.setMessage("death.attack.player")
-                        .addParameter(((EntityDamageByEntityEvent) this.lastDamageEvent).getAttacker().getName());
+                textBuilder.setMessage("death.attack.player");
                 break;
             case BLOCK_EXPLOSION:
                 textBuilder.setMessage("death.attack.explosion");
@@ -636,8 +652,7 @@ public class ImplEntity implements Entity {
                 textBuilder.setMessage("death.attack.drown");
                 break;
             case ENTITY_EXPLOSION:
-                textBuilder.setMessage("death.attack.explosion.player")
-                        .addParameter(((EntityDamageByEntityEvent) this.lastDamageEvent).getAttacker().getName());
+                textBuilder.setMessage("death.attack.explosion.player");
                 break;
             case FALL:
                 textBuilder.setMessage("death.attack.fall");
@@ -661,8 +676,7 @@ public class ImplEntity implements Entity {
                 textBuilder.setMessage("death.attack.magic");
                 break;
             case PROJECTILE:
-                textBuilder.setMessage("death.attack.arrow")
-                        .addParameter(((EntityDamageByEntityEvent) this.lastDamageEvent).getAttacker().getName());
+                textBuilder.setMessage("death.attack.arrow");
                 break;
             case STALACTITE:
                 textBuilder.setMessage("death.attack.stalactite");
@@ -690,7 +704,7 @@ public class ImplEntity implements Entity {
                 break;
         }
 
-        return textBuilder.build();
+        return Optional.of(textBuilder.build());
     }
 
     protected void startDeathAnimation() {
@@ -728,12 +742,14 @@ public class ImplEntity implements Entity {
 
     @Override
     public void tick() {
+        this.physicsEngine.tick();
+
         if (this.moveUpdate) {
             this.moveUpdate = false;
 
             MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
             moveEntityPacket.setEntityRuntimeId(this.getId());
-            moveEntityPacket.setPosition(this.getLocation().add(0, this.getEyeHeight(), 0));
+            moveEntityPacket.setPosition(this.getLocation());
             moveEntityPacket.setPitch(this.getPitch());
             moveEntityPacket.setYaw(this.getYaw());
             moveEntityPacket.setHeadYaw(this.getHeadYaw());
@@ -824,6 +840,7 @@ public class ImplEntity implements Entity {
                 boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(event.getCause())).isPresent() || !sensor.getCause().isPresent();
 
                 if (isAttackSensor) {
+                    boolean passedFilters = false;
                     for (EntityFilter filter : sensor.getFilters()) {
                         if (filter.test(damageFilterData)) {
                             if (!sensor.dealsDamage()) {
@@ -848,13 +865,15 @@ public class ImplEntity implements Entity {
 
                             this.setNoHitTicks(event.getNoHitTicks());
                             this.hurt(event.getDamage());
-                            return true;
+                            passedFilters = true;
+                            break;
                         }
+                    }
+                    if (!passedFilters) {
+                        return false;
                     }
                 }
             }
-
-            return false;
         } else {
             // No damage sensors preventing the entity from attacking the entity.
             this.getServer().getEventManager().call(event);
@@ -865,8 +884,18 @@ public class ImplEntity implements Entity {
 
             this.setNoHitTicks(event.getNoHitTicks());
             this.hurt(event.getDamage());
-            return true;
         }
+
+        if (event instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent damageByEntityEvent = (EntityDamageByEntityEvent) event;
+            Entity attacker = damageByEntityEvent.getAttacker();
+
+            Vector2 directionVector = new Vector2(this.getX() - attacker.getX(), this.getZ() - attacker.getZ()).normalize();
+            Vector3 knockback = damageByEntityEvent.getKnockback().multiply(directionVector.getX(), 1, directionVector.getY());
+            this.setVelocity(knockback);
+        }
+
+        return true;
     }
 
     /**

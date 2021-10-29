@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -90,6 +91,7 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(TextPacket packet) {
+        this.player.getWorld().addEntity(EntityRegistry.getEntity("minecraft:cow"), this.player.getLocation());
         if (packet.getType() == TextType.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
 

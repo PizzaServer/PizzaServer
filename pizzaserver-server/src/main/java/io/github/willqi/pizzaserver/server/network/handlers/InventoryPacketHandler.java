@@ -10,6 +10,7 @@ import io.github.willqi.pizzaserver.api.event.type.player.PlayerHotbarSelectEven
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.entity.inventory.InventoryID;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
@@ -260,7 +261,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
                             float damage = this.player.getInventory().getHeldItem().getItemType().getDamage();
-                            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(), this.player, DamageCause.ATTACK, damage, 10);
+                            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(), this.player, DamageCause.ATTACK, damage, 10, new Vector3(0.3f, 0.3f, 0.3f));
                             implEntity.damage(damageEvent);
                             break;
                         case INTERACT:

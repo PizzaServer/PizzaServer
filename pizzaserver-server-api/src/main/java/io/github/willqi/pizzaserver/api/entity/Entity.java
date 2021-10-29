@@ -97,6 +97,15 @@ public interface Entity extends Watchable {
     void teleport(World world, float x, float y, float z);
 
     /**
+     * Retrieve the current velocity of the entity.
+     * This will return an inaccurate velocity for player entities due to the nature of latency.
+     * @return velocity of the entity
+     */
+    Vector3 getVelocity();
+
+    void setVelocity(Vector3 velocity);
+
+    /**
      * Retrieve the {@link Location} of the entity.
      * @return the {@link Location}
      */
