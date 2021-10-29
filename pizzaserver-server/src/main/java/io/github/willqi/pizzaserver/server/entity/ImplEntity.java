@@ -227,6 +227,13 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public boolean isOnGround() {
+        boolean isOnTopOfBlock = (this.getY() - this.getFloorY()) < 0.00002;
+        boolean isOnSolidBlock = this.getWorld().getBlock(this.getLocation().toVector3i().subtract(0, 1, 0)).isSolid();
+        return isOnTopOfBlock && isOnSolidBlock;
+    }
+
+    @Override
     public Location getLocation() {
         return new Location(this.world, new Vector3(this.getX(), this.getY(), this.getZ()));
     }

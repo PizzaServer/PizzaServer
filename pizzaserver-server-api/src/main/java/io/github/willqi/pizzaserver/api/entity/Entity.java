@@ -66,6 +66,8 @@ public interface Entity extends Watchable {
 
     int getFloorZ();
 
+    boolean isOnGround();
+
     /**
      * Retrieve the {@link Server} this entity is in.
      * @return {@link Server}
