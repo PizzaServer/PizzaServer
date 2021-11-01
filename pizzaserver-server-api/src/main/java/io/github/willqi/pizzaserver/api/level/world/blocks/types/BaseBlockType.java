@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
+import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;
 
@@ -49,6 +50,14 @@ public abstract class BaseBlockType implements BlockType {
     @Override
     public int getBlockStateIndex(NBTCompound compound) {
         return this.getBlockStates().getOrDefault(compound, -1);
+    }
+
+    @Override
+    public BoundingBox getBoundingBox(int index) {
+        BoundingBox boundingBox = new BoundingBox();
+        boundingBox.setHeight(1f);
+        boundingBox.setWidth(1f);
+        return boundingBox;
     }
 
     @Override

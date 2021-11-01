@@ -22,6 +22,7 @@ import io.github.willqi.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -228,9 +229,23 @@ public class ImplEntity implements Entity {
 
     @Override
     public boolean isOnGround() {
-        boolean isOnTopOfBlock = (this.getY() - this.getFloorY()) < 0.00002;
-        boolean isOnSolidBlock = this.getWorld().getBlock(this.getLocation().toVector3i().subtract(0, 1, 0)).isSolid();
-        return isOnTopOfBlock && isOnSolidBlock;
+        int minBlockXCheck = (int) Math.floor(this.getX() - this.getBoundingBox().getWidth());
+        int minBlockZCheck = (int) Math.floor(this.getZ() - this.getBoundingBox().getWidth());
+        int maxBlockXCheck = (int) Math.ceil(this.getX() + this.getBoundingBox().getWidth());
+        int maxBlockZCheck = (int) Math.ceil(this.getZ() + this.getBoundingBox().getWidth());
+
+        BoundingBox intersectingBoundingBox = this.getBoundingBox().clone();
+        intersectingBoundingBox.setPosition(intersectingBoundingBox.getPosition().subtract(0, 0.0002f, 0));
+
+        for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
+            for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
+                Block blockBelow = this.getWorld().getBlock(x, this.getFloorY() - 1, z);
+                if (blockBelow.isSolid() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -261,6 +276,9 @@ public class ImplEntity implements Entity {
     @Override
     public void setHeight(float height) {
         this.getBoundingBox().setHeight(height * this.getScale());
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFloatProperty(EntityMetaPropertyName.BOUNDING_BOX_HEIGHT, height);
+        this.setMetaData(metaData);
     }
 
     @Override
@@ -271,6 +289,9 @@ public class ImplEntity implements Entity {
     @Override
     public void setWidth(float width) {
         this.getBoundingBox().setWidth(width * this.getScale());
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFloatProperty(EntityMetaPropertyName.BOUNDING_BOX_WIDTH, width);
+        this.setMetaData(metaData);
     }
 
     /**

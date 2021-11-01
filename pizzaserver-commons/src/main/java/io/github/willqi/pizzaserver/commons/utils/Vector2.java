@@ -108,6 +108,10 @@ public class Vector2 {
         return new Vector2(this.getX() / length, this.getY() / length);
     }
 
+    public Vector2 round() {
+        return new Vector2(Math.round(this.getX()), Math.round(this.getY()));
+    }
+
     public Vector2i toVector2i() {
         return new Vector2i((int) this.x, (int) this.y);
     }
