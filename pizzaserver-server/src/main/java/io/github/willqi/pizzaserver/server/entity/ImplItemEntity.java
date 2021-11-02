@@ -5,7 +5,6 @@ import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.AddItemEntityPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 public class ImplItemEntity extends ImplEntity implements ItemEntity {
 
@@ -48,7 +47,7 @@ public class ImplItemEntity extends ImplEntity implements ItemEntity {
             addItemEntityPacket.setItemStack(this.getItem());
             addItemEntityPacket.setMetaData(this.getMetaData());
             addItemEntityPacket.setPosition(this.getLocation());
-            addItemEntityPacket.setVelocity(new Vector3(0, 0, 0));
+            addItemEntityPacket.setVelocity(this.getVelocity());
 
             player.sendPacket(addItemEntityPacket);
             return true;

@@ -14,6 +14,8 @@ import io.github.willqi.pizzaserver.api.entity.definition.components.impl.Entity
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
 import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
@@ -92,6 +94,10 @@ public class ImplEntity implements Entity {
             EntityComponentHandler handler = EntityRegistry.getComponentHandler(clazz);
             handler.onRegistered(this, EntityRegistry.getDefaultComponent(clazz));
         });
+
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_MOVING, true);
+        this.setMetaData(metaData);
     }
 
     @Override
@@ -774,17 +780,7 @@ public class ImplEntity implements Entity {
 
         if (this.moveUpdate) {
             this.moveUpdate = false;
-
-            MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
-            moveEntityPacket.setEntityRuntimeId(this.getId());
-            moveEntityPacket.setPosition(this.getLocation());
-            moveEntityPacket.setPitch(this.getPitch());
-            moveEntityPacket.setYaw(this.getYaw());
-            moveEntityPacket.setHeadYaw(this.getHeadYaw());
-            moveEntityPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
-            for (Player player : this.getViewers()) {
-                player.sendPacket(moveEntityPacket);
-            }
+            this.sendMovementPacket();
         }
 
         if (this.metaDataUpdate) {
@@ -809,6 +805,19 @@ public class ImplEntity implements Entity {
                 this.endDeathAnimation();
                 this.despawn();
             }
+        }
+    }
+
+    protected void sendMovementPacket() {
+        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+        moveEntityPacket.setEntityRuntimeId(this.getId());
+        moveEntityPacket.setPosition(this.getLocation());
+        moveEntityPacket.setPitch(this.getPitch());
+        moveEntityPacket.setYaw(this.getYaw());
+        moveEntityPacket.setHeadYaw(this.getHeadYaw());
+        moveEntityPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
+        for (Player player : this.getViewers()) {
+            player.sendPacket(moveEntityPacket);
         }
     }
 
@@ -979,7 +988,7 @@ public class ImplEntity implements Entity {
             addEntityPacket.setEntityRuntimeId(this.getId());
             addEntityPacket.setEntityType(this.getEntityDefinition().getId());
             addEntityPacket.setPosition(this.getLocation());
-            addEntityPacket.setVelocity(new Vector3(0, 0, 0));
+            addEntityPacket.setVelocity(this.getVelocity());
             addEntityPacket.setPitch(this.getPitch());
             addEntityPacket.setYaw(this.getYaw());
             addEntityPacket.setHeadYaw(this.getHeadYaw());

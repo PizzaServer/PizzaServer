@@ -72,6 +72,29 @@ public interface World extends ChunkManager {
     void addItemEntity(ItemStack itemStack, Vector3 position);
 
     /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemStack {@link ItemStack} to spawn as an entity
+     * @param position The position to spawn it in this world
+     * @param velocity The velocity to spawn it with
+     */
+    void addItemEntity(ItemStack itemStack, Vector3 position, Vector3 velocity);
+
+    /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemEntity {@link ItemEntity} to spawn
+     * @param position The position to spawn it in this world
+     */
+    void addItemEntity(ItemEntity itemEntity, Vector3 position);
+
+    /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemEntity {@link ItemEntity} to spawn
+     * @param position The position to spawn it in this world
+     * @param velocity The velocity to spawn it with
+     */
+    void addItemEntity(ItemEntity itemEntity, Vector3 position, Vector3 velocity);
+
+    /**
      * Add a {@link Entity} to this world and spawn it.
      * @param entity The {@link Entity} to spawn
      * @param position The position to spawn it in this world

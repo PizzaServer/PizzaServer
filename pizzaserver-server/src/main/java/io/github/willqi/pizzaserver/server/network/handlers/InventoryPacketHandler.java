@@ -1,7 +1,12 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.ItemEntity;
 import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
+import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
@@ -176,7 +181,9 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
                             ItemStack droppedStack = itemStack.clone();
                             droppedStack.setCount(amountDropped);
-                            // TODO: spawn item entity logic
+
+                            ItemEntity itemEntity = EntityRegistry.getItemEntity(droppedStack);
+                            this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().add(0, 1.3f, 0), this.player.getDirectionVector().multiply(0.25f, 0.6f, 0.25f));
 
                             InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, droppedStack);
                             this.player.getServer().getEventManager().call(dropItemEvent);

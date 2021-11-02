@@ -150,25 +150,19 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     protected void endDeathAnimation() {}
 
     @Override
-    public void tick() {
-        if (this.moveUpdate) {
-            this.moveUpdate = false;
+    protected void sendMovementPacket() {
+        MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
+        movePlayerPacket.setEntityRuntimeId(this.getId());
+        movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
+        movePlayerPacket.setPitch(this.getPitch());
+        movePlayerPacket.setYaw(this.getYaw());
+        movePlayerPacket.setHeadYaw(this.getHeadYaw());
+        movePlayerPacket.setMode(MovementMode.NORMAL);
+        movePlayerPacket.setOnGround(false);
 
-            MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setEntityRuntimeId(this.getId());
-            movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
-            movePlayerPacket.setPitch(this.getPitch());
-            movePlayerPacket.setYaw(this.getYaw());
-            movePlayerPacket.setHeadYaw(this.getHeadYaw());
-            movePlayerPacket.setMode(MovementMode.NORMAL);
-            movePlayerPacket.setOnGround(false);
-
-            for (Player player : this.getViewers()) {
-                player.sendPacket(movePlayerPacket);
-            }
+        for (Player player : this.getViewers()) {
+            player.sendPacket(movePlayerPacket);
         }
-
-        super.tick();
     }
 
     @Override
@@ -184,7 +178,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
             addPlayerPacket.setEntityRuntimeId(this.getId());
             addPlayerPacket.setEntityUniqueId(this.getId());
             addPlayerPacket.setPosition(new Vector3(this.getX(), this.getY(), this.getZ()));
-            addPlayerPacket.setVelocity(new Vector3(0, 0, 0));
+            addPlayerPacket.setVelocity(this.getVelocity());
             addPlayerPacket.setPitch(this.getPitch());
             addPlayerPacket.setYaw(this.getYaw());
             addPlayerPacket.setHeadYaw(this.getHeadYaw());

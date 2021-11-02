@@ -181,8 +181,23 @@ public class ImplWorld implements World {
 
     @Override
     public void addItemEntity(ItemStack itemStack, Vector3 position) {
-        ItemEntity itemEntity = EntityRegistry.getItemEntity(itemStack);
-        if (!itemStack.isEmpty()) {
+        this.addItemEntity(itemStack, position, new Vector3(0, 0, 0));
+    }
+
+    @Override
+    public void addItemEntity(ItemStack itemStack, Vector3 position, Vector3 velocity) {
+        this.addItemEntity(EntityRegistry.getItemEntity(itemStack), position, velocity);
+    }
+
+    @Override
+    public void addItemEntity(ItemEntity itemEntity, Vector3 position) {
+        this.addItemEntity(itemEntity, position, itemEntity.getVelocity());
+    }
+
+    @Override
+    public void addItemEntity(ItemEntity itemEntity, Vector3 position, Vector3 velocity) {
+        itemEntity.setVelocity(velocity);
+        if (!itemEntity.getItem().isEmpty()) {
             this.addEntity(itemEntity, position);
         }
     }
