@@ -54,7 +54,7 @@ public class ImplItemEntity extends ImplEntity implements ItemEntity {
             this.pickUpDelay--;
         } else if (this.getItem().getCount() > 0) {
             for (Player player : this.getWorld().getPlayers()) {
-                if (player.getBoundingBox().collidesWith(this.getBoundingBox())) {
+                if (player.getLocation().distanceBetween(this.getLocation()) <= 1) {
                     if (this.getPickupDelay() <= 0) {
                         int pickedUpCount = this.getItem().getCount() - player.getInventory().getExcessIfAdded(this.getItem());
                         if (pickedUpCount <= 0) {
