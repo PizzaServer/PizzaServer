@@ -66,6 +66,8 @@ public class ImplEntity implements Entity {
     protected float headYaw;
 
     protected BoundingBox boundingBox = new BoundingBox();
+    protected boolean pistonPushable;
+    protected boolean pushable;
 
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
@@ -549,6 +551,26 @@ public class ImplEntity implements Entity {
         EntityMetaData metaData = this.getMetaData();
         metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_COLLISION, canCollide);
         this.setMetaData(metaData);
+    }
+
+    @Override
+    public boolean isPushable() {
+        return this.pushable;
+    }
+
+    @Override
+    public void setPushable(boolean enabled) {
+        this.pushable = enabled;
+    }
+
+    @Override
+    public boolean isPistonPushable() {
+        return this.pistonPushable;
+    }
+
+    @Override
+    public void setPistonPushable(boolean enabled) {
+        this.pistonPushable = enabled;
     }
 
     @Override

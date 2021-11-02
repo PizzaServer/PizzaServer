@@ -1,7 +1,9 @@
 package io.github.willqi.pizzaserver.server.entity;
 
+import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
+import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.api.utils.Location;
@@ -58,7 +60,46 @@ public class EntityPhysicsEngine {
             this.setVelocity(0, 0, 0);
             return;
         }
+        if (this.entity.hasCollision()) {
+            this.handleCollision();
+        }
+        this.handleVelocity();
+    }
 
+    /**
+     * Handles pushing other entities away from this entity if their bounding boxes intersect.
+     */
+    private void handleCollision() {
+        int minChunkX = (int) Math.floor((this.entity.getFloorX() - this.entity.getBoundingBox().getWidth() / 2) / 16f);
+        int minChunkZ = (int) Math.floor((this.entity.getFloorZ() - this.entity.getBoundingBox().getWidth() / 2) / 16f);
+        int maxChunkX = (int) Math.floor((this.entity.getFloorX() + this.entity.getBoundingBox().getWidth() / 2) / 16f);
+        int maxChunkZ = (int) Math.floor((this.entity.getFloorZ() + this.entity.getBoundingBox().getWidth() / 2) / 16f);
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                Chunk chunk = this.entity.getWorld().getChunk(chunkX, chunkZ);
+                for (Entity entity : chunk.getEntities()) {
+                    boolean canPushEntity = !entity.equals(this.entity)
+                            && entity.getBoundingBox().collidesWith(this.entity.getBoundingBox())
+                            && entity.isPushable();
+                    if (canPushEntity) {
+                        float xDiff = entity.getX() - this.entity.getX();
+                        float zDiff = entity.getZ() - this.entity.getZ();
+                        if (xDiff != 0 && zDiff != 0) {
+                            float xUnit = xDiff * (1 / Math.abs(xDiff));
+                            float zUnit = zDiff * (1 / Math.abs(zDiff));
+                            entity.setVelocity(entity.getVelocity().add(entity.getMovementSpeed() * xUnit, 0, entity.getMovementSpeed() * zUnit));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles applying velocity logic.
+     */
+    private void handleVelocity() {
         if (this.getVelocity().getLength() > 0) {
             Vector3 newVelocity = this.getVelocity();
 

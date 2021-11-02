@@ -209,6 +209,14 @@ public interface Entity extends Watchable {
 
     void setCollision(boolean enabled);
 
+    boolean isPushable();
+
+    void setPushable(boolean enabled);
+
+    boolean isPistonPushable();
+
+    void setPistonPushable(boolean enabled);
+
     boolean hasAI();
 
     void setAI(boolean hasAI);

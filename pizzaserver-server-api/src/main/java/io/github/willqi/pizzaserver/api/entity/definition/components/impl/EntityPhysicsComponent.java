@@ -30,10 +30,21 @@ public class EntityPhysicsComponent extends EntityComponent {
         return this.properties.hasGravity();
     }
 
+    public boolean isPushable() {
+        return this.properties.isPushable();
+    }
+
+    public boolean isPistonPushable() {
+        return this.properties.isPistonPushable();
+    }
+
+
     public static class Properties {
 
         private boolean collision;
         private boolean gravity;
+        private boolean pushable;
+        private boolean pistonPushable;
 
         /**
          * If this entity should collide with other entities.
@@ -57,6 +68,24 @@ public class EntityPhysicsComponent extends EntityComponent {
 
         public Properties setGravity(boolean gravity) {
             this.gravity = gravity;
+            return this;
+        }
+
+        public boolean isPushable() {
+            return this.pushable;
+        }
+
+        public Properties setPushable(boolean pushable) {
+            this.pushable = pushable;
+            return this;
+        }
+
+        public boolean isPistonPushable() {
+            return this.pistonPushable;
+        }
+
+        public Properties setPistonPushable(boolean pistonPushable) {
+            this.pistonPushable = pistonPushable;
             return this;
         }
 

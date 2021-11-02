@@ -10,6 +10,8 @@ public class EntityPhysicsComponentHandler extends EntityComponentHandler<Entity
     public void onRegistered(Entity entity, EntityPhysicsComponent component) {
         entity.setGravity(component.hasGravity());
         entity.setCollision(component.hasCollision());
+        entity.setPushable(component.isPushable());
+        entity.setPistonPushable(component.isPistonPushable());
     }
 
 }

@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.components.EntityCompo
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityCollisionBoxComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
 
 public class HumanEntityDefinition extends BaseEntityDefinition {
 
@@ -15,7 +16,8 @@ public class HumanEntityDefinition extends BaseEntityDefinition {
     public HumanEntityDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
                 new EntityCollisionBoxComponent(0.6f, 1.8f),
-                new EntityHealthComponent(20f, 20f) }));
+                new EntityHealthComponent(20f, 20f),
+                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties().setGravity(true).setCollision(true).setPistonPushable(true).setPushable(false)) }));
     }
 
     @Override
