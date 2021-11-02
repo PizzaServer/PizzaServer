@@ -54,6 +54,11 @@ public class EntityPhysicsEngine {
     }
 
     public void tick() {
+        if (this.entity.isImmobile()) {
+            this.setVelocity(0, 0, 0);
+            return;
+        }
+
         if (this.getVelocity().getLength() > 0) {
             Vector3 newVelocity = this.getVelocity();
 
@@ -100,29 +105,29 @@ public class EntityPhysicsEngine {
                                 if (block.getBoundingBox().collidesWithYAxis(newLocationBoundBox) && newLocation.getY() > block.getY() + block.getBoundingBox().getHeight() / 2) {
                                     newLocation.setY(block.getBoundingBox().getPosition().getY() + block.getBoundingBox().getHeight());
                                     newVelocity.setY(0);
+                                    newLocationBoundBox.setPosition(newLocation);
                                 }
-                                newLocationBoundBox.setPosition(newLocation);
 
                                 // Adjust x to no longer collide
                                 if (newLocationBoundBox.collidesWithXAxis(block.getBoundingBox()) && newLocationBoundBox.collidesWith(block.getBoundingBox())) {
                                     newLocation.setX(this.entity.getX());
                                     newVelocity.setX(0);
+                                    newLocationBoundBox.setPosition(newLocation);
                                 }
-                                newLocationBoundBox.setPosition(newLocation);
 
                                 // Adjust z to no longer collide
                                 if (newLocationBoundBox.collidesWithZAxis(block.getBoundingBox()) && newLocationBoundBox.collidesWith(block.getBoundingBox())) {
                                     newLocation.setZ(this.entity.getZ());
                                     newVelocity.setZ(0);
+                                    newLocationBoundBox.setPosition(newLocation);
                                 }
-                                newLocationBoundBox.setPosition(newLocation);
 
                                 // The only possible way for this to still be a collision in y is if we're in the bottom half of a block.
                                 if (newLocationBoundBox.collidesWith(block.getBoundingBox()) && newLocationBoundBox.collidesWithYAxis(block.getBoundingBox())) {
                                     newLocation.setY(block.getY() - this.entity.getEyeHeight());
                                     newVelocity.setY(0);
+                                    newLocationBoundBox.setPosition(newLocation);
                                 }
-                                newLocationBoundBox.setPosition(newLocation);
 
                                 if (newLocationBoundBox.collidesWith(block.getBoundingBox())) {
                                     // Entity is colliding with something no matter what.

@@ -148,6 +148,10 @@ public interface Entity extends Watchable {
      */
     void setVulnerable(boolean vulnerable);
 
+    boolean isImmobile();
+
+    void setImmobile(boolean enabled);
+
     Set<Attribute> getAttributes();
 
     Attribute getAttribute(AttributeType type);

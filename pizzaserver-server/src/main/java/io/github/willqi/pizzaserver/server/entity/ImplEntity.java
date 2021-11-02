@@ -375,6 +375,17 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public boolean isImmobile() {
+        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_NO_AI);
+    }
+
+    @Override
+    public void setImmobile(boolean enabled) {
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_NO_AI, true);
+    }
+
+    @Override
     public Set<Attribute> getAttributes() {
         return this.attributes.getAttributes();
     }
@@ -800,11 +811,9 @@ public class ImplEntity implements Entity {
         if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {
             this.kill();
         }
-        if (this.deathAnimationTicks != -1) {
-            if (--this.deathAnimationTicks <= 0) {
-                this.endDeathAnimation();
-                this.despawn();
-            }
+        if (this.deathAnimationTicks != -1 && --this.deathAnimationTicks <= 0) {
+            this.endDeathAnimation();
+            this.despawn();
         }
     }
 

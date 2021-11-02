@@ -92,7 +92,7 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(TextPacket packet) {
-        this.player.getInventory().addItem(ItemRegistry.getItem("minecraft:dirt"));
+        this.player.getInventory().addItem(ItemRegistry.getItem("minecraft:dirt", 10));
         this.player.getWorld().addEntity(EntityRegistry.getEntity("minecraft:cow"), this.player.getLocation());
         if (packet.getType() == TextType.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());

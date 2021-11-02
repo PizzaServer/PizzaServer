@@ -182,15 +182,17 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                             ItemStack droppedStack = itemStack.clone();
                             droppedStack.setCount(amountDropped);
 
-                            ItemEntity itemEntity = EntityRegistry.getItemEntity(droppedStack);
-                            this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().add(0, 1.3f, 0), this.player.getDirectionVector().multiply(0.25f, 0.6f, 0.25f));
-
                             InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, droppedStack);
                             this.player.getServer().getEventManager().call(dropItemEvent);
                             if (!dropItemEvent.isCancelled()) {
                                 // update server inventory to reflect dropped count
                                 itemStack.setCount(itemStack.getCount() - amountDropped);
                                 this.player.getInventory().setSlot(this.player, nextAction.getSlot(), itemStack, true);
+
+                                // Drop item
+                                ItemEntity itemEntity = EntityRegistry.getItemEntity(droppedStack);
+                                itemEntity.setPickupDelay(40);
+                                this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().add(0, 1.3f, 0), this.player.getDirectionVector().multiply(0.25f, 0.6f, 0.25f));
                             } else {
                                 // Revert clientside slot change
                                 this.player.getInventory().sendSlot(this.player, nextAction.getSlot());

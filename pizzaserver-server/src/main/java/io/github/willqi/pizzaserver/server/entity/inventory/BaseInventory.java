@@ -130,22 +130,24 @@ public abstract class BaseInventory implements Inventory {
         ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
 
         for (int slot = 0; slot < this.getSize(); slot++) {
+            if (remainingItemStack.getCount() <= 0) {
+                break;
+            }
+
             ItemStack slotStack = this.getSlot(slot);
-
+            int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+            int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
+            int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
             if (slotStack.isEmpty()) {
-                // empty available slot
-                this.setSlot(slot, remainingItemStack);
-                return Optional.empty();
+                ItemStack newSlot = remainingItemStack.clone();
+                newSlot.setCount(addedAmount);
+                this.setSlot(slot, newSlot);
             } else if (slotStack.hasSameDataAs(remainingItemStack)) {
-                // Add as much of the remaining item stack to this slot as possible
-                int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
-                int spaceLeft = maxStackCount - slotStack.getCount();
-                int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
-
                 slotStack.setCount(slotStack.getCount() + addedAmount);
-                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
                 this.setSlot(slot, slotStack);
             }
+
+            remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
         }
 
         if (remainingItemStack.isEmpty()) {
@@ -231,6 +233,27 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Set<Player> getViewers() {
         return Collections.unmodifiableSet(this.viewers);
+    }
+
+    @Override
+    public int getExcessIfAdded(ItemStack itemStack) {
+        ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
+
+        for (int slot = 0; slot < this.getSize(); slot++) {
+            if (remainingItemStack.getCount() <= 0) {
+                break;
+            }
+
+            ItemStack slotStack = this.getSlot(slot);
+            int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+            int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
+            int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+            if (slotStack.isEmpty() || slotStack.hasSameDataAs(remainingItemStack)) {
+                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+            }
+        }
+
+        return remainingItemStack.getCount();
     }
 
     /**

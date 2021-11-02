@@ -8,4 +8,8 @@ public interface ItemEntity extends Entity {
 
     void setItem(ItemStack item);
 
+    void setPickupDelay(int ticks);
+
+    int getPickupDelay();
+
 }
