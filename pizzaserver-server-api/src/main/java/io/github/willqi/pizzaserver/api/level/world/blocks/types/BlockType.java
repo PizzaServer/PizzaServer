@@ -137,6 +137,7 @@ public interface BlockType {
 
     /**
      * Retrieve the friction entities should receive on this block.
+     * MUST be within the range 0-1
      * @return friction of this block type
      */
     float getFriction();

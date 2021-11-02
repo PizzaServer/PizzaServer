@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.api.utils.Location;
@@ -8,11 +9,14 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 public class EntityPhysicsEngine {
 
+    private static final float MIN_HORIZONTAL_MOVEMENT_ALLOWED = 0.01f;
+
     protected final ImplEntity entity;
     protected boolean updatePosition = true;
 
     protected Vector3 velocity = new Vector3(0, 0, 0);
-    protected Vector3 airAcceleration = new Vector3(0, -0.05f, 0);
+    protected Vector3 lastVelocity = new Vector3(0, 0, 0);
+    protected float airAcceleration = -0.05f;
     protected float terminalYVelocity = 0.4f;
 
 
@@ -21,11 +25,16 @@ public class EntityPhysicsEngine {
     }
 
     public Vector3 getVelocity() {
-        return this.velocity;
+        return new Vector3(this.velocity.getX(), this.velocity.getY(), this.velocity.getZ());
     }
 
     public void setVelocity(Vector3 velocity) {
+        this.lastVelocity = this.velocity;
         this.velocity = velocity;
+    }
+
+    public void setVelocity(float x, float y, float z) {
+        this.setVelocity(new Vector3(x, y, z));
     }
 
     /**
@@ -47,10 +56,22 @@ public class EntityPhysicsEngine {
     public void tick() {
         if (this.getVelocity().getLength() > 0) {
             Vector3 newVelocity = this.getVelocity();
-            if (!this.entity.isOnGround()) {
-                newVelocity = newVelocity.add(this.airAcceleration);
-            }
 
+            if (this.entity.isOnGround()) {
+                if (this.lastVelocity.getLength() > 0 && (this.getVelocity().getX() != 0 || this.getVelocity().getZ() != 0)) {
+                    float friction = 1 - this.entity.getWorld().getBlock(this.entity.getLocation().round().toVector3i().subtract(0, 1, 0)).getBlockType().getFriction();
+                    newVelocity = newVelocity.subtract((newVelocity.getX() * friction), 0, (newVelocity.getZ() * friction));
+
+                    if (Math.abs(newVelocity.getX()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
+                        newVelocity.setX(0);
+                    }
+                    if (Math.abs(newVelocity.getZ()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
+                        newVelocity.setZ(0);
+                    }
+                }
+            } else {
+                newVelocity = newVelocity.add(0, this.airAcceleration, 0);
+            }
             newVelocity.setY(Math.max(Math.min(newVelocity.getY(), this.terminalYVelocity), -this.terminalYVelocity));
 
             if (this.shouldUpdatePosition()) {
@@ -75,8 +96,15 @@ public class EntityPhysicsEngine {
                         for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                             Block block = this.entity.getWorld().getBlock(x, y, z);
                             if (block.getBoundingBox().collidesWith(newLocationBoundBox) && block.isSolid()) {
+                                // ensure we are not stuck in the ground before checking x and z (otherwise no friction will ever be applied)
+                                if (block.getBoundingBox().collidesWithYAxis(newLocationBoundBox) && newLocation.getY() > block.getY() + block.getBoundingBox().getHeight() / 2) {
+                                    newLocation.setY(block.getBoundingBox().getPosition().getY() + block.getBoundingBox().getHeight());
+                                    newVelocity.setY(0);
+                                }
+                                newLocationBoundBox.setPosition(newLocation);
+
                                 // Adjust x to no longer collide
-                                if (newLocationBoundBox.collidesWithXAxis(block.getBoundingBox())) {
+                                if (newLocationBoundBox.collidesWithXAxis(block.getBoundingBox()) && newLocationBoundBox.collidesWith(block.getBoundingBox())) {
                                     newLocation.setX(this.entity.getX());
                                     newVelocity.setX(0);
                                 }
@@ -89,15 +117,9 @@ public class EntityPhysicsEngine {
                                 }
                                 newLocationBoundBox.setPosition(newLocation);
 
-                                // Adjust y to no longer collide
+                                // The only possible way for this to still be a collision in y is if we're in the bottom half of a block.
                                 if (newLocationBoundBox.collidesWith(block.getBoundingBox()) && newLocationBoundBox.collidesWithYAxis(block.getBoundingBox())) {
-                                    if (newLocation.getY() + newLocationBoundBox.getHeight() > block.getY()) {
-                                        // our new location is in the ground
-                                        newLocation.setY(block.getBoundingBox().getPosition().getY() + block.getBoundingBox().getHeight());
-                                    } else {
-                                        // our new location is too high (hitting a block)
-                                        newLocation.setY(block.getY() - this.entity.getEyeHeight());
-                                    }
+                                    newLocation.setY(block.getY() - this.entity.getEyeHeight());
                                     newVelocity.setY(0);
                                 }
                                 newLocationBoundBox.setPosition(newLocation);
@@ -119,7 +141,7 @@ public class EntityPhysicsEngine {
 
             this.setVelocity(newVelocity);
         } else if (!this.entity.isOnGround()) {
-            this.setVelocity(this.airAcceleration);
+            this.setVelocity(0, this.airAcceleration, 0);
         }
     }
 
