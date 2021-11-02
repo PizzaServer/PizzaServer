@@ -54,7 +54,7 @@ public class EntityPhysicsEngine {
     }
 
     public void tick() {
-        if (this.entity.isImmobile()) {
+        if (!this.entity.hasAI()) {
             this.setVelocity(0, 0, 0);
             return;
         }
@@ -145,7 +145,7 @@ public class EntityPhysicsEngine {
             }
 
             this.setVelocity(newVelocity);
-        } else if (!this.entity.isOnGround()) {
+        } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
             this.setVelocity(0, this.airAcceleration, 0);
         }
     }

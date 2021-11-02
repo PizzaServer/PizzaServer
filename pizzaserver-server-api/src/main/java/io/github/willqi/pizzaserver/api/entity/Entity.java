@@ -148,10 +148,6 @@ public interface Entity extends Watchable {
      */
     void setVulnerable(boolean vulnerable);
 
-    boolean isImmobile();
-
-    void setImmobile(boolean enabled);
-
     Set<Attribute> getAttributes();
 
     Attribute getAttribute(AttributeType type);
@@ -204,6 +200,14 @@ public interface Entity extends Watchable {
     EntityMetaData getMetaData();
 
     void setMetaData(EntityMetaData metaData);
+
+    boolean hasGravity();
+
+    void setGravity(boolean enabled);
+
+    boolean hasCollision();
+
+    void setCollision(boolean enabled);
 
     boolean hasAI();
 

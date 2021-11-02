@@ -67,7 +67,6 @@ public class ImplEntity implements Entity {
 
     protected BoundingBox boundingBox = new BoundingBox();
 
-    protected boolean hasAI;
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
@@ -375,17 +374,6 @@ public class ImplEntity implements Entity {
     }
 
     @Override
-    public boolean isImmobile() {
-        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_NO_AI);
-    }
-
-    @Override
-    public void setImmobile(boolean enabled) {
-        EntityMetaData metaData = this.getMetaData();
-        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_NO_AI, true);
-    }
-
-    @Override
     public Set<Attribute> getAttributes() {
         return this.attributes.getAttributes();
     }
@@ -540,13 +528,39 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public boolean hasGravity() {
+        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY);
+    }
+
+    @Override
+    public void setGravity(boolean enabled) {
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, enabled);
+        this.setMetaData(metaData);
+    }
+
+    @Override
+    public boolean hasCollision() {
+        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_COLLISION);
+    }
+
+    @Override
+    public void setCollision(boolean canCollide) {
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_COLLISION, canCollide);
+        this.setMetaData(metaData);
+    }
+
+    @Override
     public boolean hasAI() {
-        return this.hasAI;
+        return !this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_NO_AI);
     }
 
     @Override
     public void setAI(boolean hasAI) {
-        this.hasAI = hasAI;
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_NO_AI, !hasAI);
+        this.setMetaData(metaData);
     }
 
     @Override
