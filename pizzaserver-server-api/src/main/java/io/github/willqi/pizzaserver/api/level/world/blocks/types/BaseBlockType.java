@@ -2,6 +2,8 @@ package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
 import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
@@ -15,6 +17,7 @@ import io.github.willqi.pizzaserver.api.item.data.ToolType;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 public abstract class BaseBlockType implements BlockType {
@@ -58,6 +61,11 @@ public abstract class BaseBlockType implements BlockType {
         boundingBox.setHeight(1f);
         boundingBox.setWidth(1f);
         return boundingBox;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(int index) {
+        return Collections.singletonList(ItemRegistry.getItem(this.getBlockId(), 1, index));
     }
 
     @Override

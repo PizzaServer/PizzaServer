@@ -1,7 +1,9 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.InventoryTransactionType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemData;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
@@ -12,6 +14,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Handles any packets regarding chunk/block interactions.
@@ -101,6 +104,13 @@ public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
                     this.player.getServer().getEventManager().call(blockBreakEvent);
 
                     if (!blockBreakEvent.isCancelled()) {
+                        if (blockBreakEvent.isBlockDropsEnabled()) {
+                            for (ItemStack itemStack : blockMining.get().getDrops()) {
+                                Vector3 velocity = new Vector3(0.1f * (ThreadLocalRandom.current().nextFloat() * 2 - 1), 0.3f, 0.1f * (ThreadLocalRandom.current().nextFloat() * 2 - 1));
+                                Vector3 position = blockMining.get().getLocation().toVector3().add(0.5f, 0.5f, 0.5f);
+                                this.player.getWorld().addItemEntity(itemStack, position, velocity);
+                            }
+                        }
                         this.player.getBlockBreakData().breakBlock();
                         return;
                     }

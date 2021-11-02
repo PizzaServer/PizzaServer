@@ -1,12 +1,17 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks;
 
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.BlockLocation;
 import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Block {
 
@@ -96,6 +101,10 @@ public class Block {
         BoundingBox boundingBox = this.getBlockType().getBoundingBox(this.getBlockStateIndex());
         boundingBox.setPosition(this.getLocation().toVector3());
         return boundingBox;
+    }
+
+    public List<ItemStack> getDrops() {
+        return this.getBlockType().getDrops(this.getBlockStateIndex());
     }
 
 }

@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
@@ -9,6 +10,7 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
+import java.util.List;
 import java.util.Set;
 
 public interface BlockType {
@@ -56,6 +58,8 @@ public interface BlockType {
     int getBlockStateIndex(NBTCompound compound);
 
     BoundingBox getBoundingBox(int index);
+
+    List<ItemStack> getDrops(int index);
 
     /**
      * The amount of light this block will absorb.

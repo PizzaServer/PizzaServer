@@ -142,12 +142,12 @@ public abstract class BaseInventory implements Inventory {
                 ItemStack newSlot = remainingItemStack.clone();
                 newSlot.setCount(addedAmount);
                 this.setSlot(slot, newSlot);
+                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
             } else if (slotStack.hasSameDataAs(remainingItemStack)) {
                 slotStack.setCount(slotStack.getCount() + addedAmount);
                 this.setSlot(slot, slotStack);
+                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
             }
-
-            remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
         }
 
         if (remainingItemStack.isEmpty()) {

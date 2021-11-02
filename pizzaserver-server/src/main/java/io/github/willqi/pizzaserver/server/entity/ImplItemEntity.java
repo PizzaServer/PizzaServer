@@ -57,6 +57,10 @@ public class ImplItemEntity extends ImplEntity implements ItemEntity {
                 if (player.getBoundingBox().collidesWith(this.getBoundingBox())) {
                     if (this.getPickupDelay() <= 0) {
                         int pickedUpCount = this.getItem().getCount() - player.getInventory().getExcessIfAdded(this.getItem());
+                        if (pickedUpCount <= 0) {
+                            continue;
+                        }
+
                         EntityPickupItemEvent pickupItemEvent = new EntityPickupItemEvent(player, this, pickedUpCount);
                         this.getServer().getEventManager().call(pickupItemEvent);
                         if (pickupItemEvent.isCancelled())  {
