@@ -130,7 +130,7 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public float getFriction() {
-        return 0.1f;
+        return 0.6f;
     }
 
     @Override

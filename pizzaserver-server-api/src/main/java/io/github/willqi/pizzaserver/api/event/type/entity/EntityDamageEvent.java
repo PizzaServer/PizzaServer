@@ -4,9 +4,9 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 
 /**
- * Abstract class that is used for entity damage events.
+ * Called for generic events that cause entity damage.
  */
-public abstract class EntityDamageEvent extends BaseEntityEvent.Cancellable {
+public class EntityDamageEvent extends BaseEntityEvent.Cancellable {
 
     protected DamageCause cause;
     protected float damage;

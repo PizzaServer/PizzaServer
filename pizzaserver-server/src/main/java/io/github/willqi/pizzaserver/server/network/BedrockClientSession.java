@@ -136,6 +136,7 @@ public class BedrockClientSession {
         ByteBuf compressedBuffer = Zlib.compressBuffer(uncompressedPacketsBuffer, this.getServer().getPizzaServer().getConfig().getNetworkCompressionLevel());
         rakNetBuffer.writeBytes(compressedBuffer);
 
+        uncompressedPacketsBuffer.release();
         compressedBuffer.release();
 
         if (immediate) {

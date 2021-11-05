@@ -11,9 +11,9 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 public class EntityPhysicsEngine {
 
-    private static final float MIN_HORIZONTAL_MOVEMENT_ALLOWED = 0.001f;
-    private static final float AIR_ACCELERATION = 0.05f;
-    private static final float TERMINAL_Y_VELOCITY = 0.4f;
+    private static final float MIN_HORIZONTAL_MOVEMENT_ALLOWED = 0.0001f;
+    private static final float GRAVITY = 0.08f;
+    private static final float DRAG = 0.02f;
 
     protected final ImplEntity entity;
     protected boolean updatePosition = true;
@@ -103,23 +103,27 @@ public class EntityPhysicsEngine {
         if (this.getVelocity().getLength() > 0) {
             Vector3 newVelocity = this.getVelocity();
 
+            // Apply friction
+            float friction = 1 - DRAG;
             if (this.entity.isOnGround()) {
-                if (this.lastVelocity.getLength() > 0 && (this.getVelocity().getX() != 0 || this.getVelocity().getZ() != 0)) {
-                    float friction = 1 - this.entity.getWorld().getBlock(this.entity.getLocation().round().toVector3i().subtract(0, 1, 0)).getBlockType().getFriction();
-                    newVelocity = newVelocity.subtract((newVelocity.getX() * friction), 0, (newVelocity.getZ() * friction));
-
-                    if (Math.abs(newVelocity.getX()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
-                        newVelocity.setX(0);
-                    }
-                    if (Math.abs(newVelocity.getZ()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
-                        newVelocity.setZ(0);
-                    }
+                // Consider block friction
+                if (Math.abs(this.getVelocity().getX()) > 0 || Math.abs(this.getVelocity().getZ()) > 0) {
+                    friction = this.entity.getWorld().getBlock(this.entity.getLocation().round().toVector3i().subtract(0, 1, 0)).getBlockType().getFriction() * 0.91f;
                 }
             } else {
-                newVelocity = newVelocity.add(0, -AIR_ACCELERATION, 0);
+                newVelocity = newVelocity.add(0, -GRAVITY, 0);
             }
-            newVelocity.setY(Math.max(Math.min(newVelocity.getY(), TERMINAL_Y_VELOCITY), -TERMINAL_Y_VELOCITY));
+            newVelocity = newVelocity.multiply(friction, 1 - DRAG, friction);
 
+            // Stop horizontal movement if it's small enough
+            if (Math.abs(newVelocity.getX()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
+                newVelocity.setX(0);
+            }
+            if (Math.abs(newVelocity.getZ()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
+                newVelocity.setZ(0);
+            }
+
+            // Handle bounding box logic if we should update the position
             if (this.shouldUpdatePosition()) {
                 Location newLocation = this.entity.getLocation().add(newVelocity.getX(), newVelocity.getY(), newVelocity.getZ());
 
@@ -187,7 +191,7 @@ public class EntityPhysicsEngine {
 
             this.setVelocity(newVelocity);
         } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
-            this.setVelocity(0, -AIR_ACCELERATION, 0);
+            this.setVelocity(0, -GRAVITY, 0);
         }
     }
 

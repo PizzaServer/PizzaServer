@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
+import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
@@ -58,6 +59,8 @@ public class ImplEntity implements Entity {
     protected boolean vulnerable = true;
     protected int deathAnimationTicks = -1;
     protected int noHitTicks;
+
+    protected int fireTicks;
 
     protected final EntityAttributes attributes = new EntityAttributes();
 
@@ -353,6 +356,13 @@ public class ImplEntity implements Entity {
     @Override
     public void setVelocity(Vector3 velocity) {
         this.physicsEngine.setVelocity(velocity);
+
+        SetEntityVelocityPacket velocityPacket = new SetEntityVelocityPacket();
+        velocityPacket.setVelocity(this.getVelocity());
+        velocityPacket.setEntityRuntimeId(this.getId());
+        for (Player player : this.getViewers()) {
+            player.sendPacket(velocityPacket);
+        }
     }
 
     @Override
@@ -601,6 +611,26 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public int getFireTicks() {
+        return this.fireTicks;
+    }
+
+    @Override
+    public void setFireTicks(int ticks) {
+        boolean onFirePreviously = this.getFireTicks() > 0;
+        this.fireTicks = ticks;
+
+        EntityMetaData metaData = this.getMetaData();
+        if (this.fireTicks > 0 && !onFirePreviously) {
+            metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_ON_FIRE, true);
+            this.setMetaData(metaData);
+        } else if (this.fireTicks <= 0 && onFirePreviously) {
+            metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_ON_FIRE, false);
+            this.setMetaData(metaData);
+        }
+    }
+
+    @Override
     public List<ItemStack> getLoot() {
         return this.loot;
     }
@@ -842,6 +872,9 @@ public class ImplEntity implements Entity {
 
         if (this.getNoHitTicks() > 0) {
             this.setNoHitTicks(this.getNoHitTicks() - 1);
+        } else if (this.getFireTicks() > 0) {
+            this.setFireTicks(this.getFireTicks() - 1);
+            // TODO: Do fire damage
         }
 
         if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {

@@ -475,16 +475,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     }
 
     @Override
-    public void setVelocity(Vector3 velocity) {
-        super.setVelocity(velocity);
-
-        SetEntityVelocityPacket velocityPacket = new SetEntityVelocityPacket();
-        velocityPacket.setEntityRuntimeId(this.getId());
-        velocityPacket.setVelocity(this.getVelocity());
-        this.sendPacket(velocityPacket);
-    }
-
-    @Override
     public void onSpawned() {
         super.onSpawned();
         this.getChunkManager().onSpawned();

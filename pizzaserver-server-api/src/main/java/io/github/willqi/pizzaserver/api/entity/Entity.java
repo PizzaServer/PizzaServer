@@ -225,6 +225,10 @@ public interface Entity extends Watchable {
 
     void setScale(float scale);
 
+    int getFireTicks();
+
+    void setFireTicks(int ticks);
+
     List<ItemStack> getLoot();
 
     void setLoot(List<ItemStack> loot);
