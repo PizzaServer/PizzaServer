@@ -20,7 +20,7 @@ public class Zlib {
         compressor.finish();
 
         byte[] result = new byte[MAX_CHUNK_SIZE];
-        ByteBuf resultBuffer = ByteBufAllocator.DEFAULT.buffer(MAX_CHUNK_SIZE);
+        ByteBuf resultBuffer = ByteBufAllocator.DEFAULT.ioBuffer(MAX_CHUNK_SIZE);
         while (!compressor.finished()) {
             int writtenBytes = compressor.deflate(result);
             resultBuffer.writeBytes(result, 0, writtenBytes);

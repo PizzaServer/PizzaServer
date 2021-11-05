@@ -64,7 +64,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     public abstract BasePacketRegistry getPacketRegistry();
 
     public BasePacketBuffer createPacketBuffer() {
-        return this.createPacketBuffer(256);
+        return this.createPacketBuffer(16);
     }
 
     public abstract BasePacketBuffer createPacketBuffer(ByteBuf buf);

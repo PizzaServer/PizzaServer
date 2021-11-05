@@ -91,50 +91,58 @@ public class BedrockClientSession {
 
     public void sendPacket(BaseBedrockPacket packet, boolean immediate) {
         if (immediate) {
-            this.sendPacketOverNetwork(packet, true);
+            this.sendPacketsOverNetwork(Collections.singletonList(packet), true);
         } else {
             this.queuedOutgoingPackets.add(packet);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void sendPacketOverNetwork(BaseBedrockPacket packet, boolean immediate) {
+    private void sendPacketsOverNetwork(List<BaseBedrockPacket> packets, boolean immediate) {
         // Packets begin with the RakNet game packet id
-        ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.buffer();
+        ByteBuf rakNetBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
         rakNetBuffer.writeByte(0xfe);
 
-        // The Minecraft packet buffer begins a header that contains the client id (used for split screen)
-        // and the packet id.
-        BasePacketBuffer minecraftPacketBuffer = this.version.createPacketBuffer();
-        int header = packet.getPacketId() & 0x3ff;
-        minecraftPacketBuffer.writeUnsignedVarInt(header);
+        ByteBuf uncompressedPacketsBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        for (BaseBedrockPacket packet : packets) {
+            // The Minecraft packet buffer begins a header that contains the client id (used for split screen)
+            // and the packet id.
+            BasePacketBuffer minecraftPacketBuffer = this.version.createPacketBuffer();
+            BasePacketBuffer packetWrapperBuffer = this.version.createPacketBuffer();
+            try {
+                int header = packet.getPacketId() & 0x3ff;
+                minecraftPacketBuffer.writeUnsignedVarInt(header);
 
-        // Serialize the BedrockPacket to the minecraftPacketBuffer
-        BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>) this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
-        if (handler == null) {
-            this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
-            return;
+                // Serialize the BedrockPacket to the minecraftPacketBuffer
+                BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>) this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
+                if (handler == null) {
+                    this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
+                    return;
+                }
+                handler.encode(packet, minecraftPacketBuffer);
+
+                // The minecraftPacketBuffer is prefixed with the length of the buffer
+                packetWrapperBuffer.writeUnsignedVarInt(minecraftPacketBuffer.readableBytes());
+                packetWrapperBuffer.writeBytes(minecraftPacketBuffer);
+
+                uncompressedPacketsBuffer.writeBytes(packetWrapperBuffer);
+            } finally {
+                minecraftPacketBuffer.release();
+                packetWrapperBuffer.release();
+            }
         }
-        handler.encode(packet, minecraftPacketBuffer);
-
-        // The minecraftPacketBuffer is prefixed with the length of the buffer
-        BasePacketBuffer packetWrapperBuffer = this.version.createPacketBuffer();
-        packetWrapperBuffer.writeUnsignedVarInt(minecraftPacketBuffer.readableBytes());
-        packetWrapperBuffer.writeBytes(minecraftPacketBuffer);
 
         // Compress the prefixed buffer and write it to the raknet buffer to send off!
-        ByteBuf compressedBuffer = Zlib.compressBuffer(packetWrapperBuffer, this.getServer().getPizzaServer().getConfig().getNetworkCompressionLevel());
+        ByteBuf compressedBuffer = Zlib.compressBuffer(uncompressedPacketsBuffer, this.getServer().getPizzaServer().getConfig().getNetworkCompressionLevel());
         rakNetBuffer.writeBytes(compressedBuffer);
+
+        compressedBuffer.release();
 
         if (immediate) {
             this.serverSession.sendImmediate(rakNetBuffer);
         } else {
             this.serverSession.send(rakNetBuffer);
         }
-
-        compressedBuffer.release();
-        packetWrapperBuffer.release();
-        minecraftPacketBuffer.release();
     }
 
     public void processIncomingPackets() {
@@ -158,9 +166,11 @@ public class BedrockClientSession {
 
     private void processOutgoingPackets(boolean immediate) {
         BaseBedrockPacket packet;
+        List<BaseBedrockPacket> packets = new ArrayList<>();
         while ((packet = this.queuedOutgoingPackets.poll()) != null) {
-            this.sendPacketOverNetwork(packet, immediate);
+            packets.add(packet);
         }
+        this.sendPacketsOverNetwork(packets, immediate);
     }
 
     /**

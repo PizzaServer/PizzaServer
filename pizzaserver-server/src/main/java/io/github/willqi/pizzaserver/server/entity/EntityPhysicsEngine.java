@@ -11,15 +11,15 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 
 public class EntityPhysicsEngine {
 
-    private static final float MIN_HORIZONTAL_MOVEMENT_ALLOWED = 0.01f;
+    private static final float MIN_HORIZONTAL_MOVEMENT_ALLOWED = 0.001f;
+    private static final float AIR_ACCELERATION = 0.05f;
+    private static final float TERMINAL_Y_VELOCITY = 0.4f;
 
     protected final ImplEntity entity;
     protected boolean updatePosition = true;
 
     protected Vector3 velocity = new Vector3(0, 0, 0);
     protected Vector3 lastVelocity = new Vector3(0, 0, 0);
-    protected float airAcceleration = -0.05f;
-    protected float terminalYVelocity = 0.4f;
 
 
     public EntityPhysicsEngine(ImplEntity entity) {
@@ -116,9 +116,9 @@ public class EntityPhysicsEngine {
                     }
                 }
             } else {
-                newVelocity = newVelocity.add(0, this.airAcceleration, 0);
+                newVelocity = newVelocity.add(0, -AIR_ACCELERATION, 0);
             }
-            newVelocity.setY(Math.max(Math.min(newVelocity.getY(), this.terminalYVelocity), -this.terminalYVelocity));
+            newVelocity.setY(Math.max(Math.min(newVelocity.getY(), TERMINAL_Y_VELOCITY), -TERMINAL_Y_VELOCITY));
 
             if (this.shouldUpdatePosition()) {
                 Location newLocation = this.entity.getLocation().add(newVelocity.getX(), newVelocity.getY(), newVelocity.getZ());
@@ -187,7 +187,7 @@ public class EntityPhysicsEngine {
 
             this.setVelocity(newVelocity);
         } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
-            this.setVelocity(0, this.airAcceleration, 0);
+            this.setVelocity(0, -AIR_ACCELERATION, 0);
         }
     }
 

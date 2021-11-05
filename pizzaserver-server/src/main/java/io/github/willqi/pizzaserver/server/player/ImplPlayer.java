@@ -479,7 +479,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         super.setVelocity(velocity);
 
         SetEntityVelocityPacket velocityPacket = new SetEntityVelocityPacket();
-        velocityPacket.setVelocity(this.getVelocity().multiply(0.98f));
+        velocityPacket.setEntityRuntimeId(this.getId());
+        velocityPacket.setVelocity(this.getVelocity());
         this.sendPacket(velocityPacket);
     }
 

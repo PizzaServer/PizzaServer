@@ -49,7 +49,7 @@ public class BasePacketBuffer extends ByteBuf {
     }
 
     public BasePacketBuffer(BaseMinecraftVersion version, int initialCapacity) {
-        this(version, ByteBufAllocator.DEFAULT.buffer(initialCapacity));
+        this(version, ByteBufAllocator.DEFAULT.ioBuffer(initialCapacity));
     }
 
     public BasePacketBuffer(BaseMinecraftVersion version, ByteBuf buffer) {
