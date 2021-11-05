@@ -153,7 +153,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     protected void sendMovementPacket() {
         MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
         movePlayerPacket.setEntityRuntimeId(this.getId());
-        movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
+        movePlayerPacket.setPosition(this.getLocation());
         movePlayerPacket.setPitch(this.getPitch());
         movePlayerPacket.setYaw(this.getYaw());
         movePlayerPacket.setHeadYaw(this.getHeadYaw());

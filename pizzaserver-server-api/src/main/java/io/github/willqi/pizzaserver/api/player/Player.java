@@ -3,8 +3,11 @@ package io.github.willqi.pizzaserver.api.player;
 import io.github.willqi.pizzaserver.api.entity.HumanEntity;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.TextMessage;
 
 import java.util.Optional;
@@ -104,6 +107,35 @@ public interface Player extends HumanEntity {
      * @param experienceLevel experience level
      */
     void setExperienceLevel(int experienceLevel);
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param transferDimension dimension transfer screen to use
+     */
+    void teleport(float x, float y, float z, Dimension transferDimension);
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param location location to teleport them to
+     * @param transferDimension dimension transfer screen to use
+     */
+    void teleport(Location location, Dimension transferDimension);
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param world the world to teleport them to
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @param transferDimension dimension transfer screen to use
+     */
+    void teleport(World world, float x, float y, float z, Dimension transferDimension);
 
     /**
      * Send a message to this player.

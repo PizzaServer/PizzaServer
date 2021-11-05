@@ -72,13 +72,36 @@ public class PlayerChunkManager {
      * Removes the player from all chunks they were a viewer to.
      */
     public void onDespawn() {
-        for (Vector2i chunkCoordinate : this.currentVisibleChunkCoordinates) {
-            if (this.managedWorld.isChunkLoaded(chunkCoordinate.getX(), chunkCoordinate.getY())) {
-                this.managedWorld.getChunk(chunkCoordinate.getX(), chunkCoordinate.getY()).despawnFrom(this.player);
+        this.clearVisibleChunks();
+        this.managedWorld = null;
+    }
+
+    public void onDimensionTransfer() {
+        this.clearVisibleChunks();
+        this.managedWorld = this.player.getWorld();
+
+        // The dimension transfer requires at MINIMUM the chunks around the new location. So we send those first (otherwise it's rather slow)
+        this.sendNetworkChunkPublisher();
+        for (int x = this.player.getLocation().getChunkX() - 1; x <= this.player.getLocation().getChunkX() + 1; x++) {
+            for (int z = this.player.getLocation().getChunkZ() - 1; z <= this.player.getLocation().getChunkZ() + 1; z++) {
+                this.player.getWorld().sendChunk(this.player, x, z);
+                this.currentVisibleChunkCoordinates.add(new Vector2i(x, z));
             }
         }
+    }
+
+    public void onDimensionTransferComplete() {
+        this.updateChunks(this.player.getLocation(), this.player.getChunkRadius());
+    }
+
+    /**
+     * Remove the player as a viewer from all chunks this player can currently see.
+     */
+    private void clearVisibleChunks() {
+        for (Vector2i chunkCoordinate : this.currentVisibleChunkCoordinates) {
+            this.managedWorld.getChunk(chunkCoordinate.getX(), chunkCoordinate.getY()).despawnFrom(this.player);
+        }
         this.currentVisibleChunkCoordinates.clear();
-        this.managedWorld = null;
     }
 
     /**

@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
@@ -48,10 +49,11 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected final PlayerList playerList = new ImplPlayerList(this);
 
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
+    protected Dimension dimensionTransferScreen = null;
 
     protected Inventory openInventory = null;
 
-    private final BreakingData breakingData = new BreakingData(this);
+    protected final BreakingData breakingData = new BreakingData(this);
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
@@ -353,6 +355,66 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     }
 
     @Override
+    public void teleport(World world, float x, float y, float z) {
+        this.teleport(world, x, y, z, world.getDimension());
+    }
+
+    @Override
+    public void teleport(float x, float y, float z, Dimension transferDimension) {
+        this.teleport(this.getWorld(), x, y, z, transferDimension);
+    }
+
+    @Override
+    public void teleport(Location location, Dimension transferDimension) {
+        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), transferDimension);
+    }
+
+    @Override
+    public void teleport(World world, float x, float y, float z, Dimension transferDimension) {
+        World oldWorld = this.getWorld();
+
+        super.teleport(world, x, y, z);
+        MoveEntityAbsolutePacket teleportPacket = new MoveEntityAbsolutePacket();
+        teleportPacket.setEntityRuntimeId(this.getId());
+        teleportPacket.setPosition(this.getLocation().add(0, this.getEyeHeight(), 0));
+        teleportPacket.setPitch(this.getPitch());
+        teleportPacket.setYaw(this.getYaw());
+        teleportPacket.setHeadYaw(this.getHeadYaw());
+        teleportPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
+        this.sendPacket(teleportPacket);
+
+        if (!oldWorld.getDimension().equals(transferDimension)) {
+            this.setDimensionTransferScreen(transferDimension);
+        }
+    }
+
+    /**
+     * Returns the current dimension transfer screen being shown to the player.
+     * @return dimension transfer screen
+     */
+    public Optional<Dimension> getDimensionTransferScreen() {
+        return Optional.ofNullable(this.dimensionTransferScreen);
+    }
+
+    /**
+     * Send a dimension change packet.
+     * @param dimension dimension to send the transfer screen of
+     */
+    public void setDimensionTransferScreen(Dimension dimension) {
+        this.dimensionTransferScreen = dimension;
+        if (dimension != null) {
+            ChangeDimensionPacket changeDimensionPacket = new ChangeDimensionPacket();
+            changeDimensionPacket.setDimension(dimension);
+            changeDimensionPacket.setPosition(this.getLocation().add(0, this.getEyeHeight(), 0));
+            if (!this.isAlive()) {
+                changeDimensionPacket.setRespawnResponse(true);
+            }
+            this.sendPacket(changeDimensionPacket);
+            this.getChunkManager().onDimensionTransfer();
+        }
+    }
+
+    @Override
     public void sendMessage(TextMessage message) {
         TextPacket textPacket = new TextPacket();
         textPacket.setType(message.getType());
@@ -448,20 +510,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         }
 
         super.tick();
-    }
-
-    @Override
-    public void teleport(World world, float x, float y, float z) {
-        super.teleport(world, x, y, z);
-
-        MoveEntityAbsolutePacket teleportPacket = new MoveEntityAbsolutePacket();
-        teleportPacket.setEntityRuntimeId(this.getId());
-        teleportPacket.setPosition(this.getLocation());
-        teleportPacket.setPitch(this.getPitch());
-        teleportPacket.setYaw(this.getYaw());
-        teleportPacket.setHeadYaw(this.getHeadYaw());
-        teleportPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
-        this.sendPacket(teleportPacket);
     }
 
     @Override

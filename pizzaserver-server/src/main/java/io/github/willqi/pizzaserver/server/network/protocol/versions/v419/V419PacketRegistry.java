@@ -12,6 +12,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(SetLocalPlayerAsInitializedPacket.ID, new V419SetLocalPlayerAsInitializedPacketHandler())
             .register(PlayStatusPacket.ID, new V419PlayStatusPacketHandler())
             .register(PlayerActionPacket.ID, new V419PlayerActionPacketHandler())
+            .register(ChangeDimensionPacket.ID, new V419ChangeDimensionPacketHandler())
             .register(DisconnectPacket.ID, new V419DisconnectPacketHandler())
             .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler())
             .register(ResourcePackResponsePacket.ID, new V419ResourcePackResponsePacketHandler())

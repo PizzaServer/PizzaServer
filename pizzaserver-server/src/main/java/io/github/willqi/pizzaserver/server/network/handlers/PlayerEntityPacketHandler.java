@@ -4,9 +4,9 @@ import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.TextType;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
@@ -86,6 +86,22 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
                     PlayerStartSneakingEvent stopSneakingEvent = new PlayerStartSneakingEvent(this.player);
                     this.player.getServer().getEventManager().call(stopSneakingEvent);
                     this.player.setSneaking(false);
+                }
+                break;
+            case DIMENSION_CHANGE_ACK:
+                if (this.player.getDimensionTransferScreen().isPresent()) {
+                    Dimension dimensionTransferScreen = this.player.getDimensionTransferScreen().get();
+                    if (!dimensionTransferScreen.equals(this.player.getWorld().getDimension())) {
+                        this.player.setDimensionTransferScreen(this.player.getWorld().getDimension());
+                    } else {
+                        this.player.setDimensionTransferScreen(null);
+
+                        PlayStatusPacket dimensionChangeComplete = new PlayStatusPacket();
+                        dimensionChangeComplete.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+                        this.player.sendPacket(dimensionChangeComplete);
+
+                        this.player.getChunkManager().onDimensionTransferComplete();
+                    }
                 }
                 break;
         }
