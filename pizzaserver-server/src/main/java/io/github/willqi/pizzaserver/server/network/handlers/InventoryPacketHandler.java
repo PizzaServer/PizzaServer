@@ -270,7 +270,12 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
                             float damage = this.player.getInventory().getHeldItem().getItemType().getDamage();
-                            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(), this.player, DamageCause.ATTACK, damage, 10, new Vector3(0.6f, 0.4f, 0.6f));
+                            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(),
+                                    this.player,
+                                    DamageCause.ATTACK,
+                                    damage,
+                                    ImplEntity.NO_HIT_TICKS,
+                                    new Vector3(0.6f, 0.4f, 0.6f));
                             implEntity.damage(damageEvent);
                             break;
                         case INTERACT:

@@ -48,6 +48,8 @@ public class ImplEntity implements Entity {
 
     public static long ID = 1;
 
+    public static final int NO_HIT_TICKS = 10;
+
     protected final long id;
     protected volatile float x;
     protected volatile float y;
@@ -873,8 +875,11 @@ public class ImplEntity implements Entity {
         if (this.getNoHitTicks() > 0) {
             this.setNoHitTicks(this.getNoHitTicks() - 1);
         } else if (this.getFireTicks() > 0) {
+            if (this.getFireTicks() % 20 == 0) {
+                EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
+                this.damage(fireTickDamageEvent);
+            }
             this.setFireTicks(this.getFireTicks() - 1);
-            // TODO: Do fire damage
         }
 
         if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {
