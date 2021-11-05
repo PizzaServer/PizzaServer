@@ -15,6 +15,7 @@ import io.github.willqi.pizzaserver.api.event.type.player.PlayerHotbarSelectEven
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.entity.inventory.InventoryID;
@@ -265,7 +266,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     return;
                 }
 
-                if (this.player.canReach(entity.get().getLocation(), 6)) {
+                if (this.player.canReach(entity.get().getLocation(), this.player.getGamemode().equals(Gamemode.CREATIVE) ? 9 : 6)) {
                     ImplEntity implEntity = (ImplEntity) entity.get();
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:

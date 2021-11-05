@@ -7,12 +7,14 @@ import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefini
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
+import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.TextMessage;
 import io.github.willqi.pizzaserver.api.utils.TextType;
@@ -52,6 +54,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected Dimension dimensionTransferScreen = null;
 
     protected Inventory openInventory = null;
+
+    protected Gamemode gamemode;
 
     protected final BreakingData breakingData = new BreakingData(this);
 
@@ -112,6 +116,19 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         return this.locallyInitialized;
     }
 
+    @Override
+    public Gamemode getGamemode() {
+        return this.gamemode;
+    }
+
+    @Override
+    public void setGamemode(Gamemode gamemode) {
+        this.gamemode = gamemode;
+        SetPlayerGamemodePacket setPlayerGamemodePacket = new SetPlayerGamemodePacket();
+        setPlayerGamemodePacket.setGamemode(gamemode);
+        this.sendPacket(setPlayerGamemodePacket);
+    }
+
     public void onInitialized() {
         this.locallyInitialized = true;
 
@@ -136,7 +153,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         Vector3 position = this.getLocation().add(0, this.getEyeHeight(), 0);
 
         // Distance check
-        // TODO: take into account creative mode when gamemodes are implemented
         double distance = position.distanceBetween(vector3);
         if (distance > maxDistance) {
             return false;
@@ -146,6 +162,29 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         Vector3 playerDirectionVector = this.getDirectionVector();
         Vector3 targetDirectionVector = vector3.subtract(this.getLocation().add(0, this.getEyeHeight(), 0)).normalize();
         return playerDirectionVector.dot(targetDirectionVector) > 0;    // Must be in same direction
+    }
+
+    @Override
+    public void kill() {
+        if (!this.getGamemode().equals(Gamemode.CREATIVE)) {
+            super.kill();
+        }
+    }
+
+    @Override
+    public void hurt(float damage) {
+        if (!this.getGamemode().equals(Gamemode.CREATIVE)) {
+            super.hurt(damage);
+        }
+    }
+
+    @Override
+    public boolean damage(EntityDamageEvent event) {
+        if (this.getGamemode().equals(Gamemode.CREATIVE)) {
+            return false;
+        } else {
+            return super.damage(event);
+        }
     }
 
     @Override
@@ -217,6 +256,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             PlayerData playerData = new PlayerData.Builder()
                     .setLevelName(this.getLevel().getProvider().getFileName())
                     .setDimension(this.getLocation().getWorld().getDimension())
+                    .setGamemode(this.getGamemode())
                     .setPosition(this.getLocation())
                     .setPitch(this.getPitch())
                     .setYaw(this.getYaw())

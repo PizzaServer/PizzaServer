@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
@@ -289,6 +290,7 @@ public class ImplWorld implements World {
         return new PlayerData.Builder()
                 .setLevelName(this.getLevel().getProvider().getFileName())
                 .setDimension(this.getDimension())
+                .setGamemode(Gamemode.SURVIVAL)
                 .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toVector3())
                 .setYaw(this.getServer().getConfig().getDefaultYaw())
                 .setPitch(this.getServer().getConfig().getDefaultPitch())

@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.player.playerdata.provider;
 
 import io.github.willqi.pizzaserver.api.Server;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.commons.utils.Check;
 import io.github.willqi.pizzaserver.commons.utils.KeyLock;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -83,6 +84,7 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
         return new NBTCompound()
                 .putString("levelName", data.getLevelName())
                 .putInteger("dimension", data.getDimension().ordinal())
+                .putInteger("gamemode", data.getGamemode().ordinal())
                 .putFloat("positionX", data.getPosition().getX())
                 .putFloat("positionY", data.getPosition().getY())
                 .putFloat("positionZ", data.getPosition().getZ())
@@ -94,6 +96,7 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
         return new PlayerData.Builder()
                 .setLevelName(data.getString("levelName"))
                 .setDimension(Dimension.values()[data.getInteger("dimension")])
+                .setGamemode(Gamemode.values()[data.getInteger("gamemode")])
                 .setPosition(new Vector3(data.getFloat("positionX"), data.getFloat("positionY"), data.getFloat("positionZ")))
                 .setPitch(data.getFloat("pitch"))
                 .setYaw(data.getFloat("yaw"))

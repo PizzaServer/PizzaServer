@@ -3,6 +3,7 @@ package io.github.willqi.pizzaserver.server.network.handlers;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.InventoryTransactionType;
 import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemData;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
@@ -87,7 +88,7 @@ public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
         if (packet.getType() == InventoryTransactionType.ITEM_USE) {
             InventoryTransactionUseItemData useItemData = (InventoryTransactionUseItemData) packet.getData();
 
-            boolean isValidBreakBlockRequest = this.player.canReach(useItemData.getBlockCoordinates().toVector3(), 7)
+            boolean isValidBreakBlockRequest = this.player.canReach(useItemData.getBlockCoordinates().toVector3(), this.player.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7)
                     && useItemData.getAction() == InventoryTransactionUseItemData.Action.BREAK_BLOCK;
 
             if (isValidBreakBlockRequest) {

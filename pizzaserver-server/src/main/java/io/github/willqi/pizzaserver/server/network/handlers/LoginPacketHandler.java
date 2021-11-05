@@ -258,6 +258,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     this.player.setPitch(data.getPitch());
                     this.player.setYaw(data.getYaw());
                     this.player.setHeadYaw(data.getYaw());
+                    this.player.setGamemode(data.getGamemode());
 
                     // Get their spawn location
                     World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
@@ -329,7 +330,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         // Entity specific
         startGamePacket.setDimension(Dimension.OVERWORLD);
         startGamePacket.setEntityId(this.player.getId());
-        startGamePacket.setPlayerGamemode(Gamemode.SURVIVAL);
+        startGamePacket.setPlayerGamemode(this.player.getGamemode());
         startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(direction);

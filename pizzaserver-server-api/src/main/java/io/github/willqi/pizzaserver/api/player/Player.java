@@ -7,6 +7,7 @@ import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.TextMessage;
 
@@ -30,6 +31,10 @@ public interface Player extends HumanEntity {
     String getLanguageCode();
 
     boolean isLocallyInitialized();
+
+    Gamemode getGamemode();
+
+    void setGamemode(Gamemode gamemode);
 
     /**
      * Get the player list of a player.
