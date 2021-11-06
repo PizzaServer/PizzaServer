@@ -18,6 +18,7 @@ import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.TextMessage;
 import io.github.willqi.pizzaserver.api.utils.TextType;
+import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.server.ImplServer;
@@ -47,6 +48,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected final UUID uuid;
     protected final String username;
     protected final String languageCode;
+
+    protected int regenerationTicks = 80;
 
     protected final PlayerList playerList = new ImplPlayerList(this);
 
@@ -316,6 +319,9 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     public void setHealth(float health) {
         super.setHealth(health);
         this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
+        if (NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth())) {
+            this.regenerationTicks = 80;
+        }
     }
 
     @Override
@@ -547,6 +553,14 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             this.getServer().getEventManager().call(blockStopBreakEvent);
 
             this.getBlockBreakData().stopBreaking();
+        }
+
+        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18) {
+            if (this.regenerationTicks == 0) {
+                this.regenerationTicks = 80;
+                this.setHealth(this.getHealth() + 1);
+            }
+            this.regenerationTicks--;
         }
 
         super.tick();
