@@ -11,6 +11,7 @@ import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+import io.github.willqi.pizzaserver.api.player.AdventureSettings;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
@@ -59,6 +60,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected Inventory openInventory = null;
 
     protected Gamemode gamemode;
+    protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings();
 
     protected final BreakingData breakingData = new BreakingData(this);
 
@@ -127,9 +129,43 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     @Override
     public void setGamemode(Gamemode gamemode) {
         this.gamemode = gamemode;
-        SetPlayerGamemodePacket setPlayerGamemodePacket = new SetPlayerGamemodePacket();
-        setPlayerGamemodePacket.setGamemode(gamemode);
-        this.sendPacket(setPlayerGamemodePacket);
+
+        if (this.hasSpawned()) {
+            SetPlayerGamemodePacket setPlayerGamemodePacket = new SetPlayerGamemodePacket();
+            setPlayerGamemodePacket.setGamemode(gamemode);
+            this.sendPacket(setPlayerGamemodePacket);
+            this.updateAdventureSettings();
+        }
+    }
+
+    /**
+     * Updates the adventure settings based off of the current gamemode.
+     */
+    protected void updateAdventureSettings() {
+        AdventureSettings adventureSettings = this.getAdventureSettings();
+        adventureSettings.setCanFly(this.getGamemode().equals(Gamemode.CREATIVE));
+        if (adventureSettings.isFlying()) {
+            adventureSettings.setIsFlying(this.getGamemode().equals(Gamemode.CREATIVE));
+        }
+        this.setAdventureSettings(adventureSettings);
+    }
+
+    @Override
+    public AdventureSettings getAdventureSettings() {
+        return this.adventureSettings.clone();
+    }
+
+    @Override
+    public void setAdventureSettings(AdventureSettings adventureSettings) {
+        ImplAdventureSettings settings = (ImplAdventureSettings) adventureSettings;
+        this.adventureSettings = settings;
+
+        AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
+        adventureSettingsPacket.setUniqueEntityRuntimeId(this.getId());
+        adventureSettingsPacket.setPlayerPermissionLevel(settings.getPlayerPermissionLevel());
+        adventureSettingsPacket.setCommandPermissionLevel(settings.getCommandPermissionLevel());
+        adventureSettingsPacket.setFlags(settings.getFlags());
+        this.sendPacket(adventureSettingsPacket);
     }
 
     public void onInitialized() {
@@ -547,7 +583,9 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     public void tick() {
         // Make sure that the block we're breaking is within reach!
         boolean stopBreakingBlock = this.getBlockBreakData().getBlock().isPresent()
-                && (!this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), 7) || !this.isAlive());
+                && !(this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), this.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7)
+                        && this.isAlive()
+                        && this.getAdventureSettings().canMine());
         if (stopBreakingBlock) {
             BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakData().getBlock().get());
             this.getServer().getEventManager().call(blockStopBreakEvent);
@@ -596,6 +634,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
+
+        this.updateAdventureSettings();
 
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);

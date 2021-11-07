@@ -36,6 +36,10 @@ public interface Player extends HumanEntity {
 
     void setGamemode(Gamemode gamemode);
 
+    AdventureSettings getAdventureSettings();
+
+    void setAdventureSettings(AdventureSettings adventureSettings);
+
     /**
      * Get the player list of a player.
      * @return player list of a player

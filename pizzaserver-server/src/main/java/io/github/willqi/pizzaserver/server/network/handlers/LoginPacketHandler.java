@@ -29,7 +29,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.api.player.data.Gamemode;
-import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
+import io.github.willqi.pizzaserver.api.player.data.PlayerPermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldType;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
@@ -331,7 +331,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setDimension(Dimension.OVERWORLD);
         startGamePacket.setEntityId(this.player.getId());
         startGamePacket.setPlayerGamemode(this.player.getGamemode());
-        startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
+        startGamePacket.setPlayerPermissionLevel(PlayerPermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(direction);
         startGamePacket.setPlayerSpawn(position.add(0, 2, 0));

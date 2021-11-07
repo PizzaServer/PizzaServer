@@ -44,6 +44,8 @@ public abstract class BaseBedrockPacketHandler {
 
     public void onPacket(InteractPacket packet) {}
 
+    public void onPacket(AdventureSettingsPacket packet) {}
+
 
     // inventory actions
     public void onPacket(ContainerClosePacket packet) {}

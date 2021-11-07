@@ -5,6 +5,7 @@ import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
+import io.github.willqi.pizzaserver.api.player.AdventureSettings;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.TextType;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
@@ -157,6 +158,22 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
                     viewer.sendPacket(packet);
                 }
             }
+        }
+    }
+
+    @Override
+    public void onPacket(AdventureSettingsPacket packet) {
+        if (packet.getUniqueEntityRuntimeId() == this.player.getId()) {
+            AdventureSettings adventureSettings = this.player.getAdventureSettings();
+
+            if (packet.getFlags().contains(AdventureSettingsPacket.Flag.FLYING)) {
+                if (adventureSettings.canFly()) {
+                    adventureSettings.setIsFlying(true);
+                }
+            } else if (adventureSettings.isFlying()) {
+                adventureSettings.setIsFlying(false);
+            }
+            this.player.setAdventureSettings(adventureSettings);
         }
     }
 

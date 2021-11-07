@@ -50,14 +50,14 @@ public class ChunkBlockPacketHandler extends BaseBedrockPacketHandler {
             switch (packet.getActionType()) {
                 case START_BREAK:
                     BlockLocation location = new BlockLocation(this.player.getWorld(), packet.getVector3());
-                    if (location.getBlock().isSolid()) {
+                    if (location.getBlock().isSolid() && this.player.getAdventureSettings().canMine()) {
                         BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, block);
                         this.player.getServer().getEventManager().call(blockStartBreakEvent);
                         if (!blockStartBreakEvent.isCancelled()) {
                             this.player.getBlockBreakData().startBreaking(location);
                         }
                     } else {
-                        // Player tried to break a non-solid block
+                        // Player was not able to break that block
                         this.player.getWorld().sendBlock(this.player, packet.getVector3());
                     }
                     break;

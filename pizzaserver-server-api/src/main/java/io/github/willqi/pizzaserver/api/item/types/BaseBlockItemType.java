@@ -45,10 +45,14 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
         // Handle placing a block
         // TODO: Account for entity collision
         if (!block.isAir() && block.getSide(blockFace).isAir()) {
+            if (!player.getAdventureSettings().canBuild()) {
+                return false;
+            }
             Block placedBlock = this.getBlockType().create(itemStack.getDamage());
             placedBlock.setLocation(block.getWorld(), block.getSide(blockFace).getLocation());
 
             BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);
+            player.getServer().getEventManager().call(blockPlaceEvent);
             if (blockPlaceEvent.isCancelled()) {
                 return false;
             }

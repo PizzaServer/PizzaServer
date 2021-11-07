@@ -8,7 +8,7 @@ import io.github.willqi.pizzaserver.api.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.api.network.protocol.data.PlayerMovementType;
 import io.github.willqi.pizzaserver.api.network.protocol.utils.MinecraftNamespaceComparator;
 import io.github.willqi.pizzaserver.api.player.data.Gamemode;
-import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
+import io.github.willqi.pizzaserver.api.player.data.PlayerPermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -28,7 +28,7 @@ public class StartGamePacket extends BaseBedrockPacket {
     private Dimension dimension;
     private long entityId;
     private Gamemode playerGamemode;
-    private PermissionLevel permissionLevel;
+    private PlayerPermissionLevel permissionLevel;
     private long runtimeEntityId;
     private Vector2 rotation;
     private Vector3 spawn;
@@ -127,11 +127,11 @@ public class StartGamePacket extends BaseBedrockPacket {
         this.playerGamemode = gamemode;
     }
 
-    public PermissionLevel getPlayerPermissionLevel() {
+    public PlayerPermissionLevel getPlayerPermissionLevel() {
         return this.permissionLevel;
     }
 
-    public void setPlayerPermissionLevel(PermissionLevel permissionLevel) {
+    public void setPlayerPermissionLevel(PlayerPermissionLevel permissionLevel) {
         this.permissionLevel = permissionLevel;
     }
 
