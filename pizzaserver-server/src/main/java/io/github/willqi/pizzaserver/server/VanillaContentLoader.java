@@ -43,7 +43,10 @@ public class VanillaContentLoader {
                 .setCollision(true)
                 .setGravity(true)
                 .setPushable(true)
-                .setPistonPushable(true)), new EntityPhysicsComponentHandler());
+                .setPistonPushable(true)
+                .setGravityForce(0.08f)
+                .setDragForce(0.02f)
+                .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
     }
 
     private static void loadEntities() {

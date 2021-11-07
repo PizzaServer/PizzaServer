@@ -15,7 +15,14 @@ public class ItemEntityDefinition extends BaseEntityDefinition {
     public ItemEntityDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[]{
                 new EntityCollisionBoxComponent(0.25f, 0.25f),
-                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties().setPushable(false).setPistonPushable(true).setGravity(true).setCollision(false)) }));
+                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
+                        .setPushable(false)
+                        .setPistonPushable(true)
+                        .setGravity(true)
+                        .setCollision(false)
+                        .setGravityForce(0.04f)
+                        .setDragForce(0.02f)
+                        .setApplyDragBeforeGravity(true)) }));
     }
 
     @Override

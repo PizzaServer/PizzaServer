@@ -100,10 +100,6 @@ public class ImplEntity implements Entity {
             EntityComponentHandler handler = EntityRegistry.getComponentHandler(clazz);
             handler.onRegistered(this, EntityRegistry.getDefaultComponent(clazz));
         });
-
-        EntityMetaData metaData = this.getMetaData();
-        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_MOVING, true);
-        this.setMetaData(metaData);
     }
 
     @Override
@@ -901,6 +897,15 @@ public class ImplEntity implements Entity {
         moveEntityPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
         for (Player player : this.getViewers()) {
             player.sendPacket(moveEntityPacket);
+        }
+
+        if (this.getVelocity().getLength() > 0) {
+            SetEntityVelocityPacket setEntityVelocityPacket = new SetEntityVelocityPacket();
+            setEntityVelocityPacket.setEntityRuntimeId(this.getId());
+            setEntityVelocityPacket.setVelocity(this.getVelocity());
+            for (Player viewer : this.getViewers()) {
+                viewer.sendPacket(setEntityVelocityPacket);
+            }
         }
     }
 
