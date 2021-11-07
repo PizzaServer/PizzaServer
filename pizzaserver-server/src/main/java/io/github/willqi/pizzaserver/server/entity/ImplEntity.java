@@ -904,6 +904,24 @@ public class ImplEntity implements Entity {
         }
     }
 
+    private float getKnockbackResistance() {
+        float totalResistance = 0;
+        if (this.getInventory().getHelmet().getItemType() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getHelmet().getItemType()).getKnockbackResistance();
+        }
+        if (this.getInventory().getChestplate().getItemType() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getChestplate().getItemType()).getKnockbackResistance();
+        }
+        if (this.getInventory().getLeggings().getItemType() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getLeggings().getItemType()).getKnockbackResistance();
+        }
+        if (this.getInventory().getBoots().getItemType() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getBoots().getItemType()).getKnockbackResistance();
+        }
+
+        return Math.max(0, Math.min(1, totalResistance));
+    }
+
     /**
      * Damage this entity.
      * The event should be nothing more than the raw damage caused by the damage type.
@@ -939,6 +957,11 @@ public class ImplEntity implements Entity {
                 int armourPoints = this.getArmourPoints();
                 finalDamage = finalDamage * Math.max(0, 1 - armourPoints * 0.04f);
                 break;
+        }
+
+        // Apply KB resistance
+        if (event instanceof EntityDamageByEntityEvent) {
+            ((EntityDamageByEntityEvent) event).setKnockback(((EntityDamageByEntityEvent) event).getKnockback().multiply(1 - this.getKnockbackResistance()));
         }
 
         EntityFilterData damageFilterData;
