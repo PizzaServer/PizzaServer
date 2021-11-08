@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerRespawnEvent;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
@@ -224,6 +225,28 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         } else {
             return super.damage(event);
         }
+    }
+
+    public void respawn() {
+        this.deathAnimationTicks = -1;
+        this.fireTicks = 0;
+        this.noHitTicks = 0;
+        this.lastDamageEvent = null;
+        this.setAI(true);
+
+        Location respawnLocation = this.getSpawn();
+        if (respawnLocation.getWorld().getDimension() != this.getWorld().getDimension()) {
+            this.setDimensionTransferScreen(respawnLocation.getWorld().getDimension());
+        }
+
+        this.setHealth(this.getMaxHealth());
+        this.setFoodLevel(20);
+
+        PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, respawnLocation);
+        this.getServer().getEventManager().call(respawnEvent);
+
+        respawnLocation.getWorld().addEntity(this, respawnEvent.getLocation());
+        this.teleport(respawnEvent.getLocation());
     }
 
     @Override
@@ -458,7 +481,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         super.teleport(world, x, y, z);
         MoveEntityAbsolutePacket teleportPacket = new MoveEntityAbsolutePacket();
         teleportPacket.setEntityRuntimeId(this.getId());
-        teleportPacket.setPosition(this.getLocation().add(0, this.getEyeHeight(), 0));
+        teleportPacket.setPosition(new Location(world, x, y + this.getEyeHeight(), z));
         teleportPacket.setPitch(this.getPitch());
         teleportPacket.setYaw(this.getYaw());
         teleportPacket.setHeadYaw(this.getHeadYaw());
@@ -467,6 +490,16 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
         if (!oldWorld.getDimension().equals(transferDimension)) {
             this.setDimensionTransferScreen(transferDimension);
+        }
+    }
+
+    @Override
+    public Location getSpawn() {
+        if (this.getHome().isPresent()) {
+            return this.getHome().get().toLocation().add(0, this.getEyeHeight(), 0);
+        } else {
+            World world = this.getServer().getLevelManager().getDefaultLevel().getDimension(Dimension.OVERWORLD);
+            return new Location(world, world.getSpawnCoordinates().toVector3().add(0, this.getEyeHeight(), 0));
         }
     }
 
@@ -618,28 +651,20 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     public void onSpawned() {
         super.onSpawned();
         this.getChunkManager().onSpawned();
-        this.completeLogin();
-    }
 
-    @Override
-    public void onDespawned() {
-        super.onDespawned();
-        this.getChunkManager().onDespawn();
-    }
-
-    private void completeLogin() {
         this.getInventory().sendSlots(this);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
-
         this.updateAdventureSettings();
+    }
 
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
-        this.sendPacket(playStatusPacket);
+    @Override
+    public void onDespawned() {
+        super.onDespawned();
+        this.getChunkManager().onDespawn();
     }
 
     @Override

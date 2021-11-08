@@ -15,6 +15,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(ChangeDimensionPacket.ID, new V419ChangeDimensionPacketHandler())
             .register(SetPlayerGamemodePacket.ID, new V419SetPlayerGamemodePacketHandler())
             .register(DisconnectPacket.ID, new V419DisconnectPacketHandler())
+            .register(RespawnPacket.ID, new V419RespawnPacketHandler())
             .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler())
             .register(ResourcePackResponsePacket.ID, new V419ResourcePackResponsePacketHandler())
             .register(ResourcePackStackPacket.ID, new V419ResourcePackStackPacketHandler())

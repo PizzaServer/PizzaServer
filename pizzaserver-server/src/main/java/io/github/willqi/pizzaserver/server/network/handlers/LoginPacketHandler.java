@@ -305,15 +305,20 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                             .collect(Collectors.toList());
                     this.player.getPlayerList().addEntries(entries);
 
-                    location.getWorld().addEntity(this.player, location);
-                    this.session.removePacketHandler(this);
-                    this.addGamePacketHandlers();
-
                     PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(this.player);
                     this.player.getServer().getEventManager().call(playerSpawnEvent);
                     if (playerSpawnEvent.isCancelled()) {
                         this.player.disconnect();
+                        return;
                     }
+
+                    location.getWorld().addEntity(this.player, location);
+                    this.session.removePacketHandler(this);
+                    this.addGamePacketHandlers();
+
+                    PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+                    playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+                    this.session.sendPacket(playStatusPacket);
                 }).schedule();
     }
 

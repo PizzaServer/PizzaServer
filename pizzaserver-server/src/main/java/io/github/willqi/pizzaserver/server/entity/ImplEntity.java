@@ -29,10 +29,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.utils.BoundingBox;
-import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.api.utils.TextMessage;
-import io.github.willqi.pizzaserver.api.utils.TextType;
+import io.github.willqi.pizzaserver.api.utils.*;
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;
@@ -57,6 +54,8 @@ public class ImplEntity implements Entity {
     protected volatile World world;
     protected boolean moveUpdate;
     protected EntityPhysicsEngine physicsEngine = new EntityPhysicsEngine(this);
+
+    protected BlockLocation home = null;
 
     protected boolean vulnerable = true;
     protected int deathAnimationTicks = -1;
@@ -257,6 +256,16 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public void setHome(BlockLocation home) {
+        this.home = home;
+    }
+
+    @Override
+    public Optional<BlockLocation> getHome() {
+        return Optional.ofNullable(this.home);
+    }
+
+    @Override
     public Location getLocation() {
         return new Location(this.world, new Vector3(this.getX(), this.getY(), this.getZ()));
     }
@@ -440,7 +449,7 @@ public class ImplEntity implements Entity {
 
     @Override
     public boolean isAlive() {
-        return this.getHealth() >= this.getAttribute(AttributeType.HEALTH).getMinimumValue();
+        return this.getHealth() > this.getAttribute(AttributeType.HEALTH).getMinimumValue();
     }
 
     @Override

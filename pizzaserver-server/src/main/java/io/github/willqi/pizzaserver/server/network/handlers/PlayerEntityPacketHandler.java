@@ -70,20 +70,21 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(PlayerActionPacket packet) {
-        if (!this.player.isAlive()) {
-            return;
-        }
-
         switch (packet.getActionType()) {
+            case RESPAWN:
+                if (!this.player.isAlive()) {
+                    this.player.respawn();
+                }
+                break;
             case START_SNEAK:
-                if (!this.player.isSneaking()) {
+                if (!this.player.isSneaking() && this.player.isAlive()) {
                     PlayerStartSneakingEvent startSneakingEvent = new PlayerStartSneakingEvent(this.player);
                     this.player.getServer().getEventManager().call(startSneakingEvent);
                     this.player.setSneaking(true);
                 }
                 break;
             case STOP_SNEAK:
-                if (this.player.isSneaking()) {
+                if (this.player.isSneaking() && this.player.isAlive()) {
                     PlayerStartSneakingEvent stopSneakingEvent = new PlayerStartSneakingEvent(this.player);
                     this.player.getServer().getEventManager().call(stopSneakingEvent);
                     this.player.setSneaking(false);
@@ -106,6 +107,15 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onPacket(RespawnPacket packet) {
+        RespawnPacket respawnPacket = new RespawnPacket();
+        respawnPacket.setPosition(this.player.getSpawn());
+        respawnPacket.setState(RespawnPacket.State.SERVER_READY);
+        respawnPacket.setEntityRuntimeId(this.player.getId());
+        this.player.sendPacket(respawnPacket);
     }
 
     @Override

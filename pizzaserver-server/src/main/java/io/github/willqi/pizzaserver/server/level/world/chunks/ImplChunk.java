@@ -161,7 +161,7 @@ public class ImplChunk implements Chunk {
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
-            throw new IllegalArgumentException("Could not change block outside chunk");
+            throw new IllegalArgumentException("Could not get block outside chunk");
         }
         int subChunkIndex = y / 16;
         int chunkBlockX = x >= 0 ? x : 16 + x;

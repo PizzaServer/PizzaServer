@@ -147,6 +147,12 @@ public interface Player extends HumanEntity {
     void teleport(World world, float x, float y, float z, Dimension transferDimension);
 
     /**
+     * Retrieve the location that this player should spawn at when it dies.
+     * @return the location
+     */
+    Location getSpawn();
+
+    /**
      * Send a message to this player.
      * @param message the message to send
      */

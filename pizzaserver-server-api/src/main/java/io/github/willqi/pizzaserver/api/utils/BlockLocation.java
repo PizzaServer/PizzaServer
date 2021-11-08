@@ -65,6 +65,10 @@ public class BlockLocation extends Vector3i {
         return new BlockLocation(this.world, this.getX() / x, this.getY() / y, this.getZ() / z);
     }
 
+    public Location toLocation() {
+        return new Location(this.getWorld(), this);
+    }
+
     @Override
     public String toString() {
         return "BlockLocation(level=" + this.getLevel().getName()

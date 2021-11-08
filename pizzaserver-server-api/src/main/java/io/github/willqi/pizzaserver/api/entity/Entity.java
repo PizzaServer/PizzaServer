@@ -12,6 +12,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.utils.BlockLocation;
 import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
@@ -67,6 +68,10 @@ public interface Entity extends Watchable {
     int getFloorZ();
 
     boolean isOnGround();
+
+    void setHome(BlockLocation home);
+
+    Optional<BlockLocation> getHome();
 
     /**
      * Retrieve the {@link Server} this entity is in.

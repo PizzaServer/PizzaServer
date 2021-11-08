@@ -54,7 +54,10 @@ public class V419PlayerActionPacketHandler extends BaseProtocolPacketHandler<Pla
             ImplServer.getInstance().getLogger().warn("There is an unidentified PlayerAction with an id of " + action + "!");
         }
         packet.setVector3(buffer.readVector3i());
-        packet.setFace(BlockFace.resolve(buffer.readVarInt()));
+        int face = buffer.readVarInt();
+        if (face > -1) {
+            packet.setFace(BlockFace.resolve(face));
+        }
         return packet;
     }
 }
