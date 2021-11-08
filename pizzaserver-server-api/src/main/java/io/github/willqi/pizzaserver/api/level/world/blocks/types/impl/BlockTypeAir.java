@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.level.world.blocks.types;
+package io.github.willqi.pizzaserver.api.level.world.blocks.types.impl;
 
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;

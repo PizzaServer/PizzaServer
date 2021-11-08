@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.level.world.blocks.types;
+package io.github.willqi.pizzaserver.api.level.world.blocks.types.impl;
 
 import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;

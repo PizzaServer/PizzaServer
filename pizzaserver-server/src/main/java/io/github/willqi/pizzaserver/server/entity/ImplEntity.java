@@ -100,6 +100,9 @@ public class ImplEntity implements Entity {
             EntityComponentHandler handler = EntityRegistry.getComponentHandler(clazz);
             handler.onRegistered(this, EntityRegistry.getDefaultComponent(clazz));
         });
+
+        this.setMaxAirSupplyTicks(400);
+        this.setAirSupplyTicks(this.getMaxAirSupplyTicks());
     }
 
     @Override
@@ -254,6 +257,11 @@ public class ImplEntity implements Entity {
             }
         }
         return false;
+    }
+
+    @Override
+    public Block getHeadBlock() {
+        return this.getWorld().getBlock(this.getLocation().add(0, this.getEyeHeight(), 0).floor().toVector3i());
     }
 
     @Override
@@ -639,6 +647,38 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public int getAirSupplyTicks() {
+        return this.getMetaData().getShortProperty(EntityMetaPropertyName.AIR);
+    }
+
+    @Override
+    public void setAirSupplyTicks(int ticks) {
+        int newAirSupplyTicks = Math.max(0, Math.min(ticks, this.getMaxAirSupplyTicks()));
+        if (newAirSupplyTicks != this.getAirSupplyTicks()) {
+            EntityMetaData metaData = this.getMetaData();
+            metaData.setShortProperty(EntityMetaPropertyName.AIR, (short) newAirSupplyTicks);
+            this.setMetaData(metaData);
+        }
+    }
+
+    @Override
+    public int getMaxAirSupplyTicks() {
+        return this.getMetaData().getShortProperty(EntityMetaPropertyName.MAX_AIR_SUPPLY);
+    }
+
+    @Override
+    public void setMaxAirSupplyTicks(int ticks) {
+        int newMaxAirSupplyTicks = Math.max(0, ticks);
+        if (newMaxAirSupplyTicks != this.getMaxAirSupplyTicks()) {
+            EntityMetaData metaData = this.getMetaData();
+            metaData.setShortProperty(EntityMetaPropertyName.MAX_AIR_SUPPLY, (short) newMaxAirSupplyTicks);
+            this.setMetaData(metaData);
+
+            this.setAirSupplyTicks(Math.min(this.getAirSupplyTicks(), this.getMaxAirSupplyTicks()));
+        }
+    }
+
+    @Override
     public List<ItemStack> getLoot() {
         return this.loot;
     }
@@ -888,12 +928,23 @@ public class ImplEntity implements Entity {
                 }
                 this.setFireTicks(this.getFireTicks() - 1);
             }
-            if (this.getWorld().getBlock(this.getLocation().add(0, this.getEyeHeight(), 0).floor().toVector3i()).isSolid()) {
+            if (this.getHeadBlock().isSolid()) {
                 if (this.ticks % 10 == 0) {
                     EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
                     this.damage(suffocationEvent);
                 }
             }
+            if (!this.getHeadBlock().getBlockType().hasOxygen()) {
+                if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
+                    EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
+                    this.damage(drowningEvent);
+                } else {
+                    this.setAirSupplyTicks(this.getAirSupplyTicks() - 1);
+                }
+            } else if (this.getAirSupplyTicks() < this.getMaxAirSupplyTicks()) {
+                this.setAirSupplyTicks(this.getAirSupplyTicks() + 5);
+            }
+
         }
 
         if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {

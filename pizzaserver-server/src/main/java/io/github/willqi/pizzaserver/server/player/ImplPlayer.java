@@ -2,7 +2,6 @@ package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
-import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
@@ -233,6 +232,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.noHitTicks = 0;
         this.lastDamageEvent = null;
         this.setAI(true);
+        this.setAirSupplyTicks(this.getMaxAirSupplyTicks());
 
         Location respawnLocation = this.getSpawn();
         if (respawnLocation.getWorld().getDimension() != this.getWorld().getDimension()) {
@@ -247,18 +247,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
         respawnLocation.getWorld().addEntity(this, respawnEvent.getLocation());
         this.teleport(respawnEvent.getLocation());
-    }
-
-    @Override
-    public void setMetaData(EntityMetaData metaData) {
-        super.setMetaData(metaData);
-
-        if (this.hasSpawned()) {
-            SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
-            setEntityDataPacket.setRuntimeId(this.getId());
-            setEntityDataPacket.setData(this.getMetaData());
-            this.sendPacket(setEntityDataPacket);
-        }
     }
 
     public ImplServer getServer() {
@@ -611,6 +599,13 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     @Override
     public void tick() {
+        if (this.metaDataUpdate) {
+            SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+            setEntityDataPacket.setRuntimeId(this.getId());
+            setEntityDataPacket.setData(this.getMetaData());
+            this.sendPacket(setEntityDataPacket);
+        }
+
         // Make sure that the block we're breaking is within reach!
         boolean stopBreakingBlock = this.getBlockBreakData().getBlock().isPresent()
                 && !(this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), this.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7)

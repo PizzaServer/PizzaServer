@@ -7,10 +7,12 @@ import io.github.willqi.pizzaserver.api.entity.definition.impl.CowEntityDefiniti
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
-import io.github.willqi.pizzaserver.server.level.world.blocks.types.*;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeAir;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeDirt;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeGrass;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeStone;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class VanillaContentLoader {
 

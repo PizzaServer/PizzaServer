@@ -11,6 +11,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.BlockLocation;
 import io.github.willqi.pizzaserver.api.utils.BoundingBox;
@@ -68,6 +69,12 @@ public interface Entity extends Watchable {
     int getFloorZ();
 
     boolean isOnGround();
+
+    /**
+     * Retrieve the block that this entity's head is in.
+     * @return the block the entity's head is in
+     */
+    Block getHeadBlock();
 
     void setHome(BlockLocation home);
 
@@ -233,6 +240,14 @@ public interface Entity extends Watchable {
     int getFireTicks();
 
     void setFireTicks(int ticks);
+
+    int getAirSupplyTicks();
+
+    void setAirSupplyTicks(int ticks);
+
+    int getMaxAirSupplyTicks();
+
+    void setMaxAirSupplyTicks(int ticks);
 
     List<ItemStack> getLoot();
 

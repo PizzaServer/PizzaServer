@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.server.level.world.blocks.types;
+package io.github.willqi.pizzaserver.api.level.world.blocks.types.impl;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
