@@ -7,10 +7,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.impl.CowEntityDefiniti
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeAir;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeDirt;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeGrass;
-import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.BlockTypeStone;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.impl.*;
 
 import java.util.ArrayList;
 
@@ -32,6 +29,8 @@ public class VanillaContentLoader {
         BlockRegistry.register(new BlockTypeDirt());
         BlockRegistry.register(new BlockTypeGrass());
         BlockRegistry.register(new BlockTypeStone());
+        BlockRegistry.register(new BlockTypeWater());
+        BlockRegistry.register(new BlockTypeFlowingWater());
     }
 
     private static void loadEntityComponents() {
