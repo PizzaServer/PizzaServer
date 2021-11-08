@@ -112,6 +112,10 @@ public class Vector2 {
         return new Vector2(Math.round(this.getX()), Math.round(this.getY()));
     }
 
+    public Vector2 floor() {
+        return new Vector2((float) Math.floor(this.getX()), (float) Math.floor(this.getY()));
+    }
+
     public Vector2i toVector2i() {
         return new Vector2i((int) this.x, (int) this.y);
     }

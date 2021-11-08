@@ -124,6 +124,10 @@ public class Vector3 {
         return new Vector3(Math.round(this.getX()), Math.round(this.getY()), Math.round(this.getZ()));
     }
 
+    public Vector3 floor() {
+        return new Vector3((float) Math.floor(this.getX()), (float) Math.floor(this.getY()), (float) Math.floor(this.getZ()));
+    }
+
     public float dot(Vector3 vector3) {
         return (this.getX() * vector3.getX()) + (this.getY() * vector3.getY()) + (this.getZ() * vector3.getZ());
     }

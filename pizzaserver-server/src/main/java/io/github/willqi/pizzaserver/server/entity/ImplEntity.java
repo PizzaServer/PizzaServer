@@ -54,6 +54,7 @@ public class ImplEntity implements Entity {
     protected volatile World world;
     protected boolean moveUpdate;
     protected EntityPhysicsEngine physicsEngine = new EntityPhysicsEngine(this);
+    protected long ticks;
 
     protected BlockLocation home = null;
 
@@ -879,12 +880,20 @@ public class ImplEntity implements Entity {
 
         if (this.getNoHitTicks() > 0) {
             this.setNoHitTicks(this.getNoHitTicks() - 1);
-        } else if (this.getFireTicks() > 0) {
-            if (this.getFireTicks() % 20 == 0) {
-                EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
-                this.damage(fireTickDamageEvent);
+        } else {
+            if (this.getFireTicks() > 0) {
+                if (this.getFireTicks() % 20 == 0) {
+                    EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
+                    this.damage(fireTickDamageEvent);
+                }
+                this.setFireTicks(this.getFireTicks() - 1);
             }
-            this.setFireTicks(this.getFireTicks() - 1);
+            if (this.getWorld().getBlock(this.getLocation().add(0, this.getEyeHeight(), 0).floor().toVector3i()).isSolid()) {
+                if (this.ticks % 10 == 0) {
+                    EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
+                    this.damage(suffocationEvent);
+                }
+            }
         }
 
         if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {
@@ -894,6 +903,8 @@ public class ImplEntity implements Entity {
             this.endDeathAnimation();
             this.despawn();
         }
+
+        this.ticks++;
     }
 
     protected void sendMovementPacket() {

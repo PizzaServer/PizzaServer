@@ -51,8 +51,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected final String username;
     protected final String languageCode;
 
-    protected int regenerationTicks = 80;
-
     protected final PlayerList playerList = new ImplPlayerList(this);
 
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
@@ -201,7 +199,9 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         // Direction check
         Vector3 playerDirectionVector = this.getDirectionVector();
         Vector3 targetDirectionVector = vector3.subtract(this.getLocation().add(0, this.getEyeHeight(), 0)).normalize();
-        return playerDirectionVector.dot(targetDirectionVector) > 0;    // Must be in same direction
+
+        // Must be in same direction ( > 0) but we allow a little leeway to account for attacking an entity in the same position as you
+        return playerDirectionVector.dot(targetDirectionVector) > -1;
     }
 
     @Override
@@ -378,9 +378,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     public void setHealth(float health) {
         super.setHealth(health);
         this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
-        if (NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth())) {
-            this.regenerationTicks = 80;
-        }
     }
 
     @Override
@@ -626,12 +623,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             this.getBlockBreakData().stopBreaking();
         }
 
-        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18) {
-            if (this.regenerationTicks == 0) {
-                this.regenerationTicks = 80;
-                this.setHealth(this.getHealth() + 1);
-            }
-            this.regenerationTicks--;
+        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
+            this.setHealth(this.getHealth() + 1);
         }
 
         super.tick();
