@@ -45,7 +45,7 @@ public class BasePacketBuffer extends ByteBuf {
 
 
     public BasePacketBuffer(BaseMinecraftVersion version) {
-        this(version, 256);
+        this(version, 16);
     }
 
     public BasePacketBuffer(BaseMinecraftVersion version, int initialCapacity) {
