@@ -19,8 +19,4 @@ public class PlayerToggleFlightEvent extends BasePlayerEvent.Cancellable {
         return this.flight;
     }
 
-    public void setFlying(boolean enabled) {
-        this.flight = enabled;
-    }
-
 }

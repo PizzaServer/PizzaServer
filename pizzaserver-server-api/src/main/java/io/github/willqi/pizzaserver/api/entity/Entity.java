@@ -237,6 +237,14 @@ public interface Entity extends Watchable {
 
     void setScale(float scale);
 
+    boolean isSneaking();
+
+    void setSneaking(boolean sneaking);
+
+    boolean isSwimming();
+
+    void setSwimming(boolean swimming);
+
     int getFireTicks();
 
     void setFireTicks(int ticks);

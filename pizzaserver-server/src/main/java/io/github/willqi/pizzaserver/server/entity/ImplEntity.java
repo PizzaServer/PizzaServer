@@ -261,7 +261,11 @@ public class ImplEntity implements Entity {
 
     @Override
     public Block getHeadBlock() {
-        return this.getWorld().getBlock(this.getLocation().add(0, this.getEyeHeight(), 0).floor().toVector3i());
+        if (this.isSwimming()) {
+            return this.getWorld().getBlock(this.getLocation().floor().toVector3i());
+        } else {
+            return this.getWorld().getBlock(this.getLocation().add(0, this.getEyeHeight(), 0).floor().toVector3i());
+        }
     }
 
     @Override
@@ -624,6 +628,30 @@ public class ImplEntity implements Entity {
         EntityMetaData data = this.getMetaData();
         data.setFloatProperty(EntityMetaPropertyName.SCALE, scale);
         this.setMetaData(data);
+    }
+
+    @Override
+    public boolean isSneaking() {
+        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING);
+    }
+
+    @Override
+    public void setSneaking(boolean sneaking) {
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
+        this.setMetaData(metaData);
+    }
+
+    @Override
+    public boolean isSwimming() {
+        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SWIMMING);
+    }
+
+    @Override
+    public void setSwimming(boolean swimming) {
+        EntityMetaData metaData = this.getMetaData();
+        metaData.setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SWIMMING, swimming);
+        this.setMetaData(metaData);
     }
 
     @Override

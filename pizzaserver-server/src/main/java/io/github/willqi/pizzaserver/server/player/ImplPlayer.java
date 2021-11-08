@@ -233,6 +233,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.lastDamageEvent = null;
         this.setAI(true);
         this.setAirSupplyTicks(this.getMaxAirSupplyTicks());
+        this.setSwimming(false);
 
         Location respawnLocation = this.getSpawn();
         if (respawnLocation.getWorld().getDimension() != this.getWorld().getDimension()) {

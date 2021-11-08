@@ -86,6 +86,12 @@ public interface BlockType {
     boolean hasOxygen();
 
     /**
+     * If this block type is liquid and swimmable.
+     * @return if the block type is a liquid and can entities can swim in this.
+     */
+    boolean isLiquid();
+
+    /**
      * If the block type is solid.
      * @return if the block type is solid
      */

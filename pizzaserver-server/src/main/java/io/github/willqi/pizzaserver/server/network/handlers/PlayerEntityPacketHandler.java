@@ -4,6 +4,7 @@ import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.player.AdventureSettings;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -103,6 +104,27 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
                         this.player.sendPacket(dimensionChangeComplete);
 
                         this.player.getChunkManager().onDimensionTransferComplete();
+                    }
+                }
+                break;
+            case START_SWIMMING:
+                Block blockSwimmingIn = this.player.getWorld().getBlock(this.player.getLocation().floor().toVector3i());
+                if (this.player.isAlive() && !this.player.isSwimming() && blockSwimmingIn.getBlockType().isLiquid()) {
+                    PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, true);
+                    this.player.getServer().getEventManager().call(swimEvent);
+
+                    if (!swimEvent.isCancelled()) {
+                        this.player.setSwimming(true);
+                    }
+                }
+                break;
+            case STOP_SWIMMING:
+                if (this.player.isAlive() && this.player.isSwimming()) {
+                    PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, false);
+                    this.player.getServer().getEventManager().call(swimEvent);
+
+                    if (!swimEvent.isCancelled()) {
+                        this.player.setSwimming(false);
                     }
                 }
                 break;

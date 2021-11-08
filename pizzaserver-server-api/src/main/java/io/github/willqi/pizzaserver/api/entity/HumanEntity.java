@@ -45,18 +45,6 @@ public interface HumanEntity extends Entity {
      */
     void setSkin(Skin skin);
 
-    /**
-     * Check if the player is sneaking.
-     * @return sneaking status
-     */
-    boolean isSneaking();
-
-    /**
-     * Change if the player is sneaking.
-     * @param sneaking sneaking status
-     */
-    void setSneaking(boolean sneaking);
-
     PlayerList.Entry getPlayerListEntry();
 
 }

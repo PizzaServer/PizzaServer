@@ -51,4 +51,9 @@ public class BlockTypeWater extends BaseBlockType {
         return false;
     }
 
+    @Override
+    public boolean isLiquid() {
+        return true;
+    }
+
 }

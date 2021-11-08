@@ -89,6 +89,11 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
+    public boolean isLiquid() {
+        return false;
+    }
+
+    @Override
     public boolean isSolid() {
         return true;
     }
