@@ -186,6 +186,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
             addPlayerPacket.setDevice(this.getDevice());
             addPlayerPacket.setHeldItem(this.getInventory().getHeldItem());
             player.sendPacket(addPlayerPacket);
+            this.sendEquipmentPacket(player);
 
             if (!(this instanceof Player)) {
                 player.getPlayerList().removeEntry(this.getPlayerListEntry());

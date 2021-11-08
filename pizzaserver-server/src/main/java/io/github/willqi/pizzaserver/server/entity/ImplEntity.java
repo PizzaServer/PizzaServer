@@ -1176,10 +1176,29 @@ public class ImplEntity implements Entity {
             addEntityPacket.setHeadYaw(this.getHeadYaw());
             addEntityPacket.setMetaData(this.getMetaData());
             player.sendPacket(addEntityPacket);
+            this.sendEquipmentPacket(player);
 
             return true;
         } else {
             return false;
+        }
+    }
+
+    protected void sendEquipmentPacket(Player player) {
+        ItemStack helmet = this.getInventory().getHelmet();
+        ItemStack chestplate = this.getInventory().getChestplate();
+        ItemStack leggings = this.getInventory().getLeggings();
+        ItemStack boots = this.getInventory().getBoots();
+        boolean wearingAmour = !(helmet.isEmpty() && chestplate.isEmpty() && leggings.isEmpty() && boots.isEmpty());
+
+        if (wearingAmour) {
+            MobArmourEquipmentPacket mobArmourEquipmentPacket = new MobArmourEquipmentPacket();
+            mobArmourEquipmentPacket.setEntityRuntimeId(this.getId());
+            mobArmourEquipmentPacket.setHelmet(helmet);
+            mobArmourEquipmentPacket.setChestplate(chestplate);
+            mobArmourEquipmentPacket.setLeggings(leggings);
+            mobArmourEquipmentPacket.setBoots(boots);
+            player.sendPacket(mobArmourEquipmentPacket);
         }
     }
 
