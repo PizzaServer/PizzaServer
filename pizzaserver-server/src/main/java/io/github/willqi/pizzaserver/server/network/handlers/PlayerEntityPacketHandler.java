@@ -177,11 +177,21 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
             AdventureSettings adventureSettings = this.player.getAdventureSettings();
 
             if (packet.getFlags().contains(AdventureSettingsPacket.Flag.FLYING)) {
-                if (adventureSettings.canFly()) {
-                    adventureSettings.setIsFlying(true);
+                if (adventureSettings.canFly() && !adventureSettings.isFlying()) {
+                    PlayerToggleFlightEvent toggleFlightEvent = new PlayerToggleFlightEvent(this.player, true);
+                    this.player.getServer().getEventManager().call(toggleFlightEvent);
+
+                    if (!toggleFlightEvent.isCancelled()) {
+                        adventureSettings.setIsFlying(true);
+                    }
                 }
             } else if (adventureSettings.isFlying()) {
-                adventureSettings.setIsFlying(false);
+                PlayerToggleFlightEvent toggleFlightEvent = new PlayerToggleFlightEvent(this.player, false);
+                this.player.getServer().getEventManager().call(toggleFlightEvent);
+
+                if (!toggleFlightEvent.isCancelled()) {
+                    adventureSettings.setIsFlying(false);
+                }
             }
             this.player.setAdventureSettings(adventureSettings);
         }
