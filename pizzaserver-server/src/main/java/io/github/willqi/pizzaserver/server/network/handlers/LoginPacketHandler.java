@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
@@ -297,6 +298,15 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     BiomeDefinitionPacket biomeDefinitionPacket = new BiomeDefinitionPacket();
                     biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
                     this.player.sendPacket(biomeDefinitionPacket);
+
+                    AvailableEntityIdentifiersPacket availableEntityIdentifiersPacket = new AvailableEntityIdentifiersPacket();
+                    Set<AvailableEntityIdentifiersPacket.Entry> entityEntries = new HashSet<>();
+                    for (EntityDefinition definition : EntityRegistry.getDefinitions()) {
+                        entityEntries.add(new AvailableEntityIdentifiersPacket.Entry(definition.getId(), definition.isSummonable(), definition.hasSpawnEgg()));
+                    }
+                    availableEntityIdentifiersPacket.setEntries(entityEntries);
+                    this.player.sendPacket(availableEntityIdentifiersPacket);
+
 
                     // Sent the full player list to this player
                     List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()

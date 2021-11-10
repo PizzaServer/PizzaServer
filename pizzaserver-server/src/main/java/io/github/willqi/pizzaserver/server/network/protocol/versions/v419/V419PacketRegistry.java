@@ -26,6 +26,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(ItemComponentPacket.ID, new V419ItemComponentPacketHandler())
             .register(CreativeContentPacket.ID, new V419CreativeContentPacketHandler())
             .register(BiomeDefinitionPacket.ID, new V419BiomeDefinitionPacketHandler())
+            .register(AvailableEntityIdentifiersPacket.ID, new V419AvailableEntityIdentifiersPacket())
             .register(RequestChunkRadiusPacket.ID, new V419RequestChunkRadiusPacketHandler())
             .register(ChunkRadiusUpdatedPacket.ID, new V419ChunkRadiusUpdatedPacketHandler())
             .register(WorldEventPacket.ID, new V419WorldEventPacketHandler())

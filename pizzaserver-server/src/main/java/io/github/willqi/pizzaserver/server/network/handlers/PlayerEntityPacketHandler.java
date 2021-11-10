@@ -1,10 +1,13 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
 import io.github.willqi.pizzaserver.api.event.type.player.*;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockType;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.player.AdventureSettings;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -142,8 +145,8 @@ public class PlayerEntityPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(TextPacket packet) {
-        this.player.getInventory().addItem(ItemRegistry.getItem("minecraft:dirt", 10));
-        this.player.getWorld().addEntity(EntityRegistry.getEntity("minecraft:cow"), this.player.getLocation());
+        this.player.getInventory().addItem(ItemRegistry.getItem(BlockTypeID.DIRT, 10));
+        this.player.getWorld().addEntity(EntityRegistry.getEntity(CowEntityDefinition.ID), this.player.getLocation());
         if (packet.getType() == TextType.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
 

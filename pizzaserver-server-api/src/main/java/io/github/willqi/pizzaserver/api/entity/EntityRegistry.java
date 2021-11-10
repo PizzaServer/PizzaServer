@@ -6,10 +6,7 @@ import io.github.willqi.pizzaserver.api.entity.definition.components.EntityCompo
 import io.github.willqi.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 public class EntityRegistry {
@@ -86,6 +83,10 @@ public class EntityRegistry {
         ItemEntity entity = (ItemEntity) getEntity(ItemEntityDefinition.ID);
         entity.setItem(itemStack);
         return entity;
+    }
+
+    public static Set<EntityDefinition> getDefinitions() {
+        return Collections.unmodifiableSet(new HashSet<>(definitions.values()));
     }
 
     /**

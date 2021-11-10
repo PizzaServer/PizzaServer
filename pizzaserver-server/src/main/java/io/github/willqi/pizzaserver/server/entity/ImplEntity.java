@@ -1035,7 +1035,7 @@ public class ImplEntity implements Entity {
      */
     public boolean damage(EntityDamageEvent event) {
         if (!this.isVulnerable()
-                || this.getHealth() < this.getAttribute(AttributeType.HEALTH).getMinimumValue()
+                || !this.isAlive()
                 || (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getAttacker().equals(this))) {
             return false;
         }

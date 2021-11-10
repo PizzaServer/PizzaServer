@@ -11,6 +11,10 @@ public interface EntityDefinition {
 
     String getName();
 
+    boolean isSummonable();
+
+    boolean hasSpawnEgg();
+
     EntityComponentGroup getComponentGroup(String groupId);
 
     EntityComponentEvent getEvent(String eventId);

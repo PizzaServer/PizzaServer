@@ -31,6 +31,16 @@ public class HumanEntityDefinition extends BaseEntityDefinition {
     }
 
     @Override
+    public boolean isSummonable() {
+        return false;
+    }
+
+    @Override
+    public boolean hasSpawnEgg() {
+        return false;
+    }
+
+    @Override
     public void onCreation(Entity entity) {
         entity.addComponentGroup("minecraft:default");
     }

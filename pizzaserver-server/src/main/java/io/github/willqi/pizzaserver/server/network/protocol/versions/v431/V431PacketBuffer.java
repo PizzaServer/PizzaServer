@@ -81,7 +81,7 @@ public class V431PacketBuffer extends V428PacketBuffer {
             this.writeVarInt(0);
         }
 
-        BasePacketBuffer innerItemDataBuf = this.createInstance(ByteBufAllocator.DEFAULT.buffer());
+        BasePacketBuffer innerItemDataBuf = this.createInstance(ByteBufAllocator.DEFAULT.ioBuffer());
         try {
             // Write NBT tag
             if (!itemStack.getCompoundTag().isEmpty()) {

@@ -14,6 +14,17 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
     private final Map<String, EntityComponentGroup> componentGroups = new HashMap<>();
     private final Map<String, EntityComponentEvent> events = new HashMap<>();
 
+
+    @Override
+    public boolean isSummonable() {
+        return true;
+    }
+
+    @Override
+    public boolean hasSpawnEgg() {
+        return true;
+    }
+
     @Override
     public EntityComponentGroup getComponentGroup(String groupId) {
         EntityComponentGroup group = this.componentGroups.getOrDefault(groupId, null);

@@ -118,7 +118,7 @@ public class BedrockClientSession {
                 BaseProtocolPacketHandler<BaseBedrockPacket> handler = (BaseProtocolPacketHandler<BaseBedrockPacket>) this.version.getPacketRegistry().getPacketHandler(packet.getPacketId());
                 if (handler == null) {
                     this.server.getPizzaServer().getLogger().error("Missing packet handler when encoding packet id " + packet.getPacketId());
-                    return;
+                    continue;
                 }
                 handler.encode(packet, minecraftPacketBuffer);
 
