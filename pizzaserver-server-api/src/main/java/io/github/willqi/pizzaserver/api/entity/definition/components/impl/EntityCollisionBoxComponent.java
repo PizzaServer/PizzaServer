@@ -4,7 +4,6 @@ import io.github.willqi.pizzaserver.api.entity.definition.components.EntityCompo
 
 /**
  * Entity component that defines the width and height of an entity.
- * Changing this will NOT affect the dimensions of the entity client side.
  */
 public class EntityCollisionBoxComponent extends EntityComponent {
 

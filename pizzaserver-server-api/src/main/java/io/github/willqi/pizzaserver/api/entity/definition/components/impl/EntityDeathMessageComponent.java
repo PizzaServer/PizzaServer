@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.api.entity.definition.components.impl;
 
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 
+/**
+ * Entity component that defines if death messages should appear in chat when this entity dies.
+ */
 public class EntityDeathMessageComponent extends EntityComponent {
 
     private final boolean enabled;

@@ -63,7 +63,8 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler())
             .register(RemoveEntityPacket.ID, new V419RemoveEntityPacketHandler())
             .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler())
-            .register(EntityEventPacket.ID, new V419EntityEventPacketHandler());
+            .register(EntityEventPacket.ID, new V419EntityEventPacketHandler())
+            .register(BossEventPacket.ID, new V419BossEventPacketHandler());
     }
 
 }

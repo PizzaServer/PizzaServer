@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.willqi.pizzaserver.api.network.protocol.data.EntityLink;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.AddEntityPacket;
 import io.github.willqi.pizzaserver.commons.utils.Vector3;

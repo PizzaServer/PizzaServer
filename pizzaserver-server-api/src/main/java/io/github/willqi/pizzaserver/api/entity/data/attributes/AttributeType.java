@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.api.entity.attributes;
+package io.github.willqi.pizzaserver.api.entity.data.attributes;
 
 public enum AttributeType {
     HEALTH("minecraft:health"),

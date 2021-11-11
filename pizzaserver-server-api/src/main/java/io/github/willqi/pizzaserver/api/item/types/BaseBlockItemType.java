@@ -44,7 +44,8 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
     public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
         // Handle placing a block
         // TODO: Account for entity collision
-        if (!(block.isAir() || block.getSide(blockFace).getBlockType().isLiquid())) {
+        Block blockAtPlacementPos = block.getSide(blockFace);
+        if (!block.isAir() && (blockAtPlacementPos.getBlockType().isLiquid() || !blockAtPlacementPos.isSolid())) {
             if (!player.getAdventureSettings().canBuild()) {
                 return false;
             }

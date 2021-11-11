@@ -48,6 +48,7 @@ public class VanillaContentLoader {
                 .setGravityForce(0.08f)
                 .setDragForce(0.02f)
                 .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
+        EntityRegistry.registerComponent(EntityBossComponent.class, new EntityBossComponent(null, -1, false), new EntityBossComponentHandler());
     }
 
     private static void loadEntities() {

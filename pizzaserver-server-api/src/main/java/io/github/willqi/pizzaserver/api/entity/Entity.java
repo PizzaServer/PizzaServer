@@ -1,8 +1,9 @@
 package io.github.willqi.pizzaserver.api.entity;
 
 import io.github.willqi.pizzaserver.api.Server;
-import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
-import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
+import io.github.willqi.pizzaserver.api.entity.boss.BossBar;
+import io.github.willqi.pizzaserver.api.entity.data.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.inventory.EntityInventory;
@@ -262,6 +263,10 @@ public interface Entity extends Watchable {
     void setLoot(List<ItemStack> loot);
 
     EntityInventory getInventory();
+
+    Optional<BossBar> getBossBar();
+
+    void setBossBar(BossBar bossBar);
 
     int getArmourPoints();
 

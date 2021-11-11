@@ -60,4 +60,6 @@ public abstract class BaseBedrockPacketHandler {
     // misc
     public void onPacket(ViolationPacket packet) {}
 
+    public void onPacket(BossEventPacket packet) {}
+
 }

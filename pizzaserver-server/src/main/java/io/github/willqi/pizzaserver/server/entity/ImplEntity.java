@@ -2,8 +2,9 @@ package io.github.willqi.pizzaserver.server.entity;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
-import io.github.willqi.pizzaserver.api.entity.attributes.Attribute;
-import io.github.willqi.pizzaserver.api.entity.attributes.AttributeType;
+import io.github.willqi.pizzaserver.api.entity.boss.BossBar;
+import io.github.willqi.pizzaserver.api.entity.data.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
@@ -65,6 +66,9 @@ public class ImplEntity implements Entity {
     protected int fireTicks;
 
     protected final EntityAttributes attributes = new EntityAttributes();
+
+    protected BossBar bossBar = null;
+    protected final Set<Player> bossBarViewers = new HashSet<>();
 
     protected float pitch;
     protected float yaw;
@@ -475,6 +479,12 @@ public class ImplEntity implements Entity {
         Attribute attribute = this.getAttribute(AttributeType.HEALTH);
         attribute.setMaximumValue(Math.max(attribute.getMaximumValue(), health));
         attribute.setCurrentValue(Math.max(0, health));
+
+        if (this.getBossBar().isPresent()) {
+            BossBar bossBar = this.getBossBar().get();
+            bossBar.setPercentage(this.getHealth() / this.getMaxHealth());
+            this.setBossBar(bossBar);
+        }
     }
 
     @Override
@@ -719,6 +729,95 @@ public class ImplEntity implements Entity {
     @Override
     public EntityInventory getInventory() {
         return this.inventory;
+    }
+
+    @Override
+    public Optional<BossBar> getBossBar() {
+        if (this.bossBar == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(this.bossBar.clone());
+        }
+    }
+
+    @Override
+    public void setBossBar(BossBar bossBar) {
+        if (bossBar != null && this.getBossBar().isPresent()) {
+            // Updating boss bar
+            for (Player viewer : this.bossBarViewers) {
+                this.sendUpdatedBossBarPacket(viewer, bossBar);
+            }
+        } else if (this.getBossBar().isPresent()) {
+            // Removing boss bar
+            for (Player viewer : this.bossBarViewers) {
+                this.sendRemoveBossBarPacket(viewer);
+            }
+            this.bossBarViewers.clear();
+        }
+        this.bossBar = bossBar;
+    }
+
+    protected void updateBossBarVisibility() {
+        if (this.getBossBar().isPresent()) {
+            for (Player viewer : this.getViewers()) {
+                if (viewer.getLocation().distanceBetween(this.getLocation()) <= this.getBossBar().get().getRenderRange()) {
+                    // In range
+                    if (this.bossBarViewers.add(viewer)) {
+                        this.sendCreateBossBarPacket(viewer, this.getBossBar().get());
+                    }
+                } else {
+                    // Out of range
+                    if (this.bossBarViewers.remove(viewer)) {
+                        this.sendRemoveBossBarPacket(viewer);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void sendCreateBossBarPacket(Player player, BossBar bossBar) {
+        BossEventPacket createBossBarPacket = new BossEventPacket();
+        createBossBarPacket.setEntityRuntimeId(this.getId());
+        createBossBarPacket.setType(BossEventPacket.Type.SHOW);
+        createBossBarPacket.setTitle(bossBar.getTitle());
+        createBossBarPacket.setPercentage(bossBar.getPercentage());
+        createBossBarPacket.setDarkenSkyValue(bossBar.darkenSky() ? 1 : 0);
+        player.sendPacket(createBossBarPacket);
+    }
+
+    protected void sendUpdatedBossBarPacket(Player player, BossBar newBossBar) {
+        if (this.getBossBar().isPresent()) {
+            BossBar bossBar = this.getBossBar().get();
+
+            if (!bossBar.getTitle().equals(newBossBar.getTitle()))  {
+                BossEventPacket newBossTitlePacket = new BossEventPacket();
+                newBossTitlePacket.setEntityRuntimeId(this.getId());
+                newBossTitlePacket.setType(BossEventPacket.Type.CHANGE_TITLE);
+                newBossTitlePacket.setTitle(newBossBar.getTitle());
+                player.sendPacket(newBossTitlePacket);
+            }
+            if (!NumberUtils.isNearlyEqual(bossBar.getPercentage(), newBossBar.getPercentage())) {
+                BossEventPacket newPercentagePacket = new BossEventPacket();
+                newPercentagePacket.setEntityRuntimeId(this.getId());
+                newPercentagePacket.setType(BossEventPacket.Type.CHANGE_HEALTH_PERCENTAGE);
+                newPercentagePacket.setPercentage(newBossBar.getPercentage());
+                player.sendPacket(newPercentagePacket);
+            }
+            if (bossBar.darkenSky() != newBossBar.darkenSky()) {
+                BossEventPacket darkenSkyPacket = new BossEventPacket();
+                darkenSkyPacket.setEntityRuntimeId(this.getId());
+                darkenSkyPacket.setType(BossEventPacket.Type.CHANGE_APPEARANCE);
+                darkenSkyPacket.setDarkenSkyValue(newBossBar.darkenSky() ? 1 : 0);
+                player.sendPacket(darkenSkyPacket);
+            }
+        }
+    }
+
+    protected void sendRemoveBossBarPacket(Player player) {
+        BossEventPacket removeBossBarPacket = new BossEventPacket();
+        removeBossBarPacket.setEntityRuntimeId(this.getId());
+        removeBossBarPacket.setType(BossEventPacket.Type.HIDE);
+        player.sendPacket(removeBossBarPacket);
     }
 
     @Override
@@ -983,6 +1082,7 @@ public class ImplEntity implements Entity {
             this.despawn();
         }
 
+        this.updateBossBarVisibility();
         this.ticks++;
     }
 
@@ -994,17 +1094,14 @@ public class ImplEntity implements Entity {
         moveEntityPacket.setYaw(this.getYaw());
         moveEntityPacket.setHeadYaw(this.getHeadYaw());
         moveEntityPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
+
+        SetEntityVelocityPacket setEntityVelocityPacket = new SetEntityVelocityPacket();
+        setEntityVelocityPacket.setEntityRuntimeId(this.getId());
+        setEntityVelocityPacket.setVelocity(this.getVelocity());
+
         for (Player player : this.getViewers()) {
             player.sendPacket(moveEntityPacket);
-        }
-
-        if (this.getVelocity().getLength() > 0) {
-            SetEntityVelocityPacket setEntityVelocityPacket = new SetEntityVelocityPacket();
-            setEntityVelocityPacket.setEntityRuntimeId(this.getId());
-            setEntityVelocityPacket.setVelocity(this.getVelocity());
-            for (Player viewer : this.getViewers()) {
-                viewer.sendPacket(setEntityVelocityPacket);
-            }
+            player.sendPacket(setEntityVelocityPacket);
         }
     }
 
@@ -1236,6 +1333,12 @@ public class ImplEntity implements Entity {
             RemoveEntityPacket entityPacket = new RemoveEntityPacket();
             entityPacket.setUniqueEntityId(this.getId());
             player.sendPacket(entityPacket);
+
+            for (Player bossBarViewer : this.bossBarViewers) {
+                this.sendRemoveBossBarPacket(bossBarViewer);
+            }
+            this.bossBarViewers.clear();
+
             return true;
         } else {
             return false;

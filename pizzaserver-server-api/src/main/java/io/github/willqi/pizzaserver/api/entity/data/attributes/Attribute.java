@@ -1,4 +1,4 @@
-package io.github.willqi.pizzaserver.api.entity.attributes;
+package io.github.willqi.pizzaserver.api.entity.data.attributes;
 
 import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
 
