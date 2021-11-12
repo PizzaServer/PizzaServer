@@ -99,7 +99,7 @@ public class Block {
 
     public BoundingBox getBoundingBox() {
         BoundingBox boundingBox = this.getBlockType().getBoundingBox(this.getBlockStateIndex());
-        boundingBox.setPosition(this.getLocation().toVector3());
+        boundingBox.setPosition(this.getLocation().toVector3().add(0.5f, 0, 0.5f));
         return boundingBox;
     }
 

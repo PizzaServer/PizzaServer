@@ -50,7 +50,7 @@ public class BoundingBoxTest {
         otherBox.setWidth(1.01f);
         otherBox.setHeight(1);
 
-        assertTrue(boundingBox.collidesWith(otherBox));
+        assertTrue(boundingBox.collidesWith(otherBox) && boundingBox.collidesWithXAxis(otherBox));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class BoundingBoxTest {
         otherBox.setWidth(1);
         otherBox.setHeight(1);
 
-        assertFalse(boundingBox.collidesWith(otherBox));
+        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithXAxis(otherBox));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class BoundingBoxTest {
         otherBox.setWidth(1);
         otherBox.setHeight(0.6f);
 
-        assertTrue(boundingBox.collidesWith(otherBox));
+        assertTrue(boundingBox.collidesWith(otherBox) && boundingBox.collidesWithYAxis(otherBox));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class BoundingBoxTest {
         otherBox.setWidth(1);
         otherBox.setHeight(0.5f);
 
-        assertFalse(boundingBox.collidesWith(otherBox));
+        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithYAxis(otherBox));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class BoundingBoxTest {
         otherBox.setWidth(1);
         otherBox.setHeight(0.5f);
 
-        assertFalse(boundingBox.collidesWith(otherBox));
+        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithYAxis(otherBox));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class BoundingBoxTest {
         otherBox.setWidth(1.01f);
         otherBox.setHeight(1);
 
-        assertTrue(boundingBox.collidesWith(otherBox));
+        assertTrue(boundingBox.collidesWith(otherBox) && boundingBox.collidesWithZAxis(otherBox));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class BoundingBoxTest {
         otherBox.setWidth(1);
         otherBox.setHeight(1);
 
-        assertFalse(boundingBox.collidesWith(otherBox));
+        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithZAxis(otherBox));
     }
 
 }
