@@ -122,6 +122,10 @@ public interface World extends ChunkManager {
 
     void tick();
 
+    int getTime();
+
+    void setTime(int time);
+
     default void playSound(WorldSound sound, Vector3 vector3) {
         this.playSound(sound, vector3, true);
     }

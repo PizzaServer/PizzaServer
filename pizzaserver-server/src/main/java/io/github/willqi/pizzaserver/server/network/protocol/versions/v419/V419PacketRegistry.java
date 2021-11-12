@@ -34,6 +34,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(UpdateBlockPacket.ID, new V419UpdateBlockPacketHandler())
             .register(NetworkChunkPublisherUpdatePacket.ID, new V419NetworkChunkPublisherUpdatePacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler())
+            .register(SetTimePacket.ID, new V419SetTimePacketHandler())
             .register(PlayerListPacket.ID, new V419PlayerListPacketHandler())
             .register(AdventureSettingsPacket.ID, new V419AdventureSettingsPacketHandler())
             .register(AddPlayerPacket.ID, new V419AddPlayerPacketHandler())

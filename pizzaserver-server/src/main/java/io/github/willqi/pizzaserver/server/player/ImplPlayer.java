@@ -648,6 +648,10 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
         this.updateAdventureSettings();
+
+        SetTimePacket setTimePacket = new SetTimePacket();
+        setTimePacket.setTime(this.getWorld().getTime());
+        this.sendPacket(setTimePacket);
     }
 
     @Override

@@ -8,6 +8,9 @@ import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.item.types.ItemType;
+import io.github.willqi.pizzaserver.api.level.data.gamerules.BooleanGameRule;
+import io.github.willqi.pizzaserver.api.level.data.gamerules.GameRule;
+import io.github.willqi.pizzaserver.api.level.data.gamerules.GameRuleID;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.level.world.World;
@@ -370,6 +373,11 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setWorldSpawn(world.getSpawnCoordinates());
         startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
         startGamePacket.setWorldType(WorldType.INFINITE);
+        startGamePacket.setGameRules(new HashSet<GameRule<?>>() {
+            {
+                this.add(new BooleanGameRule(GameRuleID.SHOW_COORDINATES, true));
+            }
+        });
 
         return startGamePacket;
     }

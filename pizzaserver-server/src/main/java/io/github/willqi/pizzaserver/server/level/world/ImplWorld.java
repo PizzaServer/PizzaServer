@@ -8,6 +8,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.SetTimePacket;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.utils.Location;
@@ -31,14 +32,15 @@ import java.util.*;
 
 public class ImplWorld implements World {
 
-    private final ImplLevel level;
-    private final Dimension dimension;
-    private final WorldChunkManager chunkManager = new WorldChunkManager(this);
+    protected final ImplLevel level;
+    protected final Dimension dimension;
+    protected final WorldChunkManager chunkManager = new WorldChunkManager(this);
 
-    private Vector3i spawnCoordinates;
+    protected Vector3i spawnCoordinates;
+    protected int time;
 
-    private final Set<Player> players = new HashSet<>();
-    private final Map<Long, Entity> entities = new HashMap<>();
+    protected final Set<Player> players = new HashSet<>();
+    protected final Map<Long, Entity> entities = new HashMap<>();
 
 
     public ImplWorld(ImplLevel level, Dimension dimension) {
@@ -262,6 +264,23 @@ public class ImplWorld implements World {
     @Override
     public void tick() {
         this.chunkManager.tick();
+        this.time++;
+    }
+
+    @Override
+    public int getTime() {
+        return this.time;
+    }
+
+    @Override
+    public void setTime(int time) {
+        this.time = time;
+
+        SetTimePacket setTimePacket = new SetTimePacket();
+        setTimePacket.setTime(time);
+        for (Player player : this.getPlayers()) {
+            player.sendPacket(setTimePacket);
+        }
     }
 
     @Override
