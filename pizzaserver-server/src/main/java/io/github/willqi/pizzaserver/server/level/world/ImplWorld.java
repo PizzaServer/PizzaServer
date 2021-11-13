@@ -280,7 +280,7 @@ public class ImplWorld implements World {
 
     @Override
     public void setTime(int time) {
-        this.time = time;
+        this.time = time >= 0 ? time : 24000 + time;
 
         SetTimePacket setTimePacket = new SetTimePacket();
         setTimePacket.setTime(time);
