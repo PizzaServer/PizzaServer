@@ -50,7 +50,7 @@ public class ImplWorld implements World {
         Vector3i worldSpawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
         if (worldSpawnCoordinates.getY() > 255) {    // Hack to get around Minecraft worlds having REALLY high y spawn coordinates in the level.dat
             worldSpawnCoordinates = new Vector3i(worldSpawnCoordinates.getX(),
-                    this.getHighestBlockAt(worldSpawnCoordinates.getX(), worldSpawnCoordinates.getZ()),
+                    this.getHighestBlockAt(worldSpawnCoordinates.getX(), worldSpawnCoordinates.getZ()).getY(),
                     worldSpawnCoordinates.getZ());
         }
         this.setSpawnCoordinates(worldSpawnCoordinates);
@@ -126,12 +126,12 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public int getHighestBlockAt(Vector2i coordinates) {
+    public Block getHighestBlockAt(Vector2i coordinates) {
         return this.getHighestBlockAt(coordinates.getX(), coordinates.getY());
     }
 
     @Override
-    public int getHighestBlockAt(int x, int z) {
+    public Block getHighestBlockAt(int x, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
         return this.getChunk(chunkX, chunkZ).getHighestBlockAt(x % 16, z % 16);
@@ -265,6 +265,12 @@ public class ImplWorld implements World {
     public void tick() {
         this.chunkManager.tick();
         this.time++;
+    }
+
+    @Override
+    public boolean isDay() {
+        int time = this.getTime() % 24000;
+        return time < 12000;
     }
 
     @Override

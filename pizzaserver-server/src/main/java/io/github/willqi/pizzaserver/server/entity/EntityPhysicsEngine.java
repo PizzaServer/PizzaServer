@@ -69,8 +69,8 @@ public class EntityPhysicsEngine {
     private void handleCollision() {
         int minChunkX = (int) Math.floor((this.entity.getFloorX() - this.entity.getBoundingBox().getWidth() / 2) / 16f);
         int minChunkZ = (int) Math.floor((this.entity.getFloorZ() - this.entity.getBoundingBox().getWidth() / 2) / 16f);
-        int maxChunkX = (int) Math.floor((this.entity.getFloorX() + this.entity.getBoundingBox().getWidth() / 2) / 16f);
-        int maxChunkZ = (int) Math.floor((this.entity.getFloorZ() + this.entity.getBoundingBox().getWidth() / 2) / 16f);
+        int maxChunkX = (int) Math.ceil((this.entity.getFloorX() + this.entity.getBoundingBox().getWidth() / 2) / 16f);
+        int maxChunkZ = (int) Math.ceil((this.entity.getFloorZ() + this.entity.getBoundingBox().getWidth() / 2) / 16f);
 
         for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
@@ -117,7 +117,6 @@ public class EntityPhysicsEngine {
                     friction *= this.entity.getWorld().getBlock(this.entity.getLocation().round().toVector3i().subtract(0, 1, 0)).getBlockType().getFriction();
                 }
             }
-
             newVelocity = newVelocity.multiply(friction, 1, friction);
 
             // Stop horizontal movement if it's small enough
@@ -139,17 +138,17 @@ public class EntityPhysicsEngine {
                 newLocationBoundBox.setWidth(this.entity.getBoundingBox().getWidth());
 
                 int minBlockXCheck = (int) Math.floor(newLocation.getX() - newLocationBoundBox.getWidth() / 2);
-                int minBlockYCheck = (int) Math.floor(newLocation.getY());
-                int minBlockZCheck = (int) Math.floor(newLocation.getZ() - newLocationBoundBox.getWidth() / 2);
-
                 int maxBlockXCheck = (int) Math.ceil(newLocation.getX() + newLocationBoundBox.getWidth() / 2);
+                int minBlockYCheck = (int) Math.floor(newLocation.getY());
                 int maxBlockYCheck = (int) Math.ceil(newLocation.getY() + newLocationBoundBox.getHeight());
                 int maxBlockZCheck = (int) Math.ceil(newLocation.getZ() + newLocationBoundBox.getWidth() / 2);
+                int minBlockZCheck = (int) Math.floor(newLocation.getZ() - newLocationBoundBox.getWidth() / 2);
 
                 for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
                     for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
                         for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                             Block block = this.entity.getWorld().getBlock(x, y, z);
+
                             if (block.getBoundingBox().collidesWith(newLocationBoundBox) && block.isSolid()) {
                                 // ensure we are not stuck in the ground before checking x and z (otherwise no friction will ever be applied)
                                 if (block.getBoundingBox().collidesWithYAxis(newLocationBoundBox) && newLocation.getY() > block.getY() + block.getBoundingBox().getHeight() / 2) {
@@ -193,7 +192,6 @@ public class EntityPhysicsEngine {
 
                 this.entity.moveTo(newLocation.getX(), newLocation.getY(), newLocation.getZ());
             }
-
             this.setVelocity(newVelocity);
         } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
             this.setVelocity(0, -this.entity.getComponent(EntityPhysicsComponent.class).getGravityForce(), 0);

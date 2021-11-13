@@ -38,7 +38,7 @@ public interface World extends ChunkManager {
      * @param coordinates chunk column coordinates
      * @return y coordinate
      */
-    int getHighestBlockAt(Vector2i coordinates);
+    Block getHighestBlockAt(Vector2i coordinates);
 
     /**
      * Get the highest block y coordinate at a chunk column.
@@ -46,7 +46,7 @@ public interface World extends ChunkManager {
      * @param z chunk column z coordinates
      * @return y coordinate
      */
-    int getHighestBlockAt(int x, int z);
+    Block getHighestBlockAt(int x, int z);
 
     Block getBlock(Vector3i position);
 
@@ -121,6 +121,8 @@ public interface World extends ChunkManager {
     Optional<Entity> getEntity(long id);
 
     void tick();
+
+    boolean isDay();
 
     int getTime();
 

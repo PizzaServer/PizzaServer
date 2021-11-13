@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityBurnsInDaylightComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.filter.EntityFilter;
 import io.github.willqi.pizzaserver.api.entity.definition.components.filter.EntityFilterData;
@@ -1042,6 +1043,13 @@ public class ImplEntity implements Entity {
             entityDataPacket.setData(this.getMetaData());
             for (Player player : this.getViewers()) {
                 player.sendPacket(entityDataPacket);
+            }
+        }
+
+        if (this.hasComponent(EntityBurnsInDaylightComponent.class) && this.getWorld().isDay()) {
+            Block highestBlockAboveEntity = this.getWorld().getHighestBlockAt((int) Math.floor(this.getX()), (int) Math.floor(this.getZ()));
+            if (highestBlockAboveEntity.getY() <= this.getY()) {
+                this.setFireTicks(20);
             }
         }
 

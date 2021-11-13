@@ -49,6 +49,13 @@ public class VanillaContentLoader {
                 .setDragForce(0.02f)
                 .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
         EntityRegistry.registerComponent(EntityBossComponent.class, new EntityBossComponent(null, -1, false), new EntityBossComponentHandler());
+        EntityRegistry.registerComponent(EntityBurnsInDaylightComponent.class, new EntityBurnsInDaylightComponent(), new EmptyEntityComponentHandler<>());
+        EntityRegistry.registerComponent(EntityBreathableComponent.class, new EntityBreathableComponent(new EntityBreathableComponent.Properties()
+                .setCanBreathAir(true)
+                .setGenerateBubblesInWater(true)
+                .setSuffocationInterval(10)
+                .setRecoverOxygenInterval(1)
+        ), new EmptyEntityComponentHandler<>());
     }
 
     private static void loadEntities() {

@@ -132,15 +132,16 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public int getHighestBlockAt(Vector2i position) {
+    public Block getHighestBlockAt(Vector2i position) {
         return this.getHighestBlockAt(position.getX(), position.getY());
     }
 
     @Override
-    public int getHighestBlockAt(int x, int z) {
+    public Block getHighestBlockAt(int x, int z) {
         int chunkBlockX = x >= 0 ? x : 16 + x;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
-        return this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ);
+        int chunkBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
+        return this.getBlock(chunkBlockX, chunkBlockY, chunkBlockZ);
     }
 
     @Override
@@ -259,8 +260,13 @@ public class ImplChunk implements Chunk {
             BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
             mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
 
-            if (block.getBlockType().isSolid() && y > this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ)) {
-                this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, y);
+            int highestBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
+            if (y >= highestBlockY) {
+                int newHighestBlockY = y;
+                while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
+                    newHighestBlockY--;
+                }
+                this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
             }
 
             // Send update block packet
