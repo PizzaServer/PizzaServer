@@ -49,14 +49,26 @@ public class EntityBreathableComponent extends EntityComponent {
         return this.properties.generateBubblesInWater();
     }
 
-    public int getRecoverOxygenInterval() {
-        return this.properties.getRecoverOxygenInterval();
+    /**
+     * Amount of seconds it takes to recover all of your air supply from 0.
+     * @return amount of seconds
+     */
+    public int getInhaleTime() {
+        return this.properties.getInhaleTime();
     }
 
-    public int getLoseOxygenInterval() {
-        return this.properties.getLoseOxygenInterval();
+    /**
+     * Amount of seconds your air supply lasts.
+     * @return amount of seconds
+     */
+    public int getTotalSupplyTime() {
+        return this.properties.getTotalSupplyTime();
     }
 
+    /**
+     * How often you will take suffocation damage in ticks.
+     * @return ticks
+     */
     public int getSuffocationInterval() {
         return this.properties.getSuffocationInterval();
     }
@@ -71,8 +83,8 @@ public class EntityBreathableComponent extends EntityComponent {
         private Set<BlockType> breathableBlocks = new HashSet<>();
         private Set<BlockType> nonBreathableBlocks = new HashSet<>();
         private boolean generateBubblesInWater;
-        private int recoverOxygenInterval;
-        private int loseOxygenInterval;
+        private int inhaleTime;
+        private int totalSupply;
         private int suffocationInterval;
 
         public boolean canBreathAir() {
@@ -138,21 +150,35 @@ public class EntityBreathableComponent extends EntityComponent {
             return this;
         }
 
-        public int getRecoverOxygenInterval() {
-            return this.recoverOxygenInterval;
+        /**
+         * Get the amount of seconds it takes to recover all of your oxygen from 0.
+         * @return amount of seconds
+         */
+        public int getInhaleTime() {
+            return this.inhaleTime;
         }
 
-        public Properties setRecoverOxygenInterval(int interval) {
-            this.recoverOxygenInterval = interval;
+        /**
+         * Modify the amount of seconds it takes to recover all of your oxygen from 0.
+         */
+        public Properties setInhaleTime(int inhaleTime) {
+            this.inhaleTime = inhaleTime;
             return this;
         }
 
-        public int getLoseOxygenInterval() {
-            return this.loseOxygenInterval;
+        /**
+         * Amount of seconds your air supply lasts.
+         * @return amount of seconds
+         */
+        public int getTotalSupplyTime() {
+            return this.totalSupply;
         }
 
-        public Properties setLoseOptionsInterval(int interval) {
-            this.loseOxygenInterval = interval;
+        /**
+         * Modify the amount of seconds your air supply lasts.
+         */
+        public Properties setTotalSupplyTime(int totalSupply) {
+            this.totalSupply = totalSupply;
             return this;
         }
 

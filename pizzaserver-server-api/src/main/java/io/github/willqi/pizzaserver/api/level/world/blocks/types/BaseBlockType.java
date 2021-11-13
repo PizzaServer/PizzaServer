@@ -2,6 +2,7 @@ package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
@@ -194,9 +195,15 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public void onWalkedOn(Player player, Block block) {}
+    public void onWalkedOn(Entity entity, Block block) {}
 
     @Override
-    public void onUpdate(Player player, Block block) {}
+    public void onWalkedOff(Entity entity, Block block) {}
+
+    @Override
+    public void onStandingOn(Entity entity, Block block) {}
+
+    @Override
+    public void onUpdate(Block block) {}
 
 }

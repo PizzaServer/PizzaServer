@@ -1,6 +1,7 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
+import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
@@ -225,17 +226,30 @@ public interface BlockType {
     boolean onInteract(Player player, Block block);
 
     /**
-     * Called every tick when a player is walking on this block type.
-     * @param player the player walking on the block
-     * @param block the block being walked on
+     * Called whenever an entity moves onto this block.
+     * @param entity the entity walking on the block
+     * @param block the block walked on
      */
-    void onWalkedOn(Player player, Block block);
+    void onWalkedOn(Entity entity, Block block);
+
+    /**
+     * Called whenever an entity walks off of this block.
+     * @param entity the entity who walked off this block
+     * @param block the block walked off of
+     */
+    void onWalkedOff(Entity entity, Block block);
+
+    /**
+     * Called every tick an entity is on this block.
+     * @param entity the entity who is on this block
+     * @param block the block the entity is standing on
+     */
+    void onStandingOn(Entity entity, Block block);
 
     /**
      * Called whenever a block next to this block is modified.
-     * @param player the player who caused the update
-     * @param block the block being walked on
+     * @param block the block being updated
      */
-    void onUpdate(Player player, Block block);
+    void onUpdate(Block block);
     
 }

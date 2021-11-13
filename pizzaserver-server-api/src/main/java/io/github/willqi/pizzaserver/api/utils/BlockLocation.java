@@ -70,6 +70,23 @@ public class BlockLocation extends Vector3i {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BlockLocation) {
+            BlockLocation otherBlockLocation = (BlockLocation) obj;
+            return otherBlockLocation.getWorld().equals(this.getWorld())
+                    && otherBlockLocation.getX() == this.getX()
+                    && otherBlockLocation.getY() == this.getY()
+                    && otherBlockLocation.getZ() == this.getZ();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (43 * this.getX()) + (43 * this.getY()) + (43 * this.getZ()) + (this.getWorld().hashCode());
+    }
+
+    @Override
     public String toString() {
         return "BlockLocation(level=" + this.getLevel().getName()
                 + ", world=" + this.getWorld().getDimension()

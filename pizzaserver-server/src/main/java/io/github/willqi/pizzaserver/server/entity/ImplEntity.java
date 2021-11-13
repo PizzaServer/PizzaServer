@@ -1016,6 +1016,7 @@ public class ImplEntity implements Entity {
 
     public void moveTo(float x, float y, float z) {
         this.moveUpdate = true;
+        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
 
         ImplChunk currentChunk = this.getChunk();
         this.setPosition(this.getWorld(), x, y, z);
@@ -1024,6 +1025,12 @@ public class ImplEntity implements Entity {
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
             currentChunk.removeEntity(this);
             newChunk.addEntity(this);
+        }
+
+        Block newBlockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+        if (!blockBelow.getLocation().equals(newBlockBelow.getLocation())) {
+            newBlockBelow.getBlockType().onWalkedOn(this, newBlockBelow);
+            blockBelow.getBlockType().onWalkedOff(this, blockBelow);
         }
     }
 
@@ -1089,6 +1096,9 @@ public class ImplEntity implements Entity {
             this.endDeathAnimation();
             this.despawn();
         }
+
+        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+        blockBelow.getBlockType().onStandingOn(this, blockBelow);
 
         this.updateBossBarVisibility();
         this.ticks++;

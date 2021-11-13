@@ -54,7 +54,8 @@ public class VanillaContentLoader {
                 .setCanBreathAir(true)
                 .setGenerateBubblesInWater(true)
                 .setSuffocationInterval(10)
-                .setRecoverOxygenInterval(1)
+                .setInhaleTime(0)
+                .setTotalSupplyTime(15)
         ), new EmptyEntityComponentHandler<>());
     }
 
