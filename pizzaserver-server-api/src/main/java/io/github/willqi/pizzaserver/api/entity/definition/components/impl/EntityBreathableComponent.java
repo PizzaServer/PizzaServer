@@ -21,26 +21,22 @@ public class EntityBreathableComponent extends EntityComponent {
         return "minecraft:breathable";
     }
 
-    public boolean canBreathAir() {
-        return this.properties.canBreathAir();
-    }
-
-    public boolean canBreathWater() {
-        return this.properties.canBreathWater();
-    }
-
-    public boolean canBreathLava() {
-        return this.properties.canBreathLava();
-    }
-
     public boolean canBreathSolids() {
         return this.properties.canBreathSolids();
     }
 
+    /**
+     * Retrieve all extra blocks this entity can breathe in regardless of canBreathSolids().
+     * @return all extra blocks this entity can breathe in
+     */
     public Set<BlockType> getBreathableBlocks() {
         return Collections.unmodifiableSet(this.properties.getBreathableBlocks());
     }
 
+    /**
+     * Retrieve all extra blocks this entity cannot breathe in regardless of canBreathSolids().
+     * @return all extra blocks this entity cannot breathe in
+     */
     public Set<BlockType> getNonBreathableBlocks() {
         return Collections.unmodifiableSet(this.properties.getNonBreathableBlocks());
     }
@@ -53,7 +49,7 @@ public class EntityBreathableComponent extends EntityComponent {
      * Amount of seconds it takes to recover all of your air supply from 0.
      * @return amount of seconds
      */
-    public int getInhaleTime() {
+    public float getInhaleTime() {
         return this.properties.getInhaleTime();
     }
 
@@ -61,7 +57,7 @@ public class EntityBreathableComponent extends EntityComponent {
      * Amount of seconds your air supply lasts.
      * @return amount of seconds
      */
-    public int getTotalSupplyTime() {
+    public float getTotalSupplyTime() {
         return this.properties.getTotalSupplyTime();
     }
 
@@ -76,43 +72,14 @@ public class EntityBreathableComponent extends EntityComponent {
 
     public static class Properties {
 
-        private boolean canBreathAir;
-        private boolean canBreathWater;
-        private boolean canBreathLava;
         private boolean canBreathSolids;
         private Set<BlockType> breathableBlocks = new HashSet<>();
         private Set<BlockType> nonBreathableBlocks = new HashSet<>();
         private boolean generateBubblesInWater;
-        private int inhaleTime;
-        private int totalSupply;
+        private float inhaleTime;
+        private float totalSupply;
         private int suffocationInterval;
 
-        public boolean canBreathAir() {
-            return this.canBreathAir;
-        }
-
-        public Properties setCanBreathAir(boolean enabled) {
-            this.canBreathAir = enabled;
-            return this;
-        }
-
-        public boolean canBreathWater() {
-            return this.canBreathWater;
-        }
-
-        public Properties setCanBreathWater(boolean enabled) {
-            this.canBreathWater = enabled;
-            return this;
-        }
-
-        public boolean canBreathLava() {
-            return this.canBreathLava;
-        }
-
-        public Properties setCanBreathLava(boolean enabled) {
-            this.canBreathLava = enabled;
-            return this;
-        }
 
         public boolean canBreathSolids() {
             return this.canBreathSolids;
@@ -123,19 +90,35 @@ public class EntityBreathableComponent extends EntityComponent {
             return this;
         }
 
+        /**
+         * Retrieve all extra blocks this entity can breathe in regardless of canBreathSolids().
+         * @return all extra blocks this entity can breathe in
+         */
         public Set<BlockType> getBreathableBlocks() {
             return this.breathableBlocks;
         }
 
+        /**
+         * Set extra blocks that this entity can breathe in regardless of canBreathSolids().
+         * @param breathableBlocks extra blocks this entity can breathe in
+         */
         public Properties setBreathableBlocks(Set<BlockType> breathableBlocks) {
             this.breathableBlocks = breathableBlocks;
             return this;
         }
 
+        /**
+         * Retrieve all extra blocks this entity cannot breathe in regardless of canBreathSolids().
+         * @return all extra blocks this entity cannot breathe in
+         */
         public Set<BlockType> getNonBreathableBlocks() {
             return this.nonBreathableBlocks;
         }
 
+        /**
+         * Set extra blocks that this entity cannot breathe in regardless of canBreathSolids().
+         * @param nonBreathableBlocks all extra blocks this entity cannot breathe in
+         */
         public Properties setNonBreathableBlocks(Set<BlockType> nonBreathableBlocks) {
             this.nonBreathableBlocks = nonBreathableBlocks;
             return this;
@@ -154,28 +137,28 @@ public class EntityBreathableComponent extends EntityComponent {
          * Get the amount of seconds it takes to recover all of your oxygen from 0.
          * @return amount of seconds
          */
-        public int getInhaleTime() {
+        public float getInhaleTime() {
             return this.inhaleTime;
         }
 
         /**
          * Modify the amount of seconds it takes to recover all of your oxygen from 0.
          */
-        public Properties setInhaleTime(int inhaleTime) {
+        public Properties setInhaleTime(float inhaleTime) {
             this.inhaleTime = inhaleTime;
             return this;
         }
 
         /**
-         * Amount of seconds your air supply lasts.
+         * Amount of seconds this entity's air supply lasts.
          * @return amount of seconds
          */
-        public int getTotalSupplyTime() {
+        public float getTotalSupplyTime() {
             return this.totalSupply;
         }
 
         /**
-         * Modify the amount of seconds your air supply lasts.
+         * Modify the amount of seconds this entity's air supply lasts.
          */
         public Properties setTotalSupplyTime(int totalSupply) {
             this.totalSupply = totalSupply;

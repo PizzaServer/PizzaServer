@@ -37,7 +37,7 @@ public class VanillaContentLoader {
         EntityRegistry.registerComponent(EntityScaleComponent.class, new EntityScaleComponent(1), new EntityScaleComponentHandler());
         EntityRegistry.registerComponent(EntityCollisionBoxComponent.class, new EntityCollisionBoxComponent(0f, 0f), new EntityCollisionBoxComponentHandler());
         EntityRegistry.registerComponent(EntityHealthComponent.class, new EntityHealthComponent(0, 0, 0), new EntityHealthComponentHandler());
-        EntityRegistry.registerComponent(EntityDamageSensorComponent.class, new EntityDamageSensorComponent(new EntityDamageSensorComponent.Sensor[0]), new EmptyEntityComponentHandler<>());
+        EntityRegistry.registerComponent(EntityDamageSensorComponent.class, new EntityDamageSensorComponent(new EntityDamageSensorComponent.Sensor[0]), new EntityEmptyComponentHandler<>());
         EntityRegistry.registerComponent(EntityLootComponent.class, new EntityLootComponent(new ArrayList<>()), new EntityLootComponentHandler());
         EntityRegistry.registerComponent(EntityDeathMessageComponent.class, new EntityDeathMessageComponent(false), new EntityDeathMessageComponentHandler());
         EntityRegistry.registerComponent(EntityPhysicsComponent.class, new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
@@ -49,14 +49,13 @@ public class VanillaContentLoader {
                 .setDragForce(0.02f)
                 .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
         EntityRegistry.registerComponent(EntityBossComponent.class, new EntityBossComponent(null, -1, false), new EntityBossComponentHandler());
-        EntityRegistry.registerComponent(EntityBurnsInDaylightComponent.class, new EntityBurnsInDaylightComponent(), new EmptyEntityComponentHandler<>());
+        EntityRegistry.registerComponent(EntityBurnsInDaylightComponent.class, new EntityBurnsInDaylightComponent(), new EntityEmptyComponentHandler<>());
         EntityRegistry.registerComponent(EntityBreathableComponent.class, new EntityBreathableComponent(new EntityBreathableComponent.Properties()
-                .setCanBreathAir(true)
                 .setGenerateBubblesInWater(true)
                 .setSuffocationInterval(10)
-                .setInhaleTime(0)
+                .setInhaleTime(5)
                 .setTotalSupplyTime(15)
-        ), new EmptyEntityComponentHandler<>());
+        ), new EntityBreathableComponentHandler());
     }
 
     private static void loadEntities() {

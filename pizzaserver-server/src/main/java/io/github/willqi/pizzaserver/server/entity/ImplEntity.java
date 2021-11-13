@@ -9,6 +9,7 @@ import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.willqi.pizzaserver.api.entity.definition.components.EntityComponentHandler;
+import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityBreathableComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityBurnsInDaylightComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
 import io.github.willqi.pizzaserver.api.entity.definition.components.filter.EntityFilter;
@@ -28,6 +29,7 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.player.Player;
@@ -105,9 +107,6 @@ public class ImplEntity implements Entity {
             EntityComponentHandler handler = EntityRegistry.getComponentHandler(clazz);
             handler.onRegistered(this, EntityRegistry.getDefaultComponent(clazz));
         });
-
-        this.setMaxAirSupplyTicks(400);
-        this.setAirSupplyTicks(this.getMaxAirSupplyTicks());
     }
 
     @Override
@@ -1070,13 +1069,24 @@ public class ImplEntity implements Entity {
                 }
                 this.setFireTicks(this.getFireTicks() - 1);
             }
-            if (this.getHeadBlock().isSolid()) {
-                if (this.ticks % 10 == 0) {
+
+            Block headBlock = this.getHeadBlock();
+            EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
+            boolean isSuffocating = headBlock.isSolid()
+                    && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
+                        || breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType()));
+            if (isSuffocating) {
+                if (this.ticks % breathableComponent.getSuffocationInterval() == 0) {
                     EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
                     this.damage(suffocationEvent);
                 }
             }
-            if (!this.getHeadBlock().getBlockType().hasOxygen()) {
+
+            boolean losingOxygen = !headBlock.isSolid()
+                    && ((breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType())
+                                && !breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
+                        || !(headBlock.getBlockType().hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType())));
+            if (losingOxygen) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
                     this.damage(drowningEvent);
@@ -1084,7 +1094,13 @@ public class ImplEntity implements Entity {
                     this.setAirSupplyTicks(this.getAirSupplyTicks() - 1);
                 }
             } else if (this.getAirSupplyTicks() < this.getMaxAirSupplyTicks()) {
-                this.setAirSupplyTicks(this.getAirSupplyTicks() + 5);
+                int increment;
+                if (this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0) {
+                    increment = this.getMaxAirSupplyTicks();
+                } else {
+                    increment = (int) Math.ceil(this.getMaxAirSupplyTicks() / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
+                }
+                this.setAirSupplyTicks(this.getAirSupplyTicks() + increment);
             }
 
         }
