@@ -10,7 +10,7 @@ import java.util.zip.Inflater;
 public class Zlib {
 
     // How big should our temporary zlib array allocate space for?
-    private static final int MAX_CHUNK_SIZE = 1024;
+    private static final int MAX_CHUNK_SIZE = 16;
 
 
     public static ByteBuf compressBuffer(ByteBuf buffer, int level) {
@@ -21,7 +21,7 @@ public class Zlib {
         compressor.finish();
 
         byte[] result = new byte[MAX_CHUNK_SIZE];
-        ByteBuf resultBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        ByteBuf resultBuffer = ByteBufAllocator.DEFAULT.ioBuffer(MAX_CHUNK_SIZE);
         while (!compressor.finished()) {
             int writtenBytes = compressor.deflate(result);
             resultBuffer.writeBytes(result, 0, writtenBytes);
@@ -37,7 +37,7 @@ public class Zlib {
         Inflater inflater = new Inflater(true);
         inflater.setInput(compressed);
 
-        ByteBuf result = ByteBufAllocator.DEFAULT.buffer();
+        ByteBuf result = ByteBufAllocator.DEFAULT.buffer(MAX_CHUNK_SIZE);
         try {
             while (!inflater.finished()) {
                 byte[] decompressed = new byte[MAX_CHUNK_SIZE];
