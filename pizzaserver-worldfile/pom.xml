@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>PizzaServer</artifactId>
-        <groupId>io.github.willqi.pizzaserver</groupId>
+        <groupId>io.github.pizzaserver</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.willqi.pizzaserver.format</groupId>
+    <groupId>io.github.pizzaserver.format</groupId>
     <artifactId>PizzaServer-Format</artifactId>
 
     <properties>
@@ -22,26 +22,33 @@
             <id>opencollab-repo-snapshot</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
         </repository>
+        <repository>
+            <id>nukkitx-repo</id>
+            <url>https://repo.nukkitx.com/maven-releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
-
         <dependency>
-            <groupId>io.github.willqi.pizzaserver.server.nbt</groupId>
-            <artifactId>PizzaServer-NBT</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.willqi.pizzaserver.commons</groupId>
+            <groupId>io.github.pizzaserver.commons</groupId>
             <artifactId>PizzaServer-Commons</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <!-- LevelDB in Java that supports MCPE format -->
         <dependency>
             <groupId>net.daporkchop</groupId>
             <artifactId>leveldb-mcpe-jni</artifactId>
             <version>0.0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nukkitx</groupId>
+            <artifactId>nbt</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nukkitx</groupId>
+            <artifactId>math</artifactId>
+            <version>1.1.1</version>
         </dependency>
 
     </dependencies>
