@@ -94,7 +94,7 @@ public class MCWorldSubChunk implements BedrockSubChunk {
 
     @Override
     public synchronized byte[] serializeForDisk() throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(2);
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
         buffer.writeByte(this.layers.size());
         for (BlockLayer layer : this.layers) {
@@ -109,7 +109,7 @@ public class MCWorldSubChunk implements BedrockSubChunk {
 
     @Override
     public synchronized byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(1);
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
         buffer.writeByte(this.layers.size());
         for (BlockLayer layer : this.layers) {

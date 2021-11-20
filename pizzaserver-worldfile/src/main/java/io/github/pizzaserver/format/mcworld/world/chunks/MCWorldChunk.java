@@ -226,7 +226,7 @@ public class MCWorldChunk implements BedrockChunk {
         int subChunkCount = this.getSubChunkCount();
 
         // Write all subchunks
-        ByteBuf packetData = ByteBufAllocator.DEFAULT.buffer();
+        ByteBuf packetData = ByteBufAllocator.DEFAULT.ioBuffer();
         byte[] data;
         try {
             for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {

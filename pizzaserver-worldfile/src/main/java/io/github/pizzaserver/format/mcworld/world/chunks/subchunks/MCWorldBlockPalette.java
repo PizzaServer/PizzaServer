@@ -143,7 +143,7 @@ public class MCWorldBlockPalette implements BlockPalette {
 
     @Override
     public byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         Set<BlockPalette.Entry> entries = this.getEntries();
         VarInts.writeInt(buffer, entries.size());
         for (BlockPalette.Entry data : entries) {

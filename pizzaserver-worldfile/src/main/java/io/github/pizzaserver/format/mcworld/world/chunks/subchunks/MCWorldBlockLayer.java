@@ -83,7 +83,7 @@ public class MCWorldBlockLayer implements BlockLayer {
     }
 
     private synchronized byte[] serialize(IOFunction<MCWorldBlockPalette, byte[]> paletteSerializer) {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         int bitsPerBlock = Math.max((int) Math.ceil(Math.log(this.palette.getEntries().size()) / Math.log(2)), 1);
         int blocksPerWord = 32 / bitsPerBlock;
         int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
