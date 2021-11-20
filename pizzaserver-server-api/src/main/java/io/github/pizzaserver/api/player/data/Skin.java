@@ -13,6 +13,7 @@ public class Skin {
     private String playFabId;
     private String skinResourcePatch;
     private String geometryData;
+    private String geometryVersion;
     private int skinHeight;
     private int skinWidth;
     private byte[] skinData;
@@ -43,6 +44,7 @@ public class Skin {
             String playFabId,
             String skinResourcePatch,
             String geometryData,
+            String geometryVersion,
             int skinHeight,
             int skinWidth,
             byte[] skinData,
@@ -66,6 +68,7 @@ public class Skin {
         this.playFabId = playFabId;
         this.skinResourcePatch = skinResourcePatch;
         this.geometryData = geometryData;
+        this.geometryVersion = geometryVersion;
         this.skinHeight = skinHeight;
         this.skinWidth = skinWidth;
         this.skinData = skinData;
@@ -96,6 +99,7 @@ public class Skin {
             String playFabId,
             String skinResourcePatch,
             String geometryData,
+            String geometryVersion,
             int skinHeight,
             int skinWidth,
             byte[] skinData,
@@ -113,6 +117,7 @@ public class Skin {
         this.playFabId = playFabId;
         this.skinResourcePatch = skinResourcePatch;
         this.geometryData = geometryData;
+        this.geometryVersion = geometryVersion;
         this.skinHeight = skinHeight;
         this.skinWidth = skinWidth;
         this.skinData = skinData;
@@ -174,6 +179,14 @@ public class Skin {
 
     public void setGeometryData(String geometryData) {
         this.geometryData = geometryData;
+    }
+
+    public String getGeometryVersion() {
+        return this.geometryVersion;
+    }
+
+    public void setGeometryVersion(String geometryVersion) {
+        this.geometryVersion = geometryVersion;
     }
 
     public int getSkinHeight() {
@@ -328,12 +341,12 @@ public class Skin {
                 this.getAnimations(),
                 ImageData.of(this.getCapeData()),
                 this.getGeometryData(),
-                "",
+                this.getGeometryVersion(),
                 this.getAnimationData(),
                 this.isPremium(),
                 this.isPersona(),
                 this.isCapeOnClassic(),
-                false,
+                this.isPrimaryUser(),
                 this.getCapeId(),
                 this.getFullSkinId(),
                 this.getArmSize(),
@@ -349,6 +362,7 @@ public class Skin {
                 .setPlayFabId(serializedSkin.getPlayFabId())
                 .setSkinResourcePatch(serializedSkin.getSkinResourcePatch())
                 .setGeometryData(serializedSkin.getGeometryData())
+                .setGeometryVersion(serializedSkin.getGeometryDataEngineVersion())
                 .setSkinHeight(serializedSkin.getSkinData().getHeight())
                 .setSkinWidth(serializedSkin.getSkinData().getWidth())
                 .setSkinData(serializedSkin.getSkinData().getImage())
@@ -366,6 +380,7 @@ public class Skin {
                 .setPersona(serializedSkin.isPersona())
                 .setPremium(serializedSkin.isPremium())
                 .setTrusted(false)
+                .setPrimaryUser(serializedSkin.isPrimaryUser())
                 .build();
     }
 
@@ -376,6 +391,7 @@ public class Skin {
         private String fullSkinId = "";
         private String playFabId = "";
         private String skinResourcePatch;
+        private String geometryVersion = "";
         private String geometryData;
         private int skinHeight;
         private int skinWidth;
@@ -421,6 +437,11 @@ public class Skin {
 
         public Builder setGeometryData(String geometryData) {
             this.geometryData = geometryData;
+            return this;
+        }
+
+        public Builder setGeometryVersion(String geometryVersion) {
+            this.geometryVersion = geometryVersion;
             return this;
         }
 
@@ -522,6 +543,7 @@ public class Skin {
                         this.playFabId,
                         this.skinResourcePatch,
                         this.geometryData,
+                        this.geometryVersion,
                         this.skinHeight,
                         this.skinWidth,
                         this.skinData,
@@ -547,6 +569,7 @@ public class Skin {
                         this.playFabId,
                         this.skinResourcePatch,
                         this.geometryData,
+                        this.geometryVersion,
                         this.skinHeight,
                         this.skinWidth,
                         this.skinData,

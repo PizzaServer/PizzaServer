@@ -90,7 +90,7 @@ public class ImplServer implements Server {
      * Start ticking the Minecraft server.
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
-    public void boot() {
+    public void boot() throws IOException {
         ServerProtocol.loadVersions();
 
         this.getResourcePackManager().loadPacks();

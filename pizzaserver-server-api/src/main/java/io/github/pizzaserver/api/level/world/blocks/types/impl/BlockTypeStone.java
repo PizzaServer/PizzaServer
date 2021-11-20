@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.level.world.blocks.types.impl;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.ToolTypeRegistry;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
@@ -12,13 +13,14 @@ import java.util.*;
 
 public class BlockTypeStone extends BaseBlockType {
 
-    private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>() {
+    private static final HashBiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
         {
             List<String> stoneTypes = Arrays.asList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth");
             int stateIndex = 0;
             for (String stoneType : stoneTypes) {
-                NBTCompound state = new NBTCompound("states")
-                        .putString("stone_type", stoneType);
+                NbtMap state = NbtMap.builder()
+                        .putString("stone_type", stoneType)
+                        .build();
                 this.put(state, stateIndex++);
             }
         }
@@ -36,7 +38,7 @@ public class BlockTypeStone extends BaseBlockType {
     }
 
     @Override
-    public BiMap<NBTCompound, Integer> getBlockStates() {
+    public BiMap<NbtMap, Integer> getBlockStates() {
         return BLOCK_STATES;
     }
 

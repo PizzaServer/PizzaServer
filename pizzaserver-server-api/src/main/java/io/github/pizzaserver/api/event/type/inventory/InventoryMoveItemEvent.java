@@ -1,8 +1,9 @@
 package io.github.pizzaserver.api.event.type.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.pizzaserver.api.item.ItemStack;
 
 /**
@@ -12,28 +13,28 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
 
     protected Entity entity;
 
-    protected Action action;
+    protected StackRequestActionType action;
 
     protected Inventory inventory;
-    protected InventorySlotType slotType;
+    protected ContainerSlotType slotType;
     protected int movedItemSlot;
     protected ItemStack movedItem;
     protected int movedItemCount;
 
     protected Inventory destinationInventory;
-    protected InventorySlotType destinationSlotType;
+    protected ContainerSlotType destinationSlotType;
     protected int destinationItemSlot;
     protected ItemStack destinationCurrentItemStack;
 
     public InventoryMoveItemEvent(Entity entity,
-                                  Action action,
+                                  StackRequestActionType action,
                                   Inventory inventory,
-                                  InventorySlotType slotType,
+                                  ContainerSlotType slotType,
                                   int movedItemSlot,
                                   ItemStack movedItem,
                                   int movedItemCount,
                                   Inventory destinationInventory,
-                                  InventorySlotType destinationSlotType,
+                                  ContainerSlotType destinationSlotType,
                                   int destinationItemSlot,
                                   ItemStack destinationItem) {
         super(inventory);
@@ -57,11 +58,11 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
         return this.entity;
     }
 
-    public Action getAction() {
+    public StackRequestActionType getAction() {
         return this.action;
     }
 
-    public InventorySlotType getMovedSlotType() {
+    public ContainerSlotType getMovedSlotType() {
         return this.slotType;
     }
 
@@ -81,7 +82,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
         return this.destinationInventory;
     }
 
-    public InventorySlotType getTargetSlotType() {
+    public ContainerSlotType getTargetSlotType() {
         return this.destinationSlotType;
     }
 
@@ -91,13 +92,6 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
 
     public ItemStack getTargetItem() {
         return this.destinationCurrentItemStack;
-    }
-
-
-    public enum Action {
-        TAKE,
-        PLACE,
-        SWAP
     }
 
 }

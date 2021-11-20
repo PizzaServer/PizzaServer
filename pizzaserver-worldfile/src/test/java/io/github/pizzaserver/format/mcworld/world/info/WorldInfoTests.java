@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WorldInfoTests {
 
@@ -21,7 +22,7 @@ public class WorldInfoTests {
         ResourceUtils.deleteDirectoryContents(temporaryDir);
 
         assertEquals("1.16.100 World Test", info.getName());
-        assertEquals(true, info.getPlayerAbilities().canAttackPlayers());
+        assertTrue(info.getPlayerAbilities().canAttackPlayers());
     }
 
 }

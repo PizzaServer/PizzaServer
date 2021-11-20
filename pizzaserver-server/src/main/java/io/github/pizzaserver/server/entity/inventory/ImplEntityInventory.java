@@ -1,8 +1,11 @@
 package io.github.pizzaserver.server.entity.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
+import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
@@ -24,12 +27,12 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     protected ItemStack offHand = null;
 
 
-    public ImplEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size) {
+    public ImplEntityInventory(Entity entity, Set<ContainerSlotType> slotTypes, int size) {
         super(slotTypes, size);
         this.entity = entity;
     }
 
-    public ImplEntityInventory(Entity entity, Set<InventorySlotType> slotTypes, int size, int id) {
+    public ImplEntityInventory(Entity entity, Set<ContainerSlotType> slotTypes, int size, int id) {
         super(slotTypes, size, id);
         this.entity = entity;
     }
@@ -158,12 +161,12 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
 
     protected void broadcastMobArmourEquipmentPacket() {
         for (Player player : this.getEntity().getViewers()) {
-            MobArmourEquipmentPacket mobArmourEquipmentPacket = new MobArmourEquipmentPacket();
-            mobArmourEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-            mobArmourEquipmentPacket.setHelmet(this.getHelmet());
-            mobArmourEquipmentPacket.setChestplate(this.getChestplate());
-            mobArmourEquipmentPacket.setLeggings(this.getLeggings());
-            mobArmourEquipmentPacket.setBoots(this.getBoots());
+            MobArmorEquipmentPacket mobArmourEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmourEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
+            mobArmourEquipmentPacket.setHelmet(this.getHelmet().serialize(player.getVersion()));
+            mobArmourEquipmentPacket.setChestplate(this.getChestplate().serialize(player.getVersion()));
+            mobArmourEquipmentPacket.setLeggings(this.getLeggings().serialize(player.getVersion()));
+            mobArmourEquipmentPacket.setBoots(this.getBoots().serialize(player.getVersion()));
             player.sendPacket(mobArmourEquipmentPacket);
         }
     }
@@ -225,11 +228,11 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     protected void broadcastMobEquipmentPacket(ItemStack itemStack, int slot, boolean mainHand) {
         for (Player player : this.getEntity().getViewers()) {
             MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
-            mobEquipmentPacket.setEntityRuntimeId(this.getEntity().getId());
-            mobEquipmentPacket.setInventoryId(mainHand ? InventoryID.MAIN_INVENTORY : InventoryID.OFF_HAND_INVENTORY);
-            mobEquipmentPacket.setSlot(slot);
+            mobEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
+            mobEquipmentPacket.setContainerId(mainHand ? ContainerId.INVENTORY : ContainerId.OFFHAND);
+            mobEquipmentPacket.setInventorySlot(slot);
             mobEquipmentPacket.setHotbarSlot(slot);
-            mobEquipmentPacket.setEquipment(ItemStack.ensureItemStackExists(itemStack));
+            mobEquipmentPacket.setItem(ItemStack.ensureItemStackExists(itemStack).serialize(player.getVersion()));
             player.sendPacket(mobEquipmentPacket);
         }
     }

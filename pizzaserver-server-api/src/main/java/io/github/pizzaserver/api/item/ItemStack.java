@@ -102,11 +102,11 @@ public class ItemStack implements Cloneable {
                 && this.getCompoundTag().getCompound("display").get("Name") instanceof String;
     }
 
-    public String getCustomName() {
+    public Optional<String> getCustomName() {
         if (!this.hasCustomName()) {
-            return null;
+            return Optional.empty();
         }
-        return this.getCompoundTag().getCompound("display").getString("Name");
+        return Optional.of(this.getCompoundTag().getCompound("display").getString("Name"));
     }
 
     public void setCustomName(String customName) {

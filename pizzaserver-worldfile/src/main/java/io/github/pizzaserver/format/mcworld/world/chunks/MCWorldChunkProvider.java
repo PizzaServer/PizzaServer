@@ -1,6 +1,10 @@
 package io.github.pizzaserver.format.mcworld.world.chunks;
 
+import com.nukkitx.nbt.NBTOutputStream;
+import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.iq80.leveldb.DB;
 
@@ -123,9 +127,12 @@ public class MCWorldChunkProvider implements Closeable {
 
         // block entities
         ByteArrayOutputStream blockEntityOutput = new ByteArrayOutputStream();
-        NBTOutputStream blockEntityNBTOutputStream = new NBTOutputStream(new LittleEndianDataOutputStream(blockEntityOutput));
-        for (NBTCompound blockEntityCompound : bedrockChunk.getBlockEntityNBTs()) {
-            blockEntityNBTOutputStream.writeCompound(blockEntityCompound);
+        try (NBTOutputStream blockEntityNBTOutputStream = NbtUtils.createWriterLE(blockEntityOutput)) {
+            for (NbtMap blockEntityCompound : bedrockChunk.getBlockEntityNBTs()) {
+                blockEntityNBTOutputStream.writeTag(blockEntityCompound);
+            }
+        } catch (IOException exception) {
+            throw new IOException("Failed to write block entity nbt when writing to disk", exception);
         }
 
         byte[] blockEntitiesKey = ifOverworld(
@@ -140,9 +147,12 @@ public class MCWorldChunkProvider implements Closeable {
 
         // entities
         ByteArrayOutputStream entityOutput = new ByteArrayOutputStream();
-        NBTOutputStream entityNBTOutputStream = new NBTOutputStream(new LittleEndianDataOutputStream(entityOutput));
-        for (NBTCompound entityCompound : bedrockChunk.getEntityNBTs()) {
-            entityNBTOutputStream.writeCompound(entityCompound);
+        try (NBTOutputStream entityNBTOutputStream = NbtUtils.createWriterLE(entityOutput)) {
+            for (NbtMap entityCompound : bedrockChunk.getEntityNBTs()) {
+                entityNBTOutputStream.writeTag(entityCompound);
+            }
+        } catch (IOException exception) {
+            throw new IOException("Failed to write entity nbt when writing to disk", exception);
         }
 
         byte[] entityKey = ifOverworld(

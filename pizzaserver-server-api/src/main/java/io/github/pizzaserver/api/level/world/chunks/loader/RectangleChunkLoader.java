@@ -1,6 +1,8 @@
 package io.github.pizzaserver.api.level.world.chunks.loader;
 
 
+import com.nukkitx.math.vector.Vector2i;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +26,7 @@ public class RectangleChunkLoader implements ChunkLoader {
 
         for (int chunkX = minX; chunkX <= maxX; chunkX++) {
             for (int chunkZ = minZ; chunkZ <= maxZ; chunkZ++) {
-                this.coordinates.add(new Vector2i(chunkX, chunkZ));
+                this.coordinates.add(Vector2i.from(chunkX, chunkZ));
             }
         }
     }

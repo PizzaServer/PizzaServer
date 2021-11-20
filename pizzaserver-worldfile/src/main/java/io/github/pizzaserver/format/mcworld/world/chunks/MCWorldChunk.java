@@ -1,10 +1,13 @@
 package io.github.pizzaserver.format.mcworld.world.chunks;
 
 import com.nukkitx.math.vector.Vector2i;
+import com.nukkitx.nbt.NBTInputStream;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.format.BlockRuntimeMapper;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
+import io.github.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
 import io.github.pizzaserver.format.mcworld.world.chunks.subchunks.MCWorldSubChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.netty.buffer.ByteBuf;
@@ -12,6 +15,7 @@ import io.netty.buffer.ByteBufAllocator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class MCWorldChunk implements BedrockChunk {
@@ -73,21 +77,29 @@ public class MCWorldChunk implements BedrockChunk {
      * @throws IOException if it failed to parse the entity NBT
      */
     private void parseEntityNBT(byte[] blockEntityData, byte[] entityData) throws IOException {
-        NBTInputStream blockEntityNBTInputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteArrayInputStream(blockEntityData)));
-        while (blockEntityNBTInputStream.available() > 0) {
-            this.blockEntityNBTs.add(blockEntityNBTInputStream.readCompound());
+        try (InputStream blockEntityDataStream = new ByteArrayInputStream(blockEntityData);
+                NBTInputStream blockEntityNBTInputStream = NbtUtils.createReaderLE(blockEntityDataStream)) {
+            while (blockEntityDataStream.available() > 0) {
+                NbtMap compound = (NbtMap) blockEntityNBTInputStream.readTag();
+                this.blockEntityNBTs.add(compound);
+            }
+        } catch (IOException exception) {
+            throw new ChunkParseException("Failed to read block entity NBT", exception);
         }
-
-        NBTInputStream entityNBTInputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteArrayInputStream(entityData)));
-        while (entityNBTInputStream.available() > 0) {
-            this.entityNBTs.add(entityNBTInputStream.readCompound());
+        try (InputStream entityDataStream = new ByteArrayInputStream(entityData);
+                NBTInputStream entityNBTInputStream = NbtUtils.createReaderLE(entityDataStream)) {
+            while (entityDataStream.available() > 0) {
+                NbtMap compound = (NbtMap) entityNBTInputStream.readTag();
+                this.entityNBTs.add(compound);
+            }
+        } catch (IOException exception) {
+            throw new ChunkParseException("Failed to read entity NBT", exception);
         }
     }
 
     private void parseSubChunks(byte[][] subChunks) throws IOException {
-        this.subChunks = new ArrayList<>(subChunks.length);
-        for (int i = 0; i < subChunks.length; i++) {
-            byte[] subChunkBytes = subChunks[i];
+        this.subChunks = new ArrayList<>();
+        for (byte[] subChunkBytes : subChunks) {
             ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(subChunkBytes.length);
             try {
                 buffer.writeBytes(subChunkBytes);

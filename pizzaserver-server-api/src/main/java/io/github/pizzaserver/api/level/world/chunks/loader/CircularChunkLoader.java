@@ -1,6 +1,8 @@
 package io.github.pizzaserver.api.level.world.chunks.loader;
 
 
+import com.nukkitx.math.vector.Vector2i;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +19,7 @@ public class CircularChunkLoader implements ChunkLoader {
             for (int z = -radius; z <= radius; z++) {
                 int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
                 if (radius > distance) {
-                    this.coordinates.add(new Vector2i(coordinates.getX() + x, coordinates.getY() + z));
+                    this.coordinates.add(Vector2i.from(coordinates.getX() + x, coordinates.getY() + z));
                 }
             }
         }

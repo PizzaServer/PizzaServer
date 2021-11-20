@@ -2,6 +2,10 @@ package io.github.pizzaserver.format.mcworld.world.chunks.subchunks;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.nukkitx.nbt.NBTInputStream;
+import com.nukkitx.nbt.NBTOutputStream;
+import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.pizzaserver.format.BlockRuntimeMapper;
@@ -29,10 +33,9 @@ public class MCWorldBlockPalette implements BlockPalette {
      */
     public MCWorldBlockPalette(ByteBuf buffer) throws IOException {
         int paletteLength = buffer.readIntLE();
-        NBTInputStream inputStream = new NBTInputStream(new LittleEndianDataInputStream(new ByteBufInputStream(buffer)));
-        try {
+        try (NBTInputStream inputStream = NbtUtils.createReaderLE(new ByteBufInputStream(buffer))) {
             for (int i = 0; i < paletteLength; i++) {
-                NBTCompound compound = inputStream.readCompound();
+                NbtMap compound = (NbtMap) inputStream.readTag();
                 this.add(new MCWorldBlockPaletteEntry(compound));
             }
         } catch (IOException exception) {
@@ -42,7 +45,7 @@ public class MCWorldBlockPalette implements BlockPalette {
 
 
     @Override
-    public Entry create(String name, NBTCompound states, int version) {
+    public Entry create(String name, NbtMap states, int version) {
         return new MCWorldBlockPaletteEntry(name, states, version);
     }
 
@@ -119,20 +122,23 @@ public class MCWorldBlockPalette implements BlockPalette {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         Set<BlockPalette.Entry> entries = this.getEntries();
         buffer.writeIntLE(entries.size());
-        NBTOutputStream outputStream = new NBTOutputStream(new LittleEndianDataOutputStream(new ByteBufOutputStream(buffer)));
-        for (BlockPalette.Entry data : entries) {
-            NBTCompound compound = new NBTCompound();
-            compound.putString("name", data.getId())
-                    .putInteger("version", data.getVersion())
-                    .putCompound("states", data.getState());
+        try (NBTOutputStream outputStream = NbtUtils.createWriterLE(new ByteBufOutputStream(buffer))) {
+            for (BlockPalette.Entry data : entries) {
+                NbtMap compound = NbtMap.builder()
+                        .putString("name", data.getId())
+                        .putInt("version", data.getVersion())
+                        .putCompound("states", data.getState())
+                        .build();
 
-            outputStream.writeCompound(compound);
+                outputStream.writeTag(compound);
+            }
+            byte[] serialized = new byte[buffer.readableBytes()];
+            buffer.readBytes(serialized);
+
+            return serialized;
+        } catch (IOException exception) {
+            throw new IOException("Failed to serialize chunk to disk", exception);
         }
-        byte[] serialized = new byte[buffer.readableBytes()];
-        buffer.readBytes(serialized);
-        buffer.release();
-
-        return serialized;
     }
 
     @Override
@@ -156,16 +162,16 @@ public class MCWorldBlockPalette implements BlockPalette {
 
         private final String name;
         private final int version;
-        private final NBTCompound state;
+        private final NbtMap state;
 
 
-        public MCWorldBlockPaletteEntry(NBTCompound data) {
+        public MCWorldBlockPaletteEntry(NbtMap data) {
             this.name = data.getString("name");
-            this.version = data.getInteger("version");
+            this.version = data.getInt("version");
             this.state = data.getCompound("states");
         }
 
-        public MCWorldBlockPaletteEntry(String name, NBTCompound states, int version) {
+        public MCWorldBlockPaletteEntry(String name, NbtMap states, int version) {
             this.name = name;
             this.state = states;
             this.version = version;
@@ -182,7 +188,7 @@ public class MCWorldBlockPalette implements BlockPalette {
         }
 
         @Override
-        public NBTCompound getState() {
+        public NbtMap getState() {
             return this.state;
         }
 

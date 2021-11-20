@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.protocol.versions.v419;
+package io.github.pizzaserver.server.network.protocol.versions;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -9,7 +9,6 @@ import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v419.Bedrock_v419;
 import io.github.pizzaserver.api.item.types.components.*;
-import io.github.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -21,6 +20,7 @@ import io.github.pizzaserver.api.network.protocol.utils.MinecraftNamespaceCompar
 import io.github.pizzaserver.commons.utils.Tuple;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
@@ -57,14 +57,15 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
 
     @Override
     protected void loadBlockStates() throws IOException {
-        try (NBTInputStream blockStatesNBTStream = NbtUtils.createNetworkReader(this.getProtocolResourceStream("block_states.nbt"))) {
+        try (InputStream blockStatesFileStream = this.getProtocolResourceStream("block_states.nbt");
+             NBTInputStream blockStatesNBTStream = NbtUtils.createNetworkReader(blockStatesFileStream)) {
             // keySet returns in ascending rather than descending so we have to reverse it
             SortedMap<String, List<NbtMap>> sortedBlockRuntimeStates =
                     new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
 
             // Parse block states
-            NbtMap blockState;
-            while ((blockState = (NbtMap) blockStatesNBTStream.readTag()) != null) {
+            while (blockStatesFileStream.available() > 0) {
+                NbtMap blockState = (NbtMap) blockStatesNBTStream.readTag();
                 String name = blockState.getString("name");
                 if (!sortedBlockRuntimeStates.containsKey(name)) {
                     sortedBlockRuntimeStates.put(name, new ArrayList<>());
@@ -140,8 +141,8 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
 
     @Override
     protected void loadEntitiesNBT() {
+        List<NbtMap> entities = new ArrayList<>();
         int rId = 0;    // TODO: what is the purpose of this?
-        NbtList<NbtMap> entities = new NbtList<>(NbtType.COMPOUND);
         for (EntityDefinition definition : EntityRegistry.getDefinitions()) {
             entities.add(NbtMap.builder()
                     .putString("bid", "")

@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.level.world.blocks.types.impl;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.item.ToolTypeRegistry;
@@ -12,13 +13,14 @@ import java.util.*;
 
 public class BlockTypeDirt extends BaseBlockType {
 
-    private static final HashBiMap<NBTCompound, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NBTCompound, Integer>() {
+    private static final HashBiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
         {
             List<String> dirtTypes = Arrays.asList("normal", "coarse");
             int stateIndex = 0;
             for (String dirtType : dirtTypes) {
-                NBTCompound state = new NBTCompound("states")
-                        .putString("dirt_type", dirtType);
+                NbtMap state = NbtMap.builder()
+                        .putString("dirt_type", dirtType)
+                        .build();
                 this.put(state, stateIndex++);
             }
         }
@@ -36,7 +38,7 @@ public class BlockTypeDirt extends BaseBlockType {
     }
 
     @Override
-    public BiMap<NBTCompound, Integer> getBlockStates() {
+    public BiMap<NbtMap, Integer> getBlockStates() {
         return BLOCK_STATES;
     }
 

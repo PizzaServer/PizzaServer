@@ -1,25 +1,25 @@
 package io.github.pizzaserver.server.network.handlers.inventory;
 
-import io.github.pizzaserver.api.entity.inventory.InventorySlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
+import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
 
-import java.util.Optional;
+public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceStackRequestActionDataWrapper> {
 
-public class InventoryActionPlaceHandler extends InventoryActionHandler<InventoryActionPlace> {
-
-    public static final InventoryActionHandler<InventoryActionPlace> INSTANCE = new InventoryActionPlaceHandler();
+    public static final InventoryActionHandler<PlaceStackRequestActionDataWrapper> INSTANCE = new InventoryActionPlaceHandler();
 
 
     @Override
-    public boolean isValid(Player player, InventoryActionPlace action) {
-        Optional<ItemStack> source = getItemStack(player, action.getSource());
-        Optional<ItemStack> destination = getItemStack(player, action.getDestination());
+    public boolean isValid(Player player, PlaceStackRequestActionDataWrapper action) {
 
-        if (source.isPresent() && destination.isPresent()) {
-            ItemStack sourceItemStack = source.get();
-            ItemStack destinationItemStack = destination.get();
+        if (action.getSource().exists() && action.getDestination().exists()) {
+            ItemStack sourceItemStack = action.getSource().getItemStack();
+            ItemStack destinationItemStack = action.getDestination().getItemStack();
 
             // the slots must be either of the same type or the destination has to be air
             boolean canMergeItemData = (sourceItemStack.getItemType().equals(destinationItemStack.getItemType())
@@ -27,11 +27,11 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
                     && sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.isEmpty();
 
             // final destination slot cannot exceed max count
-            boolean doesNotExceedMaxCount = action.getCount() > 0
-                    && destinationItemStack.getCount() + action.getCount() <= sourceItemStack.getItemType().getMaxStackSize();
+            boolean doesNotExceedMaxCount = action.getCountRequested() > 0
+                    && destinationItemStack.getCount() + action.getCountRequested() <= sourceItemStack.getItemType().getMaxStackSize();
 
-            boolean canPutItemTypeInSlot = canPutItemTypeInSlot(sourceItemStack.getItemType(), action.getDestination().getInventorySlotType())
-                    && action.getDestination().getInventorySlotType() != InventorySlotType.CURSOR;
+            boolean canPutItemTypeInSlot = ItemType.canBePlacedInSlot(sourceItemStack.getItemType(), action.getDestination().getSlotType())
+                    && action.getDestination().getSlotType() != ContainerSlotType.CURSOR;
 
             return canMergeItemData && doesNotExceedMaxCount && canPutItemTypeInSlot;
         } else {
@@ -40,41 +40,41 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<Inventor
     }
 
     @Override
-    public boolean runAction(ItemStackResponsePacket.Response response, Player player, InventoryActionPlace action) {
-        SlotLocation source = new SlotLocation(response, player, action.getSource());
-        SlotLocation destination = new SlotLocation(response, player, action.getDestination());
+    public boolean runAction(Player player, PlaceStackRequestActionDataWrapper action) {
+        InventorySlotContainer source = action.getSource();
+        InventorySlotContainer destination = action.getDestination();
 
-        int sourceStackCount = source.getItem().getCount();
-        int playerRequestedAmount = Math.min(action.getCount(), sourceStackCount);
+        int sourceStackCount = source.getItemStack().getCount();
+        int playerRequestedAmount = Math.min(action.getCountRequested(), sourceStackCount);
 
         // Create new stack with the amount that will be placed down + existing destination count
-        int placedStackAmount = playerRequestedAmount + destination.getItem().getCount();
-        ItemStack placedStack = new ItemStack(source.getItem().getItemType(), placedStackAmount, source.getItem().getDamage()).newNetworkStack();
-        placedStack.setCompoundTag(source.getItem().getCompoundTag());
+        int placedStackAmount = playerRequestedAmount + destination.getItemStack().getCount();
+        ItemStack placedStack = new ItemStack(source.getItemStack().getItemType(), placedStackAmount, source.getItemStack().getDamage()).newNetworkStack();
+        placedStack.setCompoundTag(source.getItemStack().getCompoundTag());
 
         // Remove the amount placed from our source
-        ItemStack newSourceStack = source.getItem().clone();
+        ItemStack newSourceStack = source.getItemStack().clone();
         newSourceStack.setCount(sourceStackCount - playerRequestedAmount);
 
         // Call the event
         InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
-                InventoryMoveItemEvent.Action.PLACE,
+                StackRequestActionType.PLACE,
                 source.getInventory(),
-                action.getSource().getInventorySlotType(),
-                action.getSource().getSlot(),
-                source.getItem(),
+                source.getSlotType(),
+                source.getSlot(),
+                source.getItemStack(),
                 playerRequestedAmount,
                 destination.getInventory(),
-                action.getDestination().getInventorySlotType(),
-                action.getDestination().getSlot(),
-                destination.getItem());
+                destination.getSlotType(),
+                destination.getSlot(),
+                destination.getItemStack());
         player.getServer().getEventManager().call(inventoryMoveItemEvent);
         if (inventoryMoveItemEvent.isCancelled()) {
             return false;
         }
 
-        destination.setItem(placedStack);
-        source.setItem(newSourceStack);
+        destination.setItemStack(placedStack);
+        source.setItemStack(newSourceStack);
         return true;
     }
 

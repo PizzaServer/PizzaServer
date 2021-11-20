@@ -6,7 +6,7 @@ import io.github.pizzaserver.server.network.protocol.versions.BaseMinecraftVersi
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.pizzaserver.server.network.utils.LoginData;
+import io.github.pizzaserver.server.network.data.LoginData;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
         this.session.getConnection().setPacketCodec(version.get().getPacketCodec());
         this.session.setVersion(version.get());
 
-        Optional<LoginData> loginData = LoginData.extract(loginPacket.getChainData(), loginPacket.getChainData());
+        Optional<LoginData> loginData = LoginData.extract(loginPacket.getChainData(), loginPacket.getSkinData());
         if (!loginData.isPresent() || (!loginData.get().isAuthenticated() && this.server.getConfig().isOnlineMode())) {
             this.session.getConnection().disconnect();
             return true;
@@ -73,7 +73,10 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(ClientToServerHandshakePacket packet) {
-        return false;   // TODO
+        if (this.session.getConnection().isEncrypted()) {
+            // TODO: continue
+        }
+        return true;
     }
 
 }

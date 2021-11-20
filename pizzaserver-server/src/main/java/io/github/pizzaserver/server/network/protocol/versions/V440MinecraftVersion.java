@@ -1,6 +1,4 @@
-package io.github.pizzaserver.server.network.protocol.versions.v440;
-
-import io.github.pizzaserver.server.network.protocol.versions.v431.V431MinecraftVersion;
+package io.github.pizzaserver.server.network.protocol.versions;
 
 import java.io.IOException;
 

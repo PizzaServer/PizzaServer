@@ -54,7 +54,7 @@ public class ImplItemEntity extends ImplEntity implements ItemEntity {
             this.pickUpDelay--;
         } else if (this.getItem().getCount() > 0) {
             for (Player player : this.getWorld().getPlayers()) {
-                if (player.getLocation().distanceBetween(this.getLocation()) <= 1) {
+                if (player.getLocation().toVector3f().distance(this.getLocation().toVector3f()) <= 1) {
                     if (this.getPickupDelay() <= 0) {
                         int pickedUpCount = this.getItem().getCount() - player.getInventory().getExcessIfAdded(this.getItem());
                         if (pickedUpCount <= 0) {
@@ -109,7 +109,7 @@ public class ImplItemEntity extends ImplEntity implements ItemEntity {
             AddItemEntityPacket addItemEntityPacket = new AddItemEntityPacket();
             addItemEntityPacket.setUniqueEntityId(this.getId());
             addItemEntityPacket.setRuntimeEntityId(this.getId());
-            addItemEntityPacket.setItemStack(this.getItem());
+            addItemEntityPacket.setItemInHand(this.getItem().serialize(player.getVersion()));
             addItemEntityPacket.getMetadata().putAll(this.getMetaData().serialize());
             addItemEntityPacket.setPosition(this.getLocation().toVector3f());
             addItemEntityPacket.setMotion(this.getMotion());

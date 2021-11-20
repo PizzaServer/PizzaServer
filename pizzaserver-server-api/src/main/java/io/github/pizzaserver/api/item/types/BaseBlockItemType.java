@@ -50,7 +50,7 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
                 return false;
             }
             Block placedBlock = this.getBlockType().create(itemStack.getDamage());
-            placedBlock.setLocation(block.getWorld(), block.getSide(blockFace).getLocation());
+            placedBlock.setLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i());
 
             BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);
             player.getServer().getEventManager().call(blockPlaceEvent);
@@ -62,7 +62,7 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
                 itemStack.setCount(itemStack.getCount() - 1);
                 player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
             }
-            block.getWorld().setBlock(placedBlock, placedBlock.getLocation());
+            block.getWorld().setBlock(placedBlock, placedBlock.getLocation().toVector3i());
             return true;
         } else {
             // air blocks don't change the world at all and cannot really be placed.

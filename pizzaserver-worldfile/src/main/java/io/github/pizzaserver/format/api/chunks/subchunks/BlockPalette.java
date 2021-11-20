@@ -1,5 +1,6 @@
 package io.github.pizzaserver.format.api.chunks.subchunks;
 
+import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.format.api.chunks.BedrockNetworkDiskSerializable;
 
 import java.util.Set;
@@ -14,11 +15,11 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
     /**
      * Create a new {@link BlockPalette.Entry} given the name and compound.
      * @param name the id of the block (e.g. minecraft:stone)
-     * @param states an {@link NBTCompound} that contains the block state data
+     * @param states an {@link NbtMap} that contains the block state data
      * @param version current version of block state
      * @return the {@link BlockPalette.Entry} that represents the name and block state
      */
-    Entry create(String name, NBTCompound states, int version);
+    Entry create(String name, NbtMap states, int version);
 
     /**
      * Add a new block state to this palette.
@@ -77,10 +78,10 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
         public abstract int getVersion();
 
         /**
-         * {@link NBTCompound} of the block state data.
-         * @return {@link NBTCompound} containing block state data
+         * {@link NbtMap} of the block state data.
+         * @return {@link NbtMap} containing block state data
          */
-        public abstract NBTCompound getState();
+        public abstract NbtMap getState();
 
         @Override
         public int hashCode() {
@@ -117,8 +118,8 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
         }
 
         @Override
-        public NBTCompound getState() {
-            return new NBTCompound("states");
+        public NbtMap getState() {
+            return NbtMap.EMPTY;
         }
 
     }

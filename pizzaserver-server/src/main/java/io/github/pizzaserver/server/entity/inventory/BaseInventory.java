@@ -1,10 +1,10 @@
 package io.github.pizzaserver.server.entity.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -14,6 +14,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.ImplServer;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class BaseInventory implements Inventory {
 
@@ -23,16 +24,16 @@ public abstract class BaseInventory implements Inventory {
     protected final int size;
 
     protected ItemStack[] slots;
-    protected final Set<InventorySlotType> slotTypes;
+    protected final Set<ContainerSlotType> slotTypes;
 
     private final Set<Player> viewers = new HashSet<>();
 
 
-    public BaseInventory(Set<InventorySlotType> slotTypes, int size) {
+    public BaseInventory(Set<ContainerSlotType> slotTypes, int size) {
         this(slotTypes, size, ID++);
     }
 
-    public BaseInventory(Set<InventorySlotType> slotTypes, int size, int id) {
+    public BaseInventory(Set<ContainerSlotType> slotTypes, int size, int id) {
         this.size = size;
         this.id = id;
         this.slotTypes = slotTypes;
@@ -45,7 +46,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Set<InventorySlotType> getSlotTypes() {
+    public Set<ContainerSlotType> getSlotTypes() {
         return this.slotTypes;
     }
 
@@ -217,7 +218,7 @@ public abstract class BaseInventory implements Inventory {
     public boolean closeFor(Player player) {
         if (this.viewers.contains(player)) {
             ContainerClosePacket containerClosePacket = new ContainerClosePacket();
-            containerClosePacket.setId(this.getId());
+            containerClosePacket.setId((byte) this.getId());
             player.sendPacket(containerClosePacket);
 
             InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
@@ -267,7 +268,7 @@ public abstract class BaseInventory implements Inventory {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
         inventorySlotPacket.setContainerId(inventoryId);
         inventorySlotPacket.setSlot(slot);
-        inventorySlotPacket.setItem(itemStack);
+        inventorySlotPacket.setItem(itemStack.serialize(player.getVersion()));
         player.sendPacket(inventorySlotPacket);
     }
 
@@ -280,7 +281,7 @@ public abstract class BaseInventory implements Inventory {
     protected static void sendInventorySlots(Player player, ItemStack[] slots, int inventoryId) {
         InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
         inventoryContentPacket.setContainerId(inventoryId);
-        inventoryContentPacket.setContents(slots);
+        inventoryContentPacket.setContents(Arrays.stream(slots).map(itemStack -> itemStack.serialize(player.getVersion())).collect(Collectors.toList()));
         player.sendPacket(inventoryContentPacket);
     }
 

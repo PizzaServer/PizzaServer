@@ -38,7 +38,18 @@
         <dependency>
             <groupId>net.daporkchop</groupId>
             <artifactId>leveldb-mcpe-jni</artifactId>
-            <version>0.0.7-SNAPSHOT</version>
+            <version>0.0.10-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-buffer</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.53.Final</version>
         </dependency>
         <dependency>
             <groupId>com.nukkitx</groupId>

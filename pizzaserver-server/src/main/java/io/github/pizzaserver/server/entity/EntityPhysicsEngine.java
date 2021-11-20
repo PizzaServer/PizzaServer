@@ -6,7 +6,6 @@ import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysics
 import io.github.pizzaserver.api.level.world.blocks.Block;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.BoundingBox;
-import io.github.pizzaserver.api.utils.Location;
 
 public class EntityPhysicsEngine {
 
@@ -102,47 +101,47 @@ public class EntityPhysicsEngine {
             Vector3f newVelocity = this.getMotion();
 
             float friction = 1 - this.entity.getComponent(EntityPhysicsComponent.class).getDragForce();
+            float newY;
             if (physicsComponent.applyDragBeforeGravity()) {
-                newVelocity.setY(newVelocity.getY() * friction);
-                newVelocity.setY(newVelocity.getY() - physicsComponent.getGravityForce());
+                newY = (newVelocity.getY() * friction) - physicsComponent.getGravityForce();
             } else {
-                newVelocity.setY(newVelocity.getY() - physicsComponent.getGravityForce());
-                newVelocity.setY(newVelocity.getY() * friction);
+                newY = (newVelocity.getY() - physicsComponent.getGravityForce()) * friction;
             }
+            newVelocity = Vector3f.from(newVelocity.getX(), newY, newVelocity.getZ());
 
             // Apply friction
             if (this.entity.isOnGround()) {
                 // Consider block friction
                 if (Math.abs(this.getMotion().getX()) > 0 || Math.abs(this.getMotion().getZ()) > 0) {
-                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().round().toVector3i().subtract(0, 1, 0)).getBlockType().getFriction();
+                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getBlockType().getFriction();
                 }
             }
-            newVelocity = newVelocity.multiply(friction, 1, friction);
+            newVelocity = newVelocity.mul(friction, 1, friction);
 
             // Stop horizontal movement if it's small enough
             if (Math.abs(newVelocity.getX()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
-                newVelocity.setX(0);
+                newVelocity = Vector3f.from(0, newVelocity.getY(), newVelocity.getZ());
             }
             if (Math.abs(newVelocity.getZ()) < MIN_HORIZONTAL_MOVEMENT_ALLOWED) {
-                newVelocity.setZ(0);
+                newVelocity = Vector3f.from(newVelocity.getX(), newVelocity.getY(), 0);
             }
 
             // Handle bounding box logic if we should update the position
             if (this.shouldUpdatePosition()) {
-                Location newLocation = this.entity.getLocation().add(newVelocity.getX(), newVelocity.getY(), newVelocity.getZ());
+                Vector3f newPosition = this.entity.getLocation().toVector3f().add(newVelocity.getX(), newVelocity.getY(), newVelocity.getZ());
 
                 // Check if an entity is intercepting any blocks at said new location
                 BoundingBox newLocationBoundBox = new BoundingBox();
-                newLocationBoundBox.setPosition(newLocation);
+                newLocationBoundBox.setPosition(newPosition);
                 newLocationBoundBox.setHeight(this.entity.getBoundingBox().getHeight());
                 newLocationBoundBox.setWidth(this.entity.getBoundingBox().getWidth());
 
-                int minBlockXCheck = (int) Math.floor(newLocation.getX() - newLocationBoundBox.getWidth() / 2);
-                int maxBlockXCheck = (int) Math.ceil(newLocation.getX() + newLocationBoundBox.getWidth() / 2);
-                int minBlockYCheck = (int) Math.floor(newLocation.getY());
-                int maxBlockYCheck = (int) Math.ceil(newLocation.getY() + newLocationBoundBox.getHeight());
-                int maxBlockZCheck = (int) Math.ceil(newLocation.getZ() + newLocationBoundBox.getWidth() / 2);
-                int minBlockZCheck = (int) Math.floor(newLocation.getZ() - newLocationBoundBox.getWidth() / 2);
+                int minBlockXCheck = (int) Math.floor(newPosition.getX() - newLocationBoundBox.getWidth() / 2);
+                int maxBlockXCheck = (int) Math.ceil(newPosition.getX() + newLocationBoundBox.getWidth() / 2);
+                int minBlockYCheck = (int) Math.floor(newPosition.getY());
+                int maxBlockYCheck = (int) Math.ceil(newPosition.getY() + newLocationBoundBox.getHeight());
+                int maxBlockZCheck = (int) Math.ceil(newPosition.getZ() + newLocationBoundBox.getWidth() / 2);
+                int minBlockZCheck = (int) Math.floor(newPosition.getZ() - newLocationBoundBox.getWidth() / 2);
 
                 for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
                     for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
@@ -151,31 +150,31 @@ public class EntityPhysicsEngine {
 
                             if (block.getBoundingBox().collidesWith(newLocationBoundBox) && block.isSolid()) {
                                 // ensure we are not stuck in the ground before checking x and z (otherwise no friction will ever be applied)
-                                if (block.getBoundingBox().collidesWithYAxis(newLocationBoundBox) && newLocation.getY() > block.getY() + block.getBoundingBox().getHeight() / 2) {
-                                    newLocation.setY(block.getBoundingBox().getPosition().getY() + block.getBoundingBox().getHeight());
-                                    newVelocity.setY(0);
-                                    newLocationBoundBox.setPosition(newLocation.toVector3f());
+                                if (block.getBoundingBox().collidesWithYAxis(newLocationBoundBox) && newPosition.getY() > block.getY() + block.getBoundingBox().getHeight() / 2) {
+                                    newPosition = Vector3f.from(newPosition.getX(), block.getBoundingBox().getPosition().getY() + block.getBoundingBox().getHeight(), newPosition.getZ());
+                                    newVelocity = Vector3f.from(newVelocity.getX(), 0, newVelocity.getZ());
+                                    newLocationBoundBox.setPosition(newPosition);
                                 }
 
                                 // Adjust x to no longer collide
                                 if (newLocationBoundBox.collidesWithXAxis(block.getBoundingBox()) && newLocationBoundBox.collidesWith(block.getBoundingBox())) {
-                                    newLocation.setX(this.entity.getX());
-                                    newVelocity.setX(0);
-                                    newLocationBoundBox.setPosition(newLocation.toVector3f());
+                                    newPosition = Vector3f.from(this.entity.getX(), newPosition.getY(), newPosition.getZ());
+                                    newVelocity = Vector3f.from(0, newVelocity.getY(), newVelocity.getZ());
+                                    newLocationBoundBox.setPosition(newPosition);
                                 }
 
                                 // Adjust z to no longer collide
                                 if (newLocationBoundBox.collidesWithZAxis(block.getBoundingBox()) && newLocationBoundBox.collidesWith(block.getBoundingBox())) {
-                                    newLocation.setZ(this.entity.getZ());
-                                    newVelocity.setZ(0);
-                                    newLocationBoundBox.setPosition(newLocation.toVector3f());
+                                    newPosition = Vector3f.from(newPosition.getX(), newPosition.getY(), this.entity.getZ());
+                                    newVelocity = Vector3f.from(newVelocity.getX(), newVelocity.getY(), 0);
+                                    newLocationBoundBox.setPosition(newPosition);
                                 }
 
                                 // The only possible way for this to still be a collision in y is if we're in the bottom half of a block.
                                 if (newLocationBoundBox.collidesWith(block.getBoundingBox()) && newLocationBoundBox.collidesWithYAxis(block.getBoundingBox())) {
-                                    newLocation.setY(block.getY() - this.entity.getEyeHeight());
-                                    newVelocity.setY(0);
-                                    newLocationBoundBox.setPosition(newLocation.toVector3f());
+                                    newPosition = Vector3f.from(newPosition.getX(), block.getY() - this.entity.getEyeHeight(), newPosition.getZ());
+                                    newVelocity = Vector3f.from(newVelocity.getX(), 0, newVelocity.getZ());
+                                    newLocationBoundBox.setPosition(newPosition);
                                 }
 
                                 if (newLocationBoundBox.collidesWith(block.getBoundingBox())) {
@@ -190,7 +189,7 @@ public class EntityPhysicsEngine {
                     }
                 }
 
-                this.entity.moveTo(newLocation.getX(), newLocation.getY(), newLocation.getZ());
+                this.entity.moveTo(newPosition.getX(), newPosition.getY(), newPosition.getZ());
             }
             this.setMotion(newVelocity);
         } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {

@@ -5,6 +5,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
@@ -29,7 +30,6 @@ import io.github.pizzaserver.api.entity.definition.components.filter.EntityFilte
 import io.github.pizzaserver.api.entity.definition.components.filter.EntityFilterData;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.pizzaserver.api.entity.meta.EntityMetaData;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
@@ -85,7 +85,7 @@ public class ImplEntity implements Entity {
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
-    protected EntityInventory inventory = new ImplEntityInventory(this, Collections.singleton(InventorySlotType.INVENTORY), 0);
+    protected EntityInventory inventory = new ImplEntityInventory(this, Collections.singleton(ContainerSlotType.INVENTORY), 0);
     protected List<ItemStack> loot = new ArrayList<>();
     protected EntityMetaData metaData = new EntityMetaData();
     protected boolean metaDataUpdate;

@@ -15,7 +15,7 @@ import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.handlers.GamePacketHandler;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.pizzaserver.server.network.utils.LoginData;
+import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.pizzaserver.api.entity.EntityRegistry;
@@ -172,8 +172,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             startGamePacket.setDayCycleStopTime(world.getTime());
             startGamePacket.setEducationProductionId("");
             startGamePacket.setMultiplayerGame(true);
-            startGamePacket.setXblBroadcastMode(GamePublishSetting.NO_MULTI_PLAY);
-            startGamePacket.setPlatformBroadcastMode(GamePublishSetting.NO_MULTI_PLAY);
+            startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
+            startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
             startGamePacket.setCommandsEnabled(true);
             startGamePacket.setTexturePacksRequired(this.getServer().getResourcePackManager().arePacksRequired());
             startGamePacket.setDefaultPlayerPermission(PlayerPermission.MEMBER);
@@ -183,11 +183,12 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             startGamePacket.setForceExperimentalGameplay(true);
             startGamePacket.setLevelName(world.getLevel().getName());
             startGamePacket.setLevelId(Base64.getEncoder().encodeToString(startGamePacket.getLevelName().getBytes(StandardCharsets.UTF_8)));
+            startGamePacket.setGeneratorId(1);
             startGamePacket.setPremiumWorldTemplateId("");
             startGamePacket.setPlayerMovementSettings(movementSettings);
+            startGamePacket.setAuthoritativeMovementMode(AuthoritativeMovementMode.CLIENT);
             startGamePacket.setCurrentTick(this.getServer().getTick());
             startGamePacket.setInventoriesServerAuthoritative(true);
-            startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
             startGamePacket.setBlockPalette(this.getVersion().getCustomBlockPalette());
             startGamePacket.setItemEntries(this.getVersion().getItemEntries());
             startGamePacket.setMultiplayerCorrelationId("");
@@ -278,6 +279,21 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             this.sendPacket(setPlayerGamemodePacket);
             this.updateAdventureSettings();
         }
+    }
+
+    @Override
+    public boolean inCreativeMode() {
+        return this.getGamemode() == Gamemode.CREATIVE;
+    }
+
+    @Override
+    public boolean isAdventureMode() {
+        return this.getGamemode() == Gamemode.ADVENTURE;
+    }
+
+    @Override
+    public boolean inSurvivalMode() {
+        return this.getGamemode() == Gamemode.SURVIVAL;
     }
 
     /**

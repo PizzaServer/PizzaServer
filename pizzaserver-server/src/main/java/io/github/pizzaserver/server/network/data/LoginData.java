@@ -1,8 +1,9 @@
-package io.github.pizzaserver.server.network.utils;
+package io.github.pizzaserver.server.network.data;
 
 import com.google.gson.*;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nukkitx.protocol.bedrock.data.skin.*;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import io.github.pizzaserver.api.player.data.Device;
@@ -87,27 +88,30 @@ public class LoginData {
 
         try {
             // Validate chain and extract data
-            JWSObject chainJWS = JWSObject.parse(chainData.toString());
-            JsonObject chainJSON = GSON.fromJson(chainJWS.getPayload().toString(), JsonObject.class);
-
-            // Retrieve xuid, uuid, and username
-            JsonObject extraData = chainJSON.getAsJsonObject("extraData");
-            xuid = chainJSON.get("XUID").getAsString();
-            uuid = UUID.fromString(chainJSON.get("identity").getAsString());
-            username = chainJSON.get("displayName").getAsString();
+            JsonObject chainJSON = GSON.fromJson(chainData.toString(), JsonObject.class);
 
             // Check if xbox authenticated
-            JSONArray encodedChainArray = (JSONArray) chainJWS.getPayload().toJSONObject().get("chain");
-            authenticated = EncryptionUtils.verifyChain(encodedChainArray);
+            JSONArray chainArray = new JSONArray();
+            for (JsonElement chainElement : chainJSON.getAsJsonArray("chain")) {
+                chainArray.add(chainElement.getAsString());
+            }
+            authenticated = EncryptionUtils.verifyChain(chainArray);
+
+            // Retrieve xuid, uuid, and username
+            String chainPayload = JWSObject.parse(((String) chainArray.get(chainArray.size() - 1))).getPayload().toString();
+            JsonObject extraData = GSON.fromJson(chainPayload, JsonObject.class).getAsJsonObject("extraData");
+            xuid = extraData.get("XUID").getAsString();
+            uuid = UUID.fromString(extraData.get("identity").getAsString());
+            username = extraData.get("displayName").getAsString();
 
 
             // Extract data from skin string
             JWSObject skinJWS = JWSObject.parse(skinData.toString());
-            Map<String, Object> skinJSON = skinJWS.getPayload().toJSONObject();
+            JsonObject skinJSON = GSON.fromJson(skinJWS.getPayload().toString(), JsonObject.class);
 
             // Retrieve device and language code
-            device = Device.getPlatformByOS((Integer) skinJSON.get("DeviceOS"));
-            languageCode = (String) skinJSON.get("LanguageCode");
+            device = Device.getPlatformByOS(skinJSON.get("DeviceOS").getAsInt());
+            languageCode = skinJSON.get("LanguageCode").getAsString();
 
             // Retrieve skin
             skin = extractSkin(skinData);

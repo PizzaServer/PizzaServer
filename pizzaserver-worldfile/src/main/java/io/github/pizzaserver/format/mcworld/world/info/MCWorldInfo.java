@@ -1,13 +1,17 @@
 package io.github.pizzaserver.format.mcworld.world.info;
 
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.NBTInputStream;
+import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtType;
+import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.format.api.LevelGameRules;
 import io.github.pizzaserver.format.api.LevelData;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStream;
 
 /**
  * Representative of the information in the level.dat file
@@ -20,7 +24,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
     private boolean hasBeenLoadedInCreative;
     private boolean hasLockedResourcePack;
     private boolean hasLockedBehaviorPack;
-    private NBTCompound experiments;    // TODO: Implement actual experiments object once you figure out experiments
+    private NbtMap experiments;    // TODO: Implement actual experiments object once you figure out experiments
     private boolean forceGamemode;
     private boolean immutable;
     private boolean isConfirmedPlatformLockedContent;
@@ -84,137 +88,127 @@ public class MCWorldInfo implements LevelData, Cloneable {
     public MCWorldInfo() {}
 
     public MCWorldInfo(File levelDatFile) throws IOException {
-        try (NBTInputStream inputStream = new NBTInputStream(
-                new LittleEndianDataInputStream(
-                        new FileInputStream(levelDatFile)
-                )
-        )) {
-            // the header is 8 bytes.
-            inputStream.skip(8);    // TODO: These 8 bytes are important when writing the level.dat file
-            NBTCompound compound = inputStream.readCompound();
-            
-            this.setCommandsEnabled(compound.getBoolean("commandsEnabled"));
-            this.setCurrentTick(compound.getLong("currentTick"));
-            this.setHasBeenLoadedInCreative(compound.getBoolean("hasBeenLoadedInCreative"));
-            this.setHasLockedResourcePack(compound.getBoolean("hasLockedResourcePack"));
-            this.setHasLockedBehaviorPack(compound.getBoolean("hasLockedBehaviorPack"));
-            this.setExperiments(compound.getCompound("experiments"));
-            this.setForceGamemode(compound.getBoolean("ForceGameType"));
-            this.setImmutable(compound.getBoolean("immutableWorld"));
-            this.setConfirmedPlatformLockedContent(compound.getBoolean("ConfirmedPlatformLockedContent"));
-            this.setFromWorldTemplate(compound.getBoolean("isFromWorldTemplate"));
-            this.setFromLockedTemplate(compound.getBoolean("isFromLockedTemplate"));
-            this.setIsMultiplayerGame(compound.getBoolean("MultiplayerGame"));
-            this.setIsSingleUseWorld(compound.getBoolean("isSingleUseWorld"));
-            this.setIsWorldTemplateOptionsLocked(compound.getBoolean("isWorldTemplateOptionLocked"));
-            this.setLanBroadcast(compound.getBoolean("LANBroadcast"));
-            this.setLanBroadcastIntent(compound.getBoolean("LANBroadcastIntent"));
-            this.setMultiplayerGameIntent(compound.getBoolean("MultiplayerGameIntent"));
-            this.setPlatformBroadcastIntent(compound.getInteger("PlatformBroadcastIntent"));
-            this.setRequiresCopiedPackRemovalCheck(compound.getBoolean("requiresCopiedPackRemovalCheck"));
-            this.setServerChunkTickRange(compound.getInteger("serverChunkTickRange"));
-            this.setSpawnOnlyV1Villagers(compound.getBoolean("SpawnV1Villagers"));
-            this.setStorageVersion(compound.getInteger("StorageVersion"));
-            this.setTexturePacksRequired(compound.getBoolean("texturePacksRequired"));
-            this.setUseMsaGamerTagsOnly(compound.getBoolean("useMsaGamertagsOnly"));
-            this.setName(compound.getString("LevelName"));
-            this.setWorldStartCount(compound.getLong("worldStartCount"));
-            this.setXboxLiveBroadcastIntent(compound.getInteger("XBLBroadcastIntent"));
-            this.setEduOffer(compound.getInteger("eduOffer"));
-            this.setEduEnabled(compound.getBoolean("educationFeaturesEnabled"));
-            this.setBiomeOverride(compound.getString("BiomeOverride"));
-            this.setBonusChestEnabled(compound.getBoolean("bonusChestEnabled"));
-            this.setBonusChestSpawned(compound.getBoolean("bonusChestSpawned"));
-            this.setCenterMapsToOrigin(compound.getBoolean("CenterMapsToOrigin"));
-            this.setDefaultGamemode(compound.getInteger("GameType"));
-            this.setDifficulty(compound.getInteger("Difficulty"));
-            this.setFlatWorldLayers(compound.getString("FlatWorldLayers"));
-            this.setLightningLevel(compound.getFloat("lightningLevel"));
-            this.setLightningTime(compound.getInteger("lightningTime"));
-            this.setLimitedWorldCoordinates(new Vector3i(
-                    compound.getInteger("LimitedWorldOriginX"), 
-                    compound.getInteger("LimitedWorldOriginY"),
-                    compound.getInteger("LimitedWorldOriginZ")));
-            this.setLimitedWorldWidth(compound.getInteger("limitedWorldWidth"));
-            this.setNetherScale(compound.getInteger("NetherScale"));
-            this.setRainLevel(compound.getFloat("rainLevel"));
-            this.setRainTime(compound.getInteger("rainTime"));
-            this.setSeed(compound.getLong("RandomSeed"));
-            this.setWorldSpawn(new Vector3i(
-                    compound.getInteger("SpawnX"), 
-                    compound.getInteger("SpawnY"), 
-                    compound.getInteger("SpawnZ")
-            ));
-            this.setStartWithMapEnabled(compound.getBoolean("startWithMapEnabled"));
-            this.setTime(compound.getLong("Time"));
-            this.setWorldType(compound.getInteger("Generator"));
-            this.setBaseGameVersion(compound.getString("baseGameVersion"));
-            this.setInventoryVersion(compound.getString("InventoryVersion"));
-            this.setLastPlayed(compound.getLong("LastPlayed"));
-            this.setMinimumCompatibleClientVersion(
-                    Arrays.stream(compound.getList("MinimumCompatibleClientVersion").getContents())
-                            .mapToInt(i -> (Integer) i)
-                            .toArray()
-            );
-            this.setLastOpenedWithVersion(
-                    Arrays.stream(compound.getList("lastOpenedWithVersion").getContents())
-                            .mapToInt(i -> (Integer) i)
-                            .toArray()
-            );
-            this.setPlatform(compound.getInteger("Platform"));
-            this.setProtocol(compound.getInteger("NetworkVersion"));
-            this.setPrid(compound.getString("prid"));
 
-            NBTCompound abilities = compound.getCompound("abilities");
-            this.setPlayerAbilities(
-                    new PlayerAbilities()
-                            .setCanAttackMobs(abilities.getBoolean("attackmobs"))
-                            .setCanAttackPlayers(abilities.getBoolean("attackplayers"))
-                            .setCanBuild(abilities.getBoolean("build"))
-                            .setCanFly(abilities.getBoolean("mayfly"))
-                            .setCanInstaBuild(abilities.getBoolean("instabuild"))
-                            .setCanMine(abilities.getBoolean("mine"))
-                            .setCanOpenContainers(abilities.getBoolean("opencontainers"))
-                            .setCanTeleport(abilities.getBoolean("teleport"))
-                            .setCanUseDoorsAndSwitches(abilities.getBoolean("doorsandswitches"))
-                            .setFlySpeed(abilities.getFloat("flySpeed"))
-                            .setIsFlying(abilities.getBoolean("flying"))
-                            .setIsInvulnerable(abilities.getBoolean("invulnerable"))
-                            .setIsOp(abilities.getBoolean("op"))
-                            .setIsLightning(abilities.getBoolean("lightning"))
-                            .setPermissionsLevel(abilities.getInteger("permissionsLevel"))
-                            .setPlayerPermissionsLevel(abilities.getInteger("playerPermissionsLevel"))
-                            .setWalkSpeed(abilities.getFloat("walkSpeed"))
-            );
+        try (InputStream levelDatStream = new FileInputStream(levelDatFile)) {
+            levelDatStream.skip(8); // TODO: These 8 bytes are important when writing the level.dat file (header)
+            try (NBTInputStream inputStream = NbtUtils.createReaderLE(levelDatStream)) {
+                NbtMap compound = (NbtMap) inputStream.readTag();
 
-            LevelGameRules gameRules = new LevelGameRules();
-            gameRules.setCommandBlockOutputEnabled(compound.getBoolean("commandblockoutput"));
-            gameRules.setCommandBlocksEnabled(compound.getBoolean("commandblocksenabled"));
-            gameRules.setDaylightCycle(compound.getBoolean("dodaylightcycle"));
-            gameRules.setEntityDropsEnabled(compound.getBoolean("doentitydrops"));
-            gameRules.setFireTickEnabled(compound.getBoolean("dofiretick"));
-            gameRules.setImmediateRespawnEnabled(compound.getBoolean("doimmediaterespawn"));
-            gameRules.setInsomniaEnabled(compound.getBoolean("doinsomnia"));
-            gameRules.setMobLootEnabled(compound.getBoolean("domobloot"));
-            gameRules.setMobSpawningEnabled(compound.getBoolean("domobspawning"));
-            gameRules.setTileDropsEnabled(compound.getBoolean("dotiledrops"));
-            gameRules.setWeatherCycleEnabled(compound.getBoolean("doweathercycle"));
-            gameRules.setDrowningDamageEnabled(compound.getBoolean("drowningdamage"));
-            gameRules.setFallDamageEnabled(compound.getBoolean("falldamage"));
-            gameRules.setFireDamageEnabled(compound.getBoolean("firedamage"));
-            gameRules.setKeepInventoryEnabled(compound.getBoolean("keepinventory"));
-            gameRules.setMaxCommandChainLength(compound.getInteger("maxcommandchainlength"));
-            gameRules.setMobGriefingEnabled(compound.getBoolean("mobgriefing"));
-            gameRules.setNaturalRegenerationEnabled(compound.getBoolean("naturalregeneration"));
-            gameRules.setPVPEnabled(compound.getBoolean("pvp"));
-            gameRules.setRandomTickSpeed(compound.getInteger("randomtickspeed"));
-            gameRules.setSendCommandFeedbackEnabled(compound.getBoolean("sendcommandfeedback"));
-            gameRules.setShowCoordinatesEnabled(compound.getBoolean("showcoordinates"));
-            gameRules.setShowDeathMessagesEnabled(compound.getBoolean("showdeathmessages"));
-            gameRules.setShowItemTagsEnabled(compound.getBoolean("showtags"));
-            gameRules.setSpawnRadius(compound.getInteger("spawnradius"));
-            gameRules.setTNTExplodesEnabled(compound.getBoolean("tntexplodes"));
-            this.setGameRules(gameRules);
+                this.setCommandsEnabled(compound.getBoolean("commandsEnabled"));
+                this.setCurrentTick(compound.getLong("currentTick"));
+                this.setHasBeenLoadedInCreative(compound.getBoolean("hasBeenLoadedInCreative"));
+                this.setHasLockedResourcePack(compound.getBoolean("hasLockedResourcePack"));
+                this.setHasLockedBehaviorPack(compound.getBoolean("hasLockedBehaviorPack"));
+                this.setExperiments(compound.getCompound("experiments"));
+                this.setForceGamemode(compound.getBoolean("ForceGameType"));
+                this.setImmutable(compound.getBoolean("immutableWorld"));
+                this.setConfirmedPlatformLockedContent(compound.getBoolean("ConfirmedPlatformLockedContent"));
+                this.setFromWorldTemplate(compound.getBoolean("isFromWorldTemplate"));
+                this.setFromLockedTemplate(compound.getBoolean("isFromLockedTemplate"));
+                this.setIsMultiplayerGame(compound.getBoolean("MultiplayerGame"));
+                this.setIsSingleUseWorld(compound.getBoolean("isSingleUseWorld"));
+                this.setIsWorldTemplateOptionsLocked(compound.getBoolean("isWorldTemplateOptionLocked"));
+                this.setLanBroadcast(compound.getBoolean("LANBroadcast"));
+                this.setLanBroadcastIntent(compound.getBoolean("LANBroadcastIntent"));
+                this.setMultiplayerGameIntent(compound.getBoolean("MultiplayerGameIntent"));
+                this.setPlatformBroadcastIntent(compound.getInt("PlatformBroadcastIntent"));
+                this.setRequiresCopiedPackRemovalCheck(compound.getBoolean("requiresCopiedPackRemovalCheck"));
+                this.setServerChunkTickRange(compound.getInt("serverChunkTickRange"));
+                this.setSpawnOnlyV1Villagers(compound.getBoolean("SpawnV1Villagers"));
+                this.setStorageVersion(compound.getInt("StorageVersion"));
+                this.setTexturePacksRequired(compound.getBoolean("texturePacksRequired"));
+                this.setUseMsaGamerTagsOnly(compound.getBoolean("useMsaGamertagsOnly"));
+                this.setName(compound.getString("LevelName"));
+                this.setWorldStartCount(compound.getLong("worldStartCount"));
+                this.setXboxLiveBroadcastIntent(compound.getInt("XBLBroadcastIntent"));
+                this.setEduOffer(compound.getInt("eduOffer"));
+                this.setEduEnabled(compound.getBoolean("educationFeaturesEnabled"));
+                this.setBiomeOverride(compound.getString("BiomeOverride"));
+                this.setBonusChestEnabled(compound.getBoolean("bonusChestEnabled"));
+                this.setBonusChestSpawned(compound.getBoolean("bonusChestSpawned"));
+                this.setCenterMapsToOrigin(compound.getBoolean("CenterMapsToOrigin"));
+                this.setDefaultGamemode(compound.getInt("GameType"));
+                this.setDifficulty(compound.getInt("Difficulty"));
+                this.setFlatWorldLayers(compound.getString("FlatWorldLayers"));
+                this.setLightningLevel(compound.getFloat("lightningLevel"));
+                this.setLightningTime(compound.getInt("lightningTime"));
+                this.setLimitedWorldCoordinates(Vector3i.from(
+                        compound.getInt("LimitedWorldOriginX"),
+                        compound.getInt("LimitedWorldOriginY"),
+                        compound.getInt("LimitedWorldOriginZ")));
+                this.setLimitedWorldWidth(compound.getInt("limitedWorldWidth"));
+                this.setNetherScale(compound.getInt("NetherScale"));
+                this.setRainLevel(compound.getFloat("rainLevel"));
+                this.setRainTime(compound.getInt("rainTime"));
+                this.setSeed(compound.getLong("RandomSeed"));
+                this.setWorldSpawn(Vector3i.from(
+                        compound.getInt("SpawnX"),
+                        compound.getInt("SpawnY"),
+                        compound.getInt("SpawnZ")
+                ));
+                this.setStartWithMapEnabled(compound.getBoolean("startWithMapEnabled"));
+                this.setTime(compound.getLong("Time"));
+                this.setWorldType(compound.getInt("Generator"));
+                this.setBaseGameVersion(compound.getString("baseGameVersion"));
+                this.setInventoryVersion(compound.getString("InventoryVersion"));
+                this.setLastPlayed(compound.getLong("LastPlayed"));
+                this.setMinimumCompatibleClientVersion(compound.getList("MinimumCompatibleClientVersion", NbtType.INT).stream().mapToInt(Integer::intValue).toArray());
+                this.setLastOpenedWithVersion(compound.getList("lastOpenedWithVersion", NbtType.INT).stream().mapToInt(Integer::intValue).toArray());
+                this.setPlatform(compound.getInt("Platform"));
+                this.setProtocol(compound.getInt("NetworkVersion"));
+                this.setPrid(compound.getString("prid"));
+
+                NbtMap abilities = compound.getCompound("abilities");
+                this.setPlayerAbilities(
+                        new PlayerAbilities()
+                                .setCanAttackMobs(abilities.getBoolean("attackmobs"))
+                                .setCanAttackPlayers(abilities.getBoolean("attackplayers"))
+                                .setCanBuild(abilities.getBoolean("build"))
+                                .setCanFly(abilities.getBoolean("mayfly"))
+                                .setCanInstaBuild(abilities.getBoolean("instabuild"))
+                                .setCanMine(abilities.getBoolean("mine"))
+                                .setCanOpenContainers(abilities.getBoolean("opencontainers"))
+                                .setCanTeleport(abilities.getBoolean("teleport"))
+                                .setCanUseDoorsAndSwitches(abilities.getBoolean("doorsandswitches"))
+                                .setFlySpeed(abilities.getFloat("flySpeed"))
+                                .setIsFlying(abilities.getBoolean("flying"))
+                                .setIsInvulnerable(abilities.getBoolean("invulnerable"))
+                                .setIsOp(abilities.getBoolean("op"))
+                                .setIsLightning(abilities.getBoolean("lightning"))
+                                .setPermissionsLevel(abilities.getInt("permissionsLevel"))
+                                .setPlayerPermissionsLevel(abilities.getInt("playerPermissionsLevel"))
+                                .setWalkSpeed(abilities.getFloat("walkSpeed"))
+                );
+
+                LevelGameRules gameRules = new LevelGameRules();
+                gameRules.setCommandBlockOutputEnabled(compound.getBoolean("commandblockoutput"));
+                gameRules.setCommandBlocksEnabled(compound.getBoolean("commandblocksenabled"));
+                gameRules.setDaylightCycle(compound.getBoolean("dodaylightcycle"));
+                gameRules.setEntityDropsEnabled(compound.getBoolean("doentitydrops"));
+                gameRules.setFireTickEnabled(compound.getBoolean("dofiretick"));
+                gameRules.setImmediateRespawnEnabled(compound.getBoolean("doimmediaterespawn"));
+                gameRules.setInsomniaEnabled(compound.getBoolean("doinsomnia"));
+                gameRules.setMobLootEnabled(compound.getBoolean("domobloot"));
+                gameRules.setMobSpawningEnabled(compound.getBoolean("domobspawning"));
+                gameRules.setTileDropsEnabled(compound.getBoolean("dotiledrops"));
+                gameRules.setWeatherCycleEnabled(compound.getBoolean("doweathercycle"));
+                gameRules.setDrowningDamageEnabled(compound.getBoolean("drowningdamage"));
+                gameRules.setFallDamageEnabled(compound.getBoolean("falldamage"));
+                gameRules.setFireDamageEnabled(compound.getBoolean("firedamage"));
+                gameRules.setKeepInventoryEnabled(compound.getBoolean("keepinventory"));
+                gameRules.setMaxCommandChainLength(compound.getInt("maxcommandchainlength"));
+                gameRules.setMobGriefingEnabled(compound.getBoolean("mobgriefing"));
+                gameRules.setNaturalRegenerationEnabled(compound.getBoolean("naturalregeneration"));
+                gameRules.setPVPEnabled(compound.getBoolean("pvp"));
+                gameRules.setRandomTickSpeed(compound.getInt("randomtickspeed"));
+                gameRules.setSendCommandFeedbackEnabled(compound.getBoolean("sendcommandfeedback"));
+                gameRules.setShowCoordinatesEnabled(compound.getBoolean("showcoordinates"));
+                gameRules.setShowDeathMessagesEnabled(compound.getBoolean("showdeathmessages"));
+                gameRules.setShowItemTagsEnabled(compound.getBoolean("showtags"));
+                gameRules.setSpawnRadius(compound.getInt("spawnradius"));
+                gameRules.setTNTExplodesEnabled(compound.getBoolean("tntexplodes"));
+                this.setGameRules(gameRules);
+            }
         }
     }
 
@@ -262,7 +256,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
      * This is subject to change and will change when experiments are explored.
      * @return experiments
      */
-    public NBTCompound getExperiments() {
+    public NbtMap getExperiments() {
         return this.experiments;
     }
 
@@ -270,7 +264,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
      * This is subject to change and will change when experiments are explored.
      * @param experiments experiments
      */
-    public void setExperiments(NBTCompound experiments) {
+    public void setExperiments(NbtMap experiments) {
         this.experiments = experiments;
     }
 

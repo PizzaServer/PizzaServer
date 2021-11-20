@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.level.world.chunks;
 
+import com.nukkitx.math.vector.Vector2i;
 import io.github.pizzaserver.server.level.processing.requests.PlayerChunkRequest;
 import io.github.pizzaserver.server.level.processing.requests.UnloadChunkRequest;
 import io.github.pizzaserver.server.level.world.ImplWorld;

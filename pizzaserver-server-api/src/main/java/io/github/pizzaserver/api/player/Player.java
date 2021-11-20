@@ -36,6 +36,12 @@ public interface Player extends HumanEntity {
 
     void setGamemode(Gamemode gamemode);
 
+    boolean inCreativeMode();
+
+    boolean isAdventureMode();
+
+    boolean inSurvivalMode();
+
     AdventureSettings getAdventureSettings();
 
     void setAdventureSettings(AdventureSettings adventureSettings);

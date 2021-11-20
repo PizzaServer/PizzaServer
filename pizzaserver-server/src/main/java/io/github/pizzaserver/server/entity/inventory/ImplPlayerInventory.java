@@ -1,9 +1,10 @@
 package io.github.pizzaserver.server.entity.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
-import io.github.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
@@ -17,14 +18,14 @@ import java.util.Set;
 
 public class ImplPlayerInventory extends ImplEntityInventory implements PlayerInventory {
 
-    private static final Set<InventorySlotType> PLAYER_SLOT_TYPES = new HashSet<InventorySlotType>() {
+    private static final Set<ContainerSlotType> PLAYER_SLOT_TYPES = new HashSet<ContainerSlotType>() {
         {
-            this.add(InventorySlotType.ARMOR);
-            this.add(InventorySlotType.INVENTORY);
-            this.add(InventorySlotType.HOTBAR);
-            this.add(InventorySlotType.PLAYER_INVENTORY);
-            this.add(InventorySlotType.CURSOR);
-            this.add(InventorySlotType.OFFHAND);
+            this.add(ContainerSlotType.ARMOR);
+            this.add(ContainerSlotType.INVENTORY);
+            this.add(ContainerSlotType.HOTBAR);
+            this.add(ContainerSlotType.HOTBAR_AND_INVENTORY);
+            this.add(ContainerSlotType.CURSOR);
+            this.add(ContainerSlotType.OFFHAND);
         }
     };
 
@@ -33,7 +34,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
 
 
     public ImplPlayerInventory(Player player) {
-        super(player, PLAYER_SLOT_TYPES, 36, InventoryID.MAIN_INVENTORY);
+        super(player, PLAYER_SLOT_TYPES, 36, ContainerId.INVENTORY);
     }
 
     @Override
@@ -63,31 +64,31 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     @Override
     public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
         super.setArmour(helmet, chestplate, leggings, boots);
-        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots() }, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots() }, ContainerId.ARMOR);
     }
 
     @Override
     public void setHelmet(ItemStack helmet) {
         super.setHelmet(helmet);
-        sendInventorySlot(this.getEntity(), this.getHelmet(), 0, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getHelmet(), 0, ContainerId.ARMOR);
     }
 
     @Override
     public void setChestplate(ItemStack chestplate) {
         super.setChestplate(chestplate);
-        sendInventorySlot(this.getEntity(), this.getChestplate(), 1, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getChestplate(), 1, ContainerId.ARMOR);
     }
 
     @Override
     public void setLeggings(ItemStack leggings) {
         super.setLeggings(leggings);
-        sendInventorySlot(this.getEntity(), this.getLeggings(), 2, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getLeggings(), 2, ContainerId.ARMOR);
     }
 
     @Override
     public void setBoots(ItemStack boots) {
         super.setBoots(boots);
-        sendInventorySlot(this.getEntity(), this.getBoots(), 3, InventoryID.ARMOR_INVENTORY);
+        sendInventorySlot(this.getEntity(), this.getBoots(), 3, ContainerId.ARMOR);
     }
 
     @Override
@@ -126,7 +127,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
             mobEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
             mobEquipmentPacket.setHotbarSlot(slot);
             mobEquipmentPacket.setInventorySlot(slot);
-            mobEquipmentPacket.setItem(this.getSlot(slot));
+            mobEquipmentPacket.setItem(this.getSlot(slot).serialize(this.getEntity().getVersion()));
             this.getEntity().sendPacket(mobEquipmentPacket);
 
             sendInventorySlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
@@ -146,7 +147,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     @Override
     public void setOffhandItem(ItemStack offHand) {
         super.setOffhandItem(offHand);
-        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getOffhandItem() }, InventoryID.OFF_HAND_INVENTORY);
+        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getOffhandItem() }, ContainerId.OFFHAND);
     }
 
     @Override
@@ -157,7 +158,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     @Override
     public void setCursor(ItemStack cursor) {
         this.setCursor(cursor, false);
-        sendInventorySlot(this.getEntity(), this.cursor, 0, InventoryID.PLAYER_UI);
+        sendInventorySlot(this.getEntity(), this.cursor, 0, ContainerId.UI);
     }
 
     public void setCursor(ItemStack cursor, boolean keepNetworkId) {

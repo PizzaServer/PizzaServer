@@ -1,54 +1,55 @@
 package io.github.pizzaserver.server.network.handlers.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.player.Player;
-import java.util.Optional;
+import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
+import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
 
-public class InventoryActionSwapHandler extends InventoryActionHandler<InventoryActionSwap> {
+public class InventoryActionSwapHandler extends InventoryActionHandler<SwapStackRequestActionDataWrapper> {
 
-    public static final InventoryActionHandler<InventoryActionSwap> INSTANCE = new InventoryActionSwapHandler();
+    public static final InventoryActionHandler<SwapStackRequestActionDataWrapper> INSTANCE = new InventoryActionSwapHandler();
 
 
     @Override
-    public boolean isValid(Player player, InventoryActionSwap action) {
-        Optional<ItemStack> sourceItemStack = getItemStack(player, action.getSource());
-        Optional<ItemStack> destinationItemStack = getItemStack(player, action.getDestination());
-        if (sourceItemStack.isPresent() && destinationItemStack.isPresent()) {
+    public boolean isValid(Player player, SwapStackRequestActionDataWrapper action) {
+        if (action.getSource().exists() && action.getDestination().exists()) {
             // Ensure that the source and destination items are allowed in their new slots
-            return canPutItemTypeInSlot(sourceItemStack.get().getItemType(), action.getDestination().getInventorySlotType())
-                    && canPutItemTypeInSlot(destinationItemStack.get().getItemType(), action.getSource().getInventorySlotType());
+            return ItemType.canBePlacedInSlot(action.getSource().getItemStack().getItemType(), action.getDestination().getSlotType())
+                    && ItemType.canBePlacedInSlot(action.getDestination().getItemStack().getItemType(), action.getSource().getSlotType());
         } else {
             return false;
         }
     }
 
     @Override
-    public boolean runAction(ItemStackResponsePacket.Response response, Player player, InventoryActionSwap action) {
-        SlotLocation source = new SlotLocation(response, player, action.getSource());
-        SlotLocation destination = new SlotLocation(response, player, action.getDestination());
+    public boolean runAction(Player player, SwapStackRequestActionDataWrapper action) {
+        InventorySlotContainer source = action.getSource();
+        InventorySlotContainer destination = action.getDestination();
 
         // Call the event
         InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
-                InventoryMoveItemEvent.Action.SWAP,
+                StackRequestActionType.SWAP,
                 source.getInventory(),
-                action.getSource().getInventorySlotType(),
+                action.getSource().getSlotType(),
                 action.getSource().getSlot(),
-                source.getItem(),
-                source.getItem().getCount(),
+                source.getItemStack(),
+                source.getItemStack().getCount(),
                 destination.getInventory(),
-                action.getDestination().getInventorySlotType(),
+                action.getDestination().getSlotType(),
                 action.getDestination().getSlot(),
-                destination.getItem());
+                destination.getItemStack());
         player.getServer().getEventManager().call(inventoryMoveItemEvent);
         if (inventoryMoveItemEvent.isCancelled()) {
             return false;
         }
 
         // Swap item stacks
-        ItemStack originalSourceItemStack = source.getItem();
-        source.setItem(destination.getItem());
-        destination.setItem(originalSourceItemStack);
+        ItemStack originalSourceItemStack = source.getItemStack();
+        source.setItemStack(destination.getItemStack());
+        destination.setItemStack(originalSourceItemStack);
 
         return true;
     }

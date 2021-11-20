@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.event.type.entity;
 
+import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.player.Player;
@@ -35,7 +36,7 @@ public class EntityDeathEvent extends BaseEntityEvent {
 
     public void setDeathMessage(String message) {
         this.deathMessage = new TextMessage.Builder()
-                .setType(TextType.RAW)
+                .setType(TextPacket.Type.RAW)
                 .setMessage(message)
                 .build();
     }

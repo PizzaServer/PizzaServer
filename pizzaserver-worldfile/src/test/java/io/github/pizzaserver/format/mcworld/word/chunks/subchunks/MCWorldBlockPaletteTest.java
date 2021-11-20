@@ -1,5 +1,6 @@
 package io.github.pizzaserver.format.mcworld.word.chunks.subchunks;
 
+import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.format.mcworld.world.chunks.subchunks.MCWorldBlockPalette;
 import org.junit.jupiter.api.Test;
 
@@ -12,11 +13,11 @@ public class MCWorldBlockPaletteTest {
         MCWorldBlockPalette palette = new MCWorldBlockPalette();
 
         MCWorldBlockPalette.MCWorldBlockPaletteEntry[] entries = new MCWorldBlockPalette.MCWorldBlockPaletteEntry[]{
-                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("a", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("b", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("c", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("d", new NBTCompound(), 0),
-                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("e", new NBTCompound(), 0)
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("a", NbtMap.EMPTY, 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("b", NbtMap.EMPTY, 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("c", NbtMap.EMPTY, 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("d", NbtMap.EMPTY, 0),
+                new MCWorldBlockPalette.MCWorldBlockPaletteEntry("e", NbtMap.EMPTY, 0)
         };
         for (MCWorldBlockPalette.MCWorldBlockPaletteEntry entry : entries) {
             palette.add(entry);
