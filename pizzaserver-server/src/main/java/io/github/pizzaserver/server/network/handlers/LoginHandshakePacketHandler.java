@@ -1,13 +1,18 @@
 package io.github.pizzaserver.server.network.handlers;
 
+import com.nimbusds.jose.JWSObject;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
+import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import io.github.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.network.data.LoginData;
 
+import javax.crypto.SecretKey;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.*;
 
 /**
@@ -17,6 +22,8 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
 
     private final ImplServer server;
     private final PlayerSession session;
+
+    private LoginData loginData;
 
 
     public LoginHandshakePacketHandler(ImplServer server, PlayerSession session) {
@@ -48,20 +55,35 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
             this.session.getConnection().disconnect();
             return true;
         }
+        this.loginData = loginData.get();
 
-        if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
-            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-            playStatusPacket.setStatus(PlayStatusPacket.Status.FAILED_SERVER_FULL_SUB_CLIENT);
-            this.session.getConnection().sendPacket(playStatusPacket);
+        if (!EncryptionUtils.canUseEncryption()) {
+            this.server.getLogger().error("Packet encryption is not supported.");
+            this.session.getConnection().disconnect();
             return true;
         }
 
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
-        this.session.getConnection().sendPacket(playStatusPacket);
+        JWSObject encryptionJWT;
+        SecretKey encryptionSecretKey;
+        try {
+            PublicKey clientKey = EncryptionUtils.generateKey(loginData.get().getIdentityPublicKey());
 
-        // Initialization successful.
-        this.session.setPacketHandler(new ResourcePackPacketHandler(this.server, this.session, loginData.get()));
+            KeyPair encryptionKeyPair = EncryptionUtils.createKeyPair();
+            byte[] encryptionToken = EncryptionUtils.generateRandomToken();
+            encryptionSecretKey = EncryptionUtils.getSecretKey(encryptionKeyPair.getPrivate(), clientKey, encryptionToken);
+
+            encryptionJWT = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
+        } catch (Exception exception) {
+            this.server.getLogger().debug("Failed to initialize packet encryption.", exception);
+            this.session.getConnection().disconnect();
+            return true;
+        }
+
+        this.session.getConnection().enableEncryption(encryptionSecretKey);
+
+        ServerToClientHandshakePacket handshakePacket = new ServerToClientHandshakePacket();
+        handshakePacket.setJwt(encryptionJWT.serialize());
+        this.session.getConnection().sendPacket(handshakePacket);
         return true;
     }
 
@@ -74,7 +96,20 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
     @Override
     public boolean handle(ClientToServerHandshakePacket packet) {
         if (this.session.getConnection().isEncrypted()) {
-            // TODO: continue
+            if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
+                PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+                playStatusPacket.setStatus(PlayStatusPacket.Status.FAILED_SERVER_FULL_SUB_CLIENT);
+                this.session.getConnection().sendPacket(playStatusPacket);
+                return true;
+            }
+
+            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+            playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
+            this.session.getConnection().sendPacket(playStatusPacket);
+
+            // Initialization successful.
+            this.session.setPacketHandler(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
+            return true;
         }
         return true;
     }

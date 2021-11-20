@@ -17,6 +17,7 @@ public class LoginData {
     private static final Gson GSON = new Gson();
 
     private final String xuid;
+    private final String identityPublicKey;
     private final UUID uuid;
     private final String username;
     private final String languageCode;
@@ -26,6 +27,7 @@ public class LoginData {
 
 
     private LoginData(String xuid,
+                      String identityPublicKey,
                       UUID uuid,
                       String username,
                       String languageCode,
@@ -33,6 +35,7 @@ public class LoginData {
                       Skin skin,
                       boolean authenticated) {
         this.xuid = xuid;
+        this.identityPublicKey = identityPublicKey;
         this.uuid = uuid;
         this.username = username;
         this.languageCode = languageCode;
@@ -43,6 +46,10 @@ public class LoginData {
 
     public String getXUID() {
         return this.xuid;
+    }
+
+    public String getIdentityPublicKey() {
+        return this.identityPublicKey;
     }
 
     public UUID getUUID() {
@@ -79,6 +86,7 @@ public class LoginData {
     @SuppressWarnings("unchecked")
     public static Optional<LoginData> extract(AsciiString chainData, AsciiString skinData) {
         String xuid;
+        String identityPublicKey;
         UUID uuid;
         String username;
         String languageCode;
@@ -99,11 +107,11 @@ public class LoginData {
 
             // Retrieve xuid, uuid, and username
             String chainPayload = JWSObject.parse(((String) chainArray.get(chainArray.size() - 1))).getPayload().toString();
-            JsonObject extraData = GSON.fromJson(chainPayload, JsonObject.class).getAsJsonObject("extraData");
-            xuid = extraData.get("XUID").getAsString();
-            uuid = UUID.fromString(extraData.get("identity").getAsString());
-            username = extraData.get("displayName").getAsString();
-
+            JsonObject jsonPayload = GSON.fromJson(chainPayload, JsonObject.class);
+            xuid = jsonPayload.getAsJsonObject("extraData").get("XUID").getAsString();
+            uuid = UUID.fromString(jsonPayload.getAsJsonObject("extraData").get("identity").getAsString());
+            username = jsonPayload.getAsJsonObject("extraData").get("displayName").getAsString();
+            identityPublicKey = jsonPayload.get("identityPublicKey").getAsString();
 
             // Extract data from skin string
             JWSObject skinJWS = JWSObject.parse(skinData.toString());
@@ -120,6 +128,7 @@ public class LoginData {
         }
 
         return Optional.of(new LoginData(xuid,
+                identityPublicKey,
                 uuid,
                 username,
                 languageCode,
