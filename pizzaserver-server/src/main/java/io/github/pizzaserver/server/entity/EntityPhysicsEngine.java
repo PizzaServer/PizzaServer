@@ -179,8 +179,8 @@ public class EntityPhysicsEngine {
 
                                 if (newLocationBoundBox.collidesWith(block.getBoundingBox())) {
                                     // Entity is colliding with something no matter what.
-                                    this.setMotion(Vector3f.ZERO);
-                                    return;
+                                    newVelocity = Vector3f.ZERO;
+                                    newPosition = this.entity.getLocation().toVector3f();
                                 }
 
                                 break;

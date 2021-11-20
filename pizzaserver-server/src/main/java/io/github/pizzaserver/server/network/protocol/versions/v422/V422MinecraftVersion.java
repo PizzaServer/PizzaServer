@@ -1,7 +1,6 @@
-package io.github.pizzaserver.server.network.protocol.versions;
+package io.github.pizzaserver.server.network.protocol.versions.v422;
 
-import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
-import com.nukkitx.protocol.bedrock.v422.Bedrock_v422;
+import io.github.pizzaserver.server.network.protocol.versions.v419.V419MinecraftVersion;
 
 import java.io.IOException;
 
@@ -21,11 +20,6 @@ public class V422MinecraftVersion extends V419MinecraftVersion {
     @Override
     public String getVersion() {
         return VERSION;
-    }
-
-    @Override
-    public BedrockPacketCodec getPacketCodec() {
-        return Bedrock_v422.V422_CODEC;
     }
 
 }

@@ -48,6 +48,7 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
         int sourceStackCount = source.getItemStack().getCount();
         int pickedUpStackCount = Math.min(sourceStackCount, action.getCountRequested());
 
+
         // Get a new item stack with the amount they picked up
         ItemStack pickedUpStack;
         if (destination.getItemStack().hasSameDataAs(source.getItemStack())) {
@@ -77,10 +78,11 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
         }
 
         // Change the existing item stack to get rid of the picked up item count
-        source.getItemStack().setCount(sourceStackCount - pickedUpStackCount);
+        ItemStack currentStack = source.getItemStack();
+        currentStack.setCount(sourceStackCount - pickedUpStackCount);
 
         destination.setItemStack(pickedUpStack);
-        source.setItemStack(source.getItemStack());
+        source.setItemStack(currentStack);
         return true;
     }
 

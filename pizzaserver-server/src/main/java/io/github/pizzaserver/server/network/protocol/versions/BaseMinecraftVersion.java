@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.nukkitx.nbt.*;
+import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import io.github.pizzaserver.api.level.world.blocks.Block;
@@ -36,7 +37,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     protected NbtMap biomesDefinitions;
     protected NbtMap availableEntities;
     protected final BiMap<Integer, Integer> blockStates = HashBiMap.create();
-    protected final NbtList<NbtMap> customBlockPalette = new NbtList<>(NbtType.COMPOUND);
+    protected final List<BlockPropertyData> customBlockProperties = new ArrayList<>();
     protected final BiMap<String, Integer> itemRuntimeIds = HashBiMap.create();
     protected final List<StartGamePacket.ItemEntry> itemEntries = new ArrayList<>();
     protected final List<ComponentItemData> itemComponents = new ArrayList<>();
@@ -127,8 +128,8 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     }
 
     @Override
-    public NbtList<NbtMap> getCustomBlockPalette() {
-        return this.customBlockPalette;
+    public List<BlockPropertyData> getCustomBlockProperties() {
+        return this.customBlockProperties;
     }
 
     @Override

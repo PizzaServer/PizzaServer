@@ -75,9 +75,8 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
                 for (ResourcePack pack : this.server.getResourcePackManager().getPacks().values()) {
                     stackPacket.getResourcePacks().add(new ResourcePackStackPacket.Entry(pack.getUuid().toString(), pack.getVersion(), ""));
                 }
-                stackPacket.setGameVersion("*");
+                stackPacket.setGameVersion(this.session.getVersion().getVersion());
                 stackPacket.getExperiments().add(new ExperimentData("data_driven_items", true));
-                stackPacket.setExperimentsPreviouslyToggled(true);
                 this.session.getConnection().sendPacket(stackPacket);
                 break;
             case REFUSED:

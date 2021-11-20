@@ -6,6 +6,7 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
+import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplHumanEntity;
@@ -128,6 +129,13 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
      */
     private void completePlayerInitialization(PlayerData data) {
         this.getServer().getScheduler().prepareTask(() -> {
+            if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
+                PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+                playStatusPacket.setStatus(PlayStatusPacket.Status.FAILED_SERVER_FULL_SUB_CLIENT);
+                this.session.getConnection().sendPacket(playStatusPacket);
+                return;
+            }
+
             EntityRegistry.getDefinition(HumanEntityDefinition.ID).onCreation(this);
 
             // Apply player data
@@ -157,42 +165,37 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             // Send remaining packets to spawn player
             SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
             movementSettings.setMovementMode(AuthoritativeMovementMode.CLIENT);
+
             StartGamePacket startGamePacket = new StartGamePacket();
             startGamePacket.setUniqueEntityId(this.getId());
             startGamePacket.setRuntimeEntityId(this.getId());
             startGamePacket.setPlayerGameType(GameType.from(this.getGamemode().ordinal()));
-            startGamePacket.setPlayerPosition(location.toVector3f().add(0, 2, 0));
+            startGamePacket.setPlayerPosition(location.toVector3f().add(0, this.getEyeHeight(), 0));
             startGamePacket.setRotation(Vector2f.from(this.getPitch(), this.getYaw()));
-            startGamePacket.setSpawnBiomeType(SpawnBiomeType.DEFAULT);
-            startGamePacket.setCustomBiomeName("");
-            startGamePacket.setDimensionId(Dimension.OVERWORLD.ordinal());
-            startGamePacket.setLevelGameType(GameType.from(Gamemode.SURVIVAL.ordinal()));
+            startGamePacket.setDimensionId(world.getDimension().ordinal());
+            startGamePacket.setLevelGameType(GameType.SURVIVAL);
             startGamePacket.setDifficulty(Difficulty.PEACEFUL.ordinal());
             startGamePacket.setDefaultSpawn(world.getSpawnCoordinates());
             startGamePacket.setDayCycleStopTime(world.getTime());
-            startGamePacket.setEducationProductionId("");
-            startGamePacket.setMultiplayerGame(true);
-            startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
-            startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
-            startGamePacket.setCommandsEnabled(true);
-            startGamePacket.setTexturePacksRequired(this.getServer().getResourcePackManager().arePacksRequired());
-            startGamePacket.setDefaultPlayerPermission(PlayerPermission.MEMBER);
-            startGamePacket.setServerChunkTickRange(this.server.getConfig().getChunkRadius());
-            startGamePacket.setVanillaVersion(ServerProtocol.GAME_VERSION);
-            startGamePacket.setEduSharedUriResource(EduSharedUriResource.EMPTY);
-            startGamePacket.setForceExperimentalGameplay(true);
-            startGamePacket.setLevelName(world.getLevel().getName());
+            startGamePacket.setLevelName(this.getServer().getMotd());
             startGamePacket.setLevelId(Base64.getEncoder().encodeToString(startGamePacket.getLevelName().getBytes(StandardCharsets.UTF_8)));
             startGamePacket.setGeneratorId(1);
+            startGamePacket.setDefaultPlayerPermission(PlayerPermission.MEMBER);
+            startGamePacket.setServerChunkTickRange(this.getServer().getConfig().getChunkRadius());
+            startGamePacket.setVanillaVersion(this.version.getVersion());
             startGamePacket.setPremiumWorldTemplateId("");
-            startGamePacket.setPlayerMovementSettings(movementSettings);
-            startGamePacket.setAuthoritativeMovementMode(AuthoritativeMovementMode.CLIENT);
-            startGamePacket.setCurrentTick(this.getServer().getTick());
             startGamePacket.setInventoriesServerAuthoritative(true);
-            startGamePacket.setBlockPalette(this.getVersion().getCustomBlockPalette());
+            startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
             startGamePacket.setItemEntries(this.getVersion().getItemEntries());
-            startGamePacket.setMultiplayerCorrelationId("");
-            startGamePacket.setServerEngine("");
+            startGamePacket.getBlockProperties().addAll(this.getVersion().getCustomBlockProperties());
+            startGamePacket.setAuthoritativeMovementMode(AuthoritativeMovementMode.CLIENT);
+            startGamePacket.setPlayerMovementSettings(movementSettings);
+            startGamePacket.setCommandsEnabled(true);
+            startGamePacket.setMultiplayerGame(true);
+            startGamePacket.setBroadcastingToLan(true);
+            startGamePacket.setMultiplayerCorrelationId(UUID.randomUUID().toString());
+            startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
+            startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
             this.sendPacket(startGamePacket);
 
             // Send item components for custom items
@@ -202,6 +205,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
             // TODO: Add creative contents to prevent mobile clients from crashing
             CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
+            creativeContentPacket.setContents(new ItemData[0]);
             this.sendPacket(creativeContentPacket);
 
             BiomeDefinitionListPacket biomeDefinitionPacket = new BiomeDefinitionListPacket();
@@ -222,6 +226,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
             location.getWorld().addEntity(this, location.toVector3f());
             this.session.setPacketHandler(new GamePacketHandler(this));
+            this.session.setPlayer(this);
 
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
             playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
@@ -730,12 +735,16 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     @Override
     public void sendPacket(BedrockPacket packet) {
-        this.session.getConnection().sendPacket(packet);
+        if (!this.session.getConnection().isClosed()) {
+            this.session.getConnection().sendPacket(packet);
+        }
     }
 
     @Override
     public void sendPacketImmediately(BedrockPacket packet) {
-        this.session.getConnection().sendPacketImmediately(packet);
+        if (!this.session.getConnection().isClosed()) {
+            this.session.getConnection().sendPacketImmediately(packet);
+        }
     }
 
     @Override
@@ -803,8 +812,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
         this.getInventory().sendSlots(this);
         this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true)
-                .putFlag(EntityFlag.BREATHING, true)
-                .putFlag(EntityFlag.WALL_CLIMBING, true);
+                .putFlag(EntityFlag.BREATHING, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
         this.updateAdventureSettings();

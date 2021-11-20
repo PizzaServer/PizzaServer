@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.*;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.api.event.type.server.ServerPongUpdateEvent;
+import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
@@ -14,6 +15,8 @@ public class BedrockNetworkServer {
 
     private BedrockServer bedrockServer;
     private volatile BedrockPong pong;
+
+    private InetSocketAddress address;
 
 
     public BedrockNetworkServer(ImplServer server) {
@@ -32,8 +35,9 @@ public class BedrockNetworkServer {
     }
 
     public void boot(String ip, int port) throws ExecutionException, InterruptedException {
+        this.address = new InetSocketAddress(ip, port);
         this.getPizzaServer().getLogger().info("Booting server up on " + ip + ":" + port);
-        this.bedrockServer = new BedrockServer(new InetSocketAddress(ip, port));
+        this.bedrockServer = new BedrockServer(this.address);
         this.bedrockServer.setHandler(new BedrockServerEventHandler() {
             @Override
             public boolean onConnectionRequest(InetSocketAddress address) {
@@ -73,9 +77,13 @@ public class BedrockNetworkServer {
         pong.setEdition("MCPE");
         pong.setGameType("SURVIVAL");
         pong.setMotd(this.server.getMotd());
+        pong.setSubMotd(this.server.getMotd());
         pong.setPlayerCount(this.server.getPlayerCount());
-        pong.setProtocolVersion(-1);
         pong.setMaximumPlayerCount(this.server.getMaximumPlayerCount());
+        pong.setProtocolVersion(-1);
+        pong.setVersion("");
+        pong.setIpv4Port(this.address.getPort());
+        pong.setIpv6Port(this.address.getPort());
 
         ServerPongUpdateEvent serverPongUpdateEvent = new ServerPongUpdateEvent(this.getPizzaServer(), pong);
         this.getPizzaServer().getEventManager().call(serverPongUpdateEvent);

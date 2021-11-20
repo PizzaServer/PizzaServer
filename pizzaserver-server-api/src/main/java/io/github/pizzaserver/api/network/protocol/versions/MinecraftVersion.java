@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.network.protocol.versions;
 
-import com.nukkitx.nbt.NbtList;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
+import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import io.github.pizzaserver.api.level.world.blocks.Block;
@@ -50,9 +50,9 @@ public interface MinecraftVersion extends BlockRuntimeMapper {
 
     NbtMap getEntityIdentifiers();
 
-    NbtList<NbtMap> getCustomBlockPalette();
-
     List<StartGamePacket.ItemEntry> getItemEntries();
+
+    List<BlockPropertyData> getCustomBlockProperties();
 
     List<ComponentItemData> getItemComponents();
 
