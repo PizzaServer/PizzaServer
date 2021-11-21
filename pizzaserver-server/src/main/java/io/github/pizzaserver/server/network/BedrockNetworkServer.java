@@ -37,7 +37,7 @@ public class BedrockNetworkServer {
     public void boot(String ip, int port) throws ExecutionException, InterruptedException {
         this.address = new InetSocketAddress(ip, port);
         this.getPizzaServer().getLogger().info("Booting server up on " + ip + ":" + port);
-        this.bedrockServer = new BedrockServer(this.address);
+        this.bedrockServer = new BedrockServer(this.address, Runtime.getRuntime().availableProcessors());
         this.bedrockServer.setHandler(new BedrockServerEventHandler() {
             @Override
             public boolean onConnectionRequest(InetSocketAddress address) {

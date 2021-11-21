@@ -8,6 +8,7 @@ import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.format.BlockRuntimeMapper;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
+import io.github.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.pizzaserver.format.mcworld.world.chunks.subchunks.MCWorldSubChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.netty.buffer.ByteBuf;
@@ -235,6 +236,9 @@ public class MCWorldChunk implements BedrockChunk {
             }
             packetData.writeBytes(this.getBiomeData());
             packetData.writeByte(0);    // edu feature or smth
+            VarInts.writeUnsignedInt(packetData, 0);    // border blocks supposedly
+
+            System.out.println(packetData.capacity() + " is the capacity and " + packetData.readableBytes() + " is the readable");
 
             data = new byte[packetData.readableBytes()];
             packetData.readBytes(data);

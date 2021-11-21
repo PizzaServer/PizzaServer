@@ -70,6 +70,7 @@ public class ImplLevel implements Level, Closeable {
         for (ImplWorld world : this.dimensions.values()) {
             world.close();
         }
+        this.getProvider().close();
     }
 
 }
