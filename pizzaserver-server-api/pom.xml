@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.nukkitx.protocol</groupId>
             <artifactId>bedrock-v471</artifactId>
-            <version>2.9.3-SNAPSHOT</version>
+            <version>2.9.4-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

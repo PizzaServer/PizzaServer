@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.player;
 
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import io.github.pizzaserver.api.entity.HumanEntity;
+import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
@@ -188,6 +189,10 @@ public interface Player extends HumanEntity {
      * @param radius chunk radius
      */
     void setChunkRadius(int radius);
+
+    boolean showBossBar(BossBar bossbar);
+
+    boolean hideBossBar(BossBar bossbar);
 
     /**
      * If this session is still active.

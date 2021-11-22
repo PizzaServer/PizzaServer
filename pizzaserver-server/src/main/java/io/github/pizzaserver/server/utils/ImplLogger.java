@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.utils;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.api.utils.Logger;
 import org.apache.logging.log4j.Level;
@@ -17,7 +18,7 @@ public class ImplLogger implements Logger {
     public ImplLogger(String prefix) {
         this.logger = LogManager.getLogger(prefix);
 
-        if (((ImplServer) ImplServer.getInstance()).getConfig().isDebugLoggingEnabled()) {
+        if (((ImplServer) Server.getInstance()).getConfig().isDebugLoggingEnabled()) {
             Configurator.setLevel(this.logger.getName(), Level.DEBUG);
         }
     }

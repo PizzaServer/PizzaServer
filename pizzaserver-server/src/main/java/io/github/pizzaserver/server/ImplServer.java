@@ -1,12 +1,16 @@
 package io.github.pizzaserver.server;
 
+import io.github.pizzaserver.api.entity.boss.BossBarFactory;
+import io.github.pizzaserver.api.scoreboard.ScoreboardFactory;
 import io.github.pizzaserver.server.entity.EntityConstructor;
+import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.level.ImplLevelManager;
 import io.github.pizzaserver.server.network.handlers.LoginHandshakePacketHandler;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProvider;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
+import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 import io.github.pizzaserver.server.utils.Config;
 import io.github.pizzaserver.server.utils.TimeUtils;
 import io.github.pizzaserver.api.Server;
@@ -29,9 +33,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class ImplServer implements Server {
-
-    private static Server INSTANCE;
+public class ImplServer extends Server {
 
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
     private final Set<PlayerSession> sessions = Collections.synchronizedSet(new HashSet<>());
@@ -65,7 +67,8 @@ public class ImplServer implements Server {
 
 
     public ImplServer(String rootDirectory) {
-        INSTANCE = this;
+        Server.setInstance(this);
+
         this.rootDirectory = rootDirectory;
         this.setupFiles();
 
@@ -80,7 +83,9 @@ public class ImplServer implements Server {
         this.levelManager = new ImplLevelManager(this);
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
-        EntityRegistry.setEntityConstructor(new EntityConstructor());
+        EntityRegistry.setConstructor(new EntityConstructor());
+        BossBarFactory.setConstructor(ImplBossBar::new);
+        ScoreboardFactory.setConstructor(ImplScoreboard::new);
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
         // TODO: load plugins
@@ -346,10 +351,6 @@ public class ImplServer implements Server {
         return this.config;
     }
 
-    public static Server getInstance() {
-        return INSTANCE;
-    }
-
     /**
      * Called to load and setup required files/classes.
      */
@@ -391,7 +392,7 @@ public class ImplServer implements Server {
                 try {
                     ImplServer.this.shutdownLatch.await();
                 } catch (InterruptedException exception) {
-                    ImplServer.getInstance().getLogger().error("Exit listener exception", exception);
+                    Server.getInstance().getLogger().error("Exit listener exception", exception);
                 }
             }
         }

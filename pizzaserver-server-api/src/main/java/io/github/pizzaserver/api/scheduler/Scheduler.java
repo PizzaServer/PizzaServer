@@ -19,7 +19,7 @@ public class Scheduler {
 
     protected int tickDelay; // The amount of server ticks between each scheduler tick.
 
-    private final ExecutorService threadPool = Executors.newCachedThreadPool(runnable -> new Thread(runnable) {
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), runnable -> new Thread(runnable) {
         @Override
         public void interrupt() {
             synchronized (Scheduler.this.activeThreads) {

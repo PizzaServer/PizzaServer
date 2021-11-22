@@ -9,6 +9,8 @@ import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.SwapStack
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.TakeStackRequestActionData;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
+import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.entity.boss.BossBarFactory;
 import io.github.pizzaserver.api.event.type.player.*;
 import io.github.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -200,6 +202,11 @@ public class GamePacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
+
+        BossBar bossbar = BossBarFactory.create();
+        bossbar.setTitle("CUSTOM TITLE");
+        this.player.showBossBar(bossbar);
+
         this.player.getInventory().addItem(ItemRegistry.getItem(BlockTypeID.DIRT, 10));
         this.player.getWorld().addEntity(EntityRegistry.getEntity(CowEntityDefinition.ID), this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

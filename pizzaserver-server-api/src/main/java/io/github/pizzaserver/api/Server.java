@@ -13,100 +13,109 @@ import java.util.Set;
 /**
  * Represents a Minecraft Server.
  */
-public interface Server {
+public abstract class Server {
+
+    private static Server instance;
+
 
     /**
      * Return all {@link Player}s who been spawned into the server.
      * @return a set of all players online
      */
-    Set<Player> getPlayers();
+    public abstract Set<Player> getPlayers();
 
     /**
      * Retrieve the amount of players currently online.
      * @return online player count
      */
-    int getPlayerCount();
+    public abstract int getPlayerCount();
 
     /**
      * Retrieve the motto of the day message displayed in the server list menu.
      * @return motto of the day
      */
-    String getMotd();
+    public abstract String getMotd();
 
     /**
      * Change the motto of the day message displayed in the server list menu.
      */
-    void setMotd(String motd);
+    public abstract void setMotd(String motd);
 
     /**
      * Get the maximum amount of {@link Player}s allowed on the server.
      * @return max player count
      */
-    int getMaximumPlayerCount();
+    public abstract int getMaximumPlayerCount();
 
     /**
      * Set the maximum allowed {@link Player}s allowed on the server.
      * @param players max player count
      */
-    void setMaximumPlayerCount(int players);
+    public abstract void setMaximumPlayerCount(int players);
 
     /**
      * Retrieve the target ticks per second for the server.
      * @return target tps
      */
-    int getTargetTps();
+    public abstract int getTargetTps();
 
     /**
      * Change the target ticks per second for the server.
      * @param newTps new ticks per second
      */
-    void setTargetTps(int newTps);
+    public abstract void setTargetTps(int newTps);
 
     /**
      * Retrieve the last recorded ticks per second.
      * @return current tps
      */
-    int getCurrentTps();
+    public abstract int getCurrentTps();
 
     /**
      * Get the current server tick.
      * @return server tick
      */
-    long getTick();
+    public abstract long getTick();
 
-    PluginManager getPluginManager();
+    public abstract PluginManager getPluginManager();
 
-    ResourcePackManager getResourcePackManager();
+    public abstract ResourcePackManager getResourcePackManager();
 
-    LevelManager getLevelManager();
+    public abstract LevelManager getLevelManager();
 
-    EventManager getEventManager();
+    public abstract EventManager getEventManager();
 
-    Scheduler getScheduler();
+    public abstract Scheduler getScheduler();
 
-    Set<Scheduler> getSyncedSchedulers();
+    public abstract Set<Scheduler> getSyncedSchedulers();
 
     /**
      * Sync a {@link Scheduler} to the server tick.
      * @param scheduler scheduler to sync
      */
-    void syncScheduler(Scheduler scheduler);
+    public abstract void syncScheduler(Scheduler scheduler);
 
     /**
      * Desync a {@link Scheduler} from the server tick.
      * @param scheduler scheduler to desync
      * @return if the scheduler was desynced
      */
-    boolean desyncScheduler(Scheduler scheduler);
+    public abstract boolean desyncScheduler(Scheduler scheduler);
 
-    Logger getLogger();
+    public abstract Logger getLogger();
 
     /**
      * Get the path to the root server directory.
      * @return path to the root server directory
      */
-    String getRootDirectory();
+    public abstract String getRootDirectory();
 
+    public static Server getInstance() {
+        return instance;
+    }
 
+    public static void setInstance(Server server) {
+        instance = server;
+    }
 
 }

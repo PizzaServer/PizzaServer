@@ -18,8 +18,6 @@ public class MCWorldSubChunk implements BedrockSubChunk {
     private int subChunkVersion;
 
 
-    public MCWorldSubChunk() {}
-
     /**
      * Parse a sub chunk based off of the subchunk data retrieved from an .mcworld file
      * @param buffer sub chunk data

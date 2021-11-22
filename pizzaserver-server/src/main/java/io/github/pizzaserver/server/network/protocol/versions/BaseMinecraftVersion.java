@@ -7,6 +7,7 @@ import com.nukkitx.nbt.*;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.level.world.blocks.Block;
 import io.github.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.pizzaserver.api.level.world.blocks.types.BlockType;
@@ -62,7 +63,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     protected abstract void loadItemComponents();
 
     protected InputStream getProtocolResourceStream(String fileName) {
-        return ImplServer.getInstance().getClass().getResourceAsStream("/protocol/v" + this.getProtocol() + "/" + fileName);
+        return Server.getInstance().getClass().getResourceAsStream("/protocol/v" + this.getProtocol() + "/" + fileName);
     }
 
     @Override

@@ -238,8 +238,6 @@ public class MCWorldChunk implements BedrockChunk {
             packetData.writeByte(0);    // edu feature or smth
             VarInts.writeUnsignedInt(packetData, 0);    // border blocks supposedly
 
-            System.out.println(packetData.capacity() + " is the capacity and " + packetData.readableBytes() + " is the readable");
-
             data = new byte[packetData.readableBytes()];
             packetData.readBytes(data);
         } finally {

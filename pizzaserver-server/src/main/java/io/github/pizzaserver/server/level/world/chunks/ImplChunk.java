@@ -367,12 +367,12 @@ public class ImplChunk implements Chunk {
             this.getWorld().getServer().getScheduler().prepareTask(() -> {
                 if (player.isConnected() && player.getLocation().getWorld().equals(this.getWorld())) {
                     // TODO: Supposedly tile entities are also packaged here
-                    LevelChunkPacket worldChunkPacket = new LevelChunkPacket();
-                    worldChunkPacket.setChunkX(this.getX());
-                    worldChunkPacket.setChunkZ(this.getZ());
-                    worldChunkPacket.setSubChunksLength(packetSubChunkCount);
-                    worldChunkPacket.setData(data);
-                    player.sendPacket(worldChunkPacket);
+                    LevelChunkPacket chunkPacket = new LevelChunkPacket();
+                    chunkPacket.setChunkX(this.getX());
+                    chunkPacket.setChunkZ(this.getZ());
+                    chunkPacket.setSubChunksLength(packetSubChunkCount);
+                    chunkPacket.setData(data);
+                    player.sendPacket(chunkPacket);
 
                     this.spawnedTo.add(player);
                     this.resetExpiryTime();

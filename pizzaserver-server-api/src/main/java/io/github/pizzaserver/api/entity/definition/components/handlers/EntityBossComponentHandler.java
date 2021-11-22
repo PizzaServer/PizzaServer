@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.entity.definition.components.handlers;
 
+import io.github.pizzaserver.api.entity.boss.BossBarFactory;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityBossComponent;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -11,7 +12,7 @@ public class EntityBossComponentHandler extends EntityComponentHandler<EntityBos
     public void onRegistered(Entity entity, EntityBossComponent component) {
         BossBar bossBar = null;
         if (component.getRange() != -1) {
-            bossBar = new BossBar();
+            bossBar = BossBarFactory.create();
             bossBar.setTitle(component.getBossName().orElse(entity.getName()));
             bossBar.setDarkenSky(component.shouldDarkenSky());
             bossBar.setPercentage(entity.getHealth() / (entity.getMaxHealth() != 0 ? entity.getMaxHealth() : 1));

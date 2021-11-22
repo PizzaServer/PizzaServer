@@ -94,7 +94,7 @@ public class EntityRegistry {
      * Used to abstract internal server workings away from plugin api.
      * @param constructor entity constructor
      */
-    public static void setEntityConstructor(Function<EntityDefinition, Entity> constructor) {
+    public static void setConstructor(Function<EntityDefinition, Entity> constructor) {
         entityConstructor = constructor;
     }
 

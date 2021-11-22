@@ -1,52 +1,21 @@
 package io.github.pizzaserver.api.entity.boss;
 
-public class BossBar implements Cloneable {
+public interface BossBar {
 
-    protected String title;
-    private float percentage;
-    protected int renderRange;
-    protected boolean darkenSky;
+    String getTitle();
 
+    void setTitle(String title);
 
-    public String getTitle() {
-        return this.title;
-    }
+    float getPercentage();
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    void setPercentage(float percentage);
 
-    public float getPercentage() {
-        return this.percentage;
-    }
+    int getRenderRange();
 
-    public void setPercentage(float percentage) {
-        this.percentage = percentage;
-    }
+    void setRenderRange(int range);
 
-    public int getRenderRange() {
-        return this.renderRange;
-    }
+    boolean darkenSky();
 
-    public void setRenderRange(int range) {
-        this.renderRange = range;
-    }
-
-    public boolean darkenSky() {
-        return this.darkenSky;
-    }
-
-    public void setDarkenSky(boolean darkenSky) {
-        this.darkenSky = darkenSky;
-    }
-
-    @Override
-    public BossBar clone() {
-        try {
-            return (BossBar) super.clone();
-        } catch (CloneNotSupportedException exception) {
-            throw new AssertionError("Cloning threw an exception.", exception);
-        }
-    }
+    void setDarkenSky(boolean darkenSky);
 
 }

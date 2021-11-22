@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
@@ -195,7 +196,7 @@ public abstract class BaseInventory implements Inventory {
     public boolean openFor(Player player) {
         if (!this.viewers.contains(player)) {
             InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(player, this);
-            ImplServer.getInstance().getEventManager().call(inventoryOpenEvent);
+            Server.getInstance().getEventManager().call(inventoryOpenEvent);
             if (inventoryOpenEvent.isCancelled()) {
                 return false;
             }
@@ -222,7 +223,7 @@ public abstract class BaseInventory implements Inventory {
             player.sendPacket(containerClosePacket);
 
             InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
-            ImplServer.getInstance().getEventManager().call(inventoryCloseEvent);
+            Server.getInstance().getEventManager().call(inventoryCloseEvent);
 
             this.viewers.remove(player);
             return true;

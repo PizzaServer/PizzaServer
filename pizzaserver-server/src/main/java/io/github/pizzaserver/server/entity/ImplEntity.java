@@ -7,10 +7,12 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.packet.*;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
+import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
@@ -71,8 +73,7 @@ public class ImplEntity implements Entity {
 
     protected final EntityAttributes attributes = new EntityAttributes();
 
-    protected BossBar bossBar = null;
-    protected final Set<Player> bossBarViewers = new HashSet<>();
+    protected ImplBossBar bossBar = null;
 
     protected float pitch;
     protected float yaw;
@@ -556,7 +557,7 @@ public class ImplEntity implements Entity {
 
     @Override
     public ImplServer getServer() {
-        return (ImplServer) ImplServer.getInstance();
+        return (ImplServer) Server.getInstance();
     }
 
     @Override
@@ -734,28 +735,26 @@ public class ImplEntity implements Entity {
 
     @Override
     public Optional<BossBar> getBossBar() {
-        if (this.bossBar == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(this.bossBar.clone());
-        }
+        return Optional.ofNullable(this.bossBar);
     }
 
     @Override
     public void setBossBar(BossBar bossBar) {
-        if (bossBar != null && this.getBossBar().isPresent()) {
-            // Updating boss bar
-            for (Player viewer : this.bossBarViewers) {
-                this.sendUpdatedBossBarPacket(viewer, bossBar);
+        if (bossBar != null) {
+            if (((ImplBossBar) bossBar).getEntityId() != -1) {
+                throw new IllegalArgumentException("The boss bar is already assigned to an entity.");
             }
-        } else if (this.getBossBar().isPresent()) {
-            // Removing boss bar
-            for (Player viewer : this.bossBarViewers) {
-                this.sendRemoveBossBarPacket(viewer);
-            }
-            this.bossBarViewers.clear();
+            ((ImplBossBar) bossBar).setEntityId(this.getId());
+            ((ImplBossBar) bossBar).setDummy(false);
         }
-        this.bossBar = bossBar;
+
+        if (this.getBossBar().isPresent()) {
+            // Removing boss bar
+            for (Player viewer : this.bossBar.getViewers()) {
+                this.bossBar.despawnFrom(viewer);
+            }
+        }
+        this.bossBar = (ImplBossBar) bossBar;
     }
 
     protected void updateBossBarVisibility() {
@@ -763,62 +762,13 @@ public class ImplEntity implements Entity {
             for (Player viewer : this.getViewers()) {
                 if (viewer.getLocation().toVector3f().distance(this.getLocation().toVector3f()) <= this.getBossBar().get().getRenderRange()) {
                     // In range
-                    if (this.bossBarViewers.add(viewer)) {
-                        this.sendCreateBossBarPacket(viewer, this.getBossBar().get());
-                    }
+                    this.bossBar.spawnTo(viewer);
                 } else {
                     // Out of range
-                    if (this.bossBarViewers.remove(viewer)) {
-                        this.sendRemoveBossBarPacket(viewer);
-                    }
+                    this.bossBar.despawnFrom(viewer);
                 }
             }
         }
-    }
-
-    protected void sendCreateBossBarPacket(Player player, BossBar bossBar) {
-        BossEventPacket createBossBarPacket = new BossEventPacket();
-        createBossBarPacket.setBossUniqueEntityId(this.getId());
-        createBossBarPacket.setAction(BossEventPacket.Action.CREATE);
-        createBossBarPacket.setTitle(bossBar.getTitle());
-        createBossBarPacket.setHealthPercentage(bossBar.getPercentage());
-        createBossBarPacket.setDarkenSky(bossBar.darkenSky() ? 1 : 0);
-        player.sendPacket(createBossBarPacket);
-    }
-
-    protected void sendUpdatedBossBarPacket(Player player, BossBar newBossBar) {
-        if (this.getBossBar().isPresent()) {
-            BossBar bossBar = this.getBossBar().get();
-
-            if (!bossBar.getTitle().equals(newBossBar.getTitle()))  {
-                BossEventPacket newBossTitlePacket = new BossEventPacket();
-                newBossTitlePacket.setBossUniqueEntityId(this.getId());
-                newBossTitlePacket.setAction(BossEventPacket.Action.UPDATE_NAME);
-                newBossTitlePacket.setTitle(newBossBar.getTitle());
-                player.sendPacket(newBossTitlePacket);
-            }
-            if (!NumberUtils.isNearlyEqual(bossBar.getPercentage(), newBossBar.getPercentage())) {
-                BossEventPacket newPercentagePacket = new BossEventPacket();
-                newPercentagePacket.setBossUniqueEntityId(this.getId());
-                newPercentagePacket.setAction(BossEventPacket.Action.UPDATE_PERCENTAGE);
-                newPercentagePacket.setHealthPercentage(newBossBar.getPercentage());
-                player.sendPacket(newPercentagePacket);
-            }
-            if (bossBar.darkenSky() != newBossBar.darkenSky()) {
-                BossEventPacket darkenSkyPacket = new BossEventPacket();
-                darkenSkyPacket.setBossUniqueEntityId(this.getId());
-                darkenSkyPacket.setAction(BossEventPacket.Action.UPDATE_PROPERTIES);
-                darkenSkyPacket.setDarkenSky(newBossBar.darkenSky() ? 1 : 0);
-                player.sendPacket(darkenSkyPacket);
-            }
-        }
-    }
-
-    protected void sendRemoveBossBarPacket(Player player) {
-        BossEventPacket removeBossBarPacket = new BossEventPacket();
-        removeBossBarPacket.setBossUniqueEntityId(this.getId());
-        removeBossBarPacket.setAction(BossEventPacket.Action.REMOVE);
-        player.sendPacket(removeBossBarPacket);
     }
 
     @Override
@@ -1267,7 +1217,10 @@ public class ImplEntity implements Entity {
             EntityDamageByEntityEvent damageByEntityEvent = (EntityDamageByEntityEvent) event;
             Entity attacker = damageByEntityEvent.getAttacker();
 
-            Vector2f directionVector = Vector2f.from(this.getX() - attacker.getX(), this.getZ() - attacker.getZ()).normalize();
+            Vector2f directionVector = Vector2f.ZERO;
+            if (!(NumberUtils.isNearlyEqual(this.getX(), attacker.getX()) && NumberUtils.isNearlyEqual(this.getZ(), attacker.getZ()))) {
+                directionVector = Vector2f.from(this.getX() - attacker.getX(), this.getZ() - attacker.getZ()).normalize();
+            }
             Vector3f knockback = damageByEntityEvent.getKnockback().mul(directionVector.getX(), 1, directionVector.getY());
             this.setMotion(knockback);
         }
@@ -1365,11 +1318,7 @@ public class ImplEntity implements Entity {
             entityPacket.setUniqueEntityId(this.getId());
             player.sendPacket(entityPacket);
 
-            for (Player bossBarViewer : this.bossBarViewers) {
-                this.sendRemoveBossBarPacket(bossBarViewer);
-            }
-            this.bossBarViewers.clear();
-
+            this.bossBar.despawnFrom(player);
             return true;
         } else {
             return false;

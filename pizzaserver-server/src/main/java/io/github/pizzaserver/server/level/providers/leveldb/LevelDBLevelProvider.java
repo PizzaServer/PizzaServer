@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.level.providers.leveldb;
 
+import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.server.level.providers.BaseLevelProvider;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.format.api.LevelData;
@@ -15,16 +16,15 @@ import java.io.IOException;
 
 public class LevelDBLevelProvider extends BaseLevelProvider {
 
-    private final MCWorld mcWorld;
     private final MCWorldInfo worldInfo;
     private final MCWorldChunkProvider chunkDatabase;
 
 
     public LevelDBLevelProvider(File worldFile) throws IOException {
         super(worldFile);
-        this.mcWorld = new MCWorld(worldFile);
-        this.worldInfo = this.mcWorld.getWorldInfo();
-        this.chunkDatabase = this.mcWorld.openChunkProvider();
+        MCWorld mcWorld = new MCWorld(worldFile);
+        this.worldInfo = mcWorld.getWorldInfo();
+        this.chunkDatabase = mcWorld.openChunkProvider();
     }
 
     @Override

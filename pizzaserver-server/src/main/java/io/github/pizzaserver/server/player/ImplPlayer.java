@@ -5,17 +5,22 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.data.*;
+import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
+import com.nukkitx.protocol.bedrock.data.entity.EntityFlags;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
+import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
 import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.entity.ImplHumanEntity;
+import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.handlers.GamePacketHandler;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
-import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
@@ -71,6 +76,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings();
 
     protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
+
+    protected final Set<BossBar> bossBars = new HashSet<>();
 
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
@@ -721,6 +728,49 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     @Override
     public void setChunkRadius(int radius) {
         this.getChunkManager().setChunkRadius(radius);
+    }
+
+    @Override
+    public boolean showBossBar(BossBar bossbar) {
+        ImplBossBar implBossbar = (ImplBossBar) bossbar;
+        if (!implBossbar.isDummy()) {
+            throw new IllegalArgumentException("The boss bar is already assigned to an entity.");
+        }
+        if (implBossbar.getEntityId() == -1) {
+            implBossbar.setEntityId(ImplEntity.ID++);
+        }
+
+        if (this.bossBars.add(implBossbar)) {
+            AddEntityPacket dummyEntityPacket = new AddEntityPacket();
+            dummyEntityPacket.setIdentifier(CowEntityDefinition.ID);
+            dummyEntityPacket.setUniqueEntityId(implBossbar.getEntityId());
+            dummyEntityPacket.setRuntimeEntityId(implBossbar.getEntityId());
+            dummyEntityPacket.setMotion(Vector3f.ZERO);
+            dummyEntityPacket.setRotation(Vector3f.ZERO);
+            dummyEntityPacket.setPosition(this.getLocation().toVector3f());
+
+            dummyEntityPacket.getMetadata().putFloat(EntityData.BOUNDING_BOX_HEIGHT, 0);
+            dummyEntityPacket.getMetadata().putFloat(EntityData.BOUNDING_BOX_WIDTH, 0);
+            dummyEntityPacket.getMetadata().putFloat(EntityData.SCALE, 0);
+            EntityFlags flags = dummyEntityPacket.getMetadata().getOrCreateFlags();
+            flags.setFlag(EntityFlag.INVISIBLE, true);
+            dummyEntityPacket.getMetadata().putFlags(flags);
+
+            this.sendPacket(dummyEntityPacket);
+            return implBossbar.spawnTo(this);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hideBossBar(BossBar bossbar) {
+        if (this.bossBars.remove(bossbar) && ((ImplBossBar) bossbar).despawnFrom(this)) {
+            RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
+            removeEntityPacket.setUniqueEntityId(((ImplBossBar) bossbar).getEntityId());
+            this.sendPacket(removeEntityPacket);
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.network.protocol;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.pizzaserver.server.network.protocol.versions.V419MinecraftVersion;
 import io.github.pizzaserver.server.network.protocol.versions.V422MinecraftVersion;
@@ -40,7 +41,7 @@ public class ServerProtocol {
 
     private static void loadVersion(BaseMinecraftVersion version) {
         VERSIONS.put(version.getProtocol(), version);
-        ImplServer.getInstance().getLogger().info("Loaded protocol version v" + version.getProtocol());
+        Server.getInstance().getLogger().info("Loaded protocol version v" + version.getProtocol());
     }
 
 }
