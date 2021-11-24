@@ -29,7 +29,7 @@ public class ToolType {
     }
 
     public boolean isCorrectTool(Block block) {
-        if (block.getBlockType().getCorrectTools().contains(this)) {
+        if (block.getBlockState().getCorrectTools().contains(this)) {
             return true;
         }
 
@@ -40,7 +40,7 @@ public class ToolType {
     }
 
     public boolean isBestTool(Block block) {
-        if (block.getBlockType().getBestTools().contains(this)) {
+        if (block.getBlockState().getBestTools().contains(this)) {
             return true;
         }
 

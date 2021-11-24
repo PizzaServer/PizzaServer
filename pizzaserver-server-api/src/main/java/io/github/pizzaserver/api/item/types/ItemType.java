@@ -5,7 +5,7 @@ import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.level.world.blocks.BlockState;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.pizzaserver.api.player.Player;
@@ -102,7 +102,7 @@ public interface ItemType {
      * If empty, this item is allowed to mine any block
      * @return only blocks this item can break
      */
-    Set<BaseBlockType> getOnlyBlocksCanBreak();
+    Set<BlockState> getOnlyBlocksCanBreak();
 
     /**
      * Called when the player interacts with a block using this item.

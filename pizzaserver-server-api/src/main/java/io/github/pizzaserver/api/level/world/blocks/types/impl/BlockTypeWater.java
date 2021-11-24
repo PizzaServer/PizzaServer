@@ -28,7 +28,7 @@ public class BlockTypeWater extends BaseBlockType {
     }
 
     @Override
-    public String getName() {
+    public String getName(int blockStateIndex) {
         return "Water";
     }
 
@@ -38,22 +38,22 @@ public class BlockTypeWater extends BaseBlockType {
     }
 
     @Override
-    public float getToughness() {
+    public float getToughness(int blockStateIndex) {
         return 0;
     }
 
     @Override
-    public boolean hasOxygen() {
+    public boolean hasOxygen(int blockStateIndex) {
         return false;
     }
 
     @Override
-    public boolean isSolid() {
+    public boolean isSolid(int blockStateIndex) {
         return false;
     }
 
     @Override
-    public boolean isLiquid() {
+    public boolean isLiquid(int blockStateIndex) {
         return true;
     }
 

@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.level.world.blocks.BlockState;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.ToolTypeRegistry;
 import io.github.pizzaserver.api.level.world.blocks.BlockFace;
@@ -76,7 +76,7 @@ public abstract class BaseItemType implements ItemType {
     }
 
     @Override
-    public Set<BaseBlockType> getOnlyBlocksCanBreak() {
+    public Set<BlockState> getOnlyBlocksCanBreak() {
         return Collections.emptySet();
     }
 

@@ -11,17 +11,17 @@ public class BlockTypeAir extends BaseBlockType {
     }
 
     @Override
-    public String getName() {
+    public String getName(int blockStateIndex) {
         return "Air";
     }
 
     @Override
-    public boolean isSolid() {
+    public boolean isSolid(int blockStateIndex) {
         return false;
     }
 
     @Override
-    public float getToughness() {
+    public float getToughness(int blockStateIndex) {
         return 0;
     }
 

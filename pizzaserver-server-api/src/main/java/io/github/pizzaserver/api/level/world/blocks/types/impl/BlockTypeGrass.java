@@ -18,22 +18,22 @@ public class BlockTypeGrass extends BaseBlockType {
     }
 
     @Override
-    public String getName() {
+    public String getName(int blockStateIndex) {
         return "Grass";
     }
 
     @Override
-    public float getToughness() {
+    public float getToughness(int blockStateIndex) {
         return 0.5f;
     }
 
     @Override
-    public Set<ToolType> getCorrectTools() {
+    public Set<ToolType> getCorrectTools(int blockStateIndex) {
         return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 
     @Override
-    public Set<ToolType> getBestTools() {
+    public Set<ToolType> getBestTools(int blockStateIndex) {
         return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 

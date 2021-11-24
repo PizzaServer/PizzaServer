@@ -33,7 +33,7 @@ public class BlockTypeStone extends BaseBlockType {
     }
 
     @Override
-    public String getName() {
+    public String getName(int blockStateIndex) {
         return "Stone";
     }
 
@@ -43,17 +43,17 @@ public class BlockTypeStone extends BaseBlockType {
     }
 
     @Override
-    public float getToughness() {
+    public float getToughness(int blockStateIndex) {
         return 1.5f;
     }
 
     @Override
-    public Set<ToolType> getCorrectTools() {
+    public Set<ToolType> getCorrectTools(int blockStateIndex) {
         return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.WOOD_PICKAXE));
     }
 
     @Override
-    public Set<ToolType> getBestTools() {
+    public Set<ToolType> getBestTools(int blockStateIndex) {
         return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.WOOD_PICKAXE));
     }
 

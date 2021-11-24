@@ -24,7 +24,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
             // the slots must be either of the same type or the destination has to be air
             boolean canMergeItemData = (sourceItemStack.getItemType().equals(destinationItemStack.getItemType())
                     && sourceItemStack.getCompoundTag().equals(destinationItemStack.getCompoundTag())
-                    && sourceItemStack.getDamage() == destinationItemStack.getDamage()) || destinationItemStack.isEmpty();
+                    && sourceItemStack.getMeta() == destinationItemStack.getMeta()) || destinationItemStack.isEmpty();
 
             // final destination slot cannot exceed max count
             boolean doesNotExceedMaxCount = action.getCountRequested() > 0
@@ -49,7 +49,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
 
         // Create new stack with the amount that will be placed down + existing destination count
         int placedStackAmount = playerRequestedAmount + destination.getItemStack().getCount();
-        ItemStack placedStack = new ItemStack(source.getItemStack().getItemType(), placedStackAmount, source.getItemStack().getDamage()).newNetworkStack();
+        ItemStack placedStack = new ItemStack(source.getItemStack().getItemType(), placedStackAmount, source.getItemStack().getMeta()).newNetworkStack();
         placedStack.setCompoundTag(source.getItemStack().getCompoundTag());
 
         // Remove the amount placed from our source

@@ -5,13 +5,12 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.BlockLoot;
+import io.github.pizzaserver.api.level.world.blocks.BlockState;
 import io.github.pizzaserver.api.level.world.blocks.types.data.PushResponse;
 import io.github.pizzaserver.api.utils.BoundingBox;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
 
-import java.util.List;
 import java.util.Set;
 
 public interface BlockType {
@@ -28,7 +27,7 @@ public interface BlockType {
      * e.g. Stone
      * @return the display name
      */
-    String getName();
+    String getName(int blockStateIndex);
 
     /**
      * Create a {@link Block} with this block type.
@@ -60,162 +59,160 @@ public interface BlockType {
 
     BoundingBox getBoundingBox(int index);
 
-    List<ItemStack> getDrops(int index);
-
     /**
      * The amount of light this block will absorb.
      * @return the amount of light absorbed by this block
      */
-    int getLightAbsorption();
+    int getLightAbsorption(int blockStateIndex);
 
     /**
      * The amount of light this block will emit.
      * @return a decimal in the range of [0, 1]
      */
-    float getLightEmission();
+    float getLightEmission(int blockStateIndex);
 
     /**
      * What this block does when pushed. (e.g. a piston)
      * @return push response
      */
-    PushResponse getPushResponse();
+    PushResponse getPushResponse(int blockStateIndex);
 
     /**
      * If a player head is in this block, should their oxygen start depleting.
      * @return if the block has oxygen
      */
-    boolean hasOxygen();
+    boolean hasOxygen(int blockStateIndex);
 
     /**
      * If this block type is liquid and swimmable.
      * @return if the block type is a liquid and can entities can swim in this.
      */
-    boolean isLiquid();
+    boolean isLiquid(int blockStateIndex);
 
     /**
      * If the block type is solid.
      * @return if the block type is solid
      */
-    boolean isSolid();
+    boolean isSolid(int blockStateIndex);
 
     /**
      * How strong this block is to mine.
      * @return strength of the block
      */
-    float getToughness();
+    float getToughness(int blockStateIndex);
 
     /**
      * Get the origin position of the block.
      * @return the block origin
      */
-    float[] getOrigin();
+    float[] getOrigin(int blockStateIndex);
 
     /**
      * Retrieve the height of this BlockType.
      * @return height
      */
-    float getHeight();
+    float getHeight(int blockStateIndex);
 
     /**
      * Retrieve the width of this BlockType.
      * @return width
      */
-    float getWidth();
+    float getWidth(int blockStateIndex);
 
     /**
      * Retrieve the length of this BlockType.
      * @return length
      */
-    float getLength();
+    float getLength(int blockStateIndex);
 
     /**
      * How hard this block is to explode.
      * @return strength of the block to explode
      */
-    float getBlastResistance();
+    float getBlastResistance(int blockStateIndex);
 
     /**
      * How likely the block will be destroyed by flames when on fire.
      * @return chance of being destroyed
      */
-    int getBurnOdds();
+    int getBurnOdds(int blockStateIndex);
 
     /**
      * How likely the block will catch flame when next to a fire.
      * @return Chance of catching fire
      */
-    int getFlameOdds();
+    int getFlameOdds(int blockStateIndex);
 
     /**
      * Retrieve the friction entities should receive on this block.
      * MUST be within the range 0-1
      * @return friction of this block type
      */
-    float getFriction();
+    float getFriction(int blockStateIndex);
 
     /**
      * Retrieve the geometry to use for this block type.
      * If null is returned then it will use the default block geometry
      * @return block geometry id
      */
-    String getGeometry();
+    String getGeometry(int blockStateIndex);
 
     /**
      * Retrieve the map colour this block displays on a map.
      * If null is returned then it will use the default map colour
      * @return hex value of the color to display on the map
      */
-    String getMapColour();
+    String getMapColor(int blockStateIndex);
 
     /**
      * Retrieve the rotation of this block.
      * @return rotation of the block
      */
-    float[] getRotation();
+    float[] getRotation(int blockStateIndex);
 
     /**
      * If this block should fall if there's no block supporting it.
      * @return if the block should fall with no supports
      */
-    boolean hasGravity();
+    boolean hasGravity(int blockStateIndex);
 
     /**
      * The percentage of fall damage that should be removed when gets damaged by fall damage while falling onto this block.
      * @return a float between 0-1 that describes the ignored fall damage percent
      */
-    float getFallDamageReduction();
+    float getFallDamageReduction(int blockStateIndex);
 
     /**
      * Retrieve the item tool types that should be used against this block
      * in order for the item drops to spawn when the block is broken.
      * @return tools that will result in a block drop
      */
-    Set<ToolType> getCorrectTools();
+    Set<ToolType> getCorrectTools(int blockStateIndex);
 
     /**
      * Retrieve the item tool types that are the most effective against this block.
      * @return tools that are very effective against this block
      */
-    Set<ToolType> getBestTools();
+    Set<ToolType> getBestTools(int blockStateIndex);
 
     /**
      * Retrieve the loot that should be dropped when this block is broken.
      * @return set of the item loot to consider when dropping loot
      */
-    Set<BlockLoot> getLoot(Player player);
+    Set<ItemStack> getLoot(Player player, int blockStateIndex);
 
     /**
      * Retrieve the blocks that this block can be placed on.
      * If empty, this block can be placed on any block
      * @return all the block types that this block can be placed on
      */
-    Set<BaseBlockType> getPlaceableOnlyOn();
+    Set<BlockState> getPlaceableOnlyOn(int blockStateIndex);
 
     /**
      * Retrieve the block to replace blocks of this block type with when mined.
      * @return the block to replace this block with after it is mined.
      */
-    Block getResultBlock();
+    Block getResultBlock(int blockStateIndex);
 
     /**
      * Called when the right click button is used against this block.

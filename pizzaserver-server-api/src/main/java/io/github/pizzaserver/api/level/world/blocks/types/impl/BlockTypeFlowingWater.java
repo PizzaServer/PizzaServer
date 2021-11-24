@@ -10,7 +10,7 @@ public class BlockTypeFlowingWater extends BlockTypeWater {
     }
 
     @Override
-    public String getName() {
+    public String getName(int blockStateIndex) {
         return "Flowing Water";
     }
 

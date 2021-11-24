@@ -6,8 +6,8 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.pizzaserver.api.level.world.blocks.BlockRegistry;
+import io.github.pizzaserver.api.level.world.blocks.BlockState;
 import io.github.pizzaserver.api.level.world.blocks.types.data.PushResponse;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -18,7 +18,6 @@ import io.github.pizzaserver.api.utils.BoundingBox;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 public abstract class BaseBlockType implements BlockType {
@@ -57,7 +56,7 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public BoundingBox getBoundingBox(int index) {
+    public BoundingBox getBoundingBox(int blockStateIndex) {
         BoundingBox boundingBox = new BoundingBox();
         boundingBox.setHeight(1f);
         boundingBox.setWidth(1f);
@@ -65,127 +64,122 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public List<ItemStack> getDrops(int index) {
-        return Collections.singletonList(ItemRegistry.getItem(this.getBlockId(), 1, index));
-    }
-
-    @Override
-    public int getLightAbsorption() {
+    public int getLightAbsorption(int blockStateIndex) {
         return 0;
     }
 
     @Override
-    public float getLightEmission() {
+    public float getLightEmission(int blockStateIndex) {
         return 0;
     }
 
     @Override
-    public PushResponse getPushResponse() {
+    public PushResponse getPushResponse(int blockStateIndex) {
         return PushResponse.ALLOW;
     }
 
     @Override
-    public boolean hasOxygen() {
+    public boolean hasOxygen(int blockStateIndex) {
         return true;
     }
 
     @Override
-    public boolean isLiquid() {
+    public boolean isLiquid(int blockStateIndex) {
         return false;
     }
 
     @Override
-    public boolean isSolid() {
+    public boolean isSolid(int blockStateIndex) {
         return true;
     }
 
     @Override
-    public float[] getOrigin() {
+    public float[] getOrigin(int blockStateIndex) {
         return new float[]{ -8f, 0f, -8f };
     }
 
     @Override
-    public float getHeight() {
+    public float getHeight(int blockStateIndex) {
         return 16f;
     }
 
     @Override
-    public float getWidth() {
+    public float getWidth(int blockStateIndex) {
         return 16f;
     }
 
     @Override
-    public float getLength() {
+    public float getLength(int blockStateIndex) {
         return 16f;
     }
 
     @Override
-    public float getBlastResistance() {
+    public float getBlastResistance(int blockStateIndex) {
         return 0;
     }
 
     @Override
-    public int getBurnOdds() {
+    public int getBurnOdds(int blockStateIndex) {
         return 0;
     }
 
     @Override
-    public int getFlameOdds() {
+    public int getFlameOdds(int blockStateIndex) {
         return 0;
     }
 
     @Override
-    public float getFriction() {
+    public float getFriction(int blockStateIndex) {
         return 0.6f;
     }
 
     @Override
-    public String getGeometry() {
+    public String getGeometry(int blockStateIndex) {
         return null;
     }
 
     @Override
-    public String getMapColour() {
+    public String getMapColor(int blockStateIndex) {
         return null;
     }
 
     @Override
-    public float[] getRotation() {
+    public float[] getRotation(int blockStateIndex) {
         return new float[]{ 0, 0, 0 };
     }
 
     @Override
-    public boolean hasGravity() {
+    public boolean hasGravity(int blockStateIndex) {
         return false;
     }
 
     @Override
-    public float getFallDamageReduction() {
+    public float getFallDamageReduction(int blockStateIndex) {
         return 0;
     }
 
     @Override
-    public Set<ToolType> getCorrectTools() {
+    public Set<ToolType> getCorrectTools(int blockStateIndex) {
         return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
     }
 
     @Override
-    public Set<ToolType> getBestTools() {
+    public Set<ToolType> getBestTools(int blockStateIndex) {
         return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
     }
 
     @Override
-    public Set<BlockLoot> getLoot(Player player) {
+    public Set<ItemStack> getLoot(Player player, int blockStateIndex) {
+        return Collections.singleton(ItemRegistry.getItem(this.getBlockId(), 1, blockStateIndex));
+    }
+
+    @Override
+    public Set<BlockState> getPlaceableOnlyOn(int blockStateIndex) {
         return Collections.emptySet();
     }
 
     @Override
-    public Set<BaseBlockType> getPlaceableOnlyOn() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Block getResultBlock() {
+    public Block getResultBlock(int blockStateIndex) {
         return BlockRegistry.getBlock(BlockTypeID.AIR);
     }
 

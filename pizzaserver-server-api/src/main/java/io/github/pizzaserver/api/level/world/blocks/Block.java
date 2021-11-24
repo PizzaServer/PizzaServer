@@ -2,14 +2,10 @@ package io.github.pizzaserver.api.level.world.blocks;
 
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
-
-import java.util.List;
 
 public class Block {
 
@@ -30,13 +26,8 @@ public class Block {
         return this.blockType;
     }
 
-    /**
-     * The block state data of the block
-     * This is equivalent to a block state stored in the block_states.nbt file
-     * @return {@link NbtMap} of the block state data
-     */
-    public NbtMap getBlockState() {
-        return this.getBlockType().getBlockState(this.blockStateIndex);
+    public BlockState getBlockState() {
+        return new BlockState(this.getBlockType(), this.getBlockStateIndex());
     }
 
     public int getBlockStateIndex() {
@@ -87,22 +78,10 @@ public class Block {
         return this.getWorld().getBlock(location.toVector3i().add(blockFace.getOffset()));
     }
 
-    public boolean isAir() {
-        return this.getBlockType().getBlockId().equals(BlockTypeID.AIR);
-    }
-
-    public boolean isSolid() {
-        return this.getBlockType().isSolid();
-    }
-
     public BoundingBox getBoundingBox() {
-        BoundingBox boundingBox = this.getBlockType().getBoundingBox(this.getBlockStateIndex());
+        BoundingBox boundingBox = this.getBlockState().getBoundingBox();
         boundingBox.setPosition(this.getLocation().toVector3f().add(0.5f, 0, 0.5f));
         return boundingBox;
-    }
-
-    public List<ItemStack> getDrops() {
-        return this.getBlockType().getDrops(this.getBlockStateIndex());
     }
 
 }

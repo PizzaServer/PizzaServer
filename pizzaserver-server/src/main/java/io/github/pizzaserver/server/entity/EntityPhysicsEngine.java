@@ -113,7 +113,7 @@ public class EntityPhysicsEngine {
             if (this.entity.isOnGround()) {
                 // Consider block friction
                 if (Math.abs(this.getMotion().getX()) > 0 || Math.abs(this.getMotion().getZ()) > 0) {
-                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getBlockType().getFriction();
+                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getBlockState().getFriction();
                 }
             }
             newVelocity = newVelocity.mul(friction, 1, friction);
@@ -148,7 +148,7 @@ public class EntityPhysicsEngine {
                         for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                             Block block = this.entity.getWorld().getBlock(x, y, z);
 
-                            if (block.getBoundingBox().collidesWith(newLocationBoundBox) && block.isSolid()) {
+                            if (block.getBoundingBox().collidesWith(newLocationBoundBox) && block.getBlockState().isSolid()) {
                                 // ensure we are not stuck in the ground before checking x and z (otherwise no friction will ever be applied)
                                 if (block.getBoundingBox().collidesWithYAxis(newLocationBoundBox) && newPosition.getY() > block.getY() + block.getBoundingBox().getHeight() / 2) {
                                     newPosition = Vector3f.from(newPosition.getX(), block.getBoundingBox().getPosition().getY() + block.getBoundingBox().getHeight(), newPosition.getZ());

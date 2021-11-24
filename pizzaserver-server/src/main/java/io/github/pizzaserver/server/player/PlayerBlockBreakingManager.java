@@ -37,7 +37,7 @@ public class PlayerBlockBreakingManager {
     }
 
     public void breakBlock() {
-        this.player.getWorld().setBlock(this.blockMiningLocation.getBlock().getBlockType().getResultBlock(), this.blockMiningLocation.toVector3i());
+        this.player.getWorld().setBlock(this.blockMiningLocation.getBlock().getBlockState().getResultBlock(), this.blockMiningLocation.toVector3i());
         this.resetMiningData();
     }
 
@@ -55,7 +55,7 @@ public class PlayerBlockBreakingManager {
         ItemStack heldItem = this.player.getInventory().getHeldItem();
 
         boolean isCorrectTool = heldItem.getItemType().getToolType().isCorrectTool(block);
-        float breakTime = block.getBlockType().getToughness() * (isCorrectTool ? 1.5f : 5f);
+        float breakTime = block.getBlockState().getToughness() * (isCorrectTool ? 1.5f : 5f);
 
         boolean isBestTool = heldItem.getItemType().getToolType().isBestTool(block);
         if (isBestTool) {

@@ -102,22 +102,22 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
     protected BlockPropertyData getBlockPropertyData(BlockType blockType) {
         NbtMapBuilder componentsNBT = NbtMap.builder()
                 .putCompound("minecraft:block_light_absorption", NbtMap.builder()
-                        .putInt("value", blockType.getLightAbsorption())
+                        .putInt("value", blockType.getLightAbsorption(0))
                         .build())
                 .putCompound("minecraft:block_light_emission", NbtMap.builder()
-                        .putFloat("emission", blockType.getLightEmission())
+                        .putFloat("emission", blockType.getLightEmission(0))
                         .build())
                 .putCompound("minecraft:friction", NbtMap.builder()
-                        .putFloat("value", blockType.getFriction())
+                        .putFloat("value", blockType.getFriction(0))
                         .build())
                 .putCompound("minecraft:rotation", NbtMap.builder()
-                        .putFloat("x", blockType.getRotation()[0])
-                        .putFloat("y", blockType.getRotation()[1])
-                        .putFloat("z", blockType.getRotation()[2])
+                        .putFloat("x", blockType.getRotation(0)[0])
+                        .putFloat("y", blockType.getRotation(0)[1])
+                        .putFloat("z", blockType.getRotation(0)[2])
                         .build());
-        if (blockType.getGeometry() != null) {
+        if (blockType.getGeometry(0) != null) {
             componentsNBT.putCompound("minecraft:geometry", NbtMap.builder()
-                            .putString("value", blockType.getGeometry())
+                            .putString("value", blockType.getGeometry(0))
                     .build());
         }
 

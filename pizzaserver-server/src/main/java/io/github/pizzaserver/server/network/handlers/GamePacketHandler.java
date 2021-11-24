@@ -135,7 +135,7 @@ public class GamePacketHandler implements BedrockPacketHandler {
                 break;
             case START_SWIMMING:
                 Block blockSwimmingIn = this.player.getWorld().getBlock(this.player.getLocation().toVector3i());
-                if (this.player.isAlive() && !this.player.isSwimming() && blockSwimmingIn.getBlockType().isLiquid()) {
+                if (this.player.isAlive() && !this.player.isSwimming() && blockSwimmingIn.getBlockState().isLiquid()) {
                     PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, true);
                     this.player.getServer().getEventManager().call(swimEvent);
 
@@ -158,7 +158,7 @@ public class GamePacketHandler implements BedrockPacketHandler {
                 if (this.player.isAlive() && this.player.canReach(packet.getBlockPosition(), this.player.inCreativeMode() ? 13 : 7)) {
                     BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), packet.getBlockPosition());
 
-                    if (blockBreakingLocation.getBlock().isSolid() && this.player.getAdventureSettings().canMine()) {
+                    if (blockBreakingLocation.getBlock().getBlockState().isSolid() && this.player.getAdventureSettings().canMine()) {
                         BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());
                         this.player.getServer().getEventManager().call(blockStartBreakEvent);
                         if (!blockStartBreakEvent.isCancelled()) {
@@ -534,7 +534,7 @@ public class GamePacketHandler implements BedrockPacketHandler {
 
                                 if (!blockBreakEvent.isCancelled()) {
                                     if (blockBreakEvent.isBlockDropsEnabled()) {
-                                        for (ItemStack itemStack : blockMining.get().getDrops()) {
+                                        for (ItemStack itemStack : blockMining.get().getBlockState().getLoot(this.player)) {
                                             Vector3f velocity = Vector3f.from(0.1f * (ThreadLocalRandom.current().nextFloat() * 2 - 1), 0.3f, 0.1f * (ThreadLocalRandom.current().nextFloat() * 2 - 1));
                                             Vector3f position = blockMining.get().getLocation().toVector3f().add(0.5f, 0.5f, 0.5f);
                                             this.player.getWorld().addItemEntity(itemStack, position, velocity);

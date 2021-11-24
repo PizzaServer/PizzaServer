@@ -257,13 +257,13 @@ public class ImplChunk implements Chunk {
             // Update internal sub chunk
             BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
             BlockLayer mainBlockLayer = subChunk.getLayer(layer);
-            BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
+            BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState().getNBT(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
             mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
 
             int highestBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
             if (y >= highestBlockY) {
                 int newHighestBlockY = y;
-                while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
+                while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).getBlockState().isAir()) {
                     newHighestBlockY--;
                 }
                 this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
@@ -329,7 +329,7 @@ public class ImplChunk implements Chunk {
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockType().getBlockId(), block.getBlockState()));
+        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockType().getBlockId(), block.getBlockState().getNBT()));
         updateBlockPacket.setBlockPosition(Vector3i.from(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);

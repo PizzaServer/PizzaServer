@@ -302,7 +302,7 @@ public class ImplWorld implements World {
                 packet.setRelativeVolumeDisabled(relativeVolumeDisabled);
                 packet.setBabySound(isBaby);
                 packet.setIdentifier(entityType);
-                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockType().getBlockId(), block.getBlockState()) : -1);
+                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockType().getBlockId(), block.getBlockState().getNBT()) : -1);
 
                 player.sendPacket(packet);
             }

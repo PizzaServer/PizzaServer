@@ -4,7 +4,7 @@ import com.nukkitx.nbt.NbtList;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.level.world.blocks.BlockState;
 import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
@@ -20,11 +20,11 @@ public class ItemStack implements Cloneable {
     private int networkId;
     protected ItemType itemType;
     protected int count;
-    protected int damage;
+    protected int meta;
     protected NbtMap compound = NbtMap.EMPTY;
 
-    protected Set<BaseBlockType> blocksCanBreak;
-    protected Set<BaseBlockType> blocksCanPlaceOn = Collections.emptySet();
+    protected Set<BlockState> blocksCanBreak;
+    protected Set<BlockState> blocksCanPlaceOn = Collections.emptySet();
 
 
     public ItemStack(String itemId) {
@@ -35,12 +35,12 @@ public class ItemStack implements Cloneable {
         this(ItemRegistry.getItemType(itemId), count);
     }
 
-    public ItemStack(String itemId, int count, int damage) {
-        this(ItemRegistry.getItemType(itemId), count, damage);
+    public ItemStack(String itemId, int count, int meta) {
+        this(ItemRegistry.getItemType(itemId), count, meta);
     }
 
-    public ItemStack(String itemId, int count, int damage, int networkId) {
-        this(ItemRegistry.getItemType(itemId), count, damage, networkId);
+    public ItemStack(String itemId, int count, int meta, int networkId) {
+        this(ItemRegistry.getItemType(itemId), count, meta, networkId);
     }
 
     public ItemStack(ItemType itemType) {
@@ -51,19 +51,19 @@ public class ItemStack implements Cloneable {
         this(itemType, count, 0);
     }
 
-    public ItemStack(ItemType itemType, int count, int damage) {
-        this(itemType, count, damage, itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : -1);
+    public ItemStack(ItemType itemType, int count, int meta) {
+        this(itemType, count, meta, itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : -1);
     }
 
-    public ItemStack(ItemType itemType, int count, int damage, int networkId) {
+    public ItemStack(ItemType itemType, int count, int meta, int networkId) {
         this.itemType = count <= 0 ? ItemRegistry.getItemType(BlockTypeID.AIR) : itemType;
         this.networkId = this.isEmpty() ? 0 : networkId;
         this.count = this.isEmpty() ? 0 : count;
-        this.damage = damage;
+        this.meta = meta;
 
         this.blocksCanBreak = itemType.getOnlyBlocksCanBreak();
         if (itemType instanceof BlockItemType) {
-            this.blocksCanPlaceOn = ((BlockItemType) itemType).getBlockType().getPlaceableOnlyOn();
+            this.blocksCanPlaceOn = ((BlockItemType) itemType).getBlockType().getPlaceableOnlyOn(this.meta);
         }
     }
 
@@ -87,12 +87,12 @@ public class ItemStack implements Cloneable {
         }
     }
 
-    public int getDamage() {
-        return this.damage;
+    public int getMeta() {
+        return this.meta;
     }
 
-    public void setDamage(int damage) {
-        this.damage = damage;
+    public void setMeta(int meta) {
+        this.meta = meta;
     }
 
     public boolean hasCustomName() {
@@ -148,7 +148,7 @@ public class ItemStack implements Cloneable {
      */
     public ItemStack newNetworkStack() {
         int networkId = this.isEmpty() ? 0 : ItemStack.ID++;
-        ItemStack newStack = new ItemStack(this.getItemType(), this.getCount(), this.getDamage(), networkId);
+        ItemStack newStack = new ItemStack(this.getItemType(), this.getCount(), this.getMeta(), networkId);
         newStack.setCompoundTag(this.getCompoundTag());
         newStack.setBlocksCanBreak(this.getBlocksCanBreak());
         newStack.setBlocksCanPlaceOn(this.getBlocksCanPlaceOn());
@@ -188,11 +188,11 @@ public class ItemStack implements Cloneable {
         this.compound = compound;
     }
 
-    public Set<BaseBlockType> getBlocksCanBreak() {
+    public Set<BlockState> getBlocksCanBreak() {
         return Collections.unmodifiableSet(this.blocksCanBreak);
     }
 
-    public void setBlocksCanBreak(Set<BaseBlockType> blocksCanBreak) {
+    public void setBlocksCanBreak(Set<BlockState> blocksCanBreak) {
         this.blocksCanBreak = blocksCanBreak;
     }
 
@@ -200,7 +200,7 @@ public class ItemStack implements Cloneable {
      * Only applicable for ItemStacks that have an item type that can place blocks.
      * @return all of the blocks that this item can be placed on
      */
-    public Set<BaseBlockType> getBlocksCanPlaceOn() {
+    public Set<BlockState> getBlocksCanPlaceOn() {
         return Collections.unmodifiableSet(this.blocksCanPlaceOn);
     }
 
@@ -208,7 +208,7 @@ public class ItemStack implements Cloneable {
      * Only applicable for ItemStacks that have an item type that can place blocks.
      * @param blocksCanPlaceOn the blocks that this item can be placed on
      */
-    public void setBlocksCanPlaceOn(Set<BaseBlockType> blocksCanPlaceOn) {
+    public void setBlocksCanPlaceOn(Set<BlockState> blocksCanPlaceOn) {
         this.blocksCanPlaceOn = blocksCanPlaceOn;
     }
 
@@ -220,7 +220,7 @@ public class ItemStack implements Cloneable {
     public boolean hasSameDataAs(ItemStack otherStack) {
         return (otherStack.getItemType().equals(this.getItemType())
                 && otherStack.getCompoundTag().equals(this.getCompoundTag())
-                && otherStack.getDamage() == this.getDamage()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
+                && otherStack.getMeta() == this.getMeta()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
     }
 
     /**
@@ -238,7 +238,7 @@ public class ItemStack implements Cloneable {
      */
     public boolean visuallyEquals(ItemStack otherItemStack) {
         return otherItemStack.getCompoundTag().equals(this.getCompoundTag())
-                && (otherItemStack.getDamage() == this.getDamage() || (otherItemStack.getItemType() instanceof DurableItemComponent))
+                && (otherItemStack.getMeta() == this.getMeta() || (otherItemStack.getItemType() instanceof DurableItemComponent))
                 && otherItemStack.getItemType().equals(this.getItemType());
     }
 
@@ -248,7 +248,7 @@ public class ItemStack implements Cloneable {
             ItemStack otherItemStack = (ItemStack) obj;
 
             return otherItemStack.getItemType().equals(this.getItemType())
-                    && otherItemStack.getDamage() == this.getDamage()
+                    && otherItemStack.getMeta() == this.getMeta()
                     && otherItemStack.getCount() == this.getCount()
                     && otherItemStack.getCompoundTag().equals(this.getCompoundTag());
         }
@@ -283,9 +283,9 @@ public class ItemStack implements Cloneable {
                 .id(version.getItemRuntimeId(this.getItemType().getItemId()))
                 .netId(this.getNetworkId())
                 .count(this.getCount())
-                .damage(this.getDamage())
-                .canBreak(this.getBlocksCanBreak().stream().map(BaseBlockType::getBlockId).toArray(String[]::new))
-                .canPlace(this.getBlocksCanPlaceOn().stream().map(BaseBlockType::getBlockId).toArray(String[]::new))
+                .damage(this.getMeta())
+                .canBreak(this.getBlocksCanBreak().stream().map(BlockState::getBlockId).toArray(String[]::new))
+                .canPlace(this.getBlocksCanPlaceOn().stream().map(BlockState::getBlockId).toArray(String[]::new))
                 .tag(this.getCompoundTag())
                 .usingNetId(true)
                 .build();

@@ -257,7 +257,7 @@ public class ImplEntity implements Entity {
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                 Block blockBelow = this.getWorld().getBlock(x, this.getFloorY() - 1, z);
-                if (blockBelow.isSolid() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
+                if (blockBelow.getBlockState().isSolid() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
                     return true;
                 }
             }
@@ -1023,7 +1023,7 @@ public class ImplEntity implements Entity {
 
             Block headBlock = this.getHeadBlock();
             EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
-            boolean isSuffocating = headBlock.isSolid()
+            boolean isSuffocating = headBlock.getBlockState().isSolid()
                     && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
                         || breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType()));
             if (isSuffocating) {
@@ -1033,10 +1033,10 @@ public class ImplEntity implements Entity {
                 }
             }
 
-            boolean losingOxygen = !headBlock.isSolid()
+            boolean losingOxygen = !headBlock.getBlockState().isSolid()
                     && ((breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType())
                                 && !breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
-                        || !(headBlock.getBlockType().hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType())));
+                        || !(headBlock.getBlockState().hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType())));
             if (losingOxygen) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
@@ -1318,7 +1318,7 @@ public class ImplEntity implements Entity {
             entityPacket.setUniqueEntityId(this.getId());
             player.sendPacket(entityPacket);
 
-            this.bossBar.despawnFrom(player);
+            this.getBossBar().ifPresent(bossBar -> ((ImplBossBar) bossBar).despawnFrom(player));
             return true;
         } else {
             return false;

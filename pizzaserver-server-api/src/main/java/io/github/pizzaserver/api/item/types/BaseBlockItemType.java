@@ -32,7 +32,7 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
 
     @Override
     public String getName() {
-        return this.blockType.getName();
+        return this.getBlockType().getName(0);
     }
 
     @Override
@@ -45,11 +45,11 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
         // Handle placing a block
         // TODO: Account for entity collision
         Block blockAtPlacementPos = block.getSide(blockFace);
-        if (!block.isAir() && (blockAtPlacementPos.getBlockType().isLiquid() || !blockAtPlacementPos.isSolid())) {
+        if (!block.getBlockState().isAir() && (blockAtPlacementPos.getBlockState().isLiquid() || !blockAtPlacementPos.getBlockState().isSolid())) {
             if (!player.getAdventureSettings().canBuild()) {
                 return false;
             }
-            Block placedBlock = this.getBlockType().create(itemStack.getDamage());
+            Block placedBlock = this.getBlockType().create(itemStack.getMeta());
             placedBlock.setLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i());
 
             BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);
