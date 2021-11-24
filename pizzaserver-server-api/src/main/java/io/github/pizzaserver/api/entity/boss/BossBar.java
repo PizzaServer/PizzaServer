@@ -1,6 +1,8 @@
 package io.github.pizzaserver.api.entity.boss;
 
-public interface BossBar {
+import io.github.pizzaserver.api.utils.Watchable;
+
+public interface BossBar extends Watchable {
 
     String getTitle();
 

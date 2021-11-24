@@ -6,6 +6,8 @@ import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.api.scoreboard.DisplaySlot;
+import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
@@ -190,9 +192,13 @@ public interface Player extends HumanEntity {
      */
     void setChunkRadius(int radius);
 
-    boolean showBossBar(BossBar bossbar);
+    void showBossBar(BossBar bossbar);
 
     boolean hideBossBar(BossBar bossbar);
+
+    Optional<Scoreboard> getScoreboard(DisplaySlot displaySlot);
+
+    void setScoreboard(DisplaySlot displaySlot, Scoreboard scoreboard);
 
     /**
      * If this session is still active.

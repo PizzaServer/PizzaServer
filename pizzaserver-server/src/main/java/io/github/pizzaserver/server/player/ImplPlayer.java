@@ -12,6 +12,8 @@ import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
+import io.github.pizzaserver.api.scoreboard.DisplaySlot;
+import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.entity.ImplHumanEntity;
@@ -45,6 +47,7 @@ import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.player.data.Device;
+import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -66,6 +69,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected final String languageCode;
 
     protected final PlayerList playerList = new ImplPlayerList(this);
+    protected final Set<BossBar> bossBars = new HashSet<>();
+    protected final Map<DisplaySlot, Scoreboard> scoreboards = new HashMap<>();
 
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
     protected Dimension dimensionTransferScreen = null;
@@ -76,8 +81,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings();
 
     protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
-
-    protected final Set<BossBar> bossBars = new HashSet<>();
 
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
@@ -731,7 +734,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     }
 
     @Override
-    public boolean showBossBar(BossBar bossbar) {
+    public void showBossBar(BossBar bossbar) {
         ImplBossBar implBossbar = (ImplBossBar) bossbar;
         if (!implBossbar.isDummy()) {
             throw new IllegalArgumentException("The boss bar is already assigned to an entity.");
@@ -757,9 +760,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             dummyEntityPacket.getMetadata().putFlags(flags);
 
             this.sendPacket(dummyEntityPacket);
-            return implBossbar.spawnTo(this);
+            implBossbar.spawnTo(this);
         }
-        return false;
     }
 
     @Override
@@ -771,6 +773,66 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Optional<Scoreboard> getScoreboard(DisplaySlot displaySlot) {
+        return Optional.ofNullable(this.scoreboards.getOrDefault(displaySlot, null));
+    }
+
+    @Override
+    public void setScoreboard(DisplaySlot displaySlot, Scoreboard scoreboard) {
+        Optional<Scoreboard> activeScoreboard = this.getScoreboard(displaySlot);
+        if (activeScoreboard.isPresent() && !activeScoreboard.get().equals(scoreboard)) {
+            ((ImplScoreboard) activeScoreboard.get()).despawnFrom(this);
+        }
+        this.scoreboards.put(displaySlot, scoreboard);
+
+        if (scoreboard != null) {
+            this.ensureUniqueSlotForScoreboard(displaySlot, scoreboard);
+            ((ImplScoreboard) scoreboard).spawnTo(this, displaySlot);
+        }
+    }
+
+    /**
+     * Ensure that only a scoreboard does not occupy another display slot already.
+     * If it does, it should despawn that one.
+     * @param displaySlot display slot of the new scoreboard being set
+     * @param scoreboard scoreboard to check against
+     */
+    private void ensureUniqueSlotForScoreboard(DisplaySlot displaySlot, Scoreboard scoreboard) {
+        Optional<Scoreboard> listScoreboard = this.getScoreboard(DisplaySlot.LIST);
+        Optional<Scoreboard> sidebarScoreboard = this.getScoreboard(DisplaySlot.SIDEBAR);
+        Optional<Scoreboard> belowNameScoreboard = this.getScoreboard(DisplaySlot.BELOW_NAME);
+        switch (displaySlot) {
+            case LIST:
+                if (sidebarScoreboard.isPresent() && sidebarScoreboard.get().equals(scoreboard)) {
+                    ((ImplScoreboard) sidebarScoreboard.get()).despawnFrom(this);
+                    this.scoreboards.remove(DisplaySlot.SIDEBAR);
+                } else if (belowNameScoreboard.isPresent() && belowNameScoreboard.get().equals(scoreboard)) {
+                    ((ImplScoreboard) belowNameScoreboard.get()).despawnFrom(this);
+                    this.scoreboards.remove(DisplaySlot.BELOW_NAME);
+                }
+                break;
+            case SIDEBAR:
+                if (listScoreboard.isPresent() && listScoreboard.get().equals(scoreboard)) {
+                    ((ImplScoreboard) listScoreboard.get()).despawnFrom(this);
+                    this.scoreboards.remove(DisplaySlot.LIST);
+                } else if (belowNameScoreboard.isPresent() && belowNameScoreboard.get().equals(scoreboard)) {
+                    ((ImplScoreboard) belowNameScoreboard.get()).despawnFrom(this);
+                    this.scoreboards.remove(DisplaySlot.BELOW_NAME);
+                }
+                break;
+            case BELOW_NAME:
+                if (listScoreboard.isPresent() && listScoreboard.get().equals(scoreboard)) {
+                    ((ImplScoreboard) listScoreboard.get()).despawnFrom(this);
+                    this.scoreboards.remove(DisplaySlot.LIST);
+                } else if (sidebarScoreboard.isPresent() && sidebarScoreboard.get().equals(scoreboard)) {
+                    ((ImplScoreboard) sidebarScoreboard.get()).despawnFrom(this);
+                    this.scoreboards.remove(DisplaySlot.SIDEBAR);
+                }
+                break;
+        }
     }
 
     @Override

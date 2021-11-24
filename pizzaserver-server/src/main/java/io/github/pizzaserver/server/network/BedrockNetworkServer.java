@@ -80,8 +80,9 @@ public class BedrockNetworkServer {
         pong.setSubMotd(this.server.getMotd());
         pong.setPlayerCount(this.server.getPlayerCount());
         pong.setMaximumPlayerCount(this.server.getMaximumPlayerCount());
-        pong.setProtocolVersion(-1);
-        pong.setVersion("");
+        pong.setProtocolVersion(ServerProtocol.LATEST_PROTOCOL_VERSION);
+        pong.setVersion(ServerProtocol.LATEST_GAME_VERSION);
+        pong.setGameType("Survival");
         pong.setIpv4Port(this.address.getPort());
         pong.setIpv6Port(this.address.getPort());
 

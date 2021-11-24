@@ -38,7 +38,7 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
 
         if (!version.isPresent()) {
             PlayStatusPacket loginFailPacket = new PlayStatusPacket();
-            if (loginPacket.getProtocolVersion() > ServerProtocol.LATEST_PROTOCOL_VERISON) {
+            if (loginPacket.getProtocolVersion() > ServerProtocol.LATEST_PROTOCOL_VERSION) {
                 loginFailPacket.setStatus(PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD);
             } else {
                 loginFailPacket.setStatus(PlayStatusPacket.Status.LOGIN_FAILED_CLIENT_OLD);

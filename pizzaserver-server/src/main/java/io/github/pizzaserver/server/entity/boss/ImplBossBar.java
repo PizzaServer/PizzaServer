@@ -4,7 +4,6 @@ import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.player.Player;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -101,8 +100,9 @@ public class ImplBossBar implements BossBar {
         }
     }
 
+    @Override
     public Set<Player> getViewers() {
-        return Collections.unmodifiableSet(this.viewers);
+        return new HashSet<>(this.viewers);
     }
 
     public boolean spawnTo(Player player) {

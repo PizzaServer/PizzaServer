@@ -17,8 +17,8 @@ import java.util.Optional;
 
 public class ServerProtocol {
 
-    public static final String GAME_VERSION = V448MinecraftVersion.VERSION;
-    public static final int LATEST_PROTOCOL_VERISON = V448MinecraftVersion.PROTOCOL;
+    public static final String LATEST_GAME_VERSION = V448MinecraftVersion.VERSION;
+    public static final int LATEST_PROTOCOL_VERSION = V448MinecraftVersion.PROTOCOL;
     public static final int LATEST_BLOCK_STATES_VERSION = 17825806;
 
     private static final Map<Integer, BaseMinecraftVersion> VERSIONS = new HashMap<>();

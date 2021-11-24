@@ -1,25 +1,29 @@
 package io.github.pizzaserver.api.scoreboard;
 
-import java.util.List;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.utils.Watchable;
 
-public interface Scoreboard {
+import java.util.List;
+import java.util.Set;
+
+public interface Scoreboard extends Watchable {
 
     String getDisplayName();
 
     void setDisplayName(String displayName);
 
-    DisplaySlot getDisplaySlot();
-
-    void setDisplaySlot(DisplaySlot displaySlot);
-
     SortOrder getSortOrder();
 
     void setSortOrder(SortOrder sortOrder);
 
-    List<ScoreboardLine> getLines();
+    Set<ScoreboardLine> getLines();
+
+    List<ScoreboardLine> getSortedLines();
 
     ScoreboardLine addLine(String line, int score);
 
-    void removeLine(ScoreboardLine display);
+    EntityScoreboardLine addLine(Entity entity, int score);
+
+    boolean removeLine(ScoreboardLine display);
 
 }
