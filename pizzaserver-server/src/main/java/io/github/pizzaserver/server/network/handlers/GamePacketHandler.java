@@ -227,34 +227,6 @@ public class GamePacketHandler implements BedrockPacketHandler {
     }
 
     @Override
-    public boolean handle(LevelSoundEventPacket packet) {
-        Block block = packet.getExtraData() != -1 ? this.player.getVersion().getBlockFromRuntimeId(packet.getExtraData()) : null;
-        WorldSoundEvent event = new WorldSoundEvent(this.player.getLocation(),
-                packet.getSound(),
-                packet.isRelativeVolumeDisabled(),
-                packet.isBabySound(),
-                packet.getIdentifier(),
-                block);
-        this.player.getServer().getEventManager().call(event);
-
-        if (!event.isCancelled()) {
-            event.getWorld().playSound(event.getSound(),
-                    event.getLocation().toVector3f(),
-                    event.isRelativeVolumeDisabled(),
-                    event.isBaby(),
-                    event.getIdentifier(),
-                    event.getBlock().orElse(null));
-
-            for (Player viewer : this.player.getViewers()) {
-                if (!viewer.equals(this.player)) {
-                    viewer.sendPacket(packet);
-                }
-            }
-        }
-        return true;
-    }
-
-    @Override
     public boolean handle(AdventureSettingsPacket packet) {
         if (packet.getUniqueEntityId() == this.player.getId()) {
             AdventureSettings adventureSettings = this.player.getAdventureSettings();
