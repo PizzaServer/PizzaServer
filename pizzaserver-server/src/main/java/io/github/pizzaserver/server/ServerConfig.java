@@ -31,6 +31,18 @@ public class ServerConfig {
         return this.config.getBoolean("server.force-packs");
     }
 
+    /**
+     * Returns if xbox chains should be verified.
+     * @return if xbox chains should be verified
+     */
+    public boolean isOnlineMode() {
+        return this.config.getBoolean("server.online-mode");
+    }
+
+    public int getMinimumSupportedProtocol() {
+        return this.config.getInteger("server.minimum-supported-protocol");
+    }
+
     public int getMaxChunkThreads() {
         return this.config.getInteger("world.chunk.threads");
     }
@@ -90,14 +102,6 @@ public class ServerConfig {
 
     public int getNetworkCompressionLevel() {
         return this.config.getInteger("network.compression-level");
-    }
-
-    /**
-     * Returns if xbox chains should be verified.
-     * @return if xbox chains should be verified
-     */
-    public boolean isOnlineMode() {
-        return this.config.getBoolean("server.online-mode");
     }
 
     public boolean isDebugLoggingEnabled() {

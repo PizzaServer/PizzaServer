@@ -206,6 +206,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             startGamePacket.setMultiplayerCorrelationId(UUID.randomUUID().toString());
             startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
             startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
+            startGamePacket.setServerEngine("");
             this.sendPacket(startGamePacket);
 
             // Send item components for custom items

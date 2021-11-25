@@ -1,13 +1,7 @@
 package io.github.pizzaserver.server.network.protocol;
 
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
-import io.github.pizzaserver.server.network.protocol.versions.V419MinecraftVersion;
-import io.github.pizzaserver.server.network.protocol.versions.V422MinecraftVersion;
-import io.github.pizzaserver.server.network.protocol.versions.V428MinecraftVersion;
-import io.github.pizzaserver.server.network.protocol.versions.V431MinecraftVersion;
-import io.github.pizzaserver.server.network.protocol.versions.V440MinecraftVersion;
-import io.github.pizzaserver.server.network.protocol.versions.V448MinecraftVersion;
+import io.github.pizzaserver.server.network.protocol.versions.*;
 import io.github.pizzaserver.server.ImplServer;
 
 import java.io.IOException;
@@ -17,8 +11,8 @@ import java.util.Optional;
 
 public class ServerProtocol {
 
-    public static final String LATEST_GAME_VERSION = V448MinecraftVersion.VERSION;
-    public static final int LATEST_PROTOCOL_VERSION = V448MinecraftVersion.PROTOCOL;
+    public static final String LATEST_GAME_VERSION = V471MinecraftVersion.VERSION;
+    public static final int LATEST_PROTOCOL_VERSION = V471MinecraftVersion.PROTOCOL;
     public static final int LATEST_BLOCK_STATES_VERSION = 17825806;
 
     private static final Map<Integer, BaseMinecraftVersion> VERSIONS = new HashMap<>();
@@ -33,6 +27,8 @@ public class ServerProtocol {
         loadVersion(new V431MinecraftVersion());
         loadVersion(new V440MinecraftVersion());
         loadVersion(new V448MinecraftVersion());
+        loadVersion(new V465MinecraftVersion());
+        loadVersion(new V471MinecraftVersion());
     }
 
     public static Optional<BaseMinecraftVersion> getProtocol(int protocol) {
@@ -40,8 +36,10 @@ public class ServerProtocol {
     }
 
     private static void loadVersion(BaseMinecraftVersion version) {
-        VERSIONS.put(version.getProtocol(), version);
-        Server.getInstance().getLogger().info("Loaded protocol version v" + version.getProtocol());
+        if (version.getProtocol() >= ((ImplServer) Server.getInstance()).getConfig().getMinimumSupportedProtocol()) {
+            VERSIONS.put(version.getProtocol(), version);
+            Server.getInstance().getLogger().info("Loaded protocol version v" + version.getProtocol());
+        }
     }
 
 }
