@@ -110,6 +110,8 @@ public abstract class Server {
      */
     public abstract String getRootDirectory();
 
+    public abstract ServerConfig getConfig();
+
     public static Server getInstance() {
         return instance;
     }

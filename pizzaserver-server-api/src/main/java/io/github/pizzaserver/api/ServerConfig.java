@@ -1,6 +1,6 @@
-package io.github.pizzaserver.server;
+package io.github.pizzaserver.api;
 
-import io.github.pizzaserver.server.utils.Config;
+import io.github.pizzaserver.api.utils.Config;
 
 public class ServerConfig {
 

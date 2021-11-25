@@ -18,7 +18,48 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <dependency.io.github.pizzaserver.commons>1.0-SNAPSHOT</dependency.io.github.pizzaserver.commons>
+        <dependency.io.github.pizzaserver.api>1.0-SNAPSHOT</dependency.io.github.pizzaserver.api>
+        <dependency.io.github.pizzaserver.format>1.0-SNAPSHOT</dependency.io.github.pizzaserver.format>
+        <dependency.com.nukkitx.protocol>2.9.4-SNAPSHOT</dependency.com.nukkitx.protocol>
+        <dependency.com.nukkitx.nbt>2.0.1</dependency.com.nukkitx.nbt>
+        <dependency.org.yaml>1.27</dependency.org.yaml>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.github.pizzaserver.commons</groupId>
+                <artifactId>PizzaServer-Commons</artifactId>
+                <version>${dependency.io.github.pizzaserver.commons}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.pizzaserver.format</groupId>
+                <artifactId>PizzaServer-Format</artifactId>
+                <version>${dependency.io.github.pizzaserver.format}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.pizzaserver.api</groupId>
+                <artifactId>PizzaServer-API</artifactId>
+                <version>${dependency.io.github.pizzaserver.api}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.nukkitx.protocol</groupId>
+                <artifactId>bedrock-v471</artifactId>
+                <version>${dependency.com.nukkitx.protocol}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.nukkitx</groupId>
+                <artifactId>nbt</artifactId>
+                <version>${dependency.com.nukkitx.nbt}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${dependency.org.yaml}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>

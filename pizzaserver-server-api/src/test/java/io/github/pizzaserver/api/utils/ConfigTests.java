@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.utils;
+package io.github.pizzaserver.api.utils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

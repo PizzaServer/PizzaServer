@@ -32,9 +32,12 @@
         <dependency>
             <groupId>io.github.pizzaserver.commons</groupId>
             <artifactId>PizzaServer-Commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!-- LevelDB in Java that supports MCPE format -->
+        <dependency>
+            <groupId>com.nukkitx</groupId>
+            <artifactId>nbt</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>net.daporkchop</groupId>
             <artifactId>leveldb-mcpe-jni</artifactId>
@@ -47,19 +50,14 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-            <version>4.1.53.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>com.nukkitx</groupId>
-            <artifactId>nbt</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.nukkitx</groupId>
             <artifactId>math</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.53.Final</version>
         </dependency>
 
     </dependencies>

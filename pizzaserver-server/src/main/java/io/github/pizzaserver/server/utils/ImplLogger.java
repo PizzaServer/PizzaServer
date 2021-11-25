@@ -18,7 +18,7 @@ public class ImplLogger implements Logger {
     public ImplLogger(String prefix) {
         this.logger = LogManager.getLogger(prefix);
 
-        if (((ImplServer) Server.getInstance()).getConfig().isDebugLoggingEnabled()) {
+        if (Server.getInstance().getConfig().isDebugLoggingEnabled()) {
             Configurator.setLevel(this.logger.getName(), Level.DEBUG);
         }
     }

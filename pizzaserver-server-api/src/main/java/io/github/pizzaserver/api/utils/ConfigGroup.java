@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.utils;
+package io.github.pizzaserver.api.utils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

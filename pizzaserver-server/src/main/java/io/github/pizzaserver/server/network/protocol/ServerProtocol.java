@@ -2,7 +2,6 @@ package io.github.pizzaserver.server.network.protocol;
 
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.server.network.protocol.versions.*;
-import io.github.pizzaserver.server.ImplServer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +35,7 @@ public class ServerProtocol {
     }
 
     private static void loadVersion(BaseMinecraftVersion version) {
-        if (version.getProtocol() >= ((ImplServer) Server.getInstance()).getConfig().getMinimumSupportedProtocol()) {
+        if (version.getProtocol() >= Server.getInstance().getConfig().getMinimumSupportedProtocol()) {
             VERSIONS.put(version.getProtocol(), version);
             Server.getInstance().getLogger().info("Loaded protocol version v" + version.getProtocol());
         }

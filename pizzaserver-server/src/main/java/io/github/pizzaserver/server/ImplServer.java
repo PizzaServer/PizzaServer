@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server;
 
+import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.entity.boss.BossBarFactory;
 import io.github.pizzaserver.api.scoreboard.ScoreboardFactory;
 import io.github.pizzaserver.server.entity.EntityConstructor;
@@ -11,7 +12,7 @@ import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProvider;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
-import io.github.pizzaserver.server.utils.Config;
+import io.github.pizzaserver.api.utils.Config;
 import io.github.pizzaserver.server.utils.TimeUtils;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.EntityRegistry;
@@ -347,6 +348,7 @@ public class ImplServer extends Server {
         return this.rootDirectory;
     }
 
+    @Override
     public ServerConfig getConfig() {
         return this.config;
     }
