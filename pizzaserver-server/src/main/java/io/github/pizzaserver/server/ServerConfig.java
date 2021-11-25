@@ -60,6 +60,14 @@ public class ServerConfig {
         return this.config.getInteger("world.chunk.expiry-time");
     }
 
+    /**
+     * Returns the amount of chunks a player must be to a chunk for it to tick block updates/entities.
+     * @return chunk radius
+     */
+    public int getChunkPlayerTickRadius() {
+        return this.config.getInteger("world.chunk.player-tick-radius");
+    }
+
     public String getDefaultWorldName() {
         return this.config.getString("world.default-name");
     }

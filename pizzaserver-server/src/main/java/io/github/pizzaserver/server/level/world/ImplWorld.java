@@ -12,9 +12,7 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.ItemEntity;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.utils.Location;
@@ -134,52 +132,37 @@ public class ImplWorld implements World {
     public Block getHighestBlockAt(int x, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        return this.getChunk(chunkX, chunkZ).getHighestBlockAt(x % 16, z % 16);
+
+        return this.getChunk(chunkX, chunkZ).getHighestBlockAt(x & 15, z & 15);
     }
 
     @Override
-    public Block getBlock(Vector3i position) {
-        return this.getBlock(position.getX(), position.getY(), position.getZ());
-    }
-
-    @Override
-    public Block getBlock(int x, int y, int z) {
+    public Block getBlock(int x, int y, int z, int layer) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        return this.getChunk(chunkX, chunkZ).getBlock(x % 16, y, z % 16);
+
+        return this.getChunk(chunkX, chunkZ).getBlock(x & 15, y, z & 15, layer);
     }
 
     @Override
-    public void setBlock(String blockId, Vector3i position) {
-        this.setBlock(blockId, position.getX(), position.getY(), position.getZ());
-    }
-
-    @Override
-    public void setBlock(String blockId, int x, int y, int z) {
-        BaseBlockType blockType = BlockRegistry.getBlockType(blockId);
-        this.setBlock(blockType, x, y, z);
-    }
-
-    @Override
-    public void setBlock(BaseBlockType blockType, Vector3i position) {
-        this.setBlock(new Block(blockType), position);
-    }
-
-    @Override
-    public void setBlock(BaseBlockType blockType, int x, int y, int z) {
-        this.setBlock(new Block(blockType), x, y, z);
-    }
-
-    @Override
-    public void setBlock(Block block, Vector3i position) {
-        this.setBlock(block, position.getX(), position.getY(), position.getZ());
-    }
-
-    @Override
-    public void setBlock(Block block, int x, int y, int z) {
+    public void setBlock(Block block, int x, int y, int z, int layer) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        this.getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
+        this.getChunk(chunkX, chunkZ).setBlock(block, x & 15, y, z & 15, layer);
+    }
+
+    @Override
+    public void setAndUpdateBlock(Block block, int x, int y, int z, int layer) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        this.getChunk(chunkX, chunkZ).setAndUpdateBlock(block, x & 15, y, z & 15, layer);
+    }
+
+    @Override
+    public boolean requestBlockUpdate(int x, int y, int z) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        return this.getChunk(chunkX, chunkZ).requestBlockUpdate(x, y, z);
     }
 
     @Override
@@ -212,7 +195,7 @@ public class ImplWorld implements World {
     public void sendBlock(Player player, int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        this.getChunk(chunkX, chunkZ).sendBlock(player, x % 16, y, z % 16);
+        this.getChunk(chunkX, chunkZ).sendBlock(player, x & 15, y, z & 15);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package io.github.pizzaserver.server.level.world.chunks;
 
-import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
@@ -41,8 +40,10 @@ public class ImplChunk implements Chunk {
     private final int x;
     private final int z;
 
+    private final List<Vector3i> blockUpdates = new ArrayList<>();
+
     private int expiryTimer;
-    private AtomicInteger activeChunkLoaders = new AtomicInteger(0);
+    private final AtomicInteger activeChunkLoaders = new AtomicInteger(0);
 
     // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
@@ -132,26 +133,9 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public Block getHighestBlockAt(Vector2i position) {
-        return this.getHighestBlockAt(position.getX(), position.getY());
-    }
-
-    @Override
     public Block getHighestBlockAt(int x, int z) {
-        int chunkBlockX = x >= 0 ? x : 16 + x;
-        int chunkBlockZ = z >= 0 ? z : 16 + z;
-        int chunkBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
-        return this.getBlock(chunkBlockX, chunkBlockY, chunkBlockZ);
-    }
-
-    @Override
-    public Block getBlock(Vector3i blockCoordinates) {
-        return this.getBlock(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
-    }
-
-    @Override
-    public Block getBlock(int x, int y, int z) {
-        return this.getBlock(x, y, z, 0);
+        int chunkBlockY = Math.max(0, this.chunk.getHighestBlockAt(x & 15, z & 15) - 1);
+        return this.getBlock(x, chunkBlockY, z);
     }
 
     @Override
@@ -165,9 +149,9 @@ public class ImplChunk implements Chunk {
             throw new IllegalArgumentException("Could not get block outside chunk");
         }
         int subChunkIndex = y / 16;
-        int chunkBlockX = x >= 0 ? x : 16 + x;
-        int chunkBlockY = y % 16;
-        int chunkBlockZ = z >= 0 ? z : 16 + z;
+        int chunkBlockX = x & 15;
+        int subChunkY = y & 15;
+        int chunkBlockZ = z & 15;
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         Lock readLock = this.lock.readLock();
@@ -181,7 +165,7 @@ public class ImplChunk implements Chunk {
                 block.setLocation(this.getWorld(), blockCoordinates);
                 return block;
             }
-            BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
+            BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, subChunkY, chunkBlockZ);
             Block block;
             if (BlockRegistry.hasBlockType(paletteEntry.getId())) {
                 // Block id is registered
@@ -203,49 +187,14 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public void setBlock(BaseBlockType blockType, Vector3i blockPosition) {
-        this.setBlock(new Block(blockType), blockPosition);
-    }
-
-    @Override
-    public void setBlock(BaseBlockType blockType, int x, int y, int z) {
-        this.setBlock(new Block(blockType), x, y, z);
-    }
-
-    @Override
-    public void setBlock(Block block, Vector3i blockPosition) {
-        this.setBlock(block, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
-    }
-
-    @Override
-    public void setBlock(Block block, int x, int y, int z) {
-        this.setBlock(block, x, y, z, 0);
-    }
-
-    @Override
-    public void setBlock(BaseBlockType blockType, Vector3i blockCoordinates, int layer) {
-        this.setBlock(blockType, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
-    }
-
-    @Override
-    public void setBlock(BaseBlockType blockType, int x, int y, int z, int layer) {
-        this.setBlock(blockType.create(), x, y, z, layer);
-    }
-
-    @Override
-    public void setBlock(Block block, Vector3i blockCoordinates, int layer) {
-        this.setBlock(block, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
-    }
-
-    @Override
     public void setBlock(Block block, int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
         }
         int subChunkIndex = y / 16;
-        int chunkBlockX = x >= 0 ? x : 16 + x;
-        int chunkBlockY = y % 16;
-        int chunkBlockZ = z >= 0 ? z : 16 + z;
+        int chunkBlockX = x & 15;
+        int subChunkBlockY = y & 15;
+        int chunkBlockZ = z & 15;
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         block.setLocation(this.getWorld(), blockCoordinates);
@@ -258,7 +207,7 @@ public class ImplChunk implements Chunk {
             BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
             BlockLayer mainBlockLayer = subChunk.getLayer(layer);
             BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState().getNBT(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
-            mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
+            mainBlockLayer.setBlockEntryAt(chunkBlockX, subChunkBlockY, chunkBlockZ, entry);
 
             int highestBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
             if (y >= highestBlockY) {
@@ -271,20 +220,50 @@ public class ImplChunk implements Chunk {
 
             // Send update block packet
             for (Player viewer : this.getViewers()) {
-                this.sendBlock(viewer, x, y, z, layer);
+                this.sendBlock(viewer, chunkBlockX, y, chunkBlockZ, layer);
             }
         } finally {
             writeLock.unlock();
         }
     }
 
-    /**
-     * Send all the layers of a block to the client.
-     * @param player the player being sent the layers
-     * @param blockCoordinates coordinates of the block
-     */
-    public void sendBlock(Player player, Vector3i blockCoordinates) {
-        this.sendBlock(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+    @Override
+    public void setAndUpdateBlock(Block block, int x, int y, int z, int layer) {
+        this.setBlock(block, x, y, z, layer);
+        int chunkBlockX = x & 15;
+        int chunkBlockZ = z & 15;
+
+        Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
+
+        this.getWorld().requestBlockUpdate(blockCoordinates.up());
+        this.getWorld().requestBlockUpdate(blockCoordinates.down());
+        this.getWorld().requestBlockUpdate(blockCoordinates.north());
+        this.getWorld().requestBlockUpdate(blockCoordinates.south());
+        this.getWorld().requestBlockUpdate(blockCoordinates.west());
+        this.getWorld().requestBlockUpdate(blockCoordinates.east());
+    }
+
+    @Override
+    public boolean requestBlockUpdate(int x, int y, int z) {
+        Vector3i blockCoordinates = Vector3i.from(x & 15, y, z & 15);
+        if (!this.blockUpdates.contains(blockCoordinates)) {
+            this.blockUpdates.add(blockCoordinates);
+            return true;
+        }
+        return false;
+    }
+
+    private void doBlockUpdate(int x, int y, int z) {
+        int subChunkIndex = y / 16;
+        int chunkBlockX = x & 15;
+        int chunkBlockZ = z & 15;
+
+        int layers = Math.max(this.chunk.getSubChunk(subChunkIndex).getLayers().size(), 1);
+
+        for (int layer = 0; layer < layers; layer++) {
+            Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
+            block.getBlockType().onUpdate(block);
+        }
     }
 
     /**
@@ -301,18 +280,8 @@ public class ImplChunk implements Chunk {
         int layers = Math.max(this.chunk.getSubChunk(subChunkIndex).getLayers().size(), 1);
 
         for (int layer = 0; layer < layers; layer++) {
-            this.sendBlock(player, x, y, z, layer);
+            this.sendBlock(player, x & 15, y, z & 15, layer);
         }
-    }
-
-    /**
-     * Send a layer of a block to the client.
-     * @param player the player being sent the layers
-     * @param blockCoordinates block coordinates
-     * @param layer layer
-     */
-    public void sendBlock(Player player, Vector3i blockCoordinates, int layer) {
-        this.sendBlock(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
     }
 
     /**
@@ -324,8 +293,8 @@ public class ImplChunk implements Chunk {
      * @param layer layer
      */
     public void sendBlock(Player player, int x, int y, int z, int layer) {
-        int chunkBlockX = x >= 0 ? x : 16 + x;
-        int chunkBlockZ = z >= 0 ? z : 16 + z;
+        int chunkBlockX = x & 15;
+        int chunkBlockZ = z & 15;
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
@@ -340,11 +309,27 @@ public class ImplChunk implements Chunk {
      * run block updates and tick entities in this chunk.
      */
     public void tick() {
-        for (Entity entity : this.getEntities()) {
-            entity.tick();
+        boolean canDoLogicTick = false;
+        for (Player player : this.getViewers()) {
+            int chunkDistance = (int) Math.floor(Math.sqrt(Math.pow(player.getChunk().getX() - this.getX(), 2) + Math.pow(player.getChunk().getZ() - this.getZ(), 2)));
+            if (chunkDistance <= this.getWorld().getServer().getConfig().getChunkPlayerTickRadius()) {
+                canDoLogicTick = true;
+                break;
+            }
         }
 
-        // Chunk expiry
+        if (canDoLogicTick) {
+            for (Entity entity : this.getEntities()) {
+                entity.tick();
+            }
+
+            List<Vector3i> currentTickBlockUpdates = new ArrayList<>(this.blockUpdates);
+            this.blockUpdates.clear();
+            for (Vector3i blockCoordinate : currentTickBlockUpdates) {
+                this.doBlockUpdate(blockCoordinate.getX(), blockCoordinate.getY(), blockCoordinate.getZ());
+            }
+        }
+
         if (this.expiryTimer > 0 && this.canBeClosed()) {
             this.expiryTimer--;
 
@@ -436,7 +421,7 @@ public class ImplChunk implements Chunk {
     }
 
     public void close(boolean async, boolean force) {
-        ((ImplWorld) this.getWorld()).getChunkManager().unloadChunk(this.getX(), this.getZ(), async, force);
+        this.getWorld().getChunkManager().unloadChunk(this.getX(), this.getZ(), async, force);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
                 itemStack.setCount(itemStack.getCount() - 1);
                 player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
             }
-            block.getWorld().setBlock(placedBlock, placedBlock.getLocation().toVector3i());
+            block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
             return true;
         } else {
             // air blocks don't change the world at all and cannot really be placed.

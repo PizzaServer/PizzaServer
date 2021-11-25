@@ -37,7 +37,7 @@ public class PlayerBlockBreakingManager {
     }
 
     public void breakBlock() {
-        this.player.getWorld().setBlock(this.blockMiningLocation.getBlock().getBlockState().getResultBlock(), this.blockMiningLocation.toVector3i());
+        this.player.getWorld().setAndUpdateBlock(this.blockMiningLocation.getBlock().getBlockState().getResultBlock(), this.blockMiningLocation.toVector3i());
         this.resetMiningData();
     }
 

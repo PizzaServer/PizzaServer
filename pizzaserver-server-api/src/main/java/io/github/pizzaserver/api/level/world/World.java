@@ -38,7 +38,9 @@ public interface World extends ChunkManager {
      * @param coordinates chunk column coordinates
      * @return y coordinate
      */
-    Block getHighestBlockAt(Vector2i coordinates);
+    default Block getHighestBlockAt(Vector2i coordinates) {
+        return this.getHighestBlockAt(coordinates.getX(), coordinates.getY());
+    }
 
     /**
      * Get the highest block y coordinate at a chunk column.
@@ -48,21 +50,220 @@ public interface World extends ChunkManager {
      */
     Block getHighestBlockAt(int x, int z);
 
-    Block getBlock(Vector3i position);
+    /**
+     * Retrieve the {@link Block} at these chunk coordinates.
+     * @param blockCoordinates the chunk block coordinates
+     * @return the {@link Block} at these coordinates
+     */
+    default Block getBlock(Vector3i blockCoordinates) {
+        return this.getBlock(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+    }
 
-    Block getBlock(int x, int y, int z);
+    /**
+     * Retrieve the {@link Block} at these chunk coordinates.
+     * @param x x chunk coordinate
+     * @param y y chunk coordinate
+     * @param z z chunk coordinate
+     * @return the {@link Block} at these coordinates
+     */
+    default Block getBlock(int x, int y, int z) {
+        return this.getBlock(x, y, z, 0);
+    }
 
-    void setBlock(String blockId, Vector3i position);
+    /**
+     * Retrieve the {@link Block} at these chunk coordinates.
+     * @param blockCoordinates the chunk block coordinates
+     * @param layer layer
+     * @return the {@link Block} at these coordinates
+     */
+    default Block getBlock(Vector3i blockCoordinates, int layer) {
+        return this.getBlock(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
 
-    void setBlock(String blockId, int x, int y, int z);
+    Block getBlock(int x, int y, int z, int layer);
 
-    void setBlock(BaseBlockType blockType, Vector3i position);
+    /**
+     * Set a block in this chunk.
+     * @param blockType the {@link BaseBlockType} of the block that should be created here
+     * @param blockPosition the chunk position of the block
+     */
+    default void setBlock(BaseBlockType blockType, Vector3i blockPosition) {
+        this.setBlock(blockType.create(), blockPosition);
+    }
 
-    void setBlock(BaseBlockType blockType, int x, int y, int z);
+    /**
+     * Set a block in this chunk.
+     * @param blockType the {@link BaseBlockType} of the block that should be created here
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
+    default void setBlock(BaseBlockType blockType, int x, int y, int z) {
+        this.setBlock(blockType.create(), x, y, z);
+    }
 
-    void setBlock(Block block, Vector3i position);
+    /**
+     * Set a block in a specific layer of this chunk.
+     * @param blockType the {@link BaseBlockType} to be set here
+     * @param blockCoordinates block coordinates
+     * @param layer layer
+     */
+    default void setBlock(BaseBlockType blockType, Vector3i blockCoordinates, int layer) {
+        this.setBlock(blockType.create(), blockCoordinates, layer);
+    }
 
-    void setBlock(Block block, int x, int y, int z);
+
+    /**
+     * Set a block in a specific layer of this chunk.
+     * @param blockType the {@link BaseBlockType} to be set here
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param layer layer
+     */
+    default void setBlock(BaseBlockType blockType, int x, int y, int z, int layer) {
+        this.setBlock(blockType.create(), x, y, z, layer);
+    }
+
+    /**
+     * Set a block in this chunk.
+     * @param block the {@link Block} to be set here
+     * @param blockPosition the chunk position of the block
+     */
+    default void setBlock(Block block, Vector3i blockPosition) {
+        this.setBlock(block, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+    }
+
+    /**
+     * Set a block in this chunk.
+     * @param block the {@link Block} to be set here
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
+    default void setBlock(Block block, int x, int y, int z) {
+        this.setBlock(block, x, y, z, 0);
+    }
+
+    /**
+     * Set a block in a specific layer of this chunk.
+     * @param block the {@link Block} to be set here
+     * @param blockCoordinates block coordinates
+     * @param layer layer
+     */
+    default void setBlock(Block block, Vector3i blockCoordinates, int layer) {
+        this.setBlock(block, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    /**
+     * Set a block in a specific layer of this chunk.
+     * @param block the {@link Block} block to be set here
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param layer layer
+     */
+    void setBlock(Block block, int x, int y, int z, int layer);
+
+    /**
+     * Set a block in this chunk and schedule a block update.
+     * @param blockType the {@link BaseBlockType} of the block that should be created here
+     * @param blockPosition the chunk position of the block
+     */
+    default void setAndUpdateBlock(BaseBlockType blockType, Vector3i blockPosition) {
+        this.setAndUpdateBlock(blockType.create(), blockPosition);
+    }
+
+    /**
+     * Set a block in this chunk and schedule a block update.
+     * @param blockType the {@link BaseBlockType} of the block that should be created here
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
+    default void setAndUpdateBlock(BaseBlockType blockType, int x, int y, int z) {
+        this.setAndUpdateBlock(blockType.create(), x, y, z);
+    }
+
+    /**
+     * Set a block in a specific layer of this chunk and schedule a block update.
+     * @param blockType the {@link BaseBlockType} to be set here
+     * @param blockCoordinates block coordinates
+     * @param layer layer
+     */
+    default void setAndUpdateBlock(BaseBlockType blockType, Vector3i blockCoordinates, int layer) {
+        this.setAndUpdateBlock(blockType.create(), blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    /**
+     * Set a block in a specific layer of this chunk and schedule a block update.
+     * @param blockType the {@link BaseBlockType} to be set here
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param layer layer
+     */
+    default void setAndUpdateBlock(BaseBlockType blockType, int x, int y, int z, int layer) {
+        this.setAndUpdateBlock(blockType.create(), x, y, z, layer);
+    }
+
+    /**
+     * Set a block in this chunk and schedule a block update.
+     * @param block the {@link Block} to be set here
+     * @param blockPosition the chunk position of the block
+     */
+    default void setAndUpdateBlock(Block block, Vector3i blockPosition) {
+        this.setAndUpdateBlock(block, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+    }
+
+    /**
+     * Set a block in this chunk and schedule a block update.
+     * @param block the {@link Block} to be set here
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
+    default void setAndUpdateBlock(Block block, int x, int y, int z) {
+        this.setAndUpdateBlock(block, x, y, z, 0);
+    }
+
+    /**
+     * Set a block in a specific layer of this chunk.
+     * @param block the {@link Block} to be set here
+     * @param blockCoordinates block coordinates
+     * @param layer layer
+     */
+    default void setAndUpdateBlock(Block block, Vector3i blockCoordinates, int layer) {
+        this.setAndUpdateBlock(block, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    /**
+     * Set a block in a specific layer of this chunk and schedule a block update.
+     * @param block the {@link Block} block to be set here
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param layer layer
+     */
+    void setAndUpdateBlock(Block block, int x, int y, int z, int layer);
+
+    /**
+     * Request a block update on the next chunk tick.
+     * @param blockCoordinates coordinates
+     * @return if the block update was queued
+     */
+    default boolean requestBlockUpdate(Vector3i blockCoordinates) {
+        return this.requestBlockUpdate(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+    }
+
+    /**
+     * Request a block update on the next chunk tick.
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @return if the block update was queued
+     */
+    boolean requestBlockUpdate(int x, int y, int z);
 
     /**
      * Add a {@link ItemStack} to the world and spawn it.
