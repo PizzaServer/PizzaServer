@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.item.types;
 
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
 
 public interface BlockItemType extends ItemType {
 

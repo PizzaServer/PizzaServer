@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.item.data;
 
 import io.github.pizzaserver.api.item.ToolTypeRegistry;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 
 public class ToolType {
 

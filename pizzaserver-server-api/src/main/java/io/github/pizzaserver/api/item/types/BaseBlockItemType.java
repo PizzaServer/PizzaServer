@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.item.types;
 
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
-import io.github.pizzaserver.api.level.world.blocks.BlockFace;
+import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 

@@ -1,9 +1,9 @@
-package io.github.pizzaserver.api.level.world.blocks;
+package io.github.pizzaserver.api.block;
 
 import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
 

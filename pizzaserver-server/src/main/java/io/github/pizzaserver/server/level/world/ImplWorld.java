@@ -6,10 +6,10 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.ItemEntity;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
@@ -17,7 +17,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -145,6 +145,13 @@ public class ImplWorld implements World {
     }
 
     @Override
+    public Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        return this.getChunk(chunkX, chunkZ).getBlockEntity(x & 15, y, z & 15, layer);
+    }
+
+    @Override
     public void setBlock(Block block, int x, int y, int z, int layer) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
@@ -172,7 +179,7 @@ public class ImplWorld implements World {
 
     @Override
     public void addItemEntity(ItemStack itemStack, Vector3f position, Vector3f velocity) {
-        this.addItemEntity(EntityRegistry.getItemEntity(itemStack), position, velocity);
+        this.addItemEntity(this.getServer().getEntityRegistry().getItemEntity(itemStack), position, velocity);
     }
 
     @Override

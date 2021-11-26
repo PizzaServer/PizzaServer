@@ -84,7 +84,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
-        super(EntityRegistry.getDefinition(HumanEntityDefinition.ID));
+        super(server.getEntityRegistry().getDefinition(HumanEntityDefinition.ID));
         this.server = server;
         this.session = session;
 
@@ -146,7 +146,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
                 return;
             }
 
-            EntityRegistry.getDefinition(HumanEntityDefinition.ID).onCreation(this);
+            this.getServer().getEntityRegistry().getDefinition(HumanEntityDefinition.ID).onCreation(this);
 
             // Apply player data
             this.setPitch(data.getPitch());

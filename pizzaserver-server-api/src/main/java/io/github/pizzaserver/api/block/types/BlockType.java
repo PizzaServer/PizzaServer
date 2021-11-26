@@ -1,12 +1,12 @@
-package io.github.pizzaserver.api.level.world.blocks.types;
+package io.github.pizzaserver.api.block.types;
 
 import com.google.common.collect.BiMap;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.BlockState;
-import io.github.pizzaserver.api.level.world.blocks.types.data.PushResponse;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockState;
+import io.github.pizzaserver.api.block.types.data.PushResponse;
 import io.github.pizzaserver.api.utils.BoundingBox;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;

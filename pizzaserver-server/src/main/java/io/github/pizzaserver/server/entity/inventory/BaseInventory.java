@@ -10,9 +10,8 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.server.ImplServer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -97,7 +96,7 @@ public abstract class BaseInventory implements Inventory {
      * @return ItemStack in that slot
      */
     public ItemStack getSlot(int slot, boolean clone) {
-        ItemStack itemStack = Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getItem(BlockTypeID.AIR));
+        ItemStack itemStack = Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
         if (clone) {
             return itemStack.clone();
         } else {

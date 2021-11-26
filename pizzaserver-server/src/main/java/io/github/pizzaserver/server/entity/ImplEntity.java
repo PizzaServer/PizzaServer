@@ -17,7 +17,6 @@ import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
@@ -40,7 +39,7 @@ import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
@@ -105,9 +104,9 @@ public class ImplEntity implements Entity {
         this.entityDefinition = entityDefinition;
 
         // Apply default components to the entity
-        EntityRegistry.getComponentClasses().forEach(clazz -> {
-            EntityComponentHandler handler = EntityRegistry.getComponentHandler(clazz);
-            handler.onRegistered(this, EntityRegistry.getDefaultComponent(clazz));
+        this.getServer().getEntityRegistry().getComponentClasses().forEach(clazz -> {
+            EntityComponentHandler handler = this.getServer().getEntityRegistry().getComponentHandler(clazz);
+            handler.onRegistered(this, this.getServer().getEntityRegistry().getDefaultComponent(clazz));
         });
     }
 
@@ -136,7 +135,7 @@ public class ImplEntity implements Entity {
         // Unregister previous active components and register new active components
         for (EntityComponent newComponent : group.getComponents()) {
             Class<? extends EntityComponent> newComponentClazz = newComponent.getClass();
-            EntityComponentHandler handler = EntityRegistry.getComponentHandler(newComponentClazz);
+            EntityComponentHandler handler = this.getServer().getEntityRegistry().getComponentHandler(newComponentClazz);
 
             for (EntityComponentGroup existingComponentGroup : this.componentGroups) {
                 if (existingComponentGroup.hasComponent(newComponentClazz)) {
@@ -179,7 +178,7 @@ public class ImplEntity implements Entity {
             // Unregister components of the group from this entity and then find and apply the new active components of the same types.
             for (EntityComponent removeComponent : removingComponentGroup.getComponents()) {
                 Class<? extends EntityComponent> removeComponentClazz = removeComponent.getClass();
-                EntityComponentHandler handler = EntityRegistry.getComponentHandler(removeComponentClazz);
+                EntityComponentHandler handler = this.getServer().getEntityRegistry().getComponentHandler(removeComponentClazz);
 
                 if (!activeHigherComponents.contains(removeComponentClazz)) {
                     handler.onUnregistered(this, removingComponentGroup.getComponent(removeComponentClazz));
@@ -201,7 +200,7 @@ public class ImplEntity implements Entity {
             }
         }
 
-        return EntityRegistry.getDefaultComponent(componentClazz);
+        return this.getServer().getEntityRegistry().getDefaultComponent(componentClazz);
     }
 
     @Override

@@ -9,15 +9,15 @@ import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v419.Bedrock_v419;
+import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.types.components.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
-import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
-import io.github.pizzaserver.api.level.world.blocks.BlockRegistry;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockType;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
+import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.network.protocol.utils.MinecraftNamespaceComparator;
 import io.github.pizzaserver.commons.utils.Tuple;
 
@@ -78,7 +78,7 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
             }
 
             // Add custom block states
-            for (BaseBlockType blockType : BlockRegistry.getCustomTypes()) {
+            for (BaseBlockType blockType : BlockRegistry.getInstance().getCustomTypes()) {
                 sortedBlockRuntimeStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
                 this.customBlockProperties.add(this.getBlockPropertyData(blockType));
             }
@@ -147,7 +147,7 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
             // Register custom items
-            for (ItemType itemType : ItemRegistry.getCustomTypes()) {
+            for (ItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
                 if (!(itemType instanceof BlockItemType)) { // We register item representations of custom blocks later
                     int runtimeId = customItemIdStart++;
                     this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
@@ -162,7 +162,7 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
             // So we will sort it the same way here
             SortedSet<BaseBlockType> sortedCustomBlockTypes =
                     new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
-            sortedCustomBlockTypes.addAll(BlockRegistry.getCustomTypes());
+            sortedCustomBlockTypes.addAll(BlockRegistry.getInstance().getCustomTypes());
             for (BaseBlockType customBlockType : sortedCustomBlockTypes) {
                 this.itemRuntimeIds.put(customBlockType.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
             }
@@ -173,7 +173,7 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
     protected void loadEntitiesNBT() {
         List<NbtMap> entities = new ArrayList<>();
         int rId = 0;    // TODO: what is the purpose of this?
-        for (EntityDefinition definition : EntityRegistry.getDefinitions()) {
+        for (EntityDefinition definition : EntityRegistry.getInstance().getDefinitions()) {
             entities.add(NbtMap.builder()
                     .putString("bid", "")
                     .putBoolean("hasspawnegg", definition.hasSpawnEgg())
@@ -190,7 +190,7 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
     @Override
     protected void loadItemComponents() {
         this.itemComponents.clear();
-        for (ItemType itemType : ItemRegistry.getCustomTypes()) {
+        for (ItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
             this.itemComponents.add(new ComponentItemData(itemType.getItemId(), this.getItemComponentNBT(itemType)));
         }
     }

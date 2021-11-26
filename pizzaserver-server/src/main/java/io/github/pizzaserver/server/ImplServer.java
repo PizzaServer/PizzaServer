@@ -1,11 +1,17 @@
 package io.github.pizzaserver.server;
 
 import io.github.pizzaserver.api.ServerConfig;
-import io.github.pizzaserver.api.entity.boss.BossBarFactory;
-import io.github.pizzaserver.api.scoreboard.ScoreboardFactory;
-import io.github.pizzaserver.server.entity.EntityConstructor;
+import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.scoreboard.Scoreboard;
+import io.github.pizzaserver.server.blockentity.ImplBlockEntityRegistry;
+import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
+import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.level.ImplLevelManager;
+import io.github.pizzaserver.server.block.ImplBlockRegistry;
 import io.github.pizzaserver.server.network.handlers.LoginHandshakePacketHandler;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
@@ -45,6 +51,11 @@ public class ImplServer extends Server {
     private final EventManager eventManager = new ImplEventManager(this);
     private final ImplLevelManager levelManager;
 
+    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
+    private final BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
+    private final ItemRegistry itemRegistry = new ImplItemRegistry();
+    private final EntityRegistry entityRegistry = new ImplEntityRegistry();
+
     private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final Scheduler scheduler = new Scheduler(this, 1);
 
@@ -83,10 +94,6 @@ public class ImplServer extends Server {
 
         this.levelManager = new ImplLevelManager(this);
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
-
-        EntityRegistry.setConstructor(new EntityConstructor());
-        BossBarFactory.setConstructor(ImplBossBar::new);
-        ScoreboardFactory.setConstructor(ImplScoreboard::new);
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
         // TODO: load plugins
@@ -351,6 +358,36 @@ public class ImplServer extends Server {
     @Override
     public ServerConfig getConfig() {
         return this.config;
+    }
+
+    @Override
+    public Scoreboard createScoreboard() {
+        return new ImplScoreboard();
+    }
+
+    @Override
+    public BossBar createBossBar() {
+        return new ImplBossBar();
+    }
+
+    @Override
+    public BlockRegistry getBlockRegistry() {
+        return this.blockRegistry;
+    }
+
+    @Override
+    public BlockEntityRegistry getBlockEntityRegistry() {
+        return this.blockEntityRegistry;
+    }
+
+    @Override
+    public ItemRegistry getItemRegistry() {
+        return this.itemRegistry;
+    }
+
+    @Override
+    public EntityRegistry getEntityRegistry() {
+        return this.entityRegistry;
     }
 
     /**

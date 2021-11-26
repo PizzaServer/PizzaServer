@@ -1,10 +1,10 @@
-package io.github.pizzaserver.api.level.world.blocks.types.impl;
+package io.github.pizzaserver.api.block.types.impl;
 
 import io.github.pizzaserver.api.item.ToolTypeRegistry;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 
 import java.util.Arrays;
 import java.util.HashSet;

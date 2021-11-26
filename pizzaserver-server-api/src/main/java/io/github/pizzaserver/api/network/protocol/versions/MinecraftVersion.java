@@ -5,7 +5,7 @@ import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.format.BlockRuntimeMapper;
 
 import java.util.List;

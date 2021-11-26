@@ -4,14 +4,15 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
+import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.BlockRegistry;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
@@ -21,7 +22,7 @@ import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.level.world.ImplWorld;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 
 import java.io.IOException;
 import java.util.*;
@@ -30,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 /**
  * Represents a 16x16 chunk of blocks on the server.
@@ -139,19 +139,20 @@ public class ImplChunk implements Chunk {
     }
 
     public void addBlockEntity(BlockEntity blockEntity) {
-        if (!this.blockEntitiesByLayer.containsKey(blockEntity.getLocation().toVector3i())) {
-            this.blockEntitiesByLayer.put(blockEntity.getLocation().toVector3i(), new HashMap<>());
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
+        if (!this.blockEntitiesByLayer.containsKey(blockCoordinates)) {
+            this.blockEntitiesByLayer.put(blockCoordinates, new HashMap<>());
         }
-        this.blockEntitiesByLayer.get(blockEntity.getLocation().toVector3i()).put(blockEntity.getLayer(), blockEntity);
+        this.blockEntitiesByLayer.get(blockCoordinates).put(blockEntity.getLayer(), blockEntity);
     }
 
     public void removeBlockEntity(BlockEntity blockEntity) {
-        Vector3i vectorKey = blockEntity.getLocation().toVector3i();
-        if (this.blockEntitiesByLayer.containsKey(vectorKey)) {
-            this.blockEntitiesByLayer.get(vectorKey).remove(blockEntity.getLayer());
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
+        if (this.blockEntitiesByLayer.containsKey(blockCoordinates)) {
+            this.blockEntitiesByLayer.get(blockCoordinates).remove(blockEntity.getLayer());
 
-            if (this.blockEntitiesByLayer.get(vectorKey).isEmpty()) {
-                this.blockEntitiesByLayer.remove(vectorKey);
+            if (this.blockEntitiesByLayer.get(blockCoordinates).isEmpty()) {
+                this.blockEntitiesByLayer.remove(blockCoordinates);
             }
         }
     }
@@ -185,21 +186,21 @@ public class ImplChunk implements Chunk {
             BedrockSubChunk subChunk = this.chunk.getSubChunk(subChunkIndex);
             if (subChunk.getLayers().size() <= layer) {
                 // layer does not exist: return air block
-                Block block = BlockRegistry.getBlock(BlockTypeID.AIR);
+                Block block = BlockRegistry.getInstance().getBlock(BlockTypeID.AIR);
                 block.setLocation(this.getWorld(), blockCoordinates, layer);
                 return block;
             }
             BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, subChunkY, chunkBlockZ);
             Block block;
-            if (BlockRegistry.hasBlockType(paletteEntry.getId())) {
+            if (BlockRegistry.getInstance().hasBlockType(paletteEntry.getId())) {
                 // Block id is registered
-                BaseBlockType blockType = BlockRegistry.getBlockType(paletteEntry.getId());
+                BaseBlockType blockType = BlockRegistry.getInstance().getBlockType(paletteEntry.getId());
                 block = new Block(blockType);
                 block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
             } else {
                 // The block id is not registered
                 this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
-                BaseBlockType blockType = BlockRegistry.getBlockType(BlockTypeID.AIR);
+                BaseBlockType blockType = BlockRegistry.getInstance().getBlockType(BlockTypeID.AIR);
                 block = new Block(blockType);
             }
             block.setLocation(this.getWorld(), blockCoordinates, layer);
@@ -212,7 +213,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer) {
-        Vector3i blockCoordinate = Vector3i.from(x, y, z);
+        Vector3i blockCoordinate = Vector3i.from(x & 15, y, z & 15);
         if (!this.blockEntitiesByLayer.containsKey(blockCoordinate)) {
             return Optional.empty();
         }
@@ -242,7 +243,7 @@ public class ImplChunk implements Chunk {
         }
 
         // Add block entity if one exists for this block
-        Optional<BlockEntityType> blockEntityType = BlockEntityRegistry.getBlockEntityType(block.getBlockType());
+        Optional<BlockEntityType> blockEntityType = BlockEntityRegistry.getInstance().getBlockEntityType(block.getBlockType());
         if (blockEntityType.isPresent()) {
             BlockEntity blockEntity = blockEntityType.get().create(block);
             this.addBlockEntity(blockEntity);

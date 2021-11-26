@@ -8,12 +8,11 @@ import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.BlockRegistry;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 import io.github.pizzaserver.commons.utils.Tuple;
-import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.protocol.exceptions.ProtocolException;
 
 import java.io.IOException;
@@ -87,8 +86,8 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         int blockStateLookupId = this.blockStates.inverse().get(blockRuntimeId);
         Tuple<String, NbtMap> blockData = GLOBAL_BLOCK_STATES.inverse().get(blockStateLookupId);
 
-        if (BlockRegistry.hasBlockType(blockData.getObjectA())) {
-            BlockType blockType = BlockRegistry.getBlockType(blockData.getObjectA());
+        if (BlockRegistry.getInstance().hasBlockType(blockData.getObjectA())) {
+            BlockType blockType = BlockRegistry.getInstance().getBlockType(blockData.getObjectA());
             return blockType.create(blockType.getBlockStateIndex(blockData.getObjectB()));
         } else {
             return null;

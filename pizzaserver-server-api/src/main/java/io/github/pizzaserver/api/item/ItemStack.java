@@ -4,8 +4,8 @@ import com.nukkitx.nbt.NbtList;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
-import io.github.pizzaserver.api.level.world.blocks.BlockState;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.pizzaserver.api.block.BlockState;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.item.types.components.DurableItemComponent;
@@ -28,19 +28,19 @@ public class ItemStack implements Cloneable {
 
 
     public ItemStack(String itemId) {
-        this(ItemRegistry.getItemType(itemId));
+        this(ItemRegistry.getInstance().getItemType(itemId));
     }
 
     public ItemStack(String itemId, int count) {
-        this(ItemRegistry.getItemType(itemId), count);
+        this(ItemRegistry.getInstance().getItemType(itemId), count);
     }
 
     public ItemStack(String itemId, int count, int meta) {
-        this(ItemRegistry.getItemType(itemId), count, meta);
+        this(ItemRegistry.getInstance().getItemType(itemId), count, meta);
     }
 
     public ItemStack(String itemId, int count, int meta, int networkId) {
-        this(ItemRegistry.getItemType(itemId), count, meta, networkId);
+        this(ItemRegistry.getInstance().getItemType(itemId), count, meta, networkId);
     }
 
     public ItemStack(ItemType itemType) {
@@ -56,7 +56,7 @@ public class ItemStack implements Cloneable {
     }
 
     public ItemStack(ItemType itemType, int count, int meta, int networkId) {
-        this.itemType = count <= 0 ? ItemRegistry.getItemType(BlockTypeID.AIR) : itemType;
+        this.itemType = count <= 0 ? ItemRegistry.getInstance().getItemType(BlockTypeID.AIR) : itemType;
         this.networkId = this.isEmpty() ? 0 : networkId;
         this.count = this.isEmpty() ? 0 : count;
         this.meta = meta;
@@ -80,7 +80,7 @@ public class ItemStack implements Cloneable {
             if (count <= 0) {
                 this.count = 0;
                 this.networkId = 0;
-                this.itemType = ItemRegistry.getItemType(BlockTypeID.AIR);
+                this.itemType = ItemRegistry.getInstance().getItemType(BlockTypeID.AIR);
             } else {
                 this.count = count;
             }
@@ -299,7 +299,7 @@ public class ItemStack implements Cloneable {
      * @return item stack
      */
     public static ItemStack ensureItemStackExists(ItemStack itemStack) {
-        return itemStack == null ? ItemRegistry.getItem(BlockTypeID.AIR) : itemStack;
+        return itemStack == null ? ItemRegistry.getInstance().getItem(BlockTypeID.AIR) : itemStack;
     }
 
     public static ItemStack deserialize(ItemData itemData, MinecraftVersion version) {

@@ -1,14 +1,14 @@
-package io.github.pizzaserver.api.level.world.blocks.types;
+package io.github.pizzaserver.api.block.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.BlockRegistry;
-import io.github.pizzaserver.api.level.world.blocks.BlockState;
-import io.github.pizzaserver.api.level.world.blocks.types.data.PushResponse;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.BlockState;
+import io.github.pizzaserver.api.block.types.data.PushResponse;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
@@ -170,7 +170,7 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public Set<ItemStack> getLoot(Player player, int blockStateIndex) {
-        return Collections.singleton(ItemRegistry.getItem(this.getBlockId(), 1, blockStateIndex));
+        return Collections.singleton(ItemRegistry.getInstance().getItem(this.getBlockId(), 1, blockStateIndex));
     }
 
     @Override
@@ -180,7 +180,7 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public Block getResultBlock(int blockStateIndex) {
-        return BlockRegistry.getBlock(BlockTypeID.AIR);
+        return BlockRegistry.getInstance().getBlock(BlockTypeID.AIR);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.item.types.components;
 
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
 
 /**
  * Represents an item type that can place down a block when used

@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponentGro
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;

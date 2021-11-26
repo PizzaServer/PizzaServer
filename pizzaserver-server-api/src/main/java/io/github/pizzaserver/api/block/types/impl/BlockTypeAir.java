@@ -1,7 +1,7 @@
-package io.github.pizzaserver.api.level.world.blocks.types.impl;
+package io.github.pizzaserver.api.block.types.impl;
 
-import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.pizzaserver.api.block.types.BaseBlockType;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 
 public class BlockTypeAir extends BaseBlockType {
 

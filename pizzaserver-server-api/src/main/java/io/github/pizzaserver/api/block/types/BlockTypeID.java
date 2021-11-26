@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.level.world.blocks.types;
+package io.github.pizzaserver.api.block.types;
 
 /**
  * Contains all registered Vanilla block ids.

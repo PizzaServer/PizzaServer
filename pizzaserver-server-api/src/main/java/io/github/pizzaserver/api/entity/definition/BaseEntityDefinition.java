@@ -60,7 +60,7 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
 
     @Override
     public Entity create() {
-        return EntityRegistry.getEntity(this.getId());
+        return EntityRegistry.getInstance().getEntity(this.getId());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.event.type.block;
 
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.player.Player;
 
 /**

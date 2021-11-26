@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.entity.definition.components.filter;
 
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
 
 import java.util.Optional;

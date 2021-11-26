@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.blockentity.types;
 
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.types.BlockType;
 
 public interface BlockEntityType {
 

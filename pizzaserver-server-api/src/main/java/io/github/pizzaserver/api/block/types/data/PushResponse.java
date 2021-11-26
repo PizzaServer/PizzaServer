@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.level.world.blocks.types.data;
+package io.github.pizzaserver.api.block.types.data;
 
 /**
  * What the block type should do when it is pushed by a piston.

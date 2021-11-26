@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.event.type.world;
 
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.utils.Location;
 
 import java.util.Optional;

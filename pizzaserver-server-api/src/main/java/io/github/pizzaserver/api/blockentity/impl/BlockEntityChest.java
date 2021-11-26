@@ -4,7 +4,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.blockentity.BaseBlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.impl.BlockEntityTypeChest;
-import io.github.pizzaserver.api.level.world.blocks.Block;
+import io.github.pizzaserver.api.block.Block;
 
 public class BlockEntityChest extends BaseBlockEntity {
 
@@ -14,7 +14,7 @@ public class BlockEntityChest extends BaseBlockEntity {
 
     @Override
     public BlockEntityTypeChest getType() {
-        return (BlockEntityTypeChest) BlockEntityRegistry.getBlockEntityType(BlockEntityTypeChest.ID);
+        return (BlockEntityTypeChest) BlockEntityRegistry.getInstance().getBlockEntityType(BlockEntityTypeChest.ID);
     }
 
     @Override

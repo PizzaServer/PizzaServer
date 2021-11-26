@@ -1,11 +1,17 @@
 package io.github.pizzaserver.api;
 
+import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.entity.EntityRegistry;
+import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.level.LevelManager;
 import io.github.pizzaserver.api.event.EventManager;
+import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.packs.ResourcePackManager;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.scheduler.Scheduler;
+import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Logger;
 
 import java.util.Set;
@@ -111,6 +117,18 @@ public abstract class Server {
     public abstract String getRootDirectory();
 
     public abstract ServerConfig getConfig();
+
+    public abstract Scoreboard createScoreboard();
+
+    public abstract BossBar createBossBar();
+
+    public abstract BlockRegistry getBlockRegistry();
+
+    public abstract BlockEntityRegistry getBlockEntityRegistry();
+
+    public abstract ItemRegistry getItemRegistry();
+
+    public abstract EntityRegistry getEntityRegistry();
 
     public static Server getInstance() {
         return instance;

@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.item;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.item.types.ItemType;
 
 import java.util.HashMap;
@@ -7,49 +8,24 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ItemRegistry {
+public interface ItemRegistry {
 
-    private static final Map<String, ItemType> types = new HashMap<>();
+    void register(ItemType itemType);
 
-    private static final Set<ItemType> customItemTypes = new HashSet<>();
+    ItemType getItemType(String itemId);
 
+    boolean hasItemType(String itemId);
 
-    public static void register(ItemType itemType) {
-        if (!itemType.getItemId().startsWith("minecraft:")) {
-            customItemTypes.add(itemType);
-        }
+    Set<ItemType> getCustomTypes();
 
-        types.put(itemType.getItemId(), itemType);
-    }
+    ItemStack getItem(String itemId);
 
-    public static ItemType getItemType(String itemId) {
-        if (!types.containsKey(itemId)) {
-            throw new NullPointerException("Could not find a item type by the id of " + itemId);
-        }
-        return types.get(itemId);
-    }
+    ItemStack getItem(String itemId, int amount);
 
-    public static boolean hasItemType(String itemId) {
-        return types.containsKey(itemId);
-    }
+    ItemStack getItem(String itemId, int amount, int damage);
 
-    public static Set<ItemType> getCustomTypes() {
-        return customItemTypes;
-    }
-
-    public static ItemStack getItem(String itemId) {
-        ItemType itemType = getItemType(itemId);
-        return itemType.create();
-    }
-
-    public static ItemStack getItem(String itemId, int amount) {
-        ItemType itemType = getItemType(itemId);
-        return itemType.create(amount);
-    }
-
-    public static ItemStack getItem(String itemId, int amount, int damage) {
-        ItemType itemType = getItemType(itemId);
-        return itemType.create(amount, damage);
+    static ItemRegistry getInstance() {
+        return Server.getInstance().getItemRegistry();
     }
 
 }

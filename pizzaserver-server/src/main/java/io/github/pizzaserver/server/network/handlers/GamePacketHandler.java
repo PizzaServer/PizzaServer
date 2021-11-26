@@ -9,11 +9,13 @@ import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.SwapStack
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.TakeStackRequestActionData;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
+import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.event.type.player.*;
-import io.github.pizzaserver.api.level.world.blocks.BlockFace;
+import io.github.pizzaserver.api.block.BlockFace;
+import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.ItemEntity;
 import io.github.pizzaserver.api.entity.data.DamageCause;
 import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
@@ -22,11 +24,9 @@ import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
-import io.github.pizzaserver.api.event.type.world.WorldSoundEvent;
-import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
@@ -200,8 +200,8 @@ public class GamePacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(ItemRegistry.getItem(BlockTypeID.CHEST, 10));
-        this.player.getWorld().addEntity(EntityRegistry.getEntity(CowEntityDefinition.ID), this.player.getLocation().toVector3f());
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.CHEST, 10));
+        this.player.getWorld().addEntity(EntityRegistry.getInstance().getEntity(CowEntityDefinition.ID), this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
 
@@ -443,7 +443,7 @@ public class GamePacketHandler implements BedrockPacketHandler {
                         this.player.getInventory().setSlot(this.player, nextAction.getSlot(), itemStack, true);
 
                         // Drop item
-                        ItemEntity itemEntity = EntityRegistry.getItemEntity(droppedStack);
+                        ItemEntity itemEntity = EntityRegistry.getInstance().getItemEntity(droppedStack);
                         itemEntity.setPickupDelay(40);
                         this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().toVector3f().add(0, 1.3f, 0), this.player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
                     } else {

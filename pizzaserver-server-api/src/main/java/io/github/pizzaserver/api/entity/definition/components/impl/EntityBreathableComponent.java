@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.entity.definition.components.impl;
 
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
-import io.github.pizzaserver.api.level.world.blocks.types.BlockType;
+import io.github.pizzaserver.api.block.types.BlockType;
 
 import java.util.Collections;
 import java.util.HashSet;

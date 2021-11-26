@@ -4,10 +4,10 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
-import io.github.pizzaserver.api.level.world.blocks.Block;
-import io.github.pizzaserver.api.level.world.blocks.BlockState;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.level.world.blocks.BlockFace;
+import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.Set;

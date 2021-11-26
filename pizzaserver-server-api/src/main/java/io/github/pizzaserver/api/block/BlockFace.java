@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.level.world.blocks;
+package io.github.pizzaserver.api.block;
 
 import com.nukkitx.math.vector.Vector3i;
 
