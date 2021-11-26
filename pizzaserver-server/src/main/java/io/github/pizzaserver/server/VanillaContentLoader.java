@@ -1,5 +1,7 @@
 package io.github.pizzaserver.server;
 
+import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.blockentity.types.impl.BlockEntityTypeChest;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.components.handlers.*;
 import io.github.pizzaserver.api.entity.definition.components.impl.*;
@@ -16,6 +18,7 @@ public class VanillaContentLoader {
     public static void load() {
         loadItems();
         loadBlocks();
+        loadBlockEntities();
         loadEntityComponents();
         loadEntities();
     }
@@ -31,6 +34,11 @@ public class VanillaContentLoader {
         BlockRegistry.register(new BlockTypeStone());
         BlockRegistry.register(new BlockTypeWater());
         BlockRegistry.register(new BlockTypeFlowingWater());
+        BlockRegistry.register(new BlockTypeChest());
+    }
+
+    private static void loadBlockEntities() {
+        BlockEntityRegistry.register(new BlockEntityTypeChest());
     }
 
     private static void loadEntityComponents() {

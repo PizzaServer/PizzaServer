@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.level.world.blocks;
 
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.pizzaserver.api.utils.BlockLocation;
@@ -16,6 +16,7 @@ public class Block {
     private int x;
     private int y;
     private int z;
+    private int layer;
 
 
     public Block(BaseBlockType blockType) {
@@ -38,23 +39,28 @@ public class Block {
         this.blockStateIndex = index;
     }
 
+    public int getLayer() {
+        return this.layer;
+    }
+
     public BlockLocation getLocation() {
         return new BlockLocation(this.world, this.x, this.y, this.z);
     }
 
-    public void setLocation(BlockLocation location) {
-        this.setLocation(location.getWorld(), location.getX(), location.getY(), location.getZ());
+    public void setLocation(BlockLocation location, int layer) {
+        this.setLocation(location.getWorld(), location.getX(), location.getY(), location.getZ(), layer);
     }
 
-    public void setLocation(World world, Vector3i vector3i) {
-        this.setLocation(world, vector3i.getX(), vector3i.getY(), vector3i.getZ());
+    public void setLocation(World world, Vector3i vector3i, int layer) {
+        this.setLocation(world, vector3i.getX(), vector3i.getY(), vector3i.getZ(), layer);
     }
 
-    public void setLocation(World world, int x, int y, int z) {
+    public void setLocation(World world, int x, int y, int z, int layer) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.layer = layer;
     }
 
     public World getWorld() {
@@ -76,6 +82,10 @@ public class Block {
     public Block getSide(BlockFace blockFace) {
         BlockLocation location = this.getLocation();
         return this.getWorld().getBlock(location.toVector3i().add(blockFace.getOffset()));
+    }
+
+    public BlockEntity getBlockEntity() {
+        return this.getWorld().getBlockEntity(this.getLocation().toVector3i(), this.layer).orElse(null);
     }
 
     public BoundingBox getBoundingBox() {

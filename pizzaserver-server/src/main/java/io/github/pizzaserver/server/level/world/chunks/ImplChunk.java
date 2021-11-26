@@ -1,8 +1,12 @@
 package io.github.pizzaserver.server.level.world.chunks;
 
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.pizzaserver.api.player.Player;
@@ -26,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * Represents a 16x16 chunk of blocks on the server.
@@ -47,6 +52,7 @@ public class ImplChunk implements Chunk {
 
     // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
+    private final Map<Vector3i, Map<Integer, BlockEntity>> blockEntitiesByLayer = new HashMap<>();
 
     // The players who can see this chunk
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
@@ -132,6 +138,24 @@ public class ImplChunk implements Chunk {
         return new HashSet<>(this.entities);
     }
 
+    public void addBlockEntity(BlockEntity blockEntity) {
+        if (!this.blockEntitiesByLayer.containsKey(blockEntity.getLocation().toVector3i())) {
+            this.blockEntitiesByLayer.put(blockEntity.getLocation().toVector3i(), new HashMap<>());
+        }
+        this.blockEntitiesByLayer.get(blockEntity.getLocation().toVector3i()).put(blockEntity.getLayer(), blockEntity);
+    }
+
+    public void removeBlockEntity(BlockEntity blockEntity) {
+        Vector3i vectorKey = blockEntity.getLocation().toVector3i();
+        if (this.blockEntitiesByLayer.containsKey(vectorKey)) {
+            this.blockEntitiesByLayer.get(vectorKey).remove(blockEntity.getLayer());
+
+            if (this.blockEntitiesByLayer.get(vectorKey).isEmpty()) {
+                this.blockEntitiesByLayer.remove(vectorKey);
+            }
+        }
+    }
+
     @Override
     public Block getHighestBlockAt(int x, int z) {
         int chunkBlockY = Math.max(0, this.chunk.getHighestBlockAt(x & 15, z & 15) - 1);
@@ -162,7 +186,7 @@ public class ImplChunk implements Chunk {
             if (subChunk.getLayers().size() <= layer) {
                 // layer does not exist: return air block
                 Block block = BlockRegistry.getBlock(BlockTypeID.AIR);
-                block.setLocation(this.getWorld(), blockCoordinates);
+                block.setLocation(this.getWorld(), blockCoordinates, layer);
                 return block;
             }
             BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, subChunkY, chunkBlockZ);
@@ -178,12 +202,22 @@ public class ImplChunk implements Chunk {
                 BaseBlockType blockType = BlockRegistry.getBlockType(BlockTypeID.AIR);
                 block = new Block(blockType);
             }
-            block.setLocation(this.getWorld(), blockCoordinates);
+            block.setLocation(this.getWorld(), blockCoordinates, layer);
 
             return block;
         } finally {
             readLock.unlock();
         }
+    }
+
+    @Override
+    public Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer) {
+        Vector3i blockCoordinate = Vector3i.from(x, y, z);
+        if (!this.blockEntitiesByLayer.containsKey(blockCoordinate)) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(this.blockEntitiesByLayer.get(blockCoordinate).getOrDefault(layer, null));
     }
 
     @Override
@@ -197,10 +231,22 @@ public class ImplChunk implements Chunk {
         int chunkBlockZ = z & 15;
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
-        block.setLocation(this.getWorld(), blockCoordinates);
+        block.setLocation(this.getWorld(), blockCoordinates, layer);
 
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
+
+        // Remove old block entity at this position if present
+        if (this.getBlock(x, y, z, layer).getBlockEntity() != null) {
+            this.removeBlockEntity(this.getBlock(x, y, z, layer).getBlockEntity());
+        }
+
+        // Add block entity if one exists for this block
+        Optional<BlockEntityType> blockEntityType = BlockEntityRegistry.getBlockEntityType(block.getBlockType());
+        if (blockEntityType.isPresent()) {
+            BlockEntity blockEntity = blockEntityType.get().create(block);
+            this.addBlockEntity(blockEntity);
+        }
 
         try {
             // Update internal sub chunk
@@ -303,6 +349,15 @@ public class ImplChunk implements Chunk {
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
         player.sendPacket(updateBlockPacket);
+
+        if (block.getBlockEntity() != null) {
+            BlockEntity blockEntity = block.getBlockEntity();
+
+            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+            blockEntityDataPacket.setBlockPosition(blockEntity.getLocation().toVector3i());
+            blockEntityDataPacket.setData(blockEntity.getNetworkData());
+            player.sendPacket(blockEntityDataPacket);
+        }
     }
 
     /**
@@ -321,6 +376,12 @@ public class ImplChunk implements Chunk {
         if (canDoLogicTick) {
             for (Entity entity : this.getEntities()) {
                 entity.tick();
+            }
+
+            for (Map<Integer, BlockEntity> blockEntityCoordinateLayer : this.blockEntitiesByLayer.values()) {
+                for (BlockEntity blockEntity : blockEntityCoordinateLayer.values()) {
+                    blockEntity.tick();
+                }
             }
 
             List<Vector3i> currentTickBlockUpdates = new ArrayList<>(this.blockUpdates);

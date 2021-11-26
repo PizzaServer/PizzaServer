@@ -8,15 +8,14 @@ import io.github.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 
 import java.util.HashMap;
 
-public class BlockTypeWater extends BaseBlockType {
+public class BlockTypeChest extends BaseBlockType {
 
     private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
         {
-            for (int depth = 0; depth < 16; depth++) {
-                NbtMap state = NbtMap.builder()
-                        .putInt("liquid_depth", depth)
-                        .build();
-                this.put(state, depth);
+            for (int i = 0; i < 6; i++) {
+                this.put(NbtMap.builder()
+                        .putInt("facing_direction", i)
+                        .build(), i);
             }
         }
     });
@@ -24,37 +23,22 @@ public class BlockTypeWater extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.WATER;
+        return BlockTypeID.CHEST;
     }
 
     @Override
     public String getName(int blockStateIndex) {
-        return "Water";
+        return "Chest";
+    }
+
+    @Override
+    public float getToughness(int blockStateIndex) {
+        return 2.5f;
     }
 
     @Override
     public BiMap<NbtMap, Integer> getBlockStates() {
         return BLOCK_STATES;
-    }
-
-    @Override
-    public float getToughness(int blockStateIndex) {
-        return 0;
-    }
-
-    @Override
-    public boolean hasOxygen(int blockStateIndex) {
-        return false;
-    }
-
-    @Override
-    public boolean isSolid(int blockStateIndex) {
-        return false;
-    }
-
-    @Override
-    public boolean isLiquid(int blockStateIndex) {
-        return true;
     }
 
 }

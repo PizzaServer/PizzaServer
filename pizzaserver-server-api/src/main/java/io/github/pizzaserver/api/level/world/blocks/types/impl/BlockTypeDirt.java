@@ -13,7 +13,7 @@ import java.util.*;
 
 public class BlockTypeDirt extends BaseBlockType {
 
-    private static final HashBiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
+    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
         {
             List<String> dirtTypes = Arrays.asList("normal", "coarse");
             int stateIndex = 0;

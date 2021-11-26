@@ -4,6 +4,7 @@ import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.blocks.Block;
 import io.github.pizzaserver.api.Server;
@@ -81,6 +82,12 @@ public interface World extends ChunkManager {
     }
 
     Block getBlock(int x, int y, int z, int layer);
+
+    default Optional<BlockEntity> getBlockEntity(Vector3i blockCoordinates, int layer) {
+        return this.getBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer);
 
     /**
      * Set a block in this chunk.
@@ -308,17 +315,8 @@ public interface World extends ChunkManager {
      */
     void removeEntity(Entity entity);
 
-    /**
-     * Retrieve all entities in this world.
-     * @return the entities in this world
-     */
     Map<Long, Entity> getEntities();
 
-    /**
-     * Retrieve an entity in this world.
-     * @param id the entity id
-     * @return the entity if it exists
-     */
     Optional<Entity> getEntity(long id);
 
     void tick();

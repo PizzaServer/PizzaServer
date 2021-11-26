@@ -200,7 +200,7 @@ public class GamePacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(ItemRegistry.getItem(BlockTypeID.DIRT, 10));
+        this.player.getInventory().addItem(ItemRegistry.getItem(BlockTypeID.CHEST, 10));
         this.player.getWorld().addEntity(EntityRegistry.getEntity(CowEntityDefinition.ID), this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
@@ -480,8 +480,9 @@ public class GamePacketHandler implements BedrockPacketHandler {
                         case InventoryTransactionAction.USE_CLICK_BLOCK:
                         case InventoryTransactionAction.USE_CLICK_AIR:
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
-                            boolean callItemInteract = block.getBlockType().onInteract(this.player, block);
-                            if (callItemInteract) {
+                            boolean callItemInteractAllowedByBlock = block.getBlockType().onInteract(this.player, block);
+                            boolean callItemInteractAllowedByBlockEntity = block.getBlockEntity() == null || block.getBlockEntity().onInteract(this.player);
+                            if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
                                 boolean successfulInteraction = heldItemStack.getItemType().onInteract(this.player, heldItemStack, block, BlockFace.resolve(packet.getBlockFace()));
                                 if (successfulInteraction) {

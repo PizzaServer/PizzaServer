@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.level.world.chunks;
 
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3i;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.blocks.Block;
 import io.github.pizzaserver.api.entity.Entity;
@@ -9,6 +10,7 @@ import io.github.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.Watchable;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -109,6 +111,12 @@ public interface Chunk extends Watchable {
      * @return the {@link Block} at these coordinates
      */
     Block getBlock(int x, int y, int z, int layer);
+
+    default Optional<BlockEntity> getBlockEntity(Vector3i blockCoordinates, int layer) {
+        return this.getBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    }
+
+    Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer);
 
     /**
      * Set a block in this chunk.

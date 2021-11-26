@@ -11,5 +11,6 @@ public class BlockTypeID {
     public static final String STONE = "minecraft:stone";
     public static final String WATER = "minecraft:water";
     public static final String FLOWING_WATER = "minecraft:flowing_water";
+    public static final String CHEST = "minecraft:chest";
 
 }
