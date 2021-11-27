@@ -1,10 +1,9 @@
 package io.github.pizzaserver.server.entity.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
-import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -13,7 +12,6 @@ import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.Optional;
-import java.util.Set;
 
 public class ImplEntityInventory extends BaseInventory implements EntityInventory {
 
@@ -28,13 +26,13 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     protected ItemStack offHand = null;
 
 
-    public ImplEntityInventory(Entity entity, Set<ContainerSlotType> slotTypes, int size) {
-        super(slotTypes, size);
+    public ImplEntityInventory(Entity entity, ContainerType containerType, int size) {
+        super(containerType, size);
         this.entity = entity;
     }
 
-    public ImplEntityInventory(Entity entity, Set<ContainerSlotType> slotTypes, int size, int id) {
-        super(slotTypes, size, id);
+    public ImplEntityInventory(Entity entity, ContainerType containerType, int size, int id) {
+        super(containerType, size, id);
         this.entity = entity;
     }
 
@@ -239,8 +237,15 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
+    public boolean canBeOpenedBy(Player player) {
+        return this.getEntity().getViewers().contains(player);
+    }
+
+    @Override
     protected void sendContainerOpenPacket(Player player) {
         // TODO: open inventory depending on inventory type
+
+        this.sendSlots(player);
     }
 
 }

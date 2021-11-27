@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.entity.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.utils.Watchable;
 import io.github.pizzaserver.api.player.Player;
@@ -13,11 +13,7 @@ public interface Inventory extends Watchable {
 
     int getId();
 
-    /**
-     * Get all slot types this inventory has.
-     * @return all possible slot types this inventory has
-     */
-    Set<ContainerSlotType> getSlotTypes();
+    ContainerType getContainerType();
 
     int getSize();
 

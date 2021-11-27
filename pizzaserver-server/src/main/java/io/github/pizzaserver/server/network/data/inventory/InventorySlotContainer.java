@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.network.data.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.server.entity.inventory.BaseInventory;
@@ -38,9 +39,9 @@ public class InventorySlotContainer {
 
     public BaseInventory getInventory() {
         Optional<Inventory> openInventory = this.player.getOpenInventory();
-        if (openInventory.isPresent() && openInventory.get().getSlotTypes().contains(this.slotType)) {
+        if (openInventory.isPresent() && InventoryUtils.getSlotTypes(openInventory.get().getContainerType()).contains(this.slotType)) {
             return (BaseInventory) openInventory.get();
-        } else if (this.player.getInventory().getSlotTypes().contains(this.slotType)) {
+        } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getContainerType()).contains(this.slotType)) {
             return this.player.getInventory();
         } else {
             return null;

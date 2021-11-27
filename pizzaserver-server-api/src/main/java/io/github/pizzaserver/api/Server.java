@@ -1,8 +1,14 @@
 package io.github.pizzaserver.api;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.level.LevelManager;
 import io.github.pizzaserver.api.event.EventManager;
@@ -121,6 +127,32 @@ public abstract class Server {
     public abstract Scoreboard createScoreboard();
 
     public abstract BossBar createBossBar();
+
+    public EntityInventory createInventory(Entity entity, ContainerType containerType) {
+        return this.createInventory(entity, containerType, InventoryUtils.getSlotCount(containerType));
+    }
+
+    /**
+     * Create an inventory for an entity.
+     * @param entity entity associated with this inventory
+     * @param containerType container type
+     * @param size size of the inventory. MUST be less than or equal to the regular inventory size of the container
+     * @return inventory
+     */
+    public abstract EntityInventory createInventory(Entity entity, ContainerType containerType, int size);
+
+    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType) {
+        return this.createInventory(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
+    }
+
+    /**
+     * Create an inventory for a block entity.
+     * @param blockEntity block entity associated with this inventory
+     * @param containerType container type
+     * @param size size of the inventory. MUST be less than or equal to the regular inventory size of the container
+     * @return inventory
+     */
+    public abstract BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType, int size);
 
     public abstract BlockRegistry getBlockRegistry();
 

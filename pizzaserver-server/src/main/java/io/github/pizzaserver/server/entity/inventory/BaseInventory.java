@@ -1,11 +1,13 @@
 package io.github.pizzaserver.server.entity.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -24,19 +26,23 @@ public abstract class BaseInventory implements Inventory {
     protected final int size;
 
     protected ItemStack[] slots;
-    protected final Set<ContainerSlotType> slotTypes;
+    protected final ContainerType containerType;
 
     private final Set<Player> viewers = new HashSet<>();
 
 
-    public BaseInventory(Set<ContainerSlotType> slotTypes, int size) {
-        this(slotTypes, size, ID++);
+    public BaseInventory(ContainerType containerType, int size) {
+        this(containerType, size, ID++);
     }
 
-    public BaseInventory(Set<ContainerSlotType> slotTypes, int size, int id) {
+    public BaseInventory(ContainerType containerType, int size, int id) {
+        if (size > InventoryUtils.getSlotCount(containerType) || size < 0) {
+            throw new IllegalArgumentException("Slot count of " + containerType + " must be within 0-" + InventoryUtils.getSlotCount(containerType));
+        }
+
         this.size = size;
         this.id = id;
-        this.slotTypes = slotTypes;
+        this.containerType = containerType;
         this.slots = new ItemStack[this.size];
     }
 
@@ -46,13 +52,13 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Set<ContainerSlotType> getSlotTypes() {
-        return this.slotTypes;
+    public int getSize() {
+        return this.size;
     }
 
     @Override
-    public int getSize() {
-        return this.size;
+    public ContainerType getContainerType() {
+        return this.containerType;
     }
 
     @Override
@@ -193,7 +199,7 @@ public abstract class BaseInventory implements Inventory {
      * @return if the inventory was opened
      */
     public boolean openFor(Player player) {
-        if (!this.viewers.contains(player)) {
+        if (!this.viewers.contains(player) && this.canBeOpenedBy(player)) {
             InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(player, this);
             Server.getInstance().getEventManager().call(inventoryOpenEvent);
             if (inventoryOpenEvent.isCancelled()) {

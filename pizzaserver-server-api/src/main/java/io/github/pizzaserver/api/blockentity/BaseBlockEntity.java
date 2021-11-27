@@ -4,9 +4,12 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
+import java.util.Set;
+
 public abstract class BaseBlockEntity implements BlockEntity {
 
     protected final Block block;
+
 
     public BaseBlockEntity(Block block) {
         this.block = block;
@@ -40,6 +43,11 @@ public abstract class BaseBlockEntity implements BlockEntity {
     @Override
     public void onBreak(Player player) {
 
+    }
+
+    @Override
+    public Set<Player> getViewers() {
+        return this.getLocation().getChunk().getViewers();
     }
 
 }

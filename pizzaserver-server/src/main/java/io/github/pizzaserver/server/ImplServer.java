@@ -1,14 +1,23 @@
 package io.github.pizzaserver.server;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.ServerConfig;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.server.blockentity.ImplBlockEntityRegistry;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
+import io.github.pizzaserver.server.entity.inventory.ImplBlockEntityInventory;
+import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.level.ImplLevelManager;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
@@ -42,6 +51,11 @@ import java.util.stream.Collectors;
 
 public class ImplServer extends Server {
 
+    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
+    private final BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
+    private final ItemRegistry itemRegistry = new ImplItemRegistry();
+    private final EntityRegistry entityRegistry = new ImplEntityRegistry();
+
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
     private final Set<PlayerSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private final PlayerDataProvider provider = new NBTPlayerDataProvider(this);
@@ -50,11 +64,6 @@ public class ImplServer extends Server {
     private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
     private final EventManager eventManager = new ImplEventManager(this);
     private final ImplLevelManager levelManager;
-
-    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
-    private final BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
-    private final ItemRegistry itemRegistry = new ImplItemRegistry();
-    private final EntityRegistry entityRegistry = new ImplEntityRegistry();
 
     private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
     private final Scheduler scheduler = new Scheduler(this, 1);
@@ -371,6 +380,16 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public EntityInventory createInventory(Entity entity, ContainerType containerType, int size) {
+        return new ImplEntityInventory(entity, containerType, size);
+    }
+
+    @Override
+    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType, int size) {
+        return new ImplBlockEntityInventory(blockEntity, containerType, size);
+    }
+
+    @Override
     public BlockRegistry getBlockRegistry() {
         return this.blockRegistry;
     }
@@ -431,7 +450,7 @@ public class ImplServer extends Server {
                 try {
                     ImplServer.this.shutdownLatch.await();
                 } catch (InterruptedException exception) {
-                    Server.getInstance().getLogger().error("Exit listener exception", exception);
+                    ImplServer.this.getLogger().error("Exit listener exception", exception);
                 }
             }
         }

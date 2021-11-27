@@ -272,6 +272,12 @@ public interface World extends ChunkManager {
      */
     boolean requestBlockUpdate(int x, int y, int z);
 
+    default void addBlockEvent(Vector3i blockCoordinates, int type, int data) {
+        this.addBlockEvent(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), type, data);
+    }
+
+    void addBlockEvent(int x, int y, int z, int type, int data);
+
     /**
      * Add a {@link ItemStack} to the world and spawn it.
      * @param itemStack {@link ItemStack} to spawn as an entity

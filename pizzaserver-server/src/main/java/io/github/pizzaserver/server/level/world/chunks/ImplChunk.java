@@ -2,9 +2,9 @@ package io.github.pizzaserver.server.level.world.chunks;
 
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
+import com.nukkitx.protocol.bedrock.packet.BlockEventPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
-import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
@@ -298,6 +298,19 @@ public class ImplChunk implements Chunk {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void addBlockEvent(int x, int y, int z, int type, int data) {
+        Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + (x & 15), y, this.getZ() * 16 + (z & 15));
+        BlockEventPacket blockEventPacket = new BlockEventPacket();
+        blockEventPacket.setBlockPosition(blockCoordinates);
+        blockEventPacket.setEventType(type);
+        blockEventPacket.setEventData(data);
+
+        for (Player viewer : this.getViewers()) {
+            viewer.sendPacket(blockEventPacket);
+        }
     }
 
     private void doBlockUpdate(int x, int y, int z) {

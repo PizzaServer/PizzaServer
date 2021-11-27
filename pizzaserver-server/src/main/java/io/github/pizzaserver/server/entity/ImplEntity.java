@@ -6,6 +6,7 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.utils.BlockLocation;
@@ -85,7 +86,7 @@ public class ImplEntity implements Entity {
     protected final EntityDefinition entityDefinition;
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
-    protected EntityInventory inventory = new ImplEntityInventory(this, Collections.singleton(ContainerSlotType.INVENTORY), 0);
+    protected EntityInventory inventory = new ImplEntityInventory(this, ContainerType.INVENTORY, 0);
     protected List<ItemStack> loot = new ArrayList<>();
     protected EntityMetaData metaData = new EntityMetaData();
     protected boolean metaDataUpdate;
@@ -104,9 +105,9 @@ public class ImplEntity implements Entity {
         this.entityDefinition = entityDefinition;
 
         // Apply default components to the entity
-        this.getServer().getEntityRegistry().getComponentClasses().forEach(clazz -> {
-            EntityComponentHandler handler = this.getServer().getEntityRegistry().getComponentHandler(clazz);
-            handler.onRegistered(this, this.getServer().getEntityRegistry().getDefaultComponent(clazz));
+        Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
+            EntityComponentHandler handler = Server.getInstance().getEntityRegistry().getComponentHandler(clazz);
+            handler.onRegistered(this, Server.getInstance().getEntityRegistry().getDefaultComponent(clazz));
         });
     }
 

@@ -4,8 +4,9 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
+import io.github.pizzaserver.api.utils.Watchable;
 
-public interface BlockEntity {
+public interface BlockEntity extends Watchable {
 
     BlockEntityType getType();
 

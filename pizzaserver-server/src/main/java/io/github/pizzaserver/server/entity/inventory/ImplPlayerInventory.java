@@ -6,6 +6,8 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
@@ -19,23 +21,12 @@ import java.util.Set;
 
 public class ImplPlayerInventory extends ImplEntityInventory implements PlayerInventory {
 
-    private static final Set<ContainerSlotType> PLAYER_SLOT_TYPES = new HashSet<ContainerSlotType>() {
-        {
-            this.add(ContainerSlotType.ARMOR);
-            this.add(ContainerSlotType.INVENTORY);
-            this.add(ContainerSlotType.HOTBAR);
-            this.add(ContainerSlotType.HOTBAR_AND_INVENTORY);
-            this.add(ContainerSlotType.CURSOR);
-            this.add(ContainerSlotType.OFFHAND);
-        }
-    };
-
     private int selectedSlot;
     private ItemStack cursor = ItemRegistry.getInstance().getItem(BlockTypeID.AIR);
 
 
     public ImplPlayerInventory(Player player) {
-        super(player, PLAYER_SLOT_TYPES, 36, ContainerId.INVENTORY);
+        super(player, ContainerType.INVENTORY, InventoryUtils.getSlotCount(ContainerType.INVENTORY), ContainerId.INVENTORY);
     }
 
     @Override
@@ -176,11 +167,8 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     }
 
     @Override
-    public boolean openFor(Player player) {
-        if (!player.equals(this.getEntity())) {
-            return false;
-        }
-        return super.openFor(player);
+    public boolean canBeOpenedBy(Player player) {
+        return this.getEntity().equals(player);
     }
 
     @Override

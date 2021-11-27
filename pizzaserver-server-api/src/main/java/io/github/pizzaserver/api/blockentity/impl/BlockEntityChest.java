@@ -1,12 +1,11 @@
 package io.github.pizzaserver.api.blockentity.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.blockentity.BaseBlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.impl.BlockEntityTypeChest;
 import io.github.pizzaserver.api.block.Block;
 
-public class BlockEntityChest extends BaseBlockEntity {
+public class BlockEntityChest extends BlockEntityContainer {
 
     public BlockEntityChest(Block block) {
         super(block);
