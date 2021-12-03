@@ -167,18 +167,25 @@ public class MCWorldChunkProvider implements Closeable {
 
         // sub chunks
         for (int y = 0; y < 16; y++) {
-            final int chunkY = y;
+            int chunkY = y;
+            ByteBuf subChunkBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+            try {
+                bedrockChunk.getSubChunk(chunkY).serializeForDisk(subChunkBuffer);
+                byte[] subChunkKey = ifOverworld(
+                        bedrockChunk.getDimension(),
+                        () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(bedrockChunk.getX(), bedrockChunk.getZ(), chunkY),
+                        () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKeyWithDimension(
+                                bedrockChunk.getX(),
+                                bedrockChunk.getZ(),
+                                bedrockChunk.getDimension(),
+                                chunkY));
 
-            byte[] subChunk = bedrockChunk.getSubChunk(chunkY).serializeForDisk();
-            byte[] subChunkKey = ifOverworld(
-                    bedrockChunk.getDimension(),
-                    () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(bedrockChunk.getX(), bedrockChunk.getZ(), chunkY),
-                    () -> ChunkKey.SUB_CHUNK_DATA.getLevelDBKeyWithDimension(
-                            bedrockChunk.getX(),
-                            bedrockChunk.getZ(),
-                            bedrockChunk.getDimension(),
-                            chunkY));
-            this.database.put(subChunkKey, subChunk);
+                byte[] subChunkData = new byte[subChunkBuffer.readableBytes()];
+                subChunkBuffer.readBytes(subChunkData);
+                this.database.put(subChunkKey, subChunkData);
+            } finally {
+                subChunkBuffer.release();
+            }
         }
 
     }

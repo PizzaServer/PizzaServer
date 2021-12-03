@@ -6,14 +6,14 @@ import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.format.BlockRuntimeMapper;
+import io.github.pizzaserver.format.MinecraftDataMapper;
 
 import java.util.List;
 
 /**
  * Represents a specific Minecraft version.
  */
-public interface MinecraftVersion extends BlockRuntimeMapper {
+public interface MinecraftVersion extends MinecraftDataMapper {
 
     int getProtocol();
 

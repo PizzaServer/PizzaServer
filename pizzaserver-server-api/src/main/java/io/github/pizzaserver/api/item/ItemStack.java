@@ -274,25 +274,6 @@ public class ItemStack implements Cloneable {
     }
 
     /**
-     * Serialize the item stack to be network ready.
-     * @param version Minecraft version to serialize against
-     * @return serialized data
-     */
-    public ItemData serialize(MinecraftVersion version) {
-        return ItemData.builder()
-                .id(version.getItemRuntimeId(this.getItemType().getItemId()))
-                .netId(this.getNetworkId())
-                .count(this.getCount())
-                .damage(this.getMeta())
-                .canBreak(this.getBlocksCanBreak().stream().map(BlockState::getBlockId).toArray(String[]::new))
-                .canPlace(this.getBlocksCanPlaceOn().stream().map(BlockState::getBlockId).toArray(String[]::new))
-                .tag(this.getCompoundTag())
-                .usingNetId(true)
-                .build();
-    }
-
-
-    /**
      * Ensures that the ItemStack provided will exist.
      * If the ItemStack provided is null, it will return an air ItemStack
      * @param itemStack nullable item stack
@@ -300,12 +281,6 @@ public class ItemStack implements Cloneable {
      */
     public static ItemStack ensureItemStackExists(ItemStack itemStack) {
         return itemStack == null ? ItemRegistry.getInstance().getItem(BlockTypeID.AIR) : itemStack;
-    }
-
-    public static ItemStack deserialize(ItemData itemData, MinecraftVersion version) {
-        ItemStack itemStack = new ItemStack(version.getItemName(itemData.getId()), itemData.getCount(), itemData.getDamage(), itemData.getNetId());
-        itemStack.setCompoundTag(itemData.getTag());
-        return itemStack;
     }
 
 }

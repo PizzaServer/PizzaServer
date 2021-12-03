@@ -11,6 +11,7 @@ import io.github.pizzaserver.api.player.PlayerList;
 import io.github.pizzaserver.api.player.data.Device;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.io.*;
 import java.util.UUID;
@@ -168,7 +169,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
             addPlayerPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
             addPlayerPacket.getMetadata().putAll(this.getMetaData().serialize());
             addPlayerPacket.setDeviceId("");
-            addPlayerPacket.setHand(this.getInventory().getHeldItem().serialize(player.getVersion()));
+            addPlayerPacket.setHand(ItemUtils.serializeForNetwork(this.getInventory().getHeldItem(), player.getVersion()));
             player.sendPacket(addPlayerPacket);
             this.sendEquipmentPacket(player);
 

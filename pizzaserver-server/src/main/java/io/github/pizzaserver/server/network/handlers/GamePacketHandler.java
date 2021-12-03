@@ -11,6 +11,7 @@ import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.EntityRegistry;
+import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -32,6 +33,7 @@ import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.api.utils.BlockLocation;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
 import io.github.pizzaserver.server.network.handlers.inventory.InventoryActionSwapHandler;
 import io.github.pizzaserver.server.network.handlers.inventory.InventoryActionTakeHandler;
@@ -156,7 +158,7 @@ public class GamePacketHandler implements BedrockPacketHandler {
                 break;
             case START_BREAK:
                 if (this.player.isAlive() && this.player.canReach(packet.getBlockPosition(), this.player.inCreativeMode() ? 13 : 7)) {
-                    BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), packet.getBlockPosition());
+                    BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), packet.getBlockPosition(), 0);
 
                     if (blockBreakingLocation.getBlock().getBlockState().isSolid() && this.player.getAdventureSettings().canMine()) {
                         BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());
@@ -269,8 +271,12 @@ public class GamePacketHandler implements BedrockPacketHandler {
         if (this.player.isAlive()) {
             switch (packet.getAction()) {
                 case OPEN_INVENTORY:
-                    if (!this.player.getOpenInventory().isPresent()) {
-                        this.player.openInventory(this.player.getInventory());
+                    if (!this.player.getOpenInventory().isPresent() && this.player.getInventory().canBeOpenedBy(this.player)) {
+                        InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(this.player, this.player.getInventory());
+                        Server.getInstance().getEventManager().call(inventoryOpenEvent);
+                        if (!inventoryOpenEvent.isCancelled()) {
+                            this.player.openInventory(this.player.getInventory());
+                        }
                     }
                     break;
             }
@@ -363,7 +369,7 @@ public class GamePacketHandler implements BedrockPacketHandler {
         boolean isHotbarSlot = packet.getHotbarSlot() >= 0 && packet.getHotbarSlot() < 9;
         if (isHotbarSlot && packet.getContainerId() == ContainerId.INVENTORY) {
             // If their item does not match up with the server side item resend the server's slot
-            if (!ItemStack.deserialize(packet.getItem(), this.player.getVersion()).equals(this.player.getInventory().getSlot(packet.getHotbarSlot()))) {
+            if (!ItemUtils.deserializeNetworkItem(packet.getItem(), this.player.getVersion()).equals(this.player.getInventory().getSlot(packet.getHotbarSlot()))) {
                 this.player.getInventory().sendSlot(this.player, packet.getHotbarSlot());
             }
 

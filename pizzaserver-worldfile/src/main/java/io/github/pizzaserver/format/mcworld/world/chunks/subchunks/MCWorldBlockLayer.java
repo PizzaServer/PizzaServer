@@ -1,12 +1,10 @@
 package io.github.pizzaserver.format.mcworld.world.chunks.subchunks;
 
-import io.github.pizzaserver.format.BlockRuntimeMapper;
+import io.github.pizzaserver.format.MinecraftDataMapper;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import net.daporkchop.lib.common.function.io.IOFunction;
-
+import net.daporkchop.lib.common.function.io.IOConsumer;
 import java.util.*;
 
 public class MCWorldBlockLayer implements BlockLayer {
@@ -72,18 +70,17 @@ public class MCWorldBlockLayer implements BlockLayer {
     }
 
     @Override
-    public byte[] serializeForDisk() {
+    public void serializeForDisk(ByteBuf buffer) {
         this.cleanUpPalette();
-        return this.serialize(MCWorldBlockPalette::serializeForDisk);
+        this.serialize(buffer, (palette) -> this.palette.serializeForDisk(buffer));
     }
 
     @Override
-    public byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) {
-        return this.serialize(palette -> this.palette.serializeForNetwork(runtimeMapper));
+    public void serializeForNetwork(ByteBuf buffer, MinecraftDataMapper runtimeMapper) {
+        this.serialize(buffer, (palette) -> this.palette.serializeForNetwork(buffer, runtimeMapper));
     }
 
-    private synchronized byte[] serialize(IOFunction<MCWorldBlockPalette, byte[]> paletteSerializer) {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+    private synchronized void serialize(ByteBuf buffer, IOConsumer<MCWorldBlockPalette> paletteSerializer) {
         int bitsPerBlock = Math.max((int) Math.ceil(Math.log(this.palette.getEntries().size()) / Math.log(2)), 1);
         int blocksPerWord = 32 / bitsPerBlock;
         int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
@@ -104,12 +101,7 @@ public class MCWorldBlockLayer implements BlockLayer {
             buffer.writeIntLE(word);
         }
 
-        buffer.writeBytes(paletteSerializer.apply(this.palette));
-
-        byte[] serialized = new byte[buffer.readableBytes()];
-        buffer.readBytes(serialized);
-        buffer.release();
-        return serialized;
+        paletteSerializer.accept(this.palette);
     }
 
     /**

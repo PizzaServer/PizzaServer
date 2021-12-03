@@ -1,18 +1,15 @@
 package io.github.pizzaserver.api.blockentity;
 
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.utils.BlockLocation;
-import io.github.pizzaserver.api.utils.Watchable;
 
-public interface BlockEntity extends Watchable {
+public interface BlockEntity {
 
     BlockEntityType getType();
 
-    BlockLocation getLocation();
-
-    int getLayer();
+    Vector3i getPosition();
 
     NbtMap getNetworkData();
 

@@ -2,6 +2,7 @@ package io.github.pizzaserver.server.entity.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.entity.Entity;
@@ -10,6 +11,7 @@ import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Optional;
 
@@ -55,11 +57,10 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, boolean keepNetworkId) {
-        this.helmet = keepNetworkId ? helmet : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
-        this.chestplate = keepNetworkId ? chestplate : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
-        this.leggings = keepNetworkId ? leggings : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
-        this.boots = keepNetworkId ? boots : ItemStack.ensureItemStackExists(boots).newNetworkStack();
-        this.broadcastMobArmourEquipmentPacket();
+        this.setHelmet(helmet, keepNetworkId);
+        this.setChestplate(chestplate, keepNetworkId);
+        this.setLeggings(leggings, keepNetworkId);
+        this.setBoots(boots, keepNetworkId);
     }
 
     @Override
@@ -162,10 +163,10 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
         for (Player player : this.getEntity().getViewers()) {
             MobArmorEquipmentPacket mobArmourEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmourEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
-            mobArmourEquipmentPacket.setHelmet(this.getHelmet().serialize(player.getVersion()));
-            mobArmourEquipmentPacket.setChestplate(this.getChestplate().serialize(player.getVersion()));
-            mobArmourEquipmentPacket.setLeggings(this.getLeggings().serialize(player.getVersion()));
-            mobArmourEquipmentPacket.setBoots(this.getBoots().serialize(player.getVersion()));
+            mobArmourEquipmentPacket.setHelmet(ItemUtils.serializeForNetwork(this.getHelmet(), player.getVersion()));
+            mobArmourEquipmentPacket.setChestplate(ItemUtils.serializeForNetwork(this.getChestplate(), player.getVersion()));
+            mobArmourEquipmentPacket.setLeggings(ItemUtils.serializeForNetwork(this.getLeggings(), player.getVersion()));
+            mobArmourEquipmentPacket.setBoots(ItemUtils.serializeForNetwork(this.getBoots(), player.getVersion()));
             player.sendPacket(mobArmourEquipmentPacket);
         }
     }
@@ -231,19 +232,28 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
             mobEquipmentPacket.setContainerId(mainHand ? ContainerId.INVENTORY : ContainerId.OFFHAND);
             mobEquipmentPacket.setInventorySlot(slot);
             mobEquipmentPacket.setHotbarSlot(slot);
-            mobEquipmentPacket.setItem(ItemStack.ensureItemStackExists(itemStack).serialize(player.getVersion()));
+            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(ItemStack.ensureItemStackExists(itemStack), player.getVersion()));
             player.sendPacket(mobEquipmentPacket);
         }
     }
 
     @Override
     public boolean canBeOpenedBy(Player player) {
-        return this.getEntity().getViewers().contains(player);
+        return this.getEntity().getViewers().contains(player) && super.canBeOpenedBy(player);
+    }
+
+    @Override
+    public boolean shouldBeClosedFor(Player player) {
+        return !player.canReach(this.getEntity()) && super.shouldBeClosedFor(player);
     }
 
     @Override
     protected void sendContainerOpenPacket(Player player) {
-        // TODO: open inventory depending on inventory type
+        ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
+        containerOpenPacket.setId((byte) this.getId());
+        containerOpenPacket.setType(this.getContainerType());
+        containerOpenPacket.setUniqueEntityId(this.getEntity().getId());
+        player.sendPacket(containerOpenPacket);
 
         this.sendSlots(player);
     }

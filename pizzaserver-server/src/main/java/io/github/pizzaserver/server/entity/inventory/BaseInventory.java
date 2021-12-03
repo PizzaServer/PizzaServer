@@ -1,19 +1,17 @@
 package io.github.pizzaserver.server.entity.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
-import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -190,7 +188,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean canBeOpenedBy(Player player) {
-        return true;
+        return !this.viewers.contains(player);
     }
 
     /**
@@ -199,13 +197,7 @@ public abstract class BaseInventory implements Inventory {
      * @return if the inventory was opened
      */
     public boolean openFor(Player player) {
-        if (!this.viewers.contains(player) && this.canBeOpenedBy(player)) {
-            InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(player, this);
-            Server.getInstance().getEventManager().call(inventoryOpenEvent);
-            if (inventoryOpenEvent.isCancelled()) {
-                return false;
-            }
-
+        if (this.canBeOpenedBy(player)) {
             this.viewers.add(player);
             this.sendContainerOpenPacket(player);
             return true;
@@ -223,18 +215,22 @@ public abstract class BaseInventory implements Inventory {
      */
     public boolean closeFor(Player player) {
         if (this.viewers.contains(player)) {
+            this.viewers.remove(player);
+
             ContainerClosePacket containerClosePacket = new ContainerClosePacket();
             containerClosePacket.setId((byte) this.getId());
             player.sendPacket(containerClosePacket);
 
             InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
             Server.getInstance().getEventManager().call(inventoryCloseEvent);
-
-            this.viewers.remove(player);
             return true;
         } else {
             return false;
         }
+    }
+
+    public boolean shouldBeClosedFor(Player player) {
+        return this.getViewers().contains(player);
     }
 
     @Override
@@ -274,7 +270,7 @@ public abstract class BaseInventory implements Inventory {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
         inventorySlotPacket.setContainerId(inventoryId);
         inventorySlotPacket.setSlot(slot);
-        inventorySlotPacket.setItem(itemStack.serialize(player.getVersion()));
+        inventorySlotPacket.setItem(ItemUtils.serializeForNetwork(itemStack, player.getVersion()));
         player.sendPacket(inventorySlotPacket);
     }
 
@@ -287,7 +283,7 @@ public abstract class BaseInventory implements Inventory {
     protected static void sendInventorySlots(Player player, ItemStack[] slots, int inventoryId) {
         InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
         inventoryContentPacket.setContainerId(inventoryId);
-        inventoryContentPacket.setContents(Arrays.stream(slots).map(itemStack -> itemStack.serialize(player.getVersion())).collect(Collectors.toList()));
+        inventoryContentPacket.setContents(Arrays.stream(slots).map(itemStack -> ItemUtils.serializeForNetwork(itemStack, player.getVersion())).collect(Collectors.toList()));
         player.sendPacket(inventoryContentPacket);
     }
 

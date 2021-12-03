@@ -6,7 +6,7 @@ import io.github.pizzaserver.api.item.data.ToolTypeID;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ToolTypeRegistry {
+public class ToolTypes {
 
     private static final Map<String, ToolType> types = new HashMap<String, ToolType>() {
         {
@@ -55,10 +55,6 @@ public class ToolTypeRegistry {
 
     public static ToolType getToolType(String id) {
         return types.get(id);
-    }
-
-    public static void register(String id, ToolType toolType) {
-        types.put(id, toolType);
     }
 
 }

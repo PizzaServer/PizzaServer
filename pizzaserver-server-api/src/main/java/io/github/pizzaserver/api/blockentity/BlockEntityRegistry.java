@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public interface BlockEntityRegistry {
 
-    void register(BlockEntityType blockEntityType);
-
     BlockEntityType getBlockEntityType(String blockEntityId);
 
     /**
@@ -18,6 +16,8 @@ public interface BlockEntityRegistry {
      * @return block entity type if any exists
      */
     Optional<BlockEntityType> getBlockEntityType(BlockType blockType);
+
+    boolean hasBlockEntityType(String blockEntityId);
 
     static BlockEntityRegistry getInstance() {
         return Server.getInstance().getBlockEntityRegistry();

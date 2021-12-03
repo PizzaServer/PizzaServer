@@ -12,8 +12,9 @@ import io.github.pizzaserver.api.block.types.data.PushResponse;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
 import java.util.Collections;
@@ -160,12 +161,12 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
+        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.NONE));
     }
 
     @Override
     public Set<ToolType> getBestTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.NONE));
+        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.NONE));
     }
 
     @Override
@@ -182,6 +183,12 @@ public abstract class BaseBlockType implements BlockType {
     public Block getResultBlock(int blockStateIndex) {
         return BlockRegistry.getInstance().getBlock(BlockTypeID.AIR);
     }
+
+    @Override
+    public void prepareBlock(Player player, Block block) {}
+
+    @Override
+    public void onPlace(Player player, Block block) {}
 
     @Override
     public boolean onInteract(Player player, Block block) {

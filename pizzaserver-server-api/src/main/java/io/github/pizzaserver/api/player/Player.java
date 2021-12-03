@@ -1,6 +1,9 @@
 package io.github.pizzaserver.api.player;
 
 import com.nukkitx.protocol.bedrock.BedrockPacket;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.HumanEntity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
@@ -48,6 +51,12 @@ public interface Player extends HumanEntity {
     AdventureSettings getAdventureSettings();
 
     void setAdventureSettings(AdventureSettings adventureSettings);
+
+    boolean canReach(Entity entity);
+
+    boolean canReach(BlockEntity blockEntity);
+
+    boolean canReach(Block block);
 
     /**
      * Get the player list of a player.

@@ -5,7 +5,6 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
@@ -14,6 +13,7 @@ import io.github.pizzaserver.api.utils.BoundingBox;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
@@ -1303,10 +1303,10 @@ public class ImplEntity implements Entity {
         if (wearingAmour) {
             MobArmorEquipmentPacket mobArmourEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmourEquipmentPacket.setRuntimeEntityId(this.getId());
-            mobArmourEquipmentPacket.setHelmet(helmet.serialize(player.getVersion()));
-            mobArmourEquipmentPacket.setChestplate(chestplate.serialize(player.getVersion()));
-            mobArmourEquipmentPacket.setLeggings(leggings.serialize(player.getVersion()));
-            mobArmourEquipmentPacket.setBoots(boots.serialize(player.getVersion()));
+            mobArmourEquipmentPacket.setHelmet(ItemUtils.serializeForNetwork(helmet, player.getVersion()));
+            mobArmourEquipmentPacket.setChestplate(ItemUtils.serializeForNetwork(chestplate, player.getVersion()));
+            mobArmourEquipmentPacket.setLeggings(ItemUtils.serializeForNetwork(leggings, player.getVersion()));
+            mobArmourEquipmentPacket.setBoots(ItemUtils.serializeForNetwork(boots, player.getVersion()));
             player.sendPacket(mobArmourEquipmentPacket);
         }
     }

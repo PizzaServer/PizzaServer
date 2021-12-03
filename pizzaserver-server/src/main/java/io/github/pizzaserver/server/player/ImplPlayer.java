@@ -10,6 +10,9 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlags;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
@@ -356,6 +359,21 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     public PlayerBlockBreakingManager getBlockBreakingManager() {
         return this.breakingManager;
+    }
+
+    @Override
+    public boolean canReach(Entity entity) {
+        return this.canReach(entity.getLocation().toVector3f(), this.inCreativeMode() ? 9 : 6);
+    }
+
+    @Override
+    public boolean canReach(BlockEntity blockEntity) {
+        return this.canReach(blockEntity.getPosition(), this.inCreativeMode() ? 13 : 7);
+    }
+
+    @Override
+    public boolean canReach(Block block) {
+        return this.canReach(block.getLocation().toVector3f(), this.inCreativeMode() ? 13 : 7);
     }
 
     public boolean canReach(Vector3i vector3, float maxDistance) {
@@ -903,6 +921,11 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
         if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
             this.setHealth(this.getHealth() + 1);
+        }
+
+        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();
+        if (shouldCloseOpenInventory) {
+            this.closeOpenInventory();
         }
 
         super.tick();

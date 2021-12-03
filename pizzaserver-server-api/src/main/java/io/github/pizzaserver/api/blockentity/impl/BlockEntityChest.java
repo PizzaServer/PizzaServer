@@ -1,35 +1,21 @@
 package io.github.pizzaserver.api.blockentity.impl;
 
-import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
-import io.github.pizzaserver.api.blockentity.types.impl.BlockEntityTypeChest;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 
 public class BlockEntityChest extends BlockEntityContainer {
 
-    public BlockEntityChest(Block block) {
-        super(block);
+    public static final String ID = "Chest";
+
+
+    public BlockEntityChest(Vector3i blockLocation) {
+        super(blockLocation);
     }
 
     @Override
-    public BlockEntityTypeChest getType() {
-        return (BlockEntityTypeChest) BlockEntityRegistry.getInstance().getBlockEntityType(BlockEntityTypeChest.ID);
-    }
-
-    @Override
-    public NbtMap getNetworkData() {
-        return NbtMap.builder()
-                .putString("id", this.getType().getId())
-                .putByte("isMovable", (byte) 1)
-                .putInt("x", this.getLocation().getX())
-                .putInt("y", this.getLocation().getY())
-                .putInt("z", this.getLocation().getZ())
-                .build();
-    }
-
-    @Override
-    public NbtMap getDiskData() {
-        return NbtMap.EMPTY;
+    public BlockEntityType getType() {
+        return BlockEntityRegistry.getInstance().getBlockEntityType(ID);
     }
 
 }

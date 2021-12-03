@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.block.types.impl;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -43,18 +43,23 @@ public class BlockTypeStone extends BaseBlockType {
     }
 
     @Override
+    public float getBlastResistance(int blockStateIndex) {
+        return 6;
+    }
+
+    @Override
     public float getToughness(int blockStateIndex) {
         return 1.5f;
     }
 
     @Override
     public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.WOOD_PICKAXE));
+        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_PICKAXE));
     }
 
     @Override
     public Set<ToolType> getBestTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypeRegistry.getToolType(ToolTypeID.WOOD_PICKAXE));
+        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_PICKAXE));
     }
 
 }

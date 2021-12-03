@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.item.data;
 
-import io.github.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.block.Block;
 
 public class ToolType {
@@ -17,11 +17,11 @@ public class ToolType {
     }
 
     public ToolType getSuccessor() {
-        return ToolTypeRegistry.getToolType(this.successor);
+        return ToolTypes.getToolType(this.successor);
     }
 
     public ToolType getPredecessor() {
-        return ToolTypeRegistry.getToolType(this.predecessor);
+        return ToolTypes.getToolType(this.predecessor);
     }
 
     public float getStrength() {

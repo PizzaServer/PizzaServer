@@ -1,21 +1,17 @@
 package io.github.pizzaserver.server.entity.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
-import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -119,7 +115,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
             mobEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
             mobEquipmentPacket.setHotbarSlot(slot);
             mobEquipmentPacket.setInventorySlot(slot);
-            mobEquipmentPacket.setItem(this.getSlot(slot).serialize(this.getEntity().getVersion()));
+            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(this.getSlot(slot), this.getEntity().getVersion()));
             this.getEntity().sendPacket(mobEquipmentPacket);
 
             sendInventorySlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
@@ -169,6 +165,11 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     @Override
     public boolean canBeOpenedBy(Player player) {
         return this.getEntity().equals(player);
+    }
+
+    @Override
+    public boolean shouldBeClosedFor(Player player) {
+        return !player.equals(this.getEntity());
     }
 
     @Override

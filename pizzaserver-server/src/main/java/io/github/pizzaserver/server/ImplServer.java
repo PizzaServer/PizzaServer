@@ -3,13 +3,10 @@ package io.github.pizzaserver.server;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
@@ -18,6 +15,7 @@ import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.entity.inventory.ImplBlockEntityInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
+import io.github.pizzaserver.server.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.level.ImplLevelManager;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
@@ -52,9 +50,9 @@ import java.util.stream.Collectors;
 public class ImplServer extends Server {
 
     private final BlockRegistry blockRegistry = new ImplBlockRegistry();
-    private final BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
     private final ItemRegistry itemRegistry = new ImplItemRegistry();
     private final EntityRegistry entityRegistry = new ImplEntityRegistry();
+    private final ImplBlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
 
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
     private final Set<PlayerSession> sessions = Collections.synchronizedSet(new HashSet<>());
@@ -380,8 +378,18 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public EntityInventory createInventory(Entity entity, ContainerType containerType) {
+        return this.createInventory(entity, containerType, InventoryUtils.getSlotCount(containerType));
+    }
+
+    @Override
     public EntityInventory createInventory(Entity entity, ContainerType containerType, int size) {
         return new ImplEntityInventory(entity, containerType, size);
+    }
+
+    @Override
+    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType) {
+        return this.createInventory(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
     }
 
     @Override
@@ -395,11 +403,6 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public BlockEntityRegistry getBlockEntityRegistry() {
-        return this.blockEntityRegistry;
-    }
-
-    @Override
     public ItemRegistry getItemRegistry() {
         return this.itemRegistry;
     }
@@ -407,6 +410,10 @@ public class ImplServer extends Server {
     @Override
     public EntityRegistry getEntityRegistry() {
         return this.entityRegistry;
+    }
+
+    public ImplBlockEntityRegistry getBlockEntityRegistry() {
+        return this.blockEntityRegistry;
     }
 
     /**
@@ -455,6 +462,10 @@ public class ImplServer extends Server {
             }
         }
 
+    }
+
+    public static ImplServer getInstance() {
+        return (ImplServer) Server.getInstance();
     }
 
 }

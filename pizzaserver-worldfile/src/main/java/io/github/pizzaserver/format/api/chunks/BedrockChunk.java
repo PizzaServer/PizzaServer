@@ -1,9 +1,11 @@
 package io.github.pizzaserver.format.api.chunks;
 
 import com.nukkitx.math.vector.Vector2i;
+import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a 16x16 chunk of blocks in a Minecraft world.
@@ -15,6 +17,10 @@ public interface BedrockChunk extends BedrockNetworkDiskSerializable {
     int getZ();
 
     int getDimension();
+
+    Set<NbtMap> getEntityNBTs();
+
+    Set<NbtMap> getBlockEntityNBTs();
 
     /**
      * A height map is a array of 256 (16 * 16) integers that stores the highest blocks in a chunk.

@@ -1,8 +1,7 @@
 package io.github.pizzaserver.server;
 
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
-import io.github.pizzaserver.api.blockentity.types.impl.BlockEntityTypeChest;
+import io.github.pizzaserver.server.blockentity.types.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.components.handlers.*;
 import io.github.pizzaserver.api.entity.definition.components.impl.*;
@@ -29,16 +28,34 @@ public class VanillaContentLoader {
 
     private static void loadBlocks() {
         BlockRegistry.getInstance().register(new BlockTypeAir());
-        BlockRegistry.getInstance().register(new BlockTypeDirt());
-        BlockRegistry.getInstance().register(new BlockTypeGrass());
-        BlockRegistry.getInstance().register(new BlockTypeStone());
-        BlockRegistry.getInstance().register(new BlockTypeWater());
-        BlockRegistry.getInstance().register(new BlockTypeFlowingWater());
+        BlockRegistry.getInstance().register(new BlockTypeBed());
+        BlockRegistry.getInstance().register(new BlockTypeBell());
+        BlockRegistry.getInstance().register(new BlockTypeBlastFurnace());
+        BlockRegistry.getInstance().register(new BlockTypeCampfire());
         BlockRegistry.getInstance().register(new BlockTypeChest());
+        BlockRegistry.getInstance().register(new BlockTypeCauldron());
+        BlockRegistry.getInstance().register(new BlockTypeDirt());
+        BlockRegistry.getInstance().register(new BlockTypeFurnace());
+        BlockRegistry.getInstance().register(new BlockTypeFlowingWater());
+        BlockRegistry.getInstance().register(new BlockTypeGrass());
+        BlockRegistry.getInstance().register(new BlockTypeLitBlastFurnace());
+        BlockRegistry.getInstance().register(new BlockTypeLitFurnace());
+        BlockRegistry.getInstance().register(new BlockTypeMobSpawner());
+        BlockRegistry.getInstance().register(new BlockTypeStone());
+        BlockRegistry.getInstance().register(new BlockTypeSoulCampfire());
+        BlockRegistry.getInstance().register(new BlockTypeWater());
     }
 
     private static void loadBlockEntities() {
-        BlockEntityRegistry.getInstance().register(new BlockEntityTypeChest());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBed());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBell());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBlastFurnace());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCampfire());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeFurnace());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCauldron());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeChest());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeFurnace());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeMobSpawner());
     }
 
     private static void loadEntityComponents() {

@@ -2,10 +2,11 @@ package io.github.pizzaserver.format.mcworld.world.chunks;
 
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.nbt.NBTInputStream;
+import com.nukkitx.nbt.NBTOutputStream;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.commons.utils.Check;
-import io.github.pizzaserver.format.BlockRuntimeMapper;
+import io.github.pizzaserver.format.MinecraftDataMapper;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
 import io.github.pizzaserver.format.mcworld.utils.VarInts;
@@ -13,6 +14,7 @@ import io.github.pizzaserver.format.mcworld.world.chunks.subchunks.MCWorldSubChu
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -87,6 +89,7 @@ public class MCWorldChunk implements BedrockChunk {
         } catch (IOException exception) {
             throw new ChunkParseException("Failed to read block entity NBT", exception);
         }
+
         try (InputStream entityDataStream = new ByteArrayInputStream(entityData);
                 NBTInputStream entityNBTInputStream = NbtUtils.createReaderLE(entityDataStream)) {
             while (entityDataStream.available() > 0) {
@@ -132,10 +135,12 @@ public class MCWorldChunk implements BedrockChunk {
         return this.chunkVersion;
     }
 
+    @Override
     public Set<NbtMap> getEntityNBTs() {
         return this.entityNBTs;
     }
 
+    @Override
     public Set<NbtMap> getBlockEntityNBTs() {
         return this.blockEntityNBTs;
     }
@@ -218,33 +223,35 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public byte[] serializeForDisk() {
+    public void serializeForDisk(ByteBuf buffer) {
         throw new UnsupportedOperationException("Cannot serialize MCWorldChunk for disk. Serialize subchunks individually instead");
     }
 
     @Override
-    public byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) throws IOException {
+    public void serializeForNetwork(ByteBuf buffer, MinecraftDataMapper dataMapper) throws IOException {
         int subChunkCount = this.getSubChunkCount();
 
         // Write all subchunks
-        ByteBuf packetData = ByteBufAllocator.DEFAULT.ioBuffer();
-        byte[] data;
-        try {
-            for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
-                BedrockSubChunk subChunk = this.getSubChunks().get(subChunkIndex);
-                packetData.writeBytes(subChunk.serializeForNetwork(runtimeMapper));
-            }
-            packetData.writeBytes(this.getBiomeData());
-            packetData.writeByte(0);    // edu feature or smth
-            VarInts.writeUnsignedInt(packetData, 0);    // border blocks supposedly
-
-            data = new byte[packetData.readableBytes()];
-            packetData.readBytes(data);
-        } finally {
-            packetData.release();
+        for (int subChunkIndex = 0; subChunkIndex < subChunkCount; subChunkIndex++) {
+            BedrockSubChunk subChunk = this.getSubChunks().get(subChunkIndex);
+            subChunk.serializeForNetwork(buffer, dataMapper);
         }
+        buffer.writeBytes(this.getBiomeData());
+        buffer.writeByte(0);    // edu feature or smth
+        VarInts.writeUnsignedInt(buffer, 0);
 
-        return data;
+        if (!this.blockEntityNBTs.isEmpty()) {
+            try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
+                for (NbtMap diskBlockEntityNBT : this.blockEntityNBTs) {
+                    try {
+                        NbtMap networkBlockEntityNBT = dataMapper.getNetworkBlockEntityNBT(diskBlockEntityNBT);
+                        outputStream.writeTag(networkBlockEntityNBT);
+                    } catch (NullPointerException exception) {
+                        System.out.println(diskBlockEntityNBT + " is missing");
+                    }
+                }
+            }
+        }
     }
 
 

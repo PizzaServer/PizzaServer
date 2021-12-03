@@ -5,7 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
-import io.github.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 
@@ -49,12 +49,12 @@ public class BlockTypeDirt extends BaseBlockType {
 
     @Override
     public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
+        return new HashSet<>(Arrays.asList(ToolTypes.getToolType(ToolTypeID.NONE), ToolTypes.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 
     @Override
     public Set<ToolType> getBestTools(int blockStateIndex) {
-        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
+        return new HashSet<>(Arrays.asList(ToolTypes.getToolType(ToolTypeID.NONE), ToolTypes.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 
 }

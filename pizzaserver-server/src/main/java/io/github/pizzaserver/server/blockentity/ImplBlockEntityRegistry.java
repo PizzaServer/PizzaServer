@@ -13,14 +13,18 @@ public class ImplBlockEntityRegistry implements BlockEntityRegistry {
     private final static Map<String, BlockEntityType> entities = new HashMap<>();
     private final static Map<String, BlockEntityType> entitiesByBlockTypeId = new HashMap<>();
 
-    @Override
+
     public void register(BlockEntityType blockEntityType) {
         if (entities.containsKey(blockEntityType.getId())) {
-            entitiesByBlockTypeId.remove(entities.get(blockEntityType.getId()).getBlockType().getBlockId());
+            for (BlockType blockType : this.getBlockEntityType(blockEntityType.getId()).getBlockTypes()) {
+                entitiesByBlockTypeId.remove(blockType.getBlockId());
+            }
         }
 
         entities.put(blockEntityType.getId(), blockEntityType);
-        entitiesByBlockTypeId.put(blockEntityType.getBlockType().getBlockId(), blockEntityType);
+        for (BlockType blockType : blockEntityType.getBlockTypes()) {
+            entitiesByBlockTypeId.put(blockType.getBlockId(), blockEntityType);
+        }
     }
 
     @Override
@@ -39,6 +43,11 @@ public class ImplBlockEntityRegistry implements BlockEntityRegistry {
     @Override
     public Optional<BlockEntityType> getBlockEntityType(BlockType blockType) {
         return Optional.ofNullable(entitiesByBlockTypeId.getOrDefault(blockType.getBlockId(), null));
+    }
+
+    @Override
+    public boolean hasBlockEntityType(String blockEntityId) {
+        return entitiesByBlockTypeId.containsKey(blockEntityId);
     }
 
 }

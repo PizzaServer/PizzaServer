@@ -13,17 +13,19 @@ public class BlockLocation {
     private final int x;
     private final int y;
     private final int z;
+    private final int layer;
 
 
-    public BlockLocation(World world, Vector3i vector3i) {
-        this(world, vector3i.getX(), vector3i.getY(), vector3i.getZ());
+    public BlockLocation(World world, Vector3i vector3i, int layer) {
+        this(world, vector3i.getX(), vector3i.getY(), vector3i.getZ(), layer);
     }
 
-    public BlockLocation(World world, int x, int y, int z) {
+    public BlockLocation(World world, int x, int y, int z, int layer) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.layer = layer;
     }
 
     public int getX() {
@@ -38,8 +40,12 @@ public class BlockLocation {
         return this.z;
     }
 
+    public int getLayer() {
+        return this.layer;
+    }
+
     public Block getBlock() {
-        return this.getWorld().getBlock(this.toVector3i());
+        return this.getWorld().getBlock(this.toVector3i(), this.getLayer());
     }
 
     public Chunk getChunk() {

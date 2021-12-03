@@ -44,11 +44,11 @@ public class Block {
     }
 
     public BlockLocation getLocation() {
-        return new BlockLocation(this.world, this.x, this.y, this.z);
+        return new BlockLocation(this.world, this.x, this.y, this.z, this.layer);
     }
 
-    public void setLocation(BlockLocation location, int layer) {
-        this.setLocation(location.getWorld(), location.getX(), location.getY(), location.getZ(), layer);
+    public void setLocation(BlockLocation location) {
+        this.setLocation(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getLayer());
     }
 
     public void setLocation(World world, Vector3i vector3i, int layer) {
@@ -85,7 +85,11 @@ public class Block {
     }
 
     public BlockEntity getBlockEntity() {
-        return this.getWorld().getBlockEntity(this.getLocation().toVector3i(), this.layer).orElse(null);
+        BlockEntity blockEntity = this.getWorld().getBlockEntity(this.getLocation().toVector3i()).orElse(null);
+        if (blockEntity == null || !blockEntity.getType().getBlockTypes().contains(this.getBlockType())) {
+            return null;
+        }
+        return blockEntity;
     }
 
     public BoundingBox getBoundingBox() {

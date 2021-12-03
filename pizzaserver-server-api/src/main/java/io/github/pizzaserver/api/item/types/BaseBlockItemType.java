@@ -7,6 +7,7 @@ import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 /**
  * Any block ItemStack is an instance of this class to prevent the need to create thousands of item classes for each block.
@@ -50,7 +51,8 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
                 return false;
             }
             Block placedBlock = this.getBlockType().create(itemStack.getMeta());
-            placedBlock.setLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i(), block.getLayer());
+            placedBlock.setLocation(new BlockLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i(), block.getLayer()));
+            placedBlock.getBlockType().prepareBlock(player, placedBlock);
 
             BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);
             player.getServer().getEventManager().call(blockPlaceEvent);
@@ -63,6 +65,7 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
                 player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
             }
             block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
+            placedBlock.getBlockType().onPlace(player, placedBlock);
             if (block.getBlockEntity() != null) {
                 block.getBlockEntity().onPlace(player);
             }

@@ -7,6 +7,7 @@ import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityPickupItemEvent;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Optional;
 
@@ -109,7 +110,7 @@ public class ImplItemEntity extends ImplEntity implements ItemEntity {
             AddItemEntityPacket addItemEntityPacket = new AddItemEntityPacket();
             addItemEntityPacket.setUniqueEntityId(this.getId());
             addItemEntityPacket.setRuntimeEntityId(this.getId());
-            addItemEntityPacket.setItemInHand(this.getItem().serialize(player.getVersion()));
+            addItemEntityPacket.setItemInHand(ItemUtils.serializeForNetwork(this.getItem(), player.getVersion()));
             addItemEntityPacket.getMetadata().putAll(this.getMetaData().serialize());
             addItemEntityPacket.setPosition(this.getLocation().toVector3f());
             addItemEntityPacket.setMotion(this.getMotion());

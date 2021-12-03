@@ -83,11 +83,11 @@ public interface World extends ChunkManager {
 
     Block getBlock(int x, int y, int z, int layer);
 
-    default Optional<BlockEntity> getBlockEntity(Vector3i blockCoordinates, int layer) {
-        return this.getBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    default Optional<BlockEntity> getBlockEntity(Vector3i blockCoordinates) {
+        return this.getBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
     }
 
-    Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer);
+    Optional<BlockEntity> getBlockEntity(int x, int y, int z);
 
     /**
      * Set a block in this chunk.

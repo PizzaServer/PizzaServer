@@ -6,7 +6,7 @@ import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.player.Player;
 
@@ -67,7 +67,7 @@ public abstract class BaseItemType implements ItemType {
 
     @Override
     public ToolType getToolType() {
-        return ToolTypeRegistry.getToolType(ToolTypeID.NONE);
+        return ToolTypes.getToolType(ToolTypeID.NONE);
     }
 
     @Override

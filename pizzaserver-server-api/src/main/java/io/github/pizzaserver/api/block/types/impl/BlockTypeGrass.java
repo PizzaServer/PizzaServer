@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.block.types.impl;
 
-import io.github.pizzaserver.api.item.ToolTypeRegistry;
+import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
@@ -29,12 +29,12 @@ public class BlockTypeGrass extends BaseBlockType {
 
     @Override
     public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
+        return new HashSet<>(Arrays.asList(ToolTypes.getToolType(ToolTypeID.NONE), ToolTypes.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 
     @Override
     public Set<ToolType> getBestTools(int blockStateIndex) {
-        return new HashSet<>(Arrays.asList(ToolTypeRegistry.getToolType(ToolTypeID.NONE), ToolTypeRegistry.getToolType(ToolTypeID.WOOD_SHOVEL)));
+        return new HashSet<>(Arrays.asList(ToolTypes.getToolType(ToolTypeID.NONE), ToolTypes.getToolType(ToolTypeID.WOOD_SHOVEL)));
     }
 
 }

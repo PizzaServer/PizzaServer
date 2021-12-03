@@ -1,6 +1,7 @@
 package io.github.pizzaserver.server.level.world.chunks;
 
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import com.nukkitx.protocol.bedrock.packet.BlockEventPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
@@ -19,10 +20,13 @@ import io.github.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
+import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
 import java.util.*;
@@ -52,7 +56,7 @@ public class ImplChunk implements Chunk {
 
     // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
-    private final Map<Vector3i, Map<Integer, BlockEntity>> blockEntitiesByLayer = new HashMap<>();
+    private final Map<Vector3i, BlockEntity> blockEntities = new HashMap<>();
 
     // The players who can see this chunk
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
@@ -68,6 +72,13 @@ public class ImplChunk implements Chunk {
         this.z = z;
         this.chunk = chunk;
         this.resetExpiryTime();
+
+        for (NbtMap blockEntityNBT : chunk.getBlockEntityNBTs()) {
+            String blockEntityId = blockEntityNBT.getString("id");
+            BlockEntityType blockEntityType = BlockEntityRegistry.getInstance().getBlockEntityType(blockEntityId);
+
+            this.addBlockEntity(blockEntityType.deserialize(blockEntityNBT));
+        }
     }
 
     @Override
@@ -139,22 +150,13 @@ public class ImplChunk implements Chunk {
     }
 
     public void addBlockEntity(BlockEntity blockEntity) {
-        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
-        if (!this.blockEntitiesByLayer.containsKey(blockCoordinates)) {
-            this.blockEntitiesByLayer.put(blockCoordinates, new HashMap<>());
-        }
-        this.blockEntitiesByLayer.get(blockCoordinates).put(blockEntity.getLayer(), blockEntity);
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getPosition().getX() & 15, blockEntity.getPosition().getY(), blockEntity.getPosition().getZ() & 15);
+        this.blockEntities.put(blockCoordinates, blockEntity);
     }
 
     public void removeBlockEntity(BlockEntity blockEntity) {
-        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
-        if (this.blockEntitiesByLayer.containsKey(blockCoordinates)) {
-            this.blockEntitiesByLayer.get(blockCoordinates).remove(blockEntity.getLayer());
-
-            if (this.blockEntitiesByLayer.get(blockCoordinates).isEmpty()) {
-                this.blockEntitiesByLayer.remove(blockCoordinates);
-            }
-        }
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getPosition().getX() & 15, blockEntity.getPosition().getY(), blockEntity.getPosition().getZ() & 15);
+        this.blockEntities.remove(blockCoordinates);
     }
 
     @Override
@@ -212,13 +214,9 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer) {
+    public Optional<BlockEntity> getBlockEntity(int x, int y, int z) {
         Vector3i blockCoordinate = Vector3i.from(x & 15, y, z & 15);
-        if (!this.blockEntitiesByLayer.containsKey(blockCoordinate)) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(this.blockEntitiesByLayer.get(blockCoordinate).getOrDefault(layer, null));
+        return Optional.ofNullable(this.blockEntities.getOrDefault(blockCoordinate, null));
     }
 
     @Override
@@ -243,7 +241,7 @@ public class ImplChunk implements Chunk {
         }
 
         // Add block entity if one exists for this block
-        Optional<BlockEntityType> blockEntityType = BlockEntityRegistry.getInstance().getBlockEntityType(block.getBlockType());
+        Optional<BlockEntityType> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block.getBlockType());
         if (blockEntityType.isPresent()) {
             BlockEntity blockEntity = blockEntityType.get().create(block);
             this.addBlockEntity(blockEntity);
@@ -368,7 +366,7 @@ public class ImplChunk implements Chunk {
             BlockEntity blockEntity = block.getBlockEntity();
 
             BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-            blockEntityDataPacket.setBlockPosition(blockEntity.getLocation().toVector3i());
+            blockEntityDataPacket.setBlockPosition(blockEntity.getPosition());
             blockEntityDataPacket.setData(blockEntity.getNetworkData());
             player.sendPacket(blockEntityDataPacket);
         }
@@ -392,10 +390,8 @@ public class ImplChunk implements Chunk {
                 entity.tick();
             }
 
-            for (Map<Integer, BlockEntity> blockEntityCoordinateLayer : this.blockEntitiesByLayer.values()) {
-                for (BlockEntity blockEntity : blockEntityCoordinateLayer.values()) {
-                    blockEntity.tick();
-                }
+            for (BlockEntity blockEntity : this.blockEntities.values()) {
+                blockEntity.tick();
             }
 
             List<Vector3i> currentTickBlockUpdates = new ArrayList<>(this.blockUpdates);
@@ -418,9 +414,16 @@ public class ImplChunk implements Chunk {
         // Send the blocks to the player
         Lock readLock = this.lock.writeLock();
         readLock.lock();
+
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         try {
             int subChunkCount = this.chunk.getSubChunkCount();
-            byte[] data = this.chunk.serializeForNetwork(player.getVersion());
+            this.chunk.serializeForNetwork(buffer, player.getVersion());
+
+            // TODO: Write block entities here
+
+            byte[] chunkData = new byte[buffer.readableBytes()];
+            buffer.readBytes(chunkData);
 
             // Ran on the main thread in order because player.getLocation() is not thread safe
             final int packetSubChunkCount = subChunkCount;
@@ -431,7 +434,7 @@ public class ImplChunk implements Chunk {
                     chunkPacket.setChunkX(this.getX());
                     chunkPacket.setChunkZ(this.getZ());
                     chunkPacket.setSubChunksLength(packetSubChunkCount);
-                    chunkPacket.setData(data);
+                    chunkPacket.setData(chunkData);
                     player.sendPacket(chunkPacket);
 
                     this.spawnedTo.add(player);
@@ -450,6 +453,7 @@ public class ImplChunk implements Chunk {
         } catch (IOException exception) {
             this.getWorld().getServer().getLogger().error("Failed to serialize blocks", exception);
         } finally {
+            buffer.release();
             readLock.unlock();
         }
     }

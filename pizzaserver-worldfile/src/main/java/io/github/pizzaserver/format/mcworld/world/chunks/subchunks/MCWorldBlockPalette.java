@@ -8,10 +8,9 @@ import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
-import io.github.pizzaserver.format.BlockRuntimeMapper;
+import io.github.pizzaserver.format.MinecraftDataMapper;
 import io.github.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
@@ -118,8 +117,7 @@ public class MCWorldBlockPalette implements BlockPalette {
     }
 
     @Override
-    public byte[] serializeForDisk() throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+    public void serializeForDisk(ByteBuf buffer) throws IOException {
         Set<BlockPalette.Entry> entries = this.getEntries();
         buffer.writeIntLE(entries.size());
         try (NBTOutputStream outputStream = NbtUtils.createWriterLE(new ByteBufOutputStream(buffer))) {
@@ -132,29 +130,19 @@ public class MCWorldBlockPalette implements BlockPalette {
 
                 outputStream.writeTag(compound);
             }
-            byte[] serialized = new byte[buffer.readableBytes()];
-            buffer.readBytes(serialized);
-
-            return serialized;
         } catch (IOException exception) {
             throw new IOException("Failed to serialize chunk to disk", exception);
         }
     }
 
     @Override
-    public byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+    public void serializeForNetwork(ByteBuf buffer, MinecraftDataMapper runtimeMapper) {
         Set<BlockPalette.Entry> entries = this.getEntries();
         VarInts.writeInt(buffer, entries.size());
         for (BlockPalette.Entry data : entries) {
             int id = runtimeMapper.getBlockRuntimeId(data.getId(), data.getState());
             VarInts.writeInt(buffer, id);
         }
-        byte[] serialized = new byte[buffer.readableBytes()];
-        buffer.readBytes(serialized);
-        buffer.release();
-
-        return serialized;
     }
 
 

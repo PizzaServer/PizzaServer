@@ -145,10 +145,10 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public Optional<BlockEntity> getBlockEntity(int x, int y, int z, int layer) {
+    public Optional<BlockEntity> getBlockEntity(int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        return this.getChunk(chunkX, chunkZ).getBlockEntity(x & 15, y, z & 15, layer);
+        return this.getChunk(chunkX, chunkZ).getBlockEntity(x & 15, y, z & 15);
     }
 
     @Override

@@ -1,28 +1,21 @@
 package io.github.pizzaserver.api.blockentity;
 
-import io.github.pizzaserver.api.block.Block;
+import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.utils.BlockLocation;
-
-import java.util.Set;
 
 public abstract class BaseBlockEntity implements BlockEntity {
 
-    protected final Block block;
+    protected Vector3i blockPosition;
 
 
-    public BaseBlockEntity(Block block) {
-        this.block = block;
+    public BaseBlockEntity(Vector3i blockPosition) {
+        this.blockPosition = blockPosition;
     }
 
     @Override
-    public BlockLocation getLocation() {
-        return this.block.getLocation();
-    }
-
-    @Override
-    public int getLayer() {
-        return this.block.getLayer();
+    public Vector3i getPosition() {
+        return this.blockPosition;
     }
 
     @Override
@@ -46,8 +39,13 @@ public abstract class BaseBlockEntity implements BlockEntity {
     }
 
     @Override
-    public Set<Player> getViewers() {
-        return this.getLocation().getChunk().getViewers();
+    public NbtMap getNetworkData() {
+        return this.getType().serializeForNetwork(this);
+    }
+
+    @Override
+    public NbtMap getDiskData() {
+        return this.getType().serializeForDisk(this);
     }
 
 }

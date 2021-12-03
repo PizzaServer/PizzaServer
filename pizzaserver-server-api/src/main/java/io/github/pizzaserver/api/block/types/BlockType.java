@@ -7,6 +7,7 @@ import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.block.types.data.PushResponse;
+import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
@@ -213,6 +214,21 @@ public interface BlockType {
      * @return the block to replace this block with after it is mined.
      */
     Block getResultBlock(int blockStateIndex);
+
+    /**
+     * Called when a player places a block but before the block place event is called.
+     * Useful for player dependent blockstates. (e.g. direction)
+     * @param player player who placed the block
+     * @param block the block being placed
+     */
+    void prepareBlock(Player player, Block block);
+
+    /**
+     * Called after the block is placed in the world.
+     * @param player the player who placed this block
+     * @param block the block being placed
+     */
+    void onPlace(Player player, Block block);
 
     /**
      * Called when the right click button is used against this block.

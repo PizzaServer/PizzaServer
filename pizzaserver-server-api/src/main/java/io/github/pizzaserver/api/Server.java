@@ -8,7 +8,6 @@ import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.level.LevelManager;
 import io.github.pizzaserver.api.event.EventManager;
@@ -128,9 +127,7 @@ public abstract class Server {
 
     public abstract BossBar createBossBar();
 
-    public EntityInventory createInventory(Entity entity, ContainerType containerType) {
-        return this.createInventory(entity, containerType, InventoryUtils.getSlotCount(containerType));
-    }
+    public abstract EntityInventory createInventory(Entity entity, ContainerType containerType);
 
     /**
      * Create an inventory for an entity.
@@ -141,9 +138,7 @@ public abstract class Server {
      */
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType, int size);
 
-    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType) {
-        return this.createInventory(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
-    }
+    public abstract BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType);
 
     /**
      * Create an inventory for a block entity.

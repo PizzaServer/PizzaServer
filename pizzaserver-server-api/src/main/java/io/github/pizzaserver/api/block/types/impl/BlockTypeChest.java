@@ -5,8 +5,13 @@ import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
+import io.github.pizzaserver.api.item.ToolTypes;
+import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.data.ToolTypeID;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 public class BlockTypeChest extends BaseBlockType {
 
@@ -39,6 +44,16 @@ public class BlockTypeChest extends BaseBlockType {
     @Override
     public BiMap<NbtMap, Integer> getBlockStates() {
         return BLOCK_STATES;
+    }
+
+    @Override
+    public Set<ToolType> getCorrectTools(int blockStateIndex) {
+        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_AXE));
+    }
+
+    @Override
+    public Set<ToolType> getBestTools(int blockStateIndex) {
+        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_AXE));
     }
 
 }

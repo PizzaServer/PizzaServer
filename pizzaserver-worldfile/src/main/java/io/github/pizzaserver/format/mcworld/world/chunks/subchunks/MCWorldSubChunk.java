@@ -2,10 +2,9 @@ package io.github.pizzaserver.format.mcworld.world.chunks.subchunks;
 
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockLayer;
-import io.github.pizzaserver.format.BlockRuntimeMapper;
+import io.github.pizzaserver.format.MinecraftDataMapper;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -91,33 +90,21 @@ public class MCWorldSubChunk implements BedrockSubChunk {
     }
 
     @Override
-    public synchronized byte[] serializeForDisk() throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+    public synchronized void serializeForDisk(ByteBuf buffer) throws IOException {
         buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
         buffer.writeByte(this.layers.size());
         for (BlockLayer layer : this.layers) {
-            buffer.writeBytes(layer.serializeForDisk());
+            layer.serializeForDisk(buffer);
         }
-
-        byte[] serialized = new byte[buffer.readableBytes()];
-        buffer.readBytes(serialized);
-        buffer.release();
-        return serialized;
     }
 
     @Override
-    public synchronized byte[] serializeForNetwork(BlockRuntimeMapper runtimeMapper) throws IOException {
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+    public synchronized void serializeForNetwork(ByteBuf buffer, MinecraftDataMapper runtimeMapper) throws IOException {
         buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
         buffer.writeByte(this.layers.size());
         for (BlockLayer layer : this.layers) {
-            buffer.writeBytes(layer.serializeForNetwork(runtimeMapper));
+            layer.serializeForNetwork(buffer, runtimeMapper);
         }
-
-        byte[] serialized = new byte[buffer.readableBytes()];
-        buffer.readBytes(serialized);
-        buffer.release();
-        return serialized;
     }
 
 }
