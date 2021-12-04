@@ -9,6 +9,8 @@ import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityCauldron;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,21 +29,22 @@ public class BlockEntityTypeCauldron implements BlockEntityType {
 
     @Override
     public BlockEntityCauldron create(Block block) {
-        return new BlockEntityCauldron(block.getLocation().toVector3i());
+        return new BlockEntityCauldron(block.getLocation());
     }
 
     @Override
-    public BlockEntityCauldron deserialize(NbtMap diskNBT) {
-        return new BlockEntityCauldron(Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z")));
+    public BlockEntityCauldron deserializeDisk(World world, NbtMap diskNBT) {
+        return new BlockEntityCauldron(new BlockLocation(world,
+                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
+                .putInt("x", blockEntity.getLocation().getX())
+                .putInt("y", blockEntity.getLocation().getY())
+                .putInt("z", blockEntity.getLocation().getZ())
                 .putShort("PotionType", (short) -1)
                 .putShort("PotionId", (short) -1)
                 .putBoolean("IsSplash", false)
@@ -50,17 +53,8 @@ public class BlockEntityTypeCauldron implements BlockEntityType {
     }
 
     @Override
-    public NbtMap serializeForNetwork(BlockEntity blockEntity) {
-        return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
-                .putShort("PotionType", (short) -1)
-                .putShort("PotionId", (short) -1)
-                .putBoolean("IsSplash", false)
-                .build();
-        // TODO: Cauldrons can have a custom RGB color
+    public NbtMap serializeForNetwork(NbtMap diskNBT) {
+        return diskNBT;
     }
 
 }

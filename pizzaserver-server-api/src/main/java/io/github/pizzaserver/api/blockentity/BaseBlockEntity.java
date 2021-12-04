@@ -1,26 +1,44 @@
 package io.github.pizzaserver.api.blockentity;
 
-import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 public abstract class BaseBlockEntity implements BlockEntity {
 
-    protected Vector3i blockPosition;
+    protected BlockLocation blockPosition;
+
+    protected boolean updated;
 
 
-    public BaseBlockEntity(Vector3i blockPosition) {
+    public BaseBlockEntity(BlockLocation blockPosition) {
         this.blockPosition = blockPosition;
     }
 
     @Override
-    public Vector3i getPosition() {
+    public BlockLocation getLocation() {
         return this.blockPosition;
     }
 
     @Override
     public void tick() {
 
+    }
+
+    /**
+     * Mark this block entity to be updated to viewers.
+     */
+    public void update() {
+        this.updated = true;
+    }
+
+    @Override
+    public boolean requestedUpdate() {
+        if (this.updated) {
+            this.updated = false;
+            return true;
+        }
+        return false;
     }
 
     @Override

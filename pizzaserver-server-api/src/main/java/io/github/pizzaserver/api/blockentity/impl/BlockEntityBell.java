@@ -1,16 +1,16 @@
 package io.github.pizzaserver.api.blockentity.impl;
 
-import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.blockentity.BaseBlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 public class BlockEntityBell extends BaseBlockEntity {
 
     public static final String ID = "Bell";
 
 
-    public BlockEntityBell(Vector3i blockPosition) {
+    public BlockEntityBell(BlockLocation blockPosition) {
         super(blockPosition);
     }
 

@@ -16,6 +16,10 @@ public class BlockLocation {
     private final int layer;
 
 
+    public BlockLocation(World world, Vector3i vector3i) {
+        this(world, vector3i.getX(), vector3i.getY(), vector3i.getZ(), 0);
+    }
+
     public BlockLocation(World world, Vector3i vector3i, int layer) {
         this(world, vector3i.getX(), vector3i.getY(), vector3i.getZ(), layer);
     }

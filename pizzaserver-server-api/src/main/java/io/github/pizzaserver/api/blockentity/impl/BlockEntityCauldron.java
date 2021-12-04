@@ -4,13 +4,14 @@ import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.blockentity.BaseBlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 public class BlockEntityCauldron extends BaseBlockEntity {
 
     public static final String ID = "Cauldron";
 
 
-    public BlockEntityCauldron(Vector3i blockPosition) {
+    public BlockEntityCauldron(BlockLocation blockPosition) {
         super(blockPosition);
     }
 

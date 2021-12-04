@@ -9,6 +9,8 @@ import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityMobSpawner;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,22 +29,23 @@ public class BlockEntityTypeMobSpawner implements BlockEntityType {
 
     @Override
     public BlockEntityMobSpawner create(Block block) {
-        return new BlockEntityMobSpawner(block.getLocation().toVector3i());
+        return new BlockEntityMobSpawner(block.getLocation());
     }
 
     @Override
-    public BlockEntityMobSpawner deserialize(NbtMap diskNBT) {
-        return new BlockEntityMobSpawner(Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z")));
+    public BlockEntityMobSpawner deserializeDisk(World world, NbtMap diskNBT) {
+        return new BlockEntityMobSpawner(new BlockLocation(world,
+                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
-                .putInt("EntityId", 0)
+                .putInt("x", blockEntity.getLocation().getX())
+                .putInt("y", blockEntity.getLocation().getY())
+                .putInt("z", blockEntity.getLocation().getZ())
+                .putString("EntityIdentifier", "")
                 .putFloat("DisplayEntityWidth", 1)
                 .putFloat("DisplayEntityHeight", 1)
                 .putFloat("DisplayEntityScale", 1)
@@ -51,12 +54,12 @@ public class BlockEntityTypeMobSpawner implements BlockEntityType {
     }
 
     @Override
-    public NbtMap serializeForNetwork(BlockEntity blockEntity) {
+    public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
+                .putInt("x", diskNBT.getInt("x"))
+                .putInt("y", diskNBT.getInt("y"))
+                .putInt("z", diskNBT.getInt("z"))
                 .putInt("EntityId", 0)
                 .putFloat("DisplayEntityWidth", 1)
                 .putFloat("DisplayEntityHeight", 1)

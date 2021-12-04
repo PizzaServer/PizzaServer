@@ -4,13 +4,14 @@ import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.blockentity.BaseBlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 public class BlockEntityFurnace extends BaseBlockEntity {
 
     public static final String ID = "Furnace";
 
 
-    public BlockEntityFurnace(Vector3i blockPosition) {
+    public BlockEntityFurnace(BlockLocation blockPosition) {
         super(blockPosition);
     }
 

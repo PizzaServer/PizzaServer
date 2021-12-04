@@ -8,7 +8,6 @@ import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
@@ -75,9 +74,9 @@ public class ImplChunk implements Chunk {
 
         for (NbtMap blockEntityNBT : chunk.getBlockEntityNBTs()) {
             String blockEntityId = blockEntityNBT.getString("id");
-            BlockEntityType blockEntityType = BlockEntityRegistry.getInstance().getBlockEntityType(blockEntityId);
+            BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
 
-            this.addBlockEntity(blockEntityType.deserialize(blockEntityNBT));
+            this.addBlockEntity(blockEntityType.deserializeDisk(this.getWorld(), blockEntityNBT));
         }
     }
 
@@ -150,12 +149,12 @@ public class ImplChunk implements Chunk {
     }
 
     public void addBlockEntity(BlockEntity blockEntity) {
-        Vector3i blockCoordinates = Vector3i.from(blockEntity.getPosition().getX() & 15, blockEntity.getPosition().getY(), blockEntity.getPosition().getZ() & 15);
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
         this.blockEntities.put(blockCoordinates, blockEntity);
     }
 
     public void removeBlockEntity(BlockEntity blockEntity) {
-        Vector3i blockCoordinates = Vector3i.from(blockEntity.getPosition().getX() & 15, blockEntity.getPosition().getY(), blockEntity.getPosition().getZ() & 15);
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
         this.blockEntities.remove(blockCoordinates);
     }
 
@@ -364,12 +363,15 @@ public class ImplChunk implements Chunk {
 
         if (block.getBlockEntity() != null) {
             BlockEntity blockEntity = block.getBlockEntity();
-
-            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-            blockEntityDataPacket.setBlockPosition(blockEntity.getPosition());
-            blockEntityDataPacket.setData(blockEntity.getNetworkData());
-            player.sendPacket(blockEntityDataPacket);
+            this.sendBlockEntityData(player, blockEntity);
         }
+    }
+
+    protected void sendBlockEntityData(Player player, BlockEntity blockEntity) {
+        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+        blockEntityDataPacket.setBlockPosition(blockEntity.getLocation().toVector3i());
+        blockEntityDataPacket.setData(blockEntity.getNetworkData());
+        player.sendPacket(blockEntityDataPacket);
     }
 
     /**
@@ -392,6 +394,11 @@ public class ImplChunk implements Chunk {
 
             for (BlockEntity blockEntity : this.blockEntities.values()) {
                 blockEntity.tick();
+                if (blockEntity.requestedUpdate()) {
+                    for (Player player : this.getViewers()) {
+                        this.sendBlockEntityData(player, blockEntity);
+                    }
+                }
             }
 
             List<Vector3i> currentTickBlockUpdates = new ArrayList<>(this.blockUpdates);

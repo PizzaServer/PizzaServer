@@ -30,7 +30,7 @@ public class ImplBlockEntityInventory extends BaseInventory implements BlockEnti
     @Override
     public boolean canBeOpenedBy(Player player) {
         return super.canBeOpenedBy(player) && player.getWorld()
-                .getBlockEntity(this.getBlockEntity().getPosition())
+                .getBlockEntity(this.getBlockEntity().getLocation().toVector3i())
                 .filter(otherBlockEntity -> otherBlockEntity.equals(this.getBlockEntity()))
                 .isPresent();
     }
@@ -39,7 +39,7 @@ public class ImplBlockEntityInventory extends BaseInventory implements BlockEnti
     public boolean closeFor(Player player) {
         if (super.closeFor(player)) {
             if (this.getBlockEntity() instanceof BlockEntityContainer && this.getViewers().isEmpty()) {
-                player.getWorld().addBlockEvent(this.getBlockEntity().getPosition(), 1, 0);
+                player.getWorld().addBlockEvent(this.getBlockEntity().getLocation().toVector3i(), 1, 0);
             }
             return true;
         }
@@ -56,7 +56,7 @@ public class ImplBlockEntityInventory extends BaseInventory implements BlockEnti
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.setId((byte) this.getId());
         containerOpenPacket.setType(this.getContainerType());
-        containerOpenPacket.setBlockPosition(this.getBlockEntity().getPosition());
+        containerOpenPacket.setBlockPosition(this.getBlockEntity().getLocation().toVector3i());
         player.sendPacket(containerOpenPacket);
 
         this.sendSlots(player);

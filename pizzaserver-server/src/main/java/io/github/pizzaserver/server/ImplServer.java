@@ -3,6 +3,7 @@ package io.github.pizzaserver.server;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
@@ -52,7 +53,7 @@ public class ImplServer extends Server {
     private final BlockRegistry blockRegistry = new ImplBlockRegistry();
     private final ItemRegistry itemRegistry = new ImplItemRegistry();
     private final EntityRegistry entityRegistry = new ImplEntityRegistry();
-    private final ImplBlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
+    private final BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
 
     private final BedrockNetworkServer network = new BedrockNetworkServer(this);
     private final Set<PlayerSession> sessions = Collections.synchronizedSet(new HashSet<>());
@@ -412,8 +413,9 @@ public class ImplServer extends Server {
         return this.entityRegistry;
     }
 
+    @Override
     public ImplBlockEntityRegistry getBlockEntityRegistry() {
-        return this.blockEntityRegistry;
+        return (ImplBlockEntityRegistry) this.blockEntityRegistry;
     }
 
     /**

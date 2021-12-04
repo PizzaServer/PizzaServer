@@ -10,6 +10,8 @@ import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityFurnace;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,21 +38,22 @@ public class BlockEntityTypeFurnace implements BlockEntityType {
 
     @Override
     public BlockEntityFurnace create(Block block) {
-        return new BlockEntityFurnace(block.getLocation().toVector3i());
+        return new BlockEntityFurnace(block.getLocation());
     }
 
     @Override
-    public BlockEntityFurnace deserialize(NbtMap diskNBT) {
-        return new BlockEntityFurnace(Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z")));
+    public BlockEntityFurnace deserializeDisk(World world, NbtMap diskNBT) {
+        return new BlockEntityFurnace(new BlockLocation(world,
+                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
+                .putInt("x", blockEntity.getLocation().getX())
+                .putInt("y", blockEntity.getLocation().getY())
+                .putInt("z", blockEntity.getLocation().getZ())
                 .putShort("CookTime", (short) 0)
                 .putShort("BurnTime", (short) 0)
                 .putShort("BurnDuration", (short) 0)
@@ -60,12 +63,12 @@ public class BlockEntityTypeFurnace implements BlockEntityType {
     }
 
     @Override
-    public NbtMap serializeForNetwork(BlockEntity blockEntity) {
+    public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
+                .putInt("x", diskNBT.getInt("x"))
+                .putInt("y", diskNBT.getInt("y"))
+                .putInt("z", diskNBT.getInt("z"))
                 .putShort("CookTime", (short) 0)
                 .putShort("BurnTime", (short) 0)
                 .putShort("BurnDuration", (short) 0)

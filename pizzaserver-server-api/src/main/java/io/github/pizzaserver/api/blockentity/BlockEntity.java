@@ -1,21 +1,28 @@
 package io.github.pizzaserver.api.blockentity;
 
-import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 public interface BlockEntity {
 
     BlockEntityType getType();
 
-    Vector3i getPosition();
+    BlockLocation getLocation();
 
     NbtMap getNetworkData();
 
     NbtMap getDiskData();
 
     void tick();
+
+    /**
+     * If this block entity was updated.
+     * Querying this will set the update request to false.
+     * @return if the block entity was updated
+     */
+    boolean requestedUpdate();
 
     boolean onInteract(Player player);
 

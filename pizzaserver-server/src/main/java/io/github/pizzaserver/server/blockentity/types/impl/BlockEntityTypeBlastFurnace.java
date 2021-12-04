@@ -35,42 +35,7 @@ public class BlockEntityTypeBlastFurnace extends BlockEntityTypeFurnace {
 
     @Override
     public BlockEntityBlastFurnace create(Block block) {
-        return new BlockEntityBlastFurnace(block.getLocation().toVector3i());
-    }
-
-    @Override
-    public BlockEntityBlastFurnace deserialize(NbtMap diskNBT) {
-        return new BlockEntityBlastFurnace(Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z")));
-    }
-
-    @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
-        return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
-                .putShort("CookTime", (short) 0)
-                .putShort("BurnTime", (short) 0)
-                .putShort("BurnDuration", (short) 0)
-                .putList("Items", NbtType.COMPOUND, Collections.emptyList())
-                .build();
-        // TODO: proper serialization
-    }
-
-    @Override
-    public NbtMap serializeForNetwork(BlockEntity blockEntity) {
-        return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
-                .putShort("CookTime", (short) 0)
-                .putShort("BurnTime", (short) 0)
-                .putShort("BurnDuration", (short) 0)
-                .putList("Items", NbtType.COMPOUND, Collections.emptyList())
-                .build();
-        // TODO: proper serialization
+        return new BlockEntityBlastFurnace(block.getLocation());
     }
 
 }

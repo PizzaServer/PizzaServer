@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.blockentity;
 
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.block.types.BlockType;
+import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 
 import java.util.Optional;
 

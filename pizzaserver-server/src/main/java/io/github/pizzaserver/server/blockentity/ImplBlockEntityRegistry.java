@@ -35,11 +35,6 @@ public class ImplBlockEntityRegistry implements BlockEntityRegistry {
         return entities.get(blockEntityId);
     }
 
-    /**
-     * Retrieves the block entity type equivalent of a block type if one exists.
-     * @param blockType block type to look for
-     * @return block entity type if any exists
-     */
     @Override
     public Optional<BlockEntityType> getBlockEntityType(BlockType blockType) {
         return Optional.ofNullable(entitiesByBlockTypeId.getOrDefault(blockType.getBlockId(), null));

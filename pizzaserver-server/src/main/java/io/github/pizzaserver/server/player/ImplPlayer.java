@@ -29,7 +29,6 @@ import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
-import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
@@ -368,7 +367,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     @Override
     public boolean canReach(BlockEntity blockEntity) {
-        return this.canReach(blockEntity.getPosition(), this.inCreativeMode() ? 13 : 7);
+        return this.canReach(blockEntity.getLocation().toVector3f(), this.inCreativeMode() ? 13 : 7);
     }
 
     @Override

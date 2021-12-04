@@ -9,6 +9,8 @@ import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityCampfire;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,32 +37,33 @@ public class BlockEntityTypeCampfire implements BlockEntityType {
 
     @Override
     public BlockEntityCampfire create(Block block) {
-        return new BlockEntityCampfire(block.getLocation().toVector3i());
+        return new BlockEntityCampfire(block.getLocation());
     }
 
     @Override
-    public BlockEntityCampfire deserialize(NbtMap diskNBT) {
-        return new BlockEntityCampfire(Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z")));
+    public BlockEntity deserializeDisk(World world, NbtMap diskNBT) {
+        return new BlockEntityCampfire(new BlockLocation(world,
+                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
+                .putInt("x", blockEntity.getLocation().getX())
+                .putInt("y", blockEntity.getLocation().getY())
+                .putInt("z", blockEntity.getLocation().getZ())
                 .build();
         // TODO: proper serialization
     }
 
     @Override
-    public NbtMap serializeForNetwork(BlockEntity blockEntity) {
+    public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getPosition().getX())
-                .putInt("y", blockEntity.getPosition().getY())
-                .putInt("z", blockEntity.getPosition().getZ())
+                .putInt("x", diskNBT.getInt("x"))
+                .putInt("y", diskNBT.getInt("y"))
+                .putInt("z", diskNBT.getInt("z"))
                 .build();
         // TODO: proper serialization
     }

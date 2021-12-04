@@ -4,13 +4,14 @@ import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.blockentity.BaseBlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.utils.BlockLocation;
 
 public class BlockEntityCampfire extends BaseBlockEntity {
 
     public static final String ID = "Campfire";
 
 
-    public BlockEntityCampfire(Vector3i blockLocation) {
+    public BlockEntityCampfire(BlockLocation blockLocation) {
         super(blockLocation);
     }
 
