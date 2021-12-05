@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class ToolTypes {
 
+    private ToolTypes() {}
+
     private static final Map<String, ToolType> types = new HashMap<String, ToolType>() {
         {
             this.put(ToolTypeID.NONE, new ToolType(null, null, 1));

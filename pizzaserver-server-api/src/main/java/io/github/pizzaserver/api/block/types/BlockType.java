@@ -221,7 +221,7 @@ public interface BlockType {
      * @param player player who placed the block
      * @param block the block being placed
      */
-    void prepareBlock(Player player, Block block);
+    void prepareBlockForPlacement(Player player, Block block);
 
     /**
      * Called after the block is placed in the world.

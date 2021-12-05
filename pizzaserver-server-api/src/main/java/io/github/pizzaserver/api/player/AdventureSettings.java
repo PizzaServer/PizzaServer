@@ -7,23 +7,23 @@ public interface AdventureSettings {
 
     boolean isWorldImmutable();
 
-    void setWorldImmutable(boolean enabled);
+    AdventureSettings setWorldImmutable(boolean enabled);
 
     boolean canAutoJump();
 
-    void setAutoJump(boolean enabled);
+    AdventureSettings setAutoJump(boolean enabled);
 
     boolean hasNoClip();
 
-    void setNoClip(boolean enabled);
+    AdventureSettings setNoClip(boolean enabled);
 
     boolean canFly();
 
-    void setCanFly(boolean enabled);
+    AdventureSettings setCanFly(boolean enabled);
 
     boolean isFlying();
 
-    void setIsFlying(boolean enabled);
+    AdventureSettings setIsFlying(boolean enabled);
 
     /**
      * If this player bypasses the world immutable check.
@@ -35,50 +35,50 @@ public interface AdventureSettings {
      * Set if this player bypasses the world immutable check.
      * @param enabled if this player bypasses the world immutable check.
      */
-    void setIsWorldBuilder(boolean enabled);
+    AdventureSettings setIsWorldBuilder(boolean enabled);
 
     boolean isMuted();
 
-    void setIsMuted(boolean enabled);
+    AdventureSettings setIsMuted(boolean enabled);
 
     boolean canMine();
 
-    void setCanMine(boolean enabled);
+    AdventureSettings setCanMine(boolean enabled);
 
     boolean canBuild();
 
-    void setCanBuild(boolean enabled);
+    AdventureSettings setCanBuild(boolean enabled);
 
     boolean canUseDoorsAndSwitches();
 
-    void setCanUseDoorsAndSwitches(boolean enabled);
+    AdventureSettings setCanUseDoorsAndSwitches(boolean enabled);
 
     boolean canOpenContainers();
 
-    void setCanOpenContainers(boolean enabled);
+    AdventureSettings setCanOpenContainers(boolean enabled);
 
     boolean canAttackPlayers();
 
-    void setCanAttackPlayers(boolean enabled);
+    AdventureSettings setCanAttackPlayers(boolean enabled);
 
     boolean canAttackMobs();
 
-    void setCanAttackMobs(boolean enabled);
+    AdventureSettings setCanAttackMobs(boolean enabled);
 
     boolean isOperator();
 
-    void setIsOperator(boolean enabled);
+    AdventureSettings setIsOperator(boolean enabled);
 
     boolean canTeleport();
 
-    void setCanTeleport(boolean enabled);
+    AdventureSettings setCanTeleport(boolean enabled);
 
     CommandPermission getCommandPermission();
 
-    void setCommandPermission(CommandPermission commandPermission);
+    AdventureSettings setCommandPermission(CommandPermission commandPermission);
 
     PlayerPermission getPlayerPermission();
 
-    void setPlayerPermission(PlayerPermission playerPermission);
+    AdventureSettings setPlayerPermission(PlayerPermission playerPermission);
 
 }

@@ -80,7 +80,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected Inventory openInventory = null;
 
     protected Gamemode gamemode;
-    protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings();
+    protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings(this);
 
     protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
 
@@ -99,8 +99,9 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.skin = loginData.getSkin();
         this.inventory = new ImplPlayerInventory(this);
 
-        this.setDisplayName(this.getUsername());
         this.physicsEngine.setPositionUpdate(false);
+
+        this.setDisplayName(this.getUsername());
 
         // Players will die at any health lower than 0.5
         this.getAttribute(AttributeType.HEALTH).setMinimumValue(0.5f);
@@ -289,13 +290,22 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
     @Override
     public void setGamemode(Gamemode gamemode) {
-        this.gamemode = gamemode;
+        if (gamemode != this.gamemode) {
+            boolean wasCreativeMode = this.gamemode.equals(Gamemode.CREATIVE);
 
-        if (this.hasSpawned()) {
-            SetPlayerGameTypePacket setPlayerGamemodePacket = new SetPlayerGameTypePacket();
-            setPlayerGamemodePacket.setGamemode(gamemode.ordinal());
-            this.sendPacket(setPlayerGamemodePacket);
-            this.updateAdventureSettings();
+            this.gamemode = gamemode;
+
+            if (this.hasSpawned()) {
+                SetPlayerGameTypePacket setPlayerGamemodePacket = new SetPlayerGameTypePacket();
+                setPlayerGamemodePacket.setGamemode(gamemode.ordinal());
+                this.sendPacket(setPlayerGamemodePacket);
+            }
+
+            if (wasCreativeMode) {
+                this.getAdventureSettings().setCanFly(false);
+            } else if (this.gamemode == Gamemode.CREATIVE) {
+                this.getAdventureSettings().setCanFly(true);
+            }
         }
     }
 
@@ -314,34 +324,9 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         return this.getGamemode() == Gamemode.SURVIVAL;
     }
 
-    /**
-     * Updates the adventure settings based off of the current gamemode.
-     */
-    protected void updateAdventureSettings() {
-        AdventureSettings adventureSettings = this.getAdventureSettings();
-        adventureSettings.setCanFly(this.getGamemode().equals(Gamemode.CREATIVE));
-        if (adventureSettings.isFlying()) {
-            adventureSettings.setIsFlying(this.getGamemode().equals(Gamemode.CREATIVE));
-        }
-        this.setAdventureSettings(adventureSettings);
-    }
-
     @Override
-    public AdventureSettings getAdventureSettings() {
-        return this.adventureSettings.clone();
-    }
-
-    @Override
-    public void setAdventureSettings(AdventureSettings adventureSettings) {
-        ImplAdventureSettings settings = (ImplAdventureSettings) adventureSettings;
-        this.adventureSettings = settings;
-
-        AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
-        adventureSettingsPacket.setUniqueEntityId(this.getId());
-        adventureSettingsPacket.setPlayerPermission(settings.getPlayerPermission());
-        adventureSettingsPacket.setCommandPermission(settings.getCommandPermission());
-        adventureSettingsPacket.getSettings().addAll(settings.getSettings());
-        this.sendPacket(adventureSettingsPacket);
+    public ImplAdventureSettings getAdventureSettings() {
+        return this.adventureSettings;
     }
 
     public void onLocallyInitialized() {
@@ -950,7 +935,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
                 .putFlag(EntityFlag.BREATHING, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
-        this.updateAdventureSettings();
+        this.getAdventureSettings().send();
 
         SetTimePacket setTimePacket = new SetTimePacket();
         setTimePacket.setTime(this.getWorld().getTime());

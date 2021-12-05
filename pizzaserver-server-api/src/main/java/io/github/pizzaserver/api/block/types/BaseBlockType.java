@@ -185,7 +185,7 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public void prepareBlock(Player player, Block block) {}
+    public void prepareBlockForPlacement(Player player, Block block) {}
 
     @Override
     public void onPlace(Player player, Block block) {}

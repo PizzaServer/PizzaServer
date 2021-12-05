@@ -50,8 +50,6 @@ public interface Player extends HumanEntity {
 
     AdventureSettings getAdventureSettings();
 
-    void setAdventureSettings(AdventureSettings adventureSettings);
-
     boolean canReach(Entity entity);
 
     boolean canReach(BlockEntity blockEntity);
