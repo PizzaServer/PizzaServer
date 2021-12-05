@@ -250,7 +250,6 @@ public class GamePacketHandler implements BedrockPacketHandler {
                     adventureSettings.setIsFlying(false);
                 }
             }
-            this.player.setAdventureSettings(adventureSettings);
         }
         return true;
     }

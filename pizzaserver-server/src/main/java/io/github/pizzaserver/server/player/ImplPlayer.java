@@ -291,7 +291,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     @Override
     public void setGamemode(Gamemode gamemode) {
         if (gamemode != this.gamemode) {
-            boolean wasCreativeMode = this.gamemode.equals(Gamemode.CREATIVE);
+            boolean wasCreativeMode = this.gamemode == Gamemode.CREATIVE;
 
             this.gamemode = gamemode;
 

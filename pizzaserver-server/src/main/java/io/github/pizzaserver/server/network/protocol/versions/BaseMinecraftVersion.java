@@ -13,7 +13,6 @@ import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
-import io.github.pizzaserver.commons.utils.Tuple;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.protocol.exceptions.ProtocolException;
 
@@ -25,20 +24,9 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     protected static final Gson GSON = new Gson();
 
-    // GLOBAL_BLOCK_STATES stores all possible block states and their indexes
-    // the purpose of this is to reduce memory usage
-    // when loading the block states for each version
-    // as many of them have duplicate id and NBT
-    // by storing the integer rather than the tuple into
-    // this.blockStates, we can reduce the amount of memory allocated
-    // for the tuple and its properties since multiple versions
-    // no longer have to recreate a tuple that would use more space
-    // than an integer
-    protected static final BiMap<Tuple<String, NbtMap>, Integer> GLOBAL_BLOCK_STATES = HashBiMap.create();
-
     protected NbtMap biomesDefinitions;
     protected NbtMap availableEntities;
-    protected final BiMap<Integer, Integer> blockStates = HashBiMap.create();
+    protected final BiMap<BlockStateData, Integer> blockStates = HashBiMap.create();
     protected final List<BlockPropertyData> customBlockProperties = new ArrayList<>();
     protected final BiMap<String, Integer> itemRuntimeIds = HashBiMap.create();
     protected final List<StartGamePacket.ItemEntry> itemEntries = new ArrayList<>();
@@ -69,14 +57,8 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     @Override
     public int getBlockRuntimeId(String name, NbtMap state) {
-        Tuple<String, NbtMap> key = new Tuple<>(name, state);
-
-        if (!GLOBAL_BLOCK_STATES.containsKey(key)) {
-            throw new ProtocolException(this, "No such block runtime id exists for: " + name);
-        }
-
-        int blockStateLookupId = GLOBAL_BLOCK_STATES.get(new Tuple<>(name, state));
-        return this.blockStates.get(blockStateLookupId);
+        BlockStateData key = new BlockStateData(name, state);
+        return this.blockStates.get(key);
     }
 
     @Override
@@ -85,12 +67,11 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
             throw new ProtocolException(this, "No such block state exists for runtime id: " + blockRuntimeId);
         }
 
-        int blockStateLookupId = this.blockStates.inverse().get(blockRuntimeId);
-        Tuple<String, NbtMap> blockData = GLOBAL_BLOCK_STATES.inverse().get(blockStateLookupId);
+        BlockStateData blockStateData = this.blockStates.inverse().get(blockRuntimeId);
 
-        if (BlockRegistry.getInstance().hasBlockType(blockData.getObjectA())) {
-            BlockType blockType = BlockRegistry.getInstance().getBlockType(blockData.getObjectA());
-            return blockType.create(blockType.getBlockStateIndex(blockData.getObjectB()));
+        if (BlockRegistry.getInstance().hasBlockType(blockStateData.getBlockId())) {
+            BlockType blockType = BlockRegistry.getInstance().getBlockType(blockStateData.getBlockId());
+            return blockType.create(blockType.getBlockStateIndex(blockStateData.getNBT()));
         } else {
             return null;
         }
@@ -144,6 +125,42 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     @Override
     public List<ComponentItemData> getItemComponents() {
         return Collections.unmodifiableList(this.itemComponents);
+    }
+
+    protected static class BlockStateData {
+
+        private final String blockId;
+        private final NbtMap nbtData;
+
+
+        public BlockStateData(String blockId, NbtMap nbtData) {
+            this.blockId = blockId;
+            this.nbtData = nbtData;
+        }
+
+        public String getBlockId() {
+            return this.blockId;
+        }
+
+        public NbtMap getNBT() {
+            return this.nbtData;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.nbtData.hashCode() * 43 + this.getBlockId().hashCode() * 43;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof BlockStateData) {
+                BlockStateData otherStateData = (BlockStateData) obj;
+                return otherStateData.getBlockId().equals(this.getBlockId())
+                        && otherStateData.getNBT().equals(this.getNBT());
+            }
+            return false;
+        }
+
     }
 
 }

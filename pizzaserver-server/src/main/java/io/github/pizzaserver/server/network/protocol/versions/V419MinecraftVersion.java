@@ -87,13 +87,8 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
             int runtimeId = 0;
             for (String blockId : sortedBlockRuntimeStates.keySet()) {
                 for (NbtMap states : sortedBlockRuntimeStates.get(blockId)) {
-                    Tuple<String, NbtMap> blockStateLookupKey = new Tuple<>(blockId, states);
-                    if (!GLOBAL_BLOCK_STATES.containsKey(blockStateLookupKey)) {
-                        GLOBAL_BLOCK_STATES.put(blockStateLookupKey, GLOBAL_BLOCK_STATES.size());
-                    }
-                    int blockStateLookupId = GLOBAL_BLOCK_STATES.get(blockStateLookupKey);
-
-                    this.blockStates.put(blockStateLookupId, runtimeId++);
+                    BlockStateData blockStateLookupKey = new BlockStateData(blockId, states);
+                    this.blockStates.put(blockStateLookupKey, runtimeId++);
                 }
             }
         }
