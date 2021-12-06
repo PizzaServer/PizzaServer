@@ -39,7 +39,6 @@ import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
-import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
@@ -933,7 +932,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         this.getInventory().sendSlots(this);
         this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true)
                 .putFlag(EntityFlag.BREATHING, true);
-        this.setMetaData(this.getMetaData());
         this.sendAttributes();
         this.getAdventureSettings().send();
 

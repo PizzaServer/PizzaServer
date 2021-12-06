@@ -18,7 +18,7 @@ import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.Watchable;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.List;
@@ -210,9 +210,7 @@ public interface Entity extends Watchable {
 
     Vector3f getDirectionVector();
 
-    EntityMetaData getMetaData();
-
-    void setMetaData(EntityMetaData metaData);
+    EntityMetadata getMetaData();
 
     boolean hasGravity();
 
