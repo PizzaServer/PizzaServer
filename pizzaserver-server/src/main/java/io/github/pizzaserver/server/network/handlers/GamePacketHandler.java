@@ -107,14 +107,14 @@ public class GamePacketHandler implements BedrockPacketHandler {
                 break;
             case START_SNEAK:
                 if (!this.player.isSneaking() && this.player.isAlive()) {
-                    PlayerStartSneakingEvent startSneakingEvent = new PlayerStartSneakingEvent(this.player);
+                    PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
                     this.player.getServer().getEventManager().call(startSneakingEvent);
                     this.player.setSneaking(true);
                 }
                 break;
             case STOP_SNEAK:
                 if (this.player.isSneaking() && this.player.isAlive()) {
-                    PlayerStartSneakingEvent stopSneakingEvent = new PlayerStartSneakingEvent(this.player);
+                    PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player, false);
                     this.player.getServer().getEventManager().call(stopSneakingEvent);
                     this.player.setSneaking(false);
                 }
