@@ -27,7 +27,6 @@ import io.github.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProv
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 import io.github.pizzaserver.api.utils.Config;
-import io.github.pizzaserver.server.utils.TimeUtils;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.event.EventManager;
@@ -46,44 +45,45 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ImplServer extends Server {
 
-    private final BlockRegistry blockRegistry = new ImplBlockRegistry();
-    private final ItemRegistry itemRegistry = new ImplItemRegistry();
-    private final EntityRegistry entityRegistry = new ImplEntityRegistry();
-    private final BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
+    protected BlockRegistry blockRegistry = new ImplBlockRegistry();
+    protected ItemRegistry itemRegistry = new ImplItemRegistry();
+    protected EntityRegistry entityRegistry = new ImplEntityRegistry();
+    protected BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
 
-    private final BedrockNetworkServer network = new BedrockNetworkServer(this);
+    protected PluginManager pluginManager = new ImplPluginManager(this);
+    protected ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
+    protected EventManager eventManager = new ImplEventManager(this);
+    protected ImplLevelManager levelManager;
+
+    protected Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
+    protected Scheduler scheduler = new Scheduler(this, 1);
+
+    protected final BedrockNetworkServer network = new BedrockNetworkServer(this);
+    protected final String ip;
+    protected final int port;
+
     private final Set<PlayerSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private final PlayerDataProvider provider = new NBTPlayerDataProvider(this);
 
-    private final PluginManager pluginManager = new ImplPluginManager(this);
-    private final ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
-    private final EventManager eventManager = new ImplEventManager(this);
-    private final ImplLevelManager levelManager;
+    protected final Logger logger;
 
-    private final Set<Scheduler> syncedSchedulers = Collections.synchronizedSet(new HashSet<>());
-    private final Scheduler scheduler = new Scheduler(this, 1);
+    protected int targetTps;
+    protected int currentTps;
+    protected long currentTick;
 
-    private final Logger logger;
-
+    protected final String rootDirectory;
+    private volatile boolean running;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
-    private int targetTps;
-    private int currentTps;
-    private long currentTick;
-    private volatile boolean running;
-    private final String rootDirectory;
+    protected int maximumPlayersAllowed;
+    protected String motd;
 
-    private int maximumPlayersAllowed;
-    private String motd;
-
-    private final String ip;
-    private final int port;
-
-    private ServerConfig config;
+    protected ServerConfig config;
 
 
     public ImplServer(String rootDirectory) {
@@ -125,15 +125,18 @@ public class ImplServer extends Server {
         this.running = true;
         this.scheduler.startScheduler();
 
+        this.runTickLoop();
+        this.stop();
+    }
+
+    private void runTickLoop() {
         int currentTps = 0;
         long nextTpsRecording = 0;
 
-        // The amount of nanoseconds to sleep for
-        // This fluctuates depending on if we were at a slower/faster tps before
-        long sleepTime = 0;
+        long nanoSleepTime = 0;
 
         while (this.running) {
-            long idealNanoSleepPerTick = TimeUtils.secondsToNanoSeconds(1) / this.targetTps;
+            long idealNanoSleepPerTick = TimeUnit.SECONDS.toNanos(1) / this.targetTps;
 
             // Figure out how long it took to tick
             long startTickTime = System.nanoTime();
@@ -143,10 +146,10 @@ public class ImplServer extends Server {
             long timeTakenToTick = System.nanoTime() - startTickTime;
 
             // Sleep for the ideal time but take into account the time spent running the tick
-            sleepTime += idealNanoSleepPerTick - timeTakenToTick;
+            nanoSleepTime += idealNanoSleepPerTick - timeTakenToTick;
             long sleepStart = System.nanoTime();
             try {
-                Thread.sleep(Math.max(TimeUtils.nanoSecondsToMilliseconds(sleepTime), 0));
+                Thread.sleep(Math.max(TimeUnit.NANOSECONDS.toMillis(nanoSleepTime), 0));
             } catch (InterruptedException exception) {
                 exception.printStackTrace();
                 this.stop();
@@ -157,16 +160,15 @@ public class ImplServer extends Server {
             // If we didn't sleep for the correct amount,
             // take that into account for the next sleep by
             // leaving extra/less for the next sleep.
-            sleepTime -= System.nanoTime() - sleepStart;
+            nanoSleepTime -= System.nanoTime() - sleepStart;
 
             // Record TPS every second
             if (System.nanoTime() > nextTpsRecording) {
                 this.currentTps = currentTps;
                 currentTps = 0;
-                nextTpsRecording = System.nanoTime() + TimeUtils.secondsToNanoSeconds(1);
+                nextTpsRecording = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
             }
         }
-        this.stop();
     }
 
     private void tick() {
@@ -451,7 +453,6 @@ public class ImplServer extends Server {
 
 
     private class ServerExitListener extends Thread {
-
         @Override
         public void run() {
             if (ImplServer.this.running) {
@@ -463,7 +464,6 @@ public class ImplServer extends Server {
                 }
             }
         }
-
     }
 
     public static ImplServer getInstance() {

@@ -20,4 +20,19 @@ public interface BossBar extends Watchable {
 
     void setDarkenSky(boolean darkenSky);
 
+    Color getColor();
+
+    void setColor(Color color);
+
+
+    enum Color {
+        GREY,
+        BLUE,
+        RED,
+        GREEN,
+        YELLOW,
+        PURPLE,
+        WHITE
+    }
+
 }

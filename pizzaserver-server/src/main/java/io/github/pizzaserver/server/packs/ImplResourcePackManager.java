@@ -1,6 +1,5 @@
 package io.github.pizzaserver.server.packs;
 
-import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.packs.ResourcePackManager;
 import io.github.pizzaserver.api.packs.ResourcePack;
@@ -45,13 +44,13 @@ public class ImplResourcePackManager implements ResourcePackManager {
                         try {
                             ResourcePack pack = new ZipResourcePack(file);
                             this.packs.put(pack.getUuid(), pack);
-                            Server.getInstance().getLogger().info("Loaded resource pack: " + file.getName());
+                            this.server.getLogger().info("Loaded resource pack: " + file.getName());
                         } catch (IOException exception) {
-                            Server.getInstance().getLogger().error("Failed to load resource pack: " + file.getName(), exception);
+                            this.server.getLogger().error("Failed to load resource pack: " + file.getName(), exception);
                         }
                     });
         } catch (IOException exception) {
-            Server.getInstance().getLogger().error("Failed to read resourcepacks directory", exception);
+            this.server.getLogger().error("Failed to read resourcepacks directory", exception);
         }
     }
 

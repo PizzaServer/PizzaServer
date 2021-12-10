@@ -16,6 +16,7 @@ public class ImplBossBar implements BossBar {
     protected float percentage;
     protected int renderRange;
     protected boolean darkenSky;
+    protected Color color = Color.PURPLE;
 
     protected final Set<Player> viewers = new HashSet<>();
 
@@ -94,9 +95,28 @@ public class ImplBossBar implements BossBar {
         BossEventPacket darkenSkyPacket = new BossEventPacket();
         darkenSkyPacket.setBossUniqueEntityId(this.getEntityId());
         darkenSkyPacket.setAction(BossEventPacket.Action.UPDATE_PROPERTIES);
+        darkenSkyPacket.setColor(this.getColor().ordinal());
         darkenSkyPacket.setDarkenSky(this.darkenSky() ? 1 : 0);
         for (Player viewer : this.getViewers()) {
             viewer.sendPacket(darkenSkyPacket);
+        }
+    }
+
+    @Override
+    public Color getColor() {
+        return this.color;
+    }
+
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
+
+        BossEventPacket updateColorPacket = new BossEventPacket();
+        updateColorPacket.setBossUniqueEntityId(this.getEntityId());
+        updateColorPacket.setAction(BossEventPacket.Action.UPDATE_STYLE);
+        updateColorPacket.setColor(this.getColor().ordinal());
+        for (Player viewer : this.getViewers()) {
+            viewer.sendPacket(updateColorPacket);
         }
     }
 
@@ -113,6 +133,7 @@ public class ImplBossBar implements BossBar {
             createBossBarPacket.setTitle(this.getTitle());
             createBossBarPacket.setHealthPercentage(this.getPercentage());
             createBossBarPacket.setDarkenSky(this.darkenSky() ? 1 : 0);
+            createBossBarPacket.setColor(this.getColor().ordinal());
             player.sendPacket(createBossBarPacket);
             return true;
         }
