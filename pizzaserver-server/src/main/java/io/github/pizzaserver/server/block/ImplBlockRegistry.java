@@ -1,8 +1,7 @@
 package io.github.pizzaserver.server.block;
 
-import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.types.BaseBlockItemType;
+import io.github.pizzaserver.server.item.type.BaseBlockItemType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.types.BaseBlockType;

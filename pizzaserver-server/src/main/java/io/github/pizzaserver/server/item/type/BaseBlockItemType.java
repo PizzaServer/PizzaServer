@@ -1,10 +1,13 @@
-package io.github.pizzaserver.api.item.types;
+package io.github.pizzaserver.server.item.type;
 
+import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
 import io.github.pizzaserver.api.block.BlockFace;
+import io.github.pizzaserver.api.item.types.BaseItemType;
+import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.utils.BlockLocation;
@@ -14,7 +17,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
  */
 public class BaseBlockItemType extends BaseItemType implements BlockItemType {
 
-    private final BaseBlockType blockType;
+    private final BlockType blockType;
 
 
     public BaseBlockItemType(BaseBlockType blockType) {
@@ -22,7 +25,7 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
     }
 
     @Override
-    public BaseBlockType getBlockType() {
+    public BlockType getBlockType() {
         return this.blockType;
     }
 
