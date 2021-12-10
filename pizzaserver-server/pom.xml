@@ -15,6 +15,10 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <dependency.com.google.code.gson>2.8.6</dependency.com.google.code.gson>
+        <dependency.commons.io>2.7</dependency.commons.io>
+        <dependency.com.nimbusds.nimbus-jose-jwt>9.9.3</dependency.com.nimbusds.nimbus-jose-jwt>
+        <dependency.org.apache.logging.log4j>2.15.0</dependency.org.apache.logging.log4j>
     </properties>
 
     <repositories>
@@ -53,31 +57,28 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.6</version>
-            <scope>compile</scope>
+            <version>${dependency.com.google.code.gson}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>${dependency.commons.io}</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.9.3</version>
+            <version>${dependency.com.nimbusds.nimbus-jose-jwt}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.13.3</version>
+            <version>${dependency.org.apache.logging.log4j}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.13.3</version>
+            <version>${dependency.org.apache.logging.log4j}</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
