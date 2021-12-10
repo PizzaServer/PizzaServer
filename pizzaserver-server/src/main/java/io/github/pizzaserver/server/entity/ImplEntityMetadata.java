@@ -154,15 +154,19 @@ public class ImplEntityMetadata implements EntityMetadata {
         if (this.updated) {
             this.updated = false;
 
-            SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
-            entityDataPacket.setRuntimeEntityId(this.entity.getId());
-            entityDataPacket.getMetadata().putAll(this.dataMap);
-            for (Player player : this.entity.getViewers()) {
-                player.sendPacket(entityDataPacket);
-            }
-            if (this.entity instanceof Player) {
-                ((Player) this.entity).sendPacket(entityDataPacket);
-            }
+            this.update();
+        }
+    }
+
+    public void update() {
+        SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
+        entityDataPacket.setRuntimeEntityId(this.entity.getId());
+        entityDataPacket.getMetadata().putAll(this.dataMap);
+        for (Player player : this.entity.getViewers()) {
+            player.sendPacket(entityDataPacket);
+        }
+        if (this.entity instanceof Player) {
+            ((Player) this.entity).sendPacket(entityDataPacket);
         }
     }
 
