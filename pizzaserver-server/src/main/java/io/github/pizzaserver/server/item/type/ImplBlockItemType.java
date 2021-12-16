@@ -39,11 +39,6 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
     }
 
     @Override
-    public String getIconName() {
-        throw new UnsupportedOperationException("Unable to retrieve icon URL for a BlockItemType");
-    }
-
-    @Override
     public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
         // Handle placing a block
         // TODO: Account for entity collision

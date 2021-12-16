@@ -11,6 +11,7 @@ import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v419.Bedrock_v419;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.item.types.CustomItemType;
 import io.github.pizzaserver.api.item.types.components.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
@@ -185,12 +186,12 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
     @Override
     protected void loadItemComponents() {
         this.itemComponents.clear();
-        for (ItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
+        for (CustomItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
             this.itemComponents.add(new ComponentItemData(itemType.getItemId(), this.getItemComponentNBT(itemType)));
         }
     }
 
-    protected NbtMap getItemComponentNBT(ItemType itemType) {
+    protected NbtMap getItemComponentNBT(CustomItemType itemType) {
         NbtMapBuilder container = NbtMap.builder();
         container.putInt("id", this.getItemRuntimeId(itemType.getItemId()))
                 .putString("name", itemType.getItemId());

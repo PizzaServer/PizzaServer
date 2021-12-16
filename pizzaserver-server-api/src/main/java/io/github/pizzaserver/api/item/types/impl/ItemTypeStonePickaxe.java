@@ -3,11 +3,11 @@ package io.github.pizzaserver.api.item.types.impl;
 import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.data.ToolTypeID;
+import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.item.types.ItemTypeID;
-import io.github.pizzaserver.api.item.types.VanillaItemType;
 import io.github.pizzaserver.api.item.types.components.DurableItemComponent;
 
-public class ItemTypeStonePickaxe extends VanillaItemType implements DurableItemComponent {
+public class ItemTypeStonePickaxe extends BaseItemType implements DurableItemComponent {
 
     @Override
     public String getItemId() {

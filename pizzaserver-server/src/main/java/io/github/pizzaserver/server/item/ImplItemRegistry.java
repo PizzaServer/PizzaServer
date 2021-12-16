@@ -2,6 +2,7 @@ package io.github.pizzaserver.server.item;
 
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.types.CustomItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
 
 import java.util.HashMap;
@@ -13,13 +14,16 @@ public class ImplItemRegistry implements ItemRegistry {
 
     private final Map<String, ItemType> types = new HashMap<>();
 
-    private final Set<ItemType> customItemTypes = new HashSet<>();
+    private final Set<CustomItemType> customItemTypes = new HashSet<>();
 
 
     @Override
     public void register(ItemType itemType) {
         if (!itemType.getItemId().startsWith("minecraft:")) {
-            this.customItemTypes.add(itemType);
+            if (!(itemType instanceof CustomItemType)) {
+                throw new IllegalArgumentException("The provided item type does not extend CustomItemType");
+            }
+            this.customItemTypes.add((CustomItemType) itemType);
         }
 
         this.types.put(itemType.getItemId(), itemType);
@@ -39,7 +43,7 @@ public class ImplItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public Set<ItemType> getCustomTypes() {
+    public Set<CustomItemType> getCustomTypes() {
         return this.customItemTypes;
     }
 
