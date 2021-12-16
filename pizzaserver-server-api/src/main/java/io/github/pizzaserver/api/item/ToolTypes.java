@@ -14,7 +14,7 @@ public class ToolTypes {
         {
             this.put(ToolTypeID.NONE, new ToolType(null, null, 1));
 
-            this.put(ToolTypeID.SHEARS, new ToolType(null, null, 1));
+            this.put(ToolTypeID.SHEARS, new ToolType(null, ToolTypeID.NONE, 1));
 
             this.put(ToolTypeID.WOOD_SWORD, new ToolType(ToolTypeID.STONE_SWORD, ToolTypeID.NONE, 1.5f));
             this.put(ToolTypeID.WOOD_AXE, new ToolType(ToolTypeID.STONE_AXE, ToolTypeID.NONE, 2));

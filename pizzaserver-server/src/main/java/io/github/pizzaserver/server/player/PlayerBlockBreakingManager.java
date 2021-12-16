@@ -56,21 +56,30 @@ public class PlayerBlockBreakingManager {
         return this.isBreakingBlock() && enoughTicksPassed;
     }
 
-    public int getBreakTicks(Block block) {
-        ItemStack heldItem = this.player.getInventory().getHeldItem();
+    /**
+     * Retrieve the amount of ticks it would take to break the current block the player is mining.
+     * @return the amount of ticks or -1 if the player is not breaking a block
+     */
+    public int getBreakTicks() {
+        if (this.getBlock().isPresent()) {
+            Block block = this.getBlock().get();
+            ItemStack heldItem = this.player.getInventory().getHeldItem();
 
-        boolean isCorrectTool = heldItem.getItemType().getToolType().isCorrectTool(block);
-        float breakTime = block.getBlockState().getToughness() * (isCorrectTool ? 1.5f : 5f);
+            boolean isCorrectTool = heldItem.getItemType().getToolType().isCorrectTool(block);
+            float breakTime = block.getBlockState().getToughness() * (isCorrectTool ? 1.5f : 5f);
 
-        boolean isBestTool = heldItem.getItemType().getToolType().isBestTool(block);
-        if (isBestTool) {
-            breakTime /= this.player.getInventory().getHeldItem().getItemType().getToolStrength(block);
+            boolean isBestTool = heldItem.getItemType().getToolType().isBestTool(block);
+            if (isBestTool) {
+                breakTime /= this.player.getInventory().getHeldItem().getItemType().getToolStrength(block);
+            }
+            // TODO: haste/mining fatigue checks
+            // TODO: Underwater check
+            // TODO: on ground check
+
+            return (int) Math.ceil(breakTime * 20);
+        } else {
+            return -1;
         }
-        // TODO: haste/mining fatigue checks
-        // TODO: Underwater check
-        // TODO: on ground check
-
-        return (int) Math.ceil(breakTime * 20);
     }
 
     public void startBreaking(BlockLocation blockLocation) {
@@ -78,10 +87,10 @@ public class PlayerBlockBreakingManager {
             this.stopBreaking();
         }
 
-        this.breakTicks = this.getBreakTicks(blockLocation.getBlock());
         this.blockMiningLocation = blockLocation;
+        this.breakTicks = this.getBreakTicks();
         this.startBlockBreakTick = this.player.getServer().getTick();
-        this.endBlockBreakTick = this.player.getServer().getTick() + this.breakTicks;
+        this.endBlockBreakTick = this.startBlockBreakTick + this.breakTicks;
 
         if (this.breakTicks > 0) {
             LevelEventPacket breakStartPacket = new LevelEventPacket();
@@ -113,7 +122,7 @@ public class PlayerBlockBreakingManager {
             breakUpdatePacket.setPosition(this.blockMiningLocation.toVector3f());
             breakUpdatePacket.setData(65535 / this.breakTicks);
 
-            for (Player player : this.player.getChunk().getViewers()) {
+            for (Player player : this.blockMiningLocation.getChunk().getViewers()) {
                 player.sendPacket(breakUpdatePacket);
             }
         }
@@ -128,9 +137,7 @@ public class PlayerBlockBreakingManager {
             blockDestructionPercentage = (float) ticksMinedSoFar / this.breakTicks;
         }
 
-        Block targetBlock = this.blockMiningLocation.getBlock();
-
-        this.breakTicks = this.getBreakTicks(targetBlock);
+        this.breakTicks = this.getBreakTicks();
         this.endBlockBreakTick = this.startBlockBreakTick + (int) Math.ceil(this.breakTicks * (1 - blockDestructionPercentage));
 
         this.sendUpdatedBreakProgress();

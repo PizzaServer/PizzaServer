@@ -3,7 +3,6 @@ package io.github.pizzaserver.server.item.type;
 import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.item.types.BaseItemType;
@@ -15,12 +14,12 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 /**
  * Any block ItemStack is an instance of this class to prevent the need to create thousands of item classes for each block.
  */
-public class BaseBlockItemType extends BaseItemType implements BlockItemType {
+public class ImplBlockItemType extends BaseItemType implements BlockItemType {
 
     private final BlockType blockType;
 
 
-    public BaseBlockItemType(BaseBlockType blockType) {
+    public ImplBlockItemType(BlockType blockType) {
         this.blockType = blockType;
     }
 

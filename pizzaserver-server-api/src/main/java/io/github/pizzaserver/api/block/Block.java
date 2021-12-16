@@ -1,15 +1,15 @@
 package io.github.pizzaserver.api.block;
 
 import com.nukkitx.math.vector.Vector3i;
+import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
 public class Block {
 
-    private final BaseBlockType blockType;
+    private final BlockType blockType;
     private int blockStateIndex = 0;
 
     private World world;
@@ -19,11 +19,11 @@ public class Block {
     private int layer;
 
 
-    public Block(BaseBlockType blockType) {
+    public Block(BlockType blockType) {
         this.blockType = blockType;
     }
 
-    public BaseBlockType getBlockType() {
+    public BlockType getBlockType() {
         return this.blockType;
     }
 

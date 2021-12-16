@@ -47,7 +47,7 @@ public class ToolType {
         if (this.successor == null) {
             return false;
         }
-        return this.getSuccessor().isBestTool(block);
+        return this.getPredecessor().isBestTool(block);
     }
 
 }

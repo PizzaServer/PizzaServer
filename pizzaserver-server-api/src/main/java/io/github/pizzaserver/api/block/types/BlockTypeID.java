@@ -22,5 +22,6 @@ public class BlockTypeID {
     public static final String MOB_SPAWNER = "minecraft:mob_spawner";
     public static final String CAMPFIRE = "minecraft:campfire";
     public static final String SOUL_CAMPFIRE = "minecraft:soul_campfire";
+    public static final String IRON_ORE = "minecraft:iron_ore";
 
 }

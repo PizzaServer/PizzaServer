@@ -24,6 +24,9 @@
         <dependency.com.nukkitx.protocol>2.9.4-SNAPSHOT</dependency.com.nukkitx.protocol>
         <dependency.com.nukkitx.nbt>2.0.1</dependency.com.nukkitx.nbt>
         <dependency.org.yaml>1.27</dependency.org.yaml>
+
+        <dependency.org.junit.jupiter.junit-jupiter-engine>5.4.0</dependency.org.junit.jupiter.junit-jupiter-engine>
+        <dependency.org.mockito.mockito-core>4.1.0</dependency.org.mockito.mockito-core>
     </properties>
 
     <dependencyManagement>
@@ -65,7 +68,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.0</version>
+            <version>${dependency.org.junit.jupiter.junit-jupiter-engine}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${dependency.org.mockito.mockito-core}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

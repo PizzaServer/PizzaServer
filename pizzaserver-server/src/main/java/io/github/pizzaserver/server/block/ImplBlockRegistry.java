@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.block;
 
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.server.item.type.BaseBlockItemType;
+import io.github.pizzaserver.server.item.type.ImplBlockItemType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
@@ -23,7 +23,7 @@ public class ImplBlockRegistry implements BlockRegistry {
         }
         this.types.put(blockType.getBlockId(), blockType);
 
-        ItemRegistry.getInstance().register(new BaseBlockItemType(blockType));    // Register the item representation of this block
+        ItemRegistry.getInstance().register(new ImplBlockItemType(blockType));    // Register the item representation of this block
     }
 
     @Override

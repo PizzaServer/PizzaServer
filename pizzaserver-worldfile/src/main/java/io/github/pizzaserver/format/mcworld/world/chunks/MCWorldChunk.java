@@ -9,6 +9,7 @@ import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.format.MinecraftDataMapper;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
+import io.github.pizzaserver.format.exceptions.world.chunks.ChunkSerializationException;
 import io.github.pizzaserver.format.mcworld.utils.VarInts;
 import io.github.pizzaserver.format.mcworld.world.chunks.subchunks.MCWorldSubChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
@@ -247,7 +248,7 @@ public class MCWorldChunk implements BedrockChunk {
                         NbtMap networkBlockEntityNBT = dataMapper.getNetworkBlockEntityNBT(diskBlockEntityNBT);
                         outputStream.writeTag(networkBlockEntityNBT);
                     } catch (NullPointerException exception) {
-                        System.out.println(diskBlockEntityNBT + " is missing");
+                        throw new ChunkSerializationException("Could not serialize block entity data due to null block entity data returned by data mapper.");
                     }
                 }
             }

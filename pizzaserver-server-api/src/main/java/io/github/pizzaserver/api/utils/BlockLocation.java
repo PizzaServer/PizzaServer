@@ -49,7 +49,7 @@ public class BlockLocation {
     }
 
     public Block getBlock() {
-        return this.getWorld().getBlock(this.toVector3i(), this.getLayer());
+        return this.getWorld().getBlock(this.getX(), this.getY(), this.getZ(), this.getLayer());
     }
 
     public Chunk getChunk() {
