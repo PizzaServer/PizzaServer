@@ -16,8 +16,9 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
         <dependency.io.github.pizzaserver.commons>1.0-SNAPSHOT</dependency.io.github.pizzaserver.commons>
         <dependency.io.github.pizzaserver.api>1.0-SNAPSHOT</dependency.io.github.pizzaserver.api>
         <dependency.io.github.pizzaserver.format>1.0-SNAPSHOT</dependency.io.github.pizzaserver.format>
@@ -119,6 +120,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
