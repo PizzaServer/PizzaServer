@@ -9,6 +9,7 @@ import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v419.Bedrock_v419;
+import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.types.CustomItemType;
@@ -28,12 +29,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
 
-public class V419MinecraftVersion extends BaseMinecraftVersion {
+public class V475MinecraftVersion extends BaseMinecraftVersion {
 
-    public static final int PROTOCOL = 419;
-    public static final String VERSION = "1.16.100";
+    public static final int PROTOCOL = 475;
+    public static final String VERSION = "1.18";
 
-    public V419MinecraftVersion() throws IOException {}
+    public V475MinecraftVersion() throws IOException {}
 
 
     @Override
@@ -48,7 +49,7 @@ public class V419MinecraftVersion extends BaseMinecraftVersion {
 
     @Override
     public BedrockPacketCodec getPacketCodec() {
-        return Bedrock_v419.V419_CODEC;
+        return Bedrock_v475.V475_CODEC;
     }
 
     @Override

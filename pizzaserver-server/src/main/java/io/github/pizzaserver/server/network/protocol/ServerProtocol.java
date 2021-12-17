@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public class ServerProtocol {
 
-    public static final String LATEST_GAME_VERSION = V471MinecraftVersion.VERSION;
-    public static final int LATEST_PROTOCOL_VERSION = V471MinecraftVersion.PROTOCOL;
+    public static final String LATEST_GAME_VERSION = V475MinecraftVersion.VERSION;
+    public static final int LATEST_PROTOCOL_VERSION = V475MinecraftVersion.PROTOCOL;
     public static final int LATEST_BLOCK_STATES_VERSION = 17825806;
 
     private static final Map<Integer, BaseMinecraftVersion> VERSIONS = new HashMap<>();
@@ -20,14 +20,7 @@ public class ServerProtocol {
      * Called to load all version resources at boot rather than when a player joins.
      */
     public static void loadVersions() throws IOException {
-        loadVersion(new V419MinecraftVersion());
-        loadVersion(new V422MinecraftVersion());
-        loadVersion(new V428MinecraftVersion());
-        loadVersion(new V431MinecraftVersion());
-        loadVersion(new V440MinecraftVersion());
-        loadVersion(new V448MinecraftVersion());
-        loadVersion(new V465MinecraftVersion());
-        loadVersion(new V471MinecraftVersion());
+        loadVersion(new V475MinecraftVersion());
     }
 
     public static Optional<BaseMinecraftVersion> getProtocol(int protocol) {

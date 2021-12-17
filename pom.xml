@@ -49,7 +49,7 @@
             </dependency>
             <dependency>
                 <groupId>com.nukkitx.protocol</groupId>
-                <artifactId>bedrock-v471</artifactId>
+                <artifactId>bedrock-v475</artifactId>
                 <version>${dependency.com.nukkitx.protocol}</version>
             </dependency>
             <dependency>

@@ -194,13 +194,12 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             startGamePacket.setGeneratorId(1);
             startGamePacket.setDefaultPlayerPermission(PlayerPermission.MEMBER);
             startGamePacket.setServerChunkTickRange(this.getServer().getConfig().getChunkRadius());
-            startGamePacket.setVanillaVersion(this.version.getVersion());
+            startGamePacket.setVanillaVersion("1.17.40");
             startGamePacket.setPremiumWorldTemplateId("");
             startGamePacket.setInventoriesServerAuthoritative(true);
             startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
             startGamePacket.setItemEntries(this.getVersion().getItemEntries());
             startGamePacket.getBlockProperties().addAll(this.getVersion().getCustomBlockProperties());
-            startGamePacket.setAuthoritativeMovementMode(AuthoritativeMovementMode.CLIENT);
             startGamePacket.setPlayerMovementSettings(movementSettings);
             startGamePacket.setCommandsEnabled(true);
             startGamePacket.setMultiplayerGame(true);
