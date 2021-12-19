@@ -22,9 +22,11 @@ public class ImplLevel implements Level, Closeable {
         this.levelManager = levelManager;
         this.provider = provider;
 
-        this.dimensions.put(Dimension.OVERWORLD, new ImplWorld(this, Dimension.OVERWORLD));
-        this.dimensions.put(Dimension.NETHER, new ImplWorld(this, Dimension.NETHER));
-        this.dimensions.put(Dimension.END, new ImplWorld(this, Dimension.END));
+        synchronized (this.dimensions) {
+            this.dimensions.put(Dimension.OVERWORLD, new ImplWorld(this, Dimension.OVERWORLD));
+            this.dimensions.put(Dimension.NETHER, new ImplWorld(this, Dimension.NETHER));
+            this.dimensions.put(Dimension.END, new ImplWorld(this, Dimension.END));
+        }
     }
 
     /**

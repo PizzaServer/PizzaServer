@@ -1,6 +1,8 @@
 package io.github.pizzaserver.server.level;
 
+import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.LevelManager;
+import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.server.ImplServer;
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ImplLevelManager implements LevelManager, Closeable {
@@ -85,6 +88,11 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     @Override
+    public CompletableFuture<Level> getLevelAsync(String name) {
+        return CompletableFuture.supplyAsync(() -> this.getLevel(name));
+    }
+
+    @Override
     public ImplWorld getLevelDimension(String levelName, Dimension dimension) {
         ImplLevel level = this.getLevel(levelName);
         if (level == null) {
@@ -138,15 +146,8 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     @Override
-    public void unloadLevel(String name, boolean async) {
-        if (async) {
-            this.getServer().getScheduler()
-                    .prepareTask(() -> this.unloadLevel(name))
-                    .setAsynchronous(true)
-                    .schedule();
-        } else {
-            this.unloadLevel(name);
-        }
+    public CompletableFuture<Void> unloadLevelAsync(String name) {
+        return CompletableFuture.runAsync(() -> this.unloadLevel(name));
     }
 
     @Override

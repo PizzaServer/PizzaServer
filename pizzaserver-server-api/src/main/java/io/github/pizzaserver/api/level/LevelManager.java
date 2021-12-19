@@ -3,6 +3,8 @@ package io.github.pizzaserver.api.level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface LevelManager {
 
     /**
@@ -26,6 +28,8 @@ public interface LevelManager {
      */
     Level getLevel(String name);
 
+    CompletableFuture<Level> getLevelAsync(String name);
+
     /**
      * Get a specific {@link Dimension} belonging to a {@link Level}.
      * If the level is not currently loaded, it will fetch the level from the file system
@@ -44,8 +48,7 @@ public interface LevelManager {
     /**
      * Unload a {@link Level} back to the file system.
      * @param name name of the level
-     * @param async if this should be done asynchronously
      */
-    void unloadLevel(String name, boolean async);
+    CompletableFuture<Void> unloadLevelAsync(String name);
 
 }
