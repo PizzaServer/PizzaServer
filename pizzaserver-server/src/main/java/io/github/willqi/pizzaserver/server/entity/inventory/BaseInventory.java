@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.server.entity.inventory;
 
-import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.InventorySlotType;
 import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
@@ -9,9 +8,10 @@ import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ContainerClosePacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryContentPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.InventorySlotPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ContainerClosePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.InventoryContentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.InventorySlotPacket;
+import io.github.willqi.pizzaserver.server.ImplServer;
 
 import java.util.*;
 
@@ -19,7 +19,6 @@ public abstract class BaseInventory implements Inventory {
 
     public static int ID = 1;
 
-    protected final Entity entity;
     protected final int id;
     protected final int size;
 
@@ -29,12 +28,11 @@ public abstract class BaseInventory implements Inventory {
     private final Set<Player> viewers = new HashSet<>();
 
 
-    public BaseInventory(Entity entity, Set<InventorySlotType> slotTypes, int size) {
-        this(entity, slotTypes, size, ID++);
+    public BaseInventory(Set<InventorySlotType> slotTypes, int size) {
+        this(slotTypes, size, ID++);
     }
 
-    public BaseInventory(Entity entity, Set<InventorySlotType> slotTypes, int size, int id) {
-        this.entity = entity;
+    public BaseInventory(Set<InventorySlotType> slotTypes, int size, int id) {
         this.size = size;
         this.id = id;
         this.slotTypes = slotTypes;
@@ -49,11 +47,6 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Set<InventorySlotType> getSlotTypes() {
         return this.slotTypes;
-    }
-
-    @Override
-    public Entity getEntity() {
-        return this.entity;
     }
 
     @Override
@@ -137,21 +130,23 @@ public abstract class BaseInventory implements Inventory {
         ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
 
         for (int slot = 0; slot < this.getSize(); slot++) {
+            if (remainingItemStack.getCount() <= 0) {
+                break;
+            }
+
             ItemStack slotStack = this.getSlot(slot);
-
+            int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+            int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
+            int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
             if (slotStack.isEmpty()) {
-                // empty available slot
-                this.setSlot(slot, remainingItemStack);
-                return Optional.empty();
-            } else if (slotStack.hasSameDataAs(remainingItemStack)) {
-                // Add as much of the remaining item stack to this slot as possible
-                int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
-                int spaceLeft = maxStackCount - slotStack.getCount();
-                int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
-
-                slotStack.setCount(slotStack.getCount() + addedAmount);
+                ItemStack newSlot = remainingItemStack.clone();
+                newSlot.setCount(addedAmount);
+                this.setSlot(slot, newSlot);
                 remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+            } else if (slotStack.hasSameDataAs(remainingItemStack)) {
+                slotStack.setCount(slotStack.getCount() + addedAmount);
                 this.setSlot(slot, slotStack);
+                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
             }
         }
 
@@ -199,7 +194,7 @@ public abstract class BaseInventory implements Inventory {
     public boolean openFor(Player player) {
         if (!this.viewers.contains(player)) {
             InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(player, this);
-            this.getEntity().getServer().getEventManager().call(inventoryOpenEvent);
+            ImplServer.getInstance().getEventManager().call(inventoryOpenEvent);
             if (inventoryOpenEvent.isCancelled()) {
                 return false;
             }
@@ -226,7 +221,7 @@ public abstract class BaseInventory implements Inventory {
             player.sendPacket(containerClosePacket);
 
             InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
-            this.getEntity().getServer().getEventManager().call(inventoryCloseEvent);
+            ImplServer.getInstance().getEventManager().call(inventoryCloseEvent);
 
             this.viewers.remove(player);
             return true;
@@ -238,6 +233,27 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Set<Player> getViewers() {
         return Collections.unmodifiableSet(this.viewers);
+    }
+
+    @Override
+    public int getExcessIfAdded(ItemStack itemStack) {
+        ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
+
+        for (int slot = 0; slot < this.getSize(); slot++) {
+            if (remainingItemStack.getCount() <= 0) {
+                break;
+            }
+
+            ItemStack slotStack = this.getSlot(slot);
+            int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+            int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
+            int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+            if (slotStack.isEmpty() || slotStack.hasSameDataAs(remainingItemStack)) {
+                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+            }
+        }
+
+        return remainingItemStack.getCount();
     }
 
     /**

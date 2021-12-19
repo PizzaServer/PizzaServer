@@ -2,6 +2,8 @@ package io.github.willqi.pizzaserver.api.level.world;
 
 import io.github.willqi.pizzaserver.api.Server;
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.ItemEntity;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
@@ -36,7 +38,7 @@ public interface World extends ChunkManager {
      * @param coordinates chunk column coordinates
      * @return y coordinate
      */
-    int getHighestBlockAt(Vector2i coordinates);
+    Block getHighestBlockAt(Vector2i coordinates);
 
     /**
      * Get the highest block y coordinate at a chunk column.
@@ -44,7 +46,7 @@ public interface World extends ChunkManager {
      * @param z chunk column z coordinates
      * @return y coordinate
      */
-    int getHighestBlockAt(int x, int z);
+    Block getHighestBlockAt(int x, int z);
 
     Block getBlock(Vector3i position);
 
@@ -61,6 +63,36 @@ public interface World extends ChunkManager {
     void setBlock(Block block, Vector3i position);
 
     void setBlock(Block block, int x, int y, int z);
+
+    /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemStack {@link ItemStack} to spawn as an entity
+     * @param position The position to spawn it in this world
+     */
+    void addItemEntity(ItemStack itemStack, Vector3 position);
+
+    /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemStack {@link ItemStack} to spawn as an entity
+     * @param position The position to spawn it in this world
+     * @param velocity The velocity to spawn it with
+     */
+    void addItemEntity(ItemStack itemStack, Vector3 position, Vector3 velocity);
+
+    /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemEntity {@link ItemEntity} to spawn
+     * @param position The position to spawn it in this world
+     */
+    void addItemEntity(ItemEntity itemEntity, Vector3 position);
+
+    /**
+     * Add a {@link ItemStack} to the world and spawn it.
+     * @param itemEntity {@link ItemEntity} to spawn
+     * @param position The position to spawn it in this world
+     * @param velocity The velocity to spawn it with
+     */
+    void addItemEntity(ItemEntity itemEntity, Vector3 position, Vector3 velocity);
 
     /**
      * Add a {@link Entity} to this world and spawn it.
@@ -90,6 +122,12 @@ public interface World extends ChunkManager {
 
     void tick();
 
+    boolean isDay();
+
+    int getTime();
+
+    void setTime(int time);
+
     default void playSound(WorldSound sound, Vector3 vector3) {
         this.playSound(sound, vector3, true);
     }
@@ -99,9 +137,9 @@ public interface World extends ChunkManager {
     }
 
     default void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType) {
-        this.playSound(sound, vector3, isGlobal, isBaby, entityType, 0);
+        this.playSound(sound, vector3, isGlobal, isBaby, entityType, null);
     }
 
-    void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID);
+    void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, Block block);
 
 }

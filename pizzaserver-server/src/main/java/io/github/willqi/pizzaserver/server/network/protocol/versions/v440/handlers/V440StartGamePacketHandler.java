@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v440.handlers;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.StartGamePacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.StartGamePacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v428.handlers.V428StartGamePacketHandler;
 

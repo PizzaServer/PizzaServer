@@ -5,8 +5,9 @@ import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
-import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.Experiment;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,8 @@ public abstract class BasePacketBufferData {
     private final Map<EntityMetaFlagCategory, Integer> supportedEntityFlagCategories = new HashMap<>();
     private final Map<EntityMetaFlag, Integer> supportedEntityFlags = new HashMap<>();
     private final Map<EntityMetaPropertyName, Integer> supportedEntityProperties = new HashMap<>();
+
+    private final Map<EntityEventType, Integer> supportedEntityEventTypes = new HashMap<>();
 
     private final BiMap<InventoryActionType, Integer> supportedInventoryActionTypes = HashBiMap.create();
 
@@ -42,7 +45,7 @@ public abstract class BasePacketBufferData {
 
 
     //
-    // Entity Metadata
+    // Entity Specific
     //
 
     public BasePacketBufferData registerEntityFlagCategory(EntityMetaFlagCategory category, int value) {
@@ -83,6 +86,19 @@ public abstract class BasePacketBufferData {
 
     public int getEntityPropertyId(EntityMetaPropertyName propertyName) {
         return this.supportedEntityProperties.getOrDefault(propertyName, -1);
+    }
+
+    public BasePacketBufferData registerEntityEvent(EntityEventType type, int value) {
+        this.supportedEntityEventTypes.put(type, value);
+        return this;
+    }
+
+    public boolean isEntityEventSupported(EntityEventType type) {
+        return this.supportedEntityEventTypes.containsKey(type);
+    }
+
+    public int getEntityEventId(EntityEventType type) {
+        return this.supportedEntityEventTypes.getOrDefault(type, -1);
     }
 
     //

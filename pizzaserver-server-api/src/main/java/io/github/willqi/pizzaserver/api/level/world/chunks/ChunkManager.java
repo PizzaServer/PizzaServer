@@ -34,7 +34,7 @@ public interface ChunkManager extends Closeable {
      * @param x chunk x chunk x
      * @param z chunk z chunk z
      */
-    void sendPlayerChunk(Player player, int x, int z);
+    void sendChunk(Player player, int x, int z);
 
     /**
      * Send a {@link Chunk} to a {@link Player}.
@@ -43,7 +43,7 @@ public interface ChunkManager extends Closeable {
      * @param z chunk z
      * @param async if this should be done on a separate thread
      */
-    void sendPlayerChunk(Player player, int x, int z, boolean async);
+    void sendChunk(Player player, int x, int z, boolean async);
 
     /**
      * Add a {@link ChunkLoader} that keeps chunks loaded and ticking.

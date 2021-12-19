@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.commons.utils;
 
 public class Vector2 {
 
-    private final float x;
-    private final float y;
+    private float x;
+    private float y;
 
 
     public Vector2(float x, float y) {
@@ -15,8 +15,16 @@ public class Vector2 {
         return this.x;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
     public float getY() {
         return this.y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
     }
 
     public Vector2 add(Vector2 vector) {
@@ -75,29 +83,37 @@ public class Vector2 {
         return new Vector2(this.getX() / x, this.getY() / y);
     }
 
-    public double distanceBetween(Vector2i vector2i) {
-        return Math.sqrt(Math.pow(this.getX() - vector2i.getX(), 2) + Math.pow(this.getY() - vector2i.getY(), 2));
+    public float distanceBetween(Vector2i vector2i) {
+        return (float) Math.sqrt(Math.pow(this.getX() - vector2i.getX(), 2) + Math.pow(this.getY() - vector2i.getY(), 2));
     }
 
-    public double distanceBetween(Vector2 vector2) {
-        return Math.sqrt(Math.pow(this.getX() - vector2.getX(), 2) + Math.pow(this.getY() - vector2.getY(), 2));
+    public float distanceBetween(Vector2 vector2) {
+        return (float) Math.sqrt(Math.pow(this.getX() - vector2.getX(), 2) + Math.pow(this.getY() - vector2.getY(), 2));
     }
 
-    public double getLength() {
-        return Math.sqrt(Math.pow(this.getX(), 2) + Math.pow(this.getY(), 2));
+    public float getLength() {
+        return (float) Math.sqrt(Math.pow(this.getX(), 2) + Math.pow(this.getY(), 2));
     }
 
-    public double dot(Vector2 vector2) {
+    public float dot(Vector2 vector2) {
         return (this.getX() * vector2.getX()) + (this.getY() * vector2.getY());
     }
 
-    public double dot(Vector2i vector2i) {
+    public float dot(Vector2i vector2i) {
         return (this.getX() * vector2i.getX()) + (this.getY() * vector2i.getY());
     }
 
     public Vector2 normalize() {
-        double length = this.getLength();
-        return new Vector2((float) (this.getX() / length), (float) (this.getY() / length));
+        float length = this.getLength();
+        return new Vector2(this.getX() / length, this.getY() / length);
+    }
+
+    public Vector2 round() {
+        return new Vector2(Math.round(this.getX()), Math.round(this.getY()));
+    }
+
+    public Vector2 floor() {
+        return new Vector2((float) Math.floor(this.getX()), (float) Math.floor(this.getY()));
     }
 
     public Vector2i toVector2i() {

@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers;
 
-import io.github.willqi.pizzaserver.server.network.protocol.data.WorldEventType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.WorldEventType;
 import io.github.willqi.pizzaserver.server.network.protocol.exceptions.OutdatedProtocolException;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldEventPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldEventPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 

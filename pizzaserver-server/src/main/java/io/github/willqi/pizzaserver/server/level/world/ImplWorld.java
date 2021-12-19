@@ -1,11 +1,16 @@
 package io.github.willqi.pizzaserver.server.level.world;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.ItemEntity;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
 import io.github.willqi.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.SetTimePacket;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 import io.github.willqi.pizzaserver.api.utils.Location;
 import io.github.willqi.pizzaserver.api.level.world.World;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
@@ -14,10 +19,10 @@ import io.github.willqi.pizzaserver.commons.utils.Vector3;
 import io.github.willqi.pizzaserver.commons.utils.Vector3i;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.entity.BaseEntity;
+import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.level.ImplLevel;
 import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.level.world.chunks.WorldChunkManager;
 import io.github.willqi.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
@@ -27,14 +32,15 @@ import java.util.*;
 
 public class ImplWorld implements World {
 
-    private final ImplLevel level;
-    private final Dimension dimension;
-    private final WorldChunkManager chunkManager = new WorldChunkManager(this);
+    protected final ImplLevel level;
+    protected final Dimension dimension;
+    protected final WorldChunkManager chunkManager = new WorldChunkManager(this);
 
-    private Vector3i spawnCoordinates;
+    protected Vector3i spawnCoordinates;
+    protected int time;
 
-    private final Set<Player> players = new HashSet<>();
-    private final Map<Long, Entity> entities = new HashMap<>();
+    protected final Set<Player> players = new HashSet<>();
+    protected final Map<Long, Entity> entities = new HashMap<>();
 
 
     public ImplWorld(ImplLevel level, Dimension dimension) {
@@ -44,7 +50,7 @@ public class ImplWorld implements World {
         Vector3i worldSpawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
         if (worldSpawnCoordinates.getY() > 255) {    // Hack to get around Minecraft worlds having REALLY high y spawn coordinates in the level.dat
             worldSpawnCoordinates = new Vector3i(worldSpawnCoordinates.getX(),
-                    this.getHighestBlockAt(worldSpawnCoordinates.getX(), worldSpawnCoordinates.getZ()),
+                    this.getHighestBlockAt(worldSpawnCoordinates.getX(), worldSpawnCoordinates.getZ()).getY(),
                     worldSpawnCoordinates.getZ());
         }
         this.setSpawnCoordinates(worldSpawnCoordinates);
@@ -100,13 +106,13 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public void sendPlayerChunk(Player player, int x, int z) {
-        this.sendPlayerChunk(player, x, z, true);
+    public void sendChunk(Player player, int x, int z) {
+        this.sendChunk(player, x, z, true);
     }
 
     @Override
-    public void sendPlayerChunk(Player player, int x, int z, boolean async) {
-        this.chunkManager.sendPlayerChunk(player, x, z, async);
+    public void sendChunk(Player player, int x, int z, boolean async) {
+        this.chunkManager.sendChunk(player, x, z, async);
     }
 
     @Override
@@ -120,12 +126,12 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public int getHighestBlockAt(Vector2i coordinates) {
+    public Block getHighestBlockAt(Vector2i coordinates) {
         return this.getHighestBlockAt(coordinates.getX(), coordinates.getY());
     }
 
     @Override
-    public int getHighestBlockAt(int x, int z) {
+    public Block getHighestBlockAt(int x, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
         return this.getChunk(chunkX, chunkZ).getHighestBlockAt(x % 16, z % 16);
@@ -176,6 +182,29 @@ public class ImplWorld implements World {
         this.getChunk(chunkX, chunkZ).setBlock(block, x % 16, y, z % 16);
     }
 
+    @Override
+    public void addItemEntity(ItemStack itemStack, Vector3 position) {
+        this.addItemEntity(itemStack, position, new Vector3(0, 0, 0));
+    }
+
+    @Override
+    public void addItemEntity(ItemStack itemStack, Vector3 position, Vector3 velocity) {
+        this.addItemEntity(EntityRegistry.getItemEntity(itemStack), position, velocity);
+    }
+
+    @Override
+    public void addItemEntity(ItemEntity itemEntity, Vector3 position) {
+        this.addItemEntity(itemEntity, position, itemEntity.getVelocity());
+    }
+
+    @Override
+    public void addItemEntity(ItemEntity itemEntity, Vector3 position, Vector3 velocity) {
+        itemEntity.setVelocity(velocity);
+        if (!itemEntity.getItem().isEmpty()) {
+            this.addEntity(itemEntity, position);
+        }
+    }
+
     public void sendBlock(Player player, Vector3i blockCoordinates) {
         this.sendBlock(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
     }
@@ -188,13 +217,8 @@ public class ImplWorld implements World {
 
     @Override
     public void addEntity(Entity entity, Vector3 position) {
-        // Check if we need to despawn the entity from its old world first
-        if (entity.getWorld() != null) {
-            if (entity.getWorld().equals(this)) {
-                throw new IllegalStateException("This entity already exists in this world.");
-            } else {
-                entity.getWorld().removeEntity(entity);
-            }
+        if (entity.hasSpawned()) {
+            throw new IllegalArgumentException("The provided entity was already spawned in a world.");
         }
         Location location = new Location(this, position);
 
@@ -203,15 +227,15 @@ public class ImplWorld implements World {
             this.players.add((Player) entity);
         }
 
-        BaseEntity baseEntity = (BaseEntity) entity;
-        baseEntity.setLocation(location);
-        ((ImplChunk) location.getChunk()).addEntity(entity);
-        baseEntity.onSpawned();
+        ImplEntity implEntity = (ImplEntity) entity;
+        implEntity.setPosition(location);
+        ((ImplChunk) location.getChunk()).addEntity(implEntity);
+        implEntity.onSpawned();
     }
 
     @Override
     public void removeEntity(Entity entity) {
-        if (!this.equals(entity.getWorld())) {
+        if (!this.entities.containsKey(entity.getId())) {
             throw new IllegalStateException("This entity has not been spawned in this world");
         }
 
@@ -220,14 +244,11 @@ public class ImplWorld implements World {
             this.players.remove(entity);
         }
 
-        BaseEntity baseEntity = (BaseEntity) entity;
-        ImplChunk chunk = baseEntity.getChunk();
+        ImplEntity implEntity = (ImplEntity) entity;
+        ImplChunk chunk = implEntity.getChunk();
 
-        // Remove the location first to signify that the entity is gone and not just moving to another chunk.
-        baseEntity.setLocation(null);   // the entity no longer exists in any world
-        baseEntity.onDespawned();
-
-        chunk.removeEntity(baseEntity);
+        implEntity.onDespawned();
+        chunk.removeEntity(implEntity);
     }
 
     @Override
@@ -243,18 +264,41 @@ public class ImplWorld implements World {
     @Override
     public void tick() {
         this.chunkManager.tick();
+        this.time++;
     }
 
     @Override
-    public void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, int blockID) {
+    public boolean isDay() {
+        int time = this.getTime() % 24000;
+        return time < 12000;
+    }
+
+    @Override
+    public int getTime() {
+        return this.time;
+    }
+
+    @Override
+    public void setTime(int time) {
+        this.time = time >= 0 ? time : 24000 + time;
+
+        SetTimePacket setTimePacket = new SetTimePacket();
+        setTimePacket.setTime(time);
+        for (Player player : this.getPlayers()) {
+            player.sendPacket(setTimePacket);
+        }
+    }
+
+    @Override
+    public void playSound(WorldSound sound, Vector3 vector3, boolean isGlobal, boolean isBaby, String entityType, Block block) {
         WorldSoundEventPacket packet = new WorldSoundEventPacket();
         packet.setSound(sound);
         packet.setVector3(vector3);
         packet.setGlobal(isGlobal);
         packet.setBaby(isBaby);
         packet.setEntityType(entityType);
-        packet.setBlockID(blockID);
-        WorldSoundEvent event = new WorldSoundEvent(this, sound, vector3, isGlobal, isBaby, entityType, blockID);
+        packet.setBlock(block);
+        WorldSoundEvent event = new WorldSoundEvent(this, sound, vector3, isGlobal, isBaby, entityType, block);
         this.getServer().getEventManager().call(event);
         if (!event.isCancelled()) {
             for (Player player : this.getPlayers()) {
@@ -271,6 +315,7 @@ public class ImplWorld implements World {
         return new PlayerData.Builder()
                 .setLevelName(this.getLevel().getProvider().getFileName())
                 .setDimension(this.getDimension())
+                .setGamemode(Gamemode.SURVIVAL)
                 .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toVector3())
                 .setYaw(this.getServer().getConfig().getDefaultYaw())
                 .setPitch(this.getServer().getConfig().getDefaultPitch())

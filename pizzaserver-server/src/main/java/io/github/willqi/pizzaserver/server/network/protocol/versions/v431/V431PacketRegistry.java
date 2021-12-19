@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v431;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v428.V428PacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v431.handlers.*;
 

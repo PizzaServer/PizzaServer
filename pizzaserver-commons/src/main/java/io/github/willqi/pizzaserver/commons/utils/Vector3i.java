@@ -2,9 +2,9 @@ package io.github.willqi.pizzaserver.commons.utils;
 
 public class Vector3i {
 
-    private final int x;
-    private final int y;
-    private final int z;
+    private int x;
+    private int y;
+    private int z;
 
 
     public Vector3i(int x, int y, int z) {
@@ -17,12 +17,24 @@ public class Vector3i {
         return this.x;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
     public int getY() {
         return this.y;
     }
 
+    public void setY(int y) {
+        this.y = y;
+    }
+
     public int getZ() {
         return this.z;
+    }
+
+    public void setZ(int z) {
+        this.z = z;
     }
 
     public Vector3i add(Vector3i vector3i) {

@@ -1,21 +1,22 @@
 package io.github.willqi.pizzaserver.api.player;
 
+import io.github.willqi.pizzaserver.api.entity.HumanEntity;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
 import io.github.willqi.pizzaserver.api.entity.inventory.PlayerInventory;
-import io.github.willqi.pizzaserver.api.entity.LivingEntity;
+import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
 import io.github.willqi.pizzaserver.api.network.protocol.versions.MinecraftVersion;
-import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
-import io.github.willqi.pizzaserver.api.player.data.Device;
-import io.github.willqi.pizzaserver.api.player.skin.Skin;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
+import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.api.utils.TextMessage;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Represents a player on the Minecraft server.
  */
-public interface Player extends LivingEntity {
+public interface Player extends HumanEntity {
 
     /**
      * Retrieve the Minecraft version this player is on.
@@ -24,68 +25,26 @@ public interface Player extends LivingEntity {
     MinecraftVersion getVersion();
 
     /**
-     * Retrieve the device the player is playing on.
-     * @return {@link Device} of the player
-     */
-    Device getDevice();
-
-    /**
-     * Retrieve the xuid of the player.
-     * This is unique to every player authenticated to Xbox Live
-     * @return xuid
-     */
-    String getXUID();
-
-    /**
-     * Retrieve the UUID of the player.
-     * @return {@link UUID} of the player
-     */
-    UUID getUUID();
-
-    /**
-     * Retrieve the username of the player.
-     * @return username of the player
-     */
-    String getUsername();
-
-    /**
      * Retrieve the language code of the player.
      * @return language code (e.g. en_US)
      */
     String getLanguageCode();
 
-    /**
-     * Retrieve the current {@link Skin} of the player.
-     * @return {@link Skin} of the player
-     */
-    Skin getSkin();
+    boolean isLocallyInitialized();
 
-    /**
-     * Change the skin of the player with the provided {@link Skin}.
-     * @param skin New skin
-     */
-    void setSkin(Skin skin);
+    Gamemode getGamemode();
 
-    /**
-     * Check if the player is sneaking.
-     * @return sneaking status
-     */
-    boolean isSneaking();
+    void setGamemode(Gamemode gamemode);
 
-    /**
-     * Change if the player is sneaking.
-     * @param sneaking sneaking status
-     */
-    void setSneaking(boolean sneaking);
+    AdventureSettings getAdventureSettings();
+
+    void setAdventureSettings(AdventureSettings adventureSettings);
 
     /**
      * Get the player list of a player.
      * @return player list of a player
      */
     PlayerList getPlayerList();
-
-    // TODO: move to EntityHuman
-    PlayerList.Entry getPlayerListEntry();
 
     PlayerInventory getInventory();
 
@@ -109,12 +68,6 @@ public interface Player extends LivingEntity {
      * @return if the inventory was opened
      */
     boolean openInventory(Inventory inventory);
-
-    /**
-     * Get the player attributes of the player.
-     * @return {@link PlayerAttributes}
-     */
-    PlayerAttributes getAttributes();
 
     /**
      * Get the amount of food strength the player has.
@@ -165,6 +118,47 @@ public interface Player extends LivingEntity {
     void setExperienceLevel(int experienceLevel);
 
     /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param transferDimension dimension transfer screen to use
+     */
+    void teleport(float x, float y, float z, Dimension transferDimension);
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param location location to teleport them to
+     * @param transferDimension dimension transfer screen to use
+     */
+    void teleport(Location location, Dimension transferDimension);
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param world the world to teleport them to
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @param transferDimension dimension transfer screen to use
+     */
+    void teleport(World world, float x, float y, float z, Dimension transferDimension);
+
+    /**
+     * Retrieve the location that this player should spawn at when it dies.
+     * @return the location
+     */
+    Location getSpawn();
+
+    /**
+     * Send a message to this player.
+     * @param message the message to send
+     */
+    void sendMessage(TextMessage message);
+
+    /**
      * Send a text message to this player.
      * @param message the message to send
      */
@@ -187,14 +181,7 @@ public interface Player extends LivingEntity {
      * Set the chunk radius requested for this player.
      * @param radius chunk radius
      */
-    void setChunkRadiusRequested(int radius);
-
-    /**
-     * Request the server to send a chunk to the player.
-     * @param x chunk x coordinate
-     * @param z chunk z coordinate
-     */
-    void sendChunk(int x, int z);
+    void setChunkRadius(int radius);
 
     /**
      * If this session is still active.

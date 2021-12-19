@@ -6,6 +6,7 @@ import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
 
 /**
  * Any block ItemStack is an instance of this class to prevent the need to create thousands of item classes for each block.
@@ -43,17 +44,24 @@ public class BaseBlockItemType extends BaseItemType implements BlockItemType {
     public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
         // Handle placing a block
         // TODO: Account for entity collision
-        if (!block.isAir() && block.getSide(blockFace).isAir()) {
+        Block blockAtPlacementPos = block.getSide(blockFace);
+        if (!block.isAir() && (blockAtPlacementPos.getBlockType().isLiquid() || !blockAtPlacementPos.isSolid())) {
+            if (!player.getAdventureSettings().canBuild()) {
+                return false;
+            }
             Block placedBlock = this.getBlockType().create(itemStack.getDamage());
             placedBlock.setLocation(block.getWorld(), block.getSide(blockFace).getLocation());
 
             BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);
+            player.getServer().getEventManager().call(blockPlaceEvent);
             if (blockPlaceEvent.isCancelled()) {
                 return false;
             }
 
-            itemStack.setCount(itemStack.getCount() - 1);
-            player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
+            if (!player.getGamemode().equals(Gamemode.CREATIVE)) {
+                itemStack.setCount(itemStack.getCount() - 1);
+                player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
+            }
             block.getWorld().setBlock(placedBlock, placedBlock.getLocation());
             return true;
         } else {

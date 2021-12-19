@@ -1,5 +1,6 @@
 package io.github.willqi.pizzaserver.server.level;
 
+import io.github.willqi.pizzaserver.api.level.Level;
 import io.github.willqi.pizzaserver.api.level.LevelManager;
 import io.github.willqi.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
@@ -52,6 +53,11 @@ public class ImplLevelManager implements LevelManager, Closeable {
     @Override
     public boolean isLevelLoaded(String name) {
         return this.levels.containsKey(name);
+    }
+
+    @Override
+    public ImplLevel getDefaultLevel() {
+        return this.getLevel(this.getServer().getConfig().getDefaultWorldName());
     }
 
     @Override

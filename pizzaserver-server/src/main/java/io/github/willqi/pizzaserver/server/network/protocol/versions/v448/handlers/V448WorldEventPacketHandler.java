@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v448.handlers;
 
-import io.github.willqi.pizzaserver.server.network.protocol.data.WorldEventType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.WorldEventType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v440.handlers.V440WorldEventPacketHandler;
 
 public class V448WorldEventPacketHandler extends V440WorldEventPacketHandler {

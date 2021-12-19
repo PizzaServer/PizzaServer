@@ -24,10 +24,6 @@ public class BlockRegistry {
      * @param blockType {@link BaseBlockType} that needs to be registered
      */
     public static void register(BaseBlockType blockType) {
-        if (types.containsKey(blockType.getBlockId())) {
-            throw new IllegalArgumentException("Block id " + blockType.getBlockId() + " was already registered.");
-        }
-
         if (!blockType.getBlockId().startsWith("minecraft:")) {
             customTypes.add(blockType);
         }

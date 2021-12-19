@@ -1,13 +1,17 @@
 package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
+import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
 import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 
+import java.util.List;
 import java.util.Set;
 
 public interface BlockType {
@@ -54,6 +58,10 @@ public interface BlockType {
 
     int getBlockStateIndex(NBTCompound compound);
 
+    BoundingBox getBoundingBox(int index);
+
+    List<ItemStack> getDrops(int index);
+
     /**
      * The amount of light this block will absorb.
      * @return the amount of light absorbed by this block
@@ -77,6 +85,12 @@ public interface BlockType {
      * @return if the block has oxygen
      */
     boolean hasOxygen();
+
+    /**
+     * If this block type is liquid and swimmable.
+     * @return if the block type is a liquid and can entities can swim in this.
+     */
+    boolean isLiquid();
 
     /**
      * If the block type is solid.
@@ -134,6 +148,7 @@ public interface BlockType {
 
     /**
      * Retrieve the friction entities should receive on this block.
+     * MUST be within the range 0-1
      * @return friction of this block type
      */
     float getFriction();
@@ -211,17 +226,30 @@ public interface BlockType {
     boolean onInteract(Player player, Block block);
 
     /**
-     * Called every tick when a player is walking on this block type.
-     * @param player the player walking on the block
-     * @param block the block being walked on
+     * Called whenever an entity moves onto this block.
+     * @param entity the entity walking on the block
+     * @param block the block walked on
      */
-    void onWalkedOn(Player player, Block block);
+    void onWalkedOn(Entity entity, Block block);
+
+    /**
+     * Called whenever an entity walks off of this block.
+     * @param entity the entity who walked off this block
+     * @param block the block walked off of
+     */
+    void onWalkedOff(Entity entity, Block block);
+
+    /**
+     * Called every tick an entity is on this block.
+     * @param entity the entity who is on this block
+     * @param block the block the entity is standing on
+     */
+    void onStandingOn(Entity entity, Block block);
 
     /**
      * Called whenever a block next to this block is modified.
-     * @param player the player who caused the update
-     * @param block the block being walked on
+     * @param block the block being updated
      */
-    void onUpdate(Player player, Block block);
+    void onUpdate(Block block);
     
 }

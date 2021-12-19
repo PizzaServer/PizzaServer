@@ -1,7 +1,7 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.MobEquipmentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketRegistry;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handlers.*;
 
@@ -12,7 +12,10 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(SetLocalPlayerAsInitializedPacket.ID, new V419SetLocalPlayerAsInitializedPacketHandler())
             .register(PlayStatusPacket.ID, new V419PlayStatusPacketHandler())
             .register(PlayerActionPacket.ID, new V419PlayerActionPacketHandler())
+            .register(ChangeDimensionPacket.ID, new V419ChangeDimensionPacketHandler())
+            .register(SetPlayerGamemodePacket.ID, new V419SetPlayerGamemodePacketHandler())
             .register(DisconnectPacket.ID, new V419DisconnectPacketHandler())
+            .register(RespawnPacket.ID, new V419RespawnPacketHandler())
             .register(ResourcePacksInfoPacket.ID, new V419ResourcePacksInfoPacketHandler())
             .register(ResourcePackResponsePacket.ID, new V419ResourcePackResponsePacketHandler())
             .register(ResourcePackStackPacket.ID, new V419ResourcePackStackPacketHandler())
@@ -23,6 +26,7 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(ItemComponentPacket.ID, new V419ItemComponentPacketHandler())
             .register(CreativeContentPacket.ID, new V419CreativeContentPacketHandler())
             .register(BiomeDefinitionPacket.ID, new V419BiomeDefinitionPacketHandler())
+            .register(AvailableEntityIdentifiersPacket.ID, new V419AvailableEntityIdentifiersPacket())
             .register(RequestChunkRadiusPacket.ID, new V419RequestChunkRadiusPacketHandler())
             .register(ChunkRadiusUpdatedPacket.ID, new V419ChunkRadiusUpdatedPacketHandler())
             .register(WorldEventPacket.ID, new V419WorldEventPacketHandler())
@@ -30,10 +34,16 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(UpdateBlockPacket.ID, new V419UpdateBlockPacketHandler())
             .register(NetworkChunkPublisherUpdatePacket.ID, new V419NetworkChunkPublisherUpdatePacketHandler())
             .register(ClientCacheStatusPacket.ID, new V419ClientCacheStatusPacketHandler())
+            .register(SetTimePacket.ID, new V419SetTimePacketHandler())
             .register(PlayerListPacket.ID, new V419PlayerListPacketHandler())
+            .register(AdventureSettingsPacket.ID, new V419AdventureSettingsPacketHandler())
             .register(AddPlayerPacket.ID, new V419AddPlayerPacketHandler())
+            .register(AddEntityPacket.ID, new V419AddEntityPacketHandler())
+            .register(AddItemEntityPacket.ID, new V419AddItemEntityPacket())
+            .register(TakeItemEntityPacket.ID, new V419TakeItemEntityPacketHandler())
             .register(PlayerSkinPacket.ID, new V419PlayerSkinPacketHandler())
             .register(MovePlayerPacket.ID, new V419MovePlayerPacketHandler())
+            .register(MoveEntityAbsolutePacket.ID, new V419MoveEntityAbsolutePacketHandler())
             .register(InteractPacket.ID, new V419InteractPacketHandler())
             .register(ContainerOpenPacket.ID, new V419ContainerOpenPacketHandler())
             .register(ContainerClosePacket.ID, new V419ContainerClosePacketHandler())
@@ -48,11 +58,14 @@ public class V419PacketRegistry extends BasePacketRegistry {
             .register(UpdateAttributesPacket.ID, new V419UpdateAttributesPacketHandler())
             .register(TextPacket.ID, new V419TextPacketHandler())
             .register(SetEntityDataPacket.ID, new V419SetEntityDataPacketHandler())
+            .register(SetEntityVelocityPacket.ID, new V419SetEntityVelocityPacketHandler())
             .register(ViolationPacket.ID, new V419ViolationPacketHandler())
             .register(WorldSoundEventPacket.ID, new V419WorldSoundEventPacketHandler())
             .register(PlayerAnimatePacket.ID, new V419PlayerAnimatePacketHandler())
             .register(RemoveEntityPacket.ID, new V419RemoveEntityPacketHandler())
-            .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler());
+            .register(AnimateEntityPacket.ID, new V419AnimateEntityPacketHandler())
+            .register(EntityEventPacket.ID, new V419EntityEventPacketHandler())
+            .register(BossEventPacket.ID, new V419BossEventPacketHandler());
     }
 
 }

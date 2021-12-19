@@ -1,6 +1,5 @@
 package io.github.willqi.pizzaserver.api.entity.inventory;
 
-import io.github.willqi.pizzaserver.api.entity.Entity;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.Watchable;
@@ -18,12 +17,6 @@ public interface Inventory extends Watchable {
      * @return all possible slot types this inventory has
      */
     Set<InventorySlotType> getSlotTypes();
-
-    /**
-     * Get the entity who owns this inventory.
-     * @return the entity who owns this inventory
-     */
-    Entity getEntity();
 
     int getSize();
 
@@ -106,5 +99,12 @@ public interface Inventory extends Watchable {
      * @return if the player has permission to open the inventory by themselves
      */
     boolean canBeOpenedBy(Player player);
+
+    /**
+     * Check how many items in the stack provided will be left over if this item were to be added to the entity inventory.
+     * @param itemStack item stack to add
+     * @return excess amount
+     */
+    int getExcessIfAdded(ItemStack itemStack);
 
 }

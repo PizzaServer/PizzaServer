@@ -2,8 +2,8 @@ package io.github.willqi.pizzaserver.commons.utils;
 
 public class Vector2i {
 
-    private final int x;
-    private final int y;
+    private int x;
+    private int y;
 
 
     public Vector2i(int x, int y) {
@@ -15,8 +15,16 @@ public class Vector2i {
         return this.x;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
     public int getY() {
         return this.y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public Vector2i add(Vector2i vector) {
@@ -96,15 +104,15 @@ public class Vector2i {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Vector2i) {
-            Vector2i otherVector = (Vector2i) obj;
-            return otherVector.getX() == this.getX() && otherVector.getY() == this.getY();
+            Vector2i otherVector2i = (Vector2i) obj;
+            return otherVector2i.getX() == this.getX() && otherVector2i.getY() == this.getY();
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return (43 * this.getX()) + (43 * this.getY());
+        return (43 * this.getY()) + (43 * this.getX());
     }
 
 }

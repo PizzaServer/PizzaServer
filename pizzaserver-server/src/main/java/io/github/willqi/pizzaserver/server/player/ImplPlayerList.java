@@ -2,7 +2,7 @@ package io.github.willqi.pizzaserver.server.player;
 
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.PlayerListPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.PlayerListPacket;
 
 import java.util.*;
 import java.util.stream.Collectors;

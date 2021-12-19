@@ -11,11 +11,11 @@ import io.github.willqi.pizzaserver.nbt.streams.nbt.NBTOutputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataInputStream;
 import io.github.willqi.pizzaserver.nbt.streams.varint.VarIntDataOutputStream;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
-import io.github.willqi.pizzaserver.server.network.protocol.data.EntityLink;
-import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryAction;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.EntityLink;
+import io.github.willqi.pizzaserver.api.network.protocol.data.Experiment;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.AuthoritativeInventorySlot;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.InventoryAction;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -45,11 +45,11 @@ public class BasePacketBuffer extends ByteBuf {
 
 
     public BasePacketBuffer(BaseMinecraftVersion version) {
-        this(version, 256);
+        this(version, 16);
     }
 
     public BasePacketBuffer(BaseMinecraftVersion version, int initialCapacity) {
-        this(version, ByteBufAllocator.DEFAULT.buffer(initialCapacity));
+        this(version, ByteBufAllocator.DEFAULT.ioBuffer(initialCapacity));
     }
 
     public BasePacketBuffer(BaseMinecraftVersion version, ByteBuf buffer) {

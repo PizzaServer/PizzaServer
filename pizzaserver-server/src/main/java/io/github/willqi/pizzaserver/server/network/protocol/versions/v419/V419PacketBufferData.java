@@ -3,8 +3,9 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
 import io.github.willqi.pizzaserver.api.entity.meta.properties.EntityMetaPropertyName;
-import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.EntityEventType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.Experiment;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.InventoryActionType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBufferData;
 
 public class V419PacketBufferData extends BasePacketBufferData {
@@ -116,10 +117,10 @@ public class V419PacketBufferData extends BasePacketBufferData {
 
 
         // Commented lines represent properties with unknown types
-        this.registerEntityProperty(EntityMetaPropertyName.VARIANT, 2)
-            .registerEntityProperty(EntityMetaPropertyName.HEALTH, 1)
-            .registerEntityProperty(EntityMetaPropertyName.NAMETAG, 4)
+        this.registerEntityProperty(EntityMetaPropertyName.HEALTH, 1)
+            .registerEntityProperty(EntityMetaPropertyName.VARIANT, 2)
             .registerEntityProperty(EntityMetaPropertyName.COLOR, 3)
+            .registerEntityProperty(EntityMetaPropertyName.NAMETAG, 4)
             .registerEntityProperty(EntityMetaPropertyName.OWNER_EID, 5)
             .registerEntityProperty(EntityMetaPropertyName.TARGET_EID, 6)
             .registerEntityProperty(EntityMetaPropertyName.AIR, 7)
@@ -154,8 +155,8 @@ public class V419PacketBufferData extends BasePacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.POTION_AUX_VALUE, 36)
             .registerEntityProperty(EntityMetaPropertyName.LEAD_HOLDER_EID, 37)
             .registerEntityProperty(EntityMetaPropertyName.SCALE, 38)
-            .registerEntityProperty(EntityMetaPropertyName.INTERACTIVE_TAG, 39)
-            .registerEntityProperty(EntityMetaPropertyName.NPC_SKIN_INDEX, 40)
+            .registerEntityProperty(EntityMetaPropertyName.HAS_NPC_COMPONENT, 39)
+            // npc data
             // url tag
             .registerEntityProperty(EntityMetaPropertyName.MAX_AIR_SUPPLY, 42)
             .registerEntityProperty(EntityMetaPropertyName.MARK_VARIANT, 43)
@@ -212,7 +213,7 @@ public class V419PacketBufferData extends BasePacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.AREA_EFFECT_CLOUD_CHANGE_RATE, 96)
             .registerEntityProperty(EntityMetaPropertyName.AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP, 97)
             // pickup count
-            // interact text
+            .registerEntityProperty(EntityMetaPropertyName.INTERACTIVE_TAG, 99)
             .registerEntityProperty(EntityMetaPropertyName.TRADE_TIER, 100)
             .registerEntityProperty(EntityMetaPropertyName.MAX_TRADE_TIER, 101)
             .registerEntityProperty(EntityMetaPropertyName.TRADE_XP, 102)
@@ -234,20 +235,77 @@ public class V419PacketBufferData extends BasePacketBufferData {
             .registerEntityProperty(EntityMetaPropertyName.IS_BUOYANT, 118)
             .registerEntityProperty(EntityMetaPropertyName.BUOYANCY_DATA, 119);
 
-        this.registerInventoryActionType(InventoryActionType.TAKE, 0);
-        this.registerInventoryActionType(InventoryActionType.PLACE, 1);
-        this.registerInventoryActionType(InventoryActionType.SWAP, 2);
-        this.registerInventoryActionType(InventoryActionType.DROP, 3);
-        this.registerInventoryActionType(InventoryActionType.DESTROY, 4);
-        this.registerInventoryActionType(InventoryActionType.CONSUME, 5);
-        this.registerInventoryActionType(InventoryActionType.CREATE, 6);
-        this.registerInventoryActionType(InventoryActionType.LAB_TABLE_COMBINE, 7);
-        this.registerInventoryActionType(InventoryActionType.BEACON_PAYMENT, 8);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_RECIPE, 9);
-        this.registerInventoryActionType(InventoryActionType.AUTO_CRAFT_RECIPE, 10);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_CREATIVE, 11);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_NOT_IMPLEMENTED, 12);
-        this.registerInventoryActionType(InventoryActionType.CRAFT_RESULTS_DEPRECATED, 13);
+        this.registerEntityEvent(EntityEventType.JUMP, 1)
+                .registerEntityEvent(EntityEventType.HURT, 2)
+                .registerEntityEvent(EntityEventType.DEATH, 3)
+                .registerEntityEvent(EntityEventType.START_ATTACK, 4)
+                .registerEntityEvent(EntityEventType.STOP_ATTACK, 5)
+                .registerEntityEvent(EntityEventType.TAME_FAIL, 6)
+                .registerEntityEvent(EntityEventType.TAME_SUCCESS, 7)
+                .registerEntityEvent(EntityEventType.SHAKE_DRY, 8)
+                .registerEntityEvent(EntityEventType.USE_ITEM, 9)
+                .registerEntityEvent(EntityEventType.EAT_BLOCK, 10)
+                .registerEntityEvent(EntityEventType.FISH_HOOK_BUBBLE, 11)
+                .registerEntityEvent(EntityEventType.FISH_HOOK_POSITION, 12)
+                .registerEntityEvent(EntityEventType.FISH_HOOK_TIME, 13)
+                .registerEntityEvent(EntityEventType.FISH_HOOK_TEASE, 14)
+                .registerEntityEvent(EntityEventType.SQUID_INK_CLOUD, 15)
+                .registerEntityEvent(EntityEventType.CURE_ZOMBIE_VILLAGER, 16)
+                .registerEntityEvent(EntityEventType.PLAY_AMBIENT_SOUND, 17)
+                .registerEntityEvent(EntityEventType.RESPAWN, 18)
+                .registerEntityEvent(EntityEventType.GOLEM_OFFER_FLOWER, 19)
+                .registerEntityEvent(EntityEventType.GOLEM_WITHDRAW_FLOWER, 20)
+                .registerEntityEvent(EntityEventType.LOOKING_FOR_PARTNER, 21)
+                .registerEntityEvent(EntityEventType.ANGRY_VILLAGER, 22)
+                .registerEntityEvent(EntityEventType.HAPPY_VILLAGER, 23)
+                .registerEntityEvent(EntityEventType.WITCH_SPELL, 24)
+                .registerEntityEvent(EntityEventType.FIREWORK, 25)
+                .registerEntityEvent(EntityEventType.FOUND_PARTNER, 26)
+                .registerEntityEvent(EntityEventType.SILVERFISH_SPAWN, 27)
+                .registerEntityEvent(EntityEventType.GUARDIAN_ATTACK, 28)
+                .registerEntityEvent(EntityEventType.WITCH_DRINK_POTION, 29)
+                .registerEntityEvent(EntityEventType.WITCH_THROW_POTION, 30)
+                .registerEntityEvent(EntityEventType.MINECART_TNT_PRIME_FUSE, 31)
+                .registerEntityEvent(EntityEventType.CREEPER_PRIME_FUSE, 32)
+                .registerEntityEvent(EntityEventType.AIR_SUPPLY_EXPIRED, 33)
+                .registerEntityEvent(EntityEventType.ADD_XP_LEVELS, 34)
+                .registerEntityEvent(EntityEventType.GUARDIAN_CURSE, 35)
+                .registerEntityEvent(EntityEventType.AGENT_ARM_SWING, 36)
+                .registerEntityEvent(EntityEventType.ENDER_DRAGON_DEATH, 37)
+                .registerEntityEvent(EntityEventType.DUST_PARTICLES, 38)
+                .registerEntityEvent(EntityEventType.ARROW_SHAKE, 39)
+                .registerEntityEvent(EntityEventType.EATING_ITEM, 57)
+                .registerEntityEvent(EntityEventType.BABY_ANIMAL_FEED, 60)
+                .registerEntityEvent(EntityEventType.DEATH_SMOKE_CLOUD, 61)
+                .registerEntityEvent(EntityEventType.COMPLETE_TRADE, 62)
+                .registerEntityEvent(EntityEventType.REMOVE_LEASH, 63)
+                .registerEntityEvent(EntityEventType.LLAMA_CARAVAN_UPDATE, 64)
+                .registerEntityEvent(EntityEventType.CONSUME_TOTEM, 65)
+                .registerEntityEvent(EntityEventType.CHECK_TREASURE_HUNTER_ACHIEVEMENT, 66)
+                .registerEntityEvent(EntityEventType.ENTITY_SPAWN, 67)
+                .registerEntityEvent(EntityEventType.DRAGON_BREATH, 68)
+                .registerEntityEvent(EntityEventType.MERGE_ITEM_STACK_ENTITY, 69)
+                .registerEntityEvent(EntityEventType.START_SWIMMING, 70)
+                .registerEntityEvent(EntityEventType.BALLOON_POP, 71)
+                .registerEntityEvent(EntityEventType.TREASURE_HUNT, 72)
+                .registerEntityEvent(EntityEventType.SUMMON_AGENT, 73)
+                .registerEntityEvent(EntityEventType.CROSSBOW_CHARGED, 74)
+                .registerEntityEvent(EntityEventType.LANDED_ON_GROUND, 75);
+
+        this.registerInventoryActionType(InventoryActionType.TAKE, 0)
+            .registerInventoryActionType(InventoryActionType.PLACE, 1)
+            .registerInventoryActionType(InventoryActionType.SWAP, 2)
+            .registerInventoryActionType(InventoryActionType.DROP, 3)
+            .registerInventoryActionType(InventoryActionType.DESTROY, 4)
+            .registerInventoryActionType(InventoryActionType.CONSUME, 5)
+            .registerInventoryActionType(InventoryActionType.CREATE, 6)
+            .registerInventoryActionType(InventoryActionType.LAB_TABLE_COMBINE, 7)
+            .registerInventoryActionType(InventoryActionType.BEACON_PAYMENT, 8)
+            .registerInventoryActionType(InventoryActionType.CRAFT_RECIPE, 9)
+            .registerInventoryActionType(InventoryActionType.AUTO_CRAFT_RECIPE, 10)
+            .registerInventoryActionType(InventoryActionType.CRAFT_CREATIVE, 11)
+            .registerInventoryActionType(InventoryActionType.CRAFT_NOT_IMPLEMENTED, 12)
+            .registerInventoryActionType(InventoryActionType.CRAFT_RESULTS_DEPRECATED, 13);
     }
 
 }

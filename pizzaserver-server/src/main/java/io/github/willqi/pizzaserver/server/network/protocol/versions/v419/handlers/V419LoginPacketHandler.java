@@ -8,7 +8,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
 import io.github.willqi.pizzaserver.api.player.skin.SkinPersonaPieceTint;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.LoginPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.LoginPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 import io.github.willqi.pizzaserver.api.player.data.Device;

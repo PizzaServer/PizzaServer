@@ -2,9 +2,9 @@ package io.github.willqi.pizzaserver.commons.utils;
 
 public class Vector3 {
 
-    private final float x;
-    private final float y;
-    private final float z;
+    private float x;
+    private float y;
+    private float z;
 
 
     public Vector3(float x, float y, float z) {
@@ -17,12 +17,24 @@ public class Vector3 {
         return this.x;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
     public float getY() {
         return this.y;
     }
 
+    public void setY(float y) {
+        this.y = y;
+    }
+
     public float getZ() {
         return this.z;
+    }
+
+    public void setZ(float z) {
+        this.z = z;
     }
 
     public Vector3 add(Vector3 vector3) {
@@ -97,22 +109,30 @@ public class Vector3 {
                 + Math.pow(this.getZ() - vector3.getZ(), 2));
     }
 
-    public double getLength() {
-        return Math.sqrt(Math.pow(this.getX(), 2)
+    public float getLength() {
+        return (float) Math.sqrt(Math.pow(this.getX(), 2)
                 + Math.pow(this.getY(), 2)
                 + Math.pow(this.getZ(), 2));
     }
 
     public Vector3 normalize() {
-        double length = this.getLength();
-        return new Vector3((float) (this.getX() / length), (float) (this.getY() / length), (float) (this.getZ() / length));
+        float length = this.getLength();
+        return new Vector3(this.getX() / length, this.getY() / length, this.getZ() / length);
     }
 
-    public double dot(Vector3 vector3) {
+    public Vector3 round() {
+        return new Vector3(Math.round(this.getX()), Math.round(this.getY()), Math.round(this.getZ()));
+    }
+
+    public Vector3 floor() {
+        return new Vector3((float) Math.floor(this.getX()), (float) Math.floor(this.getY()), (float) Math.floor(this.getZ()));
+    }
+
+    public float dot(Vector3 vector3) {
         return (this.getX() * vector3.getX()) + (this.getY() * vector3.getY()) + (this.getZ() * vector3.getZ());
     }
 
-    public double dot(Vector3i vector3i) {
+    public float dot(Vector3i vector3i) {
         return (this.getX() * vector3i.getX()) + (this.getY() * vector3i.getY()) + (this.getZ() * vector3i.getZ());
     }
 

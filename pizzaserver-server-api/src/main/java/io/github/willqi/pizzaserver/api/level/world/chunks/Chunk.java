@@ -59,7 +59,7 @@ public interface Chunk extends Watchable {
      * @param position chunk column coordinates
      * @return y coordinate
      */
-    int getHighestBlockAt(Vector2i position);
+    Block getHighestBlockAt(Vector2i position);
 
     /**
      * Retrieve the highest block coordinate in this chunk column.
@@ -67,7 +67,7 @@ public interface Chunk extends Watchable {
      * @param z chunk column z
      * @return y coordinate
      */
-    int getHighestBlockAt(int x, int z);
+    Block getHighestBlockAt(int x, int z);
 
     /**
      * Retrieve the {@link Block} at these chunk coordinates.

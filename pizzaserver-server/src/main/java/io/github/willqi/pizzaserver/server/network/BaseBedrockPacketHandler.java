@@ -1,8 +1,8 @@
 package io.github.willqi.pizzaserver.server.network;
 
 import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.MobEquipmentPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.MobEquipmentPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 
 public abstract class BaseBedrockPacketHandler {
 
@@ -44,6 +44,10 @@ public abstract class BaseBedrockPacketHandler {
 
     public void onPacket(InteractPacket packet) {}
 
+    public void onPacket(AdventureSettingsPacket packet) {}
+
+    public void onPacket(RespawnPacket packet) {}
+
 
     // inventory actions
     public void onPacket(ContainerClosePacket packet) {}
@@ -55,5 +59,7 @@ public abstract class BaseBedrockPacketHandler {
 
     // misc
     public void onPacket(ViolationPacket packet) {}
+
+    public void onPacket(BossEventPacket packet) {}
 
 }

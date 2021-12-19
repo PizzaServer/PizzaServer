@@ -13,6 +13,12 @@ public interface LevelManager {
     boolean isLevelLoaded(String name);
 
     /**
+     * Retrieve the {@link Level} associated with the server configuration that all players spawn at by default.
+     * @return default level
+     */
+    Level getDefaultLevel();
+
+    /**
      * Get a {@link Level} by its name.
      * If the level is not currently loaded, it will fetch the level from the file system.
      * @param name name of the level

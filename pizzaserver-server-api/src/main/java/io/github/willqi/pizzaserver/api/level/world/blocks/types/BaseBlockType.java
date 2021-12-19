@@ -2,6 +2,9 @@ package io.github.willqi.pizzaserver.api.level.world.blocks.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.item.ItemRegistry;
+import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.item.ToolTypeRegistry;
 import io.github.willqi.pizzaserver.api.item.data.ToolTypeID;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockRegistry;
@@ -9,11 +12,13 @@ import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockLoot;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.data.PushResponse;
+import io.github.willqi.pizzaserver.api.utils.BoundingBox;
 import io.github.willqi.pizzaserver.nbt.tags.NBTCompound;
 import io.github.willqi.pizzaserver.api.item.data.ToolType;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 public abstract class BaseBlockType implements BlockType {
@@ -52,6 +57,19 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
+    public BoundingBox getBoundingBox(int index) {
+        BoundingBox boundingBox = new BoundingBox();
+        boundingBox.setHeight(1f);
+        boundingBox.setWidth(1f);
+        return boundingBox;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(int index) {
+        return Collections.singletonList(ItemRegistry.getItem(this.getBlockId(), 1, index));
+    }
+
+    @Override
     public int getLightAbsorption() {
         return 0;
     }
@@ -69,6 +87,11 @@ public abstract class BaseBlockType implements BlockType {
     @Override
     public boolean hasOxygen() {
         return true;
+    }
+
+    @Override
+    public boolean isLiquid() {
+        return false;
     }
 
     @Override
@@ -113,7 +136,7 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public float getFriction() {
-        return 0.1f;
+        return 0.6f;
     }
 
     @Override
@@ -172,9 +195,15 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public void onWalkedOn(Player player, Block block) {}
+    public void onWalkedOn(Entity entity, Block block) {}
 
     @Override
-    public void onUpdate(Player player, Block block) {}
+    public void onWalkedOff(Entity entity, Block block) {}
+
+    @Override
+    public void onStandingOn(Entity entity, Block block) {}
+
+    @Override
+    public void onUpdate(Block block) {}
 
 }

@@ -1,7 +1,6 @@
 package io.github.willqi.pizzaserver.server.level.world.chunks;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
-import io.github.willqi.pizzaserver.api.entity.LivingEntity;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BaseBlockType;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
@@ -14,10 +13,10 @@ import io.github.willqi.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.willqi.pizzaserver.format.api.chunks.subchunks.BlockPalette;
-import io.github.willqi.pizzaserver.server.entity.BaseEntity;
+import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldChunkPacket;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.UpdateBlockPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldChunkPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.UpdateBlockPacket;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
 import io.github.willqi.pizzaserver.api.level.world.blocks.types.BlockTypeID;
 
@@ -46,7 +45,7 @@ public class ImplChunk implements Chunk {
     private AtomicInteger activeChunkLoaders = new AtomicInteger(0);
 
     // Entities in this chunk
-    private final Set<Entity> entities = new HashSet<>();
+    private final Set<ImplEntity> entities = new HashSet<>();
 
     // The players who can see this chunk
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
@@ -98,10 +97,10 @@ public class ImplChunk implements Chunk {
      * The entity is also spawned to any viewers of this chunk within render distance.
      * @param entity the entity to spawn
      */
-    public void addEntity(Entity entity) {
+    public void addEntity(ImplEntity entity) {
         if (!this.entities.contains(entity)) {
             for (Player player : this.getViewers()) {
-                if (((BaseEntity) entity).canBeSpawnedTo(player)) {
+                if (entity.canBeSpawnedTo(player)) {
                     entity.spawnTo(player);
                 }
             }
@@ -119,7 +118,7 @@ public class ImplChunk implements Chunk {
         if (this.entities.remove(entity)) {
             for (Player player : this.getViewers()) {
                 if (!player.equals(entity)) {
-                    if (((BaseEntity) entity).shouldBeDespawnedFrom(player)) {
+                    if (((ImplEntity) entity).shouldBeDespawnedFrom(player)) {
                         entity.despawnFrom(player);
                     }
                 }
@@ -133,15 +132,16 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public int getHighestBlockAt(Vector2i position) {
+    public Block getHighestBlockAt(Vector2i position) {
         return this.getHighestBlockAt(position.getX(), position.getY());
     }
 
     @Override
-    public int getHighestBlockAt(int x, int z) {
+    public Block getHighestBlockAt(int x, int z) {
         int chunkBlockX = x >= 0 ? x : 16 + x;
         int chunkBlockZ = z >= 0 ? z : 16 + z;
-        return this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ);
+        int chunkBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
+        return this.getBlock(chunkBlockX, chunkBlockY, chunkBlockZ);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class ImplChunk implements Chunk {
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
-            throw new IllegalArgumentException("Could not change block outside chunk");
+            throw new IllegalArgumentException("Could not get block outside chunk");
         }
         int subChunkIndex = y / 16;
         int chunkBlockX = x >= 0 ? x : 16 + x;
@@ -260,8 +260,13 @@ public class ImplChunk implements Chunk {
             BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
             mainBlockLayer.setBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ, entry);
 
-            if (block.getBlockType().isSolid() && y > this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ)) {
-                this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, y);
+            int highestBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
+            if (y >= highestBlockY) {
+                int newHighestBlockY = y;
+                while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
+                    newHighestBlockY--;
+                }
+                this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
             }
 
             // Send update block packet
@@ -373,9 +378,11 @@ public class ImplChunk implements Chunk {
                 }
 
                 // Send the entities of this chunk to the player
-                for (Entity entity : this.getEntities()) {
-                    if (((BaseEntity) entity).canBeSpawnedTo(player)) {
-                        entity.spawnTo(player);
+                if (player.isLocallyInitialized()) {
+                    for (Entity entity : this.getEntities()) {
+                        if (((ImplEntity) entity).canBeSpawnedTo(player)) {
+                            entity.spawnTo(player);
+                        }
                     }
                 }
             }).schedule();

@@ -4,8 +4,8 @@ import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.utils.BlockLocation;
-import io.github.willqi.pizzaserver.server.network.protocol.data.WorldEventType;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldEventPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.data.WorldEventType;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldEventPacket;
 
 import java.util.Optional;
 

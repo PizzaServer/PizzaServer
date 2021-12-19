@@ -1,10 +1,16 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreSpawnEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerSpawnEvent;
 import io.github.willqi.pizzaserver.api.item.ItemRegistry;
 import io.github.willqi.pizzaserver.api.item.types.BlockItemType;
 import io.github.willqi.pizzaserver.api.item.types.ItemType;
+import io.github.willqi.pizzaserver.api.level.data.gamerules.BooleanGameRule;
+import io.github.willqi.pizzaserver.api.level.data.gamerules.GameRule;
+import io.github.willqi.pizzaserver.api.level.data.gamerules.GameRuleID;
 import io.github.willqi.pizzaserver.api.player.Player;
 import io.github.willqi.pizzaserver.api.player.PlayerList;
 import io.github.willqi.pizzaserver.api.level.world.World;
@@ -16,18 +22,18 @@ import io.github.willqi.pizzaserver.server.ImplServer;
 import io.github.willqi.pizzaserver.api.level.data.Difficulty;
 import io.github.willqi.pizzaserver.api.data.ServerOrigin;
 import io.github.willqi.pizzaserver.server.level.world.ImplWorld;
-import io.github.willqi.pizzaserver.server.network.protocol.data.Experiment;
+import io.github.willqi.pizzaserver.api.network.protocol.data.Experiment;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerPreLoginEvent;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.willqi.pizzaserver.server.network.protocol.data.PackInfo;
-import io.github.willqi.pizzaserver.server.network.protocol.data.PlayerMovementType;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.data.PackInfo;
+import io.github.willqi.pizzaserver.api.network.protocol.data.PlayerMovementType;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.api.packs.ResourcePack;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 import io.github.willqi.pizzaserver.api.player.data.Gamemode;
-import io.github.willqi.pizzaserver.api.player.data.PermissionLevel;
+import io.github.willqi.pizzaserver.api.player.data.PlayerPermissionLevel;
 import io.github.willqi.pizzaserver.commons.utils.Vector2;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldType;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
@@ -88,6 +94,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         }
 
         ImplPlayer player = new ImplPlayer(this.server, this.session, loginPacket);
+        EntityRegistry.getDefinition(HumanEntityDefinition.ID).onCreation(player);
+
         this.player = player;
 
         PlayerPreLoginEvent event = new PlayerPreLoginEvent(player);
@@ -254,6 +262,7 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     this.player.setPitch(data.getPitch());
                     this.player.setYaw(data.getYaw());
                     this.player.setHeadYaw(data.getYaw());
+                    this.player.setGamemode(data.getGamemode());
 
                     // Get their spawn location
                     World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
@@ -293,6 +302,15 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                     biomeDefinitionPacket.setTag(this.player.getVersion().getBiomeDefinitions());
                     this.player.sendPacket(biomeDefinitionPacket);
 
+                    AvailableEntityIdentifiersPacket availableEntityIdentifiersPacket = new AvailableEntityIdentifiersPacket();
+                    Set<AvailableEntityIdentifiersPacket.Entry> entityEntries = new HashSet<>();
+                    for (EntityDefinition definition : EntityRegistry.getDefinitions()) {
+                        entityEntries.add(new AvailableEntityIdentifiersPacket.Entry(definition.getId(), definition.isSummonable(), definition.hasSpawnEgg()));
+                    }
+                    availableEntityIdentifiersPacket.setEntries(entityEntries);
+                    this.player.sendPacket(availableEntityIdentifiersPacket);
+
+
                     // Sent the full player list to this player
                     List<PlayerList.Entry> entries = this.player.getServer().getPlayers().stream()
                             .filter(player -> !player.isHiddenFrom(this.player))
@@ -300,15 +318,20 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
                             .collect(Collectors.toList());
                     this.player.getPlayerList().addEntries(entries);
 
-                    location.getWorld().addEntity(this.player, location);
-                    this.session.removePacketHandler(this);
-                    this.addGamePacketHandlers();
-
                     PlayerSpawnEvent playerSpawnEvent = new PlayerSpawnEvent(this.player);
                     this.player.getServer().getEventManager().call(playerSpawnEvent);
                     if (playerSpawnEvent.isCancelled()) {
                         this.player.disconnect();
+                        return;
                     }
+
+                    location.getWorld().addEntity(this.player, location);
+                    this.session.removePacketHandler(this);
+                    this.addGamePacketHandlers();
+
+                    PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+                    playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
+                    this.session.sendPacket(playStatusPacket);
                 }).schedule();
     }
 
@@ -325,8 +348,8 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         // Entity specific
         startGamePacket.setDimension(Dimension.OVERWORLD);
         startGamePacket.setEntityId(this.player.getId());
-        startGamePacket.setPlayerGamemode(Gamemode.SURVIVAL);
-        startGamePacket.setPlayerPermissionLevel(PermissionLevel.MEMBER);
+        startGamePacket.setPlayerGamemode(this.player.getGamemode());
+        startGamePacket.setPlayerPermissionLevel(PlayerPermissionLevel.MEMBER);
         startGamePacket.setRuntimeEntityId(this.player.getId());
         startGamePacket.setPlayerRotation(direction);
         startGamePacket.setPlayerSpawn(position.add(0, 2, 0));
@@ -350,6 +373,11 @@ public class LoginPacketHandler extends BaseBedrockPacketHandler {
         startGamePacket.setWorldSpawn(world.getSpawnCoordinates());
         startGamePacket.setWorldId(Base64.getEncoder().encodeToString(startGamePacket.getServerName().getBytes(StandardCharsets.UTF_8)));
         startGamePacket.setWorldType(WorldType.INFINITE);
+        startGamePacket.setGameRules(new HashSet<GameRule<?>>() {
+            {
+                this.add(new BooleanGameRule(GameRuleID.SHOW_COORDINATES, true));
+            }
+        });
 
         return startGamePacket;
     }

@@ -1,25 +1,38 @@
 package io.github.willqi.pizzaserver.server.network.handlers;
 
 import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
+import io.github.willqi.pizzaserver.api.entity.ItemEntity;
+import io.github.willqi.pizzaserver.api.entity.data.DamageCause;
+import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
+import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
+import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.willqi.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.willqi.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.Block;
+import io.github.willqi.pizzaserver.api.player.AdventureSettings;
+import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.server.entity.ImplEntity;
 import io.github.willqi.pizzaserver.server.entity.inventory.InventoryID;
 import io.github.willqi.pizzaserver.server.network.BaseBedrockPacketHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionSwapHandler;
 import io.github.willqi.pizzaserver.server.network.handlers.inventory.InventoryActionTakeHandler;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.authoritative.actions.*;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionAction;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.data.InventoryTransactionReleaseItemData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemOnEntityData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.sources.InventoryTransactionSourceType;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.sources.InventoryTransactionWorldSource;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.authoritative.actions.*;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.InventoryTransactionAction;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionReleaseItemData;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemData;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemOnEntityData;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.sources.InventoryTransactionSourceType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.sources.InventoryTransactionWorldSource;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
 import io.github.willqi.pizzaserver.server.player.ImplPlayer;
 
 import java.util.ArrayList;
@@ -36,6 +49,10 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
     @Override
     public void onPacket(InteractPacket packet) {
+        if (!this.player.isAlive()) {
+            return;
+        }
+
         if (packet.getAction() == InteractPacket.Type.OPEN_INVENTORY && !this.player.getOpenInventory().isPresent()) {
             this.player.openInventory(this.player.getInventory());
         }
@@ -143,6 +160,10 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
     public void onPacket(InventoryTransactionPacket packet) {
         ItemStack heldItemStack = this.player.getInventory().getHeldItem();
 
+        if (!this.player.isAlive()) {
+            return;
+        }
+
         switch (packet.getType()) {
             case NORMAL:
                 // Dropping items is still handled by this packet despite server authoritative inventories
@@ -163,7 +184,6 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
 
                             ItemStack droppedStack = itemStack.clone();
                             droppedStack.setCount(amountDropped);
-                            // TODO: spawn item entity logic
 
                             InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, droppedStack);
                             this.player.getServer().getEventManager().call(dropItemEvent);
@@ -171,6 +191,11 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                                 // update server inventory to reflect dropped count
                                 itemStack.setCount(itemStack.getCount() - amountDropped);
                                 this.player.getInventory().setSlot(this.player, nextAction.getSlot(), itemStack, true);
+
+                                // Drop item
+                                ItemEntity itemEntity = EntityRegistry.getItemEntity(droppedStack);
+                                itemEntity.setPickupDelay(40);
+                                this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().add(0, 1.3f, 0), this.player.getDirectionVector().multiply(0.25f, 0.6f, 0.25f));
                             } else {
                                 // Revert clientside slot change
                                 this.player.getInventory().sendSlot(this.player, nextAction.getSlot());
@@ -192,7 +217,7 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                     return;
                 }
 
-                if (this.player.canReach(useItemData.getBlockCoordinates())) {
+                if (this.player.canReach(useItemData.getBlockCoordinates(), 7)) {
                     Block block = this.player.getWorld().getBlock(useItemData.getBlockCoordinates());
 
                     boolean isCurrentSelectedSlot = useItemData.getHotbarSlot() == this.player.getInventory().getSelectedSlot();
@@ -238,11 +263,28 @@ public class InventoryPacketHandler extends BaseBedrockPacketHandler {
                 if (!entity.isPresent() || useItemOnEntityData.getEntityRuntimeId() == this.player.getId()) {
                     return;
                 }
+                if (entity.get().isHiddenFrom(this.player)) {
+                    this.player.getServer().getLogger().warn(this.player.getUsername() + " tried to hit a entity that was hidden to them");
+                    return;
+                }
 
-                if (this.player.canReach(entity.get().getLocation())) {
+                if (this.player.canReach(entity.get().getLocation(), this.player.getGamemode().equals(Gamemode.CREATIVE) ? 9 : 6)) {
+                    ImplEntity implEntity = (ImplEntity) entity.get();
                     switch (useItemOnEntityData.getAction()) {
                         case ATTACK:
-                            // TODO: deal damage
+                            AdventureSettings adventureSettings = this.player.getAdventureSettings();
+                            if (((implEntity instanceof Player) && !adventureSettings.canAttackPlayers()) || !((implEntity instanceof Player) || adventureSettings.canAttackMobs())) {
+                                return;
+                            }
+
+                            float damage = this.player.getInventory().getHeldItem().getItemType().getDamage();
+                            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(),
+                                    this.player,
+                                    DamageCause.ATTACK,
+                                    damage,
+                                    ImplEntity.NO_HIT_TICKS,
+                                    new Vector3(0.6f, 0.4f, 0.6f));
+                            implEntity.damage(damageEvent);
                             break;
                         case INTERACT:
                             PlayerEntityInteractEvent playerEntityInteractEvent = new PlayerEntityInteractEvent(this.player, entity.get());

@@ -2,15 +2,15 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 
 import io.github.willqi.pizzaserver.api.item.ItemStack;
 import io.github.willqi.pizzaserver.api.level.world.blocks.BlockFace;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionAction;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionSlotChange;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.InventoryTransactionType;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.data.InventoryTransactionData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.data.InventoryTransactionReleaseItemData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemOnEntityData;
-import io.github.willqi.pizzaserver.server.network.protocol.data.inventory.transactions.sources.*;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.InventoryTransactionPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.InventoryTransactionAction;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.InventoryTransactionSlotChange;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.InventoryTransactionType;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionData;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionReleaseItemData;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemData;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.data.InventoryTransactionUseItemOnEntityData;
+import io.github.willqi.pizzaserver.api.network.protocol.data.inventory.transactions.sources.*;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.InventoryTransactionPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 

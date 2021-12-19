@@ -1,6 +1,6 @@
 package io.github.willqi.pizzaserver.server.network.protocol.versions.v448.handlers;
 
-import io.github.willqi.pizzaserver.server.network.protocol.packets.ResourcePacksInfoPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.ResourcePacksInfoPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.v422.handlers.V422ResourcePacksInfoPacketHandler;
 

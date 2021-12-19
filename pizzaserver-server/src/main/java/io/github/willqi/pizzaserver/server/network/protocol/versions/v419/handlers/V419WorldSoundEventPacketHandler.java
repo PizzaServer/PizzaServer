@@ -3,7 +3,7 @@ package io.github.willqi.pizzaserver.server.network.protocol.versions.v419.handl
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.github.willqi.pizzaserver.api.level.world.data.WorldSound;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.WorldSoundEventPacket;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.WorldSoundEventPacket;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BasePacketBuffer;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseProtocolPacketHandler;
 
@@ -333,7 +333,10 @@ public class V419WorldSoundEventPacketHandler extends BaseProtocolPacketHandler<
         WorldSoundEventPacket packet = new WorldSoundEventPacket();
         packet.setSound(this.sounds.inverse().get(buffer.readUnsignedVarInt()));
         packet.setVector3(buffer.readVector3());
-        packet.setBlockID(buffer.readVarInt());
+        int blockId = buffer.readVarInt();
+        if (blockId != -1) {
+            packet.setBlock(buffer.getVersion().getBlockFromRuntimeId(blockId));
+        }
         packet.setEntityType(buffer.readString());
         packet.setBaby(buffer.readBoolean());
         packet.setGlobal(buffer.readBoolean());
@@ -344,7 +347,11 @@ public class V419WorldSoundEventPacketHandler extends BaseProtocolPacketHandler<
     public void encode(WorldSoundEventPacket packet, BasePacketBuffer buffer) {
         buffer.writeUnsignedVarInt(this.sounds.get(packet.getSound()));
         buffer.writeVector3(packet.getVector3());
-        buffer.writeVarInt(packet.getBlockID());
+        if (packet.getBlock().isPresent()) {
+            buffer.writeVarInt(buffer.getVersion().getBlockRuntimeId(packet.getBlock().get().getBlockType().getBlockId(), packet.getBlock().get().getBlockState()));
+        } else {
+            buffer.writeVarInt(-1);
+        }
         buffer.writeString(packet.getEntityType());
         buffer.writeBoolean(packet.isBaby());
         buffer.writeBoolean(packet.isGlobal());

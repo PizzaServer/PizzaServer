@@ -1,66 +1,70 @@
 package io.github.willqi.pizzaserver.server.player;
 
-import io.github.willqi.pizzaserver.api.entity.Entity;
+import io.github.willqi.pizzaserver.api.entity.EntityRegistry;
 import io.github.willqi.pizzaserver.api.entity.inventory.Inventory;
-import io.github.willqi.pizzaserver.api.entity.meta.EntityMetaData;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerStartSneakingEvent;
-import io.github.willqi.pizzaserver.api.event.type.player.PlayerStopSneakingEvent;
-import io.github.willqi.pizzaserver.api.level.world.chunks.Chunk;
-import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
-import io.github.willqi.pizzaserver.api.player.Player;
-import io.github.willqi.pizzaserver.api.player.PlayerList;
-import io.github.willqi.pizzaserver.api.player.attributes.Attribute;
-import io.github.willqi.pizzaserver.api.player.attributes.PlayerAttributes;
-import io.github.willqi.pizzaserver.api.player.skin.Skin;
-import io.github.willqi.pizzaserver.api.utils.Location;
-import io.github.willqi.pizzaserver.commons.utils.Vector3;
-import io.github.willqi.pizzaserver.commons.utils.Tuple;
-import io.github.willqi.pizzaserver.commons.utils.Vector3i;
-import io.github.willqi.pizzaserver.server.ImplServer;
-import io.github.willqi.pizzaserver.server.entity.BaseEntity;
-import io.github.willqi.pizzaserver.server.entity.BaseLivingEntity;
+import io.github.willqi.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlag;
 import io.github.willqi.pizzaserver.api.entity.meta.flags.EntityMetaFlagCategory;
+import io.github.willqi.pizzaserver.api.event.type.block.BlockStopBreakEvent;
+import io.github.willqi.pizzaserver.api.event.type.entity.EntityDamageEvent;
+import io.github.willqi.pizzaserver.api.event.type.player.PlayerRespawnEvent;
+import io.github.willqi.pizzaserver.api.level.world.World;
+import io.github.willqi.pizzaserver.api.level.world.data.Dimension;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.BaseBedrockPacket;
+import io.github.willqi.pizzaserver.api.player.AdventureSettings;
+import io.github.willqi.pizzaserver.api.player.Player;
+import io.github.willqi.pizzaserver.api.player.PlayerList;
+import io.github.willqi.pizzaserver.api.entity.data.attributes.Attribute;
+import io.github.willqi.pizzaserver.api.player.data.Gamemode;
+import io.github.willqi.pizzaserver.api.utils.Location;
+import io.github.willqi.pizzaserver.api.utils.TextMessage;
+import io.github.willqi.pizzaserver.api.utils.TextType;
+import io.github.willqi.pizzaserver.commons.utils.NumberUtils;
+import io.github.willqi.pizzaserver.commons.utils.Vector3;
+import io.github.willqi.pizzaserver.commons.utils.Vector3i;
+import io.github.willqi.pizzaserver.server.ImplServer;
+import io.github.willqi.pizzaserver.server.entity.ImplHumanEntity;
 import io.github.willqi.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.willqi.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.willqi.pizzaserver.server.network.BedrockClientSession;
-import io.github.willqi.pizzaserver.server.network.protocol.data.MovementMode;
-import io.github.willqi.pizzaserver.server.network.protocol.packets.*;
-import io.github.willqi.pizzaserver.api.player.attributes.AttributeType;
+import io.github.willqi.pizzaserver.api.network.protocol.packets.*;
+import io.github.willqi.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.willqi.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
 import io.github.willqi.pizzaserver.api.player.data.Device;
 import io.github.willqi.pizzaserver.server.player.playerdata.PlayerData;
-import io.github.willqi.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
 import java.io.IOException;
 
-public class ImplPlayer extends BaseLivingEntity implements Player {
+public class ImplPlayer extends ImplHumanEntity implements Player {
 
-    private final ImplServer server;
-    private final BedrockClientSession session;
-    private boolean autoSave = true;
+    protected final ImplServer server;
+    protected final BedrockClientSession session;
+    protected boolean locallyInitialized;
+    protected boolean autoSave = true;
 
-    private final BaseMinecraftVersion version;
-    private final Device device;
-    private final String xuid;
-    private final UUID uuid;
-    private final String username;
-    private final String languageCode;
+    protected final BaseMinecraftVersion version;
+    protected final Device device;
+    protected final String xuid;
+    protected final UUID uuid;
+    protected final String username;
+    protected final String languageCode;
 
-    private final PlayerList playerList = new ImplPlayerList(this);
-    private Skin skin;
+    protected final PlayerList playerList = new ImplPlayerList(this);
 
-    private int chunkRadius = 3;
+    protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
+    protected Dimension dimensionTransferScreen = null;
 
-    private final PlayerAttributes attributes = new PlayerAttributes();
+    protected Inventory openInventory = null;
 
-    private Inventory openInventory = null;
+    protected Gamemode gamemode;
+    protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings();
 
-    private final BreakingData breakingData = new BreakingData(this);
+    protected final BreakingData breakingData = new BreakingData(this);
 
 
     public ImplPlayer(ImplServer server, BedrockClientSession session, LoginPacket loginPacket) {
+        super(EntityRegistry.getDefinition(HumanEntityDefinition.ID));
         this.server = server;
         this.session = session;
 
@@ -72,6 +76,12 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         this.languageCode = loginPacket.getLanguageCode();
         this.skin = loginPacket.getSkin();
         this.inventory = new ImplPlayerInventory(this);
+
+        this.setDisplayName(this.getUsername());
+        this.physicsEngine.setPositionUpdate(false);
+
+        // Players will die at any health lower than 0.5
+        this.getAttribute(AttributeType.HEALTH).setMinimumValue(0.5f);
     }
 
     @Override
@@ -105,99 +115,139 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
     }
 
     @Override
-    public Skin getSkin() {
-        return this.skin;
+    public boolean isLocallyInitialized() {
+        return this.locallyInitialized;
     }
 
     @Override
-    public void setSkin(Skin newSkin) {
-        this.skin = newSkin;
-        PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
-        playerSkinPacket.setPlayerUUID(this.getUUID());
-        playerSkinPacket.setSkin(newSkin);
-        playerSkinPacket.setTrusted(newSkin.isTrusted());
-
-        for (Player viewer : this.getViewers()) {
-            viewer.sendPacket(playerSkinPacket);
-        }
-        this.sendPacket(playerSkinPacket);
+    public Gamemode getGamemode() {
+        return this.gamemode;
     }
 
     @Override
-    public boolean isSneaking() {
-        return this.getMetaData().hasFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING);
+    public void setGamemode(Gamemode gamemode) {
+        this.gamemode = gamemode;
+
+        if (this.hasSpawned()) {
+            SetPlayerGamemodePacket setPlayerGamemodePacket = new SetPlayerGamemodePacket();
+            setPlayerGamemodePacket.setGamemode(gamemode);
+            this.sendPacket(setPlayerGamemodePacket);
+            this.updateAdventureSettings();
+        }
+    }
+
+    /**
+     * Updates the adventure settings based off of the current gamemode.
+     */
+    protected void updateAdventureSettings() {
+        AdventureSettings adventureSettings = this.getAdventureSettings();
+        adventureSettings.setCanFly(this.getGamemode().equals(Gamemode.CREATIVE));
+        if (adventureSettings.isFlying()) {
+            adventureSettings.setIsFlying(this.getGamemode().equals(Gamemode.CREATIVE));
+        }
+        this.setAdventureSettings(adventureSettings);
     }
 
     @Override
-    public void setSneaking(boolean sneaking) {
-        boolean isCurrentlySneaking = this.isSneaking();
-        boolean updateSneakingData = false;
-        if (sneaking && !isCurrentlySneaking) {
-            PlayerStartSneakingEvent event = new PlayerStartSneakingEvent(this);
-            this.getServer().getEventManager().call(event);
-            updateSneakingData = true;
-        } else if (!sneaking && isCurrentlySneaking) {
-            PlayerStopSneakingEvent event = new PlayerStopSneakingEvent(this);
-            this.getServer().getEventManager().call(event);
-            updateSneakingData = true;
+    public AdventureSettings getAdventureSettings() {
+        return this.adventureSettings.clone();
+    }
+
+    @Override
+    public void setAdventureSettings(AdventureSettings adventureSettings) {
+        ImplAdventureSettings settings = (ImplAdventureSettings) adventureSettings;
+        this.adventureSettings = settings;
+
+        AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
+        adventureSettingsPacket.setUniqueEntityRuntimeId(this.getId());
+        adventureSettingsPacket.setPlayerPermissionLevel(settings.getPlayerPermissionLevel());
+        adventureSettingsPacket.setCommandPermissionLevel(settings.getCommandPermissionLevel());
+        adventureSettingsPacket.setFlags(settings.getFlags());
+        this.sendPacket(adventureSettingsPacket);
+    }
+
+    public void onInitialized() {
+        this.locallyInitialized = true;
+
+        for (Player player : this.getServer().getPlayers()) {
+            if (!this.isHiddenFrom(player) && !player.equals(this)) {
+                player.getPlayerList().addEntry(this.getPlayerListEntry());
+            }
         }
 
-        if (updateSneakingData) {
-            this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_SNEAKING, sneaking);
-            this.setMetaData(this.getMetaData());
-        }
+        this.getChunkManager().onLocallyInitialized();
     }
 
     public BreakingData getBlockBreakData() {
         return this.breakingData;
     }
 
-    @Override
-    public float getHeight() {
-        return 1.8f;
+    public boolean canReach(Vector3i vector3i, float maxDistance) {
+        return this.canReach(vector3i.toVector3(), maxDistance);
     }
 
-    @Override
-    public float getWidth() {
-        return 0.6f;
-    }
-
-    @Override
-    public float getEyeHeight() {
-        return 1.62f;
-    }
-
-    public boolean canReach(Vector3i vector3i) {
-        return this.canReach(vector3i.toVector3());
-    }
-
-    public boolean canReach(Vector3 vector3) {
+    public boolean canReach(Vector3 vector3, float maxDistance) {
         Vector3 position = this.getLocation().add(0, this.getEyeHeight(), 0);
 
         // Distance check
-        // TODO: take into account creative mode when gamemodes are implemented
         double distance = position.distanceBetween(vector3);
-        if (distance > 7) {
+        if (distance > maxDistance) {
             return false;
         }
 
         // Direction check
         Vector3 playerDirectionVector = this.getDirectionVector();
         Vector3 targetDirectionVector = vector3.subtract(this.getLocation().add(0, this.getEyeHeight(), 0)).normalize();
-        return playerDirectionVector.dot(targetDirectionVector) > 0;    // Must be in same direction
+
+        // Must be in same direction ( > 0) but we allow a little leeway to account for attacking an entity in the same position as you
+        return playerDirectionVector.dot(targetDirectionVector) > -1;
     }
 
     @Override
-    public void setMetaData(EntityMetaData metaData) {
-        super.setMetaData(metaData);
-
-        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
-        setEntityDataPacket.setRuntimeId(this.getId());
-        setEntityDataPacket.setData(this.getMetaData());
-        for (Player player : this.getViewers()) {
-            player.sendPacket(setEntityDataPacket);
+    public void kill() {
+        if (!this.getGamemode().equals(Gamemode.CREATIVE)) {
+            super.kill();
         }
-        this.sendPacket(setEntityDataPacket);
+    }
+
+    @Override
+    public void hurt(float damage) {
+        if (!this.getGamemode().equals(Gamemode.CREATIVE)) {
+            super.hurt(damage);
+        }
+    }
+
+    @Override
+    public boolean damage(EntityDamageEvent event) {
+        if (this.getGamemode().equals(Gamemode.CREATIVE)) {
+            return false;
+        } else {
+            return super.damage(event);
+        }
+    }
+
+    public void respawn() {
+        this.deathAnimationTicks = -1;
+        this.fireTicks = 0;
+        this.noHitTicks = 0;
+        this.lastDamageEvent = null;
+        this.setAI(true);
+        this.setAirSupplyTicks(this.getMaxAirSupplyTicks());
+        this.setSwimming(false);
+
+        Location respawnLocation = this.getSpawn();
+        if (respawnLocation.getWorld().getDimension() != this.getWorld().getDimension()) {
+            this.setDimensionTransferScreen(respawnLocation.getWorld().getDimension());
+        }
+
+        this.setHealth(this.getMaxHealth());
+        this.setFoodLevel(20);
+
+        PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, respawnLocation);
+        this.getServer().getEventManager().call(respawnEvent);
+
+        respawnLocation.getWorld().addEntity(this, respawnEvent.getLocation());
+        this.teleport(respawnEvent.getLocation());
     }
 
     public ImplServer getServer() {
@@ -257,6 +307,7 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             PlayerData playerData = new PlayerData.Builder()
                     .setLevelName(this.getLevel().getProvider().getFileName())
                     .setDimension(this.getLocation().getWorld().getDimension())
+                    .setGamemode(this.getGamemode())
                     .setPosition(this.getLocation())
                     .setPitch(this.getPitch())
                     .setYaw(this.getYaw())
@@ -279,8 +330,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         if (this.hasSpawned()) {
             this.closeOpenInventory();
 
-            Location location = this.getLocation();
-
             if (this.canAutoSave()) {
                 this.getServer().getScheduler().prepareTask(() -> {
                     this.save();
@@ -294,308 +343,221 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             for (Player player : this.getServer().getPlayers()) {
                 player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
-
-            // Remove player from chunks they can observe
-            for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
-                for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
-                    // Chunk radius is circular
-                    int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
-                    if (this.chunkRadius > distance) {
-                        ImplChunk chunk = (ImplChunk) location.getWorld().getChunk(location.getChunkX() + x, location.getChunkZ() + z);
-                        chunk.despawnFrom(this);
-                    }
-                }
-            }
         }
-    }
-
-    @Override
-    public PlayerAttributes getAttributes() {
-        return this.attributes;
-    }
-
-    public void sendAttributes() {
-        this.sendAttributes(this.attributes.getAttributes());
-    }
-
-    private void sendAttributes(Set<Attribute> attributes) {
-        UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
-        updateAttributesPacket.setRuntimeEntityId(this.getId());
-        updateAttributesPacket.setAttributes(attributes);
-        this.sendPacket(updateAttributesPacket);
     }
 
     private void sendAttribute(Attribute attribute) {
         this.sendAttributes(Collections.singleton(attribute));
     }
 
-    @Override
-    public float getHealth() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
-        return attribute.getCurrentValue();
+    private void sendAttributes() {
+        this.sendAttributes(this.attributes.getAttributes());
+    }
+
+    private void sendAttributes(Set<Attribute> attributes) {
+        if (this.hasSpawned()) {
+            UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
+            updateAttributesPacket.setRuntimeEntityId(this.getId());
+            updateAttributesPacket.setAttributes(attributes);
+            this.sendPacket(updateAttributesPacket);
+        }
     }
 
     @Override
     public void setHealth(float health) {
         super.setHealth(health);
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
-        attribute.setCurrentValue(health);
-        this.getAttributes().setAttribute(attribute);
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getMaxHealth() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
-        return attribute.getMaximumValue();
+        this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
     }
 
     @Override
     public void setMaxHealth(float maxHealth) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.HEALTH);
-        attribute.setMaximumValue(maxHealth);
-        this.getAttributes().setAttribute(attribute);
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getAbsorption() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
-        return attribute.getCurrentValue();
+        super.setMaxHealth(maxHealth);
+        this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
     }
 
     @Override
     public void setAbsorption(float absorption) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
-        attribute.setCurrentValue(absorption);
-        this.getAttributes().setAttribute(attribute);
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getMaxAbsorption() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
-        return attribute.getMaximumValue();
+        super.setAbsorption(absorption);
+        this.sendAttribute(this.getAttribute(AttributeType.ABSORPTION));
     }
 
     @Override
     public void setMaxAbsorption(float maxAbsorption) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.ABSORPTION);
-        attribute.setMaximumValue(maxAbsorption);
-        this.getAttributes().setAttribute(attribute);
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getMovementSpeed() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
-        return attribute.getCurrentValue();
+        super.setMaxAbsorption(maxAbsorption);
+        this.sendAttribute(this.getAttribute(AttributeType.ABSORPTION));
     }
 
     @Override
     public void setMovementSpeed(float movementSpeed) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.MOVEMENT_SPEED);
-        attribute.setCurrentValue(movementSpeed);
-        this.getAttributes().setAttribute(attribute);
-        this.sendAttribute(attribute);
+        super.setMovementSpeed(movementSpeed);
+        this.sendAttribute(this.getAttribute(AttributeType.MOVEMENT_SPEED));
     }
 
     @Override
     public float getFoodLevel() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
+        Attribute attribute = this.getAttribute(AttributeType.FOOD);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setFoodLevel(float foodLevel) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.FOOD);
-        attribute.setCurrentValue(foodLevel);
-        this.getAttributes().setAttribute(attribute);
+        Attribute attribute = this.getAttribute(AttributeType.FOOD);
+        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), foodLevel));
         this.sendAttribute(attribute);
     }
 
     @Override
     public float getSaturationLevel() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
+        Attribute attribute = this.getAttribute(AttributeType.SATURATION);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setSaturationLevel(float saturationLevel) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.SATURATION);
-        attribute.setCurrentValue(saturationLevel);
-        this.getAttributes().setAttribute(attribute);
+        Attribute attribute = this.getAttribute(AttributeType.SATURATION);
+        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), saturationLevel));
         this.sendAttribute(attribute);
     }
 
     @Override
     public float getExperience() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
+        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setExperience(float experience) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE);
-        attribute.setCurrentValue(experience);
-        this.getAttributes().setAttribute(attribute);
+        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE);
+        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experience));
         this.sendAttribute(attribute);
     }
 
     @Override
     public int getExperienceLevel() {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
         return (int) attribute.getCurrentValue();
     }
 
     @Override
     public void setExperienceLevel(int experienceLevel) {
-        Attribute attribute = this.getAttributes().getAttribute(AttributeType.EXPERIENCE_LEVEL);
-        attribute.setCurrentValue(experienceLevel);
-        this.getAttributes().setAttribute(attribute);
+        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experienceLevel));
         this.sendAttribute(attribute);
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void teleport(World world, float x, float y, float z) {
+        this.teleport(world, x, y, z, world.getDimension());
+    }
+
+    @Override
+    public void teleport(float x, float y, float z, Dimension transferDimension) {
+        this.teleport(this.getWorld(), x, y, z, transferDimension);
+    }
+
+    @Override
+    public void teleport(Location location, Dimension transferDimension) {
+        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), transferDimension);
+    }
+
+    @Override
+    public void teleport(World world, float x, float y, float z, Dimension transferDimension) {
+        World oldWorld = this.getWorld();
+
+        super.teleport(world, x, y, z);
+        MoveEntityAbsolutePacket teleportPacket = new MoveEntityAbsolutePacket();
+        teleportPacket.setEntityRuntimeId(this.getId());
+        teleportPacket.setPosition(new Location(world, x, y + this.getEyeHeight(), z));
+        teleportPacket.setPitch(this.getPitch());
+        teleportPacket.setYaw(this.getYaw());
+        teleportPacket.setHeadYaw(this.getHeadYaw());
+        teleportPacket.addFlag(MoveEntityAbsolutePacket.Flag.TELEPORT);
+        this.sendPacket(teleportPacket);
+
+        if (!oldWorld.getDimension().equals(transferDimension)) {
+            this.setDimensionTransferScreen(transferDimension);
+        }
+    }
+
+    @Override
+    public Location getSpawn() {
+        if (this.getHome().isPresent()) {
+            return this.getHome().get().toLocation().add(0, this.getEyeHeight(), 0);
+        } else {
+            World world = this.getServer().getLevelManager().getDefaultLevel().getDimension(Dimension.OVERWORLD);
+            return new Location(world, world.getSpawnCoordinates().toVector3().add(0, this.getEyeHeight(), 0));
+        }
+    }
+
+    /**
+     * Returns the current dimension transfer screen being shown to the player.
+     * @return dimension transfer screen
+     */
+    public Optional<Dimension> getDimensionTransferScreen() {
+        return Optional.ofNullable(this.dimensionTransferScreen);
+    }
+
+    /**
+     * Send a dimension change packet.
+     * @param dimension dimension to send the transfer screen of
+     */
+    public void setDimensionTransferScreen(Dimension dimension) {
+        this.dimensionTransferScreen = dimension;
+        if (dimension != null) {
+            ChangeDimensionPacket changeDimensionPacket = new ChangeDimensionPacket();
+            changeDimensionPacket.setDimension(dimension);
+            changeDimensionPacket.setPosition(this.getLocation().add(0, this.getEyeHeight(), 0));
+            if (!this.isAlive()) {
+                changeDimensionPacket.setRespawnResponse(true);
+            }
+            this.sendPacket(changeDimensionPacket);
+            this.getChunkManager().onDimensionTransfer();
+        }
+    }
+
+    @Override
+    public void sendMessage(TextMessage message) {
         TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.RAW);
-        textPacket.setMessage(message);
+        textPacket.setType(message.getType());
+        textPacket.setMessage(message.getMessage());
+        textPacket.setRequiresTranslation(message.requiresTranslation());
+        textPacket.setSourceName(message.getSourceName());
+        textPacket.setParameters(message.getParameters());
+        textPacket.setXuid(message.getXuid());
+        textPacket.setPlatformChatId(message.getPlatformChatId());
         this.sendPacket(textPacket);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        this.sendMessage(new TextMessage.Builder()
+                .setType(TextType.RAW)
+                .setMessage(message)
+                .build());
     }
 
     @Override
     public void sendPlayerMessage(Player sender, String message) {
-        TextPacket textPacket = new TextPacket();
-        textPacket.setType(TextPacket.TextType.CHAT);
-        textPacket.setSourceName(sender.getUsername());
-        textPacket.setMessage(message);
-        textPacket.setXuid(sender.getXUID());
-        this.sendPacket(textPacket);
+        this.sendMessage(new TextMessage.Builder()
+                        .setType(TextType.CHAT)
+                        .setSourceName(sender.getUsername())
+                        .setMessage(message)
+                        .setXUID(sender.getXUID())
+                        .build());
+    }
+
+    public PlayerChunkManager getChunkManager() {
+        return this.chunkManager;
     }
 
     @Override
     public int getChunkRadius() {
-        return Math.min(this.chunkRadius, this.server.getConfig().getChunkRadius());
+        return this.getChunkManager().getChunkRadius();
     }
 
     @Override
-    public void setChunkRadiusRequested(int radius) {
-        int oldRadius = this.getChunkRadius();
-        this.chunkRadius = Math.min(radius, this.getServer().getConfig().getChunkRadius());
-
-        if (this.hasSpawned()) {
-            this.updateChunks(this.getLocation(), oldRadius);
-        }
-    }
-
-    @Override
-    public void sendChunk(int x, int z) {
-        this.getLocation().getWorld().sendPlayerChunk(this, x, z);
-    }
-
-    private void sendNetworkChunkPublisher() {
-        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.setCoordinates(this.getLocation().toVector3i());
-        packet.setRadius(this.getChunkRadius() * 16);
-        this.sendPacket(packet);
-    }
-
-    /**
-     * Called whenever the player moves to a new chunk.
-     * Sends the new chunks the player can see and removes the player from chunks it can no longer see.
-     * Is also responsible for rendering entities within render distance when this player moves to a new chunk.
-     */
-    private void updateChunks(Location oldLocation, int oldChunkRadius) {
-        Set<Tuple<Integer, Integer>> chunksVisibleInOldLocation = new HashSet<>();
-        if (oldLocation != null) {
-            // What were our previous chunks loaded?
-            int oldPlayerChunkX = oldLocation.getChunkX();
-            int oldPlayerChunkZ = oldLocation.getChunkZ();
-            for (int x = -oldChunkRadius; x <= oldChunkRadius; x++) {
-                for (int z = -oldChunkRadius; z <= oldChunkRadius; z++) {
-                    // Chunk radius is circular
-                    int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
-                    if (oldChunkRadius > distance) {
-                        int chunkX = oldPlayerChunkX + x;
-                        int chunkZ = oldPlayerChunkZ + z;
-                        chunksVisibleInOldLocation.add(new Tuple<>(chunkX, chunkZ));
-
-                        // Entity render distance is handled differently from chunk render distance.
-                        // Therefore we have to check the entity render distance every single time we enter a new chunk.
-                        // For each old chunk, check if the entities should be despawned from the player.
-                        // If it is renderable with the old location, but it is not with the new location, despawn the entities.
-                        int oldChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(oldLocation.getChunkX() - chunkX, 2) + Math.pow(oldLocation.getChunkZ() - chunkZ, 2)));
-                        boolean oldChunkLocationEntitiesVisible = oldChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                && oldChunkLocationEntityDistance < oldChunkRadius;
-
-                        int newChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(this.getLocation().getChunkX() - chunkX, 2) + Math.pow(this.getLocation().getChunkZ() - chunkZ, 2)));
-                        boolean newChunkLocationEntitiesVisible = newChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                && newChunkLocationEntityDistance < this.getChunkRadius();
-
-                        if (oldChunkLocationEntitiesVisible && !newChunkLocationEntitiesVisible) {
-                            Chunk chunk = this.getWorld().getChunk(chunkX, chunkZ);
-                            for (Entity entity : chunk.getEntities()) {
-                                if (entity.hasSpawnedTo(this)) {
-                                    entity.despawnFrom(this);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // What are our new chunks loaded?
-        int currentPlayerChunkX = this.getLocation().getChunkX();
-        int currentPlayerChunkZ = this.getLocation().getChunkZ();
-        for (int x = -this.getChunkRadius(); x <= this.getChunkRadius(); x++) {
-            for (int z = -this.getChunkRadius(); z <= this.getChunkRadius(); z++) {
-                // Chunk radius is circular
-                int distance = (int) Math.round(Math.sqrt((x * x) + (z * z)));
-                if (this.getChunkRadius() > distance) {
-                    // Ensure that this chunk is not already visible
-                    int chunkX = currentPlayerChunkX + x;
-                    int chunkZ = currentPlayerChunkZ + z;
-                    if (!chunksVisibleInOldLocation.remove(new Tuple<>(chunkX, chunkZ))) {
-                        // Sending a chunk also sends all the entities within render distance in that chunk
-                        this.sendChunk(chunkX, chunkZ);
-                    } else {
-                        // This is a chunk already rendered to us. So we need to check the entity render distance for entities in that chunk.
-                        // Entity render distance is handled differently from chunk render distance.
-                        // Therefore we have to check the entity render distance every single time we enter a new chunk.
-                        // For each chunk, check if the entities can now be rendered to this player.
-                        // If it was not renderable with the old location, but it can be with the new location, spawn the entities.
-                        boolean oldChunkLocationEntitiesVisible = false;
-                        if (oldLocation != null) {
-                            int oldChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(oldLocation.getChunkX() - chunkX, 2) + Math.pow(oldLocation.getChunkZ() - chunkZ, 2)));
-                            oldChunkLocationEntitiesVisible = oldChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                    && oldChunkLocationEntityDistance < oldChunkRadius;
-                        }
-
-                        int newChunkLocationEntityDistance = (int) Math.round(Math.sqrt(Math.pow(this.getLocation().getChunkX() - chunkX, 2) + Math.pow(this.getLocation().getChunkZ() - chunkZ, 2)));
-                        boolean newChunkLocationEntitiesVisible = newChunkLocationEntityDistance < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance()
-                                && newChunkLocationEntityDistance < this.getChunkRadius();
-
-                        if (!oldChunkLocationEntitiesVisible && newChunkLocationEntitiesVisible) {
-                            Chunk chunk = this.getWorld().getChunk(chunkX, chunkZ);
-                            for (Entity entity : chunk.getEntities()) { // TODO: fix so that you don't double send entities
-                                if (((BaseEntity) entity).canBeSpawnedTo(this)) {
-                                    entity.spawnTo(this);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove each chunk we shouldn't get packets from
-        for (Tuple<Integer, Integer> key : chunksVisibleInOldLocation) {
-            ((ImplChunk) this.getLocation().getWorld().getChunk(key.getObjectA(), key.getObjectB())).despawnFrom(this);
-        }
-
-        this.sendNetworkChunkPublisher();
+    public void setChunkRadius(int radius) {
+        this.getChunkManager().setChunkRadius(radius);
     }
 
     @Override
@@ -638,24 +600,27 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
 
     @Override
     public void tick() {
-        if (this.moveUpdate) {
-            MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setEntityRuntimeId(this.getId());
-            movePlayerPacket.setPosition(new Vector3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()));
-            movePlayerPacket.setPitch(this.getPitch());
-            movePlayerPacket.setYaw(this.getYaw());
-            movePlayerPacket.setHeadYaw(this.getHeadYaw());
-            movePlayerPacket.setMode(MovementMode.NORMAL);
-            movePlayerPacket.setOnGround(false);
+        if (this.metaDataUpdate) {
+            SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+            setEntityDataPacket.setRuntimeId(this.getId());
+            setEntityDataPacket.setData(this.getMetaData());
+            this.sendPacket(setEntityDataPacket);
+        }
 
-            for (Player player : this.getViewers()) {
-                player.sendPacket(movePlayerPacket);
-            }
+        // Make sure that the block we're breaking is within reach!
+        boolean stopBreakingBlock = this.getBlockBreakData().getBlock().isPresent()
+                && !(this.canReach(this.getBlockBreakData().getBlock().get().getLocation(), this.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7)
+                        && this.isAlive()
+                        && this.getAdventureSettings().canMine());
+        if (stopBreakingBlock) {
+            BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakData().getBlock().get());
+            this.getServer().getEventManager().call(blockStopBreakEvent);
 
-            // Make sure that the block we're breaking is within reach too!
-            if (this.getBlockBreakData().getBlock().isPresent() && !this.canReach(this.getBlockBreakData().getBlock().get().getLocation())) {
-                this.getBlockBreakData().stopBreaking();
-            }
+            this.getBlockBreakData().stopBreaking();
+        }
+
+        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
+            this.setHealth(this.getHealth() + 1);
         }
 
         super.tick();
@@ -667,50 +632,32 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
         super.moveTo(x, y, z);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
-            this.updateChunks(oldLocation, this.getChunkRadius());
+            this.getChunkManager().onEnterNewChunk(oldLocation);
         }
     }
 
     @Override
     public void onSpawned() {
         super.onSpawned();
-        this.sendNetworkChunkPublisher();   // Load chunks sent during initial login handshake
+        this.getChunkManager().onSpawned();
 
-        this.updateChunks(null, this.chunkRadius);
-        this.completeLogin();
-    }
-
-    private void completeLogin() {
         this.getInventory().sendSlots(this);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.HAS_GRAVITY, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.IS_BREATHING, true);
         this.getMetaData().setFlag(EntityMetaFlagCategory.DATA_FLAG, EntityMetaFlag.CAN_WALL_CLIMB, true);
         this.setMetaData(this.getMetaData());
         this.sendAttributes();
+        this.updateAdventureSettings();
 
-        // Update every other player's player list to include this player
-        for (Player player : this.getServer().getPlayers()) {
-            if (!this.isHiddenFrom(player) && !player.equals(this)) {
-                player.getPlayerList().addEntry(this.getPlayerListEntry());
-            }
-        }
-
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.PlayStatus.PLAYER_SPAWN);
-        this.sendPacket(playStatusPacket);
-
+        SetTimePacket setTimePacket = new SetTimePacket();
+        setTimePacket.setTime(this.getWorld().getTime());
+        this.sendPacket(setTimePacket);
     }
 
     @Override
-    public PlayerList.Entry getPlayerListEntry() {
-        return new PlayerList.Entry.Builder()
-                .setUUID(this.getUUID())
-                .setXUID(this.getXUID())
-                .setUsername(this.getUsername())
-                .setEntityRuntimeId(this.getId())
-                .setDevice(this.getDevice())
-                .setSkin(this.getSkin())
-                .build();
+    public void onDespawned() {
+        super.onDespawned();
+        this.getChunkManager().onDespawn();
     }
 
     @Override
@@ -730,29 +677,6 @@ public class ImplPlayer extends BaseLivingEntity implements Player {
             if (player.hasSpawned()) {  // we only need to remove the entry if we were spawned
                 player.getPlayerList().removeEntry(this.getPlayerListEntry());
             }
-        }
-    }
-
-    @Override
-    public boolean spawnTo(Player player) {
-        if (super.spawnTo(player)) {
-            AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-            addPlayerPacket.setUUID(this.getUUID());
-            addPlayerPacket.setUsername(this.getUsername());
-            addPlayerPacket.setEntityRuntimeId(this.getId());
-            addPlayerPacket.setEntityUniqueId(this.getId());
-            addPlayerPacket.setPosition(new Vector3(this.getX(), this.getY(), this.getZ()));
-            addPlayerPacket.setVelocity(new Vector3(0, 0, 0));
-            addPlayerPacket.setPitch(this.getPitch());
-            addPlayerPacket.setYaw(this.getYaw());
-            addPlayerPacket.setHeadYaw(this.getHeadYaw());
-            addPlayerPacket.setMetaData(this.getMetaData());
-            addPlayerPacket.setDevice(this.getDevice());
-            addPlayerPacket.setHeldItem(this.getInventory().getHeldItem());
-            player.sendPacket(addPlayerPacket);
-            return true;
-        } else {
-            return false;
         }
     }
 
