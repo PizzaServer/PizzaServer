@@ -4,6 +4,7 @@ Come join the [Discord Server here](https://discord.gg/R4N9mnNPsm)!
 
 ## Build
 - `mvn clean package`
+- Copy the jar file `/pizzaserver-server/target/PizzaServer-Server-1.0-SNAPSHOT.jar` to the directory of your choosing.
 
 ## Modules
 
