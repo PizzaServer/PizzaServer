@@ -19,7 +19,7 @@ public class MCWorldLevel implements BedrockLevel<MCWorldChunkProvider> {
     protected static final String LEVEL_DAT_PATH = "level.dat";
 
     protected final File mcWorldDirectory;
-    protected MCWorldChunkProvider chunkProvider;
+    protected final MCWorldChunkProvider chunkProvider;
     protected LevelData levelData;
 
 
@@ -27,22 +27,24 @@ public class MCWorldLevel implements BedrockLevel<MCWorldChunkProvider> {
      * Read the contents in an exported Bedrock world file.
      * @param mcWorldDirectory Folder of the unzipped contents in the .mcworld file
      */
-    public MCWorldLevel(File mcWorldDirectory) {
+    public MCWorldLevel(File mcWorldDirectory) throws IOException {
         this.mcWorldDirectory = mcWorldDirectory;
-    }
 
-    @Override
-    public MCWorldChunkProvider getChunkProvider() throws IOException {
-        if (this.chunkProvider != null) {
-            return this.chunkProvider;
+        File levelDatFile = new File(this.mcWorldDirectory.getAbsolutePath(), LEVEL_DAT_PATH);
+        if (!levelDatFile.exists()) {
+            throw new FileNotFoundException("Could not find level.dat file");
         }
+        this.levelData = new MCWorldInfo(levelDatFile);
 
         File dbDirectory = new File(this.mcWorldDirectory.getAbsolutePath(), DB_PATH);
         if (!(dbDirectory.exists() && dbDirectory.isDirectory())) {
             throw new FileNotFoundException("Could not find db directory");
         }
-
         this.chunkProvider = new MCWorldChunkProvider(LevelDB.PROVIDER.open(dbDirectory, new Options().createIfMissing(true)));
+    }
+
+    @Override
+    public MCWorldChunkProvider getChunkProvider() {
         return this.chunkProvider;
     }
 
@@ -51,32 +53,23 @@ public class MCWorldLevel implements BedrockLevel<MCWorldChunkProvider> {
         // TODO: write info to disk
     }
 
+    @Override
+    public File getFile() {
+        return this.mcWorldDirectory;
+    }
+
     /**
      * Parse the level.dat file and retrieve the world info
      * @throws IOException if file cannot be read
      */
     @Override
-    public LevelData getLevelData() throws IOException {
-        if (this.levelData != null) {
-            return this.levelData;
-        }
-
-        File levelDatFile = new File(this.mcWorldDirectory.getAbsolutePath(), LEVEL_DAT_PATH);
-        if (!levelDatFile.exists()) {
-            throw new FileNotFoundException("Could not find level.dat file");
-        }
-
-        this.levelData = new MCWorldInfo(levelDatFile);
+    public LevelData getLevelData() {
         return this.levelData;
     }
 
     @Override
     public void close() throws IOException {
-        this.levelData = null;
-        if (this.chunkProvider != null) {
-            this.chunkProvider.close();
-            this.chunkProvider = null;
-        }
+        this.chunkProvider.close();
     }
 
 }

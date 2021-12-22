@@ -312,7 +312,7 @@ public class ImplWorld implements World {
      */
     public PlayerData getDefaultPlayerData() {
         return new PlayerData.Builder()
-                .setLevelName(this.getLevel().getProvider().getFileName())
+                .setLevelName(this.getLevel().getProvider().getFile().getName())
                 .setDimension(this.getDimension())
                 .setGamemode(Gamemode.SURVIVAL)
                 .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toFloat())

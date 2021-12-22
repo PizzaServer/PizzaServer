@@ -72,7 +72,10 @@ public class WorldChunkManager implements ChunkManager {
                 // Load chunk from provider
                 ImplChunk chunk = null;
                 try {
-                    BedrockChunk internalChunk = this.world.getLevel().getProvider().getChunk(x, z, this.world.getDimension());
+                    BedrockChunk internalChunk = this.world.getLevel()
+                            .getProvider()
+                            .getChunkProvider()
+                            .getChunk(x, z, this.world.getDimension().ordinal());
 
                     chunk = new ImplChunk.Builder()
                             .setWorld(this.world)

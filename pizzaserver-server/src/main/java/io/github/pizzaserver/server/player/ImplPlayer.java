@@ -481,7 +481,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     public boolean save() {
         if (this.hasSpawned()) {
             PlayerData playerData = new PlayerData.Builder()
-                    .setLevelName(this.getLevel().getProvider().getFileName())
+                    .setLevelName(this.getLevel().getProvider().getFile().getName())
                     .setDimension(this.getLocation().getWorld().getDimension())
                     .setGamemode(this.getGamemode())
                     .setPosition(this.getLocation().toVector3f())

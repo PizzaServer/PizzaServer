@@ -2,8 +2,10 @@ package io.github.pizzaserver.server.level;
 
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.format.api.BedrockLevel;
+import io.github.pizzaserver.format.api.chunks.BedrockChunk;
+import io.github.pizzaserver.format.api.chunks.BedrockChunkProvider;
 import io.github.pizzaserver.server.ImplServer;
-import io.github.pizzaserver.server.level.providers.BaseLevelProvider;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 
 import java.io.Closeable;
@@ -14,19 +16,17 @@ import java.util.Map;
 public class ImplLevel implements Level, Closeable {
 
     private final ImplLevelManager levelManager;
-    private final BaseLevelProvider provider;
+    private final BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider;
 
     private final Map<Dimension, ImplWorld> dimensions = new HashMap<>();
 
-    public ImplLevel(ImplLevelManager levelManager, BaseLevelProvider provider) {
+    public ImplLevel(ImplLevelManager levelManager, BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider) {
         this.levelManager = levelManager;
         this.provider = provider;
 
-        synchronized (this.dimensions) {
-            this.dimensions.put(Dimension.OVERWORLD, new ImplWorld(this, Dimension.OVERWORLD));
-            this.dimensions.put(Dimension.NETHER, new ImplWorld(this, Dimension.NETHER));
-            this.dimensions.put(Dimension.END, new ImplWorld(this, Dimension.END));
-        }
+        this.dimensions.put(Dimension.OVERWORLD, new ImplWorld(this, Dimension.OVERWORLD));
+        this.dimensions.put(Dimension.NETHER, new ImplWorld(this, Dimension.NETHER));
+        this.dimensions.put(Dimension.END, new ImplWorld(this, Dimension.END));
     }
 
     /**
@@ -53,7 +53,7 @@ public class ImplLevel implements Level, Closeable {
         return this.levelManager.getServer();
     }
 
-    public BaseLevelProvider getProvider() {
+    public BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> getProvider() {
         return this.provider;
     }
 

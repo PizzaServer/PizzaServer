@@ -1,4 +1,4 @@
-package io.github.pizzaserver.format.mcworld.world.info;
+package io.github.pizzaserver.format.api.data;
 
 public class PlayerAbilities {
 

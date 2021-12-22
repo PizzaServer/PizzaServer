@@ -4,7 +4,6 @@ import com.nukkitx.nbt.NBTOutputStream;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.format.api.chunks.BedrockChunkProvider;
-import io.github.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.iq80.leveldb.DB;
@@ -27,27 +26,27 @@ public class MCWorldChunkProvider implements BedrockChunkProvider<MCWorldChunk> 
     @Override
     public MCWorldChunk getChunk(int x, int z, int dimension) throws IOException {
         // First extract the chunk version
-        byte[] versionData = this.database.get(ifOverworld(
-                dimension,
+        byte[] versionKey = ifOverworld(dimension,
                 () -> ChunkKey.VERSION.getLevelDBKey(x, z),
-                () -> ChunkKey.VERSION.getLevelDBKeyWithDimension(x, z, dimension)));
+                () -> ChunkKey.VERSION.getLevelDBKeyWithDimension(x, z, dimension));
+        byte[] versionData = this.database.get(versionKey);
 
         if (versionData == null) {
-            versionData = this.database.get(ifOverworld(
-                    dimension,
-                    () -> ChunkKey.OLD_VERSION.getLevelDBKey(x, z),
-                    () -> ChunkKey.OLD_VERSION.getLevelDBKeyWithDimension(x, z, dimension)));
-            if (versionData == null) {
-                throw new NoChunkFoundException("Could not find a chunk at (" + x + ", " + z + ")");
-            }
+            versionData = new byte[] { (byte) 21 };
+            this.database.put(versionKey, versionData);
         }
         int chunkVersion = versionData[0];
 
         // Extract height map and biome data
-        byte[] heightAndBiomeData = this.database.get(ifOverworld(
-                dimension,
+        byte[] heightAndBiomeKey = ifOverworld(dimension,
                 () -> ChunkKey.DATA_2D.getLevelDBKey(x, z),
-                () -> ChunkKey.DATA_2D.getLevelDBKeyWithDimension(x, z, dimension)));
+                () -> ChunkKey.DATA_2D.getLevelDBKeyWithDimension(x, z, dimension));
+        byte[] heightAndBiomeData = this.database.get(heightAndBiomeKey);
+
+        if (heightAndBiomeData == null) {
+            heightAndBiomeData = new byte[768];
+            this.database.put(heightAndBiomeKey, heightAndBiomeData);
+        }
 
         // Extract block entities within this chunk
         byte[] blockEntityData = this.database.get(ifOverworld(

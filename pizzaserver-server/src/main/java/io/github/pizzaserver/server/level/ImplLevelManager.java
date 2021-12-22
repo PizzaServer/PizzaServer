@@ -5,10 +5,12 @@ import io.github.pizzaserver.api.level.LevelManager;
 import io.github.pizzaserver.api.level.providers.ProviderType;
 import io.github.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.format.api.BedrockLevel;
+import io.github.pizzaserver.format.api.chunks.BedrockChunk;
+import io.github.pizzaserver.format.api.chunks.BedrockChunkProvider;
+import io.github.pizzaserver.format.mcworld.MCWorldLevel;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.level.processing.LevelChunkProcessorManager;
-import io.github.pizzaserver.server.level.providers.BaseLevelProvider;
-import io.github.pizzaserver.server.level.providers.leveldb.LevelDBLevelProvider;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 
 import java.io.Closeable;
@@ -110,7 +112,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
         if (!file.exists()) {
             throw new FileNotFoundException("No level exists with the name: " + name);
         }
-        BaseLevelProvider provider;
+        BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider;
         try {
             provider = this.getProvider(file, ProviderType.resolveByFile(file));
         } catch (IOException exception) {
@@ -198,10 +200,10 @@ public class ImplLevelManager implements LevelManager, Closeable {
      * @return provider
      * @throws IOException if an exception occurred while reading the file
      */
-    protected BaseLevelProvider getProvider(File levelFile, ProviderType providerType) throws IOException {
+    protected BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> getProvider(File levelFile, ProviderType providerType) throws IOException {
         switch (providerType) {
             case LEVELDB:
-                return new LevelDBLevelProvider(levelFile);
+                return new MCWorldLevel(levelFile);
             default:
                 return null;
         }
@@ -210,7 +212,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
     @Override
     public void close() throws IOException {
         for (ImplLevel level : this.levels.values()) {
-            this.unloadLevel(level.getProvider().getFileName());
+            this.unloadLevel(level.getProvider().getFile().getName());
         }
         this.levelChunkProcessorManager.close();
     }

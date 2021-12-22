@@ -1,4 +1,4 @@
-package io.github.pizzaserver.format.api;
+package io.github.pizzaserver.format.api.data;
 
 public class LevelGameRules {
 

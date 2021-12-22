@@ -1,5 +1,6 @@
 package io.github.pizzaserver.format.mcworld.world.info;
 
+import io.github.pizzaserver.format.api.LevelData;
 import io.github.pizzaserver.format.mcworld.MCWorldLevel;
 import io.github.pizzaserver.format.mcworld.ResourceUtils;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,15 @@ public class WorldInfoTests {
     public void shouldParseTestWorldInfo(@TempDir Path temporaryDir) throws IOException {
         ResourceUtils.copyTestWorld(temporaryDir);
         MCWorldLevel world = new MCWorldLevel(temporaryDir.toFile());
-        MCWorldInfo info = world.getWorldInfo();
+        try {
+            LevelData info = world.getLevelData();
 
-        ResourceUtils.deleteDirectoryContents(temporaryDir);
-
-        assertEquals("1.16.100 World Test", info.getName());
-        assertTrue(info.getPlayerAbilities().canAttackPlayers());
+            assertEquals("1.16.100 World Test", info.getName());
+            assertTrue(info.getPlayerAbilities().canAttackPlayers());
+        } finally {
+            world.close();
+            ResourceUtils.deleteDirectoryContents(temporaryDir);
+        }
     }
 
 }
