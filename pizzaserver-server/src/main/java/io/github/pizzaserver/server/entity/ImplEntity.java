@@ -819,12 +819,12 @@ public class ImplEntity implements Entity {
     }
 
     @Override
-    public void setShowDeathMessages(boolean enabled) {
+    public void setDeathMessageEnabled(boolean enabled) {
         this.showDeathMessages = enabled;
     }
 
     @Override
-    public boolean showDeathMessages() {
+    public boolean isDeathMessageEnabled() {
         return this.showDeathMessages;
     }
 

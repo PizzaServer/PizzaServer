@@ -2,18 +2,20 @@ package io.github.pizzaserver.server.level;
 
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.LevelManager;
-import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.level.providers.ProviderType;
 import io.github.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.level.processing.LevelChunkProcessorManager;
 import io.github.pizzaserver.server.level.providers.BaseLevelProvider;
-import io.github.pizzaserver.server.level.providers.ProviderType;
+import io.github.pizzaserver.server.level.providers.leveldb.LevelDBLevelProvider;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -74,6 +76,8 @@ public class ImplLevelManager implements LevelManager, Closeable {
                 if (!this.levels.containsKey(name)) {
                     level = this.fetchLevel(name);
                 }
+            } catch (IOException exception) {
+                throw new RuntimeException("Failed to fetch level by the name " + name, exception);
             } finally {
                 this.locks.writeUnlock(name);
                 this.locks.readLock(name);
@@ -101,16 +105,14 @@ public class ImplLevelManager implements LevelManager, Closeable {
         return level.getDimension(dimension);
     }
 
-    private ImplLevel fetchLevel(String name) {
-        this.server.getLogger().info("Loading world: " + name);
-        File file = Paths.get(this.server.getRootDirectory(), "levels", name).toFile();
+    protected ImplLevel fetchLevel(String name) throws IOException {
+        File file = this.getLevelFile(name);
         if (!file.exists()) {
-            this.server.getLogger().error("No level exists with the name: " + name);
-            return null;
+            throw new FileNotFoundException("No level exists with the name: " + name);
         }
         BaseLevelProvider provider;
         try {
-            provider = ProviderType.resolveByFile(file).create(file);
+            provider = this.getProvider(file, ProviderType.resolveByFile(file));
         } catch (IOException exception) {
             this.server.getLogger().error("Failed to create world provider with level: " + name, exception);
             return null;
@@ -120,26 +122,16 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     @Override
-    public void unloadLevel(String name) {
+    public void unloadLevel(String name) throws IOException {
         this.locks.writeLock(name);
 
-        this.server.getLogger().info("Unloading level " + name);
         try {
             ImplLevel level = this.levels.getOrDefault(name, null);
-            if (level == null) {
-                this.server.getLogger().error("No level is loaded with the name: " + name);
-                return;
-            }
-            try {
+            if (level != null) {
                 level.save();
                 level.close();
-            } catch (IOException exception) {
-                this.server.getLogger().error("Failed to unload level: " + name, exception);
-                return;
+                this.levels.remove(name);
             }
-
-            this.server.getLogger().info("Successfully unloaded level " + name);
-            this.levels.remove(name);
         } finally {
             this.locks.writeUnlock(name);
         }
@@ -147,7 +139,72 @@ public class ImplLevelManager implements LevelManager, Closeable {
 
     @Override
     public CompletableFuture<Void> unloadLevelAsync(String name) {
-        return CompletableFuture.runAsync(() -> this.unloadLevel(name));
+        CompletableFuture<Void> levelFuture = new CompletableFuture<>();
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                this.unloadLevel(name);
+                levelFuture.complete(null);
+            } catch (IOException exception) {
+                levelFuture.completeExceptionally(exception);
+            }
+        });
+
+        return levelFuture;
+    }
+
+    @Override
+    public Level createLevel(String name, ProviderType providerType) throws IOException {
+        this.locks.writeLock(name);
+        try {
+            File file = this.getLevelFile(name);
+            if (file.exists()) {
+                throw new FileAlreadyExistsException(name + " is already a level that exists");
+            }
+
+            ImplLevel level = new ImplLevel(this, this.getProvider(file, providerType));
+            this.levels.put(name, level);
+
+            return level;
+        } finally {
+            this.locks.writeUnlock(name);
+        }
+    }
+
+    @Override
+    public CompletableFuture<Level> createLevelAsync(String name, ProviderType providerType) {
+        CompletableFuture<Level> levelFuture = new CompletableFuture<>();
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                levelFuture.complete(this.createLevel(name, providerType));
+            } catch (IOException exception) {
+                levelFuture.completeExceptionally(exception);
+            }
+        });
+
+        return levelFuture;
+    }
+
+    protected File getLevelFile(String name) {
+        return Paths.get(this.server.getRootDirectory(), "levels", name).toFile();
+    }
+
+    /**
+     * Retrieve a provider object given a level file that may or may not exist.
+     * If it does not exist, one will be created.
+     * @param levelFile level file to read/write to
+     * @param providerType provider type to open the file as
+     * @return provider
+     * @throws IOException if an exception occurred while reading the file
+     */
+    protected BaseLevelProvider getProvider(File levelFile, ProviderType providerType) throws IOException {
+        switch (providerType) {
+            case LEVELDB:
+                return new LevelDBLevelProvider(levelFile);
+            default:
+                return null;
+        }
     }
 
     @Override

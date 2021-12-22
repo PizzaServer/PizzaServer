@@ -95,7 +95,7 @@ public class VanillaContentLoader {
                 .setDragForce(0.02f)
                 .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
         EntityRegistry.getInstance().registerComponent(EntityBossComponent.class,
-                new EntityBossComponent(null, -1, false),
+                new EntityBossComponent(),
                 new EntityBossComponentHandler());
         EntityRegistry.getInstance().registerComponent(EntityBurnsInDaylightComponent.class,
                 new EntityBurnsInDaylightComponent(),

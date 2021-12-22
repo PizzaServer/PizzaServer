@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.entity;
 
+import com.google.common.base.Charsets;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
@@ -12,10 +13,10 @@ import io.github.pizzaserver.api.player.data.Device;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.item.ItemUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ImplHumanEntity extends ImplEntity implements HumanEntity {
 
@@ -23,21 +24,9 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
 
     static {
         try {
-            InputStream defaultGeometryStream = ImplServer.class.getResourceAsStream("/skin/steve/geometry.json");
-            String defaultGeometryString = new BufferedReader(new InputStreamReader(defaultGeometryStream))
-                    .lines().collect(Collectors.joining("\n"));
-
-            InputStream defaultResourcePatchStream = ImplServer.class.getResourceAsStream("/skin/steve/resource_patch.json");
-            String defaultResourcePatchString = new BufferedReader(new InputStreamReader(defaultResourcePatchStream))
-                    .lines().collect(Collectors.joining("\n"));
-
-            InputStream defaultSkinDataStream = ImplServer.class.getResourceAsStream("/skin/steve/skin_data");
-            ByteArrayOutputStream skinDataBufferStream = new ByteArrayOutputStream();
-            int b;
-            while ((b = defaultSkinDataStream.read()) != -1) {
-                skinDataBufferStream.write(b);
-            }
-            byte[] skinData = skinDataBufferStream.toByteArray();
+            String defaultGeometryString = IOUtils.toString(ImplServer.class.getResourceAsStream("/skin/steve/geometry.json"), Charsets.UTF_8);
+            String defaultResourcePatchString = IOUtils.toString(ImplServer.class.getResourceAsStream("/skin/steve/resource_patch.json"), Charsets.UTF_8);
+            byte[] skinData = IOUtils.toByteArray(ImplServer.class.getResourceAsStream("/skin/steve/skin_data"));
 
             DEFAULT_STEVE = new Skin.Builder()
                     .setSkinResourcePatch(defaultResourcePatchString)

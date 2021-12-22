@@ -137,12 +137,12 @@ public class MCWorldChunk implements BedrockChunk {
     }
 
     @Override
-    public Set<NbtMap> getEntityNBTs() {
+    public Set<NbtMap> getEntities() {
         return this.entityNBTs;
     }
 
     @Override
-    public Set<NbtMap> getBlockEntityNBTs() {
+    public Set<NbtMap> getBlockEntities() {
         return this.blockEntityNBTs;
     }
 

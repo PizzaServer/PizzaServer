@@ -1,42 +1,40 @@
 package io.github.pizzaserver.server.level.providers.leveldb;
 
-import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.server.level.providers.BaseLevelProvider;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.format.api.LevelData;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
-import io.github.pizzaserver.format.mcworld.MCWorld;
+import io.github.pizzaserver.format.mcworld.MCWorldLevel;
 import io.github.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
 import io.github.pizzaserver.format.mcworld.world.chunks.MCWorldChunk;
 import io.github.pizzaserver.format.mcworld.world.chunks.MCWorldChunkProvider;
-import io.github.pizzaserver.format.mcworld.world.info.MCWorldInfo;
 
 import java.io.File;
 import java.io.IOException;
 
 public class LevelDBLevelProvider extends BaseLevelProvider {
 
-    private final MCWorldInfo worldInfo;
-    private final MCWorldChunkProvider chunkDatabase;
+    private final LevelData levelData;
+    private final MCWorldChunkProvider chunkProvider;
 
 
     public LevelDBLevelProvider(File worldFile) throws IOException {
         super(worldFile);
-        MCWorld mcWorld = new MCWorld(worldFile);
-        this.worldInfo = mcWorld.getWorldInfo();
-        this.chunkDatabase = mcWorld.openChunkProvider();
+        MCWorldLevel mcWorldLevel = new MCWorldLevel(worldFile);
+        this.levelData = mcWorldLevel.getLevelData();
+        this.chunkProvider = mcWorldLevel.getChunkProvider();
     }
 
     @Override
     public LevelData getLevelData() {
-        return this.worldInfo;
+        return this.levelData;
     }
 
     @Override
     public BedrockChunk getChunk(int x, int z, Dimension dimension) throws IOException {
         MCWorldChunk internalChunk;
         try {
-            internalChunk = this.chunkDatabase.getChunk(x, z, dimension.ordinal());
+            internalChunk = this.chunkProvider.getChunk(x, z, dimension.ordinal());
         } catch (NoChunkFoundException exception) {
             // Empty chunk. Create the empty chunk data.
             byte[][] subChunks = new byte[16][];
@@ -56,6 +54,6 @@ public class LevelDBLevelProvider extends BaseLevelProvider {
 
     @Override
     public void close() throws IOException {
-        this.chunkDatabase.close();
+        this.chunkProvider.close();
     }
 }

@@ -276,9 +276,9 @@ public interface Entity extends Watchable {
 
     void kill();
 
-    void setShowDeathMessages(boolean enabled);
+    void setDeathMessageEnabled(boolean enabled);
 
-    boolean showDeathMessages();
+    boolean isDeathMessageEnabled();
 
     /**
      * Called every server tick.

@@ -11,7 +11,6 @@ Come join the [Discord Server here](https://discord.gg/R4N9mnNPsm)!
 | Name      | Description                                                                 |
 | --------- | --------------------------------------------------------------------------- |
 | commons   | Various utility structures/data used across multiple modules                |
-| nbt       | Bedrock NBT implementation                                                  |
 | api       | Server API that serves to separate plugins and the actual implementation    |
 | server    | Server implementation                                                       | 
 | worldfile | Parses world formats into usable objects (currently only .mcworld)          |

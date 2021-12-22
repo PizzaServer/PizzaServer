@@ -18,9 +18,9 @@ public interface BedrockChunk extends BedrockNetworkDiskSerializable {
 
     int getDimension();
 
-    Set<NbtMap> getEntityNBTs();
+    Set<NbtMap> getEntities();
 
-    Set<NbtMap> getBlockEntityNBTs();
+    Set<NbtMap> getBlockEntities();
 
     /**
      * A height map is a array of 256 (16 * 16) integers that stores the highest blocks in a chunk.

@@ -1,6 +1,6 @@
 package io.github.pizzaserver.format.mcworld.world.info;
 
-import io.github.pizzaserver.format.mcworld.MCWorld;
+import io.github.pizzaserver.format.mcworld.MCWorldLevel;
 import io.github.pizzaserver.format.mcworld.ResourceUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -16,7 +16,7 @@ public class WorldInfoTests {
     @Test
     public void shouldParseTestWorldInfo(@TempDir Path temporaryDir) throws IOException {
         ResourceUtils.copyTestWorld(temporaryDir);
-        MCWorld world = new MCWorld(temporaryDir.toFile());
+        MCWorldLevel world = new MCWorldLevel(temporaryDir.toFile());
         MCWorldInfo info = world.getWorldInfo();
 
         ResourceUtils.deleteDirectoryContents(temporaryDir);

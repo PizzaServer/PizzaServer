@@ -13,6 +13,15 @@ public class EntityBossComponent extends EntityComponent {
     private final int range;
     private final boolean darkenSky;
 
+    private final boolean enabled;
+
+    public EntityBossComponent() {
+        this.name = null;
+        this.range = -1;
+        this.darkenSky = false;
+        this.enabled = false;
+    }
+
     /**
      * Creates a boss bar when in distance to this entity.
      * @param name name of the boss bar. If none is present it will use the name of the entity
@@ -23,6 +32,7 @@ public class EntityBossComponent extends EntityComponent {
         this.name = name;
         this.range = range;
         this.darkenSky = darkenSky;
+        this.enabled = true;
     }
 
     /**
@@ -32,6 +42,10 @@ public class EntityBossComponent extends EntityComponent {
      */
     public EntityBossComponent(int range, boolean darkenSky) {
         this(null, range, darkenSky);
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
     }
 
     public Optional<String> getBossName() {

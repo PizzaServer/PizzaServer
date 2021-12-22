@@ -8,7 +8,7 @@ public class EntityDeathMessageComponentHandler extends EntityComponentHandler<E
 
     @Override
     public void onRegistered(Entity entity, EntityDeathMessageComponent component) {
-        entity.setShowDeathMessages(component.showDeathMessages());
+        entity.setDeathMessageEnabled(component.showDeathMessages());
     }
 
 }

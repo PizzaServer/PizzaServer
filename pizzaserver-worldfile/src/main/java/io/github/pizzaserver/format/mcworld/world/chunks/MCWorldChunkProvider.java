@@ -3,27 +3,28 @@ package io.github.pizzaserver.format.mcworld.world.chunks;
 import com.nukkitx.nbt.NBTOutputStream;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtUtils;
+import io.github.pizzaserver.format.api.chunks.BedrockChunkProvider;
 import io.github.pizzaserver.format.exceptions.world.chunks.NoChunkFoundException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.iq80.leveldb.DB;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.Supplier;
 
-public class MCWorldChunkProvider implements Closeable {
+public class MCWorldChunkProvider implements BedrockChunkProvider<MCWorldChunk> {
 
-    private final static int OVERWORLD_DIMENSION = 0;
+    protected final static int OVERWORLD_DIMENSION = 0;
 
-    private final DB database;
+    protected final DB database;
 
 
     public MCWorldChunkProvider(DB database) {
         this.database = database;
     }
 
+    @Override
     public MCWorldChunk getChunk(int x, int z, int dimension) throws IOException {
         // First extract the chunk version
         byte[] versionData = this.database.get(ifOverworld(
@@ -93,6 +94,7 @@ public class MCWorldChunkProvider implements Closeable {
                 .build();
     }
 
+    @Override
     public void saveChunk(MCWorldChunk bedrockChunk) throws IOException {
         byte[] chunkVersionKey = ifOverworld(
                 bedrockChunk.getDimension(),
@@ -128,7 +130,7 @@ public class MCWorldChunkProvider implements Closeable {
         // block entities
         ByteArrayOutputStream blockEntityOutput = new ByteArrayOutputStream();
         try (NBTOutputStream blockEntityNBTOutputStream = NbtUtils.createWriterLE(blockEntityOutput)) {
-            for (NbtMap blockEntityCompound : bedrockChunk.getBlockEntityNBTs()) {
+            for (NbtMap blockEntityCompound : bedrockChunk.getBlockEntities()) {
                 blockEntityNBTOutputStream.writeTag(blockEntityCompound);
             }
         } catch (IOException exception) {
@@ -148,7 +150,7 @@ public class MCWorldChunkProvider implements Closeable {
         // entities
         ByteArrayOutputStream entityOutput = new ByteArrayOutputStream();
         try (NBTOutputStream entityNBTOutputStream = NbtUtils.createWriterLE(entityOutput)) {
-            for (NbtMap entityCompound : bedrockChunk.getEntityNBTs()) {
+            for (NbtMap entityCompound : bedrockChunk.getEntities()) {
                 entityNBTOutputStream.writeTag(entityCompound);
             }
         } catch (IOException exception) {

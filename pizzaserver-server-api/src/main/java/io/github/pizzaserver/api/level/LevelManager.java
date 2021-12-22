@@ -1,8 +1,10 @@
 package io.github.pizzaserver.api.level;
 
+import io.github.pizzaserver.api.level.providers.ProviderType;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public interface LevelManager {
@@ -43,12 +45,16 @@ public interface LevelManager {
      * Unload a {@link Level} back to the file system.
      * @param name name of the level
      */
-    void unloadLevel(String name);
+    void unloadLevel(String name) throws IOException;
 
     /**
      * Unload a {@link Level} back to the file system.
      * @param name name of the level
      */
     CompletableFuture<Void> unloadLevelAsync(String name);
+
+    Level createLevel(String name, ProviderType providerType) throws IOException;
+
+    CompletableFuture<Level> createLevelAsync(String name, ProviderType providerType);
 
 }

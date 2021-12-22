@@ -72,7 +72,7 @@ public class ImplChunk implements Chunk {
         this.chunk = chunk;
         this.resetExpiryTime();
 
-        for (NbtMap blockEntityNBT : chunk.getBlockEntityNBTs()) {
+        for (NbtMap blockEntityNBT : chunk.getBlockEntities()) {
             String blockEntityId = blockEntityNBT.getString("id");
             BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
 

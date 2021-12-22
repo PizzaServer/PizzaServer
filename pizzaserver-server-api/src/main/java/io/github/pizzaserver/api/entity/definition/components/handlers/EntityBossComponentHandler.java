@@ -11,7 +11,7 @@ public class EntityBossComponentHandler extends EntityComponentHandler<EntityBos
     @Override
     public void onRegistered(Entity entity, EntityBossComponent component) {
         BossBar bossBar = null;
-        if (component.getRange() != -1) {
+        if (component.isEnabled()) {
             bossBar = Server.getInstance().createBossBar();
             bossBar.setTitle(component.getBossName().orElse(entity.getName()));
             bossBar.setDarkenSky(component.shouldDarkenSky());
