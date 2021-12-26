@@ -3,13 +3,11 @@ package io.github.pizzaserver.api.item;
 import com.nukkitx.nbt.NbtList;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
-import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.item.types.components.DurableItemComponent;
-import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
 
 import java.util.*;
 

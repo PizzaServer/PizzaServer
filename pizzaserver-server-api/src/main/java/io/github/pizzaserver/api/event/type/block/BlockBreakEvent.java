@@ -9,7 +9,6 @@ import io.github.pizzaserver.api.player.Player;
 public class BlockBreakEvent extends BaseBlockEvent.Cancellable {
 
     protected Player player;
-    protected boolean doBlockDrops = true;
 
     public BlockBreakEvent(Player player, Block block) {
         super(block);
@@ -18,14 +17,6 @@ public class BlockBreakEvent extends BaseBlockEvent.Cancellable {
 
     public Player getPlayer() {
         return this.player;
-    }
-
-    public boolean isBlockDropsEnabled() {
-        return this.doBlockDrops;
-    }
-
-    public void setBlockDropsEnabled(boolean enabled) {
-        this.doBlockDrops = enabled;
     }
 
 }

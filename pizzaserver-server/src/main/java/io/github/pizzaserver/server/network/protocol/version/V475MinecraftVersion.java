@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.protocol.versions;
+package io.github.pizzaserver.server.network.protocol.version;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -8,7 +8,6 @@ import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import com.nukkitx.protocol.bedrock.v419.Bedrock_v419;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -20,8 +19,7 @@ import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockType;
-import io.github.pizzaserver.api.network.protocol.utils.MinecraftNamespaceComparator;
-import io.github.pizzaserver.commons.utils.Tuple;
+import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.io.IOException;
 import java.io.InputStream;

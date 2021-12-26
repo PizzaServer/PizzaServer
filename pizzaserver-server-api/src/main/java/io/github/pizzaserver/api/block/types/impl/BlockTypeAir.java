@@ -21,7 +21,7 @@ public class BlockTypeAir extends BaseBlockType {
     }
 
     @Override
-    public float getToughness(int blockStateIndex) {
+    public float getHardness(int blockStateIndex) {
         return 0;
     }
 

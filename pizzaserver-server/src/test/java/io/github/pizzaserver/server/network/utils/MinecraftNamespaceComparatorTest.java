@@ -1,6 +1,5 @@
 package io.github.pizzaserver.server.network.utils;
 
-import io.github.pizzaserver.api.network.protocol.utils.MinecraftNamespaceComparator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

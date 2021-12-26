@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class BlockTypeWater extends BaseBlockType {
 
-    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
+    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<>() {
         {
             for (int depth = 0; depth < 16; depth++) {
                 NbtMap state = NbtMap.builder()
@@ -38,7 +38,7 @@ public class BlockTypeWater extends BaseBlockType {
     }
 
     @Override
-    public float getToughness(int blockStateIndex) {
+    public float getHardness(int blockStateIndex) {
         return 0;
     }
 

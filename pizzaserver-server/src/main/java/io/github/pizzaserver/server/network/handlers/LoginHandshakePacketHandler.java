@@ -4,7 +4,7 @@ import com.nimbusds.jose.JWSObject;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
-import io.github.pizzaserver.server.network.protocol.versions.BaseMinecraftVersion;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
@@ -36,7 +36,7 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
         // Check if the protocol version is supported
         Optional<BaseMinecraftVersion> version = ServerProtocol.getProtocol(loginPacket.getProtocolVersion());
 
-        if (!version.isPresent()) {
+        if (version.isEmpty()) {
             PlayStatusPacket loginFailPacket = new PlayStatusPacket();
             if (loginPacket.getProtocolVersion() > ServerProtocol.LATEST_PROTOCOL_VERSION) {
                 loginFailPacket.setStatus(PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD);
@@ -51,7 +51,7 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
         this.session.setVersion(version.get());
 
         Optional<LoginData> loginData = LoginData.extract(loginPacket.getChainData(), loginPacket.getSkinData());
-        if (!loginData.isPresent() || (!loginData.get().isAuthenticated() && this.server.getConfig().isOnlineMode())) {
+        if (loginData.isEmpty() || (!loginData.get().isAuthenticated() && this.server.getConfig().isOnlineMode())) {
             this.session.getConnection().disconnect();
             return true;
         }
@@ -88,12 +88,6 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
     }
 
     @Override
-    public boolean handle(PacketViolationWarningPacket packet) {
-        this.server.getLogger().error("Packet violation for " + packet.getPacketType() + ": " + packet.getContext());
-        return true;
-    }
-
-    @Override
     public boolean handle(ClientToServerHandshakePacket packet) {
         if (this.session.getConnection().isEncrypted()) {
             if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
@@ -111,6 +105,12 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
             this.session.setPacketHandler(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
             return true;
         }
+        return true;
+    }
+
+    @Override
+    public boolean handle(PacketViolationWarningPacket packet) {
+        this.server.getLogger().debug("Packet violation for " + packet.getPacketType() + ": " + packet.getContext());
         return true;
     }
 

@@ -1,12 +1,11 @@
 package io.github.pizzaserver.api.item.types;
 
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.item.ToolTypes;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.player.Player;
 
@@ -67,12 +66,12 @@ public abstract class BaseItemType implements ItemType {
 
     @Override
     public ToolType getToolType() {
-        return ToolTypes.getToolType(ToolTypeID.NONE);
+        return ToolType.NONE;
     }
 
     @Override
-    public float getToolStrength(Block block) {
-        return this.getToolType().getStrength();
+    public ToolTier getToolTier() {
+        return ToolTier.NONE;
     }
 
     @Override

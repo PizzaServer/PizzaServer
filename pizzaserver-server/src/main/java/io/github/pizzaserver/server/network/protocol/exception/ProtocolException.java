@@ -1,6 +1,6 @@
-package io.github.pizzaserver.server.network.protocol.exceptions;
+package io.github.pizzaserver.server.network.protocol.exception;
 
-import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 
 /**
  * General exception thrown when a protocol exception occurs.

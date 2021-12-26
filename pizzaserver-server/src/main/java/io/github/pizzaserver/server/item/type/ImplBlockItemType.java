@@ -49,7 +49,9 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
             }
             Block placedBlock = this.getBlockType().create(itemStack.getMeta());
             placedBlock.setLocation(new BlockLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i(), block.getLayer()));
-            placedBlock.getBlockType().prepareBlockForPlacement(player, placedBlock);
+            if (!placedBlock.getBlockType().prepareForPlacement(player, placedBlock)) {
+                return false;
+            }
 
             BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);
             player.getServer().getEventManager().call(blockPlaceEvent);

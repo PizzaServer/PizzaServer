@@ -4,7 +4,7 @@ import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 
 public class ItemUtils {
 

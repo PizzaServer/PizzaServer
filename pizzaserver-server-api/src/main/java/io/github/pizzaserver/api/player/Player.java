@@ -14,7 +14,7 @@ import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
-import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.data.Gamemode;
 
 import java.util.Optional;

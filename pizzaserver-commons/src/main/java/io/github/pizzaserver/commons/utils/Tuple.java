@@ -11,11 +11,11 @@ public class Tuple<A, B> {
         this.objectB = objectB;
     }
 
-    public A getObjectA() {
+    public A getFirst() {
         return this.objectA;
     }
 
-    public B getObjectB() {
+    public B getSecond() {
         return this.objectB;
     }
 
@@ -28,7 +28,7 @@ public class Tuple<A, B> {
     public boolean equals(Object obj) {
         if (obj instanceof Tuple) {
             Tuple<?, ?> tuple = (Tuple<?, ?>) obj;
-            return tuple.getObjectA().equals(this.getObjectA()) && tuple.getObjectB().equals(this.getObjectB());
+            return tuple.getFirst().equals(this.getFirst()) && tuple.getSecond().equals(this.getSecond());
         }
         return false;
     }

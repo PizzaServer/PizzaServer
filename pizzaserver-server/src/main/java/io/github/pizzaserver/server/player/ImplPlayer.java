@@ -38,7 +38,7 @@ import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
-import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
@@ -146,6 +146,13 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
                 playStatusPacket.setStatus(PlayStatusPacket.Status.FAILED_SERVER_FULL_SUB_CLIENT);
                 this.session.getConnection().sendPacket(playStatusPacket);
                 return;
+            }
+
+            // Disconnect the player's other session if they're logged in on another device
+            for (Player player : this.getServer().getPlayers()) {
+                if (player.getXUID().equals(this.getXUID())) {
+                    player.disconnect();
+                }
             }
 
             this.getServer().getEntityRegistry().getDefinition(HumanEntityDefinition.ID).onCreation(this);

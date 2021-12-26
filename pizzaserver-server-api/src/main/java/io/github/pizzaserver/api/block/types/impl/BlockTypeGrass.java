@@ -1,14 +1,9 @@
 package io.github.pizzaserver.api.block.types.impl;
 
-import io.github.pizzaserver.api.item.ToolTypes;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class BlockTypeGrass extends BaseBlockType {
 
@@ -23,18 +18,23 @@ public class BlockTypeGrass extends BaseBlockType {
     }
 
     @Override
-    public float getToughness(int blockStateIndex) {
+    public float getHardness(int blockStateIndex) {
         return 0.5f;
     }
 
     @Override
-    public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return new HashSet<>(Arrays.asList(ToolTypes.getToolType(ToolTypeID.NONE), ToolTypes.getToolType(ToolTypeID.WOOD_SHOVEL)));
+    public boolean canBeMinedWithHand() {
+        return true;
     }
 
     @Override
-    public Set<ToolType> getBestTools(int blockStateIndex) {
-        return new HashSet<>(Arrays.asList(ToolTypes.getToolType(ToolTypeID.NONE), ToolTypes.getToolType(ToolTypeID.WOOD_SHOVEL)));
+    public ToolTier getToolTierRequired() {
+        return ToolTier.WOOD;
+    }
+
+    @Override
+    public ToolType getToolTypeRequired() {
+        return ToolType.SHOVEL;
     }
 
 }

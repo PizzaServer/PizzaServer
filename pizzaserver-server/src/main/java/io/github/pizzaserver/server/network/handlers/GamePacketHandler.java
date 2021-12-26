@@ -15,6 +15,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.item.types.ItemTypeID;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.ItemEntity;
@@ -210,7 +211,10 @@ public class GamePacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.IRON_ORE, 10));
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.CHEST, 10));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.STONE_PICKAXE, 1));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.WOODEN_PICKAXE, 1));
         this.player.getWorld().addEntity(EntityRegistry.getInstance().getEntity(CowEntityDefinition.ID), this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {
             PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
@@ -519,13 +523,6 @@ public class GamePacketHandler implements BedrockPacketHandler {
                                 this.player.getServer().getEventManager().call(blockBreakEvent);
 
                                 if (!blockBreakEvent.isCancelled()) {
-                                    if (blockBreakEvent.isBlockDropsEnabled()) {
-                                        for (ItemStack itemStack : blockMining.get().getBlockState().getLoot(this.player)) {
-                                            Vector3f velocity = Vector3f.from(0.1f * (ThreadLocalRandom.current().nextFloat() * 2 - 1), 0.3f, 0.1f * (ThreadLocalRandom.current().nextFloat() * 2 - 1));
-                                            Vector3f position = blockMining.get().getLocation().toVector3f().add(0.5f, 0.5f, 0.5f);
-                                            this.player.getWorld().addItemEntity(itemStack, position, velocity);
-                                        }
-                                    }
                                     this.player.getBlockBreakingManager().breakBlock();
                                     return;
                                 }

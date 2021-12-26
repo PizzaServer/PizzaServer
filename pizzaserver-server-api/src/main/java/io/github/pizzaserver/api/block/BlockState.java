@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.block;
 
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
@@ -65,8 +66,8 @@ public class BlockState {
         return this.getBlockType().isSolid(this.index);
     }
 
-    public float getToughness() {
-        return this.getBlockType().getToughness(this.index);
+    public float getHardness() {
+        return this.getBlockType().getHardness(this.index);
     }
 
     public float[] getOrigin() {
@@ -117,12 +118,16 @@ public class BlockState {
         return this.getBlockType().getFallDamageReduction(this.index);
     }
 
-    public Set<ToolType> getCorrectTools() {
-        return this.getBlockType().getCorrectTools(this.index);
+    public boolean canBeMinedWithHand() {
+        return this.getBlockType().canBeMinedWithHand();
     }
 
-    public Set<ToolType> getBestTools() {
-        return this.getBlockType().getBestTools(this.index);
+    public ToolType getToolType() {
+        return this.getBlockType().getToolTypeRequired();
+    }
+
+    public ToolTier getToolTier() {
+        return this.getBlockType().getToolTierRequired();
     }
 
     public Set<ItemStack> getLoot(Player player) {
@@ -131,10 +136,6 @@ public class BlockState {
 
     public Set<BlockState> getPlaceableOnlyOn() {
         return this.getBlockType().getPlaceableOnlyOn(this.index);
-    }
-
-    public Block getResultBlock() {
-        return this.getBlockType().getResultBlock(this.index);
     }
 
     public BlockType getBlockType() {

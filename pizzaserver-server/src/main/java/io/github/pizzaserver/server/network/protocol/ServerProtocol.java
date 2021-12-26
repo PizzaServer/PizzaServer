@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.network.protocol;
 
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.server.network.protocol.versions.*;
+import io.github.pizzaserver.server.network.protocol.version.*;
 
 import java.io.IOException;
 import java.util.HashMap;

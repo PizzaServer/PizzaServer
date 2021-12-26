@@ -5,9 +5,8 @@ import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
-import io.github.pizzaserver.api.item.ToolTypes;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.data.ToolTypeID;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ import java.util.Set;
 
 public class BlockTypeCauldron extends BaseBlockType {
 
-    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
+    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<>() {
         {
             String[] contentTypes = new String[]{ "water", "lava", "snow_powder" };
 
@@ -52,18 +51,18 @@ public class BlockTypeCauldron extends BaseBlockType {
     }
 
     @Override
-    public float getToughness(int blockStateIndex) {
+    public float getHardness(int blockStateIndex) {
         return 2;
     }
 
     @Override
-    public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_PICKAXE));
+    public ToolType getToolTypeRequired() {
+        return ToolType.PICKAXE;
     }
 
     @Override
-    public Set<ToolType> getBestTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_PICKAXE));
+    public ToolTier getToolTierRequired() {
+        return ToolTier.WOOD;
     }
 
 }

@@ -51,6 +51,7 @@ public class BedrockNetworkServer {
 
             @Override
             public void onSessionCreation(BedrockServerSession connection) {
+                connection.setCompressionLevel(BedrockNetworkServer.this.getPizzaServer().getConfig().getNetworkCompressionLevel());
                 PlayerSession playerSession = new PlayerSession(connection);
                 BedrockNetworkServer.this.getPizzaServer().registerSession(playerSession);
 

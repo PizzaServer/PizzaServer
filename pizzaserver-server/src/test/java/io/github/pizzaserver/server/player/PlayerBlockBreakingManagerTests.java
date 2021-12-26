@@ -62,12 +62,11 @@ public class PlayerBlockBreakingManagerTests {
     }
 
     @Test
-    @Disabled("WIP: iron ore break time is invalid")
+    @Disabled("WIP: correct tool break time is invalid")
     public void breakingShouldBeQuickerAndCorrectWithCorrectTool() {
         BlockType blockType = new BlockTypeIronOre();
         ItemStack bestTool = new ItemStack(new ItemTypeStonePickaxe());
         ItemStack correctTool = new ItemStack(new ItemTypeWoodenPickaxe());
-        int expectedTicksWithBestTool = 40;
         int expectedTicksWithTool = 160;
         int expectedTicksWithoutTool = 300;
 
@@ -99,9 +98,12 @@ public class PlayerBlockBreakingManagerTests {
 
         blockBreakingManager.startBreaking(blockLocation);
 
-        assertEquals(expectedTicksWithoutTool, blockBreakingManager.getBreakTicks(), "break ticks without a tool was incorrect");
-        assertEquals(expectedTicksWithTool, blockBreakingManager.getBreakTicks(), "break ticks with correct tool was incorrect");
-        assertEquals(expectedTicksWithBestTool, blockBreakingManager.getBreakTicks(), "break ticks with best tool was incorrect");
+        int resultTicksWithoutTool = blockBreakingManager.getBreakTicks();
+        int resultTicksWithTool = blockBreakingManager.getBreakTicks();
+        int resultTicksWithBestTool = blockBreakingManager.getBreakTicks();
+        assertEquals(expectedTicksWithoutTool, resultTicksWithoutTool, "break ticks without a tool was incorrect");
+        assertEquals(expectedTicksWithTool, resultTicksWithTool, "break ticks with correct tool was incorrect");
+        assertTrue(resultTicksWithBestTool < resultTicksWithTool, "break ticks with best tool was slower than with the correct tool");
     }
 
     @Test

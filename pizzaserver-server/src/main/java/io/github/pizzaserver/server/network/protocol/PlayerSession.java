@@ -3,7 +3,7 @@ package io.github.pizzaserver.server.network.protocol;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
-import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Queue;

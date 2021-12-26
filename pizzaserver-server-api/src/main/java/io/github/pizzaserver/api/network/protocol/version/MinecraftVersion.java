@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.network.protocol.versions;
+package io.github.pizzaserver.api.network.protocol.version;
 
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;

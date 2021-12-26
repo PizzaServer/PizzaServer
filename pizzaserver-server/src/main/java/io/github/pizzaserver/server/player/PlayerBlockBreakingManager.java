@@ -2,8 +2,11 @@ package io.github.pizzaserver.server.player;
 
 import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
+import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
@@ -42,7 +45,9 @@ public class PlayerBlockBreakingManager {
         if (block.getBlockEntity() != null) {
             block.getBlockEntity().onBreak(this.player);
         }
-        this.player.getWorld().setAndUpdateBlock(block.getBlockState().getResultBlock(), block.getLocation().toVector3i());
+        this.player.getWorld().setAndUpdateBlock(BlockRegistry.getInstance().getBlockType(BlockTypeID.AIR), block.getLocation().toVector3i());
+        block.getBlockType().onBreak(this.player, block);
+
         this.resetMiningData();
     }
 
@@ -65,12 +70,15 @@ public class PlayerBlockBreakingManager {
             Block block = this.getBlock().get();
             ItemStack heldItem = this.player.getInventory().getHeldItem();
 
-            boolean isCorrectTool = heldItem.getItemType().getToolType().isCorrectTool(block);
-            float breakTime = block.getBlockState().getToughness() * (isCorrectTool ? 1.5f : 5f);
+            boolean isCorrectTool = block.getBlockState().getToolType() == heldItem.getItemType().getToolType()
+                    || block.getBlockState().canBeMinedWithHand();
+            boolean isBestTool = heldItem.getItemType().getToolTier().getStrength() >= block.getBlockState().getToolTier().getStrength()
+                    && block.getBlockState().getToolTier() != ToolTier.NONE
+                    && isCorrectTool;
 
-            boolean isBestTool = heldItem.getItemType().getToolType().isBestTool(block);
+            float breakTime = block.getBlockState().getHardness() * (isCorrectTool ? 1.5f : 5f);
             if (isBestTool) {
-                breakTime /= this.player.getInventory().getHeldItem().getItemType().getToolStrength(block);
+                breakTime /= this.player.getInventory().getHeldItem().getItemType().getToolTier().getStrength();
             }
             // TODO: haste/mining fatigue checks
             // TODO: Underwater check

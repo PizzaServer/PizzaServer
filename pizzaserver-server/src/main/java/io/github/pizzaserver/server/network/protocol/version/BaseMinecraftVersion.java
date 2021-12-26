@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.protocol.versions;
+package io.github.pizzaserver.server.network.protocol.version;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -12,9 +12,9 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
-import io.github.pizzaserver.api.network.protocol.versions.MinecraftVersion;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.ImplServer;
-import io.github.pizzaserver.server.network.protocol.exceptions.ProtocolException;
+import io.github.pizzaserver.server.network.protocol.exception.ProtocolException;
 
 import java.io.IOException;
 import java.io.InputStream;

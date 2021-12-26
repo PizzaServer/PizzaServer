@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class BlockTypeBed extends BaseBlockType {
 
-    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
+    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<>() {
         {
             int blockStateIndex = 0;
             for (int direction = 0; direction <= 3; direction++) {
@@ -49,7 +49,7 @@ public class BlockTypeBed extends BaseBlockType {
     }
 
     @Override
-    public float getToughness(int blockStateIndex) {
+    public float getHardness(int blockStateIndex) {
         return 0.2f;
     }
 

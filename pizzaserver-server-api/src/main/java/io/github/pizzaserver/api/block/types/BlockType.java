@@ -3,6 +3,7 @@ package io.github.pizzaserver.api.block.types;
 import com.google.common.collect.BiMap;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockState;
@@ -97,10 +98,10 @@ public interface BlockType {
     boolean isSolid(int blockStateIndex);
 
     /**
-     * How strong this block is to mine.
+     * How hard this block is to mine.
      * @return strength of the block
      */
-    float getToughness(int blockStateIndex);
+    float getHardness(int blockStateIndex);
 
     /**
      * Get the origin position of the block.
@@ -184,23 +185,28 @@ public interface BlockType {
     float getFallDamageReduction(int blockStateIndex);
 
     /**
-     * Retrieve the item tool types that should be used against this block
-     * in order for the item drops to spawn when the block is broken.
-     * @return tools that will result in a block drop
+     * If this block can be mined efficiently without using a tool.
+     * @return if it does not require a tool
      */
-    Set<ToolType> getCorrectTools(int blockStateIndex);
+    boolean canBeMinedWithHand();
 
     /**
-     * Retrieve the item tool types that are the most effective against this block.
-     * @return tools that are very effective against this block
+     * Retrieve the tool type required to efficiently mine this block.
+     * @return tool type
      */
-    Set<ToolType> getBestTools(int blockStateIndex);
+    ToolType getToolTypeRequired();
+
+    /**
+     * Retrieve the tool tier required to maximize efficiency while mining this block.
+     * @return tool tier
+     */
+    ToolTier getToolTierRequired();
 
     /**
      * Retrieve the loot that should be dropped when this block is broken.
      * @return set of the item loot to consider when dropping loot
      */
-    Set<ItemStack> getLoot(Player player, int blockStateIndex);
+    Set<ItemStack> getLoot(Entity entity, int blockStateIndex);
 
     /**
      * Retrieve the blocks that this block can be placed on.
@@ -210,33 +216,35 @@ public interface BlockType {
     Set<BlockState> getPlaceableOnlyOn(int blockStateIndex);
 
     /**
-     * Retrieve the block to replace blocks of this block type with when mined.
-     * @return the block to replace this block with after it is mined.
-     */
-    Block getResultBlock(int blockStateIndex);
-
-    /**
-     * Called when a player places a block but before the block place event is called.
-     * Useful for player dependent blockstates. (e.g. direction)
-     * @param player player who placed the block
+     * Called before an entity places a block.
+     * Useful for entity dependent blockstates. (e.g. direction)
+     * @param entity entity who placed the block
      * @param block the block being placed
+     * @return if the block should be placed
      */
-    void prepareBlockForPlacement(Player player, Block block);
+    boolean prepareForPlacement(Entity entity, Block block);
 
     /**
      * Called after the block is placed in the world.
-     * @param player the player who placed this block
+     * @param entity the entity who placed this block
      * @param block the block being placed
      */
-    void onPlace(Player player, Block block);
+    void onPlace(Entity entity, Block block);
 
     /**
      * Called when the right click button is used against this block.
-     * @param player the player who interacted with the block
+     * @param entity the entity who interacted with the block
      * @param block the block interacted with
      * @return if the item used to interact with this block should be called
      */
-    boolean onInteract(Player player, Block block);
+    boolean onInteract(Entity entity, Block block);
+
+    /**
+     * Called whenever an entity breaks this block.
+     * @param entity the entity that broke this block
+     * @param block the block broken
+     */
+    void onBreak(Entity entity, Block block);
 
     /**
      * Called whenever an entity moves onto this block.

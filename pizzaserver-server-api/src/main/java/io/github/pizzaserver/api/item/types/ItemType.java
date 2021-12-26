@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.item.types;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.pizzaserver.api.block.Block;
@@ -91,12 +92,7 @@ public interface ItemType {
 
     ToolType getToolType();
 
-    /**
-     * Returns the strength of the tool against a block.
-     *
-     * @return level of mining speed this item provides against a block
-     */
-    float getToolStrength(Block block);
+    ToolTier getToolTier();
 
     /**
      * Get the only blocks that this item can break.

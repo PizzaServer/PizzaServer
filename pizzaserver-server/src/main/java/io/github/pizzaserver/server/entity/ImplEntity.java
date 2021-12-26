@@ -8,10 +8,7 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.utils.BlockLocation;
-import io.github.pizzaserver.api.utils.BoundingBox;
-import io.github.pizzaserver.api.utils.Location;
-import io.github.pizzaserver.api.utils.TextMessage;
+import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
@@ -460,6 +457,11 @@ public class ImplEntity implements Entity {
     public void setHeadYaw(float headYaw) {
         this.moveUpdate = true;
         this.headYaw = headYaw;
+    }
+
+    @Override
+    public HorizontalDirection getHorizontalDirection() {
+        return HorizontalDirection.fromYaw(this.getYaw());
     }
 
     @Override

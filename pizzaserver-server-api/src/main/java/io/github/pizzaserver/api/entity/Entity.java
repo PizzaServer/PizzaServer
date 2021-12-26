@@ -12,10 +12,7 @@ import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
-import io.github.pizzaserver.api.utils.BlockLocation;
-import io.github.pizzaserver.api.utils.BoundingBox;
-import io.github.pizzaserver.api.utils.Location;
-import io.github.pizzaserver.api.utils.Watchable;
+import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
@@ -189,6 +186,8 @@ public interface Entity extends Watchable {
     float getHeadYaw();
 
     void setHeadYaw(float headYaw);
+
+    HorizontalDirection getHorizontalDirection();
 
     boolean isAlive();
 

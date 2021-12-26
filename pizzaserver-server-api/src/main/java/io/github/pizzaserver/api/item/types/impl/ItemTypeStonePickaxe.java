@@ -1,8 +1,7 @@
 package io.github.pizzaserver.api.item.types.impl;
 
-import io.github.pizzaserver.api.item.ToolTypes;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.item.types.ItemTypeID;
 import io.github.pizzaserver.api.item.types.components.DurableItemComponent;
@@ -31,7 +30,12 @@ public class ItemTypeStonePickaxe extends BaseItemType implements DurableItemCom
 
     @Override
     public ToolType getToolType() {
-        return ToolTypes.getToolType(ToolTypeID.STONE_PICKAXE);
+        return ToolType.PICKAXE;
+    }
+
+    @Override
+    public ToolTier getToolTier() {
+        return ToolTier.STONE;
     }
 
     @Override

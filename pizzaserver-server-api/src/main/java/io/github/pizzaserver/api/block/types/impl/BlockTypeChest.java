@@ -3,19 +3,18 @@ package io.github.pizzaserver.api.block.types.impl;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
-import io.github.pizzaserver.api.item.ToolTypes;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.data.ToolTypeID;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
 
 public class BlockTypeChest extends BaseBlockType {
 
-    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<NbtMap, Integer>() {
+    private static final BiMap<NbtMap, Integer> BLOCK_STATES = HashBiMap.create(new HashMap<>() {
         {
             for (int i = 0; i < 6; i++) {
                 this.put(NbtMap.builder()
@@ -37,7 +36,7 @@ public class BlockTypeChest extends BaseBlockType {
     }
 
     @Override
-    public float getToughness(int blockStateIndex) {
+    public float getHardness(int blockStateIndex) {
         return 2.5f;
     }
 
@@ -47,13 +46,24 @@ public class BlockTypeChest extends BaseBlockType {
     }
 
     @Override
-    public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_AXE));
+    public boolean canBeMinedWithHand() {
+        return true;
     }
 
     @Override
-    public Set<ToolType> getBestTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.WOOD_AXE));
+    public ToolType getToolTypeRequired() {
+        return ToolType.AXE;
+    }
+
+    @Override
+    public ToolTier getToolTierRequired() {
+        return ToolTier.WOOD;
+    }
+
+    @Override
+    public boolean prepareForPlacement(Entity entity, Block block) {
+        block.setBlockStateIndex(entity.getHorizontalDirection().opposite().ordinal());
+        return true;
     }
 
 }

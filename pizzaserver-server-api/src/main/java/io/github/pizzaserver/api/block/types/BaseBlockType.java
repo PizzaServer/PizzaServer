@@ -3,23 +3,20 @@ package io.github.pizzaserver.api.block.types;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.data.ToolTypeID;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.block.types.data.PushResponse;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.ToolTypes;
-import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BaseBlockType implements BlockType {
 
@@ -160,17 +157,22 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public Set<ToolType> getCorrectTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.NONE));
+    public boolean canBeMinedWithHand() {
+        return false;
     }
 
     @Override
-    public Set<ToolType> getBestTools(int blockStateIndex) {
-        return Collections.singleton(ToolTypes.getToolType(ToolTypeID.NONE));
+    public ToolType getToolTypeRequired() {
+        return ToolType.NONE;
     }
 
     @Override
-    public Set<ItemStack> getLoot(Player player, int blockStateIndex) {
+    public ToolTier getToolTierRequired() {
+        return ToolTier.NONE;
+    }
+
+    @Override
+    public Set<ItemStack> getLoot(Entity entity, int blockStateIndex) {
         return Collections.singleton(ItemRegistry.getInstance().getItem(this.getBlockId(), 1, blockStateIndex));
     }
 
@@ -180,19 +182,27 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public Block getResultBlock(int blockStateIndex) {
-        return BlockRegistry.getInstance().getBlock(BlockTypeID.AIR);
+    public boolean prepareForPlacement(Entity entity, Block block) {
+        return true;
     }
 
     @Override
-    public void prepareBlockForPlacement(Player player, Block block) {}
+    public void onPlace(Entity entity, Block block) {}
 
     @Override
-    public void onPlace(Player player, Block block) {}
-
-    @Override
-    public boolean onInteract(Player player, Block block) {
+    public boolean onInteract(Entity entity, Block block) {
         return true;
+    }
+
+    @Override
+    public void onBreak(Entity entity, Block block) {
+        for (ItemStack loot : this.getLoot(entity, block.getBlockStateIndex())) {
+            block.getWorld().addItemEntity(loot, block.getLocation().toVector3f()
+                    .add(0.5f, 0.5f, 0.5f)
+                    .add(ThreadLocalRandom.current().nextFloat() * 0.2f,
+                            ThreadLocalRandom.current().nextFloat() * 0.2f,
+                            ThreadLocalRandom.current().nextFloat() * 0.2f));
+        }
     }
 
     @Override

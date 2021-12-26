@@ -116,4 +116,10 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
         return true;
     }
 
+    @Override
+    public boolean handle(PacketViolationWarningPacket packet) {
+        this.server.getLogger().debug("Packet violation for " + packet.getPacketType() + ": " + packet.getContext());
+        return true;
+    }
+
 }
