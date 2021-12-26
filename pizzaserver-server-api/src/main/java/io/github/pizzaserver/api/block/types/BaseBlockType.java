@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.block.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -39,18 +40,18 @@ public abstract class BaseBlockType implements BlockType {
     }
 
     @Override
-    public BiMap<NbtMap, Integer> getBlockStates() {
+    public BiMap<NbtMap, Integer> getBlockStateNBTs() {
         return EMPTY_BLOCK_STATES;
     }
 
     @Override
-    public NbtMap getBlockState(int index) {
-        return this.getBlockStates().inverse().getOrDefault(index, null);
+    public NbtMap getBlockStateNBT(int index) {
+        return this.getBlockStateNBTs().inverse().getOrDefault(index, null);
     }
 
     @Override
     public int getBlockStateIndex(NbtMap compound) {
-        return this.getBlockStates().getOrDefault(compound, -1);
+        return this.getBlockStateNBTs().getOrDefault(compound, -1);
     }
 
     @Override
@@ -197,9 +198,9 @@ public abstract class BaseBlockType implements BlockType {
     @Override
     public void onBreak(Entity entity, Block block) {
         for (ItemStack loot : this.getLoot(entity, block.getBlockStateIndex())) {
-            block.getWorld().addItemEntity(loot, block.getLocation().toVector3f()
-                    .add(0.5f, 0.5f, 0.5f)
-                    .add(ThreadLocalRandom.current().nextFloat() * 0.2f,
+            block.getWorld().addItemEntity(loot,
+                    block.getLocation().toVector3f().add(0.5f, 0.5f, 0.5f),
+                    Vector3f.from(ThreadLocalRandom.current().nextFloat() * 0.2f,
                             ThreadLocalRandom.current().nextFloat() * 0.2f,
                             ThreadLocalRandom.current().nextFloat() * 0.2f));
         }

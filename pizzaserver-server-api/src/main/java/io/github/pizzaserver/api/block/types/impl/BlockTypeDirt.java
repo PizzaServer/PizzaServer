@@ -37,7 +37,7 @@ public class BlockTypeDirt extends BaseBlockType {
     }
 
     @Override
-    public BiMap<NbtMap, Integer> getBlockStates() {
+    public BiMap<NbtMap, Integer> getBlockStateNBTs() {
         return BLOCK_STATES;
     }
 

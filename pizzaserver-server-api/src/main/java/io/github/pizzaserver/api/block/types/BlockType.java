@@ -53,9 +53,9 @@ public interface BlockType {
      *
      * @return block states
      */
-    BiMap<NbtMap, Integer> getBlockStates();
+    BiMap<NbtMap, Integer> getBlockStateNBTs();
 
-    NbtMap getBlockState(int index);
+    NbtMap getBlockStateNBT(int index);
 
     int getBlockStateIndex(NbtMap compound);
 

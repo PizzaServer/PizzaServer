@@ -41,7 +41,7 @@ public class BlockTypeChest extends BaseBlockType {
     }
 
     @Override
-    public BiMap<NbtMap, Integer> getBlockStates() {
+    public BiMap<NbtMap, Integer> getBlockStateNBTs() {
         return BLOCK_STATES;
     }
 
@@ -62,7 +62,7 @@ public class BlockTypeChest extends BaseBlockType {
 
     @Override
     public boolean prepareForPlacement(Entity entity, Block block) {
-        block.setBlockStateIndex(entity.getHorizontalDirection().opposite().ordinal());
+        block.setBlockStateIndex(entity.getHorizontalDirection().opposite().getBlockStateIndex());
         return true;
     }
 

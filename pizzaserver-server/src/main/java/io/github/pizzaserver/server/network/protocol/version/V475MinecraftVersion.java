@@ -79,7 +79,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
             // Add custom block states
             for (BaseBlockType blockType : BlockRegistry.getInstance().getCustomTypes()) {
-                sortedBlockRuntimeStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStates().keySet()));
+                sortedBlockRuntimeStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStateNBTs().keySet()));
                 this.customBlockProperties.add(this.getBlockPropertyData(blockType));
             }
 

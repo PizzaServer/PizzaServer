@@ -31,7 +31,7 @@ public class BlockState {
     }
 
     public NbtMap getNBT() {
-        return this.getBlockType().getBlockState(this.index);
+        return this.getBlockType().getBlockStateNBT(this.index);
     }
 
     public BoundingBox getBoundingBox() {
