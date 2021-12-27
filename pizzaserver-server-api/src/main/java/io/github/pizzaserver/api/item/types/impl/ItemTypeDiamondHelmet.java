@@ -1,11 +1,9 @@
 package io.github.pizzaserver.api.item.types.impl;
 
 import io.github.pizzaserver.api.item.data.ArmorSlot;
-import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.item.types.ItemTypeID;
-import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
 
-public class ItemTypeDiamondHelmet extends BaseItemType implements ArmorItemComponent {
+public class ItemTypeDiamondHelmet extends ItemTypeArmor {
 
     @Override
     public String getItemId() {
