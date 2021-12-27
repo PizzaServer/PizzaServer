@@ -17,8 +17,8 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<SwapStack
     public boolean isValid(Player player, SwapStackRequestActionDataWrapper action) {
         if (action.getSource().exists() && action.getDestination().exists()) {
             // Ensure that the source and destination items are allowed in their new slots
-            return ItemType.canBePlacedInSlot(action.getSource().getItemStack().getItemType(), action.getDestination().getSlotType())
-                    && ItemType.canBePlacedInSlot(action.getDestination().getItemStack().getItemType(), action.getSource().getSlotType());
+            return ItemType.canBePlacedInSlot(action.getSource().getItemStack().getItemType(), action.getDestination().getSlotType(), action.getDestination().getSlot())
+                    && ItemType.canBePlacedInSlot(action.getDestination().getItemStack().getItemType(), action.getSource().getSlotType(), action.getDestination().getSlot());
         } else {
             return false;
         }

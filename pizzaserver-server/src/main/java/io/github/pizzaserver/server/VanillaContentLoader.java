@@ -2,10 +2,7 @@ package io.github.pizzaserver.server;
 
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.types.impl.ItemTypeShears;
-import io.github.pizzaserver.api.item.types.impl.ItemTypeStonePickaxe;
-import io.github.pizzaserver.api.item.types.impl.ItemTypeWoodenPickaxe;
-import io.github.pizzaserver.api.item.types.impl.ItemTypeWoodenSword;
+import io.github.pizzaserver.api.item.types.impl.*;
 import io.github.pizzaserver.server.blockentity.types.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.components.handlers.*;
@@ -32,6 +29,7 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemTypeStonePickaxe());
         ItemRegistry.getInstance().register(new ItemTypeWoodenPickaxe());
         ItemRegistry.getInstance().register(new ItemTypeWoodenSword());
+        ItemRegistry.getInstance().register(new ItemTypeDiamondHelmet());
     }
 
     private static void loadBlocks() {

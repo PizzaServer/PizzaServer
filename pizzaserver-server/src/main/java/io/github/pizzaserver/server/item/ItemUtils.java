@@ -1,9 +1,11 @@
 package io.github.pizzaserver.server.item;
 
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 
 public class ItemUtils {
@@ -17,6 +19,9 @@ public class ItemUtils {
      * @return serialized data
      */
     public static ItemData serializeForNetwork(ItemStack itemStack, MinecraftVersion version) {
+        if (itemStack.getItemType() instanceof ArmorItemComponent) {
+            itemStack.setCompoundTag(NbtMapBuilder.from(itemStack.getCompoundTag()).putInt("Damage", 0).build());
+        }
         return ItemData.builder()
                 .id(version.getItemRuntimeId(itemStack.getItemType().getItemId()))
                 .netId(itemStack.getNetworkId())

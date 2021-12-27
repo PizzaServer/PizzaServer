@@ -30,7 +30,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
             boolean doesNotExceedMaxCount = action.getCountRequested() > 0
                     && destinationItemStack.getCount() + action.getCountRequested() <= sourceItemStack.getItemType().getMaxStackSize();
 
-            boolean canPutItemTypeInSlot = ItemType.canBePlacedInSlot(sourceItemStack.getItemType(), action.getDestination().getSlotType())
+            boolean canPutItemTypeInSlot = ItemType.canBePlacedInSlot(sourceItemStack.getItemType(), action.getDestination().getSlotType(), action.getDestination().getSlot())
                     && action.getDestination().getSlotType() != ContainerSlotType.CURSOR;
 
             return canMergeItemData && doesNotExceedMaxCount && canPutItemTypeInSlot;

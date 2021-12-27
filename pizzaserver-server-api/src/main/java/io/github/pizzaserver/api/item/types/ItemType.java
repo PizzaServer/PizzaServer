@@ -153,10 +153,10 @@ public interface ItemType {
         POTION
     }
 
-    static boolean canBePlacedInSlot(ItemType itemType, ContainerSlotType containerSlotType) {
+    static boolean canBePlacedInSlot(ItemType itemType, ContainerSlotType containerSlotType, int slot) {
         switch (containerSlotType) {
             case ARMOR:
-                return itemType instanceof ArmorItemComponent;
+                return itemType instanceof ArmorItemComponent && slot == ((ArmorItemComponent) itemType).getArmorSlot().ordinal();
             case OFFHAND:
                 return itemType.isAllowedInOffHand();
             default:

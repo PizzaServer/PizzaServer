@@ -97,8 +97,8 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
     @Override
     public boolean handle(TextPacket packet) {
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.IRON_ORE, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.CHEST, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.STONE_PICKAXE, 1));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.DIAMOND_HELMET, 1));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.SHEARS, 1));
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.WOODEN_PICKAXE, 1));
         this.player.getWorld().addEntity(EntityRegistry.getInstance().getEntity(CowEntityDefinition.ID), this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

@@ -18,7 +18,6 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.ItemEntity;
 import io.github.pizzaserver.api.entity.data.DamageCause;
-import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;

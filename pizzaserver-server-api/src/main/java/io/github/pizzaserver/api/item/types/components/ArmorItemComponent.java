@@ -1,11 +1,14 @@
 package io.github.pizzaserver.api.item.types.components;
 
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.data.ArmorSlot;
 
 /**
  * Represents an item that is considered armor.
  */
 public interface ArmorItemComponent extends DurableItemComponent {
+
+    ArmorSlot getArmorSlot();
 
     /**
      * Amount of armor points this item type provides when worn.
