@@ -62,12 +62,11 @@ public class PlayerBlockBreakingManagerTests {
     }
 
     @Test
-    @Disabled("WIP: correct tool break time is invalid")
     public void breakingShouldBeQuickerAndCorrectWithCorrectTool() {
         BlockType blockType = new BlockTypeIronOre();
-        ItemStack bestTool = new ItemStack(new ItemTypeStonePickaxe());
+        ItemStack correctToolAndTier = new ItemStack(new ItemTypeStonePickaxe());
         ItemStack correctTool = new ItemStack(new ItemTypeWoodenPickaxe());
-        int expectedTicksWithTool = 160;
+        int expectedTicksWithTool = 150;
         int expectedTicksWithoutTool = 300;
 
 
@@ -83,7 +82,7 @@ public class PlayerBlockBreakingManagerTests {
                 new ItemStack(new ImplBlockItemType(new BlockTypeAir())),
                 new ItemStack(new ImplBlockItemType(new BlockTypeAir())),
                 correctTool,
-                bestTool);
+                correctToolAndTier);
 
         PlayerBlockBreakingManager blockBreakingManager = new PlayerBlockBreakingManager(mockPlayer);
         BlockLocation blockLocation = new BlockLocation(mockWorld, 0, 0, 0, 0);
@@ -100,10 +99,10 @@ public class PlayerBlockBreakingManagerTests {
 
         int resultTicksWithoutTool = blockBreakingManager.getBreakTicks();
         int resultTicksWithTool = blockBreakingManager.getBreakTicks();
-        int resultTicksWithBestTool = blockBreakingManager.getBreakTicks();
+        int resultTicksWithToolAndTier = blockBreakingManager.getBreakTicks();
         assertEquals(expectedTicksWithoutTool, resultTicksWithoutTool, "break ticks without a tool was incorrect");
         assertEquals(expectedTicksWithTool, resultTicksWithTool, "break ticks with correct tool was incorrect");
-        assertTrue(resultTicksWithBestTool < resultTicksWithTool, "break ticks with best tool was slower than with the correct tool");
+        assertTrue(resultTicksWithToolAndTier < resultTicksWithTool, "break ticks with best tool was slower than with the correct tool");
     }
 
     @Test

@@ -135,6 +135,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
         movePlayerPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
         movePlayerPacket.setMode(MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(this.isOnGround());
+        movePlayerPacket.setTick(this.getServer().getTick());
 
         for (Player player : this.getViewers()) {
             player.sendPacket(movePlayerPacket);

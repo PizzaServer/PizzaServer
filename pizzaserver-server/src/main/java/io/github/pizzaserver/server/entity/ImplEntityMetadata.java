@@ -162,6 +162,7 @@ public class ImplEntityMetadata implements EntityMetadata {
         SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
         entityDataPacket.setRuntimeEntityId(this.entity.getId());
         entityDataPacket.getMetadata().putAll(this.dataMap);
+        entityDataPacket.setTick(this.entity.getServer().getTick());
         for (Player player : this.entity.getViewers()) {
             player.sendPacket(entityDataPacket);
         }

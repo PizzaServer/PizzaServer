@@ -242,7 +242,7 @@ public class ImplServer extends Server {
     }
 
     public void registerSession(PlayerSession session) {
-        session.setPacketHandler(new LoginHandshakePacketHandler(this, session));
+        session.addPacketHandler(new LoginHandshakePacketHandler(this, session));
         this.sessions.add(session);
     }
 

@@ -6,13 +6,13 @@ import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PlayerSession {
 
     private final BedrockServerSession connection;
-    private volatile BedrockPacketHandler handler;
+    private final List<BedrockPacketHandler> handlers = Collections.synchronizedList(new ArrayList<>());
     private MinecraftVersion version;
     private ImplPlayer player;
 
@@ -34,8 +34,12 @@ public class PlayerSession {
         this.player = player;
     }
 
-    public void setPacketHandler(BedrockPacketHandler handler) {
-        this.handler = handler;
+    public void addPacketHandler(BedrockPacketHandler handler) {
+        this.handlers.add(handler);
+    }
+
+    public boolean removePacketHandler(BedrockPacketHandler handler) {
+        return this.handlers.remove(handler);
     }
 
     public MinecraftVersion getVersion() {
@@ -51,10 +55,12 @@ public class PlayerSession {
     }
 
     public void processIncomingPackets() {
-        if (this.handler != null) {
-            BedrockPacket packet;
-            while ((packet = this.incomingPacketsQueue.poll()) != null) {
-                packet.handle(this.handler);
+        List<BedrockPacketHandler> currentHandlers = new ArrayList<>(this.handlers);
+
+        BedrockPacket packet;
+        while ((packet = this.incomingPacketsQueue.poll()) != null) {
+            for (BedrockPacketHandler handler : currentHandlers) {
+                packet.handle(handler);
             }
         }
     }

@@ -6,7 +6,6 @@ import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
@@ -70,21 +69,18 @@ public class PlayerBlockBreakingManager {
             Block block = this.getBlock().get();
             ItemStack heldItem = this.player.getInventory().getHeldItem();
 
-            boolean isCorrectTool = block.getBlockState().getToolType() == heldItem.getItemType().getToolType()
-                    || block.getBlockState().canBeMinedWithHand();
-            boolean isBestTool = heldItem.getItemType().getToolTier().getStrength() >= block.getBlockState().getToolTier().getStrength()
-                    && block.getBlockState().getToolTier() != ToolTier.NONE
-                    && isCorrectTool;
+            boolean isCorrectTool = block.getBlockState().getToolType() == heldItem.getItemType().getToolType();
+            boolean isCorrectTier = heldItem.getItemType().getToolTier().getStrength() >= block.getBlockState().getToolTier().getStrength();
 
-            float breakTime = block.getBlockState().getHardness() * (isCorrectTool ? 1.5f : 5f);
-            if (isBestTool) {
-                breakTime /= this.player.getInventory().getHeldItem().getItemType().getToolTier().getStrength();
+            float breakTime = block.getBlockState().getHardness() * ((isCorrectTool && isCorrectTier) || block.getBlockState().canBeMinedWithHand() ? 1.5f : 5f);
+            if (isCorrectTool) {
+                breakTime /= heldItem.getItemType().getToolTier().getStrength();
             }
             // TODO: haste/mining fatigue checks
             // TODO: Underwater check
             // TODO: on ground check
 
-            return (int) Math.ceil(breakTime * 20);
+            return Math.round(breakTime * 20);
         } else {
             return -1;
         }

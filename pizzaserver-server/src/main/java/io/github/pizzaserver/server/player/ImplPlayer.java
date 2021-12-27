@@ -24,7 +24,9 @@ import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
 import io.github.pizzaserver.server.level.world.ImplWorld;
-import io.github.pizzaserver.server.network.handlers.GamePacketHandler;
+import io.github.pizzaserver.server.network.handlers.AuthInputHandler;
+import io.github.pizzaserver.server.network.handlers.PlayerPacketHandler;
+import io.github.pizzaserver.server.network.handlers.InventoryTransactionHandler;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
@@ -183,7 +185,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
             // Send remaining packets to spawn player
             SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
-            movementSettings.setMovementMode(AuthoritativeMovementMode.CLIENT);
+            movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
+            movementSettings.setServerAuthoritativeBlockBreaking(true);
 
             StartGamePacket startGamePacket = new StartGamePacket();
             startGamePacket.setUniqueEntityId(this.getId());
@@ -214,6 +217,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             startGamePacket.setMultiplayerCorrelationId(UUID.randomUUID().toString());
             startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
             startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
+            startGamePacket.setCurrentTick(this.getServer().getTick());
             startGamePacket.setServerEngine("");
             this.sendPacket(startGamePacket);
 
@@ -244,7 +248,9 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             this.getPlayerList().addEntries(entries);
 
             location.getWorld().addEntity(this, location.toVector3f());
-            this.session.setPacketHandler(new GamePacketHandler(this));
+            this.session.addPacketHandler(new PlayerPacketHandler(this));
+            this.session.addPacketHandler(new AuthInputHandler(this));
+            this.session.addPacketHandler(new InventoryTransactionHandler(this));
             this.session.setPlayer(this);
 
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
@@ -542,6 +548,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
             updateAttributesPacket.setRuntimeEntityId(this.getId());
             updateAttributesPacket.setAttributes(attributes.stream().map(Attribute::serialize).collect(Collectors.toList()));
+            updateAttributesPacket.setTick(this.getServer().getTick());
             this.sendPacket(updateAttributesPacket);
         }
     }
