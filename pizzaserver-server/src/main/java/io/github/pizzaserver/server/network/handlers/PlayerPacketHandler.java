@@ -102,7 +102,11 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.WOODEN_PICKAXE, 1));
         this.player.getWorld().addEntity(EntityRegistry.getInstance().getEntity(CowEntityDefinition.ID), this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {
-            PlayerChatEvent event = new PlayerChatEvent(this.player, packet.getMessage(), this.player.getServer().getPlayers());
+            String message = packet.getMessage().strip();
+            if (message.length() > 512) {
+                message = message.substring(0, 512);
+            }
+            PlayerChatEvent event = new PlayerChatEvent(this.player, message, this.player.getServer().getPlayers());
 
             this.player.getServer().getEventManager().call(event);
             if (!event.isCancelled()) {
