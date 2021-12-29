@@ -15,6 +15,7 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
+import io.github.pizzaserver.api.item.types.ItemTypeID;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.server.ImplServer;
@@ -185,8 +186,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
             // Send remaining packets to spawn player
             SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
-            movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
-            movementSettings.setRewindHistorySize(20);
+            movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER);
             movementSettings.setServerAuthoritativeBlockBreaking(true);
 
             StartGamePacket startGamePacket = new StartGamePacket();
@@ -249,6 +249,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             this.getPlayerList().addEntries(entries);
 
             location.getWorld().addEntity(this, location.toVector3f());
+            this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemTypeID.SHIELD));
             this.session.addPacketHandler(new PlayerPacketHandler(this));
             this.session.addPacketHandler(new AuthInputHandler(this));
             this.session.addPacketHandler(new InventoryTransactionHandler(this));

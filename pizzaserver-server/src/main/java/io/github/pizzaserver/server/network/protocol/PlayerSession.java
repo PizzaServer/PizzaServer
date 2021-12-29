@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.player.ImplPlayer;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -62,6 +63,7 @@ public class PlayerSession {
             for (BedrockPacketHandler handler : currentHandlers) {
                 packet.handle(handler);
             }
+            ReferenceCountUtil.release(packet);
         }
     }
 
