@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.data.skin.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class Skin {
 
@@ -388,7 +389,7 @@ public class Skin {
     public static class Builder {
 
         private String skinId = "";
-        private String fullSkinId = "";
+        private String fullSkinId = UUID.randomUUID().toString();
         private String playFabId = "";
         private String skinResourcePatch;
         private String geometryVersion = "";

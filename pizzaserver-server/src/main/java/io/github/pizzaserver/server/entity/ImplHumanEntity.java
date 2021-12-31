@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class ImplHumanEntity extends ImplEntity implements HumanEntity {
 
-    public static Skin DEFAULT_STEVE;
+    public static final Skin DEFAULT_STEVE;
 
     static {
         try {
@@ -131,7 +131,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     protected void sendMovementPacket() {
         MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
         movePlayerPacket.setRuntimeEntityId(this.getId());
-        movePlayerPacket.setPosition(this.getLocation().toVector3f());
+        movePlayerPacket.setPosition(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0));
         movePlayerPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
         movePlayerPacket.setMode(MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(this.isOnGround());
@@ -159,6 +159,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
             addPlayerPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
             addPlayerPacket.getMetadata().putAll(this.getMetaData().serialize());
             addPlayerPacket.setDeviceId("");
+            addPlayerPacket.setPlatformChatId("");
             addPlayerPacket.setHand(ItemUtils.serializeForNetwork(this.getInventory().getHeldItem(), player.getVersion()));
             player.sendPacket(addPlayerPacket);
             this.sendEquipmentPacket(player);

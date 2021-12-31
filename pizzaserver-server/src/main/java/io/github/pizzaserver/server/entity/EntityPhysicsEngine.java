@@ -57,7 +57,7 @@ public class EntityPhysicsEngine {
             return;
         }
         if (this.entity.hasCollision()) {
-            this.handleCollision();
+            this.handleCollisionWithEntities();
         }
         this.handleVelocity();
     }
@@ -65,7 +65,7 @@ public class EntityPhysicsEngine {
     /**
      * Handles pushing other entities away from this entity if their bounding boxes intersect.
      */
-    private void handleCollision() {
+    private void handleCollisionWithEntities() {
         int minChunkX = (int) Math.floor((this.entity.getFloorX() - this.entity.getBoundingBox().getWidth() / 2) / 16f);
         int minChunkZ = (int) Math.floor((this.entity.getFloorZ() - this.entity.getBoundingBox().getWidth() / 2) / 16f);
         int maxChunkX = (int) Math.ceil((this.entity.getFloorX() + this.entity.getBoundingBox().getWidth() / 2) / 16f);

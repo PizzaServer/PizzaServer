@@ -186,7 +186,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
             // Send remaining packets to spawn player
             SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
-            movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER);
+            movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
+            movementSettings.setRewindHistorySize(100);
             movementSettings.setServerAuthoritativeBlockBreaking(true);
 
             StartGamePacket startGamePacket = new StartGamePacket();

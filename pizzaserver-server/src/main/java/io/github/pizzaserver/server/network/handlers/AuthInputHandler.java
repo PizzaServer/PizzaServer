@@ -34,9 +34,6 @@ public class AuthInputHandler implements BedrockPacketHandler {
         // TODO: tick validation
         if (this.player.isAlive() && this.player.hasSpawned()) {
             this.handleMovement(packet.getPosition(), packet.getRotation());
-            if (!packet.getInputData().contains(PlayerAuthInputData.PERFORM_BLOCK_ACTIONS) && packet.getPlayerActions().size() > 0) {
-                this.player.sendMessage("ERROR");
-            }
 
             for (PlayerAuthInputData input : packet.getInputData()) {
                 switch (input) {
