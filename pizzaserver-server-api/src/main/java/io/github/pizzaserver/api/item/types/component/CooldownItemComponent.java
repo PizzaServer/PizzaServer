@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.item.types.components;
+package io.github.pizzaserver.api.item.types.component;
 
 /**
  * Represents an item that has a cooldown when used.

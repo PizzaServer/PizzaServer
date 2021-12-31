@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.item.types.components;
+package io.github.pizzaserver.api.item.types.component;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.types.BaseBlockType;

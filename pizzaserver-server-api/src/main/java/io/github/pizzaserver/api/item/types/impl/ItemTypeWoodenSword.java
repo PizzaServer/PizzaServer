@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.item.types.ItemTypeID;
-import io.github.pizzaserver.api.item.types.components.DurableItemComponent;
+import io.github.pizzaserver.api.item.types.component.DurableItemComponent;
 
 public class ItemTypeWoodenSword extends BaseItemType implements DurableItemComponent {
 

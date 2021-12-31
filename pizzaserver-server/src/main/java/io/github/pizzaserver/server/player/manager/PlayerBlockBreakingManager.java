@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.player;
+package io.github.pizzaserver.server.player.manager;
 
 import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;

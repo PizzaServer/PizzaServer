@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.types.BaseItemType;
-import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
+import io.github.pizzaserver.api.item.types.component.ArmorItemComponent;
 import io.github.pizzaserver.api.player.Player;
 
 public abstract class ItemTypeArmor extends BaseItemType implements ArmorItemComponent {

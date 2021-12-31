@@ -1,13 +1,13 @@
 package io.github.pizzaserver.api.item;
 
-import com.nukkitx.nbt.NbtList;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.nbt.NbtType;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
-import io.github.pizzaserver.api.item.types.components.DurableItemComponent;
+import io.github.pizzaserver.api.item.types.component.DurableItemComponent;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ public class ItemStack implements Cloneable {
     protected ItemType itemType;
     protected int count;
     protected int meta;
-    protected NbtMap compound = NbtMap.EMPTY;
+    protected NbtMap nbt = NbtMap.EMPTY;
 
     protected Set<BlockState> blocksCanBreak;
     protected Set<BlockState> blocksCanPlaceOn = Collections.emptySet();
@@ -93,42 +93,22 @@ public class ItemStack implements Cloneable {
         this.meta = meta;
     }
 
-    public boolean hasCustomName() {
-        return this.getCompoundTag().containsKey("display")
-                && this.getCompoundTag().get("display") instanceof NbtMap
-                && this.getCompoundTag().getCompound("display").containsKey("Name")
-                && this.getCompoundTag().getCompound("display").get("Name") instanceof String;
-    }
-
-    public Optional<String> getCustomName() {
-        if (!this.hasCustomName()) {
-            return Optional.empty();
-        }
-        return Optional.of(this.getCompoundTag().getCompound("display").getString("Name"));
+    public String getCustomName() {
+        return this.getNBT().getCompound("display").getString("Name");
     }
 
     public void setCustomName(String customName) {
+        NbtMap displayNBT;
         if (customName != null) {
-            // Set custom name
-            if (!(this.getCompoundTag().containsKey("display")) || !(this.getCompoundTag().get("display") instanceof NbtMap)) {
-                this.getCompoundTag().put("display", NbtMap.EMPTY);
-            }
-            this.getCompoundTag().getCompound("display").put("Name", customName);
-        } else if (this.hasCustomName()) {
-            // delete custom name
-            NbtMap displayCompound = this.getCompoundTag().getCompound("display");
-            displayCompound.remove("Name");
-            if (displayCompound.size() == 0) {  // Check if we can delete the compound
-                this.getCompoundTag().remove("display");
-            }
+            displayNBT = this.getNBT().getCompound("display").toBuilder()
+                    .putString("Name", customName)
+                    .build();
+        } else {
+            NbtMapBuilder displayNBTBuilder = this.getNBT().getCompound("display").toBuilder();
+            displayNBTBuilder.remove("Name");
+            displayNBT = displayNBTBuilder.build();
         }
-    }
-
-    public boolean hasLore() {
-        return this.getCompoundTag().containsKey("display")
-                && this.getCompoundTag().get("display") instanceof NbtMap
-                && this.getCompoundTag().getCompound("display").containsKey("Lore")
-                && this.getCompoundTag().getCompound("display").get("Lore") instanceof NbtList;
+        this.setNBT(this.getNBT().toBuilder().putCompound("display", displayNBT).build());
     }
 
     /**
@@ -147,43 +127,29 @@ public class ItemStack implements Cloneable {
     public ItemStack newNetworkStack() {
         int networkId = this.isEmpty() ? 0 : ItemStack.ID++;
         ItemStack newStack = new ItemStack(this.getItemType(), this.getCount(), this.getMeta(), networkId);
-        newStack.setCompoundTag(this.getCompoundTag());
+        newStack.setNBT(this.getNBT());
         newStack.setBlocksCanBreak(this.getBlocksCanBreak());
         newStack.setBlocksCanPlaceOn(this.getBlocksCanPlaceOn());
         return newStack;
     }
 
     public List<String> getLore() {
-        if (this.hasLore()) {
-            return this.getCompoundTag().getCompound("display").getList("Lore", NbtType.STRING);
-        } else {
-            return Collections.emptyList();
-        }
+        return this.getNBT().getCompound("display").getList("Lore", NbtType.STRING);
     }
 
     public void setLore(List<String> lore) {
-        if (lore != null) {
-            // Set lore
-            if (!(this.getCompoundTag().containsKey("display")) || !(this.getCompoundTag().get("display") instanceof NbtMap)) {
-                this.getCompoundTag().toBuilder().putCompound("display", NbtMap.EMPTY).build();
-            }
-            this.getCompoundTag().getCompound("display").toBuilder().putList("Lore", NbtType.STRING, lore).build();
-        } else if (this.hasLore()) {
-            // Delete lore
-            NbtMap displayCompound = this.getCompoundTag().getCompound("display");
-            displayCompound.remove("Lore");
-            if (displayCompound.size() == 0) {  // Check if we can delete the compound
-                this.getCompoundTag().remove("display");
-            }
-        }
+        NbtMap displayNBT = this.getNBT().getCompound("display").toBuilder()
+                .putList("Lore", NbtType.STRING, lore)
+                .build();
+        this.setNBT(this.getNBT().toBuilder().putCompound("display", displayNBT).build());
     }
 
-    public NbtMap getCompoundTag() {
-        return this.compound;
+    public NbtMap getNBT() {
+        return this.nbt;
     }
 
-    public void setCompoundTag(NbtMap compound) {
-        this.compound = compound;
+    public void setNBT(NbtMap nbt) {
+        this.nbt = nbt;
     }
 
     public Set<BlockState> getBlocksCanBreak() {
@@ -217,7 +183,7 @@ public class ItemStack implements Cloneable {
      */
     public boolean hasSameDataAs(ItemStack otherStack) {
         return (otherStack.getItemType().equals(this.getItemType())
-                && otherStack.getCompoundTag().equals(this.getCompoundTag())
+                && otherStack.getNBT().equals(this.getNBT())
                 && otherStack.getMeta() == this.getMeta()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
     }
 
@@ -235,7 +201,7 @@ public class ItemStack implements Cloneable {
      * @return if they are visually the same
      */
     public boolean visuallyEquals(ItemStack otherItemStack) {
-        return otherItemStack.getCompoundTag().equals(this.getCompoundTag())
+        return otherItemStack.getNBT().equals(this.getNBT())
                 && (otherItemStack.getMeta() == this.getMeta() || (otherItemStack.getItemType() instanceof DurableItemComponent))
                 && otherItemStack.getItemType().equals(this.getItemType());
     }
@@ -248,7 +214,7 @@ public class ItemStack implements Cloneable {
             return otherItemStack.getItemType().equals(this.getItemType())
                     && otherItemStack.getMeta() == this.getMeta()
                     && otherItemStack.getCount() == this.getCount()
-                    && otherItemStack.getCompoundTag().equals(this.getCompoundTag());
+                    && otherItemStack.getNBT().equals(this.getNBT());
         }
         return false;
     }
@@ -262,7 +228,7 @@ public class ItemStack implements Cloneable {
     public ItemStack clone() {
         try {
             ItemStack clone = (ItemStack) super.clone();
-            clone.setCompoundTag(this.getCompoundTag().toBuilder().build());
+            clone.setNBT(this.getNBT().toBuilder().build());
             clone.setBlocksCanBreak(new HashSet<>(this.getBlocksCanBreak()));
             clone.setBlocksCanPlaceOn(new HashSet<>(this.getBlocksCanPlaceOn()));
             return clone;

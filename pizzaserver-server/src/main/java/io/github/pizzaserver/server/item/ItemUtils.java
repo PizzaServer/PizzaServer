@@ -1,11 +1,9 @@
 package io.github.pizzaserver.server.item;
 
 import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 
 public class ItemUtils {
@@ -19,9 +17,6 @@ public class ItemUtils {
      * @return serialized data
      */
     public static ItemData serializeForNetwork(ItemStack itemStack, MinecraftVersion version) {
-        if (itemStack.getItemType() instanceof ArmorItemComponent) {
-            itemStack.setCompoundTag(NbtMapBuilder.from(itemStack.getCompoundTag()).putInt("Damage", 0).build());
-        }
         return ItemData.builder()
                 .id(version.getItemRuntimeId(itemStack.getItemType().getItemId()))
                 .netId(itemStack.getNetworkId())
@@ -29,7 +24,7 @@ public class ItemUtils {
                 .damage(itemStack.getMeta())
                 .canBreak(itemStack.getBlocksCanBreak().stream().map(BlockState::getBlockId).toArray(String[]::new))
                 .canPlace(itemStack.getBlocksCanPlaceOn().stream().map(BlockState::getBlockId).toArray(String[]::new))
-                .tag(itemStack.getCompoundTag())
+                .tag(itemStack.getNBT())
                 .usingNetId(true)
                 .build();
     }
@@ -39,7 +34,7 @@ public class ItemUtils {
                 .putString("Name", itemStack.getItemType().getItemId())
                 .putShort("Damage", (short) itemStack.getMeta())
                 .putByte("Count", (byte) itemStack.getCount())
-                .putCompound("tag", itemStack.getCompoundTag())
+                .putCompound("tag", itemStack.getNBT())
                 .build();
     }
 
@@ -50,13 +45,13 @@ public class ItemUtils {
         NbtMap nbtTag = itemNBT.getCompound("tag");
 
         ItemStack itemStack = new ItemStack(itemId, meta, count);
-        itemStack.setCompoundTag(nbtTag);
+        itemStack.setNBT(nbtTag);
         return itemStack;
     }
 
     public static ItemStack deserializeNetworkItem(ItemData itemData, MinecraftVersion version) {
         ItemStack itemStack = new ItemStack(version.getItemName(itemData.getId()), itemData.getCount(), itemData.getDamage(), itemData.getNetId());
-        itemStack.setCompoundTag(itemData.getTag());
+        itemStack.setNBT(itemData.getTag());
         return itemStack;
     }
 

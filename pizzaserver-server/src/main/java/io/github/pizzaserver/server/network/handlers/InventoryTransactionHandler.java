@@ -2,10 +2,7 @@ package io.github.pizzaserver.server.network.handlers;
 
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
-import com.nukkitx.protocol.bedrock.data.inventory.InventoryActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.InventorySource;
-import com.nukkitx.protocol.bedrock.data.inventory.ItemStackRequest;
+import com.nukkitx.protocol.bedrock.data.inventory.*;
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.PlaceStackRequestActionData;
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionData;
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.SwapStackRequestActionData;
@@ -166,7 +163,8 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                 case ITEM_USE -> this.handleUseInventoryTransaction(packet.getBlockPosition(),
                         BlockFace.resolve(packet.getBlockFace()),
                         packet.getHotbarSlot(),
-                        packet.getActionType());
+                        packet.getActionType(),
+                        packet.getItemInHand());
                 case ITEM_USE_ON_ENTITY -> this.handleUseEntityInventoryTransaction(packet);
                 case ITEM_RELEASE -> this.handleReleaseInventoryTransaction(packet);
             }
@@ -182,7 +180,8 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
             this.handleUseInventoryTransaction(packet.getItemUseTransaction().getBlockPosition(),
                     BlockFace.resolve(packet.getItemUseTransaction().getBlockFace()),
                     packet.getItemUseTransaction().getHotbarSlot(),
-                    packet.getItemUseTransaction().getActionType());
+                    packet.getItemUseTransaction().getActionType(),
+                    packet.getItemUseTransaction().getItemInHand());
         }
         return true;
     }
@@ -230,7 +229,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
         }
     }
 
-    private void handleUseInventoryTransaction(Vector3i blockCoordinates, BlockFace blockFace, int hotbarSlot, int actionType) {
+    private void handleUseInventoryTransaction(Vector3i blockCoordinates, BlockFace blockFace, int hotbarSlot, int actionType, ItemData itemData) {
         double distanceToBlock = this.player.getLocation().toVector3f().distance(blockCoordinates.toFloat());
         if (distanceToBlock > this.player.getChunkRadius() * 16) {
             // Prevent malicious clients from causing an OutOfMemory error by sending a transaction
@@ -276,7 +275,12 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
         // Resend the data stored server-side.
         this.player.getWorld().sendBlock(this.player, blockCoordinates);
         this.player.getWorld().sendBlock(this.player, blockCoordinates.add(blockFace.getOffset()));
-        this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
+
+        // This packet is spammed by the client and sending the inventory slot EVERY single time causes ugly visual effects
+        // while towering up with blocks. This fixes it by only sending the item again if the counts do not match up.
+        if (itemData.getCount() != this.player.getInventory().getHeldItem().getCount()) {
+            this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
+        }
     }
 
     private void handleUseEntityInventoryTransaction(InventoryTransactionPacket packet) {

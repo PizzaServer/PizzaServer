@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.item.types.impl;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.item.types.ItemTypeID;
-import io.github.pizzaserver.api.item.types.components.DurableItemComponent;
+import io.github.pizzaserver.api.item.types.component.DurableItemComponent;
 
 public class ItemTypeShears extends BaseItemType implements DurableItemComponent {
 

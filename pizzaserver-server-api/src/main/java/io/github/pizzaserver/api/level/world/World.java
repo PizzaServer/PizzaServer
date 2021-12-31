@@ -325,6 +325,8 @@ public interface World extends ChunkManager {
 
     Optional<Entity> getEntity(long id);
 
+    Set<Entity> getEntitiesNear(Vector3f position, int maxDistance);
+
     void tick();
 
     boolean isDay();

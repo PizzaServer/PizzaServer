@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
+import io.github.pizzaserver.api.item.types.component.ArmorItemComponent;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockState;
 import io.github.pizzaserver.api.entity.Entity;

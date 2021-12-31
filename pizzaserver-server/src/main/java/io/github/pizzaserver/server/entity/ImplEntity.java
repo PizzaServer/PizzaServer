@@ -35,7 +35,7 @@ import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.components.ArmorItemComponent;
+import io.github.pizzaserver.api.item.types.component.ArmorItemComponent;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.player.Player;

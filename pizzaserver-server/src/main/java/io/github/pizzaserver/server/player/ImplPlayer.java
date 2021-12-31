@@ -30,6 +30,8 @@ import io.github.pizzaserver.server.network.handlers.PlayerPacketHandler;
 import io.github.pizzaserver.server.network.handlers.InventoryTransactionHandler;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.data.LoginData;
+import io.github.pizzaserver.server.player.manager.PlayerBlockBreakingManager;
+import io.github.pizzaserver.server.player.manager.PlayerChunkManager;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
@@ -551,7 +553,6 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
             updateAttributesPacket.setRuntimeEntityId(this.getId());
             updateAttributesPacket.setAttributes(attributes.stream().map(Attribute::serialize).collect(Collectors.toList()));
-            updateAttributesPacket.setTick(this.getServer().getTick());
             this.sendPacket(updateAttributesPacket);
         }
     }
@@ -936,7 +937,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
         super.moveTo(x, y, z);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
-            this.getChunkManager().onEnterNewChunk(oldLocation);
+            this.getChunkManager().onChunkChange(oldLocation);
         }
     }
 

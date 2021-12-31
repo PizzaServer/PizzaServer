@@ -12,7 +12,7 @@ import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.types.CustomItemType;
-import io.github.pizzaserver.api.item.types.components.*;
+import io.github.pizzaserver.api.item.types.component.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.types.BlockItemType;

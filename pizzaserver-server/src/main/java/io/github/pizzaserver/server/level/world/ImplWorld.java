@@ -7,6 +7,7 @@ import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.api.entity.Entity;
@@ -27,6 +28,7 @@ import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ImplWorld implements World {
 
@@ -256,6 +258,30 @@ public class ImplWorld implements World {
     @Override
     public Optional<Entity> getEntity(long id) {
         return Optional.ofNullable(this.entities.getOrDefault(id, null));
+    }
+
+    @Override
+    public Set<Entity> getEntitiesNear(Vector3f position, int maxDistance) {
+        Set<Entity> entities = new HashSet<>();
+
+        int minChunkX = getChunkCoordinate(position.getFloorX() - maxDistance);
+        int maxChunkX = getChunkCoordinate(position.getFloorX() + maxDistance);
+        int minChunkZ = getChunkCoordinate(position.getFloorZ() - maxDistance);
+        int maxChunkZ = getChunkCoordinate(position.getFloorZ() + maxDistance);
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                Chunk chunk = this.getChunk(chunkX, chunkZ);
+
+                for (Entity entity : chunk.getEntities()) {
+                    if (entity.getLocation().toVector3f().distance(position) <= maxDistance) {
+                        entities.add(entity);
+                    }
+                }
+            }
+        }
+
+        return entities;
     }
 
     @Override

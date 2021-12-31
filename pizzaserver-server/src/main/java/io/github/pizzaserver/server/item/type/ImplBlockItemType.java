@@ -1,6 +1,8 @@
 package io.github.pizzaserver.server.item.type;
 
 import io.github.pizzaserver.api.block.types.BlockType;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.ItemEntity;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
@@ -10,6 +12,8 @@ import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.utils.BlockLocation;
+
+import java.util.Set;
 
 /**
  * Any block ItemStack is an instance of this class to prevent the need to create thousands of item classes for each block.
@@ -41,7 +45,6 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
     @Override
     public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
         // Handle placing a block
-        // TODO: Account for entity collision
         Block blockAtPlacementPos = block.getSide(blockFace);
         if (!block.getBlockState().isAir() && (blockAtPlacementPos.getBlockState().isLiquid() || !blockAtPlacementPos.getBlockState().isSolid())) {
             if (!player.getAdventureSettings().canBuild()) {
@@ -51,6 +54,19 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
             placedBlock.setLocation(new BlockLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i(), block.getLayer()));
             if (!placedBlock.getBlockType().prepareForPlacement(player, placedBlock)) {
                 return false;
+            }
+
+            // Collision check with nearby entities
+            Set<Entity> nearByEntities = block.getLocation().getWorld().getEntitiesNear(block.getLocation().toVector3f(), 16);
+            for (Entity entity : nearByEntities) {
+                boolean entityCollidesWithBlock = placedBlock.getBoundingBox().collidesWith(entity.getBoundingBox())
+                        && entity.hasCollision()
+                        && !(entity instanceof ItemEntity)
+                        && (entity.getViewers().contains(player) || entity.equals(player));
+
+                if (entityCollidesWithBlock) {
+                    return false;
+                }
             }
 
             BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(player, placedBlock, block);

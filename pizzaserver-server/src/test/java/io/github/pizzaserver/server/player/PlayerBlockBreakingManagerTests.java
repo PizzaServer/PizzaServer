@@ -17,7 +17,7 @@ import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.item.type.ImplBlockItemType;
-import org.junit.jupiter.api.Disabled;
+import io.github.pizzaserver.server.player.manager.PlayerBlockBreakingManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

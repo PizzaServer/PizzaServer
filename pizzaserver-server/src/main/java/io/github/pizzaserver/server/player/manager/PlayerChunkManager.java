@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.player;
+package io.github.pizzaserver.server.player.manager;
 
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
@@ -8,6 +8,7 @@ import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.Location;
+import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,7 +40,7 @@ public class PlayerChunkManager {
         }
     }
 
-    public void onEnterNewChunk(Location oldLocation) {
+    public void onChunkChange(Location oldLocation) {
         this.updateChunks(oldLocation, this.getChunkRadius());
     }
 
@@ -108,7 +109,7 @@ public class PlayerChunkManager {
      * @param oldLocation old location before their current one
      * @param oldRadius old chunk radius before their current one (or the existing if the chunk radius was not modified)
      */
-    public void updateChunks(Location oldLocation, int oldRadius) {
+    private void updateChunks(Location oldLocation, int oldRadius) {
         this.sendNetworkChunkPublisher();
 
         if (oldLocation != null) {
