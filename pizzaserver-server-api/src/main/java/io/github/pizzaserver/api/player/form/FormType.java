@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api.player.form;
 
 public enum FormType {
-    CUSTOM("custom"),
+    CUSTOM("custom_form"),
     MODAL("modal"),
-    SIMPLE("simple");
+    SIMPLE("form");
 
 
     private final String jsonId;
