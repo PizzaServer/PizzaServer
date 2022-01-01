@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.entity.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.utils.Watchable;
 import io.github.pizzaserver.api.player.Player;
 
@@ -49,6 +50,21 @@ public interface Inventory extends Watchable {
      * @param itemStack the item to place in it (this will be cloned)
      */
     void setSlot(int slot, ItemStack itemStack);
+
+    /**
+     * Check if the inventory contains the item type provided.
+     * @param itemType item type
+     * @return if the inventory contains the item type.
+     */
+    boolean contains(ItemType itemType);
+
+    /**
+     * Check if the inventory contains the item stack provided.
+     * This will take into consideration the size of the stack.
+     * @param itemStack item stack
+     * @return if the inventory contains the item stack
+     */
+    boolean contains(ItemStack itemStack);
 
     /**
      * Try to add an item to the inventory.

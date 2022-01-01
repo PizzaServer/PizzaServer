@@ -184,7 +184,7 @@ public class ItemStack implements Cloneable {
     public boolean hasSameDataAs(ItemStack otherStack) {
         return (otherStack.getItemType().equals(this.getItemType())
                 && otherStack.getNBT().equals(this.getNBT())
-                && otherStack.getMeta() == this.getMeta()) || otherStack.getItemType().getItemId().equals(BlockTypeID.AIR);
+                && otherStack.getMeta() == this.getMeta());
     }
 
     /**

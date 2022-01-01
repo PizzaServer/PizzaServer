@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
+import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
@@ -131,26 +132,69 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
+    public boolean contains(ItemType itemType) {
+        for (int i = 0; i < this.slots.length; i++) {
+            if (this.getSlot(i).getItemType().equals(itemType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean contains(ItemStack itemStack) {
+        int countNeeded = itemStack.getCount();
+        for (int i = 0; i < this.slots.length; i++) {
+            ItemStack slot = this.getSlot(i);
+            if (slot.hasSameDataAs(itemStack)) {
+                countNeeded = Math.max(0, countNeeded - slot.getCount());
+
+                if (countNeeded == 0) {
+                    break;
+                }
+            }
+        }
+
+        return countNeeded == 0;
+    }
+
+    @Override
     public Optional<ItemStack> addItem(ItemStack itemStack) {
         ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
 
+        // Add item to any existing stack
         for (int slot = 0; slot < this.getSize(); slot++) {
             if (remainingItemStack.getCount() <= 0) {
                 break;
             }
 
             ItemStack slotStack = this.getSlot(slot);
-            int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
-            int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
-            int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+            if (slotStack.hasSameDataAs(itemStack)) {
+                int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+                int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
+                int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+
+                slotStack.setCount(slotStack.getCount() + addedAmount);
+                this.setSlot(slot, slotStack);
+                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+            }
+        }
+
+        // Add item to free slots
+        for (int slot = 0; slot < this.getSize(); slot++) {
+            if (remainingItemStack.getCount() <= 0) {
+                break;
+            }
+
+            ItemStack slotStack = this.getSlot(slot);
             if (slotStack.isEmpty()) {
+                int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+                int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
+                int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+
                 ItemStack newSlot = remainingItemStack.clone();
                 newSlot.setCount(addedAmount);
                 this.setSlot(slot, newSlot);
-                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
-            } else if (slotStack.hasSameDataAs(remainingItemStack)) {
-                slotStack.setCount(slotStack.getCount() + addedAmount);
-                this.setSlot(slot, slotStack);
                 remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
             }
         }
