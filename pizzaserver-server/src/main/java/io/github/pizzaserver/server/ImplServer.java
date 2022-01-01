@@ -271,6 +271,23 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public Optional<Player> getPlayerByUsername(String username) {
+        Optional<Player> exactMatch = this.getPlayerByExactUsername(username);
+        if (exactMatch.isPresent()) {
+            return exactMatch;
+        }
+
+        return this.getPlayers().stream()
+                .filter(player -> player.getUsername()
+                        .toLowerCase(Locale.ROOT).startsWith(username.toLowerCase(Locale.ROOT))).findAny();
+    }
+
+    @Override
+    public Optional<Player> getPlayerByExactUsername(String username) {
+        return this.getPlayers().stream().filter(player -> player.getUsername().equalsIgnoreCase(username)).findAny();
+    }
+
+    @Override
     public int getPlayerCount() {
         return this.getPlayers().size();
     }

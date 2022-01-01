@@ -16,6 +16,10 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
 import io.github.pizzaserver.api.item.types.ItemTypeID;
+import io.github.pizzaserver.api.player.dialogue.NPCDialogue;
+import io.github.pizzaserver.api.player.dialogue.NPCDialogueResponse;
+import io.github.pizzaserver.api.player.form.Form;
+import io.github.pizzaserver.api.player.form.response.FormResponse;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.server.ImplServer;
@@ -32,6 +36,8 @@ import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.player.manager.PlayerBlockBreakingManager;
 import io.github.pizzaserver.server.player.manager.PlayerChunkManager;
+import io.github.pizzaserver.server.player.form.FormUtils;
+import io.github.pizzaserver.server.player.manager.PlayerPopupManager;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
@@ -58,6 +64,7 @@ import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.IOException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ImplPlayer extends ImplHumanEntity implements Player {
@@ -77,6 +84,8 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
     protected final PlayerList playerList = new ImplPlayerList(this);
     protected final Set<BossBar> bossBars = new HashSet<>();
     protected final Map<DisplaySlot, Scoreboard> scoreboards = new HashMap<>();
+
+    protected final PlayerPopupManager popupManager = new PlayerPopupManager(this);
 
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
     protected Dimension dimensionTransferScreen = null;
@@ -811,6 +820,25 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             this.ensureUniqueSlotForScoreboard(displaySlot, scoreboard);
             ((ImplScoreboard) scoreboard).spawnTo(this, displaySlot);
         }
+    }
+
+    public PlayerPopupManager getPopupManager() {
+        return this.popupManager;
+    }
+
+    @Override
+    public void showForm(Form form, Consumer<FormResponse<? extends Form>> callback) {
+        this.getPopupManager().showForm(form, callback);
+    }
+
+    @Override
+    public void showDialogue(NPCDialogue dialogue, Consumer<NPCDialogueResponse> callback) {
+        this.getPopupManager().showDialogue(dialogue, callback);
+    }
+
+    @Override
+    public void hideDialogue() {
+        this.getPopupManager().hideDialogue();
     }
 
     /**

@@ -19,6 +19,7 @@ import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Logger;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -34,6 +35,17 @@ public abstract class Server {
      * @return a set of all players online
      */
     public abstract Set<Player> getPlayers();
+
+    /**
+     * Retrieve a player by their username.
+     * If no player can be found by the username given, it will look for any player
+     * that has the username as a prefix.
+     * @param username username of the player
+     * @return player if any exists
+     */
+    public abstract Optional<Player> getPlayerByUsername(String username);
+
+    public abstract Optional<Player> getPlayerByExactUsername(String username);
 
     /**
      * Retrieve the amount of players currently online.

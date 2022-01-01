@@ -9,6 +9,10 @@ import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.api.player.dialogue.NPCDialogue;
+import io.github.pizzaserver.api.player.dialogue.NPCDialogueResponse;
+import io.github.pizzaserver.api.player.form.Form;
+import io.github.pizzaserver.api.player.form.response.FormResponse;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
@@ -18,6 +22,7 @@ import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.data.Gamemode;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Represents a player on the Minecraft server.
@@ -206,6 +211,12 @@ public interface Player extends HumanEntity {
     Optional<Scoreboard> getScoreboard(DisplaySlot displaySlot);
 
     void setScoreboard(DisplaySlot displaySlot, Scoreboard scoreboard);
+
+    void showForm(Form form, Consumer<FormResponse<? extends Form>> callback);
+
+    void showDialogue(NPCDialogue dialogue, Consumer<NPCDialogueResponse> callback);
+
+    void hideDialogue();
 
     /**
      * If this session is still active.
