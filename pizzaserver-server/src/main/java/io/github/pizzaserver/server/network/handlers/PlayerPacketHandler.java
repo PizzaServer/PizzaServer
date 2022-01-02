@@ -16,10 +16,6 @@ import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Skin;
-import io.github.pizzaserver.api.player.form.CustomForm;
-import io.github.pizzaserver.api.player.form.FormImage;
-import io.github.pizzaserver.api.player.form.element.*;
-import io.github.pizzaserver.api.player.form.response.CustomFormResponse;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 public class PlayerPacketHandler implements BedrockPacketHandler {
@@ -111,45 +107,6 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 message = message.substring(0, 512);
             }
             PlayerChatEvent event = new PlayerChatEvent(this.player, message, this.player.getServer().getPlayers());
-
-            CustomForm form = new CustomForm.Builder()
-                    .setTitle("Title")
-                    .addElement(new DropdownElement.Builder()
-                            .setText("Dropdown")
-                            .setDefaultOptionIndex(1)
-                            .addOptions("A", "B", "C")
-                            .build())
-                    .addElement(new InputElement("Input", "value", "placeholder"))
-                    .addElement(new LabelElement("Label"))
-                    .addElement(new SliderElement.Builder()
-                            .setText("Slider")
-                            .setMin(0)
-                            .setMax(10)
-                            .setStep(1)
-                            .setValue(5)
-                            .build())
-                    .addElement(new StepSliderElement.Builder()
-                            .setText("StepSlider")
-                            .addSteps("A", "B", "C")
-                            .setDefaultIndex(2)
-                            .build())
-                    .addElement(new ToggleElement("Toggle", true))
-                    .build();
-            this.player.getServer().getScheduler().prepareTask(() -> {
-                this.player.showForm(form, response -> {
-                    CustomFormResponse customFormResponse = (CustomFormResponse) response;
-                    if (customFormResponse.wasClosed()) {
-                        this.player.sendMessage("closed");
-                    } else {
-                        this.player.sendMessage("dropdown = " + customFormResponse.getDropdownResponse(0));
-                        this.player.sendMessage("input = " + customFormResponse.getInputResponse(0));
-                        this.player.sendMessage("slider = " + customFormResponse.getSliderResponse(0));
-                        this.player.sendMessage("step = " + customFormResponse.getStepSliderResponse(0));
-                        this.player.sendMessage("toggle = " + customFormResponse.getToggleResponse(0));
-
-                    }
-                });
-            }).setDelay(40).schedule();
 
             this.player.getServer().getEventManager().call(event);
             if (!event.isCancelled()) {

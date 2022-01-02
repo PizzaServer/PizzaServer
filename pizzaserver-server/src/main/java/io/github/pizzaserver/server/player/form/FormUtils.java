@@ -5,18 +5,17 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.form.CustomForm;
 import io.github.pizzaserver.api.player.form.Form;
 import io.github.pizzaserver.api.player.form.ModalForm;
+import io.github.pizzaserver.api.player.form.SimpleForm;
 import io.github.pizzaserver.api.player.form.element.*;
 import io.github.pizzaserver.api.player.form.response.CustomFormResponse;
 import io.github.pizzaserver.api.player.form.response.FormResponse;
 import io.github.pizzaserver.api.player.form.response.ModalFormResponse;
+import io.github.pizzaserver.api.player.form.response.SimpleFormResponse;
 import io.github.pizzaserver.server.ImplServer;
-
-import java.util.Collection;
-import java.util.Collections;
 
 public class FormUtils {
 
-    private static final Gson GSON = new Gson();
+    protected static final Gson GSON = new Gson();
 
 
     private FormUtils() {}
@@ -36,7 +35,25 @@ public class FormUtils {
                         .setClosed(closed)
                         .build();
             case SIMPLE:
-                break;
+                int simpleResponse = 0;
+                try {
+                    simpleResponse = Integer.parseInt(data);
+                } catch (NumberFormatException exception) {
+                    ImplServer.getInstance().getLogger().debug("Invalid integer provided in simple form response from client.");
+                    closed = true;
+                }
+
+                if (simpleResponse < 0 || simpleResponse >= ((SimpleForm) form).getButtons().size()) {
+                    ImplServer.getInstance().getLogger().debug("Out of bounds integer provided in simple form response from client.");
+                    closed = true;
+                }
+
+                return new SimpleFormResponse.Builder()
+                        .setForm((SimpleForm) form)
+                        .setPlayer(player)
+                        .setClosed(closed)
+                        .setResponse(simpleResponse)
+                        .build();
             case CUSTOM:
                 JsonArray responses = closed ? new JsonArray() : GSON.fromJson(data, JsonArray.class);
 

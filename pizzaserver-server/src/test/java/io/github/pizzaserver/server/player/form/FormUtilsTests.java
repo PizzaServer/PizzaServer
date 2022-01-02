@@ -6,9 +6,11 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.form.CustomForm;
 import io.github.pizzaserver.api.player.form.FormImage;
 import io.github.pizzaserver.api.player.form.ModalForm;
+import io.github.pizzaserver.api.player.form.SimpleForm;
 import io.github.pizzaserver.api.player.form.element.*;
 import io.github.pizzaserver.api.player.form.response.CustomFormResponse;
 import io.github.pizzaserver.api.player.form.response.ModalFormResponse;
+import io.github.pizzaserver.api.player.form.response.SimpleFormResponse;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +22,6 @@ import static org.mockito.Mockito.*;
 
 public class FormUtilsTests {
 
-    private final static Gson GSON = new Gson();
-
     @Test
     public void shouldSerializeModalTypeCorrectly() throws IOException {
         ModalForm modalForm = new ModalForm.Builder()
@@ -31,8 +31,8 @@ public class FormUtilsTests {
                 .setFalseButton("False Button")
                 .build();
 
-        JsonObject correctJSON = GSON.fromJson(IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/modal.json"), StandardCharsets.UTF_8), JsonObject.class);
-        JsonObject outputJSON = GSON.fromJson(FormUtils.toJSON(modalForm), JsonObject.class);
+        JsonObject correctJSON = FormUtils.GSON.fromJson(IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/modal.json"), StandardCharsets.UTF_8), JsonObject.class);
+        JsonObject outputJSON = FormUtils.GSON.fromJson(FormUtils.toJSON(modalForm), JsonObject.class);
         assertEquals(correctJSON, outputJSON, "Modal form JSON does not match.");
     }
 
@@ -63,14 +63,24 @@ public class FormUtilsTests {
                 .addElement(new ToggleElement("Toggle", true))
                 .build();
 
-        JsonObject correctJSON = GSON.fromJson(IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/custom.json"), StandardCharsets.UTF_8), JsonObject.class);
-        JsonObject outputJSON = GSON.fromJson(FormUtils.toJSON(form), JsonObject.class);
+        JsonObject correctJSON = FormUtils.GSON.fromJson(IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/custom.json"), StandardCharsets.UTF_8), JsonObject.class);
+        JsonObject outputJSON = FormUtils.GSON.fromJson(FormUtils.toJSON(form), JsonObject.class);
         assertEquals(correctJSON, outputJSON, "Custom form JSON does not match.");
     }
 
     @Test
-    public void shouldSerializeSimpleTypeCorrectly() {
+    public void shouldSerializeSimpleTypeCorrectly() throws IOException {
+        SimpleForm form = new SimpleForm.Builder()
+                .setTitle("Title")
+                .setContent("Content")
+                .addButton(new ButtonElement("Button One"))
+                .addButton(new ButtonElement("Button Two", new FormImage(FormImage.Type.URL, "url to image")))
+                .addButton(new ButtonElement("Button Three", new FormImage(FormImage.Type.PATH, "path to image")))
+                .build();
 
+        JsonObject correctJSON = FormUtils.GSON.fromJson(IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/simple.json"), StandardCharsets.UTF_8), JsonObject.class);
+        JsonObject outputJSON = FormUtils.GSON.fromJson(FormUtils.toJSON(form), JsonObject.class);
+        assertEquals(correctJSON, outputJSON, "Simple form JSON does not match.");
     }
 
     @Test
@@ -123,8 +133,19 @@ public class FormUtilsTests {
     }
 
     @Test
-    public void shouldDeserializeSimpleTypeResponseCorrectly() {
+    public void shouldDeserializeSimpleTypeResponseCorrectly() throws IOException {
+        String response = IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/response/simple.txt"), StandardCharsets.UTF_8);
 
+        SimpleForm form = new SimpleForm.Builder()
+                .setTitle("Title")
+                .setContent("Content")
+                .addButton(new ButtonElement("Button One"))
+                .addButton(new ButtonElement("Button Two", new FormImage(FormImage.Type.URL, "url to image")))
+                .addButton(new ButtonElement("Button Three", new FormImage(FormImage.Type.PATH, "path to image")))
+                .build();
+
+        SimpleFormResponse formResponse = (SimpleFormResponse) FormUtils.toResponse(form, mock(Player.class), response);
+        assertEquals(1, formResponse.getResponse());
     }
 
 }

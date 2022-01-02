@@ -22,6 +22,10 @@ public class CustomForm extends Form {
         return Collections.unmodifiableList(this.content);
     }
 
+    public CustomElement getElement(int elementIndex) {
+        return this.content.get(elementIndex);
+    }
+
     /**
      * Get the server setting icon if present.
      * @return icon if present

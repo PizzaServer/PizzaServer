@@ -1,0 +1,24 @@
+{
+  "type": "form",
+  "title": "Title",
+  "content": "Content",
+  "buttons": [
+    {
+      "text": "Button One"
+    },
+    {
+      "text": "Button Two",
+      "image": {
+        "type": "url",
+        "data": "url to image"
+      }
+    },
+    {
+      "text": "Button Three",
+      "image": {
+        "type": "path",
+        "data": "path to image"
+      }
+    }
+  ]
+}

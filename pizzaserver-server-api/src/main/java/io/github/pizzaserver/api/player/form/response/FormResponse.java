@@ -10,7 +10,7 @@ public abstract class FormResponse<T extends Form> {
     protected final boolean closed;
 
 
-    public FormResponse(T form, Player player, boolean closed) {
+    protected FormResponse(T form, Player player, boolean closed) {
         this.form = form;
         this.player = player;
         this.closed = closed;
