@@ -89,7 +89,7 @@ public class PlayerPopupManager {
         }
     }
 
-    public void onDimensionTransfer() {
+    public void closeAllForms() {
         for (Integer formId : this.openForms.keySet()) {
             Form form = this.openForms.get(formId);
             Consumer<FormResponse<? extends Form>> callback = this.openFormCallbacks.get(formId);

@@ -36,7 +36,6 @@ import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.player.manager.PlayerBlockBreakingManager;
 import io.github.pizzaserver.server.player.manager.PlayerChunkManager;
-import io.github.pizzaserver.server.player.form.FormUtils;
 import io.github.pizzaserver.server.player.manager.PlayerPopupManager;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
@@ -713,7 +712,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             }
             this.sendPacket(changeDimensionPacket);
             this.getChunkManager().onDimensionTransfer();
-            this.getPopupManager().onDimensionTransfer();
+            this.getPopupManager().closeAllForms();
         }
     }
 
