@@ -18,8 +18,6 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
-import java.util.UUID;
-
 public class PlayerPacketHandler implements BedrockPacketHandler {
 
     private final ImplPlayer player;
@@ -154,6 +152,12 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 }
             }
         }
+        return true;
+    }
+
+    @Override
+    public boolean handle(ModalFormResponsePacket packet) {
+        this.player.getPopupManager().onFormResponse(packet.getFormId(), packet.getFormData());
         return true;
     }
 

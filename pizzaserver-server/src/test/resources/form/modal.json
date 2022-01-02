@@ -1,0 +1,7 @@
+{
+  "type": "modal",
+  "title": "Title",
+  "content": "Content",
+  "button1": "True Button",
+  "button2": "False Button"
+}

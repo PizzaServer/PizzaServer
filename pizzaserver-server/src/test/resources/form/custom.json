@@ -1,0 +1,45 @@
+{
+  "type": "custom_form",
+  "title": "Title",
+  "icon": {
+    "type": "path",
+    "data": "path to image"
+  },
+  "content": [
+    {
+      "type": "dropdown",
+      "text": "Dropdown",
+      "options": ["A", "B", "C"],
+      "default": 1
+    },
+    {
+      "type": "input",
+      "text": "Input",
+      "placeholder": "placeholder",
+      "default": "value"
+    },
+    {
+      "type": "label",
+      "text": "Label"
+    },
+    {
+      "type": "slider",
+      "text": "Slider",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "step_slider",
+      "text": "StepSlider",
+      "steps": ["A", "B", "C"],
+      "default": 2
+    },
+    {
+      "type": "toggle",
+      "text": "Toggle",
+      "default": true
+    }
+  ]
+}
