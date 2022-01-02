@@ -713,6 +713,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
             }
             this.sendPacket(changeDimensionPacket);
             this.getChunkManager().onDimensionTransfer();
+            this.getPopupManager().onDimensionTransfer();
         }
     }
 

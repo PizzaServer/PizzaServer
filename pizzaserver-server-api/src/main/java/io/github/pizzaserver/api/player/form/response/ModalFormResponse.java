@@ -3,9 +3,6 @@ package io.github.pizzaserver.api.player.form.response;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.form.ModalForm;
 
-/**
- * Form response for ModalForms. These responses will never return being closed.
- */
 public class ModalFormResponse extends FormResponse<ModalForm> {
 
     private final boolean result;
