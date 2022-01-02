@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.handlers;
+package io.github.pizzaserver.server.player.handlers;
 
 import com.nukkitx.protocol.bedrock.data.AdventureSetting;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
@@ -99,6 +99,13 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
     public boolean handle(TextPacket packet) {
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.IRON_ORE, 10));
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.WOODEN_PICKAXE, 1));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.BOAT, 2));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.ACACIA_BOAT, 2));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.DARK_OAK_BOAT, 2));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.JUNGLE_BOAT, 2));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.OAK_BOAT, 2));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.BIRCH_BOAT, 2));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.SPRUCE_BOAT, 2));
         HumanEntity humanEntity = (HumanEntity) EntityRegistry.getInstance().getEntity(HumanEntityDefinition.ID);
         this.player.getWorld().addEntity(humanEntity, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

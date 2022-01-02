@@ -20,7 +20,7 @@ import io.github.pizzaserver.server.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.level.ImplLevelManager;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
-import io.github.pizzaserver.server.network.handlers.LoginHandshakePacketHandler;
+import io.github.pizzaserver.server.player.handlers.LoginHandshakePacketHandler;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProvider;

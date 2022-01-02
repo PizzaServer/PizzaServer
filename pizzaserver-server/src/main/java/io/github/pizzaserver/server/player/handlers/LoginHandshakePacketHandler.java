@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.handlers;
+package io.github.pizzaserver.server.player.handlers;
 
 import com.nimbusds.jose.JWSObject;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;

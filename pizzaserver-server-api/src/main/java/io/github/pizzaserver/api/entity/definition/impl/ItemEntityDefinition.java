@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.entity.definition.BaseEntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
-import io.github.pizzaserver.api.entity.definition.components.impl.EntityCollisionBoxComponent;
+import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
 
 public class ItemEntityDefinition extends BaseEntityDefinition {
@@ -14,7 +14,7 @@ public class ItemEntityDefinition extends BaseEntityDefinition {
 
     public ItemEntityDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[]{
-                new EntityCollisionBoxComponent(0.25f, 0.25f),
+                new EntityDimensionsComponent(0.25f, 0.25f),
                 new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
                         .setPushable(false)
                         .setPistonPushable(true)

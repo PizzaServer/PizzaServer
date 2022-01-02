@@ -26,7 +26,7 @@ public interface ItemRegistry {
 
     ItemStack getItem(String itemId, int amount);
 
-    ItemStack getItem(String itemId, int amount, int damage);
+    ItemStack getItem(String itemId, int amount, int meta);
 
     static ItemRegistry getInstance() {
         return Server.getInstance().getItemRegistry();

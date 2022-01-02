@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.handlers;
+package io.github.pizzaserver.server.player.handlers;
 
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
@@ -30,9 +30,9 @@ import io.github.pizzaserver.server.network.data.inventory.StackResponse;
 import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.network.data.inventory.actions.TakeStackRequestActionDataWrapper;
-import io.github.pizzaserver.server.network.handlers.inventory.InventoryActionPlaceHandler;
-import io.github.pizzaserver.server.network.handlers.inventory.InventoryActionSwapHandler;
-import io.github.pizzaserver.server.network.handlers.inventory.InventoryActionTakeHandler;
+import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionPlaceHandler;
+import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionSwapHandler;
+import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionTakeHandler;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Optional;

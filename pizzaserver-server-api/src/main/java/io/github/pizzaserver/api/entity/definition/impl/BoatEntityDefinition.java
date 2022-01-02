@@ -1,26 +1,21 @@
 package io.github.pizzaserver.api.entity.definition.impl;
 
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.BaseEntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
-import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreathableComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 
-public class CowEntityDefinition extends BaseEntityDefinition {
+public class BoatEntityDefinition extends BaseEntityDefinition {
 
-    public static final String ID = "minecraft:cow";
+    public static final String ID = "minecraft:boat";
 
 
-    public CowEntityDefinition() {
+    public BoatEntityDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
-                new EntityDimensionsComponent(0.9f, 1.3f),
-                new EntityHealthComponent(10f, 10f),
-                new EntityBreathableComponent(new EntityBreathableComponent.Properties()
-                        .setTotalSupplyTime(15)
-                        .setSuffocationInterval(10)
-                        .setGenerateBubblesInWater(true)) }));
+            new EntityDimensionsComponent(1.4f, 0.455f, 0.455f / 2 + 0.1f, 0.375f),
+            new EntityHealthComponent(20, 20) }));
     }
 
     @Override
@@ -30,13 +25,12 @@ public class CowEntityDefinition extends BaseEntityDefinition {
 
     @Override
     public String getName() {
-        return "Cow";
+        return "Boat";
     }
 
     @Override
     public void onCreation(Entity entity) {
         entity.addComponentGroup("minecraft:default");
     }
-
 
 }

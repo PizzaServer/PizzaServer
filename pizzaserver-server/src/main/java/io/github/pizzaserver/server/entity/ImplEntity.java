@@ -8,6 +8,7 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.entity.definition.impl.BoatEntityDefinition;
 import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.item.ItemUtils;
@@ -77,6 +78,8 @@ public class ImplEntity implements Entity {
     protected float headYaw;
 
     protected BoundingBox boundingBox = new BoundingBox();
+    protected float eyeHeight;
+    protected float baseOffset;
     protected boolean pistonPushable;
     protected boolean pushable;
 
@@ -293,7 +296,22 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getEyeHeight() {
-        return this.getHeight() / 2 + 0.1f;
+        return this.eyeHeight;
+    }
+
+    @Override
+    public void setEyeHeight(float eyeHeight) {
+        this.eyeHeight = eyeHeight;
+    }
+
+    @Override
+    public float getBaseOffset() {
+        return this.baseOffset;
+    }
+
+    @Override
+    public void setBaseOffset(float offset) {
+        this.baseOffset = offset;
     }
 
     @Override
@@ -1039,7 +1057,7 @@ public class ImplEntity implements Entity {
     protected void sendMovementPacket() {
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(this.getId());
-        moveEntityPacket.setPosition(this.getLocation().toVector3f());
+        moveEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
         moveEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.headYaw));
         moveEntityPacket.setTeleported(true);
 

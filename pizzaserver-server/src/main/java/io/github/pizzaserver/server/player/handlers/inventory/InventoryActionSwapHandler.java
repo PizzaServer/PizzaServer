@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.handlers.inventory;
+package io.github.pizzaserver.server.player.handlers.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;

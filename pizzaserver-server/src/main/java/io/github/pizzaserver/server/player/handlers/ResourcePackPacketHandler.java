@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.network.handlers;
+package io.github.pizzaserver.server.player.handlers;
 
 import com.nukkitx.protocol.bedrock.data.ExperimentData;
 import com.nukkitx.protocol.bedrock.data.ResourcePackType;

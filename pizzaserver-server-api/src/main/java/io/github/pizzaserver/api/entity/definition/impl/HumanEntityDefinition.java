@@ -5,7 +5,7 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreathableComponent;
-import io.github.pizzaserver.api.entity.definition.components.impl.EntityCollisionBoxComponent;
+import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
 
@@ -16,7 +16,7 @@ public class HumanEntityDefinition extends BaseEntityDefinition {
 
     public HumanEntityDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
-                new EntityCollisionBoxComponent(0.6f, 1.8f),
+                new EntityDimensionsComponent(0.6f, 1.8f, 1.62f, 1.62f),
                 new EntityHealthComponent(20f, 20f),
                 new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
                         .setGravity(true)

@@ -60,9 +60,9 @@ public class ImplItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public ItemStack getItem(String itemId, int amount, int damage) {
+    public ItemStack getItem(String itemId, int amount, int meta) {
         ItemType itemType = this.getItemType(itemId);
-        return itemType.create(amount, damage);
+        return itemType.create(amount, meta);
     }
 
 }

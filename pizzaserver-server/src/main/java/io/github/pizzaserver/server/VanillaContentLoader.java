@@ -1,7 +1,10 @@
 package io.github.pizzaserver.server;
 
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.entity.definition.impl.BoatEntityDefinition;
 import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.item.data.WoodType;
+import io.github.pizzaserver.api.item.types.ItemTypeID;
 import io.github.pizzaserver.api.item.types.impl.*;
 import io.github.pizzaserver.server.blockentity.types.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
@@ -25,6 +28,13 @@ public class VanillaContentLoader {
     }
 
     private static void loadItems() {
+        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.ACACIA_BOAT, WoodType.ACACIA));
+        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.BIRCH_BOAT, WoodType.BIRCH));
+        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.BOAT, WoodType.OAK));   // Why does Microsoft have minecraft:boat and minecraft:oak_boat?...
+        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.DARK_OAK_BOAT, WoodType.DARK_OAK));
+        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.JUNGLE_BOAT, WoodType.JUNGLE));
+        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.OAK_BOAT, WoodType.OAK));
+        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.SPRUCE_BOAT, WoodType.SPRUCE));
         ItemRegistry.getInstance().register(new ItemTypeShears());
         ItemRegistry.getInstance().register(new ItemTypeStonePickaxe());
         ItemRegistry.getInstance().register(new ItemTypeWoodenPickaxe());
@@ -69,9 +79,9 @@ public class VanillaContentLoader {
         EntityRegistry.getInstance().registerComponent(EntityScaleComponent.class,
                 new EntityScaleComponent(1),
                 new EntityScaleComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityCollisionBoxComponent.class,
-                new EntityCollisionBoxComponent(0f, 0f),
-                new EntityCollisionBoxComponentHandler());
+        EntityRegistry.getInstance().registerComponent(EntityDimensionsComponent.class,
+                new EntityDimensionsComponent(0f, 0f),
+                new EntityDimensionsComponentHandler());
         EntityRegistry.getInstance().registerComponent(EntityHealthComponent.class,
                 new EntityHealthComponent(0, 0, 0),
                 new EntityHealthComponentHandler());
@@ -108,9 +118,10 @@ public class VanillaContentLoader {
     }
 
     private static void loadEntities() {
+        EntityRegistry.getInstance().registerDefinition(new BoatEntityDefinition());
+        EntityRegistry.getInstance().registerDefinition(new CowEntityDefinition());
         EntityRegistry.getInstance().registerDefinition(new HumanEntityDefinition());
         EntityRegistry.getInstance().registerDefinition(new ItemEntityDefinition());
-        EntityRegistry.getInstance().registerDefinition(new CowEntityDefinition());
     }
 
 }

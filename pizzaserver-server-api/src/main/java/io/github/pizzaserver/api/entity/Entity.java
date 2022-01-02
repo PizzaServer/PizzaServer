@@ -135,6 +135,12 @@ public interface Entity extends Watchable {
 
     float getEyeHeight();
 
+    void setEyeHeight(float eyeHeight);
+
+    float getBaseOffset();
+
+    void setBaseOffset(float offset);
+
     /**
      * Retrieves the display name if present.
      * Otherwise it falls back to the name of the entity.

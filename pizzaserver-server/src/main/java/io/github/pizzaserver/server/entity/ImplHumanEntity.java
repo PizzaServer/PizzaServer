@@ -53,21 +53,6 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     }
 
     @Override
-    public float getHeight() {
-        return 1.8f;
-    }
-
-    @Override
-    public float getWidth() {
-        return 0.6f;
-    }
-
-    @Override
-    public float getEyeHeight() {
-        return 1.62f;
-    }
-
-    @Override
     public Device getDevice() {
         return Device.UNKNOWN;
     }
@@ -131,7 +116,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     protected void sendMovementPacket() {
         MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
         movePlayerPacket.setRuntimeEntityId(this.getId());
-        movePlayerPacket.setPosition(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0));
+        movePlayerPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
         movePlayerPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
         movePlayerPacket.setMode(MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(this.isOnGround());
