@@ -62,7 +62,7 @@ public class PlayerPopupManager {
 
             FormResponse<? extends Form> response;
             try {
-                response = FormUtils.toResponse(form, this.player, formData);
+                response = FormUtils.toResponse(form, this.player, formData.strip());
             } catch (JsonParseException ignored) {
                 return;
             } finally {

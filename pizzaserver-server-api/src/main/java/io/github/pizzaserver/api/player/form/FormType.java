@@ -1,18 +1,15 @@
 package io.github.pizzaserver.api.player.form;
 
+import com.google.gson.annotations.SerializedName;
+
 public enum FormType {
-    CUSTOM("custom_form"),
-    MODAL("modal"),
-    SIMPLE("form");
+    @SerializedName("custom_form")
+    CUSTOM,
 
+    @SerializedName("modal")
+    MODAL,
 
-    private final String jsonId;
+    @SerializedName("form")
+    SIMPLE;
 
-    FormType(String jsonId) {
-        this.jsonId = jsonId;
-    }
-
-    public String getJsonId() {
-        return this.jsonId;
-    }
 }

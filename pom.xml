@@ -24,6 +24,7 @@
         <dependency.io.github.pizzaserver.format>1.0-SNAPSHOT</dependency.io.github.pizzaserver.format>
         <dependency.com.nukkitx.protocol>2.9.4-SNAPSHOT</dependency.com.nukkitx.protocol>
         <dependency.com.nukkitx.nbt>2.0.1</dependency.com.nukkitx.nbt>
+        <dependency.com.google.code.gson>2.8.6</dependency.com.google.code.gson>
         <dependency.org.yaml>1.27</dependency.org.yaml>
 
         <dependency.org.junit.jupiter.junit-jupiter-engine>5.4.0</dependency.org.junit.jupiter.junit-jupiter-engine>
@@ -61,6 +62,11 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${dependency.org.yaml}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${dependency.com.google.code.gson}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

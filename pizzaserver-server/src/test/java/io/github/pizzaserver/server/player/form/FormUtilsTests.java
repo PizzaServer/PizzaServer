@@ -3,13 +3,19 @@ package io.github.pizzaserver.server.player.form;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.player.form.FormType;
+import io.github.pizzaserver.api.player.form.CustomForm;
+import io.github.pizzaserver.api.player.form.FormImage;
 import io.github.pizzaserver.api.player.form.ModalForm;
+import io.github.pizzaserver.api.player.form.element.*;
+import io.github.pizzaserver.api.player.form.response.CustomFormResponse;
 import io.github.pizzaserver.api.player.form.response.ModalFormResponse;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class FormUtilsTests {
@@ -17,34 +23,49 @@ public class FormUtilsTests {
     private final static Gson GSON = new Gson();
 
     @Test
-    public void shouldSerializeModalTypeCorrectly() {
-        String title = "Title";
-        String content = "Content";
-        String trueButton = "True Button";
-        String falseButton = "False Button";
-
+    public void shouldSerializeModalTypeCorrectly() throws IOException {
         ModalForm modalForm = new ModalForm.Builder()
-                .setTitle(title)
-                .setContent(content)
-                .setTrueButton(trueButton)
-                .setFalseButton(falseButton)
+                .setTitle("Title")
+                .setContent("Content")
+                .setTrueButton("True Button")
+                .setFalseButton("False Button")
                 .build();
 
-        JsonObject correctJSON = new JsonObject();
-        correctJSON.addProperty("type", FormType.MODAL.getJsonId());
-        correctJSON.addProperty("title", title);
-        correctJSON.addProperty("content", content);
-        correctJSON.addProperty("button1", trueButton);
-        correctJSON.addProperty("button2", falseButton);
-
+        JsonObject correctJSON = GSON.fromJson(IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/modal.json"), StandardCharsets.UTF_8), JsonObject.class);
         JsonObject outputJSON = GSON.fromJson(FormUtils.toJSON(modalForm), JsonObject.class);
-
         assertEquals(correctJSON, outputJSON, "Modal form JSON does not match.");
     }
 
     @Test
-    public void shouldSerializeCustomTypeCorrectly() {
+    public void shouldSerializeCustomTypeCorrectly() throws IOException {
+        CustomForm form = new CustomForm.Builder()
+                .setTitle("Title")
+                .setIcon(new FormImage(FormImage.Type.PATH, "path to image"))
+                .addElement(new DropdownElement.Builder()
+                        .setText("Dropdown")
+                        .setDefaultOptionIndex(1)
+                        .addOptions("A", "B", "C")
+                        .build())
+                .addElement(new InputElement("Input", "value", "placeholder"))
+                .addElement(new LabelElement("Label"))
+                .addElement(new SliderElement.Builder()
+                        .setText("Slider")
+                        .setMin(0)
+                        .setMax(10)
+                        .setStep(1)
+                        .setValue(5)
+                        .build())
+                .addElement(new StepSliderElement.Builder()
+                        .setText("StepSlider")
+                        .addSteps("A", "B", "C")
+                        .setDefaultIndex(2)
+                        .build())
+                .addElement(new ToggleElement("Toggle", true))
+                .build();
 
+        JsonObject correctJSON = GSON.fromJson(IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/custom.json"), StandardCharsets.UTF_8), JsonObject.class);
+        JsonObject outputJSON = GSON.fromJson(FormUtils.toJSON(form), JsonObject.class);
+        assertEquals(correctJSON, outputJSON, "Custom form JSON does not match.");
     }
 
     @Test
@@ -53,8 +74,8 @@ public class FormUtilsTests {
     }
 
     @Test
-    public void shouldDeserializeModalTypeResponseCorrectly() {
-        String response = "true\n";
+    public void shouldDeserializeModalTypeResponseCorrectly() throws IOException {
+        String response = IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/response/modal.txt"), StandardCharsets.UTF_8);
 
         ModalFormResponse formResponse = (ModalFormResponse) FormUtils.toResponse(new ModalForm.Builder()
                 .build(), mock(Player.class), response);
@@ -62,8 +83,43 @@ public class FormUtilsTests {
     }
 
     @Test
-    public void shouldDeserializeCustomTypeResponseCorrectly() {
+    public void shouldDeserializeCustomTypeResponseCorrectly() throws IOException {
+        String response = IOUtils.toString(FormUtilsTests.class.getResourceAsStream("/form/response/custom.json"), StandardCharsets.UTF_8);
 
+        CustomForm form = new CustomForm.Builder()
+                .setTitle("Title")
+                .setIcon(new FormImage(FormImage.Type.PATH, "path to image"))
+                .addElement(new ToggleElement("Toggle", true))
+                .addElement(new DropdownElement.Builder()
+                        .setText("Dropdown")
+                        .setDefaultOptionIndex(1)
+                        .addOptions("A", "B", "C")
+                        .build())
+                .addElement(new InputElement("Input", "value", "placeholder"))
+                .addElement(new LabelElement("Label"))
+                .addElement(new SliderElement.Builder()
+                        .setText("Slider")
+                        .setMin(0)
+                        .setMax(10)
+                        .setStep(1)
+                        .setValue(5)
+                        .build())
+                .addElement(new StepSliderElement.Builder()
+                        .setText("StepSlider")
+                        .addSteps("A", "B", "C")
+                        .setDefaultIndex(2)
+                        .build())
+                .addElement(new ToggleElement("Toggle", false))
+                .build();
+
+        CustomFormResponse formResponse = (CustomFormResponse) FormUtils.toResponse(form, mock(Player.class), response);
+
+        assertEquals(0, formResponse.getDropdownResponse(0), "Dropdown input failed to be parsed.");
+        assertEquals("input", formResponse.getInputResponse(0), "Text input failed to be parsed.");
+        assertEquals(7, formResponse.getSliderResponse(0), "Slider response failed to be parsed.");
+        assertEquals(2, formResponse.getStepSliderResponse(0), "Step slider failed to be parsed.");
+        assertTrue(formResponse.getToggleResponse(0), "Toggle response failed to be parsed.");
+        assertFalse(formResponse.getToggleResponse(1), "Second toggle response failed to be parsed.");
     }
 
     @Test

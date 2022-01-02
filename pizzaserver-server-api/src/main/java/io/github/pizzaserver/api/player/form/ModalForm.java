@@ -1,18 +1,25 @@
 package io.github.pizzaserver.api.player.form;
 
+import com.google.gson.annotations.SerializedName;
+
+/**
+ * Modal forms are forms with only a true and false option that players can select.
+ */
 public class ModalForm extends Form {
 
     private final String content;
 
-    // For serialization purposes, these are named button1 and button2 as Minecraft sends them over the network as such
-    private final String button1;
-    private final String button2;
+    @SerializedName("button1")
+    private final String trueButton;
+
+    @SerializedName("button2")
+    private final String falseButton;
 
     protected ModalForm(String title, String content, String trueButton, String falseButton) {
         super(FormType.MODAL, title);
         this.content = content;
-        this.button1 = trueButton;
-        this.button2 = falseButton;
+        this.trueButton = trueButton;
+        this.falseButton = falseButton;
     }
 
     public String getContent() {
@@ -20,11 +27,11 @@ public class ModalForm extends Form {
     }
 
     public String getTrueButton() {
-        return this.button1;
+        return this.trueButton;
     }
 
     public String getFalseButton() {
-        return this.button2;
+        return this.falseButton;
     }
 
 
