@@ -4,13 +4,13 @@ Come join the [Discord Server here](https://discord.gg/R4N9mnNPsm)!
 
 ## Build
 - `mvn clean package`
+- Copy the jar file `/pizzaserver-server/target/PizzaServer-Server-1.0-SNAPSHOT.jar` to the directory of your choosing.
 
 ## Modules
 
 | Name      | Description                                                                 |
 | --------- | --------------------------------------------------------------------------- |
 | commons   | Various utility structures/data used across multiple modules                |
-| nbt       | Bedrock NBT implementation                                                  |
 | api       | Server API that serves to separate plugins and the actual implementation    |
 | server    | Server implementation                                                       | 
 | worldfile | Parses world formats into usable objects (currently only .mcworld)          |

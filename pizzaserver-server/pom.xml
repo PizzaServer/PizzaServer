@@ -4,17 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>PizzaServer</artifactId>
-        <groupId>io.github.willqi.pizzaserver</groupId>
+        <groupId>io.github.pizzaserver</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.willqi.pizzaserver.server</groupId>
+    <groupId>io.github.pizzaserver.server</groupId>
     <artifactId>PizzaServer-Server</artifactId>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <dependency.commons.io>2.7</dependency.commons.io>
+        <dependency.com.nimbusds.nimbus-jose-jwt>9.9.3</dependency.com.nimbusds.nimbus-jose-jwt>
+        <dependency.org.apache.logging.log4j>2.17.1</dependency.org.apache.logging.log4j>
     </properties>
 
     <repositories>
@@ -22,85 +23,58 @@
             <id>nukkitx-repo-release</id>
             <url>https://repo.nukkitx.com/maven-releases/</url>
         </repository>
+        <repository>
+            <id>nukkitx-repo-snapshot</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
-
         <dependency>
-            <groupId>io.github.willqi.pizzaserver.api</groupId>
+            <groupId>io.github.pizzaserver.api</groupId>
             <artifactId>PizzaServer-API</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>io.github.willqi.pizzaserver.commons</groupId>
+            <groupId>io.github.pizzaserver.commons</groupId>
             <artifactId>PizzaServer-Commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>io.github.willqi.pizzaserver.server.nbt</groupId>
-            <artifactId>PizzaServer-NBT</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.willqi.pizzaserver.format</groupId>
+            <groupId>io.github.pizzaserver.format</groupId>
             <artifactId>PizzaServer-Format</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.nukkitx.network</groupId>
-            <artifactId>query</artifactId>
-            <version>1.6.25</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.nukkitx.network</groupId>
-            <artifactId>raknet</artifactId>
-            <version>1.6.25</version>
-            <scope>compile</scope>
+            <groupId>com.nukkitx.protocol</groupId>
+            <artifactId>bedrock-v475</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.nukkitx.network</groupId>
-            <artifactId>rcon</artifactId>
-            <version>1.6.25</version>
-            <scope>compile</scope>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.6</version>
-            <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>${dependency.commons.io}</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.9.3</version>
+            <version>${dependency.com.nimbusds.nimbus-jose-jwt}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.27</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.13.3</version>
+            <version>${dependency.org.apache.logging.log4j}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.13.3</version>
+            <version>${dependency.org.apache.logging.log4j}</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -113,7 +87,8 @@
                     <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <manifestEntries>
-                                <Main-Class>io.github.willqi.pizzaserver.server.Launcher</Main-Class>
+                                <Main-Class>io.github.pizzaserver.server.Launcher</Main-Class>
+                                <Multi-Release>true</Multi-Release>
                             </manifestEntries>
                         </transformer>
                     </transformers>
@@ -126,6 +101,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
