@@ -67,6 +67,10 @@ public class PlayerBlockBreakingManager {
     public int getBreakTicks() {
         if (this.getBlock().isPresent()) {
             Block block = this.getBlock().get();
+            if (block.getBlockState().getHardness() == -1) {
+                return Integer.MAX_VALUE;
+            }
+
             ItemStack heldItem = this.player.getInventory().getHeldItem();
 
             boolean isCorrectTool = block.getBlockState().getToolType() == heldItem.getItemType().getToolType();

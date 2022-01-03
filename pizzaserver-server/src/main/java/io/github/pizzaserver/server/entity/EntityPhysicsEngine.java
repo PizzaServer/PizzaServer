@@ -148,7 +148,7 @@ public class EntityPhysicsEngine {
                         for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                             Block block = this.entity.getWorld().getBlock(x, y, z);
 
-                            if (block.getBoundingBox().collidesWith(newLocationBoundBox) && block.getBlockState().isSolid()) {
+                            if (block.getBoundingBox().collidesWith(newLocationBoundBox) && block.getBlockState().hasCollision()) {
                                 // ensure we are not stuck in the ground before checking x and z (otherwise no friction will ever be applied)
                                 if (block.getBoundingBox().collidesWithYAxis(newLocationBoundBox) && newPosition.getY() > block.getY() + block.getBoundingBox().getHeight() / 2) {
                                     newPosition = Vector3f.from(newPosition.getX(), block.getBoundingBox().getPosition().getY() + block.getBoundingBox().getHeight(), newPosition.getZ());

@@ -1,50 +1,40 @@
 package io.github.pizzaserver.api.block.types.impl;
 
-import io.github.pizzaserver.api.item.data.ToolTier;
-import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
+import io.github.pizzaserver.api.item.data.ToolTier;
+import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockTypeGrass extends BaseBlockType {
+public class BlockTypeCalcite extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.GRASS;
+        return BlockTypeID.CALCITE;
     }
 
     @Override
     public String getName(int blockStateIndex) {
-        return "Grass";
+        return "Calcite";
     }
 
     @Override
     public float getHardness() {
-        return 0.5f;
+        return 0.75f;
     }
 
     @Override
     public float getBlastResistance() {
-        return 0.5f;
+        return 0.75f;
     }
 
     @Override
-    public boolean canBeMinedWithHand() {
-        return true;
-    }
-
-    @Override
-    public boolean isReplaceable() {
-        return true;
+    public ToolType getToolTypeRequired() {
+        return ToolType.PICKAXE;
     }
 
     @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
-    @Override    public ToolType getToolTypeRequired() {
-        return ToolType.SHOVEL;
-    }
-
 
 }

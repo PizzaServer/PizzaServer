@@ -1,30 +1,30 @@
 package io.github.pizzaserver.api.block.types.impl;
 
-import io.github.pizzaserver.api.item.data.ToolTier;
-import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
+import io.github.pizzaserver.api.item.data.ToolTier;
+import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockTypeGrass extends BaseBlockType {
+public class BlockTypeClay extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.GRASS;
+        return BlockTypeID.CLAY;
     }
 
     @Override
     public String getName(int blockStateIndex) {
-        return "Grass";
+        return "Clay Block";
     }
 
     @Override
     public float getHardness() {
-        return 0.5f;
+        return 0.6f;
     }
 
     @Override
     public float getBlastResistance() {
-        return 0.5f;
+        return 0.6f;
     }
 
     @Override
@@ -33,18 +33,13 @@ public class BlockTypeGrass extends BaseBlockType {
     }
 
     @Override
-    public boolean isReplaceable() {
-        return true;
+    public ToolType getToolTypeRequired() {
+        return ToolType.SHOVEL;
     }
 
     @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
-    @Override    public ToolType getToolTypeRequired() {
-        return ToolType.SHOVEL;
-    }
-
 
 }

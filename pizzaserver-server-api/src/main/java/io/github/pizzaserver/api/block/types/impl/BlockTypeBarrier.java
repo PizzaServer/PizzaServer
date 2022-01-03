@@ -1,28 +1,21 @@
 package io.github.pizzaserver.api.block.types.impl;
 
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
+import io.github.pizzaserver.api.entity.Entity;
 
-public class BlockTypeAir extends BaseBlockType {
+public class BlockTypeBarrier extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.AIR;
+        return BlockTypeID.BARRIER;
     }
 
     @Override
     public String getName(int blockStateIndex) {
-        return "Air";
-    }
-
-    @Override
-    public boolean hasCollision() {
-        return false;
-    }
-
-    @Override
-    public boolean isReplaceable() {
-        return true;
+        return "Barrier";
     }
 
     @Override
@@ -34,6 +27,5 @@ public class BlockTypeAir extends BaseBlockType {
     public float getBlastResistance() {
         return -1;
     }
-
 
 }

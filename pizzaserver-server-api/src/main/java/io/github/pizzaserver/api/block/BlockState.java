@@ -62,7 +62,7 @@ public class BlockState {
         return this.getBlockId().equals(BlockTypeID.AIR);
     }
 
-    public boolean isSolid() {
+    public boolean hasCollision() {
         return this.getBlockType().hasCollision();
     }
 
@@ -140,6 +140,10 @@ public class BlockState {
 
     public BlockType getBlockType() {
         return this.blockType;
+    }
+
+    public ItemStack toStack() {
+        return this.blockType.toStack(this.index);
     }
 
     public int getIndex() {

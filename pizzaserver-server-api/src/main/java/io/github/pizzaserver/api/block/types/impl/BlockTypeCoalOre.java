@@ -5,16 +5,16 @@ import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockTypeIronOre extends BaseBlockType {
+public class BlockTypeCoalOre extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.IRON_ORE;
+        return BlockTypeID.COAL_ORE;
     }
 
     @Override
     public String getName(int blockStateIndex) {
-        return "Iron Ore";
+        return "Coal Ore";
     }
 
     @Override
@@ -23,13 +23,8 @@ public class BlockTypeIronOre extends BaseBlockType {
     }
 
     @Override
-    public float getBlastResistance() {
-        return 3;
-    }
-
-    @Override
     public ToolTier getToolTierRequired() {
-        return ToolTier.STONE;
+        return ToolTier.WOOD;
     }
 
     @Override

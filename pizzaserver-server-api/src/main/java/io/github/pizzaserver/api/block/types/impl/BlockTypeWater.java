@@ -39,7 +39,12 @@ public class BlockTypeWater extends BaseBlockType {
 
     @Override
     public float getHardness() {
-        return 0;
+        return -1;
+    }
+
+    @Override
+    public float getBlastResistance() {
+        return -1;
     }
 
     @Override

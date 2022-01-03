@@ -28,8 +28,8 @@ public abstract class BaseBlockType implements BlockType {
     });
 
     @Override
-    public Block create() {
-        return new Block(this);
+    public ItemStack toStack(int blockStateIndex) {
+        return new ItemStack(this.getBlockId());
     }
 
     @Override
@@ -179,7 +179,14 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public Set<ItemStack> getLoot(Entity entity, int blockStateIndex) {
-        return Collections.singleton(ItemRegistry.getInstance().getItem(this.getBlockId(), 1));
+        boolean correctTool = entity.getInventory().getHeldItem().getItemType().getToolTier().getStrength() >= this.getToolTierRequired().getStrength()
+                && entity.getInventory().getHeldItem().getItemType().getToolType() == this.getToolTypeRequired();
+
+        if (this.canBeMinedWithHand() || correctTool) {
+            return Collections.singleton(this.toStack());
+        } else {
+            return Collections.emptySet();
+        }
     }
 
     @Override

@@ -71,7 +71,7 @@ public abstract class BlockTypeButton extends BaseBlockType {
     @Override
     public boolean prepareForPlacement(Entity entity, Block block, BlockFace face) {
         block.setBlockStateIndex(face.ordinal());
-        return block.getSide(face.opposite()).getBlockState().isSolid();
+        return block.getSide(face.opposite()).getBlockState().hasCollision();
     }
 
     @Override
@@ -97,7 +97,7 @@ public abstract class BlockTypeButton extends BaseBlockType {
                 break;
             case NEIGHBOUR:
                 Block parentBlock = block.getSide(BlockFace.resolve(block.getBlockStateIndex()).opposite());
-                if (!parentBlock.getBlockState().isSolid()) {
+                if (!parentBlock.getBlockState().hasCollision()) {
                     block.getWorld().addItemEntity(new ItemStack(this.getBlockId(), 1),
                             block.getLocation().toVector3f(),
                             ItemEntity.getRandomMotion());

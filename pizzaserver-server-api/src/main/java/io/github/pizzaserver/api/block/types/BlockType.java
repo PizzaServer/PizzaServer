@@ -34,10 +34,27 @@ public interface BlockType {
     String getName(int blockStateIndex);
 
     /**
+     * Create an ItemStack based off of this block type.
+     * @return item stack
+     */
+    default ItemStack toStack() {
+        return this.toStack(0);
+    }
+
+    /**
+     * Create an ItemStack based off of this block type.
+     * @param blockStateIndex block state index
+     * @return item stack
+     */
+    ItemStack toStack(int blockStateIndex);
+
+    /**
      * Create a {@link Block} with this block type.
      * @return {@link Block}
      */
-    Block create();
+    default Block create() {
+        return this.create(0);
+    }
 
     /**
      * Create a {@link Block} with this block type and a block state index.

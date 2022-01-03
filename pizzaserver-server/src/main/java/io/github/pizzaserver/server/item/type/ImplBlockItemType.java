@@ -56,7 +56,7 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
                 return false;
             }
 
-            if (placedBlock.getBlockState().isSolid()) {
+            if (placedBlock.getBlockState().hasCollision()) {
                 // Collision check with nearby entities
                 Set<Entity> nearByEntities = block.getLocation().getWorld().getEntitiesNear(block.getLocation().toVector3f(), 16);
                 for (Entity entity : nearByEntities) {

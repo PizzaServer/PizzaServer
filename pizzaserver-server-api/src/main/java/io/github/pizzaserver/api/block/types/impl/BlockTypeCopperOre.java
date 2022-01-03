@@ -5,16 +5,16 @@ import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockTypeIronOre extends BaseBlockType {
+public class BlockTypeCopperOre extends BaseBlockType {
 
     @Override
     public String getBlockId() {
-        return BlockTypeID.IRON_ORE;
+        return BlockTypeID.COPPER_ORE;
     }
 
     @Override
     public String getName(int blockStateIndex) {
-        return "Iron Ore";
+        return "Copper Ore";
     }
 
     @Override

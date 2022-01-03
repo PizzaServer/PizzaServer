@@ -256,7 +256,7 @@ public class ImplEntity implements Entity {
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                 Block blockBelow = this.getWorld().getBlock(x, this.getFloorY() - 1, z);
-                if (blockBelow.getBlockState().isSolid() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
+                if (blockBelow.getBlockState().hasCollision() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
                     return true;
                 }
             }
@@ -1005,7 +1005,7 @@ public class ImplEntity implements Entity {
 
             Block headBlock = this.getHeadBlock();
             EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
-            boolean isSuffocating = headBlock.getBlockState().isSolid()
+            boolean isSuffocating = headBlock.getBlockState().hasCollision()
                     && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
                         || breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType()));
             if (isSuffocating) {
@@ -1015,7 +1015,7 @@ public class ImplEntity implements Entity {
                 }
             }
 
-            boolean losingOxygen = !headBlock.getBlockState().isSolid()
+            boolean losingOxygen = !headBlock.getBlockState().hasCollision()
                     && ((breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType())
                                 && !breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
                         || !(headBlock.getBlockState().hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType())));
