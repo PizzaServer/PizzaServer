@@ -1,6 +1,7 @@
 package io.github.pizzaserver.server;
 
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.entity.definition.impl.BoatEntityDefinition;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.data.WoodType;
@@ -43,22 +44,30 @@ public class VanillaContentLoader {
     }
 
     private static void loadBlocks() {
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.ACACIA_BUTTON, WoodType.ACACIA));
         BlockRegistry.getInstance().register(new BlockTypeAir());
         BlockRegistry.getInstance().register(new BlockTypeBed());
         BlockRegistry.getInstance().register(new BlockTypeBell());
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.BIRCH_BUTTON, WoodType.BIRCH));
         BlockRegistry.getInstance().register(new BlockTypeBlastFurnace());
         BlockRegistry.getInstance().register(new BlockTypeCampfire());
-        BlockRegistry.getInstance().register(new BlockTypeChest());
         BlockRegistry.getInstance().register(new BlockTypeCauldron());
+        BlockRegistry.getInstance().register(new BlockTypeChest());
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.CRIMSON_BUTTON, WoodType.CRIMSON));
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.DARK_OAK_BUTTON, WoodType.DARK_OAK));
         BlockRegistry.getInstance().register(new BlockTypeDirt());
         BlockRegistry.getInstance().register(new BlockTypeFurnace());
         BlockRegistry.getInstance().register(new BlockTypeFlowingWater());
         BlockRegistry.getInstance().register(new BlockTypeGrass());
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.JUNGLE_BUTTON, WoodType.JUNGLE));
         BlockRegistry.getInstance().register(new BlockTypeLitBlastFurnace());
         BlockRegistry.getInstance().register(new BlockTypeLitFurnace());
         BlockRegistry.getInstance().register(new BlockTypeMobSpawner());
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.OAK_BUTTON, WoodType.OAK));
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.SPRUCE_BUTTON, WoodType.SPRUCE));
         BlockRegistry.getInstance().register(new BlockTypeStone());
         BlockRegistry.getInstance().register(new BlockTypeSoulCampfire());
+        BlockRegistry.getInstance().register(new BlockTypeWoodenButton(BlockTypeID.WARPED_BUTTON, WoodType.WARPED));
         BlockRegistry.getInstance().register(new BlockTypeWater());
         BlockRegistry.getInstance().register(new BlockTypeIronOre());
     }

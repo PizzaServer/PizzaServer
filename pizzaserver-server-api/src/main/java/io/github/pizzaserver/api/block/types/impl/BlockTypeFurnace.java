@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.block.types.BaseBlockType;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.entity.Entity;
@@ -40,12 +41,12 @@ public class BlockTypeFurnace extends BaseBlockType {
     }
 
     @Override
-    public float getBlastResistance(int blockStateIndex) {
+    public float getBlastResistance() {
         return 3.5f;
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 3.5f;
     }
 
@@ -60,7 +61,7 @@ public class BlockTypeFurnace extends BaseBlockType {
     }
 
     @Override
-    public boolean prepareForPlacement(Entity entity, Block block) {
+    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face) {
         block.setBlockStateIndex(entity.getHorizontalDirection().opposite().getBlockStateIndex());
         return true;
     }

@@ -44,12 +44,12 @@ public class BlockTypeBed extends BaseBlockType {
     }
 
     @Override
-    public float getBlastResistance(int blockStateIndex) {
+    public float getBlastResistance() {
         return 0.2f;
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 0.2f;
     }
 

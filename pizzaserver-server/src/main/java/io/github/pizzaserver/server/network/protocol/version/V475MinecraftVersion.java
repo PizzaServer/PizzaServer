@@ -103,7 +103,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                         .putFloat("emission", blockType.getLightEmission(0))
                         .build())
                 .putCompound("minecraft:friction", NbtMap.builder()
-                        .putFloat("value", blockType.getFriction(0))
+                        .putFloat("value", blockType.getFriction())
                         .build())
                 .putCompound("minecraft:rotation", NbtMap.builder()
                         .putFloat("x", blockType.getRotation(0)[0])

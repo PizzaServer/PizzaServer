@@ -18,7 +18,7 @@ public class BlockTypeIronOre extends BaseBlockType {
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 3f;
     }
 

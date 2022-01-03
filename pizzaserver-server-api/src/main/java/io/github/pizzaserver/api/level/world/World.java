@@ -4,6 +4,7 @@ import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
+import io.github.pizzaserver.api.block.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.block.Block;
@@ -256,21 +257,25 @@ public interface World extends ChunkManager {
 
     /**
      * Request a block update on the next chunk tick.
+     * @param type block update type
      * @param blockCoordinates coordinates
+     * @param ticks minimum amount of ticks to wait before processing the update
      * @return if the block update was queued
      */
-    default boolean requestBlockUpdate(Vector3i blockCoordinates) {
-        return this.requestBlockUpdate(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+    default boolean requestBlockUpdate(BlockUpdateType type, Vector3i blockCoordinates, int ticks) {
+        return this.requestBlockUpdate(type, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), ticks);
     }
 
     /**
      * Request a block update on the next chunk tick.
+     * @param type block update type
      * @param x x coordinate
      * @param y y coordinate
      * @param z z coordinate
+     * @param ticks minimum amount of ticks to wait before processing the update
      * @return if the block update was queued
      */
-    boolean requestBlockUpdate(int x, int y, int z);
+    boolean requestBlockUpdate(BlockUpdateType type, int x, int y, int z, int ticks);
 
     default void addBlockEvent(Vector3i blockCoordinates, int type, int data) {
         this.addBlockEvent(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), type, data);

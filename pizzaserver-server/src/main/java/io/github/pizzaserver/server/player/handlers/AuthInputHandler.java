@@ -130,7 +130,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 this.player.getBlockBreakingManager().stopBreaking();
                             }
 
-                            boolean canBreakNewBlock = blockBreakingLocation.getBlock().getBlockState().isSolid()
+                            boolean canBreakNewBlock = !blockBreakingLocation.getBlock().getBlockState().isLiquid()
+                                    && !blockBreakingLocation.getBlock().getBlockState().isAir()
                                     && this.player.getAdventureSettings().canMine();
                             if (canBreakNewBlock) {
                                 BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());

@@ -251,7 +251,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                         case InventoryTransactionAction.USE_CLICK_BLOCK:
                         case InventoryTransactionAction.USE_CLICK_AIR:
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
-                            boolean callItemInteractAllowedByBlock = block.getBlockType().onInteract(this.player, block);
+                            boolean callItemInteractAllowedByBlock = block.getBlockType().onInteract(this.player, block, blockFace);
                             boolean callItemInteractAllowedByBlockEntity = block.getBlockEntity() == null || block.getBlockEntity().onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used

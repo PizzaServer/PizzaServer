@@ -8,7 +8,6 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.entity.definition.impl.BoatEntityDefinition;
 import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.item.ItemUtils;

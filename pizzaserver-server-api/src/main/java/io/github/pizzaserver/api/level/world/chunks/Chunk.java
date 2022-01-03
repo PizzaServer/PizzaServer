@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.level.world.chunks;
 
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3i;
+import io.github.pizzaserver.api.block.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.block.Block;
@@ -283,18 +284,20 @@ public interface Chunk extends Watchable {
      */
     void setAndUpdateBlock(Block block, int x, int y, int z, int layer);
 
-    default boolean requestBlockUpdate(Vector3i blockCoordinates) {
-        return this.requestBlockUpdate(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+    default boolean requestBlockUpdate(BlockUpdateType type, Vector3i blockCoordinates, int ticks) {
+        return this.requestBlockUpdate(type, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), ticks);
     }
 
     /**
      * Request a block update on the next chunk tick.
+     * @param type block update type
      * @param x x coordinate
      * @param y y coordinate
      * @param z z coordinate
+     * @param ticks minimum ticks required to pass before block update is processed
      * @return if the block update was queued
      */
-    boolean requestBlockUpdate(int x, int y, int z);
+    boolean requestBlockUpdate(BlockUpdateType type, int x, int y, int z, int ticks);
 
     default void addBlockEvent(Vector3i blockCoordinates, int type, int data) {
         this.addBlockEvent(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), type, data);

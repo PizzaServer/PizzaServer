@@ -16,12 +16,17 @@ public class BlockTypeAir extends BaseBlockType {
     }
 
     @Override
-    public boolean isSolid(int blockStateIndex) {
+    public boolean hasCollision() {
         return false;
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public boolean isReplaceable() {
+        return true;
+    }
+
+    @Override
+    public float getHardness() {
         return 0;
     }
 

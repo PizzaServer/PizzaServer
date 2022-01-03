@@ -6,6 +6,7 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
+import io.github.pizzaserver.api.block.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.server.level.ImplLevel;
@@ -168,10 +169,10 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public boolean requestBlockUpdate(int x, int y, int z) {
+    public boolean requestBlockUpdate(BlockUpdateType type, int x, int y, int z, int ticks) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
-        return this.getChunk(chunkX, chunkZ).requestBlockUpdate(x & 15, y, z & 15);
+        return this.getChunk(chunkX, chunkZ).requestBlockUpdate(type, x & 15, y, z & 15, ticks);
     }
 
     @Override

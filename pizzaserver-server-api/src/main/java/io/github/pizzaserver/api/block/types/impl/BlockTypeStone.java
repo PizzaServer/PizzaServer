@@ -42,12 +42,12 @@ public class BlockTypeStone extends BaseBlockType {
     }
 
     @Override
-    public float getBlastResistance(int blockStateIndex) {
+    public float getBlastResistance() {
         return 6;
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 1.5f;
     }
 

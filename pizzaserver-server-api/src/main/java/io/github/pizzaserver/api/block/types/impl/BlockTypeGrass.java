@@ -18,12 +18,17 @@ public class BlockTypeGrass extends BaseBlockType {
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 0.5f;
     }
 
     @Override
     public boolean canBeMinedWithHand() {
+        return true;
+    }
+
+    @Override
+    public boolean isReplaceable() {
         return true;
     }
 

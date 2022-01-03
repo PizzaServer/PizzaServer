@@ -46,12 +46,12 @@ public class BlockTypeCauldron extends BaseBlockType {
     }
 
     @Override
-    public float getBlastResistance(int blockStateIndex) {
+    public float getBlastResistance() {
         return 2;
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 2;
     }
 

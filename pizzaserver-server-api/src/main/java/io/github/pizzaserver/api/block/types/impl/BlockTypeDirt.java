@@ -42,7 +42,7 @@ public class BlockTypeDirt extends BaseBlockType {
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 0.5f;
     }
 

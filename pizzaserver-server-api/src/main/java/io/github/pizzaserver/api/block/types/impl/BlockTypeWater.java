@@ -38,22 +38,27 @@ public class BlockTypeWater extends BaseBlockType {
     }
 
     @Override
-    public float getHardness(int blockStateIndex) {
+    public float getHardness() {
         return 0;
     }
 
     @Override
-    public boolean hasOxygen(int blockStateIndex) {
+    public boolean hasOxygen() {
         return false;
     }
 
     @Override
-    public boolean isSolid(int blockStateIndex) {
+    public boolean hasCollision() {
         return false;
     }
 
     @Override
-    public boolean isLiquid(int blockStateIndex) {
+    public boolean isLiquid() {
+        return true;
+    }
+
+    @Override
+    public boolean isReplaceable() {
         return true;
     }
 

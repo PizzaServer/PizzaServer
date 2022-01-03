@@ -100,12 +100,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.IRON_ORE, 10));
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.WOODEN_PICKAXE, 1));
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.BOAT, 2));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.ACACIA_BOAT, 2));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.DARK_OAK_BOAT, 2));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.JUNGLE_BOAT, 2));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.OAK_BOAT, 2));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.BIRCH_BOAT, 2));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.SPRUCE_BOAT, 2));
+        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockTypeID.ACACIA_BUTTON, 2));
         HumanEntity humanEntity = (HumanEntity) EntityRegistry.getInstance().getEntity(HumanEntityDefinition.ID);
         this.player.getWorld().addEntity(humanEntity, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

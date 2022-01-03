@@ -73,7 +73,7 @@ public class ServerConfig {
     }
 
     /**
-     * Returns the amount of chunks a player must be to a chunk for it to tick block updates/entities.
+     * Returns the radius of chunks a player must be to a chunk for it to tick block updates/entities.
      * @return chunk radius
      */
     public int getChunkPlayerTickRadius() {

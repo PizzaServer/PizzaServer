@@ -47,15 +47,15 @@ public class BlockState {
     }
 
     public PushResponse getPushResponse() {
-        return this.getBlockType().getPushResponse(this.index);
+        return this.getBlockType().getPushResponse();
     }
 
     public boolean hasOxygen() {
-        return this.getBlockType().hasOxygen(this.index);
+        return this.getBlockType().hasOxygen();
     }
 
     public boolean isLiquid() {
-        return this.getBlockType().isLiquid(this.index);
+        return this.getBlockType().isLiquid();
     }
 
     public boolean isAir() {
@@ -63,11 +63,15 @@ public class BlockState {
     }
 
     public boolean isSolid() {
-        return this.getBlockType().isSolid(this.index);
+        return this.getBlockType().hasCollision();
+    }
+
+    public boolean isReplaceable() {
+        return this.getBlockType().isReplaceable();
     }
 
     public float getHardness() {
-        return this.getBlockType().getHardness(this.index);
+        return this.getBlockType().getHardness();
     }
 
     public float[] getOrigin() {
@@ -83,19 +87,19 @@ public class BlockState {
     }
 
     public float getBlastResistance() {
-        return this.getBlockType().getBlastResistance(this.index);
+        return this.getBlockType().getBlastResistance();
     }
 
     public int getBurnOdds() {
-        return this.getBlockType().getBurnOdds(this.index);
+        return this.getBlockType().getBurnOdds();
     }
 
     public int getFlameOdds() {
-        return this.getBlockType().getFlameOdds(this.index);
+        return this.getBlockType().getFlameOdds();
     }
 
     public float getFriction() {
-        return this.getBlockType().getFriction(this.index);
+        return this.getBlockType().getFriction();
     }
 
     public String getGeometry() {
@@ -111,11 +115,11 @@ public class BlockState {
     }
 
     public boolean hasGravity() {
-        return this.getBlockType().hasGravity(this.index);
+        return this.getBlockType().hasGravity();
     }
 
     public float getFallDamageReduction() {
-        return this.getBlockType().getFallDamageReduction(this.index);
+        return this.getBlockType().getFallDamageReduction();
     }
 
     public boolean canBeMinedWithHand() {
@@ -132,10 +136,6 @@ public class BlockState {
 
     public Set<ItemStack> getLoot(Player player) {
         return this.getBlockType().getLoot(player, this.index);
-    }
-
-    public Set<BlockState> getPlaceableOnlyOn() {
-        return this.getBlockType().getPlaceableOnlyOn(this.index);
     }
 
     public BlockType getBlockType() {

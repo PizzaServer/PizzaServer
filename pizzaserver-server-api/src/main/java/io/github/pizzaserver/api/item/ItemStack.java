@@ -60,9 +60,6 @@ public class ItemStack implements Cloneable {
         this.meta = meta;
 
         this.blocksCanBreak = itemType.getOnlyBlocksCanBreak();
-        if (itemType instanceof BlockItemType) {
-            this.blocksCanPlaceOn = ((BlockItemType) itemType).getBlockType().getPlaceableOnlyOn(this.meta);
-        }
     }
 
     public ItemType getItemType() {

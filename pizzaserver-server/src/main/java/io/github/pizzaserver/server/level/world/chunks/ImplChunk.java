@@ -7,6 +7,7 @@ import com.nukkitx.protocol.bedrock.packet.BlockEventPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.entity.Entity;
@@ -15,12 +16,14 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.commons.utils.Check;
+import io.github.pizzaserver.commons.utils.Tuple;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.level.world.chunks.data.BlockUpdateEntry;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.api.block.types.BlockTypeID;
@@ -48,7 +51,7 @@ public class ImplChunk implements Chunk {
     private final int x;
     private final int z;
 
-    private final List<Vector3i> blockUpdates = new ArrayList<>();
+    private final List<BlockUpdateEntry> blockUpdates = new ArrayList<>();
 
     private int expiryTimer;
     private final AtomicInteger activeChunkLoaders = new AtomicInteger(0);
@@ -279,22 +282,19 @@ public class ImplChunk implements Chunk {
 
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
-        this.getWorld().requestBlockUpdate(blockCoordinates.up());
-        this.getWorld().requestBlockUpdate(blockCoordinates.down());
-        this.getWorld().requestBlockUpdate(blockCoordinates.north());
-        this.getWorld().requestBlockUpdate(blockCoordinates.south());
-        this.getWorld().requestBlockUpdate(blockCoordinates.west());
-        this.getWorld().requestBlockUpdate(blockCoordinates.east());
+        this.getWorld().requestBlockUpdate(BlockUpdateType.NEIGHBOUR, blockCoordinates.up(), 1);
+        this.getWorld().requestBlockUpdate(BlockUpdateType.NEIGHBOUR, blockCoordinates.down(), 1);
+        this.getWorld().requestBlockUpdate(BlockUpdateType.NEIGHBOUR, blockCoordinates.north(), 1);
+        this.getWorld().requestBlockUpdate(BlockUpdateType.NEIGHBOUR, blockCoordinates.south(), 1);
+        this.getWorld().requestBlockUpdate(BlockUpdateType.NEIGHBOUR, blockCoordinates.west(), 1);
+        this.getWorld().requestBlockUpdate(BlockUpdateType.NEIGHBOUR, blockCoordinates.east(), 1);
     }
 
     @Override
-    public boolean requestBlockUpdate(int x, int y, int z) {
+    public boolean requestBlockUpdate(BlockUpdateType type, int x, int y, int z, int ticks) {
         Vector3i blockCoordinates = Vector3i.from(x & 15, y, z & 15);
-        if (!this.blockUpdates.contains(blockCoordinates)) {
-            this.blockUpdates.add(blockCoordinates);
-            return true;
-        }
-        return false;
+        BlockUpdateEntry entry = new BlockUpdateEntry(type, blockCoordinates, ticks);
+        return this.blockUpdates.add(entry);
     }
 
     @Override
@@ -310,7 +310,7 @@ public class ImplChunk implements Chunk {
         }
     }
 
-    private void doBlockUpdate(int x, int y, int z) {
+    private void doBlockUpdate(BlockUpdateType type, int x, int y, int z) {
         int subChunkIndex = y / 16;
         int chunkBlockX = x & 15;
         int chunkBlockZ = z & 15;
@@ -319,7 +319,7 @@ public class ImplChunk implements Chunk {
 
         for (int layer = 0; layer < layers; layer++) {
             Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
-            block.getBlockType().onUpdate(block);
+            block.getBlockType().onUpdate(type, block);
         }
     }
 
@@ -401,10 +401,16 @@ public class ImplChunk implements Chunk {
                 }
             }
 
-            List<Vector3i> currentTickBlockUpdates = new ArrayList<>(this.blockUpdates);
+            List<BlockUpdateEntry> currentTickBlockUpdates = new ArrayList<>(this.blockUpdates);
             this.blockUpdates.clear();
-            for (Vector3i blockCoordinate : currentTickBlockUpdates) {
-                this.doBlockUpdate(blockCoordinate.getX(), blockCoordinate.getY(), blockCoordinate.getZ());
+            for (BlockUpdateEntry blockUpdateEntry : currentTickBlockUpdates) {
+                if (blockUpdateEntry.getTicksLeft() > 0) {
+                    blockUpdateEntry.tick();
+                    this.blockUpdates.add(blockUpdateEntry);
+                } else {
+                    Vector3i blockCoordinates = blockUpdateEntry.getBlockCoordinates();
+                    this.doBlockUpdate(blockUpdateEntry.getType(), blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+                }
             }
         }
 

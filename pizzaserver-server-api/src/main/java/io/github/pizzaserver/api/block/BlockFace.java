@@ -22,6 +22,17 @@ public enum BlockFace {
         return this.offset;
     }
 
+    public BlockFace opposite() {
+        return switch (this) {
+            case BOTTOM -> TOP;
+            case TOP -> BOTTOM;
+            case NORTH -> SOUTH;
+            case SOUTH -> NORTH;
+            case WEST -> EAST;
+            case EAST -> WEST;
+        };
+    }
+
     public static BlockFace resolve(int index) {
         return BlockFace.values()[index % 6];
     }

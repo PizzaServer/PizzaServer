@@ -46,26 +46,28 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
     public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
         // Handle placing a block
         Block blockAtPlacementPos = block.getSide(blockFace);
-        if (!block.getBlockState().isAir() && (blockAtPlacementPos.getBlockState().isLiquid() || !blockAtPlacementPos.getBlockState().isSolid())) {
+        if (!block.getBlockState().isAir() && blockAtPlacementPos.getBlockState().isReplaceable()) {
             if (!player.getAdventureSettings().canBuild()) {
                 return false;
             }
             Block placedBlock = this.getBlockType().create(itemStack.getMeta());
             placedBlock.setLocation(new BlockLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i(), block.getLayer()));
-            if (!placedBlock.getBlockType().prepareForPlacement(player, placedBlock)) {
+            if (!placedBlock.getBlockType().prepareForPlacement(player, placedBlock, blockFace)) {
                 return false;
             }
 
-            // Collision check with nearby entities
-            Set<Entity> nearByEntities = block.getLocation().getWorld().getEntitiesNear(block.getLocation().toVector3f(), 16);
-            for (Entity entity : nearByEntities) {
-                boolean entityCollidesWithBlock = placedBlock.getBoundingBox().collidesWith(entity.getBoundingBox())
-                        && entity.hasCollision()
-                        && !(entity instanceof ItemEntity)
-                        && (entity.getViewers().contains(player) || entity.equals(player));
+            if (placedBlock.getBlockState().isSolid()) {
+                // Collision check with nearby entities
+                Set<Entity> nearByEntities = block.getLocation().getWorld().getEntitiesNear(block.getLocation().toVector3f(), 16);
+                for (Entity entity : nearByEntities) {
+                    boolean entityCollidesWithBlock = placedBlock.getBoundingBox().collidesWith(entity.getBoundingBox())
+                            && entity.hasCollision()
+                            && !(entity instanceof ItemEntity)
+                            && (entity.getViewers().contains(player) || entity.equals(player));
 
-                if (entityCollidesWithBlock) {
-                    return false;
+                    if (entityCollidesWithBlock) {
+                        return false;
+                    }
                 }
             }
 
@@ -80,7 +82,7 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
                 player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
             }
             block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
-            placedBlock.getBlockType().onPlace(player, placedBlock);
+            placedBlock.getBlockType().onPlace(player, placedBlock, blockFace);
             if (block.getBlockEntity() != null) {
                 block.getBlockEntity().onPlace(player);
             }
