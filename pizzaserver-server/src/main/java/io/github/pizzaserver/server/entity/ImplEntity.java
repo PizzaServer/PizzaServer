@@ -76,7 +76,7 @@ public class ImplEntity implements Entity {
     protected float yaw;
     protected float headYaw;
 
-    protected BoundingBox boundingBox = new BoundingBox();
+    protected BoundingBox boundingBox = new BoundingBox(Vector3f.ZERO, Vector3f.ZERO);
     protected float eyeHeight;
     protected float baseOffset;
     protected boolean pistonPushable;
@@ -245,14 +245,13 @@ public class ImplEntity implements Entity {
 
     @Override
     public boolean isOnGround() {
-        int minBlockXCheck = (int) Math.floor(this.getX() - this.getBoundingBox().getWidth());
-        int minBlockZCheck = (int) Math.floor(this.getZ() - this.getBoundingBox().getWidth());
-        int maxBlockXCheck = (int) Math.ceil(this.getX() + this.getBoundingBox().getWidth());
-        int maxBlockZCheck = (int) Math.ceil(this.getZ() + this.getBoundingBox().getWidth());
+        BoundingBox boundingBox = this.getBoundingBox().grow(0.5f);
+        int minBlockXCheck = (int) boundingBox.getMinX();
+        int minBlockZCheck = (int) boundingBox.getMinZ();
+        int maxBlockXCheck = (int) boundingBox.getMaxX();
+        int maxBlockZCheck = (int) boundingBox.getMaxZ();
 
-        BoundingBox intersectingBoundingBox = this.getBoundingBox().clone();
-        intersectingBoundingBox.setPosition(intersectingBoundingBox.getPosition().sub(0, 0.0002f, 0));
-
+        BoundingBox intersectingBoundingBox = this.getBoundingBox().translate(0, -0.0002f, 0);
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                 Block blockBelow = this.getWorld().getBlock(x, this.getFloorY() - 1, z);
@@ -293,6 +292,16 @@ public class ImplEntity implements Entity {
         return this.boundingBox;
     }
 
+    protected void recalculateBoundingBox() {
+        float minX = this.getX() - ((this.getWidth() / 2) * this.getScale());
+        float maxX = this.getX() + ((this.getWidth() / 2) * this.getScale());
+        float minY = this.getY();
+        float maxY = this.getY() + (this.getHeight() * this.getScale());
+        float minZ = this.getZ() - ((this.getWidth() / 2) * this.getScale());
+        float maxZ = this.getZ() + ((this.getWidth() / 2) * this.getScale());
+        this.boundingBox = new BoundingBox(Vector3f.from(minX, minY, minZ), Vector3f.from(maxX, maxY, maxZ));
+    }
+
     @Override
     public float getEyeHeight() {
         return this.eyeHeight;
@@ -320,24 +329,24 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getHeight() {
-        return this.getBoundingBox().getHeight() / this.getScale();
+        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_HEIGHT);
     }
 
     @Override
     public void setHeight(float height) {
-        this.getBoundingBox().setHeight(height * this.getScale());
         this.getMetaData().putFloat(EntityData.BOUNDING_BOX_HEIGHT, height);
+        this.recalculateBoundingBox();
     }
 
     @Override
     public float getWidth() {
-        return this.getBoundingBox().getWidth() / this.getScale();
+        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_WIDTH);
     }
 
     @Override
     public void setWidth(float width) {
-        this.getBoundingBox().setWidth(width * this.getScale());
         this.getMetaData().putFloat(EntityData.BOUNDING_BOX_WIDTH, width);
+        this.recalculateBoundingBox();
     }
 
     /**
@@ -358,7 +367,7 @@ public class ImplEntity implements Entity {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.getBoundingBox().setPosition(x, y, z);
+        this.recalculateBoundingBox();
     }
 
     @Override
@@ -637,9 +646,8 @@ public class ImplEntity implements Entity {
 
     @Override
     public void setScale(float scale) {
-        this.getBoundingBox().setWidth(this.getWidth() * scale);
-        this.getBoundingBox().setHeight(this.getHeight() * scale);
         this.getMetaData().putFloat(EntityData.SCALE, scale);
+        this.recalculateBoundingBox();
     }
 
     @Override
@@ -862,73 +870,28 @@ public class ImplEntity implements Entity {
         }
 
         switch (this.lastDamageEvent.getCause()) {
-            case ANVIL:
-                textBuilder.setMessage("death.attack.anvil");
-                break;
-            case ATTACK:
-                textBuilder.setMessage("death.attack.player");
-                break;
-            case BLOCK_EXPLOSION:
-                textBuilder.setMessage("death.attack.explosion");
-                break;
-            case CONTACT:
-                // TODO: verify this is a cactus attack
-                textBuilder.setMessage("death.attack.cactus");
-                break;
-            case DROWNING:
-                textBuilder.setMessage("death.attack.drown");
-                break;
-            case ENTITY_EXPLOSION:
-                textBuilder.setMessage("death.attack.explosion.player");
-                break;
-            case FALL:
-                textBuilder.setMessage("death.attack.fall");
-                break;
-            case FALLING_BLOCK:
-                textBuilder.setMessage("death.attack.fallingBlock");
-                break;
-            case FIRE:
-                textBuilder.setMessage("death.attack.inFire");
-                break;
-            case FIRE_TICK:
-                textBuilder.setMessage("death.attack.onFire");
-                break;
-            case FLY_INTO_WALL:
-                textBuilder.setMessage("death.attack.flyIntoWall");
-                break;
-            case LAVA:
-                textBuilder.setMessage("death.attack.lava");
-                break;
-            case MAGIC:
-                textBuilder.setMessage("death.attack.magic");
-                break;
-            case PROJECTILE:
-                textBuilder.setMessage("death.attack.arrow");
-                break;
-            case STALACTITE:
-                textBuilder.setMessage("death.attack.stalactite");
-                break;
-            case STALAGMITE:
-                textBuilder.setMessage("death.attack.stalagmite");
-                break;
-            case STARVE:
-                textBuilder.setMessage("death.attack.starve");
-                break;
-            case SUFFOCATION:
-                textBuilder.setMessage("death.attack.inWall");
-                break;
-            case THORNS:
-                textBuilder.setMessage("death.attack.thorns");
-                break;
-            case VOID:
-                textBuilder.setMessage("death.attack.outOfWorld");
-                break;
-            case WITHER:
-                textBuilder.setMessage("death.attack.wither");
-                break;
-            default:
-                textBuilder.setMessage("death.attack.generic");
-                break;
+            case ANVIL -> textBuilder.setMessage("death.attack.anvil");
+            case ATTACK -> textBuilder.setMessage("death.attack.player");
+            case BLOCK_EXPLOSION -> textBuilder.setMessage("death.attack.explosion");
+            case CONTACT -> textBuilder.setMessage("death.attack.cactus");
+            case DROWNING -> textBuilder.setMessage("death.attack.drown");
+            case ENTITY_EXPLOSION -> textBuilder.setMessage("death.attack.explosion.player");
+            case FALL -> textBuilder.setMessage("death.attack.fall");
+            case FALLING_BLOCK -> textBuilder.setMessage("death.attack.fallingBlock");
+            case FIRE -> textBuilder.setMessage("death.attack.inFire");
+            case FIRE_TICK -> textBuilder.setMessage("death.attack.onFire");
+            case FLY_INTO_WALL -> textBuilder.setMessage("death.attack.flyIntoWall");
+            case LAVA -> textBuilder.setMessage("death.attack.lava");
+            case MAGIC -> textBuilder.setMessage("death.attack.magic");
+            case PROJECTILE -> textBuilder.setMessage("death.attack.arrow");
+            case STALACTITE -> textBuilder.setMessage("death.attack.stalactite");
+            case STALAGMITE -> textBuilder.setMessage("death.attack.stalagmite");
+            case STARVE -> textBuilder.setMessage("death.attack.starve");
+            case SUFFOCATION -> textBuilder.setMessage("death.attack.inWall");
+            case THORNS -> textBuilder.setMessage("death.attack.thorns");
+            case VOID -> textBuilder.setMessage("death.attack.outOfWorld");
+            case WITHER -> textBuilder.setMessage("death.attack.wither");
+            default -> textBuilder.setMessage("death.attack.generic");
         }
 
         return Optional.of(textBuilder.build());
@@ -1262,7 +1225,7 @@ public class ImplEntity implements Entity {
             addEntityPacket.setUniqueEntityId(this.getId());
             addEntityPacket.setRuntimeEntityId(this.getId());
             addEntityPacket.setIdentifier(this.getEntityDefinition().getId());
-            addEntityPacket.setPosition(this.getLocation().toVector3f());
+            addEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
             addEntityPacket.setMotion(this.getMotion());
             addEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
             addEntityPacket.getMetadata().putAll(this.getMetaData().serialize());

@@ -93,9 +93,8 @@ public class Block {
     }
 
     public BoundingBox getBoundingBox() {
-        BoundingBox boundingBox = this.getBlockState().getBoundingBox();
-        boundingBox.setPosition(this.getLocation().toVector3f().add(0.5f, 0, 0.5f));
-        return boundingBox;
+        return this.getBlockState().getBoundingBox()
+                .translate(this.getLocation().toVector3f());
     }
 
 }

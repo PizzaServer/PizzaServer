@@ -1,146 +1,72 @@
 package io.github.pizzaserver.api.utils;
 
-import io.github.pizzaserver.api.utils.BoundingBox;
+import com.nukkitx.math.vector.Vector3f;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BoundingBoxTest {
 
     @Test
     public void shouldInterceptOnAllAxis() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(2);
-        boundingBox.setHeight(1);
-
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(1.4f, 0.9f, -1.4f);
-        otherBox.setWidth(1);
-        otherBox.setHeight(0.5f);
-
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-2, 1, -2), Vector3f.from(2, 0, 2));
+        BoundingBox otherBox = new BoundingBox(Vector3f.from(-1, 0.5f, -1), Vector3f.from(3, 0, -1));
         assertTrue(boundingBox.collidesWith(otherBox));
     }
 
     @Test
     public void shouldNotInterceptOnAllAxis() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(2);
-        boundingBox.setHeight(1);
-
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(1.5f, 1.5f, -1.5f);
-        otherBox.setWidth(1);
-        otherBox.setHeight(0.5f);
-
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-2, 0, -2), Vector3f.from(2, 1, 2));
+        BoundingBox otherBox = new BoundingBox(Vector3f.from(-3, 0.5f, 0), Vector3f.from(-2f, 0, 2));
         assertFalse(boundingBox.collidesWith(otherBox));
     }
 
     @Test
     public void shouldInterceptOnXAxis() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(1);
-        boundingBox.setHeight(1);
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(1, 0, 0);
-        otherBox.setWidth(1.01f);
-        otherBox.setHeight(1);
-
-        assertTrue(boundingBox.collidesWith(otherBox) && boundingBox.collidesWithXAxis(otherBox));
+        assertTrue(boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(1, 0, 0)))
+                                && boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(-1, 0, 0))));
     }
 
     @Test
     public void shouldNotInterceptOnXAxis() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(1f);
-        boundingBox.setHeight(1);
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(1, 0, 0);
-        otherBox.setWidth(1);
-        otherBox.setHeight(1);
-
-        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithXAxis(otherBox));
+        assertFalse(boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(2, 0, 0)))
+                        || boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(-2, 0, 0))));
     }
 
     @Test
     public void shouldInterceptOnYAxis() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0.5f, 0);
-        boundingBox.setWidth(1);
-        boundingBox.setHeight(0.1f);
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(0, 0, 0);
-        otherBox.setWidth(1);
-        otherBox.setHeight(0.6f);
-
-        assertTrue(boundingBox.collidesWith(otherBox) && boundingBox.collidesWithYAxis(otherBox));
+        assertTrue(boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, 0.99f, 0)))
+                && boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, -0.99f, 0))));
     }
 
     @Test
-    public void shouldNotInterceptOnYAxisDueToHeightOnlyGoingUp() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(1);
-        boundingBox.setHeight(0.49f);
+    public void shouldNotInterceptOnYAxis() {
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(0, 0.5f, 0);
-        otherBox.setWidth(1);
-        otherBox.setHeight(0.5f);
-
-        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithYAxis(otherBox));
-    }
-
-    @Test
-    public void shouldNotInterceptOnYAxisDueToBeingTooSmall() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(1);
-        boundingBox.setHeight(0.5f);
-
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(0, 0.5f, 0);
-        otherBox.setWidth(1);
-        otherBox.setHeight(0.5f);
-
-        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithYAxis(otherBox));
+        assertFalse(boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, 1, 0)))
+                || boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, -1, 0))));
     }
 
     @Test
     public void shouldInterceptOnZAxis() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(1);
-        boundingBox.setHeight(1);
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(0, 0, 1);
-        otherBox.setWidth(1.01f);
-        otherBox.setHeight(1);
-
-        assertTrue(boundingBox.collidesWith(otherBox) && boundingBox.collidesWithZAxis(otherBox));
+        assertTrue(boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, 1)))
+                && boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, -1))));
     }
 
     @Test
     public void shouldNotInterceptOnZAxis() {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setPosition(0, 0, 0);
-        boundingBox.setWidth(1);
-        boundingBox.setHeight(1);
+        BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
-        BoundingBox otherBox = new BoundingBox();
-        otherBox.setPosition(0, 0, 1);
-        otherBox.setWidth(1);
-        otherBox.setHeight(1);
-
-        assertFalse(boundingBox.collidesWith(otherBox) || boundingBox.collidesWithZAxis(otherBox));
+        assertFalse(boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, 2)))
+                || boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, -2))));
     }
 
 }

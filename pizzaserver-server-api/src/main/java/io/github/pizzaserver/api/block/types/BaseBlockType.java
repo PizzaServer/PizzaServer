@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.block.types;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.block.BlockUpdateType;
@@ -11,7 +12,6 @@ import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.types.data.PushResponse;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
@@ -56,10 +56,7 @@ public abstract class BaseBlockType implements BlockType {
 
     @Override
     public BoundingBox getBoundingBox(int blockStateIndex) {
-        BoundingBox boundingBox = new BoundingBox();
-        boundingBox.setHeight(1f);
-        boundingBox.setWidth(1f);
-        return boundingBox;
+        return new BoundingBox(Vector3f.ZERO, Vector3f.from(1, 1, 1));
     }
 
     @Override

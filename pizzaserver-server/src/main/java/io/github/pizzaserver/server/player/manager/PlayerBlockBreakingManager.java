@@ -65,11 +65,8 @@ public class PlayerBlockBreakingManager {
      * @return the amount of ticks or -1 if the player is not breaking a block
      */
     public int getBreakTicks() {
-        if (this.getBlock().isPresent()) {
+        if (this.getBlock().filter(block -> block.getBlockState().getHardness() != -1).isPresent()) {
             Block block = this.getBlock().get();
-            if (block.getBlockState().getHardness() == -1) {
-                return Integer.MAX_VALUE;
-            }
 
             ItemStack heldItem = this.player.getInventory().getHeldItem();
 
