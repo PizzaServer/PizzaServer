@@ -6,7 +6,7 @@ import io.github.pizzaserver.api.player.data.Skin;
 
 import java.util.UUID;
 
-public interface HumanEntity extends Entity {
+public interface EntityHuman extends Entity {
 
     /**
      * Retrieve the device the player is playing on.

@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.event.type.entity;
 
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.item.ItemStack;
 
 /**
@@ -9,16 +9,16 @@ import io.github.pizzaserver.api.item.ItemStack;
  */
 public class EntityPickupItemEvent extends BaseEntityEvent.Cancellable {
 
-    protected ItemEntity pickedUpEntity;
+    protected EntityItem pickedUpEntity;
     protected int pickedUpCount;
 
-    public EntityPickupItemEvent(Entity entity, ItemEntity pickedUpEntity, int pickedUpCount) {
+    public EntityPickupItemEvent(Entity entity, EntityItem pickedUpEntity, int pickedUpCount) {
         super(entity);
         this.pickedUpEntity = pickedUpEntity;
         this.pickedUpCount = pickedUpCount;
     }
 
-    public ItemEntity getItemEntity() {
+    public EntityItem getItemEntity() {
         return this.pickedUpEntity;
     }
 

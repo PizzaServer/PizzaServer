@@ -2,12 +2,12 @@ package io.github.pizzaserver.server.entity;
 
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentHandler;
-import io.github.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityItemDefinition;
 import io.github.pizzaserver.api.item.ItemStack;
 
 import java.util.*;
@@ -74,11 +74,11 @@ public class ImplEntityRegistry implements EntityRegistry {
         EntityDefinition entityDefinition = this.getDefinition(entityId);
         Entity entity;
         switch (entityDefinition.getId()) {
-            case HumanEntityDefinition.ID:
-                entity = new ImplHumanEntity(entityDefinition);
+            case EntityHumanDefinition.ID:
+                entity = new ImplEntityHuman(entityDefinition);
                 break;
-            case ItemEntityDefinition.ID:
-                entity = new ImplItemEntity(entityDefinition);
+            case EntityItemDefinition.ID:
+                entity = new ImplEntityItem(entityDefinition);
                 break;
             default:
                 entity = new ImplEntity(entityDefinition);
@@ -90,8 +90,8 @@ public class ImplEntityRegistry implements EntityRegistry {
     }
 
     @Override
-    public ItemEntity getItemEntity(ItemStack itemStack) {
-        ItemEntity entity = (ItemEntity) this.getEntity(ItemEntityDefinition.ID);
+    public EntityItem getItemEntity(ItemStack itemStack) {
+        EntityItem entity = (EntityItem) this.getEntity(EntityItemDefinition.ID);
         entity.setItem(itemStack);
         return entity;
     }

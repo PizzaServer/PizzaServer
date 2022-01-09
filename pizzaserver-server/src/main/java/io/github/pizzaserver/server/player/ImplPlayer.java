@@ -16,8 +16,8 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
-import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
@@ -43,7 +43,7 @@ import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
-import io.github.pizzaserver.server.entity.ImplHumanEntity;
+import io.github.pizzaserver.server.entity.ImplEntityHuman;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
@@ -66,7 +66,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class ImplPlayer extends ImplHumanEntity implements Player {
+public class ImplPlayer extends ImplEntityHuman implements Player {
 
     protected final ImplServer server;
     protected final PlayerSession session;
@@ -98,7 +98,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
-        super(server.getEntityRegistry().getDefinition(HumanEntityDefinition.ID));
+        super(server.getEntityRegistry().getDefinition(EntityHumanDefinition.ID));
         this.server = server;
         this.session = session;
 
@@ -168,7 +168,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
                 }
             }
 
-            this.getServer().getEntityRegistry().getDefinition(HumanEntityDefinition.ID).onCreation(this);
+            this.getServer().getEntityRegistry().getDefinition(EntityHumanDefinition.ID).onCreation(this);
 
             // Apply player data
             this.setPitch(data.getPitch());
@@ -773,7 +773,7 @@ public class ImplPlayer extends ImplHumanEntity implements Player {
 
         if (this.bossBars.add(implBossbar)) {
             AddEntityPacket dummyEntityPacket = new AddEntityPacket();
-            dummyEntityPacket.setIdentifier(CowEntityDefinition.ID);
+            dummyEntityPacket.setIdentifier(EntityCowDefinition.ID);
             dummyEntityPacket.setUniqueEntityId(implBossbar.getEntityId());
             dummyEntityPacket.setRuntimeEntityId(implBossbar.getEntityId());
             dummyEntityPacket.setMotion(Vector3f.ZERO);

@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.level.world.World;
@@ -192,12 +192,12 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public void addItemEntity(ItemEntity itemEntity, Vector3f position) {
+    public void addItemEntity(EntityItem itemEntity, Vector3f position) {
         this.addItemEntity(itemEntity, position, itemEntity.getMotion());
     }
 
     @Override
-    public void addItemEntity(ItemEntity itemEntity, Vector3f position, Vector3f motion) {
+    public void addItemEntity(EntityItem itemEntity, Vector3f position, Vector3f motion) {
         itemEntity.setMotion(motion);
         if (!itemEntity.getItem().isEmpty()) {
             this.addEntity(itemEntity, position);

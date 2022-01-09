@@ -5,7 +5,7 @@ import io.github.pizzaserver.api.item.ItemStack;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public interface ItemEntity extends Entity {
+public interface EntityItem extends Entity {
 
     ItemStack getItem();
 

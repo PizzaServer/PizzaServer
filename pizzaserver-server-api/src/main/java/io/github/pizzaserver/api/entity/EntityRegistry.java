@@ -36,7 +36,7 @@ public interface EntityRegistry {
 
     Entity getEntity(String entityId);
 
-    ItemEntity getItemEntity(ItemStack itemStack);
+    EntityItem getItemEntity(ItemStack itemStack);
 
     Set<EntityDefinition> getDefinitions();
 

@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.block.behavior.impl;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.behavior.BlockBehavior;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.item.ItemStack;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ public class DefaultBlockBehavior implements BlockBehavior {
         for (ItemStack loot : this.getDrops(entity, block)) {
             block.getWorld().addItemEntity(loot,
                     block.getLocation().toVector3f().add(0.5f, 0.5f, 0.5f),
-                    ItemEntity.getRandomMotion());
+                    EntityItem.getRandomMotion());
         }
     }
 

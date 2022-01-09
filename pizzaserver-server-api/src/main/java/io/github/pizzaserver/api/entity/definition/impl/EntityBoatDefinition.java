@@ -7,12 +7,12 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponentGro
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 
-public class BoatEntityDefinition extends BaseEntityDefinition {
+public class EntityBoatDefinition extends BaseEntityDefinition {
 
     public static final String ID = "minecraft:boat";
 
 
-    public BoatEntityDefinition() {
+    public EntityBoatDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
             new EntityDimensionsComponent(1.4f, 0.455f, 0.455f / 2 + 0.1f, 0.375f),
             new EntityHealthComponent(20, 20) }));

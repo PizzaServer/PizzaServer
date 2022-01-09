@@ -5,7 +5,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
-import io.github.pizzaserver.api.entity.HumanEntity;
+import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
@@ -18,7 +18,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.util.UUID;
 
-public class ImplHumanEntity extends ImplEntity implements HumanEntity {
+public class ImplEntityHuman extends ImplEntity implements EntityHuman {
 
     public static final Skin DEFAULT_STEVE;
 
@@ -46,7 +46,7 @@ public class ImplHumanEntity extends ImplEntity implements HumanEntity {
     protected final UUID uuid;
 
 
-    public ImplHumanEntity(EntityDefinition entityType) {
+    public ImplEntityHuman(EntityDefinition entityType) {
         super(entityType);
         this.uuid = UUID.randomUUID();
         this.skin = DEFAULT_STEVE;

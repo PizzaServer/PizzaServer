@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.chunks.ChunkManager;
@@ -303,18 +303,18 @@ public interface World extends ChunkManager {
 
     /**
      * Add a {@link ItemStack} to the world and spawn it.
-     * @param itemEntity {@link ItemEntity} to spawn
+     * @param itemEntity {@link EntityItem} to spawn
      * @param position The position to spawn it in this world
      */
-    void addItemEntity(ItemEntity itemEntity, Vector3f position);
+    void addItemEntity(EntityItem itemEntity, Vector3f position);
 
     /**
      * Add a {@link ItemStack} to the world and spawn it.
-     * @param itemEntity {@link ItemEntity} to spawn
+     * @param itemEntity {@link EntityItem} to spawn
      * @param position The position to spawn it in this world
      * @param velocity The velocity to spawn it with
      */
-    void addItemEntity(ItemEntity itemEntity, Vector3f position, Vector3f velocity);
+    void addItemEntity(EntityItem itemEntity, Vector3f position, Vector3f velocity);
 
     /**
      * Add a {@link Entity} to this world and spawn it.

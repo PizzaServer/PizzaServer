@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.BedrockPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.HumanEntity;
+import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 /**
  * Represents a player on the Minecraft server.
  */
-public interface Player extends HumanEntity {
+public interface Player extends EntityHuman {
 
     /**
      * Retrieve the Minecraft version this player is on.

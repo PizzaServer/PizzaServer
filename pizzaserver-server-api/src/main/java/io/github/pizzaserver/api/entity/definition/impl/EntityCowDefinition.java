@@ -8,12 +8,12 @@ import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreatha
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 
-public class CowEntityDefinition extends BaseEntityDefinition {
+public class EntityCowDefinition extends BaseEntityDefinition {
 
     public static final String ID = "minecraft:cow";
 
 
-    public CowEntityDefinition() {
+    public EntityCowDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
                 new EntityDimensionsComponent(0.9f, 1.3f),
                 new EntityHealthComponent(10f, 10f),

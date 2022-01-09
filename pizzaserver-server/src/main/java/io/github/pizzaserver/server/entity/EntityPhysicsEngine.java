@@ -170,6 +170,10 @@ public class EntityPhysicsEngine {
 
                 newVelocity = Vector3f.from(deltaX, deltaY, deltaZ);
                 this.entity.moveTo(this.entity.getX() + deltaX, this.entity.getY() + deltaY, this.entity.getZ() + deltaZ);
+
+                if (this.entity.getWorld().getBlock(this.entity.getFloorX(), this.entity.getFloorY(), this.entity.getFloorZ()).hasCollision()) {
+                    System.out.println("colliding.");
+                }
             }
             this.setMotion(newVelocity);
         } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {

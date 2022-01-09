@@ -15,7 +15,7 @@ import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.data.DamageCause;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
@@ -216,7 +216,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                         this.player.getInventory().setSlot(this.player, nextAction.getSlot(), itemStack, true);
 
                         // Drop item
-                        ItemEntity itemEntity = EntityRegistry.getInstance().getItemEntity(droppedStack);
+                        EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedStack);
                         itemEntity.setPickupDelay(40);
                         this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().toVector3f().add(0, 1.3f, 0), this.player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
                     } else {

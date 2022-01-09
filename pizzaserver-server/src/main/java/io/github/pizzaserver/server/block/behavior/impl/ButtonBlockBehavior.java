@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 
 public class ButtonBlockBehavior extends DefaultBlockBehavior {
 
@@ -43,7 +43,7 @@ public class ButtonBlockBehavior extends DefaultBlockBehavior {
                 if (!parentBlock.hasCollision()) {
                     block.getWorld().addItemEntity(block.toStack(),
                             block.getLocation().toVector3f(),
-                            ItemEntity.getRandomMotion());
+                            EntityItem.getRandomMotion());
                     block.getWorld().setAndUpdateBlock(BlockID.AIR, block.getLocation().toLocation().toVector3i());
                 }
                 break;

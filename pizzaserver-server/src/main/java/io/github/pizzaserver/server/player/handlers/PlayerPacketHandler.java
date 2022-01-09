@@ -6,8 +6,8 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.entity.HumanEntity;
-import io.github.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
+import io.github.pizzaserver.api.entity.EntityHuman;
+import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -101,8 +101,8 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.WOODEN_PICKAXE, 1));
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(ItemTypeID.BOAT, 2));
         this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.ACACIA_BUTTON, 2));
-        HumanEntity humanEntity = (HumanEntity) EntityRegistry.getInstance().getEntity(HumanEntityDefinition.ID);
-        this.player.getWorld().addEntity(humanEntity, this.player.getLocation().toVector3f());
+        EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
+        this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {
             String message = packet.getMessage().strip();
             if (message.length() > 512) {

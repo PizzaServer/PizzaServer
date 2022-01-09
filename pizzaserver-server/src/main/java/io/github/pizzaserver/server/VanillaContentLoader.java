@@ -8,10 +8,10 @@ import io.github.pizzaserver.api.block.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.components.handlers.*;
 import io.github.pizzaserver.api.entity.definition.components.impl.*;
-import io.github.pizzaserver.api.entity.definition.impl.BoatEntityDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.CowEntityDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.HumanEntityDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityItemDefinition;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.types.ItemTypeID;
 import io.github.pizzaserver.api.item.types.impl.*;
@@ -151,10 +151,10 @@ public class VanillaContentLoader {
     }
 
     private static void loadEntities() {
-        EntityRegistry.getInstance().registerDefinition(new BoatEntityDefinition());
-        EntityRegistry.getInstance().registerDefinition(new CowEntityDefinition());
-        EntityRegistry.getInstance().registerDefinition(new HumanEntityDefinition());
-        EntityRegistry.getInstance().registerDefinition(new ItemEntityDefinition());
+        EntityRegistry.getInstance().registerDefinition(new EntityBoatDefinition());
+        EntityRegistry.getInstance().registerDefinition(new EntityCowDefinition());
+        EntityRegistry.getInstance().registerDefinition(new EntityHumanDefinition());
+        EntityRegistry.getInstance().registerDefinition(new EntityItemDefinition());
     }
 
 }

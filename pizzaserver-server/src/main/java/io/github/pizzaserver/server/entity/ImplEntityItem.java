@@ -2,7 +2,7 @@ package io.github.pizzaserver.server.entity;
 
 import com.nukkitx.protocol.bedrock.packet.AddItemEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.TakeItemEntityPacket;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityPickupItemEvent;
 import io.github.pizzaserver.api.item.ItemStack;
@@ -11,13 +11,13 @@ import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Optional;
 
-public class ImplItemEntity extends ImplEntity implements ItemEntity {
+public class ImplEntityItem extends ImplEntity implements EntityItem {
 
     protected ItemStack itemStack;
     protected int pickUpDelay;
 
 
-    public ImplItemEntity(EntityDefinition entityDefinition) {
+    public ImplEntityItem(EntityDefinition entityDefinition) {
         super(entityDefinition);
     }
 

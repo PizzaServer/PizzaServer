@@ -7,12 +7,12 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponentGro
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
 
-public class ItemEntityDefinition extends BaseEntityDefinition {
+public class EntityItemDefinition extends BaseEntityDefinition {
 
     public static final String ID = "minecraft:item";
 
 
-    public ItemEntityDefinition() {
+    public EntityItemDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[]{
                 new EntityDimensionsComponent(0.25f, 0.25f),
                 new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()

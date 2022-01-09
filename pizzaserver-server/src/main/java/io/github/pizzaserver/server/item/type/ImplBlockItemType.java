@@ -5,7 +5,7 @@ import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.types.BaseItemType;
@@ -63,7 +63,7 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
                 for (Entity entity : nearByEntities) {
                     boolean entityCollidesWithBlock = placedBlock.getBoundingBox().collidesWith(entity.getBoundingBox())
                             && entity.hasCollision()
-                            && !(entity instanceof ItemEntity)
+                            && !(entity instanceof EntityItem)
                             && (entity.getViewers().contains(player) || entity.equals(player));
 
                     if (entityCollidesWithBlock) {

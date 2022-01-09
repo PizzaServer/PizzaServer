@@ -8,7 +8,7 @@ import io.github.pizzaserver.api.block.data.WoodType;
 import io.github.pizzaserver.api.block.descriptors.Liquid;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.entity.definition.impl.BoatEntityDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.player.Player;
@@ -53,7 +53,7 @@ public class ItemTypeBoat extends BaseItemType {
         itemStack.setCount(itemStack.getCount() - 1);
         player.getInventory().setHeldItem(itemStack);
 
-        Entity boatEntity = EntityRegistry.getInstance().getEntity(BoatEntityDefinition.ID);
+        Entity boatEntity = EntityRegistry.getInstance().getEntity(EntityBoatDefinition.ID);
         boatEntity.getMetaData().putInt(EntityData.VARIANT, this.woodType.ordinal());
         Vector3f spawnLocation;
         if (player.getHeadBlock() instanceof Liquid) {

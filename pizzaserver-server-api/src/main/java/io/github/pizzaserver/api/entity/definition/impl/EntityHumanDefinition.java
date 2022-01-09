@@ -9,12 +9,12 @@ import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensi
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
 
-public class HumanEntityDefinition extends BaseEntityDefinition {
+public class EntityHumanDefinition extends BaseEntityDefinition {
 
     public static final String ID = "minecraft:player";
 
 
-    public HumanEntityDefinition() {
+    public EntityHumanDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
                 new EntityDimensionsComponent(0.6f, 1.8f, 1.62f, 1.62f),
                 new EntityHealthComponent(20f, 20f),
