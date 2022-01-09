@@ -39,6 +39,10 @@ public class ServerConfig {
         return this.config.getBoolean("server.online-mode");
     }
 
+    public boolean isEncryptionEnabled() {
+        return this.config.getBoolean("server.enable-encryption");
+    }
+
     public int getMinimumSupportedProtocol() {
         return this.config.getInteger("server.minimum-supported-protocol");
     }

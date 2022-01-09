@@ -117,8 +117,6 @@ public class EntityPhysicsEngine {
                 float deltaZ = newVelocity.getZ();
 
                 // Find all the blocks the entity is colliding with at the new location
-                Set<Block> collidingBlocks = new HashSet<>();
-
                 BoundingBox targetNewLocationBoundingBox = this.entity.getBoundingBox().translate(newVelocity);
                 BoundingBox intersectingBlockBoundingBox = targetNewLocationBoundingBox.grow(0.5f);
                 int minBlockXCheck = (int) Math.floor(intersectingBlockBoundingBox.getMinX());
@@ -128,6 +126,7 @@ public class EntityPhysicsEngine {
                 int minBlockZCheck = (int) Math.floor(intersectingBlockBoundingBox.getMinZ());
                 int maxBlockZCheck = (int) Math.ceil(intersectingBlockBoundingBox.getMaxZ());
 
+                Set<Block> collidingBlocks = new HashSet<>();
                 for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
                     for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
                         for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
@@ -139,41 +138,29 @@ public class EntityPhysicsEngine {
                     }
                 }
 
-                System.out.println(collidingBlocks.size() + " colliding blocks");
-
                 // Adjust velocity deltas to not collide
                 BoundingBox newEntityBoundingBox = this.entity.getBoundingBox();
 
                 // Adjust y
-                System.out.print("delta y went from " + deltaY);
                 for (Block block : collidingBlocks) {
                     deltaY = newEntityBoundingBox.calcYOffset(block.getBoundingBox(), deltaY);
                 }
-                System.out.println(" to " + deltaY);
                 newEntityBoundingBox = newEntityBoundingBox.translate(0, deltaY, 0);
 
                 // Adjust x
-                System.out.print("delta x went from " + deltaX);
                 for (Block block : collidingBlocks) {
                     deltaX = newEntityBoundingBox.calcXOffset(block.getBoundingBox(), deltaX);
                 }
-                System.out.println(" to " + deltaX);
                 newEntityBoundingBox = newEntityBoundingBox.translate(deltaX, 0, 0);
 
                 // Adjust z
-                System.out.print("delta z went from " + deltaZ);
                 for (Block block : collidingBlocks) {
                     deltaZ = newEntityBoundingBox.calcZOffset(block.getBoundingBox(), deltaZ);
                 }
-                System.out.println(" to " + deltaZ);
 
 
                 newVelocity = Vector3f.from(deltaX, deltaY, deltaZ);
                 this.entity.moveTo(this.entity.getX() + deltaX, this.entity.getY() + deltaY, this.entity.getZ() + deltaZ);
-
-                if (this.entity.getWorld().getBlock(this.entity.getFloorX(), this.entity.getFloorY(), this.entity.getFloorZ()).hasCollision()) {
-                    System.out.println("colliding.");
-                }
             }
             this.setMotion(newVelocity);
         } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {

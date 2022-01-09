@@ -57,8 +57,13 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
         }
         this.loginData = loginData.get();
 
+        if (!this.server.getConfig().isEncryptionEnabled()) {
+            this.completeLogin();
+            return true;
+        }
+
         if (!EncryptionUtils.canUseEncryption()) {
-            this.server.getLogger().error("Packet encryption is not supported.");
+            this.server.getLogger().error("Packet encryption is not supported on this machine.");
             this.session.getConnection().disconnect();
             return true;
         }
@@ -90,20 +95,7 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
     @Override
     public boolean handle(ClientToServerHandshakePacket packet) {
         if (this.session.getConnection().isEncrypted()) {
-            if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
-                PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-                playStatusPacket.setStatus(PlayStatusPacket.Status.FAILED_SERVER_FULL_SUB_CLIENT);
-                this.session.getConnection().sendPacket(playStatusPacket);
-                return true;
-            }
-
-            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-            playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
-            this.session.getConnection().sendPacket(playStatusPacket);
-
-            // Initialization successful.
-            this.session.addPacketHandler(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
-            this.session.removePacketHandler(this);
+            this.completeLogin();
             return true;
         }
         return true;
@@ -113,6 +105,22 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
     public boolean handle(PacketViolationWarningPacket packet) {
         this.server.getLogger().debug("Packet violation for " + packet.getPacketType() + ": " + packet.getContext());
         return true;
+    }
+
+    private void completeLogin() {
+        if (this.server.getPlayerCount() >= this.server.getMaximumPlayerCount()) {
+            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+            playStatusPacket.setStatus(PlayStatusPacket.Status.FAILED_SERVER_FULL_SUB_CLIENT);
+            this.session.getConnection().sendPacket(playStatusPacket);
+        } else {
+            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+            playStatusPacket.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
+            this.session.getConnection().sendPacket(playStatusPacket);
+
+            // Initialization successful.
+            this.session.addPacketHandler(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
+            this.session.removePacketHandler(this);
+        }
     }
 
 }

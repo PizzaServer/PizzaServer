@@ -3,7 +3,8 @@ server:
   max-players: 20
   force-packs: false
   online-mode: true
-  minimum-supported-protocol: 419
+  enable-encryption: true
+  minimum-supported-protocol: 475
 
 network:
   ip: 0.0.0.0
