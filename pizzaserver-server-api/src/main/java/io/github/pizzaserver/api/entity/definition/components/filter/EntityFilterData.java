@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.entity.definition.components.filter;
 
-import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.item.ItemStack;
 
 import java.util.Optional;
 

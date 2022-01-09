@@ -1,9 +1,9 @@
 package io.github.pizzaserver.server.network;
 
 import com.nukkitx.protocol.bedrock.*;
+import io.github.pizzaserver.api.event.type.server.ServerPongUpdateEvent;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
-import io.github.pizzaserver.api.event.type.server.ServerPongUpdateEvent;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 
 import java.net.InetSocketAddress;

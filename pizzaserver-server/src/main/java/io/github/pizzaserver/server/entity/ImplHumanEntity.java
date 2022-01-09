@@ -15,7 +15,7 @@ import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.item.ItemUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.UUID;
 
 public class ImplHumanEntity extends ImplEntity implements HumanEntity {

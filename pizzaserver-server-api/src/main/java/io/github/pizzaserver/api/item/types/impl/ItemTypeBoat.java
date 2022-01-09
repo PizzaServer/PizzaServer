@@ -3,12 +3,13 @@ package io.github.pizzaserver.api.item.types.impl;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockFace;
+import io.github.pizzaserver.api.block.data.BlockFace;
+import io.github.pizzaserver.api.block.data.WoodType;
+import io.github.pizzaserver.api.block.descriptors.Liquid;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.impl.BoatEntityDefinition;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.data.WoodType;
 import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.player.Player;
 
@@ -55,7 +56,7 @@ public class ItemTypeBoat extends BaseItemType {
         Entity boatEntity = EntityRegistry.getInstance().getEntity(BoatEntityDefinition.ID);
         boatEntity.getMetaData().putInt(EntityData.VARIANT, this.woodType.ordinal());
         Vector3f spawnLocation;
-        if (player.getHeadBlock().getBlockState().isLiquid()) {
+        if (player.getHeadBlock() instanceof Liquid) {
             spawnLocation = player.getLocation().toVector3f().add(0, player.getEyeHeight(), 0);
         } else {
             spawnLocation = block.getSide(blockFace).getLocation().toVector3f();

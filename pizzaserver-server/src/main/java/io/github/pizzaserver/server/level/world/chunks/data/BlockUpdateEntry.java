@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.level.world.chunks.data;
 
 import com.nukkitx.math.vector.Vector3i;
-import io.github.pizzaserver.api.block.BlockUpdateType;
+import io.github.pizzaserver.api.block.data.BlockUpdateType;
 
 public class BlockUpdateEntry {
 

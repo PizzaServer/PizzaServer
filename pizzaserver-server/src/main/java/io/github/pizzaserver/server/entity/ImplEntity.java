@@ -8,40 +8,40 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.utils.*;
-import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.item.ItemUtils;
-import io.github.pizzaserver.server.level.ImplLevel;
-import io.github.pizzaserver.server.level.world.ImplWorld;
-import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.entity.data.DamageCause;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
-import io.github.pizzaserver.api.entity.data.DamageCause;
+import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentHandler;
+import io.github.pizzaserver.api.entity.definition.components.filter.EntityFilter;
+import io.github.pizzaserver.api.entity.definition.components.filter.EntityFilterData;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreathableComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityBurnsInDaylightComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
-import io.github.pizzaserver.api.entity.definition.components.filter.EntityFilter;
-import io.github.pizzaserver.api.entity.definition.components.filter.EntityFilterData;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
-import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.types.component.ArmorItemComponent;
 import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
+import io.github.pizzaserver.server.item.ItemUtils;
+import io.github.pizzaserver.server.level.ImplLevel;
+import io.github.pizzaserver.server.level.world.ImplWorld;
+import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
 
@@ -255,7 +255,7 @@ public class ImplEntity implements Entity {
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                 Block blockBelow = this.getWorld().getBlock(x, this.getFloorY() - 1, z);
-                if (blockBelow.getBlockState().hasCollision() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
+                if (blockBelow.hasCollision() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
                     return true;
                 }
             }
@@ -932,8 +932,8 @@ public class ImplEntity implements Entity {
 
         Block newBlockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
         if (!blockBelow.getLocation().equals(newBlockBelow.getLocation())) {
-            newBlockBelow.getBlockType().onWalkedOn(this, newBlockBelow);
-            blockBelow.getBlockType().onWalkedOff(this, blockBelow);
+            newBlockBelow.getBehavior().onWalkedOn(this, newBlockBelow);
+            blockBelow.getBehavior().onWalkedOff(this, blockBelow);
         }
     }
 
@@ -968,9 +968,9 @@ public class ImplEntity implements Entity {
 
             Block headBlock = this.getHeadBlock();
             EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
-            boolean isSuffocating = headBlock.getBlockState().hasCollision()
-                    && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
-                        || breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType()));
+            boolean isSuffocating = headBlock.hasCollision()
+                    && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
+                        || breathableComponent.getNonBreathableBlocks().contains(headBlock));
             if (isSuffocating) {
                 if (this.ticks % breathableComponent.getSuffocationInterval() == 0) {
                     EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
@@ -978,10 +978,10 @@ public class ImplEntity implements Entity {
                 }
             }
 
-            boolean losingOxygen = !headBlock.getBlockState().hasCollision()
-                    && ((breathableComponent.getNonBreathableBlocks().contains(headBlock.getBlockType())
-                                && !breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType()))
-                        || !(headBlock.getBlockState().hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock.getBlockType())));
+            boolean losingOxygen = !headBlock.hasCollision()
+                    && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
+                                && !breathableComponent.getBreathableBlocks().contains(headBlock))
+                        || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
             if (losingOxygen) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
@@ -1010,7 +1010,7 @@ public class ImplEntity implements Entity {
         }
 
         Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
-        blockBelow.getBlockType().onStandingOn(this, blockBelow);
+        blockBelow.getBehavior().onStandingOn(this, blockBelow);
 
         this.updateBossBarVisibility();
         this.ticks++;
@@ -1109,7 +1109,7 @@ public class ImplEntity implements Entity {
         if (damageSensorComponent.getSensors().length > 0) {
             // Check entity's damage sensors to ensure we can attack the entity
             for (EntityDamageSensorComponent.Sensor sensor : damageSensorComponent.getSensors()) {
-                boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(event.getCause())).isPresent() || !sensor.getCause().isPresent();
+                boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(event.getCause())).isPresent() || sensor.getCause().isEmpty();
 
                 if (isAttackSensor) {
                     boolean passedFilters = false;

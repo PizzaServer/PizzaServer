@@ -1,12 +1,12 @@
 package io.github.pizzaserver.server.event;
 
-import io.github.pizzaserver.server.event.handler.EventHandlerReference;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.event.Event;
 import io.github.pizzaserver.api.event.EventManager;
 import io.github.pizzaserver.api.event.filter.EventFilter;
 import io.github.pizzaserver.api.event.handler.EventHandler;
 import io.github.pizzaserver.api.event.type.CancellableType;
+import io.github.pizzaserver.server.event.handler.EventHandlerReference;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;

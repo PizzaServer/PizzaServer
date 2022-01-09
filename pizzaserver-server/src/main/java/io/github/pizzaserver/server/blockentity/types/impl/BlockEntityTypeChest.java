@@ -3,14 +3,13 @@ package io.github.pizzaserver.server.blockentity.types.impl;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityChest;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.types.BlockType;
-import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.item.ItemUtils;
@@ -28,8 +27,8 @@ public class BlockEntityTypeChest implements BlockEntityType {
     }
 
     @Override
-    public Set<BlockType> getBlockTypes() {
-        return Collections.singleton(BlockRegistry.getInstance().getBlockType(BlockTypeID.CHEST));
+    public Set<Block> getBlocks() {
+        return Collections.singleton(BlockRegistry.getInstance().getBlock(BlockID.CHEST));
     }
 
     @Override

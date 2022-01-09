@@ -4,16 +4,16 @@ import com.nimbusds.jose.JWSObject;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
-import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.pizzaserver.server.network.data.LoginData;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Optional;
 
 /**
  * Handles login and handshake flow of players.

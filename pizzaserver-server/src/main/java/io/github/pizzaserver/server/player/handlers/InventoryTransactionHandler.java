@@ -10,7 +10,9 @@ import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.TakeStack
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockFace;
+import io.github.pizzaserver.api.block.data.BlockFace;
+import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.ItemEntity;
@@ -30,10 +32,10 @@ import io.github.pizzaserver.server.network.data.inventory.StackResponse;
 import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.network.data.inventory.actions.TakeStackRequestActionDataWrapper;
+import io.github.pizzaserver.server.player.ImplPlayer;
 import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionPlaceHandler;
 import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionSwapHandler;
 import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionTakeHandler;
-import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Optional;
 
@@ -251,8 +253,9 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                         case InventoryTransactionAction.USE_CLICK_BLOCK:
                         case InventoryTransactionAction.USE_CLICK_AIR:
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
-                            boolean callItemInteractAllowedByBlock = block.getBlockType().onInteract(this.player, block, blockFace);
-                            boolean callItemInteractAllowedByBlockEntity = block.getBlockEntity() == null || block.getBlockEntity().onInteract(this.player);
+                            boolean callItemInteractAllowedByBlock = block.getBehavior().onInteract(this.player, block, blockFace);
+                            boolean callItemInteractAllowedByBlockEntity = !(block instanceof BlockEntityContainer<? extends BlockEntity>)
+                                    || ((BlockEntityContainer<? extends BlockEntity>) block).getBlockEntity().onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
                                 boolean successfulInteraction = heldItemStack.getItemType().onInteract(this.player, heldItemStack, block, blockFace);

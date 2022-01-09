@@ -4,10 +4,10 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
@@ -18,7 +18,7 @@ import java.util.Set;
 public class ImplPlayerInventory extends ImplEntityInventory implements PlayerInventory {
 
     private int selectedSlot;
-    private ItemStack cursor = ItemRegistry.getInstance().getItem(BlockTypeID.AIR);
+    private ItemStack cursor = ItemRegistry.getInstance().getItem(BlockID.AIR);
 
 
     public ImplPlayerInventory(Player player) {
@@ -140,7 +140,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
 
     @Override
     public ItemStack getCursor() {
-        return Optional.ofNullable(this.cursor).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR)).clone();
+        return Optional.ofNullable(this.cursor).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR)).clone();
     }
 
     @Override

@@ -4,7 +4,10 @@ import io.github.pizzaserver.api.entity.data.DamageCause;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.filter.EntityFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Entity component that defines what damage an entity can take.

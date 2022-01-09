@@ -5,11 +5,11 @@ import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
@@ -101,7 +101,7 @@ public abstract class BaseInventory implements Inventory {
      * @return ItemStack in that slot
      */
     public ItemStack getSlot(int slot, boolean clone) {
-        ItemStack itemStack = Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
+        ItemStack itemStack = Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return itemStack.clone();
         } else {

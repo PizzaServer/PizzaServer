@@ -3,13 +3,15 @@ package io.github.pizzaserver.api.item;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.nbt.NbtType;
-import io.github.pizzaserver.api.block.BlockState;
-import io.github.pizzaserver.api.block.types.BlockTypeID;
-import io.github.pizzaserver.api.item.types.BlockItemType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.item.types.component.DurableItemComponent;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ItemStack implements Cloneable {
 
@@ -21,8 +23,8 @@ public class ItemStack implements Cloneable {
     protected int meta;
     protected NbtMap nbt = NbtMap.EMPTY;
 
-    protected Set<BlockState> blocksCanBreak;
-    protected Set<BlockState> blocksCanPlaceOn = Collections.emptySet();
+    protected Set<Block> blocksCanBreak;
+    protected Set<Block> blocksCanPlaceOn = Collections.emptySet();
 
 
     public ItemStack(String itemId) {
@@ -50,11 +52,11 @@ public class ItemStack implements Cloneable {
     }
 
     public ItemStack(ItemType itemType, int count, int meta) {
-        this(itemType, count, meta, itemType.getItemId().equals(BlockTypeID.AIR) ? 0 : -1);
+        this(itemType, count, meta, itemType.getItemId().equals(BlockID.AIR) ? 0 : -1);
     }
 
     public ItemStack(ItemType itemType, int count, int meta, int networkId) {
-        this.itemType = count <= 0 ? ItemRegistry.getInstance().getItemType(BlockTypeID.AIR) : itemType;
+        this.itemType = count <= 0 ? ItemRegistry.getInstance().getItemType(BlockID.AIR) : itemType;
         this.networkId = this.isEmpty() ? 0 : networkId;
         this.count = this.isEmpty() ? 0 : count;
         this.meta = meta;
@@ -75,7 +77,7 @@ public class ItemStack implements Cloneable {
             if (count <= 0) {
                 this.count = 0;
                 this.networkId = 0;
-                this.itemType = ItemRegistry.getInstance().getItemType(BlockTypeID.AIR);
+                this.itemType = ItemRegistry.getInstance().getItemType(BlockID.AIR);
             } else {
                 this.count = count;
             }
@@ -149,11 +151,11 @@ public class ItemStack implements Cloneable {
         this.nbt = nbt;
     }
 
-    public Set<BlockState> getBlocksCanBreak() {
+    public Set<Block> getBlocksCanBreak() {
         return Collections.unmodifiableSet(this.blocksCanBreak);
     }
 
-    public void setBlocksCanBreak(Set<BlockState> blocksCanBreak) {
+    public void setBlocksCanBreak(Set<Block> blocksCanBreak) {
         this.blocksCanBreak = blocksCanBreak;
     }
 
@@ -161,7 +163,7 @@ public class ItemStack implements Cloneable {
      * Only applicable for ItemStacks that have an item type that can place blocks.
      * @return all of the blocks that this item can be placed on
      */
-    public Set<BlockState> getBlocksCanPlaceOn() {
+    public Set<Block> getBlocksCanPlaceOn() {
         return Collections.unmodifiableSet(this.blocksCanPlaceOn);
     }
 
@@ -169,7 +171,7 @@ public class ItemStack implements Cloneable {
      * Only applicable for ItemStacks that have an item type that can place blocks.
      * @param blocksCanPlaceOn the blocks that this item can be placed on
      */
-    public void setBlocksCanPlaceOn(Set<BlockState> blocksCanPlaceOn) {
+    public void setBlocksCanPlaceOn(Set<Block> blocksCanPlaceOn) {
         this.blocksCanPlaceOn = blocksCanPlaceOn;
     }
 
@@ -189,7 +191,7 @@ public class ItemStack implements Cloneable {
      * @return if the ItemStack is air
      */
     public boolean isEmpty() {
-        return this.getItemType().getItemId().equals(BlockTypeID.AIR);
+        return this.getItemType().getItemId().equals(BlockID.AIR);
     }
 
     /**
@@ -241,7 +243,7 @@ public class ItemStack implements Cloneable {
      * @return item stack
      */
     public static ItemStack ensureItemStackExists(ItemStack itemStack) {
-        return itemStack == null ? ItemRegistry.getInstance().getItem(BlockTypeID.AIR) : itemStack;
+        return itemStack == null ? ItemRegistry.getInstance().getItem(BlockID.AIR) : itemStack;
     }
 
 }

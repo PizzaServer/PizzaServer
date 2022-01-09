@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.event.type.player;
 
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockFace;
+import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.player.Player;
 
 /**

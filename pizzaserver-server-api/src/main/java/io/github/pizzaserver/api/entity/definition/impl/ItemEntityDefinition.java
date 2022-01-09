@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.entity.definition.impl;
 
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.BaseEntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
-import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;

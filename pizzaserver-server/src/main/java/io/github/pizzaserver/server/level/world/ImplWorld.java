@@ -6,30 +6,29 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
-import io.github.pizzaserver.api.block.BlockUpdateType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.level.world.chunks.Chunk;
-import io.github.pizzaserver.server.level.ImplLevel;
-import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.ItemEntity;
+import io.github.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
+import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.utils.Location;
-import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.level.ImplLevel;
+import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.level.world.chunks.WorldChunkManager;
-import io.github.pizzaserver.api.event.type.world.WorldSoundEvent;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ImplWorld implements World {
 
@@ -326,7 +325,7 @@ public class ImplWorld implements World {
                 packet.setRelativeVolumeDisabled(relativeVolumeDisabled);
                 packet.setBabySound(isBaby);
                 packet.setIdentifier(entityType);
-                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockType().getBlockId(), block.getBlockState().getNBT()) : -1);
+                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
 
                 player.sendPacket(packet);
             }

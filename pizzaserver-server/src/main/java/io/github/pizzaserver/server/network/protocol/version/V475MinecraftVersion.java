@@ -9,16 +9,15 @@ import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.types.CustomItemType;
-import io.github.pizzaserver.api.item.types.component.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.types.BlockItemType;
+import io.github.pizzaserver.api.item.types.CustomItemType;
 import io.github.pizzaserver.api.item.types.ItemType;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
-import io.github.pizzaserver.api.block.types.BlockType;
+import io.github.pizzaserver.api.item.types.component.*;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.io.IOException;
@@ -78,9 +77,9 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             }
 
             // Add custom block states
-            for (BaseBlockType blockType : BlockRegistry.getInstance().getCustomTypes()) {
-                sortedBlockRuntimeStates.put(blockType.getBlockId(), new ArrayList<>(blockType.getBlockStateNBTs().keySet()));
-                this.customBlockProperties.add(this.getBlockPropertyData(blockType));
+            for (Block block : BlockRegistry.getInstance().getCustomBlocks()) {
+                sortedBlockRuntimeStates.put(block.getBlockId(), block.getNBTStates());
+                this.customBlockProperties.add(this.getBlockPropertyData(block));
             }
 
             // Block runtime ids are determined by the order of the sorted block runtime states.
@@ -94,29 +93,29 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         }
     }
 
-    protected BlockPropertyData getBlockPropertyData(BlockType blockType) {
+    protected BlockPropertyData getBlockPropertyData(Block block) {
         NbtMapBuilder componentsNBT = NbtMap.builder()
                 .putCompound("minecraft:block_light_absorption", NbtMap.builder()
-                        .putInt("value", blockType.getLightAbsorption(0))
+                        .putInt("value", block.getLightAbsorption())
                         .build())
                 .putCompound("minecraft:block_light_emission", NbtMap.builder()
-                        .putFloat("emission", blockType.getLightEmission(0))
+                        .putFloat("emission", block.getLightEmission())
                         .build())
                 .putCompound("minecraft:friction", NbtMap.builder()
-                        .putFloat("value", blockType.getFriction())
+                        .putFloat("value", block.getFriction())
                         .build())
                 .putCompound("minecraft:rotation", NbtMap.builder()
-                        .putFloat("x", blockType.getRotation(0)[0])
-                        .putFloat("y", blockType.getRotation(0)[1])
-                        .putFloat("z", blockType.getRotation(0)[2])
+                        .putFloat("x", 0)
+                        .putFloat("y", 0)
+                        .putFloat("z", 0)
                         .build());
-        if (blockType.getGeometry(0) != null) {
+        if (block.getGeometry().isPresent()) {
             componentsNBT.putCompound("minecraft:geometry", NbtMap.builder()
-                            .putString("value", blockType.getGeometry(0))
+                            .putString("value", block.getGeometry().get())
                     .build());
         }
 
-        return new BlockPropertyData(blockType.getBlockId(), NbtMap.builder()
+        return new BlockPropertyData(block.getBlockId(), NbtMap.builder()
                 .putCompound("components", componentsNBT.build())
                 .build());
     }
@@ -155,11 +154,11 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
-            SortedSet<BaseBlockType> sortedCustomBlockTypes =
+            SortedSet<Block> sortedCustomBlocks =
                     new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
-            sortedCustomBlockTypes.addAll(BlockRegistry.getInstance().getCustomTypes());
-            for (BaseBlockType customBlockType : sortedCustomBlockTypes) {
-                this.itemRuntimeIds.put(customBlockType.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+            sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
+            for (Block customBlock : sortedCustomBlocks) {
+                this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
             }
         }
     }

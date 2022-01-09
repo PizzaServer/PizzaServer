@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.entity.definition.components.handlers;
 
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.entity.definition.components.impl.EntityBossComponent;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentHandler;
+import io.github.pizzaserver.api.entity.definition.components.impl.EntityBossComponent;
 
 public class EntityBossComponentHandler extends EntityComponentHandler<EntityBossComponent> {
 

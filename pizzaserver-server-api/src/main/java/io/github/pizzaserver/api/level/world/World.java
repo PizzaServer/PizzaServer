@@ -4,18 +4,18 @@ import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
-import io.github.pizzaserver.api.block.BlockUpdateType;
-import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.level.Level;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.data.BlockUpdateType;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.ItemEntity;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
+import io.github.pizzaserver.api.level.Level;
+import io.github.pizzaserver.api.level.world.chunks.ChunkManager;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.level.world.chunks.ChunkManager;
 
 import java.util.Map;
 import java.util.Optional;
@@ -92,45 +92,46 @@ public interface World extends ChunkManager {
 
     /**
      * Set a block in this chunk.
-     * @param blockType the {@link BaseBlockType} of the block that should be created here
-     * @param blockPosition the chunk position of the block
+     * @param blockId block id of the block to set here
+     * @param blockPosition block position
      */
-    default void setBlock(BaseBlockType blockType, Vector3i blockPosition) {
-        this.setBlock(blockType.create(), blockPosition);
+    default void setBlock(String blockId, Vector3i blockPosition) {
+        this.setBlock(blockId, blockPosition, 0);
     }
 
     /**
      * Set a block in this chunk.
-     * @param blockType the {@link BaseBlockType} of the block that should be created here
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     * @param blockId block id to set here
+     * @param blockPosition block position
+     * @param layer layer to place the block on
      */
-    default void setBlock(BaseBlockType blockType, int x, int y, int z) {
-        this.setBlock(blockType.create(), x, y, z);
+    default void setBlock(String blockId, Vector3i blockPosition, int layer) {
+        this.setBlock(blockId, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ(), layer);
     }
 
     /**
      * Set a block in a specific layer of this chunk.
-     * @param blockType the {@link BaseBlockType} to be set here
-     * @param blockCoordinates block coordinates
-     * @param layer layer
+     * @param blockId block id to set here
+     * @param x block x
+     * @param y block y
+     * @param z block z
+     * @param layer block layer
      */
-    default void setBlock(BaseBlockType blockType, Vector3i blockCoordinates, int layer) {
-        this.setBlock(blockType.create(), blockCoordinates, layer);
+    default void setBlock(String blockId, int x, int y, int z, int layer) {
+        this.setBlock(blockId, 0, x, y, z, layer);
     }
 
-
     /**
-     * Set a block in a specific layer of this chunk.
-     * @param blockType the {@link BaseBlockType} to be set here
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
-     * @param layer layer
+     * Set a block in a specific layer of this chunk with a specific state.
+     * @param blockId block id to set here
+     * @param blockState block state
+     * @param x block x
+     * @param y block y
+     * @param z block z
+     * @param layer block layer
      */
-    default void setBlock(BaseBlockType blockType, int x, int y, int z, int layer) {
-        this.setBlock(blockType.create(), x, y, z, layer);
+    default void setBlock(String blockId, int blockState, int x, int y, int z, int layer) {
+        this.setBlock(BlockRegistry.getInstance().getBlock(blockId, blockState), x, y, z, layer);
     }
 
     /**
@@ -175,44 +176,46 @@ public interface World extends ChunkManager {
 
     /**
      * Set a block in this chunk and schedule a block update.
-     * @param blockType the {@link BaseBlockType} of the block that should be created here
-     * @param blockPosition the chunk position of the block
+     * @param blockId block id of the block to set here
+     * @param blockPosition block position
      */
-    default void setAndUpdateBlock(BaseBlockType blockType, Vector3i blockPosition) {
-        this.setAndUpdateBlock(blockType.create(), blockPosition);
+    default void setAndUpdateBlock(String blockId, Vector3i blockPosition) {
+        this.setAndUpdateBlock(blockId, blockPosition, 0);
     }
 
     /**
      * Set a block in this chunk and schedule a block update.
-     * @param blockType the {@link BaseBlockType} of the block that should be created here
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     * @param blockId block id to set here
+     * @param blockPosition block position
+     * @param layer layer to place the block on
      */
-    default void setAndUpdateBlock(BaseBlockType blockType, int x, int y, int z) {
-        this.setAndUpdateBlock(blockType.create(), x, y, z);
+    default void setAndUpdateBlock(String blockId, Vector3i blockPosition, int layer) {
+        this.setAndUpdateBlock(blockId, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ(), layer);
     }
 
     /**
-     * Set a block in a specific layer of this chunk and schedule a block update.
-     * @param blockType the {@link BaseBlockType} to be set here
-     * @param blockCoordinates block coordinates
-     * @param layer layer
+     * Set a block in this chunk and schedule a block update.
+     * @param blockId block id to set here
+     * @param x block x
+     * @param y block y
+     * @param z block z
+     * @param layer block layer
      */
-    default void setAndUpdateBlock(BaseBlockType blockType, Vector3i blockCoordinates, int layer) {
-        this.setAndUpdateBlock(blockType.create(), blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), layer);
+    default void setAndUpdateBlock(String blockId, int x, int y, int z, int layer) {
+        this.setAndUpdateBlock(blockId, 0, x, y, z, layer);
     }
 
     /**
-     * Set a block in a specific layer of this chunk and schedule a block update.
-     * @param blockType the {@link BaseBlockType} to be set here
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
-     * @param layer layer
+     * Set a block in this chunk and schedule a block update.
+     * @param blockId block id to set here
+     * @param blockState block state
+     * @param x block x
+     * @param y block y
+     * @param z block z
+     * @param layer block layer
      */
-    default void setAndUpdateBlock(BaseBlockType blockType, int x, int y, int z, int layer) {
-        this.setAndUpdateBlock(blockType.create(), x, y, z, layer);
+    default void setAndUpdateBlock(String blockId, int blockState, int x, int y, int z, int layer) {
+        this.setAndUpdateBlock(BlockRegistry.getInstance().getBlock(blockId, blockState), x, y, z, layer);
     }
 
     /**

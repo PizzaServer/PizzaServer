@@ -1,100 +1,159 @@
 package io.github.pizzaserver.api.block;
 
 import com.nukkitx.math.vector.Vector3i;
-import io.github.pizzaserver.api.block.types.BlockType;
-import io.github.pizzaserver.api.blockentity.BlockEntity;
+import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.block.behavior.BlockBehavior;
+import io.github.pizzaserver.api.block.data.BlockFace;
+import io.github.pizzaserver.api.block.data.PushResponse;
+import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.data.ToolTier;
+import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
-public class Block {
+import java.util.List;
+import java.util.Optional;
 
-    private final BlockType blockType;
-    private int blockStateIndex = 0;
+public interface Block extends Cloneable {
 
-    private World world;
-    private int x;
-    private int y;
-    private int z;
-    private int layer;
+    /**
+     * Namespace id of the block.
+     * e.g. minecraft:stone
+     * @return the namespace id
+     */
+    String getBlockId();
 
+    /**
+     * Display name of the block.
+     * e.g. Stone
+     * @return the display name
+     */
+    String getName();
 
-    public Block(BlockType blockType) {
-        this.blockType = blockType;
-    }
+    BlockLocation getLocation();
 
-    public BlockType getBlockType() {
-        return this.blockType;
-    }
-
-    public BlockState getBlockState() {
-        return new BlockState(this.getBlockType(), this.getBlockStateIndex());
-    }
-
-    public int getBlockStateIndex() {
-        return this.blockStateIndex;
-    }
-
-    public void setBlockStateIndex(int index) {
-        this.blockStateIndex = index;
-    }
-
-    public int getLayer() {
-        return this.layer;
-    }
-
-    public BlockLocation getLocation() {
-        return new BlockLocation(this.world, this.x, this.y, this.z, this.layer);
-    }
-
-    public void setLocation(BlockLocation location) {
+    default void setLocation(BlockLocation location) {
         this.setLocation(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getLayer());
     }
 
-    public void setLocation(World world, Vector3i vector3i, int layer) {
-        this.setLocation(world, vector3i.getX(), vector3i.getY(), vector3i.getZ(), layer);
+    default void setLocation(World world, Vector3i position, int layer) {
+        this.setLocation(world, position.getX(), position.getY(), position.getZ(), layer);
     }
 
-    public void setLocation(World world, int x, int y, int z, int layer) {
-        this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.layer = layer;
+    void setLocation(World world, int x, int y, int z, int layer);
+
+    World getWorld();
+
+    int getLayer();
+
+    int getX();
+
+    int getY();
+
+    int getZ();
+
+    Block getSide(BlockFace face);
+
+    int getBlockState();
+
+    void setBlockState(int state);
+
+    void setBlockState(NbtMap state);
+
+    NbtMap getNBTState();
+
+    List<NbtMap> getNBTStates();
+
+    BoundingBox getBoundingBox();
+
+    /**
+     * Retrieve the map colour this block displays on a map.
+     * If null is returned then it will use the default map colour
+     * @return hex value of the color to display on the map
+     */
+    String getMapColor();
+
+    /**
+     * Retrieve the geometry to use for this block type.
+     * If no geometry is returned then it will use the default block geometry
+     * @return block geometry id
+     */
+    Optional<String> getGeometry();
+
+    float getHardness();
+
+    /**
+     * If this block can be mined efficiently without using a tool.
+     * @return if it can
+     */
+    boolean canBeMinedWithHand();
+
+    /**
+     * Retrieve the tool type required to efficiently mine this block.
+     * @return tool type
+     */
+    ToolType getToolTypeRequired();
+
+    /**
+     * Retrieve the tool tier required to maximize efficiency while mining this block.
+     * @return tool tier
+     */
+    ToolTier getToolTierRequired();
+
+    float getBlastResistance();
+
+    /**
+     * The percentage of fall damage that should be removed when gets damaged by fall damage while falling onto this block.
+     * @return a float between 0-1 that describes the ignored fall damage percent
+     */
+    float getFallDamageReduction();
+
+    /**
+     * Retrieve the friction entities should receive on this block.
+     * MUST be within the range 0-1
+     * @return friction of this block
+     */
+    float getFriction();
+
+    int getLightAbsorption();
+
+    int getLightEmission();
+
+    PushResponse getPushResponse();
+
+    boolean isAffectedByGravity();
+
+    boolean hasOxygen();
+
+    /**
+     * If true, entities cannot pass through this block.
+     * @return if this block allows entities to walk through it
+     */
+    boolean hasCollision();
+
+    /**
+     * If true, when a player attempts to place a block at the position of this block,
+     * the block at this location will be replaced.
+     */
+    boolean isReplaceable();
+
+    /**
+     * If true, light can pass through this block.
+     * @return if light can pass through
+     */
+    boolean isTransparent();
+
+    ItemStack toStack();
+
+    default BlockBehavior getBehavior() {
+        return BlockRegistry.getInstance().getBlockBehavior(this);
     }
 
-    public World getWorld() {
-        return this.world;
+    default boolean isAir() {
+        return BlockID.AIR.equals(this.getBlockId());
     }
 
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
-    }
-
-    public int getZ() {
-        return this.z;
-    }
-
-    public Block getSide(BlockFace blockFace) {
-        BlockLocation location = this.getLocation();
-        return this.getWorld().getBlock(location.toVector3i().add(blockFace.getOffset()));
-    }
-
-    public BlockEntity getBlockEntity() {
-        BlockEntity blockEntity = this.getWorld().getBlockEntity(this.getLocation().toVector3i()).orElse(null);
-        if (blockEntity == null || !blockEntity.getType().getBlockTypes().contains(this.getBlockType())) {
-            return null;
-        }
-        return blockEntity;
-    }
-
-    public BoundingBox getBoundingBox() {
-        return this.getBlockState().getBoundingBox()
-                .translate(this.getLocation().toVector3f());
-    }
+    Block clone();
 
 }

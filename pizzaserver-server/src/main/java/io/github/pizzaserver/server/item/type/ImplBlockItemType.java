@@ -1,12 +1,13 @@
 package io.github.pizzaserver.server.item.type;
 
-import io.github.pizzaserver.api.block.types.BlockType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.data.BlockFace;
+import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.ItemEntity;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
-import io.github.pizzaserver.api.block.BlockFace;
+import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.types.BaseItemType;
 import io.github.pizzaserver.api.item.types.BlockItemType;
 import io.github.pizzaserver.api.player.Player;
@@ -20,15 +21,15 @@ import java.util.Set;
  */
 public class ImplBlockItemType extends BaseItemType implements BlockItemType {
 
-    private final BlockType blockType;
+    private final Block blockType;
 
 
-    public ImplBlockItemType(BlockType blockType) {
+    public ImplBlockItemType(Block blockType) {
         this.blockType = blockType;
     }
 
     @Override
-    public BlockType getBlockType() {
+    public Block getBlock() {
         return this.blockType;
     }
 
@@ -39,24 +40,24 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
 
     @Override
     public String getName() {
-        return this.getBlockType().getName(0);
+        return this.getBlock().getName();
     }
 
     @Override
     public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
         // Handle placing a block
         Block blockAtPlacementPos = block.getSide(blockFace);
-        if (!block.getBlockState().isAir() && blockAtPlacementPos.getBlockState().isReplaceable()) {
+        if (!block.isAir() && blockAtPlacementPos.isReplaceable()) {
             if (!player.getAdventureSettings().canBuild()) {
                 return false;
             }
-            Block placedBlock = this.getBlockType().create(itemStack.getMeta());
+            Block placedBlock = this.getBlock();
             placedBlock.setLocation(new BlockLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i(), block.getLayer()));
-            if (!placedBlock.getBlockType().prepareForPlacement(player, placedBlock, blockFace)) {
+            if (!placedBlock.getBehavior().prepareForPlacement(player, placedBlock, blockFace)) {
                 return false;
             }
 
-            if (placedBlock.getBlockState().hasCollision()) {
+            if (placedBlock.hasCollision()) {
                 // Collision check with nearby entities
                 Set<Entity> nearByEntities = block.getLocation().getWorld().getEntitiesNear(block.getLocation().toVector3f(), 16);
                 for (Entity entity : nearByEntities) {
@@ -82,9 +83,11 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
                 player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
             }
             block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
-            placedBlock.getBlockType().onPlace(player, placedBlock, blockFace);
-            if (block.getBlockEntity() != null) {
-                block.getBlockEntity().onPlace(player);
+            placedBlock.getBehavior().onPlace(player, placedBlock, blockFace);
+            if (block instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
+                if (blockWithBlockEntity.getBlockEntity() != null) {
+                    blockWithBlockEntity.getBlockEntity().onPlace(player);
+                }
             }
             return true;
         } else {

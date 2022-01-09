@@ -1,7 +1,5 @@
 package io.github.pizzaserver.api.packs;
 
-import com.nukkitx.protocol.bedrock.packet.ResourcePacksInfoPacket;
-
 import java.util.UUID;
 
 public interface ResourcePack {

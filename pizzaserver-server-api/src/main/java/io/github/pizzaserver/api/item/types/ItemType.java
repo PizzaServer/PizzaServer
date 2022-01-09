@@ -1,14 +1,13 @@
 package io.github.pizzaserver.api.item.types;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.data.BlockFace;
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.types.component.ArmorItemComponent;
-import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockState;
-import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.block.BlockFace;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.Set;
@@ -100,7 +99,7 @@ public interface ItemType {
      *
      * @return only blocks this item can break
      */
-    Set<BlockState> getOnlyBlocksCanBreak();
+    Set<Block> getOnlyBlocksCanBreak();
 
     /**
      * Called when the player interacts with a block using this item.

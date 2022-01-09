@@ -1,59 +1,68 @@
 package io.github.pizzaserver.server.block;
 
-import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.server.item.type.ImplBlockItemType;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
+import io.github.pizzaserver.api.block.behavior.BlockBehavior;
+import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.server.item.type.ImplBlockItemType;
 
 import java.util.*;
 
 public class ImplBlockRegistry implements BlockRegistry {
 
     // All registered block types
-    private final Map<String, BaseBlockType> types = new HashMap<>();
+    private final BiMap<String, Block> blocks = HashBiMap.create();
+    private final Map<Class<? extends Block>, BlockBehavior> behaviors = new HashMap<>();
 
     // All registered CUSTOM block types
-    private final Set<BaseBlockType> customTypes = new HashSet<>();
+    private final Set<Block> customTypes = new HashSet<>();
 
     @Override
-    public void register(BaseBlockType blockType) {
-        if (!blockType.getBlockId().startsWith("minecraft:")) {
-            this.customTypes.add(blockType);
+    public void register(Block block, BlockBehavior behavior) {
+        if (block.getBlockId().startsWith("minecraft:")) {
+            this.customTypes.add(block);
         }
-        this.types.put(blockType.getBlockId(), blockType);
 
-        ItemRegistry.getInstance().register(new ImplBlockItemType(blockType));    // Register the item representation of this block
+        this.blocks.put(block.getBlockId(), block);
+        this.behaviors.put(block.getClass(), behavior);
+        ItemRegistry.getInstance().register(new ImplBlockItemType(block));
     }
 
     @Override
-    public BaseBlockType getBlockType(String blockId) {
-        if (!this.types.containsKey(blockId)) {
-            throw new NullPointerException("Could not find a block type by the id of " + blockId);
-        }
-        return this.types.get(blockId);
+    public boolean hasBlock(String blockId) {
+        return this.blocks.containsKey(blockId);
     }
 
     @Override
-    public boolean hasBlockType(String blockId) {
-        return this.types.containsKey(blockId);
-    }
-
-    @Override
-    public Set<BaseBlockType> getCustomTypes() {
+    public Set<Block> getCustomBlocks() {
         return Collections.unmodifiableSet(this.customTypes);
     }
 
     @Override
     public Block getBlock(String blockId) {
-        BaseBlockType blockType = this.getBlockType(blockId);
-        return blockType.create();
+        return this.getBlock(blockId, 0);
     }
 
     @Override
     public Block getBlock(String blockId, int state) {
-        BaseBlockType blockType = this.getBlockType(blockId);
-        return blockType.create(state);
+        if (!this.blocks.containsKey(blockId)) {
+            throw new NullPointerException("No registered block could be found by the id: " + blockId);
+        }
+
+        Block block = this.blocks.get(blockId).clone();
+        block.setBlockState(state);
+        return block;
+    }
+
+    @Override
+    public BlockBehavior getBlockBehavior(Block block) {
+        if (!this.behaviors.containsKey(block.getClass())) {
+            throw new NullPointerException("There is no block behavior class for the provided class.");
+        }
+
+        return this.behaviors.get(block.getClass());
     }
 
 }

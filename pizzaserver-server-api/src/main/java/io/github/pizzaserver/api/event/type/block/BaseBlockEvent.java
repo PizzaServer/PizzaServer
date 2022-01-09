@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.event.type.block;
 
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.event.Event;
 import io.github.pizzaserver.api.event.type.CancellableType;
-import io.github.pizzaserver.api.block.Block;
 
 public abstract class BaseBlockEvent extends Event {
 

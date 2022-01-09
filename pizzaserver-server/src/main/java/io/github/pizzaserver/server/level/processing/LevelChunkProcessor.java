@@ -1,9 +1,9 @@
 package io.github.pizzaserver.server.level.processing;
 
+import io.github.pizzaserver.server.level.processing.requests.ChunkRequest;
 import io.github.pizzaserver.server.level.processing.requests.PlayerChunkRequest;
 import io.github.pizzaserver.server.level.processing.requests.UnloadChunkRequest;
 import io.github.pizzaserver.server.level.world.ImplWorld;
-import io.github.pizzaserver.server.level.processing.requests.ChunkRequest;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

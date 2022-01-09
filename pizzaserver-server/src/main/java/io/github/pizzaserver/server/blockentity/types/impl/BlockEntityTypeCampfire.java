@@ -3,9 +3,8 @@ package io.github.pizzaserver.server.blockentity.types.impl;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.types.BlockType;
-import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityCampfire;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -17,10 +16,10 @@ import java.util.Set;
 
 public class BlockEntityTypeCampfire implements BlockEntityType {
 
-    private static final Set<BlockType> BLOCK_TYPES = new HashSet<BlockType>() {
+    private static final Set<Block> BLOCK_TYPES = new HashSet<>() {
         {
-            this.add(BlockRegistry.getInstance().getBlockType(BlockTypeID.CAMPFIRE));
-            this.add(BlockRegistry.getInstance().getBlockType(BlockTypeID.SOUL_CAMPFIRE));
+            this.add(BlockRegistry.getInstance().getBlock(BlockID.CAMPFIRE));
+            this.add(BlockRegistry.getInstance().getBlock(BlockID.SOUL_CAMPFIRE));
         }
     };
 
@@ -31,7 +30,7 @@ public class BlockEntityTypeCampfire implements BlockEntityType {
     }
 
     @Override
-    public Set<BlockType> getBlockTypes() {
+    public Set<Block> getBlocks() {
         return BLOCK_TYPES;
     }
 

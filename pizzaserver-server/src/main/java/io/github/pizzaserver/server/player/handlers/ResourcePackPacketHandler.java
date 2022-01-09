@@ -4,13 +4,13 @@ import com.nukkitx.protocol.bedrock.data.ExperimentData;
 import com.nukkitx.protocol.bedrock.data.ResourcePackType;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
-import io.github.pizzaserver.server.network.protocol.PlayerSession;
-import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.api.packs.ResourcePack;
 import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.network.data.LoginData;
+import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
-import java.util.*;
+import java.util.UUID;
 
 public class ResourcePackPacketHandler implements BedrockPacketHandler {
 

@@ -1,6 +1,5 @@
 package io.github.pizzaserver.server.player.form;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.form.CustomForm;
@@ -18,7 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 public class FormUtilsTests {
 

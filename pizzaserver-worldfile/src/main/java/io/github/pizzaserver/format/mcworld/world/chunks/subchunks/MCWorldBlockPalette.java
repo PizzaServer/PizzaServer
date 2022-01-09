@@ -6,16 +6,17 @@ import com.nukkitx.nbt.NBTInputStream;
 import com.nukkitx.nbt.NBTOutputStream;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtUtils;
-import io.github.pizzaserver.format.mcworld.utils.VarInts;
-import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.pizzaserver.format.MinecraftDataMapper;
+import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.pizzaserver.format.exceptions.world.chunks.ChunkParseException;
+import io.github.pizzaserver.format.mcworld.utils.VarInts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
 
 public class MCWorldBlockPalette implements BlockPalette {
 

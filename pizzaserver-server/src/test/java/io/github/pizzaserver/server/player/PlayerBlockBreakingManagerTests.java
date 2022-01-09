@@ -2,11 +2,10 @@ package io.github.pizzaserver.server.player;
 
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.types.BlockType;
-import io.github.pizzaserver.api.block.types.impl.BlockTypeAir;
-import io.github.pizzaserver.api.block.types.impl.BlockTypeDirt;
-import io.github.pizzaserver.api.block.types.impl.BlockTypeIronOre;
-import io.github.pizzaserver.api.block.types.impl.BlockTypeStone;
+import io.github.pizzaserver.api.block.impl.BlockAir;
+import io.github.pizzaserver.api.block.impl.BlockDirt;
+import io.github.pizzaserver.api.block.impl.BlockIronOre;
+import io.github.pizzaserver.api.block.impl.BlockStone;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.types.impl.ItemTypeShears;
@@ -23,7 +22,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PlayerBlockBreakingManagerTests {
 
@@ -47,7 +47,7 @@ public class PlayerBlockBreakingManagerTests {
 
         PlayerBlockBreakingManager blockBreakingManager = new PlayerBlockBreakingManager(mockPlayer);
         BlockLocation blockLocation = new BlockLocation(mockWorld, 0, 0, 0, 0);
-        Block blockMining = new Block(new BlockTypeDirt());
+        Block blockMining = new BlockDirt();
         blockMining.setLocation(blockLocation);
 
         when(mockWorld.getBlock(0, 0, 0, 0)).thenReturn(blockMining);
@@ -63,7 +63,6 @@ public class PlayerBlockBreakingManagerTests {
 
     @Test
     public void breakingShouldBeQuickerAndCorrectWithCorrectTool() {
-        BlockType blockType = new BlockTypeIronOre();
         ItemStack correctToolAndTier = new ItemStack(new ItemTypeStonePickaxe());
         ItemStack correctTool = new ItemStack(new ItemTypeWoodenPickaxe());
         int expectedTicksWithTool = 150;
@@ -79,14 +78,14 @@ public class PlayerBlockBreakingManagerTests {
         PlayerInventory mockPlayerInventory = mock(PlayerInventory.class);
         when(mockPlayer.getInventory()).thenReturn(mockPlayerInventory);
         when(mockPlayerInventory.getHeldItem()).thenReturn(
-                new ItemStack(new ImplBlockItemType(new BlockTypeAir())),
-                new ItemStack(new ImplBlockItemType(new BlockTypeAir())),
+                new ItemStack(new ImplBlockItemType(new BlockAir())),
+                new ItemStack(new ImplBlockItemType(new BlockAir())),
                 correctTool,
                 correctToolAndTier);
 
         PlayerBlockBreakingManager blockBreakingManager = new PlayerBlockBreakingManager(mockPlayer);
         BlockLocation blockLocation = new BlockLocation(mockWorld, 0, 0, 0, 0);
-        Block blockMining = new Block(blockType);
+        Block blockMining = new BlockIronOre();
         blockMining.setLocation(blockLocation);
 
         when(mockWorld.getBlock(0, 0, 0, 0)).thenReturn(blockMining);
@@ -107,7 +106,7 @@ public class PlayerBlockBreakingManagerTests {
 
     @Test
     public void breakTimeShouldChangeIfHandItemChanges() {
-        ItemStack originalItem = new ItemStack(new ImplBlockItemType(new BlockTypeAir()));
+        ItemStack originalItem = new ItemStack(new ImplBlockItemType(new BlockAir()));
         ItemStack switchingToItem = new ItemStack(new ItemTypeWoodenPickaxe());
 
         Server mockServer = mock(Server.class);
@@ -122,7 +121,7 @@ public class PlayerBlockBreakingManagerTests {
 
         PlayerBlockBreakingManager blockBreakingManager = new PlayerBlockBreakingManager(mockPlayer);
         BlockLocation blockLocation = new BlockLocation(mockWorld, 0, 0, 0, 0);
-        Block blockMining = new Block(new BlockTypeStone());
+        Block blockMining = new BlockStone();
         blockMining.setLocation(blockLocation);
 
         when(mockWorld.getBlock(0, 0, 0, 0)).thenReturn(blockMining);

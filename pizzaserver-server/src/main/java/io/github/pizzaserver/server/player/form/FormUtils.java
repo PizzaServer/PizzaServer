@@ -1,6 +1,9 @@
 package io.github.pizzaserver.server.player.form;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.form.CustomForm;
 import io.github.pizzaserver.api.player.form.Form;

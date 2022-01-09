@@ -1,9 +1,9 @@
 package io.github.pizzaserver.server.entity;
 
 import com.nukkitx.math.vector.Vector3f;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
@@ -132,32 +132,40 @@ public class EntityPhysicsEngine {
                     for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
                         for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                             Block block = this.entity.getWorld().getBlock(x, y, z);
-                            if (block.getBlockState().hasCollision() && block.getBoundingBox().collidesWith(targetNewLocationBoundingBox)) {
+                            if (block.hasCollision() && block.getBoundingBox().collidesWith(targetNewLocationBoundingBox)) {
                                 collidingBlocks.add(block);
                             }
                         }
                     }
                 }
 
+                System.out.println(collidingBlocks.size() + " colliding blocks");
+
                 // Adjust velocity deltas to not collide
                 BoundingBox newEntityBoundingBox = this.entity.getBoundingBox();
 
                 // Adjust y
+                System.out.print("delta y went from " + deltaY);
                 for (Block block : collidingBlocks) {
                     deltaY = newEntityBoundingBox.calcYOffset(block.getBoundingBox(), deltaY);
                 }
+                System.out.println(" to " + deltaY);
                 newEntityBoundingBox = newEntityBoundingBox.translate(0, deltaY, 0);
 
                 // Adjust x
+                System.out.print("delta x went from " + deltaX);
                 for (Block block : collidingBlocks) {
                     deltaX = newEntityBoundingBox.calcXOffset(block.getBoundingBox(), deltaX);
                 }
+                System.out.println(" to " + deltaX);
                 newEntityBoundingBox = newEntityBoundingBox.translate(deltaX, 0, 0);
 
                 // Adjust z
+                System.out.print("delta z went from " + deltaZ);
                 for (Block block : collidingBlocks) {
                     deltaZ = newEntityBoundingBox.calcZOffset(block.getBoundingBox(), deltaZ);
                 }
+                System.out.println(" to " + deltaZ);
 
 
                 newVelocity = Vector3f.from(deltaX, deltaY, deltaZ);
@@ -186,7 +194,7 @@ public class EntityPhysicsEngine {
             if (this.entity.isOnGround()) {
                 // Consider block friction
                 if (Math.abs(this.getMotion().getX()) > 0 || Math.abs(this.getMotion().getZ()) > 0) {
-                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getBlockState().getFriction();
+                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getFriction();
                 }
             }
             newMotion = newMotion.mul(friction, 1, friction);

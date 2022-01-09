@@ -1,6 +1,6 @@
 package io.github.pizzaserver.server.blockentity;
 
-import io.github.pizzaserver.api.block.types.BlockType;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 
@@ -16,14 +16,14 @@ public class ImplBlockEntityRegistry implements BlockEntityRegistry {
 
     public void register(BlockEntityType blockEntityType) {
         if (entities.containsKey(blockEntityType.getId())) {
-            for (BlockType blockType : this.getBlockEntityType(blockEntityType.getId()).getBlockTypes()) {
-                entitiesByBlockTypeId.remove(blockType.getBlockId());
+            for (Block block : this.getBlockEntityType(blockEntityType.getId()).getBlocks()) {
+                entitiesByBlockTypeId.remove(block.getBlockId());
             }
         }
 
         entities.put(blockEntityType.getId(), blockEntityType);
-        for (BlockType blockType : blockEntityType.getBlockTypes()) {
-            entitiesByBlockTypeId.put(blockType.getBlockId(), blockEntityType);
+        for (Block block : blockEntityType.getBlocks()) {
+            entitiesByBlockTypeId.put(block.getBlockId(), blockEntityType);
         }
     }
 
@@ -36,7 +36,7 @@ public class ImplBlockEntityRegistry implements BlockEntityRegistry {
     }
 
     @Override
-    public Optional<BlockEntityType> getBlockEntityType(BlockType blockType) {
+    public Optional<BlockEntityType> getBlockEntityType(Block blockType) {
         return Optional.ofNullable(entitiesByBlockTypeId.getOrDefault(blockType.getBlockId(), null));
     }
 

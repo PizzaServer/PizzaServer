@@ -1,7 +1,6 @@
 package io.github.pizzaserver.api.item.types.component;
 
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
 
 /**
  * Represents an item type that can place down a block when used
@@ -19,6 +18,6 @@ public interface PlantableItemComponent {
      * Get the block types this item can be used on.
      * @return block types this item can be used on
      */
-    BaseBlockType[] getPlaceableBlockTypes();
+    Block[] getPlaceableBlockTypes();
 
 }

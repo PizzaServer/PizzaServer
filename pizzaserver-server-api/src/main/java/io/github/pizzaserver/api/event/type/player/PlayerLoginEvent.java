@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.event.type.player;
 
-import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.utils.Location;
 
 /**
  * Called before the player entity is spawned.

@@ -5,11 +5,11 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
@@ -69,7 +69,7 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     public ItemStack getHelmet(boolean clone) {
-        ItemStack helmet = Optional.ofNullable(this.helmet).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
+        ItemStack helmet = Optional.ofNullable(this.helmet).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return helmet.clone();
         } else {
@@ -93,7 +93,7 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     public ItemStack getChestplate(boolean clone) {
-        ItemStack chestplate = Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
+        ItemStack chestplate = Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return chestplate.clone();
         } else {
@@ -117,7 +117,7 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     public ItemStack getLeggings(boolean clone) {
-        ItemStack leggings = Optional.ofNullable(this.leggings).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
+        ItemStack leggings = Optional.ofNullable(this.leggings).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return leggings.clone();
         } else {
@@ -141,7 +141,7 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     public ItemStack getBoots(boolean clone) {
-        ItemStack boots = Optional.ofNullable(this.boots).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
+        ItemStack boots = Optional.ofNullable(this.boots).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return boots.clone();
         } else {
@@ -177,7 +177,7 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     public ItemStack getHeldItem(boolean clone) {
-        ItemStack mainHand = Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
+        ItemStack mainHand = Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return mainHand.clone();
         } else {
@@ -201,7 +201,7 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     public ItemStack getOffhandItem(boolean clone) {
-        ItemStack offhand = Optional.ofNullable(this.offHand).orElse(ItemRegistry.getInstance().getItem(BlockTypeID.AIR));
+        ItemStack offhand = Optional.ofNullable(this.offHand).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return offhand.clone();
         } else {

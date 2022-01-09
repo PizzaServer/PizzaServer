@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.entity.definition.components.impl;
 
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
-import io.github.pizzaserver.api.block.types.BlockType;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ public class EntityBreathableComponent extends EntityComponent {
      * Retrieve all extra blocks this entity can breathe in regardless of canBreathSolids().
      * @return all extra blocks this entity can breathe in
      */
-    public Set<BlockType> getBreathableBlocks() {
+    public Set<Block> getBreathableBlocks() {
         return Collections.unmodifiableSet(this.properties.getBreathableBlocks());
     }
 
@@ -37,7 +37,7 @@ public class EntityBreathableComponent extends EntityComponent {
      * Retrieve all extra blocks this entity cannot breathe in regardless of canBreathSolids().
      * @return all extra blocks this entity cannot breathe in
      */
-    public Set<BlockType> getNonBreathableBlocks() {
+    public Set<Block> getNonBreathableBlocks() {
         return Collections.unmodifiableSet(this.properties.getNonBreathableBlocks());
     }
 
@@ -73,8 +73,8 @@ public class EntityBreathableComponent extends EntityComponent {
     public static class Properties {
 
         private boolean canBreathSolids;
-        private Set<BlockType> breathableBlocks = new HashSet<>();
-        private Set<BlockType> nonBreathableBlocks = new HashSet<>();
+        private Set<Block> breathableBlocks = new HashSet<>();
+        private Set<Block> nonBreathableBlocks = new HashSet<>();
         private boolean generateBubblesInWater;
         private float inhaleTime;
         private float totalSupply;
@@ -94,7 +94,7 @@ public class EntityBreathableComponent extends EntityComponent {
          * Retrieve all extra blocks this entity can breathe in regardless of canBreathSolids().
          * @return all extra blocks this entity can breathe in
          */
-        public Set<BlockType> getBreathableBlocks() {
+        public Set<Block> getBreathableBlocks() {
             return this.breathableBlocks;
         }
 
@@ -102,7 +102,7 @@ public class EntityBreathableComponent extends EntityComponent {
          * Set extra blocks that this entity can breathe in regardless of canBreathSolids().
          * @param breathableBlocks extra blocks this entity can breathe in
          */
-        public Properties setBreathableBlocks(Set<BlockType> breathableBlocks) {
+        public Properties setBreathableBlocks(Set<Block> breathableBlocks) {
             this.breathableBlocks = breathableBlocks;
             return this;
         }
@@ -111,7 +111,7 @@ public class EntityBreathableComponent extends EntityComponent {
          * Retrieve all extra blocks this entity cannot breathe in regardless of canBreathSolids().
          * @return all extra blocks this entity cannot breathe in
          */
-        public Set<BlockType> getNonBreathableBlocks() {
+        public Set<Block> getNonBreathableBlocks() {
             return this.nonBreathableBlocks;
         }
 
@@ -119,7 +119,7 @@ public class EntityBreathableComponent extends EntityComponent {
          * Set extra blocks that this entity cannot breathe in regardless of canBreathSolids().
          * @param nonBreathableBlocks all extra blocks this entity cannot breathe in
          */
-        public Properties setNonBreathableBlocks(Set<BlockType> nonBreathableBlocks) {
+        public Properties setNonBreathableBlocks(Set<Block> nonBreathableBlocks) {
             this.nonBreathableBlocks = nonBreathableBlocks;
             return this;
         }

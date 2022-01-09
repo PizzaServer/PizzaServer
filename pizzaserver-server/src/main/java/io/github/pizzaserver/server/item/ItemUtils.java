@@ -2,7 +2,7 @@ package io.github.pizzaserver.server.item;
 
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
-import io.github.pizzaserver.api.block.BlockState;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 
@@ -22,8 +22,8 @@ public class ItemUtils {
                 .netId(itemStack.getNetworkId())
                 .count(itemStack.getCount())
                 .damage(itemStack.getMeta())
-                .canBreak(itemStack.getBlocksCanBreak().stream().map(BlockState::getBlockId).toArray(String[]::new))
-                .canPlace(itemStack.getBlocksCanPlaceOn().stream().map(BlockState::getBlockId).toArray(String[]::new))
+                .canBreak(itemStack.getBlocksCanBreak().stream().map(Block::getBlockId).toArray(String[]::new))
+                .canPlace(itemStack.getBlocksCanPlaceOn().stream().map(Block::getBlockId).toArray(String[]::new))
                 .tag(itemStack.getNBT())
                 .usingNetId(true)
                 .build();

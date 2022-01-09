@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
@@ -8,10 +9,9 @@ import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.event.EventManager;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.level.LevelManager;
-import io.github.pizzaserver.api.event.EventManager;
-import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.packs.ResourcePackManager;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;

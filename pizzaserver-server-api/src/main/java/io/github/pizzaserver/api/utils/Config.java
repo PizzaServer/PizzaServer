@@ -2,7 +2,10 @@ package io.github.pizzaserver.api.utils;
 
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 public class Config extends ConfigGroup {

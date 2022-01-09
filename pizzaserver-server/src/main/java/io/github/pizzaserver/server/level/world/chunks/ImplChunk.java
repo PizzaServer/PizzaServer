@@ -6,27 +6,27 @@ import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import com.nukkitx.protocol.bedrock.packet.BlockEventPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.BlockUpdateType;
+import io.github.pizzaserver.api.block.data.BlockUpdateType;
+import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
+import io.github.pizzaserver.api.block.impl.BlockAir;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
-import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
+import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.commons.utils.Check;
-import io.github.pizzaserver.commons.utils.Tuple;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.data.BlockUpdateEntry;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
-import io.github.pizzaserver.server.level.world.ImplWorld;
-import io.github.pizzaserver.api.block.types.BlockTypeID;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -190,22 +190,20 @@ public class ImplChunk implements Chunk {
             BedrockSubChunk subChunk = this.chunk.getSubChunk(subChunkIndex);
             if (subChunk.getLayers().size() <= layer) {
                 // layer does not exist: return air block
-                Block block = BlockRegistry.getInstance().getBlock(BlockTypeID.AIR);
+                Block block = BlockRegistry.getInstance().getBlock(BlockID.AIR);
                 block.setLocation(this.getWorld(), blockCoordinates, layer);
                 return block;
             }
             BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, subChunkY, chunkBlockZ);
             Block block;
-            if (BlockRegistry.getInstance().hasBlockType(paletteEntry.getId())) {
+            if (BlockRegistry.getInstance().hasBlock(paletteEntry.getId())) {
                 // Block id is registered
-                BaseBlockType blockType = BlockRegistry.getInstance().getBlockType(paletteEntry.getId());
-                block = new Block(blockType);
-                block.setBlockStateIndex(blockType.getBlockStateIndex(paletteEntry.getState()));
+                block = BlockRegistry.getInstance().getBlock(paletteEntry.getId());
+                block.setBlockState(paletteEntry.getState());
             } else {
                 // The block id is not registered
                 this.getWorld().getServer().getLogger().warn("Could not find block type for id " + paletteEntry.getId() + ". Substituting with air");
-                BaseBlockType blockType = BlockRegistry.getInstance().getBlockType(BlockTypeID.AIR);
-                block = new Block(blockType);
+                block = new BlockAir();
             }
             block.setLocation(this.getWorld(), blockCoordinates, layer);
 
@@ -238,12 +236,14 @@ public class ImplChunk implements Chunk {
         writeLock.lock();
 
         // Remove old block entity at this position if present
-        if (this.getBlock(x, y, z, layer).getBlockEntity() != null) {
-            this.removeBlockEntity(this.getBlock(x, y, z, layer).getBlockEntity());
+        if (this.getBlock(x, y, z, layer) instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
+            if (blockWithBlockEntity.getBlockEntity() != null) {
+                this.removeBlockEntity(blockWithBlockEntity.getBlockEntity());
+            }
         }
 
         // Add block entity if one exists for this block
-        Optional<BlockEntityType> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block.getBlockType());
+        Optional<BlockEntityType> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block);
         if (blockEntityType.isPresent()) {
             BlockEntity blockEntity = blockEntityType.get().create(block);
             this.addBlockEntity(blockEntity);
@@ -253,13 +253,13 @@ public class ImplChunk implements Chunk {
             // Update internal sub chunk
             BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
             BlockLayer mainBlockLayer = subChunk.getLayer(layer);
-            BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockType().getBlockId(), block.getBlockState().getNBT(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
+            BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockId(), block.getNBTState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
             mainBlockLayer.setBlockEntryAt(chunkBlockX, subChunkBlockY, chunkBlockZ, entry);
 
             int highestBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
             if (y >= highestBlockY) {
                 int newHighestBlockY = y;
-                while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).getBlockState().isAir()) {
+                while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
                     newHighestBlockY--;
                 }
                 this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
@@ -319,7 +319,7 @@ public class ImplChunk implements Chunk {
 
         for (int layer = 0; layer < layers; layer++) {
             Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
-            block.getBlockType().onUpdate(type, block);
+            block.getBehavior().onUpdate(type, block);
         }
     }
 
@@ -355,15 +355,17 @@ public class ImplChunk implements Chunk {
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockType().getBlockId(), block.getBlockState().getNBT()));
+        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
         updateBlockPacket.setBlockPosition(Vector3i.from(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
         player.sendPacket(updateBlockPacket);
 
-        if (block.getBlockEntity() != null) {
-            BlockEntity blockEntity = block.getBlockEntity();
-            this.sendBlockEntityData(player, blockEntity);
+        if (block instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
+            if (blockWithBlockEntity.getBlockEntity() != null) {
+                BlockEntity blockEntity = blockWithBlockEntity.getBlockEntity();
+                this.sendBlockEntityData(player, blockEntity);
+            }
         }
     }
 

@@ -1,45 +1,40 @@
 package io.github.pizzaserver.api.block;
 
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.block.types.BaseBlockType;
+import io.github.pizzaserver.api.block.behavior.BlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * Contains every single block retrievable via the API.
  */
 public interface BlockRegistry {
 
-    /**
-     * Register a {@link BaseBlockType} to the server.
-     * Custom blocks will need to register their {@link BaseBlockType} in order to be used and for the world to render correctly
-     * @param blockType {@link BaseBlockType} that needs to be registered
-     */
-    void register(BaseBlockType blockType);
+    default void register(Block block) {
+        this.register(block, new DefaultBlockBehavior());
+    }
 
-    /**
-     * Retrieve a {@link BaseBlockType} by it's id (e.g. minecraft:air)
-     * @param blockId The id of the block (e.g. minecraft:air)
-     * @return {@link BaseBlockType}
-     */
-    BaseBlockType getBlockType(String blockId);
+    void register(Block block, BlockBehavior behavior);
 
     /**
      * Check if a block id was registered.
      * @param blockId the id of the block (e.g. minecraft:air)
      * @return if the block was registered or not
      */
-    boolean hasBlockType(String blockId);
+    boolean hasBlock(String blockId);
 
     /**
-     * Retrieve all non-Vanilla {@link BaseBlockType}s that are registered.
-     * @return registered non-Vanilla {@link BaseBlockType}s
+     * Retrieve all non-Vanilla blocks that were registered.
+     * @return registered non-Vanilla blocks
      */
-    Set<BaseBlockType> getCustomTypes();
+    Set<Block> getCustomBlocks();
 
     Block getBlock(String blockId);
 
     Block getBlock(String blockId, int state);
+
+    BlockBehavior getBlockBehavior(Block block);
 
     static BlockRegistry getInstance() {
         return Server.getInstance().getBlockRegistry();

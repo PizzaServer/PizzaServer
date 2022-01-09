@@ -25,6 +25,10 @@ public enum HorizontalDirection {
         return this.ordinal() + 2;
     }
 
+    public static HorizontalDirection fromBlockStateIndex(int index) {
+        return HorizontalDirection.values()[index - 2];
+    }
+
     public static HorizontalDirection fromYaw(float yaw) {
         float angle = yaw % 360;
         if (angle < 0) {

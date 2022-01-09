@@ -1,9 +1,11 @@
 package io.github.pizzaserver.server.network.data;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nukkitx.protocol.bedrock.data.skin.*;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import io.github.pizzaserver.api.player.data.Device;

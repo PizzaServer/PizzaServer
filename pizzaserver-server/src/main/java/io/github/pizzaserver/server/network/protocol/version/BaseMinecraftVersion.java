@@ -3,14 +3,14 @@ package io.github.pizzaserver.server.network.protocol.version;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
-import com.nukkitx.nbt.*;
+import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.types.BlockType;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.ImplServer;
@@ -18,7 +18,9 @@ import io.github.pizzaserver.server.network.protocol.exception.ProtocolException
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
@@ -69,9 +71,10 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
         BlockStateData blockStateData = this.blockStates.inverse().get(blockRuntimeId);
 
-        if (BlockRegistry.getInstance().hasBlockType(blockStateData.getBlockId())) {
-            BlockType blockType = BlockRegistry.getInstance().getBlockType(blockStateData.getBlockId());
-            return blockType.create(blockType.getBlockStateIndex(blockStateData.getNBT()));
+        if (BlockRegistry.getInstance().hasBlock(blockStateData.getBlockId())) {
+            Block block = BlockRegistry.getInstance().getBlock(blockStateData.getBlockId());
+            block.setBlockState(blockStateData.getNBT());
+            return block;
         } else {
             return null;
         }
@@ -88,6 +91,10 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     @Override
     public String getItemName(int runtimeId) {
+        if (runtimeId == 0) {
+            return BlockID.AIR;
+        }
+
         if (this.itemRuntimeIds.inverse().containsKey(runtimeId)) {
             return this.itemRuntimeIds.inverse().get(runtimeId);
         } else {

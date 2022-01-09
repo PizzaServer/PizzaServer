@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.entity.definition.components.handlers;
 
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentHandler;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityLootComponent;
-import io.github.pizzaserver.api.entity.Entity;
 
 import java.util.ArrayList;
 

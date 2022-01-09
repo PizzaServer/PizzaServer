@@ -1,7 +1,5 @@
 package io.github.pizzaserver.server.packs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.github.pizzaserver.api.packs.ResourcePack;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +9,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ZipResourcePackTests {
 

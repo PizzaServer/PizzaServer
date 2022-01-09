@@ -5,8 +5,8 @@ import com.nukkitx.nbt.NBTInputStream;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
 import com.nukkitx.nbt.NbtUtils;
-import io.github.pizzaserver.format.api.data.LevelGameRules;
 import io.github.pizzaserver.format.api.LevelData;
+import io.github.pizzaserver.format.api.data.LevelGameRules;
 import io.github.pizzaserver.format.api.data.PlayerAbilities;
 
 import java.io.File;

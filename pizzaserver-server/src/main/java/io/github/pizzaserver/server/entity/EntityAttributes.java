@@ -3,7 +3,10 @@ package io.github.pizzaserver.server.entity;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class EntityAttributes {
 

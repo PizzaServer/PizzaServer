@@ -5,12 +5,12 @@ import com.nukkitx.nbt.NBTInputStream;
 import com.nukkitx.nbt.NBTOutputStream;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtUtils;
-import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.KeyLock;
-import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.File;
 import java.io.FileInputStream;

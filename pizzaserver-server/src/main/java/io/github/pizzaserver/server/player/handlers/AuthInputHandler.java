@@ -6,6 +6,7 @@ import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.descriptors.Liquid;
 import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
@@ -50,7 +51,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         break;
                     case START_SWIMMING:
                         Block blockSwimmingIn = this.player.getWorld().getBlock(this.player.getLocation().toVector3i());
-                        if (!this.player.isSwimming() && blockSwimmingIn.getBlockState().isLiquid()) {
+                        if (!this.player.isSwimming() && blockSwimmingIn instanceof Liquid) {
                             PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, true);
                             this.player.getServer().getEventManager().call(swimEvent);
 
@@ -130,8 +131,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 this.player.getBlockBreakingManager().stopBreaking();
                             }
 
-                            boolean canBreakNewBlock = !blockBreakingLocation.getBlock().getBlockState().isLiquid()
-                                    && !blockBreakingLocation.getBlock().getBlockState().isAir()
+                            boolean canBreakNewBlock = !(blockBreakingLocation.getBlock() instanceof Liquid)
+                                    && !blockBreakingLocation.getBlock().isAir()
                                     && this.player.getAdventureSettings().canMine();
                             if (canBreakNewBlock) {
                                 BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());

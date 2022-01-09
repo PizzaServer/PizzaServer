@@ -5,7 +5,11 @@ import io.github.pizzaserver.format.api.chunks.subchunks.BlockLayer;
 import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
 import io.netty.buffer.ByteBuf;
 import net.daporkchop.lib.common.function.io.IOConsumer;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 public class MCWorldBlockLayer implements BlockLayer {
 

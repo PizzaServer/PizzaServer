@@ -11,7 +11,6 @@ import io.github.pizzaserver.api.entity.definition.impl.ItemEntityDefinition;
 import io.github.pizzaserver.api.item.ItemStack;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class ImplEntityRegistry implements EntityRegistry {
 

@@ -1,7 +1,6 @@
 package io.github.pizzaserver.server.utils;
 
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.api.utils.Logger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
