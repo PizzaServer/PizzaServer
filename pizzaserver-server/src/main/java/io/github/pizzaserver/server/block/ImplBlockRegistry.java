@@ -21,7 +21,7 @@ public class ImplBlockRegistry implements BlockRegistry {
 
     @Override
     public void register(Block block, BlockBehavior behavior) {
-        if (block.getBlockId().startsWith("minecraft:")) {
+        if (!block.getBlockId().startsWith("minecraft:")) {
             this.customTypes.add(block);
         }
 
