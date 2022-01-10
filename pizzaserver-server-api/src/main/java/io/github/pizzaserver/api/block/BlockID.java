@@ -20,11 +20,16 @@ public class BlockID {
     public static final String BIRCH_BUTTON = "minecraft:birch_button";
     public static final String BLACKSTONE = "minecraft:blackstone";
     public static final String BLAST_FURNACE = "minecraft:blast_furnace";
+    public static final String BOOKSHELF = "minecraft:bookshelf";
     public static final String BRICK = "minecraft:brick_block";
+    public static final String BUDDING_AMETHYST = "minecraft:budding_amethyst";
     public static final String CALCITE = "minecraft:calcite";
     public static final String CAMPFIRE = "minecraft:campfire";
     public static final String CAULDRON = "minecraft:cauldron";
     public static final String CHEST = "minecraft:chest";
+    public static final String CHISELED_DEEPSLATE = "minecraft:chiseled_deepslate";
+    public static final String CHISELED_NETHER_BRICK = "minecraft:chiseled_nether_bricks";
+    public static final String CHISELED_POLISHED_BLACKSTONE = "minecraft:chiseled_polished_blackstone";
     public static final String CLAY = "minecraft:clay";
     public static final String COAL = "minecraft:coal_block";
     public static final String COAL_ORE = "minecraft:coal_ore";
@@ -36,11 +41,17 @@ public class BlockID {
     public static final String CRACKED_NETHER_BRICK = "minecraft:cracked_nether_bricks";
     public static final String CRACKED_POLISHED_BLACKSTONE_BRICK = "minecraft:cracked_polished_blackstone_bricks";
     public static final String CRIMSON_BUTTON = "minecraft:crimson_button";
+    public static final String CRIMSON_NYLIUM = "minecraft:crimson_nylium";
+    public static final String CRYING_OBSIDIAN = "minecraft:crying_obsidian";
     public static final String DARK_OAK_BUTTON = "minecraft:dark_oak_button";
+    public static final String DENY = "minecraft:deny";
     public static final String DIRT = "minecraft:dirt";
     public static final String FLOWING_WATER = "minecraft:flowing_water";
     public static final String FURNACE = "minecraft:furnace";
     public static final String GRASS = "minecraft:grass";
+    public static final String GRASS_PATH = "minecraft:grass_path";
+    public static final String GRAVEL = "minecraft:gravel";
+    public static final String INVISIBLE_BEDROCK = "minecraft:invisibleBedrock";
     public static final String IRON_ORE = "minecraft:iron_ore";
     public static final String JUNGLE_BUTTON = "minecraft:jungle_button";
     public static final String LIT_BLAST_FURNACE = "minecraft:lit_blast_furnace";
@@ -58,5 +69,6 @@ public class BlockID {
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
     public static final String WOODEN_BUTTON = "minecraft:wooden_button";
+    public static final String WOOL = "minecraft:wool";
 
 }

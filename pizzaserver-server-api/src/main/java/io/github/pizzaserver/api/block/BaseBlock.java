@@ -123,6 +123,11 @@ public abstract class BaseBlock implements Block {
     }
 
     @Override
+    public float getBlastResistance() {
+        return 0;
+    }
+
+    @Override
     public boolean canBeMinedWithHand() {
         return false;
     }
@@ -135,11 +140,6 @@ public abstract class BaseBlock implements Block {
     @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.NONE;
-    }
-
-    @Override
-    public float getBlastResistance() {
-        return 0;
     }
 
     @Override

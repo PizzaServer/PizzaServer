@@ -4,16 +4,16 @@ import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.PushResponse;
 
-public class BlockBarrier extends BaseBlock {
+public class BlockInvisibleBedrock extends BaseBlock {
 
     @Override
     public String getBlockId() {
-        return BlockID.BARRIER;
+        return BlockID.INVISIBLE_BEDROCK;
     }
 
     @Override
     public String getName() {
-        return "Barrier";
+        return "Invisible Bedrock";
     }
 
     @Override

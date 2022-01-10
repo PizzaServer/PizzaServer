@@ -4,25 +4,20 @@ import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.PushResponse;
 
-public class BlockBarrier extends BaseBlock {
+public class BlockDeny extends BaseBlock {
 
     @Override
     public String getBlockId() {
-        return BlockID.BARRIER;
+        return BlockID.DENY;
     }
 
     @Override
     public String getName() {
-        return "Barrier";
+        return "Deny";
     }
 
     @Override
     public float getHardness() {
-        return -1;
-    }
-
-    @Override
-    public float getBlastResistance() {
         return -1;
     }
 

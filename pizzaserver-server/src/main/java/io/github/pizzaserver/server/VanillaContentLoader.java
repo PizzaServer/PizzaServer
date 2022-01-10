@@ -60,11 +60,16 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.BIRCH), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockBlackstone());
         BlockRegistry.getInstance().register(new BlockBlastFurnace(), new HorziontalDirectionBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockBookshelf());
         BlockRegistry.getInstance().register(new BlockBrick());
+        BlockRegistry.getInstance().register(new BlockBuddingAmethyst());
         BlockRegistry.getInstance().register(new BlockCalcite());
         BlockRegistry.getInstance().register(new BlockCampfire());
         BlockRegistry.getInstance().register(new BlockCauldron());
         BlockRegistry.getInstance().register(new BlockChest(), new HorziontalDirectionBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockChiseledDeepslate());
+        BlockRegistry.getInstance().register(new BlockChiseledNetherBrick());
+        BlockRegistry.getInstance().register(new BlockChiseledPolishedBlackstone());
         BlockRegistry.getInstance().register(new BlockClay());
         BlockRegistry.getInstance().register(new BlockCoal());
         BlockRegistry.getInstance().register(new BlockCoalOre());
@@ -76,11 +81,17 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCrackedNetherBrick());
         BlockRegistry.getInstance().register(new BlockCrackedPolishedBlackstoneBrick());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.CRIMSON), new ButtonBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockCrimsonNylium());
+        BlockRegistry.getInstance().register(new BlockCryingObsidian());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.DARK_OAK), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockDirt());
         BlockRegistry.getInstance().register(new BlockFurnace(), new HorziontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockFlowingWater());
         BlockRegistry.getInstance().register(new BlockGrass());
+        BlockRegistry.getInstance().register(new BlockGrassPath());
+        BlockRegistry.getInstance().register(new BlockGravel());
+        BlockRegistry.getInstance().register(new BlockInvisibleBedrock());
+        BlockRegistry.getInstance().register(new BlockIronOre());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.JUNGLE), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLitBlastFurnace(), new HorziontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLitFurnace(), new HorziontalDirectionBlockBehavior());
@@ -94,7 +105,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockTallGrass());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.WARPED), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWater());
-        BlockRegistry.getInstance().register(new BlockIronOre());
+        BlockRegistry.getInstance().register(new BlockWool());
     }
 
     private static void loadBlockEntities() {
