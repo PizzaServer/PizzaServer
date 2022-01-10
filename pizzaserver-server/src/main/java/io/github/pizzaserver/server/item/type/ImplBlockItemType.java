@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.item.type;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
+import io.github.pizzaserver.api.block.descriptors.Liquid;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
@@ -45,14 +46,25 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
 
     @Override
     public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
-        // Handle placing a block
-        Block blockAtPlacementPos = block.getSide(blockFace);
+        // Replaceable blocks (other than liquids) should directly change the block instead of the
+        // block of the face provided. (e.g. grass)
+        Block blockAtPlacementPos;
+        if (!(block instanceof Liquid) && block.isReplaceable()) {
+            blockAtPlacementPos = block;
+        } else {
+            blockAtPlacementPos = block.getSide(blockFace);
+        }
+
         if (!block.isAir() && blockAtPlacementPos.isReplaceable()) {
             if (!player.getAdventureSettings().canBuild()) {
                 return false;
             }
             Block placedBlock = this.getBlock();
-            placedBlock.setLocation(new BlockLocation(block.getWorld(), block.getSide(blockFace).getLocation().toVector3i(), block.getLayer()));
+            placedBlock.setLocation(blockAtPlacementPos.getWorld(),
+                    blockAtPlacementPos.getX(),
+                    blockAtPlacementPos.getY(),
+                    blockAtPlacementPos.getZ(),
+                    (block instanceof Liquid) ? 1 : 0);
             if (!placedBlock.getBehavior().prepareForPlacement(player, placedBlock, blockFace)) {
                 return false;
             }

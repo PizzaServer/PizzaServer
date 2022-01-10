@@ -69,4 +69,9 @@ public class BlockTallGrass extends BaseBlock {
         return true;
     }
 
+    @Override
+    public boolean isReplaceable() {
+        return true;
+    }
+
 }
