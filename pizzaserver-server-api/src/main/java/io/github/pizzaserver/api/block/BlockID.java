@@ -54,6 +54,7 @@ public class BlockID {
     public static final String SOUL_CAMPFIRE = "minecraft:soul_campfire";
     public static final String STONE_BUTTON = "minecraft:stone_button";
     public static final String STONE = "minecraft:stone";
+    public static final String TALL_GRASS = "minecraft:tallgrass";
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
     public static final String WOODEN_BUTTON = "minecraft:wooden_button";

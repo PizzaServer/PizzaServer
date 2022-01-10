@@ -220,6 +220,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setPremiumWorldTemplateId("");
             startGamePacket.setInventoriesServerAuthoritative(true);
             startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
+            startGamePacket.getGamerules().add(new GameRuleData<>("showcoordinates", true));
             startGamePacket.setItemEntries(this.getVersion().getItemEntries());
             startGamePacket.getBlockProperties().addAll(this.getVersion().getCustomBlockProperties());
             startGamePacket.setPlayerMovementSettings(movementSettings);

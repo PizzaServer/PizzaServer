@@ -98,7 +98,10 @@ public class BlockLocation {
 
     @Override
     public int hashCode() {
-        return (43 * this.getX()) + (43 * this.getY()) + (43 * this.getZ()) + (this.getWorld().hashCode());
+        return (43 * this.getX())
+                + (43 * this.getY())
+                + (43 * this.getZ())
+                + (43 * (this.getWorld() != null ? this.getWorld().hashCode() : 0));
     }
 
     @Override

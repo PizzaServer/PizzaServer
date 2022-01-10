@@ -216,13 +216,15 @@ public abstract class BaseBlock implements Block {
     @Override
     public int hashCode() {
         return (93 * this.blockState)
-                + (93 * this.getBlockId().hashCode());
+                + (93 * this.getBlockId().hashCode())
+                + (93 * this.getLocation().hashCode());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Block block) {
-            return block.getBlockId().equals(this.getBlockId()) && block.getBlockState() == this.getBlockState();
+            return block.getBlockId().equals(this.getBlockId()) && block.getBlockState() == this.getBlockState()
+                    && block.getLocation().equals(this.getLocation());
         }
         return false;
     }

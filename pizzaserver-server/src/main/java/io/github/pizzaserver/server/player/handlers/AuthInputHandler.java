@@ -73,10 +73,10 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case START_SPRINTING:
                     case SPRINTING:
                     case SPRINT_DOWN:
-                        this.player.sendMessage("start sprinting");
+                        // TODO: start sprint
                         break;
                     case STOP_SPRINTING:
-                        this.player.sendMessage("stop sprinting");
+                        // TODO: stop sprint
                         break;
                     case PERFORM_BLOCK_ACTIONS:
                         this.handleBlockActions(packet.getPlayerActions());
