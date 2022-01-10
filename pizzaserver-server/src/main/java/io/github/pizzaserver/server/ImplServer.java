@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -21,6 +22,7 @@ import io.github.pizzaserver.api.utils.Config;
 import io.github.pizzaserver.api.utils.Logger;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
 import io.github.pizzaserver.server.blockentity.ImplBlockEntityRegistry;
+import io.github.pizzaserver.server.commands.ImplCommandRegistry;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.entity.inventory.ImplBlockEntityInventory;
@@ -56,6 +58,7 @@ public class ImplServer extends Server {
     protected ItemRegistry itemRegistry = new ImplItemRegistry();
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
     protected BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
+    protected CommandRegistry commandRegistry = new ImplCommandRegistry(this);
 
     protected PluginManager pluginManager = new ImplPluginManager(this);
     protected ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
@@ -106,6 +109,7 @@ public class ImplServer extends Server {
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
+        ImplCommandRegistry.registerDefaults();
         // TODO: load plugins
     }
 
@@ -432,6 +436,11 @@ public class ImplServer extends Server {
     @Override
     public EntityRegistry getEntityRegistry() {
         return this.entityRegistry;
+    }
+
+    @Override
+    public CommandRegistry getCommandRegistry() {
+        return commandRegistry;
     }
 
     @Override

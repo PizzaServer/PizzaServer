@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -168,6 +169,8 @@ public abstract class Server {
     public abstract ItemRegistry getItemRegistry();
 
     public abstract EntityRegistry getEntityRegistry();
+
+    public abstract CommandRegistry getCommandRegistry();
 
     public static Server getInstance() {
         return instance;
