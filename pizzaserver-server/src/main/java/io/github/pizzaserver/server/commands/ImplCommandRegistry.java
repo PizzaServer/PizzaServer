@@ -1,19 +1,18 @@
 package io.github.pizzaserver.server.commands;
 
-import com.nukkitx.protocol.bedrock.data.command.CommandData;
 import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.commands.ImplCommand;
 import io.github.pizzaserver.server.commands.defaults.SecondaryTestCommand;
-import io.github.pizzaserver.server.commands.defaults.TestCommand;
-import org.checkerframework.checker.units.qual.A;
+import io.github.pizzaserver.server.commands.defaults.ExampleCommand;
 
 import java.util.*;
 
 public class ImplCommandRegistry implements CommandRegistry {
 
     private final Map<String, ImplCommand> commands = new HashMap<>();
+    private final Map<String, ImplCommand> aliases = new HashMap<>();
 
     private static Server server;
 
@@ -22,7 +21,7 @@ public class ImplCommandRegistry implements CommandRegistry {
     }
 
     public static void registerDefaults() {
-        server.getCommandRegistry().register(new TestCommand());
+        server.getCommandRegistry().register(new ExampleCommand());
         server.getCommandRegistry().register(new SecondaryTestCommand());
     }
 
@@ -40,13 +39,21 @@ public class ImplCommandRegistry implements CommandRegistry {
             commands.put(label, command);
         } else {
             //TODO: Show the plugin name of the command that has been overwritten
-            server.getLogger().error("A command with the name " + label + " already exists!");
+            server.getLogger().warn("A command with the name `" + label + "` already exists from " + commands.get(label) + " when trying to register " + command + "!");
+            return;
         }
 
         for(String alias : command.getAliases()) {
             alias = alias.trim().toLowerCase(Locale.ROOT);
-            if(commands.containsKey(alias))
-                server.getLogger().error("A command with the name " + label + " already exists!");
+            if(commands.containsKey(alias)) {
+                server.getLogger().warn("A command with the name `" + alias + "` already exists from " + commands.get(alias) + " when trying to register " + command + "!");
+                continue;
+            }
+            if(aliases.containsKey(alias)) {
+                server.getLogger().warn("An alias with the name `" + alias + "` already exists from " + commands.get(alias) + " when trying to register " + command + "!");
+                continue;
+            }
+            aliases.put(alias, command);
         }
     }
 
@@ -61,13 +68,15 @@ public class ImplCommandRegistry implements CommandRegistry {
     public void removeCommand(String name) {
         if(!commands.containsKey(name)) {
             throw new NullPointerException("That command doesn't exist");
+        } else {
+            commands.remove(name);
         }
-        commands.remove(name);
     }
 
     @Override
     public ImplCommand getCommand(String name) {
         if(commands.containsKey(name)) return commands.get(name);
+        if(aliases.containsKey(name)) return aliases.get(name);
         return null;
     }
 

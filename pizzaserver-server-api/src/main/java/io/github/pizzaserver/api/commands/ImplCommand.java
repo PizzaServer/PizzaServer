@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.data.command.CommandEnumData;
 import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.player.Player;
+import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
@@ -13,29 +14,23 @@ public abstract class ImplCommand {
 
     private String name;
     private String description;
-    private Set<String> aliases;
+    private String[] aliases;
     private short flags = 0;
     private int permission = 0;
-    private CommandParamData[][] overloads = new CommandParamData[][]{};
+    public CommandParamData[][] overloads = new CommandParamData[0][0];
 
     public ImplCommand(String name) {
         this(name, "");
     }
 
     public ImplCommand(String name, String description) {
-        this(name, description, new HashSet<>());
-    }
-
-    public ImplCommand(String name, String description, Set<String> aliases) {
-        this.name = name;
-        this.description = description;
-        this.aliases = aliases;
+        this(name, description, new String[0]);
     }
 
     public ImplCommand(String name, String description, String[] aliases) {
-        this.name = name.trim().toLowerCase(Locale.ROOT);
+        this.name = name;
         this.description = description;
-        this.aliases = new HashSet<>(Arrays.asList(aliases));
+        this.aliases = aliases;
     }
 
     public String getName() {
@@ -54,11 +49,11 @@ public abstract class ImplCommand {
         this.description = description;
     }
 
-    public Set<String> getAliases() {
+    public String[] getAliases() {
         return aliases;
     }
 
-    public void setAliases(Set<String> aliases) {
+    public void setAliases(String[] aliases) {
         this.aliases = aliases;
     }
 
@@ -89,8 +84,15 @@ public abstract class ImplCommand {
     public CommandData asCommandData() {
         return new CommandData(
                 name, description, new ArrayList<>(), 0,
-                new CommandEnumData("aliases", aliases.toArray(new String[0]), true), overloads
+                new CommandEnumData(name, addCmdName(aliases), true), overloads
         );
+    }
+
+    // For some reason, when the alias CommandEnumData doesn't contain the command's name, the command itself doesn't appear but it's aliases do
+    private String[] addCmdName(String[] aliases) {
+        ArrayList<String> newAliases = new ArrayList<>(Arrays.asList(aliases));
+        newAliases.add(name);
+        return newAliases.toArray(new String[0]);
     }
 
     //TODO: Implement a CommandSender object, have player and console use it

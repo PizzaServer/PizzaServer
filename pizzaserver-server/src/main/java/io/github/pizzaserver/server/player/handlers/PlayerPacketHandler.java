@@ -216,10 +216,15 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
         ImplCommand command = player.getServer().getCommandRegistry().getCommand(label);
         if(command == null) {
-            player.sendMessage("§4That command doesn't exist!");
+            player.sendMessage("§cThat command doesn't exist!");
             return true;
         }
-        command.execute(player, args, label);
+        try {
+            command.execute(player, args, label);
+        } catch (Exception e) {
+            player.sendMessage("§cSomething went wrong while executing that command");
+            e.printStackTrace();
+        }
         return true;
     }
 
