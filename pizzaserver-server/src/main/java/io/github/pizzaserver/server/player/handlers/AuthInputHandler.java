@@ -24,7 +24,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
     private static final float ROTATION_UPDATE_THRESHOLD = 1;
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
 
-    protected final ImplPlayer player;
+    private final ImplPlayer player;
+    private long nextExpectedTick = -1;
 
     public AuthInputHandler(ImplPlayer player) {
         this.player = player;
@@ -32,13 +33,19 @@ public class AuthInputHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(PlayerAuthInputPacket packet) {
-        // TODO: tick validation
+        if (!this.isTickValid(packet.getTick())) {
+            this.player.disconnect();
+            return true;
+        }
+
         if (this.player.isAlive() && this.player.hasSpawned()) {
             this.handleMovement(packet.getPosition(), packet.getRotation());
 
             for (PlayerAuthInputData input : packet.getInputData()) {
                 switch (input) {
                     case SNEAK_DOWN:
+                    case START_SNEAKING:
+                    case SNEAKING:
                         if (!this.player.isSneaking()) {
                             PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSneakingEvent);
@@ -46,6 +53,17 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 this.player.getMetaData().update();
                             } else {
                                 this.player.setSneaking(startSneakingEvent.isSneaking());
+                            }
+                        }
+                        break;
+                    case STOP_SNEAKING:
+                        if (this.player.isSneaking()) {
+                            PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player, false);
+                            this.player.getServer().getEventManager().call(stopSneakingEvent);
+                            if (stopSneakingEvent.isCancelled()) {
+                                this.player.getMetaData().update();
+                            } else {
+                                this.player.setSneaking(stopSneakingEvent.isSneaking());
                             }
                         }
                         break;
@@ -85,6 +103,11 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case DOWN:
                     case LEFT:
                     case RIGHT:
+                    case WANT_DOWN:
+                    case WANT_UP:
+                    case NORTH_JUMP:
+                    case JUMP_DOWN:
+                    case JUMPING:
                         // For now, we don't need to handle this.
                         // However, if we ever want to implement server-side knockback using the rewind system. This may be useful.
                         break;
@@ -94,23 +117,37 @@ public class AuthInputHandler implements BedrockPacketHandler {
                 }
             }
 
-            // If the player is no longer sneaking
-            if (this.player.isSneaking() && !packet.getInputData().contains(PlayerAuthInputData.SNEAK_DOWN)) {
-                PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player, false);
-                this.player.getServer().getEventManager().call(stopSneakingEvent);
-                if (stopSneakingEvent.isCancelled()) {
-                    this.player.getMetaData().update();
-                } else {
-                    this.player.setSneaking(stopSneakingEvent.isSneaking());
-                }
-            }
             // TODO: move inventory transaction handlers here once ALL inventory transactions all handled via the auth packet
             // at the moment, only the use inventory transaction is handled
         }
         return true;
     }
 
-    protected void handleBlockActions(List<PlayerBlockActionData> actions) {
+    /**
+     * Check if the tick sent in a player auth input packet is the next tick we are looking for.
+     * @param tick the tick
+     * @return if it is valid
+     */
+    private boolean isTickValid(long tick) {
+        if (this.nextExpectedTick == -1) {
+            this.nextExpectedTick = tick + 1;
+
+            if (tick < 0) {
+                this.player.getServer().getLogger().debug("Player sent invalid starting tick.");
+                return false;
+            }
+        } else {
+            if (this.nextExpectedTick != tick) {
+                this.player.getServer().getLogger().debug(String.format("Player sent tick %d when expecting %d.", tick, this.nextExpectedTick));
+                return false;
+            }
+            this.nextExpectedTick++;
+        }
+
+        return true;
+    }
+
+    private void handleBlockActions(List<PlayerBlockActionData> actions) {
         for (PlayerBlockActionData action : actions) {
             switch (action.getAction()) {
                 case START_BREAK:
@@ -184,7 +221,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
         }
     }
 
-    protected void handleMovement(Vector3f position, Vector3f rotation) {
+    private void handleMovement(Vector3f position, Vector3f rotation) {
         boolean updateRotation = Math.abs(this.player.getPitch() - rotation.getX()) > ROTATION_UPDATE_THRESHOLD
                 || Math.abs(this.player.getYaw() - rotation.getY()) > ROTATION_UPDATE_THRESHOLD
                 || Math.abs(this.player.getHeadYaw() - rotation.getZ()) > ROTATION_UPDATE_THRESHOLD;
