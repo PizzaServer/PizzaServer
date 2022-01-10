@@ -1,7 +1,6 @@
 package io.github.pizzaserver.server.commands.defaults;
 
 import com.nukkitx.protocol.bedrock.data.command.*;
-import io.github.pizzaserver.api.commands.CommandEnum;
 import io.github.pizzaserver.api.commands.ImplCommand;
 import io.github.pizzaserver.api.player.Player;
 

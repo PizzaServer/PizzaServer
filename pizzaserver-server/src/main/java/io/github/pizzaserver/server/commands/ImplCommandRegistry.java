@@ -4,7 +4,6 @@ import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.commands.ImplCommand;
-import io.github.pizzaserver.server.commands.defaults.SecondaryTestCommand;
 import io.github.pizzaserver.server.commands.defaults.ExampleCommand;
 
 import java.util.*;
@@ -22,7 +21,6 @@ public class ImplCommandRegistry implements CommandRegistry {
 
     public static void registerDefaults() {
         server.getCommandRegistry().register(new ExampleCommand());
-        server.getCommandRegistry().register(new SecondaryTestCommand());
     }
 
     @Override
