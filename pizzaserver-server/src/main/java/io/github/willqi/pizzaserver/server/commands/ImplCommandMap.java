@@ -12,16 +12,15 @@ public class ImplCommandMap implements CommandMap {
 
     private final Map<String, ImplCommand> commands = new HashMap<>();
 
-    private final Server server;
+    private static Server server;
 
     public ImplCommandMap(Server server) {
         this.server = server;
-        registerDefaults();
     }
 
-    private void registerDefaults() {
-        this.register(new TestCommand());
-        this.register(new SecondaryTestCommand());
+    public static void registerDefaults() {
+        server.getCommandMap().register(new TestCommand());
+        server.getCommandMap().register(new SecondaryTestCommand());
     }
 
     @Override
@@ -31,13 +30,23 @@ public class ImplCommandMap implements CommandMap {
 
     @Override
     public void register(ImplCommand command, String label) {
-        if(label == null) label = command.getName();
+        if (label == null) label = command.getName();
         label = label.trim().toLowerCase(Locale.ROOT);
-        if(!commands.containsKey(label)) {
+
+        if (!commands.containsKey(label)) {
             commands.put(label, command);
         } else {
             //TODO: Show the plugin name of the command that has been overwritten
-            server.getLogger().error("A command with the name " + label + " already exists! Overwritting it, it came from the plugin: ");
+            server.getLogger().error("A command with the name " + label + " already exists!");
+        }
+
+        for(String alias : command.getAliases()) {
+            alias = alias.trim().toLowerCase(Locale.ROOT);
+            if(!commands.containsKey(alias)) {
+                commands.put(alias, command);
+            } else {
+                server.getLogger().error("A command with the name " + label + " already exists!");
+            }
         }
     }
 

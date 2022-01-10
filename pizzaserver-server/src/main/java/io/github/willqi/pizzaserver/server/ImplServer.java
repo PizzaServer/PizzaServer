@@ -78,6 +78,9 @@ public class ImplServer implements Server {
         // Load required data/files
         this.setupFiles();
 
+        // Register command map and default commands
+        ImplCommandMap.registerDefaults();
+
         this.getLogger().info("Internal setup complete.");
         // TODO: load plugins
     }

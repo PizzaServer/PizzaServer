@@ -5,6 +5,8 @@ import io.github.willqi.pizzaserver.api.commands.CommandEnum;
 import io.github.willqi.pizzaserver.api.player.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class TestCommand extends ImplCommand {
@@ -17,6 +19,7 @@ public class TestCommand extends ImplCommand {
             this.add("option2");
         }}));
         setDescription("This is a test, please I beg you to work");
+        setAliases(new HashSet<>(Collections.singleton("alias1")));
     }
 
     @Override

@@ -68,16 +68,18 @@ public class V419AvailableCommandsPacket extends BaseProtocolPacketHandler<Avail
         }
 
         VarInts.writeUnsignedInt(buffer, commands.size());
-        for(ImplCommand command : commands.values()) {
-            helper.writeString(command.getName(), buffer);
+        for(String name : commands.keySet()) { // Not using an enhanced for loop to count for aliases
+            ImplCommand command = commands.get(name);
+            helper.writeString(name, buffer);
             helper.writeString(command.getDescription(), buffer);
             //TODO: For 1.17.10 support, make the below flags write a LE short
             buffer.writeByte(command.getFlags());
             buffer.writeByte(command.getPermission());
             buffer.writeIntLE(-1);
-            VarInts.writeUnsignedInt(buffer, command.getParameters().size()); //Overload Size
+            // The below part with parameters isn't entirely finished/accurate
+            VarInts.writeUnsignedInt(buffer, command.getParameters().size()); // Overload Size
             for(CommandEnum commandEnum : command.getParameters()) {
-                VarInts.writeUnsignedInt(buffer, 1); //Parameter Size
+                VarInts.writeUnsignedInt(buffer, 1); // Parameter Size
                 helper.writeString(commandEnum.getName(), buffer);
                 int type = 0;
                 type |= ARG_FLAG_VALID;

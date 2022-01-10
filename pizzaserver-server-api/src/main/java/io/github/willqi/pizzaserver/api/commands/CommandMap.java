@@ -16,5 +16,4 @@ public interface CommandMap {
     ImplCommand getCommand(String name);
 
     Map<String, ImplCommand> getCommands();
-
 }
