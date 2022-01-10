@@ -185,7 +185,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                     packet.getItemUseTransaction().getActionType(),
                     packet.getItemUseTransaction().getItemInHand());
         }
-        return true;
+        return false;   // HACK: to get around packet handler not calling PlayerAuthInputHandler.
     }
 
     private void handleDropInventoryTransaction(InventoryTransactionPacket packet) {

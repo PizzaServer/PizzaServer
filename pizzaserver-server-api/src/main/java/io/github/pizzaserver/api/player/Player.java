@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.dialogue.NPCDialogue;
@@ -217,6 +218,8 @@ public interface Player extends EntityHuman {
     void showDialogue(NPCDialogue dialogue, Consumer<NPCDialogueResponse> callback);
 
     void hideDialogue();
+
+    PacketHandlerPipeline getPacketHandlerPipeline();
 
     /**
      * If this session is still active.

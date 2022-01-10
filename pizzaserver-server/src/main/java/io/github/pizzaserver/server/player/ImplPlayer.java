@@ -27,6 +27,7 @@ import io.github.pizzaserver.api.item.types.ItemTypeID;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
@@ -262,9 +263,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             location.getWorld().addEntity(this, location.toVector3f());
             this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemTypeID.SHIELD));
-            this.session.addPacketHandler(new PlayerPacketHandler(this));
-            this.session.addPacketHandler(new AuthInputHandler(this));
-            this.session.addPacketHandler(new InventoryTransactionHandler(this));
+            this.getPacketHandlerPipeline().addLast(new PlayerPacketHandler(this));
+            this.getPacketHandlerPipeline().addLast(new InventoryTransactionHandler(this));
+            this.getPacketHandlerPipeline().addLast(new AuthInputHandler(this));
             this.session.setPlayer(this);
 
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
@@ -840,6 +841,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     @Override
     public void hideDialogue() {
         this.getPopupManager().hideDialogue();
+    }
+
+    @Override
+    public PacketHandlerPipeline getPacketHandlerPipeline() {
+        return this.session.getPacketHandlerPipeline();
     }
 
     /**

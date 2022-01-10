@@ -83,7 +83,7 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
                 this.session.getConnection().disconnect();
                 break;
             case COMPLETED:
-                this.session.removePacketHandler(this);
+                this.session.getPacketHandlerPipeline().remove(this);
                 ImplPlayer player = new ImplPlayer(this.server, this.session, this.loginData);
                 player.initialize();
                 break;
