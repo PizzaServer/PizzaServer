@@ -15,8 +15,16 @@ public abstract class ImplCommand {
     private String name;
     private String description;
     private String[] aliases;
-    private short flags = 0;
+    private ArrayList<CommandData.Flag> flags = new ArrayList<>();
     private int permission = 0;
+
+    /**
+     * This multidimensional array is where parameters are made for commands
+     * The first index signifies what branch the parameter should be related to
+     * The second index signifies what position the parameter should be in (Show as first parameter, second, etc.)
+     * The {@link CommandParamData#getPostfix()} variable should be set as null, unless the param type is an integer
+     * If it is not null and the type is not a numerical value, the client will crash
+     */
     public CommandParamData[][] overloads = new CommandParamData[0][0];
 
     public ImplCommand(String name) {
@@ -57,11 +65,11 @@ public abstract class ImplCommand {
         this.aliases = aliases;
     }
 
-    public short getFlags() {
+    public ArrayList<CommandData.Flag> getFlags() {
         return flags;
     }
 
-    public void setFlags(short flags) {
+    public void setFlags(ArrayList<CommandData.Flag> flags) {
         this.flags = flags;
     }
 
@@ -81,9 +89,15 @@ public abstract class ImplCommand {
         this.overloads = overloads;
     }
 
+    /**
+     * The {@link CommandData} class is needed by the {@link com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket}
+     * to be sent to the player. Since the class is also marked as final, there's no way to extend it, so this method
+     * returns an instance of one to be used in the packet
+     * @return Command information for the AvailableCommandsPacket
+     */
     public CommandData asCommandData() {
         return new CommandData(
-                name, description, new ArrayList<>(), 0,
+                name, description, flags, permission,
                 new CommandEnumData(name, addCmdName(aliases), true), overloads
         );
     }
