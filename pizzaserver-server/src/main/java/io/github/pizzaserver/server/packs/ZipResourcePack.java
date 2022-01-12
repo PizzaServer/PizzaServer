@@ -37,7 +37,13 @@ public class ZipResourcePack implements ResourcePack {
 
     @Override
     public int getMaxChunkLength() {
-        return 102400; // While we can technically go higher, the Bedrock Dedicated Server keeps this at 102400.
+        // BDS: 102400
+        final long minChunkLength = 102400;
+
+        // more chunks will cause a clientside error with disconnect
+        final long maxChunks = 99;
+
+        return (int) Math.max((this.getDataLength() + maxChunks) / maxChunks, minChunkLength);
     }
 
     @Override
