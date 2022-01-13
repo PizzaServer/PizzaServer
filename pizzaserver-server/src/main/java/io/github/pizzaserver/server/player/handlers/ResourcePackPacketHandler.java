@@ -31,14 +31,7 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
         ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
         resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
         for (ResourcePack pack : this.server.getResourcePackManager().getPacks().values()) {
-            resourcePacksInfoPacket.getResourcePackInfos().add(new ResourcePacksInfoPacket.Entry(pack.getUuid().toString(),
-                    pack.getVersion(),
-                    pack.getDataLength(),
-                    "",
-                    "",
-                    "",
-                    false,
-                    pack.isRayTracingEnabled()));
+            resourcePacksInfoPacket.getResourcePackInfos().add(new ResourcePacksInfoPacket.Entry(pack.getUuid().toString(), pack.getVersion(), pack.getDataLength(), "", "", "", false, pack.isRayTracingEnabled()));
         }
         session.getConnection().sendPacket(resourcePacksInfoPacket);
     }
@@ -118,41 +111,39 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
             return true;
         }
 
-        if (packet.getChunkIndex() < 0 || packet.getChunkIndex() >= pack.getChunkCount()) {
+        DownloadingPack currentPack = this.packDownloadQueue.peekFirst();
+
+        if (packet.getChunkIndex() < 0 || packet.getChunkIndex() >= pack.getChunkCount() || currentPack == null) {
             this.server.getLogger().debug("Invalid chunk requested while handling ResourcePackChunkRequestPacket");
             this.session.getConnection().disconnect();
             return true;
         }
 
-        DownloadingPack currentPack = this.packDownloadQueue.peekFirst();
+        // ensure that the client is requesting chunk indices increasing by 1, so that our download queue logic works out
+        if (packet.getChunkIndex() != currentPack.currentChunkIndex) {
+            this.server.getLogger().debug("Invalid chunk order requested while handling ResourcePackChunkRequestPacket");
+            this.packDownloadQueue.clear();
+            return true;
+        } else {
+            currentPack.currentChunkIndex++;
+        }
 
-        if (currentPack != null) {
-            // ensure that the client is requesting chunk indices increasing by 1, so that our download queue logic works out
-            if (packet.getChunkIndex() != currentPack.currentChunkIndex) {
-                this.server.getLogger().debug("Invalid chunk order requested while handling ResourcePackChunkRequestPacket");
-                this.packDownloadQueue.clear();
-                return true;
-            } else {
-                currentPack.currentChunkIndex++;
-            }
+        // Send the resource pack chunk requested
+        ResourcePackChunkDataPacket chunkDataPacket = new ResourcePackChunkDataPacket();
+        chunkDataPacket.setPackId(pack.getUuid());
+        chunkDataPacket.setPackVersion(pack.getVersion());
+        chunkDataPacket.setChunkIndex(packet.getChunkIndex());
+        chunkDataPacket.setProgress((long) packet.getChunkIndex() * pack.getMaxChunkLength());
+        chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));
+        this.session.getConnection().sendPacket(chunkDataPacket);
 
-            // Send the resource pack chunk requested
-            ResourcePackChunkDataPacket chunkDataPacket = new ResourcePackChunkDataPacket();
-            chunkDataPacket.setPackId(pack.getUuid());
-            chunkDataPacket.setPackVersion(pack.getVersion());
-            chunkDataPacket.setChunkIndex(packet.getChunkIndex());
-            chunkDataPacket.setProgress((long) packet.getChunkIndex() * pack.getMaxChunkLength());
-            chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));
-            this.session.getConnection().sendPacket(chunkDataPacket);
+        if ((chunkDataPacket.getChunkIndex() + 1) == currentPack.dataInfoPacket.getChunkCount()) {
+            // finished with this pack, send next one's info
+            this.packDownloadQueue.removeFirst();
 
-            if ((chunkDataPacket.getChunkIndex() + 1) == currentPack.dataInfoPacket.getChunkCount()) {
-                // finished with this pack, send next one's info
-                this.packDownloadQueue.removeFirst();
-
-                DownloadingPack nextPack = this.packDownloadQueue.peekFirst();
-                if (nextPack != null) {
-                    this.session.getConnection().sendPacket(nextPack.dataInfoPacket);
-                }
+            DownloadingPack nextPack = this.packDownloadQueue.peekFirst();
+            if (nextPack != null) {
+                this.session.getConnection().sendPacket(nextPack.dataInfoPacket);
             }
         }
 
@@ -166,7 +157,9 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
     }
 
     static class DownloadingPack {
+
         public int currentChunkIndex = 0;
+
         private final ResourcePackDataInfoPacket dataInfoPacket;
 
         DownloadingPack(ResourcePackDataInfoPacket dataInfoPacket) {
