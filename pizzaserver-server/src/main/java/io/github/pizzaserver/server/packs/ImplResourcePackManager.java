@@ -41,20 +41,20 @@ public class ImplResourcePackManager implements ResourcePackManager {
     public void loadPacks() {
         try {
             Files.list(Paths.get(this.server.getRootDirectory() + "/resourcepacks"))
-                    .map(Path::toFile)
-                    .filter(File::isFile)
-                    .forEach(file -> {
-                        try {
-                            ResourcePack pack = new ZipResourcePack(file);
-                            this.packs.put(pack.getUuid(), pack);
-                            this.server.getLogger().info("Loaded resource pack: " + file.getName());
-                        } catch (IOException exception) {
-                            this.server.getLogger().error("Failed to load resource pack: " + file.getName(), exception);
-                        }
-                    });
+                 .map(Path::toFile)
+                 .filter(File::isFile)
+                 .filter(file -> file.getName().endsWith(".zip") || file.getName().endsWith(".mcpack"))
+                 .forEach(file -> {
+                     try {
+                         ResourcePack pack = new ZipResourcePack(file);
+                         this.packs.put(pack.getUuid(), pack);
+                         this.server.getLogger().info("Loaded resource pack: " + file.getName());
+                     } catch (IOException exception) {
+                         this.server.getLogger().error("Failed to load resource pack: " + file.getName(), exception);
+                     }
+                 });
         } catch (IOException exception) {
             this.server.getLogger().error("Failed to read resourcepacks directory", exception);
         }
     }
-
 }
