@@ -30,9 +30,11 @@ public class CustomFormResponse extends FormResponse<CustomForm> {
 
                 switch (element.getType()) {
                     case DROPDOWN:
-                    case SLIDER:
                     case STEP_SLIDER:
                         this.responses.get(element.getType()).add(response.getAsInt());
+                        break;
+                    case SLIDER:
+                        this.responses.get(element.getType()).add(response.getAsFloat());
                         break;
                     case INPUT:
                         this.responses.get(element.getType()).add(response.getAsString());
@@ -55,9 +57,9 @@ public class CustomFormResponse extends FormResponse<CustomForm> {
         return (String) this.responses.get(ElementType.INPUT).get(inputIndex);
     }
 
-    public int getSliderResponse(int sliderIndex) {
+    public float getSliderResponse(int sliderIndex) {
         this.checkResponseAvailability(ElementType.SLIDER);
-        return (int) this.responses.get(ElementType.SLIDER).get(sliderIndex);
+        return (float) this.responses.get(ElementType.SLIDER).get(sliderIndex);
     }
 
     public int getStepSliderResponse(int stepSliderIndex) {
