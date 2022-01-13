@@ -57,9 +57,9 @@ public class CustomFormResponse extends FormResponse<CustomForm> {
         return (String) this.responses.get(ElementType.INPUT).get(inputIndex);
     }
 
-    public int getSliderResponse(int sliderIndex) {
+    public float getSliderResponse(int sliderIndex) {
         this.checkResponseAvailability(ElementType.SLIDER);
-        return (int) this.responses.get(ElementType.SLIDER).get(sliderIndex);
+        return (float) this.responses.get(ElementType.SLIDER).get(sliderIndex);
     }
 
     public int getStepSliderResponse(int stepSliderIndex) {
