@@ -31,7 +31,13 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
         ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
         resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
         for (ResourcePack pack : this.server.getResourcePackManager().getPacks().values()) {
-            resourcePacksInfoPacket.getResourcePackInfos().add(new ResourcePacksInfoPacket.Entry(pack.getUuid().toString(), pack.getVersion(), pack.getDataLength(), "", "", "", false, pack.isRayTracingEnabled()));
+            resourcePacksInfoPacket.getResourcePackInfos().add(
+                    new ResourcePacksInfoPacket.Entry(
+                            pack.getUuid().toString(),
+                            pack.getVersion(),
+                            pack.getDataLength(),
+                            "", "", "", false,
+                            pack.isRayTracingEnabled()));
         }
         session.getConnection().sendPacket(resourcePacksInfoPacket);
     }
@@ -41,10 +47,6 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
     public boolean handle(ResourcePackClientResponsePacket packet) {
         switch (packet.getStatus()) {
             case SEND_PACKS:
-
-                this.server.getLogger().debug("yup");
-
-
                 // Create list of all packs' info of the packs the client does not have.
                 for (String packId : packet.getPackIds()) {
                     UUID uuid = UUID.fromString(packId.split("_")[0]);
