@@ -171,6 +171,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCrimsonNylium());
         BlockRegistry.getInstance().register(new BlockCryingObsidian());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.DARK_OAK), new ButtonBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockDeny());
         BlockRegistry.getInstance().register(new BlockDirt());
         BlockRegistry.getInstance().register(new BlockFurnace(), new HorziontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockFlowingWater());

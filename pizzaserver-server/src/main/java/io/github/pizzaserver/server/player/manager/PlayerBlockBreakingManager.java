@@ -4,8 +4,6 @@ import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
-import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -45,11 +43,8 @@ public class PlayerBlockBreakingManager {
     public void breakBlock() {
         Block block = this.blockMiningLocation.getBlock();
 
-        if (block instanceof BlockEntityContainer<? extends BlockEntity> blockEntityBlock) {
-            if (blockEntityBlock.getBlockEntity() != null) {
-                blockEntityBlock.getBlockEntity().onBreak(this.player);
-            }
-        }
+        block.getWorld().getBlockEntity(block.getLocation().toVector3i())
+                .ifPresent(blockEntity -> blockEntity.onBreak(this.player));
         this.player.getWorld().setAndUpdateBlock(BlockID.AIR, block.getLocation().toVector3i());
         block.getBehavior().onBreak(this.player, block);
 

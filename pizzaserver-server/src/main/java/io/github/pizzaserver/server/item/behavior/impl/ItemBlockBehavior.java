@@ -2,7 +2,6 @@ package io.github.pizzaserver.server.item.behavior.impl;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
 import io.github.pizzaserver.api.block.descriptors.Liquid;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
@@ -13,6 +12,7 @@ import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
@@ -69,11 +69,8 @@ public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
             }
             block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
             placedBlock.getBehavior().onPlace(player, placedBlock, blockFace);
-            if (block instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
-                if (blockWithBlockEntity.getBlockEntity() != null) {
-                    blockWithBlockEntity.getBlockEntity().onPlace(player);
-                }
-            }
+            Optional<BlockEntity> blockEntity = block.getWorld().getBlockEntity(block.getLocation().toVector3i());
+            blockEntity.ifPresent(entity -> entity.onPlace(player));
             return true;
         } else {
             // air blocks don't change the world at all and cannot really be placed.

@@ -1,11 +1,11 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockIronOre extends BaseBlock {
+public class BlockIronOre extends Block {
 
     @Override
     public String getBlockId() {

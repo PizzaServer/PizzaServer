@@ -11,8 +11,6 @@ import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
-import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.EntityItem;
@@ -254,8 +252,8 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                         case InventoryTransactionAction.USE_CLICK_AIR:
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
                             boolean callItemInteractAllowedByBlock = block.getBehavior().onInteract(this.player, block, blockFace);
-                            boolean callItemInteractAllowedByBlockEntity = !(block instanceof BlockEntityContainer<? extends BlockEntity>)
-                                    || ((BlockEntityContainer<? extends BlockEntity>) block).getBlockEntity().onInteract(this.player);
+                            boolean callItemInteractAllowedByBlockEntity = block.getWorld().getBlockEntity(blockCoordinates).isEmpty()
+                                    || block.getWorld().getBlockEntity(blockCoordinates).get().onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
                                 boolean successfulInteraction = heldItemStack.getBehavior().onInteract(this.player, heldItemStack, block, blockFace);

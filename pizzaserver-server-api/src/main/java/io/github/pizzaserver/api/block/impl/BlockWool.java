@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.descriptors.Flammable;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BlockWool extends BaseBlock implements Flammable {
+public class BlockWool extends Block implements Flammable {
 
     private static final List<NbtMap> BLOCK_STATES = Arrays.stream(DyeColor.values())
             .map(color -> NbtMap.builder()

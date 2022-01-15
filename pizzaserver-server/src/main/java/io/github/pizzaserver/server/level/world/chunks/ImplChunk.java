@@ -10,7 +10,6 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
 import io.github.pizzaserver.api.block.impl.BlockAir;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -236,11 +235,7 @@ public class ImplChunk implements Chunk {
         writeLock.lock();
 
         // Remove old block entity at this position if present
-        if (this.getBlock(x, y, z, layer) instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
-            if (blockWithBlockEntity.getBlockEntity() != null) {
-                this.removeBlockEntity(blockWithBlockEntity.getBlockEntity());
-            }
-        }
+        this.getBlockEntity(x, y, z).ifPresent(this::removeBlockEntity);
 
         // Add block entity if one exists for this block
         Optional<BlockEntityType> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block);
@@ -361,12 +356,8 @@ public class ImplChunk implements Chunk {
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
         player.sendPacket(updateBlockPacket);
 
-        if (block instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
-            if (blockWithBlockEntity.getBlockEntity() != null) {
-                BlockEntity blockEntity = blockWithBlockEntity.getBlockEntity();
-                this.sendBlockEntityData(player, blockEntity);
-            }
-        }
+        this.getWorld().getBlockEntity(block.getLocation().toVector3i()).ifPresent(blockEntity ->
+                this.sendBlockEntityData(player, blockEntity));
     }
 
     protected void sendBlockEntityData(Player player, BlockEntity blockEntity) {

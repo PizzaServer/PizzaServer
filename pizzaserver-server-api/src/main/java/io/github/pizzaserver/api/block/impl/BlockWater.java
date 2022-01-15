@@ -1,14 +1,14 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.descriptors.Liquid;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockWater extends BaseBlock implements Liquid {
+public class BlockWater extends Block implements Liquid {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
