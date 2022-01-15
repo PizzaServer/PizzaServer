@@ -109,6 +109,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case JUMP_DOWN:
                     case JUMPING:
                     case START_JUMPING:
+                    case PERSIST_SNEAK:
                         // For now, we don't need to handle this.
                         // However, if we ever want to implement server-side knockback using the rewind system. This may be useful.
                         break;

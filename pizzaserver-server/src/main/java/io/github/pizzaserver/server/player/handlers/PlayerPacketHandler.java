@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.impl.BlockChest;
 import io.github.pizzaserver.api.block.impl.BlockCobblestone;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.EntityHuman;
@@ -106,7 +107,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         this.player.getInventory().addItem(new ItemNetheriteChestplate());
         this.player.getInventory().addItem(new ItemDiamondChestplate());
         this.player.getInventory().addItem(new ItemClock());
-        this.player.getInventory().addItem(new ItemStonePickaxe());
+        this.player.getInventory().addItem(new ItemBlock(new BlockChest()));
         this.player.getInventory().addItem(new ItemBlock(new BlockCobblestone(), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
         this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());

@@ -16,14 +16,14 @@ public class ImplBlockEntityRegistry implements BlockEntityRegistry {
 
     public void register(BlockEntityType blockEntityType) {
         if (entities.containsKey(blockEntityType.getId())) {
-            for (Block block : this.getBlockEntityType(blockEntityType.getId()).getBlocks()) {
-                entitiesByBlockTypeId.remove(block.getBlockId());
+            for (String blockId : this.getBlockEntityType(blockEntityType.getId()).getBlockIds()) {
+                entitiesByBlockTypeId.remove(blockId);
             }
         }
 
         entities.put(blockEntityType.getId(), blockEntityType);
-        for (Block block : blockEntityType.getBlocks()) {
-            entitiesByBlockTypeId.put(block.getBlockId(), blockEntityType);
+        for (String blockId : blockEntityType.getBlockIds()) {
+            entitiesByBlockTypeId.put(blockId, blockEntityType);
         }
     }
 

@@ -22,8 +22,8 @@ public class BlockEntityTypeCauldron implements BlockEntityType {
     }
 
     @Override
-    public Set<Block> getBlocks() {
-        return Collections.singleton(BlockRegistry.getInstance().getBlock(BlockID.CAULDRON));
+    public Set<String> getBlockIds() {
+        return Collections.singleton(BlockID.CAULDRON);
     }
 
     @Override

@@ -10,10 +10,10 @@ import java.util.Set;
 
 public class BlockEntityTypeBlastFurnace extends BlockEntityTypeFurnace {
 
-    private static final Set<Block> BLOCK_TYPES = new HashSet<>() {
+    private static final Set<String> BLOCK_TYPES = new HashSet<>() {
         {
-            this.add(BlockRegistry.getInstance().getBlock(BlockID.BLAST_FURNACE));
-            this.add(BlockRegistry.getInstance().getBlock(BlockID.LIT_BLAST_FURNACE));
+            this.add(BlockID.BLAST_FURNACE);
+            this.add(BlockID.LIT_BLAST_FURNACE);
         }
     };
 
@@ -23,7 +23,7 @@ public class BlockEntityTypeBlastFurnace extends BlockEntityTypeFurnace {
     }
 
     @Override
-    public Set<Block> getBlocks() {
+    public Set<String> getBlockIds() {
         return BLOCK_TYPES;
     }
 

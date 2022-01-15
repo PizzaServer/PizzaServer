@@ -16,10 +16,10 @@ import java.util.Set;
 
 public class BlockEntityTypeCampfire implements BlockEntityType {
 
-    private static final Set<Block> BLOCK_TYPES = new HashSet<>() {
+    private static final Set<String> BLOCK_TYPES = new HashSet<>() {
         {
-            this.add(BlockRegistry.getInstance().getBlock(BlockID.CAMPFIRE));
-            this.add(BlockRegistry.getInstance().getBlock(BlockID.SOUL_CAMPFIRE));
+            this.add(BlockID.CAMPFIRE);
+            this.add(BlockID.SOUL_CAMPFIRE);
         }
     };
 
@@ -30,7 +30,7 @@ public class BlockEntityTypeCampfire implements BlockEntityType {
     }
 
     @Override
-    public Set<Block> getBlocks() {
+    public Set<String> getBlockIds() {
         return BLOCK_TYPES;
     }
 

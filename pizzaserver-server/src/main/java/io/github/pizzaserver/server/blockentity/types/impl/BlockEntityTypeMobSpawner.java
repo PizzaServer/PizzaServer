@@ -22,8 +22,8 @@ public class BlockEntityTypeMobSpawner implements BlockEntityType {
     }
 
     @Override
-    public Set<Block> getBlocks() {
-        return Collections.singleton(BlockRegistry.getInstance().getBlock(BlockID.BELL));
+    public Set<String> getBlockIds() {
+        return Collections.singleton(BlockID.BELL);
     }
 
     @Override

@@ -18,10 +18,10 @@ import java.util.Set;
 
 public class BlockEntityTypeFurnace implements BlockEntityType {
 
-    private static final Set<Block> BLOCK_TYPES = new HashSet<>() {
+    private static final Set<String> BLOCK_TYPES = new HashSet<>() {
         {
-            this.add(BlockRegistry.getInstance().getBlock(BlockID.FURNACE));
-            this.add(BlockRegistry.getInstance().getBlock(BlockID.LIT_FURNACE));
+            this.add(BlockID.FURNACE);
+            this.add(BlockID.LIT_FURNACE);
         }
     };
 
@@ -31,7 +31,7 @@ public class BlockEntityTypeFurnace implements BlockEntityType {
     }
 
     @Override
-    public Set<Block> getBlocks() {
+    public Set<String> getBlockIds() {
         return BLOCK_TYPES;
     }
 

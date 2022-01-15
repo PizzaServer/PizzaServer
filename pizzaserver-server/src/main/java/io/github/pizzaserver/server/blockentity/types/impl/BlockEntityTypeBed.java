@@ -23,8 +23,8 @@ public class BlockEntityTypeBed implements BlockEntityType {
     }
 
     @Override
-    public Set<Block> getBlocks() {
-        return Collections.singleton(BlockRegistry.getInstance().getBlock(BlockID.BED));
+    public Set<String> getBlockIds() {
+        return Collections.singleton(BlockID.BED);
     }
 
     @Override

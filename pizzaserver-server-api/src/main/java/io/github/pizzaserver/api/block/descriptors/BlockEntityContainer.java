@@ -8,7 +8,7 @@ public interface BlockEntityContainer<T extends BlockEntity> extends Block {
     @SuppressWarnings("unchecked")
     default T getBlockEntity() {
         BlockEntity blockEntity = this.getWorld().getBlockEntity(this.getLocation().toVector3i()).orElse(null);
-        if (blockEntity == null || !blockEntity.getType().getBlocks().contains(this)) {
+        if (blockEntity == null || !blockEntity.getType().getBlockIds().contains(this.getBlockId())) {
             return null;
         }
         return (T) blockEntity;

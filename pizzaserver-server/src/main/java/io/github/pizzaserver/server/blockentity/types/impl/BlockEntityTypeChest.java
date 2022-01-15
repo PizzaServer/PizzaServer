@@ -27,8 +27,8 @@ public class BlockEntityTypeChest implements BlockEntityType {
     }
 
     @Override
-    public Set<Block> getBlocks() {
-        return Collections.singleton(BlockRegistry.getInstance().getBlock(BlockID.CHEST));
+    public Set<String> getBlockIds() {
+        return Collections.singleton(BlockID.CHEST);
     }
 
     @Override

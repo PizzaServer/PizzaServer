@@ -15,7 +15,7 @@ public interface BlockEntityType {
      * Retrieve the blocks that this block entity is associated with.
      * @return block types
      */
-    Set<Block> getBlocks();
+    Set<String> getBlockIds();
 
     BlockEntity create(Block block);
 
