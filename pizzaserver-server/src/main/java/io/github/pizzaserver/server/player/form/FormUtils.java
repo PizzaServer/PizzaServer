@@ -112,7 +112,7 @@ public class FormUtils {
                 if (!primitive.isNumber()) {
                     return true;
                 }
-                int sliderValue = primitive.getAsInt();
+                float sliderValue = primitive.getAsFloat();
                 return sliderValue < ((SliderElement) element).getMin() || sliderValue > ((SliderElement) element).getMax();
             case STEP_SLIDER:
                 if (!primitive.isNumber()) {

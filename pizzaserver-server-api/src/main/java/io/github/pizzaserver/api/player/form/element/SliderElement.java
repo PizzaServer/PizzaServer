@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class SliderElement extends CustomElement {
 
-    private final int min;
-    private final int max;
-    private final int step;
+    private final float min;
+    private final float max;
+    private final float step;
     @SerializedName("default")
-    private final int value;
+    private final float value;
 
-    protected SliderElement(String text, int value, int min, int max, int step) {
+    protected SliderElement(String text, float value, float min, float max, float step) {
         super(ElementType.SLIDER, text);
         this.value = value;
         this.min = min;
@@ -18,19 +18,19 @@ public class SliderElement extends CustomElement {
         this.step = step;
     }
 
-    public int getMin() {
+    public float getMin() {
         return this.min;
     }
 
-    public int getMax() {
+    public float getMax() {
         return this.max;
     }
 
-    public int getStep() {
+    public float getStep() {
         return this.step;
     }
 
-    public int getValue() {
+    public float getValue() {
         return this.value;
     }
 
@@ -38,32 +38,37 @@ public class SliderElement extends CustomElement {
     public static class Builder {
 
         private String text = "";
-        private int min;
-        private int max;
-        private int step;
-        private int value;
+        private float min;
+        private float max;
+        private float step = 1;
+        private float value;
 
         public Builder setText(String text) {
             this.text = text;
             return this;
         }
 
-        public Builder setMin(int min) {
+        public Builder setMin(float min) {
             this.min = min;
             return this;
         }
 
-        public Builder setMax(int max) {
+        public Builder setMax(float max) {
             this.max = max;
             return this;
         }
 
-        public Builder setStep(int step) {
+        /**
+         * Sets the slider's step from one value to the next.
+         * If the step is not an integral value (multiple of 1), values will be displayed with decimals.
+         * @param step Step value. Must not be zero.
+         */
+        public Builder setStep(float step) {
             this.step = step;
             return this;
         }
 
-        public Builder setValue(int value) {
+        public Builder setValue(float value) {
             this.value = value;
             return this;
         }
