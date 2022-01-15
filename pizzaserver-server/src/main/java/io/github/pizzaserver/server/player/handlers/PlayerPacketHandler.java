@@ -12,9 +12,7 @@ import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
-import io.github.pizzaserver.api.item.impl.ItemBoat;
-import io.github.pizzaserver.api.item.impl.ItemStonePickaxe;
+import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
@@ -102,6 +100,12 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
     public boolean handle(TextPacket packet) {
         this.player.getInventory().addItem(new ItemBlock(BlockID.IRON_ORE, 10));
         this.player.getInventory().addItem(new ItemBoat());
+        this.player.getInventory().addItem(new ItemSlimeball());
+        this.player.getInventory().addItem(new ItemHeartOfTheSea());
+        this.player.getInventory().addItem(new ItemNetheriteSword());
+        this.player.getInventory().addItem(new ItemNetheriteChestplate());
+        this.player.getInventory().addItem(new ItemDiamondChestplate());
+        this.player.getInventory().addItem(new ItemClock());
         this.player.getInventory().addItem(new ItemStonePickaxe());
         this.player.getInventory().addItem(new ItemBlock(new BlockCobblestone(), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);

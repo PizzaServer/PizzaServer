@@ -25,7 +25,7 @@ public class ImplItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public void register(Item item, ItemBehavior<? extends Item> behavior) {
+    public <T extends Item> void register(T item, ItemBehavior<T> behavior) {
         if (!item.getItemId().startsWith("minecraft:")) {
             if (!(item instanceof CustomItem)) {
                 throw new IllegalArgumentException("The provided item type does not extend CustomItemType");

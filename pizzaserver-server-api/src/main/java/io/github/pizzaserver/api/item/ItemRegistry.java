@@ -18,7 +18,7 @@ public interface ItemRegistry {
      * @param item if implementing a custom item, you must implement CustomItem instead of Item
      * @param behavior behavior of item
      */
-    void register(Item item, ItemBehavior<? extends Item> behavior);
+    <T extends Item> void register(T item, ItemBehavior<T> behavior);
 
     boolean hasItemType(String itemId);
 
