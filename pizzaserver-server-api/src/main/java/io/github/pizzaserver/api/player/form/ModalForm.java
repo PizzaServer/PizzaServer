@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api.player.form;
 
 import com.google.gson.annotations.SerializedName;
+import io.github.pizzaserver.commons.utils.Check;
 
 /**
  * Modal forms are forms with only a true and false option that players can select.
@@ -65,7 +66,10 @@ public class ModalForm extends Form {
 
 
         public ModalForm build() {
-            return new ModalForm(this.title, this.content, this.trueButton, this.falseButton);
+            return new ModalForm(Check.nullParam(this.title, "title"),
+                    Check.nullParam(this.content, "content"),
+                    Check.nullParam(this.trueButton, "true button text"),
+                    Check.nullParam(this.falseButton, "false button text"));
         }
 
     }

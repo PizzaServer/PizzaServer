@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api.player.form;
 
 import io.github.pizzaserver.api.player.form.element.ButtonElement;
+import io.github.pizzaserver.commons.utils.Check;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ public class SimpleForm extends Form {
     protected final String content;
     protected final List<ButtonElement> buttons;
 
-    protected SimpleForm(String title, String content, List<ButtonElement> buttons) {
+    public SimpleForm(String title, String content, List<ButtonElement> buttons) {
         super(FormType.SIMPLE, title);
         this.content = content;
         this.buttons = buttons;
@@ -67,7 +68,9 @@ public class SimpleForm extends Form {
         }
 
         public SimpleForm build() {
-            return new SimpleForm(this.title, this.content, this.buttons);
+            return new SimpleForm(Check.nullParam(this.title, "title"),
+                    Check.nullParam(this.content, "content"),
+                    this.buttons);
         }
 
     }

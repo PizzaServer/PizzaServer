@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api.player.form;
 
 import io.github.pizzaserver.api.player.form.element.CustomElement;
+import io.github.pizzaserver.commons.utils.Check;
 
 import java.util.*;
 
@@ -12,7 +13,7 @@ public class CustomForm extends Form {
     private final List<CustomElement> content;
     private final FormImage icon;
 
-    protected CustomForm(String title, FormImage icon, List<CustomElement> elements) {
+    public CustomForm(String title, FormImage icon, List<CustomElement> elements) {
         super(FormType.CUSTOM, title);
         this.content = elements;
         this.icon = icon;
@@ -75,7 +76,7 @@ public class CustomForm extends Form {
         }
 
         public CustomForm build() {
-            return new CustomForm(this.title, this.icon, this.elements);
+            return new CustomForm(Check.nullParam(this.title, "title"), this.icon, this.elements);
         }
 
     }
