@@ -1,6 +1,9 @@
-package io.github.pizzaserver.api.item.types.component;
+package io.github.pizzaserver.api.item.descriptors;
 
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.data.UseAnimationType;
+
+import java.util.Optional;
 
 /**
  * Represents an item that can be eaten.
@@ -28,8 +31,8 @@ public interface FoodItemComponent {
      * If this method return null then no result item is given when eaten
      * @return item to give to the player when eaten
      */
-    default ItemStack getResultItem() {
-        return null;
+    default Optional<Item> getResultItem() {
+        return Optional.empty();
     }
 
     /**
@@ -39,5 +42,19 @@ public interface FoodItemComponent {
     default boolean canAlwaysBeEaten() {
         return false;
     }
+
+    /**
+     * Returns the animation to use when using this item.
+     *
+     * @return animation to use upon using this item
+     */
+    UseAnimationType getUseAnimationType();
+
+    /**
+     * Amount of ticks to show this animation for.
+     *
+     * @return how long to show the animation for
+     */
+    int getUseDurationTicks();
 
 }

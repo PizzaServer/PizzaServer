@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.item.type;
+package io.github.pizzaserver.server.item.behavior.impl;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
@@ -8,44 +8,17 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.BaseItemType;
-import io.github.pizzaserver.api.item.types.BlockItemType;
+import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
-import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Set;
 
-/**
- * Any block ItemStack is an instance of this class to prevent the need to create thousands of item classes for each block.
- */
-public class ImplBlockItemType extends BaseItemType implements BlockItemType {
-
-    private final Block blockType;
-
-
-    public ImplBlockItemType(Block blockType) {
-        this.blockType = blockType;
-    }
+public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
 
     @Override
-    public Block getBlock() {
-        return this.blockType;
-    }
-
-    @Override
-    public String getItemId() {
-        return this.blockType.getBlockId();
-    }
-
-    @Override
-    public String getName() {
-        return this.getBlock().getName();
-    }
-
-    @Override
-    public boolean onInteract(Player player, ItemStack itemStack, Block block, BlockFace blockFace) {
+    public boolean onInteract(Player player, ItemBlock itemBlock, Block block, BlockFace blockFace) {
         // Replaceable blocks (other than liquids) should directly change the block instead of the
         // block of the face provided. (e.g. grass)
         Block blockAtPlacementPos;
@@ -59,7 +32,7 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
             if (!player.getAdventureSettings().canBuild()) {
                 return false;
             }
-            Block placedBlock = this.getBlock();
+            Block placedBlock = itemBlock.getBlock();
             placedBlock.setLocation(blockAtPlacementPos.getWorld(),
                     blockAtPlacementPos.getX(),
                     blockAtPlacementPos.getY(),
@@ -91,8 +64,8 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
             }
 
             if (!player.getGamemode().equals(Gamemode.CREATIVE)) {
-                itemStack.setCount(itemStack.getCount() - 1);
-                player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemStack);
+                itemBlock.setCount(itemBlock.getCount() - 1);
+                player.getInventory().setSlot(player.getInventory().getSelectedSlot(), itemBlock);
             }
             block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
             placedBlock.getBehavior().onPlace(player, placedBlock, blockFace);
@@ -106,7 +79,7 @@ public class ImplBlockItemType extends BaseItemType implements BlockItemType {
             // air blocks don't change the world at all and cannot really be placed.
             // but for all other blocks return false since the block should not have
             // been placed clientside.
-            return itemStack.isEmpty();
+            return itemBlock.isEmpty();
         }
     }
 

@@ -5,7 +5,7 @@ import com.nukkitx.protocol.bedrock.packet.TakeItemEntityPacket;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityPickupItemEvent;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class ImplEntityItem extends ImplEntity implements EntityItem {
 
-    protected ItemStack itemStack;
+    protected Item item;
     protected int pickUpDelay;
 
 
@@ -22,13 +22,13 @@ public class ImplEntityItem extends ImplEntity implements EntityItem {
     }
 
     @Override
-    public ItemStack getItem() {
-        return this.itemStack;
+    public Item getItem() {
+        return this.item;
     }
 
     @Override
-    public void setItem(ItemStack itemStack) {
-        this.itemStack = itemStack;
+    public void setItem(Item item) {
+        this.item = item;
 
         // We cannot change the item entity displayed without respawning the item.
         for (Player player : this.getViewers()) {
@@ -54,7 +54,7 @@ public class ImplEntityItem extends ImplEntity implements EntityItem {
         if (this.getPickupDelay() > 0) {
             this.pickUpDelay--;
         } else if (this.getItem().getCount() > 0) {
-            for (Player player : this.getWorld().getPlayers()) {
+            for (Player player : this.getChunk().getViewers()) {
                 if (player.getLocation().toVector3f().distance(this.getLocation().toVector3f()) <= 1) {
                     if (this.getPickupDelay() <= 0) {
                         int pickedUpCount = this.getItem().getCount() - player.getInventory().getExcessIfAdded(this.getItem());
@@ -75,9 +75,9 @@ public class ImplEntityItem extends ImplEntity implements EntityItem {
                             viewer.sendPacket(takeItemEntityPacket);
                         }
 
-                        ItemStack stackToAdd = this.getItem().clone();
+                        Item stackToAdd = this.getItem().clone();
                         stackToAdd.setCount(pickupItemEvent.getPickedUpCount());
-                        Optional<ItemStack> excessStack = player.getInventory().addItem(stackToAdd);
+                        Optional<Item> excessStack = player.getInventory().addItem(stackToAdd);
 
                         if (excessStack.isPresent()) {
                             this.getItem().setCount(excessStack.get().getCount());

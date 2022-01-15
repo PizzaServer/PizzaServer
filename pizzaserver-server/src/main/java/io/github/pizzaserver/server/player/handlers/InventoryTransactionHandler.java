@@ -22,7 +22,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerInteractEvent;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -139,7 +139,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                     // Server approves of hotbar slot change.
 
                     // Check if we need to recalculate our break time for the block we may be breaking.
-                    boolean differentItemTypes = !this.player.getInventory().getHeldItem().getItemType().equals(this.player.getInventory().getSlot(packet.getHotbarSlot()).getItemType());
+                    boolean differentItemTypes = !this.player.getInventory().getHeldItem().equals(this.player.getInventory().getSlot(packet.getHotbarSlot()));
                     boolean needToRecalculateBlockBreakTime = this.player.getBlockBreakingManager().isBreakingBlock()
                             && differentItemTypes;
 
@@ -200,12 +200,12 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                     && nextAction.getSlot() >= 0 && nextAction.getSlot() < 9;
 
             if (isDropAction) {
-                ItemStack itemStack = this.player.getInventory().getSlot(nextAction.getSlot());
+                Item itemStack = this.player.getInventory().getSlot(nextAction.getSlot());
                 if (!itemStack.isEmpty()) {
                     // Update stack with amount dropped
                     int amountDropped = Math.max(0, Math.min(itemStack.getCount(), action.getToItem().getCount()));
 
-                    ItemStack droppedStack = itemStack.clone();
+                    Item droppedStack = itemStack.clone();
                     droppedStack.setCount(amountDropped);
 
                     InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, droppedStack);
@@ -248,7 +248,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                 this.player.getServer().getEventManager().call(playerInteractEvent);
 
                 if (!playerInteractEvent.isCancelled()) {
-                    ItemStack heldItemStack = this.player.getInventory().getHeldItem();
+                    Item heldItemStack = this.player.getInventory().getHeldItem();
                     switch (actionType) {
                         case InventoryTransactionAction.USE_CLICK_BLOCK:
                         case InventoryTransactionAction.USE_CLICK_AIR:
@@ -258,7 +258,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                                     || ((BlockEntityContainer<? extends BlockEntity>) block).getBlockEntity().onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
-                                boolean successfulInteraction = heldItemStack.getItemType().onInteract(this.player, heldItemStack, block, blockFace);
+                                boolean successfulInteraction = heldItemStack.getBehavior().onInteract(this.player, heldItemStack, block, blockFace);
                                 if (successfulInteraction) {
                                     return; // Item interaction succeeded. Returning ensures the interaction does not get reset
                                 }
@@ -305,8 +305,8 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                     this.player.getServer().getEventManager().call(playerEntityInteractEvent);
 
                     if (!playerEntityInteractEvent.isCancelled()) {
-                        ItemStack heldItemStack = this.player.getInventory().getHeldItem();
-                        heldItemStack.getItemType().onInteract(this.player, heldItemStack, entity.get());
+                        Item heldItemStack = this.player.getInventory().getHeldItem();
+                        heldItemStack.getBehavior().onInteract(this.player, heldItemStack, entity.get());
                     }
                     break;
                 case InventoryTransactionAction.USE_ENTITY_ATTACK:
@@ -315,7 +315,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                         return;
                     }
 
-                    float damage = this.player.getInventory().getHeldItem().getItemType().getDamage();
+                    float damage = this.player.getInventory().getHeldItem().getDamage();
                     EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(),
                             this.player,
                             DamageCause.ATTACK,

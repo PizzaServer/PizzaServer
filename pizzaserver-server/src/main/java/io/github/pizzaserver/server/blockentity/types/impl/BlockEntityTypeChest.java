@@ -9,7 +9,7 @@ import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityChest;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.item.ItemUtils;
@@ -55,9 +55,9 @@ public class BlockEntityTypeChest implements BlockEntityType {
         BlockEntityChest blockEntityChest = (BlockEntityChest) blockEntity;
 
         List<NbtMap> itemNBTs = new ArrayList<>();
-        for (ItemStack itemStack : blockEntityChest.getInventory().getSlots()) {
-            if (!itemStack.isEmpty()) {
-                itemNBTs.add(ItemUtils.serializeWithSlotForDisk(itemStack));
+        for (Item item : blockEntityChest.getInventory().getSlots()) {
+            if (!item.isEmpty()) {
+                itemNBTs.add(ItemUtils.serializeWithSlotForDisk(item));
             }
         }
 

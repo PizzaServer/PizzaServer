@@ -1,6 +1,6 @@
-package io.github.pizzaserver.api.item.types;
+package io.github.pizzaserver.api.item.data;
 
-public class ItemTypeID {
+public class ItemID {
 
     public static final String ACACIA_BOAT = "minecraft:acacia_boat";
     public static final String BIRCH_BOAT = "minecraft:birch_boat";

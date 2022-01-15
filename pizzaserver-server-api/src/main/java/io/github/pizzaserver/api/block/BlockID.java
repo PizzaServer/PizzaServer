@@ -35,6 +35,8 @@ public class BlockID {
     public static final String COAL_ORE = "minecraft:coal_ore";
     public static final String COBBLED_DEEPSLATE = "minecraft:cobbled_deepslate";
     public static final String COBBLESTONE = "minecraft:cobblestone";
+    public static final String COLORED_TORCH_BP = "minecraft:colored_torch_bp";
+    public static final String COLORED_TORCH_RG = "minecraft:colored_torch_rg";
     public static final String COPPER_ORE = "minecraft:copper_ore";
     public static final String CRACKED_DEEPSLATE_BRICK = "minecraft:cracked_deepslate_bricks";
     public static final String CRACKED_DEEPSLATE_TILE = "minecraft:cracked_deepslate_tiles";

@@ -1,8 +1,7 @@
 package io.github.pizzaserver.api.entity.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.ItemType;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.Watchable;
 
@@ -27,71 +26,71 @@ public interface Inventory extends Watchable {
      * Returns a copy of the slots of this inventory.
      * @return clone of the slots
      */
-    ItemStack[] getSlots();
+    Item[] getSlots();
 
     /**
      * Returns a copy of the slot in this inventory.
      * @param slot the slot
      * @return clone of the slot
      */
-    ItemStack getSlot(int slot);
+    Item getSlot(int slot);
 
     /**
      * Change all the slots in this inventory.
      * The slots provided must be the same size as the existing slots
-     * ItemStacks will be cloned when setting
+     * items will be cloned when setting
      * @param slots new slots
      */
-    void setSlots(ItemStack[] slots);
+    void setSlots(Item[] slots);
 
     /**
      * Change a single slot.
      * @param slot the slot to change
-     * @param itemStack the item to place in it (this will be cloned)
+     * @param item the item to place in it (this will be cloned)
      */
-    void setSlot(int slot, ItemStack itemStack);
+    void setSlot(int slot, Item item);
 
     /**
-     * Check if the inventory contains the item type provided.
-     * @param itemType item type
-     * @return if the inventory contains the item type.
+     * Check if the inventory contains the item id provided.
+     * @param itemId item id
+     * @return if the inventory contains the item id.
      */
-    boolean contains(ItemType itemType);
+    boolean contains(String itemId);
 
     /**
-     * Check if the inventory contains the item stack provided.
+     * Check if the inventory contains the item provided.
      * This will take into consideration the size of the stack.
-     * @param itemStack item stack
-     * @return if the inventory contains the item stack
+     * @param item item
+     * @return if the inventory contains the item
      */
-    boolean contains(ItemStack itemStack);
+    boolean contains(Item item);
 
     /**
      * Try to add an item to the inventory.
-     * It will attempt to merge itself with any existing item stacks that can merge
-     * with this item stack. If it cannot fullly merge, it will return whatever could not be merged.
-     * @param itemStack ItemStack to add
-     * @return remainder of the item stack if any exists
+     * It will attempt to merge itself with any existing items that can merge
+     * with this item. If it cannot fullly merge, it will return whatever could not be merged.
+     * @param item item to add
+     * @return remainder of the item if any exists
      */
-    Optional<ItemStack> addItem(ItemStack itemStack);
+    Optional<Item> addItem(Item item);
 
     /**
      * Try to add items to this inventory.
-     * It will attempt to merge itself with any existing item stacks that can merge
-     * with this item stack. If it cannot fully merge, it will return whatever could not be merged.
-     * @param itemStacks ItemStacks to add
-     * @return remainder of the item stacks that could not be added
+     * It will attempt to merge itself with any existing items that can merge
+     * with this items. If it cannot fully merge, it will return whatever could not be merged.
+     * @param items items to add
+     * @return remainder of the items that could not be added
      */
-    Set<ItemStack> addItems(ItemStack ...itemStacks);
+    Set<Item> addItems(Item ...items);
 
     /**
      * Try to add items to this inventory.
-     * It will attempt to merge itself with any existing item stacks that can merge
-     * with this item stack. If it cannot fully merge, it will return whatever could not be merged.
-     * @param itemStacks ItemStacks to add
-     * @return remainder of the item stacks that could not be added
+     * It will attempt to merge itself with any existing items that can merge
+     * with this item. If it cannot fully merge, it will return whatever could not be merged.
+     * @param items items to add
+     * @return remainder of the items that could not be added
      */
-    Set<ItemStack> addItems(Collection<ItemStack> itemStacks);
+    Set<Item> addItems(Collection<Item> items);
 
     /**
      * Send this inventory to a player.
@@ -115,9 +114,9 @@ public interface Inventory extends Watchable {
 
     /**
      * Check how many items in the stack provided will be left over if this item were to be added to the entity inventory.
-     * @param itemStack item stack to add
+     * @param item item to find the excess of
      * @return excess amount
      */
-    int getExcessIfAdded(ItemStack itemStack);
+    int getExcessIfAdded(Item item);
 
 }

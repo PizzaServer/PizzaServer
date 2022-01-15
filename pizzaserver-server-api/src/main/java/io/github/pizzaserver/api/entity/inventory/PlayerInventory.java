@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.entity.inventory;
 
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 
 public interface PlayerInventory extends EntityInventory {
@@ -24,12 +24,12 @@ public interface PlayerInventory extends EntityInventory {
      * Get the item held by the cursor.
      * @return item held by the player's cursor
      */
-    ItemStack getCursor();
+    Item getCursor();
 
     /**
      * Change the item held by the player's cursor.
      * @param item item held by the player's cursor
      */
-    void setCursor(ItemStack item);
+    void setCursor(Item item);
 
 }

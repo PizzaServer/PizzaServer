@@ -5,13 +5,16 @@ import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.impl.BlockCobblestone;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.types.ItemTypeID;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.item.impl.ItemBoat;
+import io.github.pizzaserver.api.item.impl.ItemStonePickaxe;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
@@ -97,14 +100,10 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.IRON_ORE, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.CRACKED_DEEPSLATE_BRICK, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.BEDROCK, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.AMETHYST, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.DIRT, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.GRASS, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.BARRIER, 10));
-        this.player.getInventory().addItem(ItemRegistry.getInstance().getItem(BlockID.BLACKSTONE, 10));
+        this.player.getInventory().addItem(new ItemBlock(BlockID.IRON_ORE, 10));
+        this.player.getInventory().addItem(new ItemBoat());
+        this.player.getInventory().addItem(new ItemStonePickaxe());
+        this.player.getInventory().addItem(new ItemBlock(new BlockCobblestone(), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
         this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

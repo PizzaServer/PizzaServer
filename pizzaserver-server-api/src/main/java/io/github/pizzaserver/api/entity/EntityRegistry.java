@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentHandler;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public interface EntityRegistry {
 
     Entity getEntity(String entityId);
 
-    EntityItem getItemEntity(ItemStack itemStack);
+    EntityItem getItemEntity(Item item);
 
     Set<EntityDefinition> getDefinitions();
 

@@ -1,19 +1,18 @@
 package io.github.pizzaserver.server.block;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.behavior.BlockBehavior;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.server.item.type.ImplBlockItemType;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.server.item.behavior.impl.ItemBlockBehavior;
 
 import java.util.*;
 
 public class ImplBlockRegistry implements BlockRegistry {
 
     // All registered block types
-    private final BiMap<String, Block> blocks = HashBiMap.create();
+    private final Map<String, Block> blocks = new HashMap<>();
     private final Map<Class<? extends Block>, BlockBehavior> behaviors = new HashMap<>();
 
     // All registered CUSTOM block types
@@ -27,7 +26,7 @@ public class ImplBlockRegistry implements BlockRegistry {
 
         this.blocks.put(block.getBlockId(), block);
         this.behaviors.put(block.getClass(), behavior);
-        ItemRegistry.getInstance().register(new ImplBlockItemType(block));
+        ItemRegistry.getInstance().register(new ItemBlock(block), new ItemBlockBehavior());
     }
 
     @Override
@@ -59,7 +58,7 @@ public class ImplBlockRegistry implements BlockRegistry {
     @Override
     public BlockBehavior getBlockBehavior(Block block) {
         if (!this.behaviors.containsKey(block.getClass())) {
-            throw new NullPointerException("There is no block behavior class for the provided class.");
+            throw new NullPointerException("There is no block behavior class for the provided class. Was it registered?");
         }
 
         return this.behaviors.get(block.getClass());

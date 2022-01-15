@@ -11,7 +11,7 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
@@ -261,9 +261,9 @@ public interface Entity extends Watchable {
 
     void setMaxAirSupplyTicks(int ticks);
 
-    List<ItemStack> getLoot();
+    List<Item> getLoot();
 
-    void setLoot(List<ItemStack> loot);
+    void setLoot(List<Item> loot);
 
     EntityInventory getInventory();
 

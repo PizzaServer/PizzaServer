@@ -1,13 +1,20 @@
-package io.github.pizzaserver.api.item.types.impl;
+package io.github.pizzaserver.api.item.impl;
 
 import io.github.pizzaserver.api.item.data.ArmorSlot;
-import io.github.pizzaserver.api.item.types.ItemTypeID;
+import io.github.pizzaserver.api.item.data.ItemID;
 
-public class ItemTypeDiamondHelmet extends ItemTypeArmor {
+public class ItemDiamondHelmet extends ItemArmor {
 
-    @Override
-    public String getItemId() {
-        return ItemTypeID.DIAMOND_HELMET;
+    public ItemDiamondHelmet() {
+        this(1);
+    }
+
+    public ItemDiamondHelmet(int count) {
+        this(count, 0);
+    }
+
+    public ItemDiamondHelmet(int count, int meta) {
+        super(ItemID.DIAMOND_HELMET, count, meta);
     }
 
     @Override

@@ -4,9 +4,10 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.PushResponse;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
@@ -193,8 +194,8 @@ public abstract class BaseBlock implements Block {
     }
 
     @Override
-    public ItemStack toStack() {
-        return new ItemStack(this.getBlockId(), 1);
+    public ItemBlock toStack() {
+        return (ItemBlock) ItemRegistry.getInstance().getItem(this.getBlockId(), 1);
     }
 
     /**

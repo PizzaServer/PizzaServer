@@ -13,11 +13,9 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.pizzaserver.api.item.CustomItem;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.types.BlockItemType;
-import io.github.pizzaserver.api.item.types.CustomItemType;
-import io.github.pizzaserver.api.item.types.ItemType;
-import io.github.pizzaserver.api.item.types.component.*;
+import io.github.pizzaserver.api.item.descriptors.*;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.io.IOException;
@@ -141,12 +139,10 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
             // Register custom items
-            for (ItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
-                if (!(itemType instanceof BlockItemType)) { // We register item representations of custom blocks later
-                    int runtimeId = customItemIdStart++;
-                    this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
-                    this.itemEntries.add(new StartGamePacket.ItemEntry(itemType.getItemId(), (short) runtimeId, true));
-                }
+            for (CustomItem customItem : ItemRegistry.getInstance().getCustomItems()) {
+                int runtimeId = customItemIdStart++;
+                this.itemRuntimeIds.put(customItem.getItemId(), runtimeId);
+                this.itemEntries.add(new StartGamePacket.ItemEntry(customItem.getItemId(), (short) runtimeId, true));
             }
 
             //Register custom block items
@@ -184,64 +180,60 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     @Override
     protected void loadItemComponents() {
         this.itemComponents.clear();
-        for (CustomItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
-            this.itemComponents.add(new ComponentItemData(itemType.getItemId(), this.getItemComponentNBT(itemType)));
+        for (CustomItem customItem : ItemRegistry.getInstance().getCustomItems()) {
+            this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
         }
     }
 
-    protected NbtMap getItemComponentNBT(CustomItemType itemType) {
+    protected NbtMap getItemComponentNBT(CustomItem item) {
         NbtMapBuilder container = NbtMap.builder();
-        container.putInt("id", this.getItemRuntimeId(itemType.getItemId()))
-                .putString("name", itemType.getItemId());
+        container.putInt("id", this.getItemRuntimeId(item.getItemId()))
+                .putString("name", item.getItemId());
 
         NbtMapBuilder components = NbtMap.builder();
-        components.putCompound("minecraft:icon", NbtMap.builder()
-                .putString("texture", itemType.getIconName())
-                .build());
 
         // Write non-required components if present
-        if (itemType instanceof ArmorItemComponent) {
-            ArmorItemComponent armorItemComponent = (ArmorItemComponent) itemType;
+        if (item instanceof ArmorItemComponent armorItemComponent) {
             components.putCompound("minecraft:armor", NbtMap.builder()
                     .putInt("protection", armorItemComponent.getProtection())
                     .build());
         }
-        if (itemType instanceof CooldownItemComponent) {
-            CooldownItemComponent cooldownItemComponent = (CooldownItemComponent) itemType;
+        if (item instanceof CooldownItemComponent cooldownItemComponent) {
             components.putCompound("minecraft:cooldown", NbtMap.builder()
                     .putString("category", cooldownItemComponent.getCooldownCategory())
                     .putFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f)
                     .build());
         }
-        if (itemType instanceof DurableItemComponent) {
-            DurableItemComponent durableItemComponent = (DurableItemComponent) itemType;
+        if (item instanceof DurableItemComponent durableItemComponent) {
             components.putCompound("minecraft:durability", NbtMap.builder()
                     .putInt("max_durability", durableItemComponent.getMaxDurability())
                     .build());
         }
-        if (itemType instanceof FoodItemComponent) {
-            FoodItemComponent foodItemComponent = (FoodItemComponent) itemType;
+        if (item instanceof FoodItemComponent foodItemComponent) {
             components.putCompound("minecraft:food", NbtMap.builder()
                     .putBoolean("can_always_eat", foodItemComponent.canAlwaysBeEaten())
                     .build());
         }
-        if (itemType instanceof PlantableItemComponent) {
+        if (item instanceof PlantableItemComponent) {
             components.putCompound("minecraft:block_placer", NbtMap.EMPTY);
         }
 
         NbtMap itemProperties = NbtMap.builder()
-                .putBoolean("allow_off_hand", itemType.isAllowedInOffHand())
+                .putCompound("minecraft:icon", NbtMap.builder()
+                        .putString("texture", item.getIconName())
+                        .build())
+                .putBoolean("allow_off_hand", item.isAllowedInOffHand())
                 .putInt("creative_category", 2)
-                .putInt("damage", itemType.getDamage())
-                .putBoolean("foil", itemType.hasFoil())
-                .putBoolean("hand_equipped", itemType.isHandEquipped())
-                .putBoolean("liquid_clipped", itemType.canClickOnLiquids())
-                .putInt("max_stack_size", itemType.getMaxStackSize())
+                .putInt("damage", item.getDamage())
+                .putBoolean("foil", item.hasFoil())
+                .putBoolean("hand_equipped", item.isHandEquipped())
+                .putBoolean("liquid_clipped", item.canUseOnLiquid())
+                .putInt("max_stack_size", item.getMaxStackSize())
                 .putFloat("mining_speed", 0)  // Block breaking is handled server-side. Doing this gives greater block break control in the item type class
-                .putBoolean("mirrored_art", itemType.isMirroredArt())
-                .putBoolean("stacked_by_data", itemType.isStackedByDamage())
-                .putInt("use_animation", itemType.getUseAnimationType().ordinal())
-                .putInt("use_duration", itemType.getUseDuration())
+                .putBoolean("mirrored_art", item.isMirroredArt())
+                .putBoolean("stacked_by_data", item.isStackedByMeta())
+                .putInt("use_animation", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseAnimationType().ordinal() : 0)
+                .putInt("use_duration", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseDurationTicks() : 0)
                 .build();
         components.putCompound("item_properties", itemProperties);
 

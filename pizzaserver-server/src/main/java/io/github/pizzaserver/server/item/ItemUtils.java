@@ -2,8 +2,9 @@ package io.github.pizzaserver.server.item;
 
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
-import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 
 public class ItemUtils {
@@ -16,41 +17,42 @@ public class ItemUtils {
      * @param version Minecraft version to serialize against
      * @return serialized data
      */
-    public static ItemData serializeForNetwork(ItemStack itemStack, MinecraftVersion version) {
+    public static ItemData serializeForNetwork(Item item, MinecraftVersion version) {
         return ItemData.builder()
-                .id(version.getItemRuntimeId(itemStack.getItemType().getItemId()))
-                .netId(itemStack.getNetworkId())
-                .count(itemStack.getCount())
-                .damage(itemStack.getMeta())
-                .canBreak(itemStack.getBlocksCanBreak().stream().map(Block::getBlockId).toArray(String[]::new))
-                .canPlace(itemStack.getBlocksCanPlaceOn().stream().map(Block::getBlockId).toArray(String[]::new))
-                .tag(itemStack.getNBT())
+                .id(version.getItemRuntimeId(item.getItemId()))
+                .netId(item.getNetworkId())
+                .count(item.getCount())
+                .damage(item.getMeta())
+                .canBreak(item.getBlocksCanBreak().toArray(String[]::new))
+                .canPlace(item instanceof ItemBlock blockItem ? blockItem.getBlocksCanPlaceOn().toArray(String[]::new) : new String[0])
+                .tag(item.getNBT())
                 .usingNetId(true)
                 .build();
     }
 
-    public static NbtMap serializeWithSlotForDisk(ItemStack itemStack) {
+    public static NbtMap serializeWithSlotForDisk(Item item) {
         return NbtMap.builder()
-                .putString("Name", itemStack.getItemType().getItemId())
-                .putShort("Damage", (short) itemStack.getMeta())
-                .putByte("Count", (byte) itemStack.getCount())
-                .putCompound("tag", itemStack.getNBT())
+                .putString("Name", item.getItemId())
+                .putShort("Damage", (short) item.getMeta())
+                .putByte("Count", (byte) item.getCount())
+                .putCompound("tag", item.getNBT())
                 .build();
     }
 
-    public static ItemStack deserializeDiskNBTItem(NbtMap itemNBT) {
+    public static Item deserializeDiskNBTItem(NbtMap itemNBT) {
         String itemId = itemNBT.getString("Name");
         int meta = itemNBT.getShort("Damage");
         int count = itemNBT.getByte("Count");
         NbtMap nbtTag = itemNBT.getCompound("tag");
 
-        ItemStack itemStack = new ItemStack(itemId, meta, count);
+        Item itemStack = ItemRegistry.getInstance().getItem(itemId, count, meta);
         itemStack.setNBT(nbtTag);
         return itemStack;
     }
 
-    public static ItemStack deserializeNetworkItem(ItemData itemData, MinecraftVersion version) {
-        ItemStack itemStack = new ItemStack(version.getItemName(itemData.getId()), itemData.getCount(), itemData.getDamage(), itemData.getNetId());
+    public static Item deserializeNetworkItem(ItemData itemData, MinecraftVersion version) {
+        Item itemStack = ItemRegistry.getInstance().getItem(version.getItemName(itemData.getId()), itemData.getCount(), itemData.getDamage())
+                .newNetworkCopy(itemData.getNetId());
         itemStack.setNBT(itemData.getTag());
         return itemStack;
     }

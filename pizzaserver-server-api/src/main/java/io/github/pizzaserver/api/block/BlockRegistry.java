@@ -34,6 +34,10 @@ public interface BlockRegistry {
 
     Block getBlock(String blockId, int state);
 
+    default BlockBehavior getBlockBehavior(String blockId) {
+        return this.getBlockBehavior(this.getBlock(blockId));
+    }
+
     BlockBehavior getBlockBehavior(Block block);
 
     static BlockRegistry getInstance() {

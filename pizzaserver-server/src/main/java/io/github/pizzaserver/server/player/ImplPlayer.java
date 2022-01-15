@@ -23,7 +23,7 @@ import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
-import io.github.pizzaserver.api.item.types.ItemTypeID;
+import io.github.pizzaserver.api.item.data.ItemID;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
@@ -262,7 +262,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.getPlayerList().addEntries(entries);
 
             location.getWorld().addEntity(this, location.toVector3f());
-            this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemTypeID.SHIELD));
+            this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemID.SHIELD));
             this.getPacketHandlerPipeline().addLast(new PlayerPacketHandler(this));
             this.getPacketHandlerPipeline().addLast(new InventoryTransactionHandler(this));
             this.getPacketHandlerPipeline().addLast(new AuthInputHandler(this));

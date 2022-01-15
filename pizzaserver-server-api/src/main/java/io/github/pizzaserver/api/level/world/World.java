@@ -11,7 +11,7 @@ import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.chunks.ChunkManager;
 import io.github.pizzaserver.api.level.world.data.Dimension;
@@ -287,29 +287,31 @@ public interface World extends ChunkManager {
     void addBlockEvent(int x, int y, int z, int type, int data);
 
     /**
-     * Add a {@link ItemStack} to the world and spawn it.
-     * @param itemStack {@link ItemStack} to spawn as an entity
+     * Add a {@link Item} to the world and spawn it.
+     * @param itemStack {@link Item} to spawn as an entity
      * @param position The position to spawn it in this world
      */
-    void addItemEntity(ItemStack itemStack, Vector3f position);
+    default void addItemEntity(Item itemStack, Vector3f position) {
+        this.addItemEntity(itemStack, position, Vector3f.ZERO);
+    }
 
     /**
-     * Add a {@link ItemStack} to the world and spawn it.
-     * @param itemStack {@link ItemStack} to spawn as an entity
+     * Add a {@link Item} to the world and spawn it.
+     * @param itemStack {@link Item} to spawn as an entity
      * @param position The position to spawn it in this world
      * @param velocity The velocity to spawn it with
      */
-    void addItemEntity(ItemStack itemStack, Vector3f position, Vector3f velocity);
+    void addItemEntity(Item itemStack, Vector3f position, Vector3f velocity);
 
     /**
-     * Add a {@link ItemStack} to the world and spawn it.
+     * Add a {@link Item} to the world and spawn it.
      * @param itemEntity {@link EntityItem} to spawn
      * @param position The position to spawn it in this world
      */
     void addItemEntity(EntityItem itemEntity, Vector3f position);
 
     /**
-     * Add a {@link ItemStack} to the world and spawn it.
+     * Add a {@link Item} to the world and spawn it.
      * @param itemEntity {@link EntityItem} to spawn
      * @param position The position to spawn it in this world
      * @param velocity The velocity to spawn it with

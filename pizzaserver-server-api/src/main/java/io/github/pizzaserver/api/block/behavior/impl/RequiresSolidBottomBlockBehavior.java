@@ -6,7 +6,7 @@ import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 public class RequiresSolidBottomBlockBehavior extends DefaultBlockBehavior {
 
@@ -19,7 +19,7 @@ public class RequiresSolidBottomBlockBehavior extends DefaultBlockBehavior {
     public void onUpdate(BlockUpdateType type, Block block) {
         Block parentBlock = block.getSide(BlockFace.BOTTOM);
         if (!parentBlock.hasCollision()) {
-            block.getWorld().addItemEntity(new ItemStack(block.getBlockId(), 1),
+            block.getWorld().addItemEntity(new ItemBlock(block.getBlockId(), 1),
                     block.getLocation().toVector3f(),
                     EntityItem.getRandomMotion());
             block.getWorld().setAndUpdateBlock(BlockID.AIR, block.getLocation().toLocation().toVector3i());

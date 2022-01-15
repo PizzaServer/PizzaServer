@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
@@ -48,7 +48,7 @@ public class InventorySlotContainer {
         }
     }
 
-    public ItemStack getItemStack() {
+    public Item getItemStack() {
         BaseInventory inventory = this.getInventory();
         if (inventory == null) {
             return null;
@@ -68,18 +68,13 @@ public class InventorySlotContainer {
             case ARMOR:
                 if (this.getInventory() instanceof EntityInventory) {
                     EntityInventory entityInventory = (EntityInventory) this.getInventory();
-                    switch (this.getSlot()) {
-                        case 0:
-                            return entityInventory.getHelmet();
-                        case 1:
-                            return entityInventory.getChestplate();
-                        case 2:
-                            return entityInventory.getLeggings();
-                        case 3:
-                            return entityInventory.getBoots();
-                        default:
-                            return null;
-                    }
+                    return switch (this.getSlot()) {
+                        case 0 -> entityInventory.getHelmet();
+                        case 1 -> entityInventory.getChestplate();
+                        case 2 -> entityInventory.getLeggings();
+                        case 3 -> entityInventory.getBoots();
+                        default -> null;
+                    };
                 } else {
                     return null;
                 }
@@ -92,7 +87,7 @@ public class InventorySlotContainer {
         }
     }
 
-    public void setItemStack(ItemStack itemStack) {
+    public void setItemStack(Item itemStack) {
         if (!this.exists()) {
             throw new NullPointerException("Attempted to set non-existent item slot");
         }

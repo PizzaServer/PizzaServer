@@ -26,7 +26,7 @@ public class StackResponse {
                 (byte) slotContainer.getSlot(),
                 (byte) slotContainer.getItemStack().getCount(),
                 slotContainer.getItemStack().getNetworkId(),
-                slotContainer.getItemStack().getCustomName(),
+                slotContainer.getItemStack().getCustomName().orElse(""),
                 slotContainer.getItemStack().getMeta()));
     }
 

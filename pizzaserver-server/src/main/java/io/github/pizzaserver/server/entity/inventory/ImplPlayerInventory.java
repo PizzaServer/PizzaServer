@@ -6,8 +6,8 @@ import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
@@ -18,7 +18,7 @@ import java.util.Set;
 public class ImplPlayerInventory extends ImplEntityInventory implements PlayerInventory {
 
     private int selectedSlot;
-    private ItemStack cursor = ItemRegistry.getInstance().getItem(BlockID.AIR);
+    private Item cursor = ItemRegistry.getInstance().getItem(BlockID.AIR);
 
 
     public ImplPlayerInventory(Player player) {
@@ -37,44 +37,44 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     }
 
     @Override
-    public void setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
-        ItemStack oldItemStack = this.getSlot(slot);
-        super.setSlot(player, slot, itemStack, keepNetworkId);
+    public void setSlot(Player player, int slot, Item item, boolean keepNetworkId) {
+        Item oldItemStack = this.getSlot(slot);
+        super.setSlot(player, slot, item, keepNetworkId);
 
         // Only broadcast this slot change to other entities if the slot is in the main hand and the change is a visible change.
         boolean isSelectedSlot = slot == this.getSelectedSlot();
-        if (isSelectedSlot && !oldItemStack.visuallyEquals(ItemStack.ensureItemStackExists(itemStack))) {
+        if (isSelectedSlot && !oldItemStack.visuallySameAs(Item.getAirIfNull(item))) {
             // Only broadcast the packet if the item has visually changed for other players.
-            this.broadcastMobEquipmentPacket(itemStack, slot, true);
+            this.broadcastMobEquipmentPacket(item, slot, true);
         }
     }
 
     @Override
-    public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+    public void setArmour(Item helmet, Item chestplate, Item leggings, Item boots) {
         super.setArmour(helmet, chestplate, leggings, boots);
-        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots() }, ContainerId.ARMOR);
+        sendInventorySlots(this.getEntity(), new Item[]{ this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots() }, ContainerId.ARMOR);
     }
 
     @Override
-    public void setHelmet(ItemStack helmet) {
+    public void setHelmet(Item helmet) {
         super.setHelmet(helmet);
         sendInventorySlot(this.getEntity(), this.getHelmet(), 0, ContainerId.ARMOR);
     }
 
     @Override
-    public void setChestplate(ItemStack chestplate) {
+    public void setChestplate(Item chestplate) {
         super.setChestplate(chestplate);
         sendInventorySlot(this.getEntity(), this.getChestplate(), 1, ContainerId.ARMOR);
     }
 
     @Override
-    public void setLeggings(ItemStack leggings) {
+    public void setLeggings(Item leggings) {
         super.setLeggings(leggings);
         sendInventorySlot(this.getEntity(), this.getLeggings(), 2, ContainerId.ARMOR);
     }
 
     @Override
-    public void setBoots(ItemStack boots) {
+    public void setBoots(Item boots) {
         super.setBoots(boots);
         sendInventorySlot(this.getEntity(), this.getBoots(), 3, ContainerId.ARMOR);
     }
@@ -99,11 +99,11 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
             throw new IllegalArgumentException("The selected slot cannot be a number outside of slots 0-8");
         }
 
-        ItemStack oldItemStack = this.getHeldItem();
+        Item oldItem = this.getHeldItem();
         this.selectedSlot = slot;
 
         // Only broadcast the item to others if the item has changed visually for other players.
-        if (!oldItemStack.visuallyEquals(this.getHeldItem())) {
+        if (!oldItem.visuallySameAs(this.getHeldItem())) {
             this.broadcastMobEquipmentPacket(this.getHeldItem(), 0, true);
         }
 
@@ -123,34 +123,38 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     }
 
     @Override
-    public ItemStack getHeldItem() {
+    public Item getHeldItem() {
         return this.getSlot(this.getSelectedSlot());
     }
 
     @Override
-    public void setHeldItem(ItemStack mainHand) {
+    public void setHeldItem(Item mainHand) {
         this.setSlot(this.getSelectedSlot(), mainHand);
     }
 
     @Override
-    public void setOffhandItem(ItemStack offHand) {
+    public void setOffhandItem(Item offHand) {
         super.setOffhandItem(offHand);
-        sendInventorySlots(this.getEntity(), new ItemStack[]{ this.getOffhandItem() }, ContainerId.OFFHAND);
+        sendInventorySlots(this.getEntity(), new Item[]{ this.getOffhandItem() }, ContainerId.OFFHAND);
     }
 
     @Override
-    public ItemStack getCursor() {
+    public Item getCursor() {
         return Optional.ofNullable(this.cursor).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR)).clone();
     }
 
     @Override
-    public void setCursor(ItemStack cursor) {
+    public void setCursor(Item cursor) {
         this.setCursor(cursor, false);
         sendInventorySlot(this.getEntity(), this.cursor, 0, ContainerId.UI);
     }
 
-    public void setCursor(ItemStack cursor, boolean keepNetworkId) {
-        this.cursor = keepNetworkId ? ItemStack.ensureItemStackExists(cursor) : ItemStack.ensureItemStackExists(cursor).newNetworkStack();
+    public void setCursor(Item cursor, boolean keepNetworkId) {
+        if (cursor == null || cursor.isEmpty()) {
+            this.cursor = null;
+        } else {
+            this.cursor = keepNetworkId ? Item.getAirIfNull(cursor).clone() : Item.getAirIfNull(cursor).newNetworkCopy();
+        }
     }
 
     @Override

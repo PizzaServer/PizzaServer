@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.entity.definition.components.impl;
 
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class EntityLootComponent extends EntityComponent {
 
-    private final List<ItemStack> loot;
+    private final List<Item> loot;
 
-    public EntityLootComponent(List<ItemStack> loot) {
+    public EntityLootComponent(List<Item> loot) {
         this.loot = loot;
     }
 
@@ -27,7 +27,7 @@ public class EntityLootComponent extends EntityComponent {
      * @deprecated When loot tables are implemented, this should be replaced.
      */
     @Deprecated
-    public List<ItemStack> getLoot() {
+    public List<Item> getLoot() {
         return this.loot;
     }
 

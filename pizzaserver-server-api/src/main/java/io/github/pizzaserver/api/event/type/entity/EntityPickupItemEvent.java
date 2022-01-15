@@ -2,7 +2,7 @@ package io.github.pizzaserver.api.event.type.entity;
 
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 
 /**
  * Called when an entity is about to pick up an item.
@@ -22,7 +22,7 @@ public class EntityPickupItemEvent extends BaseEntityEvent.Cancellable {
         return this.pickedUpEntity;
     }
 
-    public ItemStack getItem() {
+    public Item getItem() {
         return this.pickedUpEntity.getItem();
     }
 

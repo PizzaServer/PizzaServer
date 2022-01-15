@@ -1,6 +1,6 @@
-package io.github.pizzaserver.api.item.types.component;
+package io.github.pizzaserver.api.item.descriptors;
 
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ArmorSlot;
 
 /**
@@ -31,8 +31,8 @@ public interface ArmorItemComponent extends DurableItemComponent {
      * The possible items that can repair this item in an anvil.
      * @return items that can repair this item
      */
-    default ItemStack[] getRepairItems() {
-        return new ItemStack[0];
+    default Item[] getRepairItems() {
+        return new Item[0];
     }
 
 }

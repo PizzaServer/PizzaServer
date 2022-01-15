@@ -8,9 +8,8 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
 import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.ItemType;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
@@ -24,7 +23,7 @@ public abstract class BaseInventory implements Inventory {
     protected final int id;
     protected final int size;
 
-    protected ItemStack[] slots;
+    protected Item[] slots;
     protected final ContainerType containerType;
 
     private final Set<Player> viewers = new HashSet<>();
@@ -42,7 +41,7 @@ public abstract class BaseInventory implements Inventory {
         this.size = size;
         this.id = id;
         this.containerType = containerType;
-        this.slots = new ItemStack[this.size];
+        this.slots = new Item[this.size];
     }
 
     @Override
@@ -62,12 +61,12 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void clear() {
-        this.setSlots(new ItemStack[this.size]);
+        this.setSlots(new Item[this.size]);
     }
 
     @Override
-    public ItemStack[] getSlots() {
-        ItemStack[] slots = new ItemStack[this.getSize()];
+    public Item[] getSlots() {
+        Item[] slots = new Item[this.getSize()];
         for (int i = 0; i < this.getSize(); i++) {
             slots[i] = this.getSlot(i); // These slots are cloned
         }
@@ -75,13 +74,13 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void setSlots(ItemStack[] slots) {
+    public void setSlots(Item[] slots) {
         if (slots.length != this.size) {
             throw new IllegalArgumentException("The slots provided must be " + this.size + " in length.");
         }
 
         for (int i = 0; i < this.size; i++) {
-            this.slots[i] = ItemStack.ensureItemStackExists(slots[i]).newNetworkStack();
+            this.slots[i] = Item.getAirIfNull(slots[i]).newNetworkCopy();
         }
 
         for (Player viewer : this.getViewers()) {
@@ -90,39 +89,44 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public ItemStack getSlot(int slot) {
+    public Item getSlot(int slot) {
         return this.getSlot(slot, true);
     }
 
     /**
      * Get a slot in the inventory.
      * @param slot the slot
-     * @param clone if the ItemStack should be cloned or if it should retrieve the actual object
-     * @return ItemStack in that slot
+     * @param clone if the Item should be cloned or if it should retrieve the actual object
+     * @return Item in that slot
      */
-    public ItemStack getSlot(int slot, boolean clone) {
-        ItemStack itemStack = Optional.ofNullable(this.slots[slot]).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
+    public Item getSlot(int slot, boolean clone) {
+        Item item = Item.getAirIfNull(this.slots[slot]);
         if (clone) {
-            return itemStack.clone();
+            return item.clone();
         } else {
-            return itemStack;
+            return item;
         }
     }
 
     @Override
-    public void setSlot(int slot, ItemStack itemStack) {
-        this.setSlot(null, slot, itemStack, false);
+    public void setSlot(int slot, Item item) {
+        this.setSlot(null, slot, item, false);
     }
 
     /**
      * Change a slot in the inventory.
      * @param player the player who is changing the slot if any exists
      * @param slot the slot changed
-     * @param itemStack the new item stack
-     * @param keepNetworkId if the network id of the ItemStack should be kept or if a new one should be generated
+     * @param item the new item stack
+     * @param keepNetworkId if the network id of the Item should be kept or if a new one should be generated
      */
-    public void setSlot(Player player, int slot, ItemStack itemStack, boolean keepNetworkId) {
-        this.slots[slot] = keepNetworkId ? itemStack : ItemStack.ensureItemStackExists(itemStack).newNetworkStack();
+    public void setSlot(Player player, int slot, Item item, boolean keepNetworkId) {
+        if (item == null || item.isEmpty()) {
+            this.slots[slot] = null;
+        } else {
+            Item newItem = keepNetworkId ? Item.getAirIfNull(item).clone() : Item.getAirIfNull(item).newNetworkCopy();
+            this.slots[slot] = newItem;
+        }
 
         for (Player viewer : this.getViewers()) {
             if (!viewer.equals(player)) {
@@ -132,9 +136,9 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public boolean contains(ItemType itemType) {
+    public boolean contains(String itemId) {
         for (int i = 0; i < this.slots.length; i++) {
-            if (this.getSlot(i).getItemType().equals(itemType)) {
+            if (this.getSlot(i).getItemId().equals(itemId)) {
                 return true;
             }
         }
@@ -142,11 +146,11 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public boolean contains(ItemStack itemStack) {
-        int countNeeded = itemStack.getCount();
+    public boolean contains(Item item) {
+        int countNeeded = item.getCount();
         for (int i = 0; i < this.slots.length; i++) {
-            ItemStack slot = this.getSlot(i);
-            if (slot.hasSameDataAs(itemStack)) {
+            Item slot = this.getSlot(i);
+            if (slot.hasSameDataAs(item)) {
                 countNeeded = Math.max(0, countNeeded - slot.getCount());
 
                 if (countNeeded == 0) {
@@ -159,63 +163,63 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Optional<ItemStack> addItem(ItemStack itemStack) {
-        ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
+    public Optional<Item> addItem(Item item) {
+        Item remainingItem = Item.getAirIfNull(item).clone();
 
         // Add item to any existing stack
         for (int slot = 0; slot < this.getSize(); slot++) {
-            if (remainingItemStack.getCount() <= 0) {
+            if (remainingItem.getCount() <= 0) {
                 break;
             }
 
-            ItemStack slotStack = this.getSlot(slot);
-            if (slotStack.hasSameDataAs(itemStack)) {
-                int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+            Item slotStack = this.getSlot(slot);
+            if (slotStack.hasSameDataAs(item)) {
+                int maxStackCount = remainingItem.getMaxStackSize();
                 int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
-                int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+                int addedAmount = Math.min(spaceLeft, remainingItem.getCount());
 
                 slotStack.setCount(slotStack.getCount() + addedAmount);
                 this.setSlot(slot, slotStack);
-                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+                remainingItem.setCount(remainingItem.getCount() - addedAmount);
             }
         }
 
         // Add item to free slots
         for (int slot = 0; slot < this.getSize(); slot++) {
-            if (remainingItemStack.getCount() <= 0) {
+            if (remainingItem.getCount() <= 0) {
                 break;
             }
 
-            ItemStack slotStack = this.getSlot(slot);
+            Item slotStack = this.getSlot(slot);
             if (slotStack.isEmpty()) {
-                int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+                int maxStackCount = remainingItem.getMaxStackSize();
                 int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
-                int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
+                int addedAmount = Math.min(spaceLeft, remainingItem.getCount());
 
-                ItemStack newSlot = remainingItemStack.clone();
+                Item newSlot = remainingItem.clone();
                 newSlot.setCount(addedAmount);
                 this.setSlot(slot, newSlot);
-                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+                remainingItem.setCount(remainingItem.getCount() - addedAmount);
             }
         }
 
-        if (remainingItemStack.isEmpty()) {
+        if (remainingItem.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(remainingItemStack);
+            return Optional.of(remainingItem);
         }
     }
 
     @Override
-    public Set<ItemStack> addItems(Collection<ItemStack> itemStacks) {
-        return this.addItems(itemStacks.toArray(new ItemStack[0]));
+    public Set<Item> addItems(Collection<Item> items) {
+        return this.addItems(items.toArray(new Item[0]));
     }
 
     @Override
-    public Set<ItemStack> addItems(ItemStack... itemStacks) {
-        Set<ItemStack> failedToAddItems = new HashSet<>();
-        for (ItemStack itemStack : itemStacks) {
-            this.addItem(itemStack).ifPresent(failedToAddItems::add);
+    public Set<Item> addItems(Item... items) {
+        Set<Item> failedToAddItems = new HashSet<>();
+        for (Item Item : items) {
+            this.addItem(Item).ifPresent(failedToAddItems::add);
         }
         return failedToAddItems;
     }
@@ -283,38 +287,38 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public int getExcessIfAdded(ItemStack itemStack) {
-        ItemStack remainingItemStack = ItemStack.ensureItemStackExists(itemStack.clone());
+    public int getExcessIfAdded(Item item) {
+        Item remainingItem = Item.getAirIfNull(item).clone();
 
         for (int slot = 0; slot < this.getSize(); slot++) {
-            if (remainingItemStack.getCount() <= 0) {
+            if (remainingItem.getCount() <= 0) {
                 break;
             }
 
-            ItemStack slotStack = this.getSlot(slot);
-            int maxStackCount = remainingItemStack.getItemType().getMaxStackSize();
+            Item slotStack = this.getSlot(slot);
+            int maxStackCount = remainingItem.getMaxStackSize();
             int spaceLeft = Math.max(maxStackCount - slotStack.getCount(), 0);
-            int addedAmount = Math.min(spaceLeft, remainingItemStack.getCount());
-            if (slotStack.isEmpty() || slotStack.hasSameDataAs(remainingItemStack)) {
-                remainingItemStack.setCount(remainingItemStack.getCount() - addedAmount);
+            int addedAmount = Math.min(spaceLeft, remainingItem.getCount());
+            if (slotStack.isEmpty() || slotStack.hasSameDataAs(remainingItem)) {
+                remainingItem.setCount(remainingItem.getCount() - addedAmount);
             }
         }
 
-        return remainingItemStack.getCount();
+        return remainingItem.getCount();
     }
 
     /**
      * Helper method to send a slot of an inventory.
      * @param player player to send the slot to
-     * @param itemStack the item stack to send
+     * @param item the item stack to send
      * @param slot the slot
      * @param inventoryId the id of the inventory
      */
-    protected static void sendInventorySlot(Player player, ItemStack itemStack, int slot, int inventoryId) {
+    protected static void sendInventorySlot(Player player, Item item, int slot, int inventoryId) {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
         inventorySlotPacket.setContainerId(inventoryId);
         inventorySlotPacket.setSlot(slot);
-        inventorySlotPacket.setItem(ItemUtils.serializeForNetwork(itemStack, player.getVersion()));
+        inventorySlotPacket.setItem(ItemUtils.serializeForNetwork(item, player.getVersion()));
         player.sendPacket(inventorySlotPacket);
     }
 
@@ -324,10 +328,10 @@ public abstract class BaseInventory implements Inventory {
      * @param slots the slots
      * @param inventoryId the inventory id
      */
-    protected static void sendInventorySlots(Player player, ItemStack[] slots, int inventoryId) {
+    protected static void sendInventorySlots(Player player, Item[] slots, int inventoryId) {
         InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
         inventoryContentPacket.setContainerId(inventoryId);
-        inventoryContentPacket.setContents(Arrays.stream(slots).map(itemStack -> ItemUtils.serializeForNetwork(itemStack, player.getVersion())).collect(Collectors.toList()));
+        inventoryContentPacket.setContents(Arrays.stream(slots).map(item -> ItemUtils.serializeForNetwork(item, player.getVersion())).collect(Collectors.toList()));
         player.sendPacket(inventoryContentPacket);
     }
 

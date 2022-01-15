@@ -1,32 +1,44 @@
 package io.github.pizzaserver.api.item;
 
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.item.types.CustomItemType;
-import io.github.pizzaserver.api.item.types.ItemType;
+import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 
 import java.util.Set;
 
 public interface ItemRegistry {
 
     /**
-     * Register the behaviour/existence of an item type.
-     *
-     * @param itemType item type - if implementing a custom item, you must implement CustomItemType in addition to ItemType
-     *                      otherwise an exception will occur
+     * Register an item.
+     * @param item if implementing a custom item, you must implement CustomItem instead of Item
      */
-    void register(ItemType itemType);
+    void register(Item item);
 
-    ItemType getItemType(String itemId);
+    /**
+     * Register an item and tie it to a behavior.
+     * @param item if implementing a custom item, you must implement CustomItem instead of Item
+     * @param behavior behavior of item
+     */
+    void register(Item item, ItemBehavior<? extends Item> behavior);
 
     boolean hasItemType(String itemId);
 
-    Set<CustomItemType> getCustomTypes();
+    Set<CustomItem> getCustomItems();
 
-    ItemStack getItem(String itemId);
+    default Item getItem(String itemId) {
+        return this.getItem(itemId, 1);
+    }
 
-    ItemStack getItem(String itemId, int amount);
+    default Item getItem(String itemId, int amount) {
+        return this.getItem(itemId, amount, 0);
+    }
 
-    ItemStack getItem(String itemId, int amount, int meta);
+    Item getItem(String itemId, int amount, int meta);
+
+    default ItemBehavior<? extends Item> getItemBehavior(String itemId) {
+        return this.getItemBehavior(this.getItem(itemId));
+    }
+
+    ItemBehavior<? extends Item> getItemBehavior(Item item);
 
     static ItemRegistry getInstance() {
         return Server.getInstance().getItemRegistry();

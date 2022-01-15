@@ -8,8 +8,8 @@ import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
@@ -19,13 +19,13 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
 
     protected final Entity entity;
 
-    protected ItemStack helmet = null;
-    protected ItemStack chestplate = null;
-    protected ItemStack leggings = null;
-    protected ItemStack boots = null;
+    protected Item helmet = null;
+    protected Item chestplate = null;
+    protected Item leggings = null;
+    protected Item boots = null;
 
-    protected ItemStack mainHand = null;
-    protected ItemStack offHand = null;
+    protected Item mainHand = null;
+    protected Item offHand = null;
 
 
     public ImplEntityInventory(Entity entity, ContainerType containerType, int size) {
@@ -52,11 +52,11 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+    public void setArmour(Item helmet, Item chestplate, Item leggings, Item boots) {
         this.setArmour(helmet, chestplate, leggings, boots, false);
     }
 
-    public void setArmour(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, boolean keepNetworkId) {
+    public void setArmour(Item helmet, Item chestplate, Item leggings, Item boots, boolean keepNetworkId) {
         this.setHelmet(helmet, keepNetworkId);
         this.setChestplate(chestplate, keepNetworkId);
         this.setLeggings(leggings, keepNetworkId);
@@ -64,12 +64,12 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public ItemStack getHelmet() {
+    public Item getHelmet() {
         return this.getHelmet(true);
     }
 
-    public ItemStack getHelmet(boolean clone) {
-        ItemStack helmet = Optional.ofNullable(this.helmet).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
+    public Item getHelmet(boolean clone) {
+        Item helmet = Optional.ofNullable(this.helmet).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return helmet.clone();
         } else {
@@ -78,22 +78,26 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public void setHelmet(ItemStack helmet) {
+    public void setHelmet(Item helmet) {
         this.setHelmet(helmet, false);
     }
 
-    public void setHelmet(ItemStack helmet, boolean keepNetworkId) {
-        this.helmet = keepNetworkId ? helmet : ItemStack.ensureItemStackExists(helmet).newNetworkStack();
+    public void setHelmet(Item helmet, boolean keepNetworkId) {
+        if (helmet == null || helmet.isEmpty()) {
+            this.helmet = null;
+        } else {
+            this.helmet = keepNetworkId ? Item.getAirIfNull(helmet).clone() : Item.getAirIfNull(helmet).newNetworkCopy();
+        }
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
-    public ItemStack getChestplate() {
+    public Item getChestplate() {
         return this.getChestplate(true);
     }
 
-    public ItemStack getChestplate(boolean clone) {
-        ItemStack chestplate = Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
+    public Item getChestplate(boolean clone) {
+        Item chestplate = Optional.ofNullable(this.chestplate).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return chestplate.clone();
         } else {
@@ -102,22 +106,26 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public void setChestplate(ItemStack chestplate) {
+    public void setChestplate(Item chestplate) {
         this.setChestplate(chestplate, false);
     }
 
-    public void setChestplate(ItemStack chestplate, boolean keepNetworkId) {
-        this.chestplate = keepNetworkId ? chestplate : ItemStack.ensureItemStackExists(chestplate).newNetworkStack();
+    public void setChestplate(Item chestplate, boolean keepNetworkId) {
+        if (chestplate == null || chestplate.isEmpty()) {
+            this.chestplate = null;
+        } else {
+            this.chestplate = keepNetworkId ? Item.getAirIfNull(chestplate).clone() : Item.getAirIfNull(chestplate).newNetworkCopy();
+        }
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
-    public ItemStack getLeggings() {
+    public Item getLeggings() {
         return this.getLeggings(true);
     }
 
-    public ItemStack getLeggings(boolean clone) {
-        ItemStack leggings = Optional.ofNullable(this.leggings).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
+    public Item getLeggings(boolean clone) {
+        Item leggings = Optional.ofNullable(this.leggings).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return leggings.clone();
         } else {
@@ -126,22 +134,26 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public void setLeggings(ItemStack leggings) {
+    public void setLeggings(Item leggings) {
         this.setLeggings(leggings, false);
     }
 
-    public void setLeggings(ItemStack leggings, boolean keepNetworkId) {
-        this.leggings = keepNetworkId ? leggings : ItemStack.ensureItemStackExists(leggings).newNetworkStack();
+    public void setLeggings(Item leggings, boolean keepNetworkId) {
+        if (leggings == null || leggings.isEmpty()) {
+            this.leggings = null;
+        } else {
+            this.leggings = keepNetworkId ? Item.getAirIfNull(leggings).clone() : Item.getAirIfNull(leggings).newNetworkCopy();
+        }
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
-    public ItemStack getBoots() {
+    public Item getBoots() {
         return this.getBoots(true);
     }
 
-    public ItemStack getBoots(boolean clone) {
-        ItemStack boots = Optional.ofNullable(this.boots).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
+    public Item getBoots(boolean clone) {
+        Item boots = Optional.ofNullable(this.boots).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return boots.clone();
         } else {
@@ -150,12 +162,16 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public void setBoots(ItemStack boots) {
+    public void setBoots(Item boots) {
         this.setBoots(boots, false);
     }
 
-    public void setBoots(ItemStack boots, boolean keepNetworkId) {
-        this.boots = keepNetworkId ? boots : ItemStack.ensureItemStackExists(boots).newNetworkStack();
+    public void setBoots(Item boots, boolean keepNetworkId) {
+        if (boots == null || boots.isEmpty()) {
+            this.boots = null;
+        } else {
+            this.boots = keepNetworkId ? Item.getAirIfNull(boots).clone() : Item.getAirIfNull(boots).newNetworkCopy();
+        }
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
@@ -172,12 +188,12 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public ItemStack getHeldItem() {
+    public Item getHeldItem() {
         return this.getHeldItem(true);
     }
 
-    public ItemStack getHeldItem(boolean clone) {
-        ItemStack mainHand = Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
+    public Item getHeldItem(boolean clone) {
+        Item mainHand = Optional.ofNullable(this.mainHand).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return mainHand.clone();
         } else {
@@ -186,22 +202,26 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public void setHeldItem(ItemStack mainHand) {
+    public void setHeldItem(Item mainHand) {
         this.setHeldItem(mainHand, false);
     }
 
-    public void setHeldItem(ItemStack mainHand, boolean keepNetworkId) {
-        this.mainHand = keepNetworkId ? mainHand : ItemStack.ensureItemStackExists(mainHand).newNetworkStack();
+    public void setHeldItem(Item mainHand, boolean keepNetworkId) {
+        if (mainHand == null || mainHand.isEmpty()) {
+            this.mainHand = null;
+        } else {
+            this.mainHand = keepNetworkId ? Item.getAirIfNull(mainHand).clone() : Item.getAirIfNull(mainHand).newNetworkCopy();
+        }
         this.broadcastMobEquipmentPacket(this.getHeldItem(), 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
-    public ItemStack getOffhandItem() {
+    public Item getOffhandItem() {
         return this.getOffhandItem(true);
     }
 
-    public ItemStack getOffhandItem(boolean clone) {
-        ItemStack offhand = Optional.ofNullable(this.offHand).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
+    public Item getOffhandItem(boolean clone) {
+        Item offhand = Optional.ofNullable(this.offHand).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR));
         if (clone) {
             return offhand.clone();
         } else {
@@ -210,29 +230,33 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
     }
 
     @Override
-    public void setOffhandItem(ItemStack offHand) {
+    public void setOffhandItem(Item offHand) {
         this.setOffhandItem(offHand, false);
     }
 
-    public void setOffhandItem(ItemStack offHand, boolean keepNetworkId) {
-        this.offHand = keepNetworkId ? offHand : ItemStack.ensureItemStackExists(offHand).newNetworkStack();
+    public void setOffhandItem(Item offHand, boolean keepNetworkId) {
+        if (offHand == null || offHand.isEmpty()) {
+            this.offHand = null;
+        } else {
+            this.offHand = keepNetworkId ? Item.getAirIfNull(offHand).clone() : Item.getAirIfNull(offHand).newNetworkCopy();
+        }
         this.broadcastMobEquipmentPacket(this.getHeldItem(), 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     /**
      * Broadcasts mob equipment packet to all viewers of this entity.
-     * @param itemStack the item stack being sent
+     * @param item the item stack being sent
      * @param slot the slot to send it as
      * @param mainHand if the item is in the main hand
      */
-    protected void broadcastMobEquipmentPacket(ItemStack itemStack, int slot, boolean mainHand) {
+    protected void broadcastMobEquipmentPacket(Item item, int slot, boolean mainHand) {
         for (Player player : this.getEntity().getViewers()) {
             MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
             mobEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
             mobEquipmentPacket.setContainerId(mainHand ? ContainerId.INVENTORY : ContainerId.OFFHAND);
             mobEquipmentPacket.setInventorySlot(slot);
             mobEquipmentPacket.setHotbarSlot(slot);
-            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(ItemStack.ensureItemStackExists(itemStack), player.getVersion()));
+            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(Item.getAirIfNull(item), player.getVersion()));
             player.sendPacket(mobEquipmentPacket);
         }
     }

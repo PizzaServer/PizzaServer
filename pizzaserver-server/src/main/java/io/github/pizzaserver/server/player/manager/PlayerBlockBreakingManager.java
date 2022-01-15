@@ -6,7 +6,10 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.data.ToolTier;
+import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.descriptors.ToolItemComponent;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
@@ -71,14 +74,17 @@ public class PlayerBlockBreakingManager {
         if (this.getBlock().filter(block -> block.getHardness() != -1).isPresent()) {
             Block block = this.getBlock().get();
 
-            ItemStack heldItem = this.player.getInventory().getHeldItem();
-
-            boolean isCorrectTool = block.getToolTypeRequired() == heldItem.getItemType().getToolType();
-            boolean isCorrectTier = heldItem.getItemType().getToolTier().getStrength() >= block.getToolTierRequired().getStrength();
+            Item heldItem = this.player.getInventory().getHeldItem();
+            boolean isCorrectTool = block.getToolTypeRequired() == ToolType.NONE;
+            boolean isCorrectTier = block.getToolTierRequired() == ToolTier.NONE;
+            if (heldItem instanceof ToolItemComponent toolItemComponent) {
+                isCorrectTool = block.getToolTypeRequired() == toolItemComponent.getToolType();
+                isCorrectTier = toolItemComponent.getToolTier().getStrength() >= block.getToolTierRequired().getStrength();
+            }
 
             float breakTime = block.getHardness() * ((isCorrectTool && isCorrectTier) || block.canBeMinedWithHand() ? 1.5f : 5f);
-            if (isCorrectTool) {
-                breakTime /= heldItem.getItemType().getToolTier().getStrength();
+            if (isCorrectTool && heldItem instanceof ToolItemComponent toolItemComponent) {
+                breakTime /= toolItemComponent.getToolTier().getStrength();
             }
             // TODO: haste/mining fatigue checks
             // TODO: Underwater check

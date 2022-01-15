@@ -29,8 +29,8 @@ import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.component.ArmorItemComponent;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.descriptors.ArmorItemComponent;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
@@ -86,7 +86,7 @@ public class ImplEntity implements Entity {
     protected final LinkedList<EntityComponentGroup> componentGroups = new LinkedList<>();
 
     protected EntityInventory inventory = new ImplEntityInventory(this, ContainerType.INVENTORY, 0);
-    protected List<ItemStack> loot = new ArrayList<>();
+    protected List<Item> loot = new ArrayList<>();
     protected EntityMetadata metaData = new ImplEntityMetadata(this);
     protected boolean metaDataUpdate;
 
@@ -717,12 +717,12 @@ public class ImplEntity implements Entity {
     }
 
     @Override
-    public List<ItemStack> getLoot() {
+    public List<Item> getLoot() {
         return this.loot;
     }
 
     @Override
-    public void setLoot(List<ItemStack> loot) {
+    public void setLoot(List<Item> loot) {
         this.loot = loot;
     }
 
@@ -773,17 +773,17 @@ public class ImplEntity implements Entity {
     public int getArmourPoints() {
         int armourPoints = 0;
 
-        if (this.getInventory().getHelmet().getItemType() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getHelmet().getItemType()).getProtection();
+        if (this.getInventory().getHelmet() instanceof ArmorItemComponent) {
+            armourPoints += ((ArmorItemComponent) this.getInventory().getHelmet()).getProtection();
         }
-        if (this.getInventory().getChestplate().getItemType() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getChestplate().getItemType()).getProtection();
+        if (this.getInventory().getChestplate() instanceof ArmorItemComponent) {
+            armourPoints += ((ArmorItemComponent) this.getInventory().getChestplate()).getProtection();
         }
-        if (this.getInventory().getLeggings().getItemType() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getLeggings().getItemType()).getProtection();
+        if (this.getInventory().getLeggings() instanceof ArmorItemComponent) {
+            armourPoints += ((ArmorItemComponent) this.getInventory().getLeggings()).getProtection();
         }
-        if (this.getInventory().getBoots().getItemType() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getBoots().getItemType()).getProtection();
+        if (this.getInventory().getBoots() instanceof ArmorItemComponent) {
+            armourPoints += ((ArmorItemComponent) this.getInventory().getBoots()).getProtection();
         }
 
         return armourPoints;
@@ -833,7 +833,7 @@ public class ImplEntity implements Entity {
             EntityDeathEvent deathEvent = new EntityDeathEvent(this, this.getLoot(), deathMessage, this.getServer().getPlayers());
             this.getServer().getEventManager().call(deathEvent);
 
-            for (ItemStack itemStack : deathEvent.getDrops()) {
+            for (Item itemStack : deathEvent.getDrops()) {
                 this.getWorld().addItemEntity(itemStack, this.getLocation().toVector3f());
             }
 
@@ -1035,17 +1035,17 @@ public class ImplEntity implements Entity {
 
     private float getKnockbackResistance() {
         float totalResistance = 0;
-        if (this.getInventory().getHelmet().getItemType() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getHelmet().getItemType()).getKnockbackResistance();
+        if (this.getInventory().getHelmet() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getHelmet()).getKnockbackResistance();
         }
-        if (this.getInventory().getChestplate().getItemType() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getChestplate().getItemType()).getKnockbackResistance();
+        if (this.getInventory().getChestplate() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getChestplate()).getKnockbackResistance();
         }
-        if (this.getInventory().getLeggings().getItemType() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getLeggings().getItemType()).getKnockbackResistance();
+        if (this.getInventory().getLeggings() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getLeggings()).getKnockbackResistance();
         }
-        if (this.getInventory().getBoots().getItemType() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getBoots().getItemType()).getKnockbackResistance();
+        if (this.getInventory().getBoots() instanceof ArmorItemComponent) {
+            totalResistance += ((ArmorItemComponent) this.getInventory().getBoots()).getKnockbackResistance();
         }
 
         return Math.max(0, Math.min(1, totalResistance));
@@ -1239,10 +1239,10 @@ public class ImplEntity implements Entity {
     }
 
     protected void sendEquipmentPacket(Player player) {
-        ItemStack helmet = this.getInventory().getHelmet();
-        ItemStack chestplate = this.getInventory().getChestplate();
-        ItemStack leggings = this.getInventory().getLeggings();
-        ItemStack boots = this.getInventory().getBoots();
+        Item helmet = this.getInventory().getHelmet();
+        Item chestplate = this.getInventory().getChestplate();
+        Item leggings = this.getInventory().getLeggings();
+        Item boots = this.getInventory().getBoots();
         boolean wearingAmour = !(helmet.isEmpty() && chestplate.isEmpty() && leggings.isEmpty() && boots.isEmpty());
 
         if (wearingAmour) {

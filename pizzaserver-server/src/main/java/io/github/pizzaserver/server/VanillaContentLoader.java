@@ -13,11 +13,12 @@ import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityItemDefinition;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.types.ItemTypeID;
-import io.github.pizzaserver.api.item.types.impl.*;
+import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.server.block.behavior.impl.ButtonBlockBehavior;
 import io.github.pizzaserver.server.block.behavior.impl.HorziontalDirectionBlockBehavior;
 import io.github.pizzaserver.server.blockentity.types.impl.*;
+import io.github.pizzaserver.server.item.behavior.impl.ItemArmorBehavior;
+import io.github.pizzaserver.server.item.behavior.impl.ItemBoatBehavior;
 
 import java.util.ArrayList;
 
@@ -32,18 +33,18 @@ public class VanillaContentLoader {
     }
 
     private static void loadItems() {
-        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.ACACIA_BOAT, WoodType.ACACIA));
-        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.BIRCH_BOAT, WoodType.BIRCH));
-        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.BOAT, WoodType.OAK));   // Why does Microsoft have minecraft:boat and minecraft:oak_boat?...
-        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.DARK_OAK_BOAT, WoodType.DARK_OAK));
-        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.JUNGLE_BOAT, WoodType.JUNGLE));
-        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.OAK_BOAT, WoodType.OAK));
-        ItemRegistry.getInstance().register(new ItemTypeBoat(ItemTypeID.SPRUCE_BOAT, WoodType.SPRUCE));
-        ItemRegistry.getInstance().register(new ItemTypeShears());
-        ItemRegistry.getInstance().register(new ItemTypeStonePickaxe());
-        ItemRegistry.getInstance().register(new ItemTypeWoodenPickaxe());
-        ItemRegistry.getInstance().register(new ItemTypeWoodenSword());
-        ItemRegistry.getInstance().register(new ItemTypeDiamondHelmet());
+        ItemRegistry.getInstance().register(new ItemAcaciaBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemBirchBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemBoat(), new ItemBoatBehavior());   // Why does Microsoft have minecraft:boat and minecraft:oak_boat?...
+        ItemRegistry.getInstance().register(new ItemDarkOakBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemDiamondHelmet(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemJungleBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemOakBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemSpruceBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemShears());
+        ItemRegistry.getInstance().register(new ItemStonePickaxe());
+        ItemRegistry.getInstance().register(new ItemWoodenPickaxe());
+        ItemRegistry.getInstance().register(new ItemWoodenSword());
     }
 
     private static void loadBlocks() {
@@ -75,6 +76,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCoalOre());
         BlockRegistry.getInstance().register(new BlockCobbledDeepslate());
         BlockRegistry.getInstance().register(new BlockCobblestone());
+        BlockRegistry.getInstance().register(new BlockColoredTorchBP());
+        BlockRegistry.getInstance().register(new BlockColoredTorchRG());
         BlockRegistry.getInstance().register(new BlockCopperOre());
         BlockRegistry.getInstance().register(new BlockCrackedDeepslateBrick());
         BlockRegistry.getInstance().register(new BlockCrackedDeepslateTile());
