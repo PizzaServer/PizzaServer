@@ -3,56 +3,48 @@ package io.github.pizzaserver.api.block.impl;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.data.SandType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.utils.DyeColor;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class BlockSand extends Block {
+public class BlockConcretePowder extends Block {
 
-    private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
-        {
-            this.add(NbtMap.builder()
-                    .putString("sand_type", "normal")
-                    .build());
-            this.add(NbtMap.builder()
-                    .putString("sand_type", "red")
-                    .build());
-        }
-    };
+    private static final List<NbtMap> BLOCK_STATES = Arrays.stream(DyeColor.values())
+            .map(color -> NbtMap.builder()
+                    .putString("color", color.getId())
+                    .build())
+            .collect(Collectors.toList());
 
 
-    public BlockSand() {
-        this(SandType.NORMAL);
+    public BlockConcretePowder() {
+        this(DyeColor.WHITE);
     }
 
-    public BlockSand(SandType sandType) {
-        this.setBlockState(sandType.ordinal());
+    public BlockConcretePowder(DyeColor dyeColor) {
+        this.setBlockState(dyeColor.ordinal());
     }
 
-    public SandType getSandType() {
-        return SandType.values()[this.getBlockState()];
+    public DyeColor getColor() {
+        return DyeColor.values()[this.getBlockState()];
     }
 
-    public void setSandType(SandType sandType) {
-        this.setBlockState(sandType.ordinal());
+    public void setColor(DyeColor color) {
+        this.setBlockState(color.ordinal());
     }
 
     @Override
     public String getBlockId() {
-        return BlockID.SAND;
+        return BlockID.CONCRETE_POWDER;
     }
 
     @Override
     public String getName() {
-        if (this.getBlockState() == 0) {
-            return "Sand";
-        } else {
-            return "Red Sand";
-        }
+        return this.getColor().getDisplayName() + " Concrete Powder";
     }
 
     @Override
@@ -94,7 +86,5 @@ public class BlockSand extends Block {
     public ItemBlock toStack() {
         return new ItemBlock(this, 1);
     }
-
-
 
 }

@@ -31,8 +31,7 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block, int count) {
-        super(block.getBlockId(), count);
-        this.block = block.clone();
+        this(block, count, 0);
     }
 
     public ItemBlock(Block block, int count, int meta) {

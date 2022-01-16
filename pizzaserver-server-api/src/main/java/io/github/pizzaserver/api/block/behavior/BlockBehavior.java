@@ -4,6 +4,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.player.Player;
 
 public interface BlockBehavior {
 
@@ -29,12 +30,12 @@ public interface BlockBehavior {
 
     /**
      * Called when the right click button is used against this block.
-     * @param entity the entity who interacted with the block
+     * @param player the player who interacted with the block
      * @param block the block interacted with
      * @param face block face that was clicked
      * @return if the item used to interact with this block should be called
      */
-    default boolean onInteract(Entity entity, Block block, BlockFace face) {
+    default boolean onInteract(Player player, Block block, BlockFace face) {
         return true;
     }
 

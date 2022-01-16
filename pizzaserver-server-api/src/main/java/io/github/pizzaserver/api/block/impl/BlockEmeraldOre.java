@@ -6,26 +6,26 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.impl.ItemRawIron;
+import io.github.pizzaserver.api.item.impl.ItemEmerald;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockIronOre extends Block {
+public class BlockEmeraldOre extends Block {
 
     @Override
     public String getBlockId() {
-        return BlockID.IRON_ORE;
+        return BlockID.EMERALD_ORE;
     }
 
     @Override
     public String getName() {
-        return "Iron Ore";
+        return "Emerald Ore";
     }
 
     @Override
     public float getHardness() {
-        return 3f;
+        return 3;
     }
 
     @Override
@@ -34,18 +34,18 @@ public class BlockIronOre extends Block {
     }
 
     @Override
-    public ToolTier getToolTierRequired() {
-        return ToolTier.STONE;
-    }
-
-    @Override
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
     }
 
     @Override
+    public ToolTier getToolTierRequired() {
+        return ToolTier.IRON;
+    }
+
+    @Override
     public Set<Item> getDrops(Entity entity) {
-        return Collections.singleton(new ItemRawIron());
+        return Collections.singleton(new ItemEmerald());
     }
 
 }

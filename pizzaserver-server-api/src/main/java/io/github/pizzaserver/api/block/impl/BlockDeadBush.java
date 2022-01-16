@@ -6,31 +6,28 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.impl.ItemClayBall;
+import io.github.pizzaserver.api.item.descriptors.ToolItemComponent;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.item.impl.ItemStick;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockClay extends Block {
+public class BlockDeadBush extends Block {
 
     @Override
     public String getBlockId() {
-        return BlockID.CLAY;
+        return BlockID.DEADBUSH;
     }
 
     @Override
     public String getName() {
-        return "Clay Block";
+        return "Dead Bush";
     }
 
     @Override
     public float getHardness() {
-        return 0.6f;
-    }
-
-    @Override
-    public float getBlastResistance() {
-        return 0.6f;
+        return 0;
     }
 
     @Override
@@ -40,17 +37,22 @@ public class BlockClay extends Block {
 
     @Override
     public ToolType getToolTypeRequired() {
-        return ToolType.SHOVEL;
+        return ToolType.SHEARS;
     }
 
     @Override
-    public ToolTier getToolTierRequired() {
-        return ToolTier.WOOD;
+    public boolean hasCollision() {
+        return false;
     }
 
     @Override
     public Set<Item> getDrops(Entity entity) {
-        return Collections.singleton(new ItemClayBall(4));
+        if (entity.getInventory().getHeldItem() instanceof ToolItemComponent toolItemComponent
+                && toolItemComponent.getToolType() == ToolType.SHEARS) {
+            return Collections.singleton(this.toStack());
+        }
+
+        return Collections.singleton(new ItemStick((int) Math.floor(Math.random() * 2) + 1));
     }
 
 }

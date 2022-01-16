@@ -12,32 +12,20 @@ import java.util.Set;
 
 public class DefaultBlockBehavior implements BlockBehavior {
 
-    /**
-     * Retrieve the loot that should be dropped when this block is broken.
-     * @param entity entity who broke this block
-     * @param block the block that was broken
-     * @return the
-     */
-    protected Set<Item> getDrops(Entity entity, Block block) {
+    @Override
+    public void onBreak(Entity entity, Block block) {
         boolean correctTool = false;
         if (entity.getInventory().getHeldItem() instanceof ToolItemComponent itemToolComponent) {
             correctTool = itemToolComponent.getToolTier().getStrength() >= block.getToolTierRequired().getStrength()
-                && itemToolComponent.getToolType() == block.getToolTypeRequired();
+                    && itemToolComponent.getToolType() == block.getToolTypeRequired();
         }
 
         if (block.canBeMinedWithHand() || correctTool) {
-            return Collections.singleton(block.toStack());
-        } else {
-            return Collections.emptySet();
-        }
-    }
-
-    @Override
-    public void onBreak(Entity entity, Block block) {
-        for (Item loot : this.getDrops(entity, block)) {
-            block.getWorld().addItemEntity(loot,
-                    block.getLocation().toVector3f().add(0.5f, 0.5f, 0.5f),
-                    EntityItem.getRandomMotion());
+            for (Item loot : block.getDrops(entity)) {
+                block.getWorld().addItemEntity(loot,
+                        block.getLocation().toVector3f().add(0.5f, 0.5f, 0.5f),
+                        EntityItem.getRandomMotion());
+            }
         }
     }
 

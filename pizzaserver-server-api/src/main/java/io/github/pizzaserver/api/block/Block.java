@@ -6,6 +6,8 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.behavior.BlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.PushResponse;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -17,6 +19,7 @@ import io.github.pizzaserver.api.utils.BoundingBox;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public abstract class Block implements Cloneable {
 
@@ -43,6 +46,10 @@ public abstract class Block implements Cloneable {
      */
     public abstract String getName();
 
+    /**
+     * Returning -1 means the block cannot be destroyed.
+     * @return hardness of the block
+     */
     public abstract float getHardness();
 
     public BlockLocation getLocation() {
@@ -169,6 +176,10 @@ public abstract class Block implements Cloneable {
         return ToolTier.NONE;
     }
 
+    /**
+     * Returning -1 means the block cannot explode.
+     * @return blast resistance
+     */
     public float getBlastResistance() {
         return 0;
     }
@@ -235,11 +246,20 @@ public abstract class Block implements Cloneable {
     }
 
     public ItemBlock toStack() {
-        return (ItemBlock) ItemRegistry.getInstance().getItem(this.getBlockId(), 1);
+        return new ItemBlock(this.getBlockId(), 1);
     }
 
     public BlockBehavior getBehavior() {
         return BlockRegistry.getInstance().getBlockBehavior(this);
+    }
+
+    /**
+     * Get the items that should drop when this block is mined with the correct tool and tier.
+     * @param entity the entity that mined this block
+     * @return the drops
+     */
+    public Set<Item> getDrops(Entity entity) {
+        return Collections.singleton(this.toStack());
     }
 
     public boolean isAir() {

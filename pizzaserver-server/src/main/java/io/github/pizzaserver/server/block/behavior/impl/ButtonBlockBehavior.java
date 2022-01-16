@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
+import io.github.pizzaserver.api.player.Player;
 
 public class ButtonBlockBehavior extends DefaultBlockBehavior {
 
@@ -18,7 +19,7 @@ public class ButtonBlockBehavior extends DefaultBlockBehavior {
     }
 
     @Override
-    public boolean onInteract(Entity entity, Block block, BlockFace face) {
+    public boolean onInteract(Player player, Block block, BlockFace face) {
         if (block.getBlockState() < 6) {
             block.setBlockState(block.getBlockState() + 6);   // Power it on
             block.getWorld().setAndUpdateBlock(block, block.getLocation().toVector3i());

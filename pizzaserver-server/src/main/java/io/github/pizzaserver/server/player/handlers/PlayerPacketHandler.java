@@ -99,7 +99,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(new ItemBlock(BlockID.IRON_ORE, 10));
+        this.player.getInventory().addItem(new ItemBlock(BlockID.DEEPSLATE_REDSTONE_ORE, 10));
         this.player.getInventory().addItem(new ItemBoat());
         this.player.getInventory().addItem(new ItemSlimeball());
         this.player.getInventory().addItem(new ItemHeartOfTheSea());

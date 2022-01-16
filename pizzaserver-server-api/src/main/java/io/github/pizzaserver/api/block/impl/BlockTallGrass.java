@@ -4,11 +4,10 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.TallGrassType;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.item.Item;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class BlockTallGrass extends Block {
 
@@ -72,6 +71,11 @@ public class BlockTallGrass extends Block {
     @Override
     public boolean isReplaceable() {
         return true;
+    }
+
+    @Override
+    public Set<Item> getDrops(Entity entity) {
+        return Collections.emptySet();
     }
 
 }

@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.StoneType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +45,15 @@ public class BlockStone extends Block {
 
     @Override
     public String getName() {
-        return "Stone";
+        return switch (this.getStoneType()) {
+            case STONE -> "Stone";
+            case GRANITE -> "Granite";
+            case GRANITE_SMOOTH -> "Smooth Granite";
+            case DIORITE -> "Diorite";
+            case DIORITE_SMOOTH -> "Smooth Diorite";
+            case ANDESITE -> "Andesite";
+            case ANDESITE_SMOOTH -> "Andesite Smooth";
+        };
     }
 
     @Override
@@ -70,6 +79,11 @@ public class BlockStone extends Block {
     @Override
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
+    }
+
+    @Override
+    public ItemBlock toStack() {
+        return new ItemBlock(this, 1);
     }
 
 }

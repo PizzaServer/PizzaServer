@@ -6,36 +6,45 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.impl.ItemRawIron;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockIronOre extends Block {
+public class BlockBlueIce extends Block {
 
     @Override
     public String getBlockId() {
-        return BlockID.IRON_ORE;
+        return BlockID.BLUE_ICE;
     }
 
     @Override
     public String getName() {
-        return "Iron Ore";
+        return "Blue Ice";
     }
 
     @Override
     public float getHardness() {
-        return 3f;
+        return 2.8f;
     }
 
     @Override
     public float getBlastResistance() {
-        return 3;
+        return 2.8f;
     }
 
     @Override
-    public ToolTier getToolTierRequired() {
-        return ToolTier.STONE;
+    public float getFriction() {
+        return 0.99f;
+    }
+
+    @Override
+    public int getLightEmission() {
+        return 4;
+    }
+
+    @Override
+    public boolean canBeMinedWithHand() {
+        return true;
     }
 
     @Override
@@ -44,8 +53,14 @@ public class BlockIronOre extends Block {
     }
 
     @Override
+    public ToolTier getToolTierRequired() {
+        return ToolTier.WOOD;
+    }
+
+    @Override
     public Set<Item> getDrops(Entity entity) {
-        return Collections.singleton(new ItemRawIron());
+        // TODO: return blue ice block if entity is has silk touch
+        return Collections.emptySet();
     }
 
 }

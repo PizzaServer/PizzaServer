@@ -289,6 +289,7 @@ public class ImplChunk implements Chunk {
     public boolean requestBlockUpdate(BlockUpdateType type, int x, int y, int z, int ticks) {
         Vector3i blockCoordinates = Vector3i.from(x & 15, y, z & 15);
         BlockUpdateEntry entry = new BlockUpdateEntry(type, blockCoordinates, ticks);
+        this.blockUpdates.remove(entry);
         return this.blockUpdates.add(entry);
     }
 
