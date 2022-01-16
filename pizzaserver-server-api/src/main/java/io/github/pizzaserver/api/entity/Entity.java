@@ -42,6 +42,7 @@ public interface Entity extends Watchable {
     /**
      * Retrieves the most recent entity component from its component groups that matches the component requested.
      * If no component is found, the default component is returned.
+     *
      * @param componentClazz component class
      * @return entity component
      */
@@ -49,6 +50,7 @@ public interface Entity extends Watchable {
 
     /**
      * Check if this entity has any component group with this component defined.
+     *
      * @param componentClazz component class
      * @return if it exists
      */
@@ -70,6 +72,7 @@ public interface Entity extends Watchable {
 
     /**
      * Retrieve the block that this entity's head is in.
+     *
      * @return the block the entity's head is in
      */
     Block getHeadBlock();
@@ -80,24 +83,28 @@ public interface Entity extends Watchable {
 
     /**
      * Retrieve the {@link Server} this entity is in.
+     *
      * @return {@link Server}
      */
     Server getServer();
 
     /**
      * Retrieve the {@link Level} this entity is in.
+     *
      * @return {@link Level}
      */
     Level getLevel();
 
     /**
      * Retrieve the {@link World} this entity is in.
+     *
      * @return {@link World}
      */
     World getWorld();
 
     /**
      * Retrieve the {@link Chunk} the entity is in.
+     *
      * @return the {@link Chunk}
      */
     Chunk getChunk();
@@ -111,6 +118,7 @@ public interface Entity extends Watchable {
     /**
      * Retrieve the current velocity of the entity.
      * This will return an inaccurate velocity for player entities due to the nature of latency.
+     *
      * @return velocity of the entity
      */
     Vector3f getMotion();
@@ -119,6 +127,7 @@ public interface Entity extends Watchable {
 
     /**
      * Retrieve the {@link Location} of the entity.
+     *
      * @return the {@link Location}
      */
     Location getLocation();
@@ -144,6 +153,7 @@ public interface Entity extends Watchable {
     /**
      * Retrieves the display name if present.
      * Otherwise it falls back to the name of the entity.
+     *
      * @return name of the entity
      */
     String getName();
@@ -154,12 +164,14 @@ public interface Entity extends Watchable {
 
     /**
      * Checks if the entity is can be hurt.
+     *
      * @return if the entity can be hurt.
      */
     boolean isVulnerable();
 
     /**
      * Change the vulnerability status fo the entity.
+     *
      * @param vulnerable if the entity is vulnerable and can be hurt/die.
      */
     void setVulnerable(boolean vulnerable);
@@ -171,12 +183,14 @@ public interface Entity extends Watchable {
     /**
      * Retrieve the entity's current movement speed per tick.
      * This is used to determine how far this entity's input can move per tick
+     *
      * @return movement speed of an entity
      */
     float getMovementSpeed();
 
     /**
      * Change the entity's movement speed input per tick.
+     *
      * @param movementSpeed new movement speed
      */
     void setMovementSpeed(float movementSpeed);
@@ -293,6 +307,7 @@ public interface Entity extends Watchable {
     /**
      * This entity will be shown to the player when the player is within range.
      * If the player is already in range and has not seen the entity, it will be spawned for the player
+     *
      * @param player player to show the entity to
      */
     void showTo(Player player);
@@ -300,12 +315,14 @@ public interface Entity extends Watchable {
     /**
      * This entity will not be shown to the player when the player is within range.
      * If the player is already in range and sees the entity, it will be despawned from the player
+     *
      * @param player player to hide the entity from
      */
     void hideFrom(Player player);
 
     /**
      * Checks if this entity can be shown to a player.
+     *
      * @param player the player in question
      * @return if the entity is supposed to be hidden from the player
      */
@@ -313,6 +330,7 @@ public interface Entity extends Watchable {
 
     /**
      * Check if the entity has been spawned into a world yet.
+     *
      * @return if the entity has been spawned into a world
      */
     boolean hasSpawned();
@@ -321,6 +339,7 @@ public interface Entity extends Watchable {
 
     /**
      * Spawns an entity to a player.
+     *
      * @param player the player the entity is being spawned to
      * @return if the entity was spawned
      */
@@ -328,6 +347,7 @@ public interface Entity extends Watchable {
 
     /**
      * Despawns an entity from a player.
+     *
      * @param player the player the entity is being despawned from
      * @return if the entity was despawned
      */

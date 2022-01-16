@@ -103,7 +103,8 @@ public class PlayerPopupManager {
 
     /**
      * Calls the callback of a form saying that it was closed.
-     * @param form the form
+     *
+     * @param form     the form
      * @param callback the callback
      */
     private void callCloseFormCallback(Form form, Consumer<FormResponse<? extends Form>> callback) {
@@ -134,8 +135,7 @@ public class PlayerPopupManager {
     }
 
     private static void callCallback(
-            Consumer<FormResponse<? extends Form>> callback,
-            FormResponse<? extends Form> response) {
+            Consumer<FormResponse<? extends Form>> callback, FormResponse<? extends Form> response) {
         try {
             callback.accept(response);
         } catch (Exception exception) {

@@ -33,6 +33,7 @@ public class ServerConfig {
 
     /**
      * Returns if xbox chains should be verified.
+     *
      * @return if xbox chains should be verified
      */
     public boolean isOnlineMode() {
@@ -61,6 +62,7 @@ public class ServerConfig {
 
     /**
      * Max amount of chunk requests a level chunk processing thread can handle per tick.
+     *
      * @return max chunk request processing count per tick
      */
     public int getMaxChunkProcessingCountPerTick() {
@@ -70,6 +72,7 @@ public class ServerConfig {
     /**
      * Returns the amount of seconds it takes for a chunk with no chunk loaders
      * (caused by plugins fetching a block in an unloaded chunk) to be automatically unloaded.
+     *
      * @return amount of seconds
      */
     public int getChunkExpiryTime() {
@@ -78,6 +81,7 @@ public class ServerConfig {
 
     /**
      * Returns the radius of chunks a player must be to a chunk for it to tick block updates/entities.
+     *
      * @return chunk radius
      */
     public int getChunkPlayerTickRadius() {
@@ -90,6 +94,7 @@ public class ServerConfig {
 
     /**
      * Default yaw to assign players who join the server.
+     *
      * @return default yaw
      */
     public float getDefaultYaw() {
@@ -98,6 +103,7 @@ public class ServerConfig {
 
     /**
      * Default pitch to assign players who join the server.
+     *
      * @return default pitch
      */
     public float getDefaultPitch() {

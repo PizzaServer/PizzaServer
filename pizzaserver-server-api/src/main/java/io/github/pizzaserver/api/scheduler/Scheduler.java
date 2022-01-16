@@ -69,6 +69,7 @@ public class Scheduler {
 
     /**
      * Removes scheduler's hook to the server tick whilst clearing the queue.
+     *
      * @return true if the scheduler was initially running and then stopped.
      */
     public synchronized boolean stopScheduler() {
@@ -101,6 +102,7 @@ public class Scheduler {
 
     /**
      * Ran to indicate a server tick has occurred, potentially triggering a server tick.
+     *
      * @return true is a scheduler tick is triggered as a result.
      */
     public synchronized boolean serverTick() { // Should only be done on the main thread
@@ -224,6 +226,7 @@ public class Scheduler {
 
     /**
      * Retrieve amount of server ticks this scheduler has been running for.
+     *
      * @return the amount of server ticks this scheduler has been running for.
      */
     public long getSyncedTick() {
@@ -232,6 +235,7 @@ public class Scheduler {
 
     /**
      * Retrieve the amount of ticks this scheduler has executed.
+     *
      * @return the amount of ticks this scheduler has executed.
      */
     public long getSchedulerTick() {
@@ -240,6 +244,7 @@ public class Scheduler {
 
     /**
      * Retrieve the amount of server ticks between each scheduler tick.
+     *
      * @return the amount of server ticks between each scheduler tick.
      */
     public int getTickDelay() {
@@ -248,6 +253,7 @@ public class Scheduler {
 
     /**
      * Retrieve a set of active async task threads.
+     *
      * @return a set of active async task threads
      */
     public Set<Thread> getActiveThreads() {

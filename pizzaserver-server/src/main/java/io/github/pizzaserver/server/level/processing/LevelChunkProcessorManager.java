@@ -46,6 +46,7 @@ public class LevelChunkProcessorManager {
 
     /**
      * Add a chunk request for the processors to handle.
+     *
      * @param request chunk request
      */
     public void addRequest(ChunkRequest request) {
@@ -55,7 +56,9 @@ public class LevelChunkProcessorManager {
     /**
      * Take a request from the queued chunk requests.
      * If none is available this will wait until one is available or the thread is interrupted.
+     *
      * @return chunk request
+     *
      * @throws InterruptedException if the thread is interrupted.
      */
     public ChunkRequest takeRequest() throws InterruptedException {

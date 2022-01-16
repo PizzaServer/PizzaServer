@@ -12,6 +12,7 @@ public interface ArmorItemComponent extends DurableItemComponent {
 
     /**
      * Amount of armor points this item type provides when worn.
+     *
      * @return armor points this item type provides
      */
     default int getProtection() {
@@ -21,6 +22,7 @@ public interface ArmorItemComponent extends DurableItemComponent {
     /**
      * Percentage of knockback resistance to apply.
      * This ranges from 0-1, 1 being maximum knockback resistance
+     *
      * @return percentage of knockback to ignore if this item is worn
      */
     default float getKnockbackResistance() {
@@ -29,6 +31,7 @@ public interface ArmorItemComponent extends DurableItemComponent {
 
     /**
      * The possible items that can repair this item in an anvil.
+     *
      * @return items that can repair this item
      */
     default Item[] getRepairItems() {

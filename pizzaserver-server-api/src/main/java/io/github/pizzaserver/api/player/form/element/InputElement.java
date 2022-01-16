@@ -26,6 +26,7 @@ public class InputElement extends CustomElement {
 
     /**
      * Text displayed when no characters are in the input box.
+     *
      * @return the text
      */
     public String getPlaceholder() {
@@ -34,6 +35,7 @@ public class InputElement extends CustomElement {
 
     /**
      * Default text placed in the input box.
+     *
      * @return the text
      */
     public String getValue() {
@@ -50,6 +52,7 @@ public class InputElement extends CustomElement {
 
         /**
          * Set the text displayed above the input element.
+         *
          * @param text text
          * @return self for chaining
          */
@@ -60,6 +63,7 @@ public class InputElement extends CustomElement {
 
         /**
          * Set the default text placed in.
+         *
          * @param value text
          * @return self for chaining
          */
@@ -70,6 +74,7 @@ public class InputElement extends CustomElement {
 
         /**
          * Set the placeholder displayed when no text is in the input.
+         *
          * @param placeholder text
          * @return self for chaining
          */

@@ -16,30 +16,35 @@ public interface PlayerList {
 
     /**
      * Add a new entry to the player's player list.
+     *
      * @param entry player list entry
      */
     void addEntry(Entry entry);
 
     /**
      * Add multiple entries to the player's player list.
+     *
      * @param entries player list entries
      */
     void addEntries(Collection<Entry> entries);
 
     /**
      * Remove a entry from the player's player list.
+     *
      * @param entry player list entry
      */
     void removeEntry(Entry entry);
 
     /**
      * Remove multiple entries from the player's player list.
+     *
      * @param entries player list entries
      */
     void removeEntries(Collection<Entry> entries);
 
     /**
      * Retrieve the entries a player is currently shown.
+     *
      * @return player list entries
      */
     List<Entry> getEntries();
@@ -99,6 +104,7 @@ public interface PlayerList {
 
         /**
          * Used on specific platforms to limit who can see messages sent by this player.
+         *
          * @return platform chat id
          */
         public String getPlatformChatId() {
@@ -107,6 +113,7 @@ public interface PlayerList {
 
         /**
          * Get the device of the player.
+         *
          * @return player's device
          */
         public Device getDevice() {

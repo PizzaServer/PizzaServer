@@ -60,7 +60,8 @@ public class ImplPlayerList implements PlayerList {
 
     /**
      * Send a PlayerListPacket to this player.
-     * @param action action type
+     *
+     * @param action  action type
      * @param entries entries to send
      */
     private void sendPacket(PlayerListPacket.Action action, Collection<Entry> entries) {

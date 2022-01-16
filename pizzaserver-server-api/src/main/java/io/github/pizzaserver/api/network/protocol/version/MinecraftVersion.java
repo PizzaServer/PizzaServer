@@ -19,6 +19,7 @@ public interface MinecraftVersion extends MinecraftDataMapper {
 
     /**
      * The game version.
+     *
      * @return the game version
      */
     String getVersion();
@@ -27,6 +28,7 @@ public interface MinecraftVersion extends MinecraftDataMapper {
 
     /**
      * Resolves the runtime id of an item given its item id.
+     *
      * @param itemName item id
      * @return item runtime id
      */
@@ -34,6 +36,7 @@ public interface MinecraftVersion extends MinecraftDataMapper {
 
     /**
      * Resolve an item name by its runtime id.
+     *
      * @param runtimeId runtime id
      * @return the item name
      */
@@ -41,6 +44,7 @@ public interface MinecraftVersion extends MinecraftDataMapper {
 
     /**
      * Resolve a block by its runtime id.
+     *
      * @param blockRuntimeId runtime id
      * @return the block
      */

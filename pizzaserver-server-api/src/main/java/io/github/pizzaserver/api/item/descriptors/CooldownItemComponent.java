@@ -7,12 +7,14 @@ public interface CooldownItemComponent {
 
     /**
      * Retrieve the cooldown category this item falls under.
+     *
      * @return cooldown item category
      */
     String getCooldownCategory();
 
     /**
      * Retrieve the amount of ticks this item should be on cooldown for after usage.
+     *
      * @return amount of ticks
      */
     int getCooldownTicks();

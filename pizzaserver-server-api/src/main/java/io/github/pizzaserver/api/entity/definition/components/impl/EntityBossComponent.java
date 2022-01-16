@@ -24,8 +24,9 @@ public class EntityBossComponent extends EntityComponent {
 
     /**
      * Creates a boss bar when in distance to this entity.
-     * @param name name of the boss bar. If none is present it will use the name of the entity
-     * @param range amount of blocks a player must be to see this boss bar
+     *
+     * @param name      name of the boss bar. If none is present it will use the name of the entity
+     * @param range     amount of blocks a player must be to see this boss bar
      * @param darkenSky if the boss bar should darken the sky
      */
     public EntityBossComponent(String name, int range, boolean darkenSky) {
@@ -37,7 +38,8 @@ public class EntityBossComponent extends EntityComponent {
 
     /**
      * Creates a boss bar when in distance to this entity.
-     * @param range amount of blocks a player must be to see this boss bar
+     *
+     * @param range     amount of blocks a player must be to see this boss bar
      * @param darkenSky if the boss bar should darken the sky
      */
     public EntityBossComponent(int range, boolean darkenSky) {

@@ -32,6 +32,7 @@ public abstract class Server {
 
     /**
      * Return all {@link Player}s who been spawned into the server.
+     *
      * @return a set of all players online
      */
     public abstract Set<Player> getPlayers();
@@ -40,6 +41,7 @@ public abstract class Server {
      * Retrieve a player by their username.
      * If no player can be found by the username given, it will look for any player
      * that has the username as a prefix.
+     *
      * @param username username of the player
      * @return player if any exists
      */
@@ -49,12 +51,14 @@ public abstract class Server {
 
     /**
      * Retrieve the amount of players currently online.
+     *
      * @return online player count
      */
     public abstract int getPlayerCount();
 
     /**
      * Retrieve the motto of the day message displayed in the server list menu.
+     *
      * @return motto of the day
      */
     public abstract String getMotd();
@@ -66,36 +70,42 @@ public abstract class Server {
 
     /**
      * Get the maximum amount of {@link Player}s allowed on the server.
+     *
      * @return max player count
      */
     public abstract int getMaximumPlayerCount();
 
     /**
      * Set the maximum allowed {@link Player}s allowed on the server.
+     *
      * @param players max player count
      */
     public abstract void setMaximumPlayerCount(int players);
 
     /**
      * Retrieve the target ticks per second for the server.
+     *
      * @return target tps
      */
     public abstract int getTargetTps();
 
     /**
      * Change the target ticks per second for the server.
+     *
      * @param newTps new ticks per second
      */
     public abstract void setTargetTps(int newTps);
 
     /**
      * Retrieve the last recorded ticks per second.
+     *
      * @return current tps
      */
     public abstract int getCurrentTps();
 
     /**
      * Get the current server tick.
+     *
      * @return server tick
      */
     public abstract long getTick();
@@ -114,12 +124,14 @@ public abstract class Server {
 
     /**
      * Sync a {@link Scheduler} to the server tick.
+     *
      * @param scheduler scheduler to sync
      */
     public abstract void syncScheduler(Scheduler scheduler);
 
     /**
      * Desync a {@link Scheduler} from the server tick.
+     *
      * @param scheduler scheduler to desync
      * @return if the scheduler was desynced
      */
@@ -129,6 +141,7 @@ public abstract class Server {
 
     /**
      * Get the path to the root server directory.
+     *
      * @return path to the root server directory
      */
     public abstract String getRootDirectory();
@@ -143,9 +156,11 @@ public abstract class Server {
 
     /**
      * Create an inventory for an entity.
-     * @param entity entity associated with this inventory
+     *
+     * @param entity        entity associated with this inventory
      * @param containerType container type
-     * @param size size of the inventory. MUST be less than or equal to the regular inventory size of the container
+     * @param size          size of the inventory. MUST be less than or equal to the regular inventory size of the
+     *                      container
      * @return inventory
      */
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType, int size);
@@ -154,15 +169,15 @@ public abstract class Server {
 
     /**
      * Create an inventory for a block entity.
-     * @param blockEntity block entity associated with this inventory
+     *
+     * @param blockEntity   block entity associated with this inventory
      * @param containerType container type
-     * @param size size of the inventory. MUST be less than or equal to the regular inventory size of the container
+     * @param size          size of the inventory. MUST be less than or equal to the regular inventory size of the
+     *                      container
      * @return inventory
      */
     public abstract BlockEntityInventory createInventory(
-            BlockEntity blockEntity,
-            ContainerType containerType,
-            int size);
+            BlockEntity blockEntity, ContainerType containerType, int size);
 
     public abstract BlockRegistry getBlockRegistry();
 

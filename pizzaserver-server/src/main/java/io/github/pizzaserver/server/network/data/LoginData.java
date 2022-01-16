@@ -82,8 +82,9 @@ public class LoginData {
 
     /**
      * Parses login chain/skin data or returns an empty optional if it was unable to parse.
+     *
      * @param chainData chain data
-     * @param skinData skin data
+     * @param skinData  skin data
      * @return login data
      */
     @SuppressWarnings("unchecked")

@@ -77,6 +77,7 @@ public class ZipResourcePack implements ResourcePack {
 
     /**
      * Cache uuid and version of resource pack.
+     *
      * @param file the resource pack zipped file
      * @throws IOException if it fails to parse the manifest file
      */
@@ -100,6 +101,7 @@ public class ZipResourcePack implements ResourcePack {
 
     /**
      * Cache resource pack chunks to be sent to client.
+     *
      * @param file the resource pack zipped file
      * @throws IOException if it fails to read the file
      */

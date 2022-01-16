@@ -12,6 +12,7 @@ public interface BedrockSubChunk extends BedrockNetworkDiskSerializable {
 
     /**
      * Retrieve all of the {@link BlockLayer}s of this subchunk.
+     *
      * @return the {@link List} of {@link BlockLayer}s this subchunk holds.
      */
     List<BlockLayer> getLayers();
@@ -19,6 +20,7 @@ public interface BedrockSubChunk extends BedrockNetworkDiskSerializable {
     /**
      * Retrieve a specific {@link BlockLayer} in this subchunk.
      * If the layer does not exist, it should create the layer
+     *
      * @param index block layer index
      * @return {@link BlockLayer}
      */
@@ -26,6 +28,7 @@ public interface BedrockSubChunk extends BedrockNetworkDiskSerializable {
 
     /**
      * Add a new {@link BlockLayer} to this subchunk.
+     *
      * @param layer The {@link BlockLayer} to add
      */
     void addLayer(BlockLayer layer);

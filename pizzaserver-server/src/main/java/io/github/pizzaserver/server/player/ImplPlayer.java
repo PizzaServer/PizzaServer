@@ -153,6 +153,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     /**
      * Applies player data on the main thread and sends remaining packets to spawn player.
+     *
      * @param data player data
      */
     private void completePlayerInitialization(PlayerData data) {
@@ -504,7 +505,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     /**
      * Fetch the SAVED player data from the {@link PlayerDataProvider} if any exists.
+     *
      * @return saved player data
+     *
      * @throws IOException if an exception occurred while reading the data
      */
     public Optional<PlayerData> getSavedData() throws IOException {
@@ -704,6 +707,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     /**
      * Returns the current dimension transfer screen being shown to the player.
+     *
      * @return dimension transfer screen
      */
     public Optional<Dimension> getDimensionTransferScreen() {
@@ -712,6 +716,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     /**
      * Send a dimension change packet.
+     *
      * @param dimension dimension to send the transfer screen of
      */
     public void setDimensionTransferScreen(Dimension dimension) {
@@ -858,8 +863,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     /**
      * Ensure that only a scoreboard does not occupy another display slot already.
      * If it does, it should despawn that one.
+     *
      * @param displaySlot display slot of the new scoreboard being set
-     * @param scoreboard scoreboard to check against
+     * @param scoreboard  scoreboard to check against
      */
     private void ensureUniqueSlotForScoreboard(DisplaySlot displaySlot, Scoreboard scoreboard) {
         Optional<Scoreboard> listScoreboard = this.getScoreboard(DisplaySlot.LIST);

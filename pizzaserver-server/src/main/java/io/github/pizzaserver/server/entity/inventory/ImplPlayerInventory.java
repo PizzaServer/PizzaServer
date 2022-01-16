@@ -96,7 +96,8 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
 
     /**
      * Change the selected slot of the player.
-     * @param slot slot
+     *
+     * @param slot           slot
      * @param calledByPlayer if this action was done by the player rather than manually through the server
      */
     public void setSelectedSlot(int slot, boolean calledByPlayer) {

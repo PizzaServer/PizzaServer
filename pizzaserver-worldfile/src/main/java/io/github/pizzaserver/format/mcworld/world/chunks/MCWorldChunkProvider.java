@@ -192,15 +192,14 @@ public class MCWorldChunkProvider implements BedrockChunkProvider<MCWorldChunk> 
 
     /**
      * Returns a chunk key depending on whether or not the dimension is an overworld.
-     * @param dimension dimension we are checking
+     *
+     * @param dimension         dimension we are checking
      * @param overworldCallback if this dimension is an overworld
-     * @param otherCallback if this dimension isn't an overworld
+     * @param otherCallback     if this dimension isn't an overworld
      * @return bytes representative of the key
      */
     private static byte[] ifOverworld(
-            int dimension,
-            Supplier<byte[]> overworldCallback,
-            Supplier<byte[]> otherCallback) {
+            int dimension, Supplier<byte[]> overworldCallback, Supplier<byte[]> otherCallback) {
         return dimension == OVERWORLD_DIMENSION ? overworldCallback.get() : otherCallback.get();
     }
 

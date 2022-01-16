@@ -9,10 +9,9 @@ public final class Check {
      * situations where a specific property that is required
      * is missing.
      *
-     * @param obj - The object which represents the property that is missing.
-     * @param loc - A string descriptor of the holding object.
+     * @param obj  - The object which represents the property that is missing.
+     * @param loc  - A string descriptor of the holding object.
      * @param name - The name of the property.
-     *
      * @return the parameter "obj"
      */
     public static <T> T missingProperty(T obj, String loc, String name) {
@@ -25,9 +24,9 @@ public final class Check {
 
     /**
      * Checks if a parameter is null in a cleaner way, throwing an IllegalArgumentException if true.
-     * @param obj - the parameter that is potentially null.
-     * @param name - the name of the parameter.
      *
+     * @param obj  - the parameter that is potentially null.
+     * @param name - the name of the parameter.
      * @return the parameter "obj"
      */
     public static <T> T nullParam(T obj, String name) {
@@ -40,11 +39,11 @@ public final class Check {
 
     /**
      * Assets that a value is between two numbers.
-     * @param val the value being checked.
+     *
+     * @param val        the value being checked.
      * @param lowerBound the lower bound checked (inclusive)
      * @param upperBound the upper bound checked (inclusive)
-     * @param name the name of the variable/property.
-     *
+     * @param name       the name of the variable/property.
      * @return the parameter "val"
      */
     public static int inclusiveBounds(int val, int lowerBound, int upperBound, String name) {

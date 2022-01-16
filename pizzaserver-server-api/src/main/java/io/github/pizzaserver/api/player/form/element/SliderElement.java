@@ -61,6 +61,7 @@ public class SliderElement extends CustomElement {
         /**
          * Sets the slider's step from one value to the next.
          * If the step is not an integral value (multiple of 1), values will be displayed with decimals.
+         *
          * @param step Step value. Must not be zero.
          */
         public Builder setStep(float step) {

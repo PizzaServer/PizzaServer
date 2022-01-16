@@ -133,6 +133,7 @@ public class InventorySlotContainer {
 
     /**
      * Retrieves the new item stack for this slot if changed.
+     *
      * @return new item stack for this slot if changed
      */
     public boolean isModified() {

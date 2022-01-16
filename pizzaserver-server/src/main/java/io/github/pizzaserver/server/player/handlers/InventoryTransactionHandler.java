@@ -251,11 +251,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
     }
 
     private void handleUseInventoryTransaction(
-            Vector3i blockCoordinates,
-            BlockFace blockFace,
-            int hotbarSlot,
-            int actionType,
-            ItemData itemData) {
+            Vector3i blockCoordinates, BlockFace blockFace, int hotbarSlot, int actionType, ItemData itemData) {
         double distanceToBlock = this.player.getLocation().toVector3f().distance(blockCoordinates.toFloat());
         if (distanceToBlock > this.player.getChunkRadius() * 16) {
             // Prevent malicious clients from causing an OutOfMemory error by sending a transaction

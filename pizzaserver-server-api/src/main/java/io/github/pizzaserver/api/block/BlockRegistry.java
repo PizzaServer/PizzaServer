@@ -19,6 +19,7 @@ public interface BlockRegistry {
 
     /**
      * Check if a block id was registered.
+     *
      * @param blockId the id of the block (e.g. minecraft:air)
      * @return if the block was registered or not
      */
@@ -26,6 +27,7 @@ public interface BlockRegistry {
 
     /**
      * Retrieve all non-Vanilla blocks that were registered.
+     *
      * @return registered non-Vanilla blocks
      */
     Set<Block> getCustomBlocks();

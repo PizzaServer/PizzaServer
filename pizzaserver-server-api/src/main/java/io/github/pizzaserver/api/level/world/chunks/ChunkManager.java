@@ -11,6 +11,7 @@ public interface ChunkManager extends Closeable {
 
     /**
      * Retrieve a chunk from the cache or load it from the chunk provider.
+     *
      * @param x chunk x
      * @param z chunk z
      * @return {@link Chunk}
@@ -20,8 +21,9 @@ public interface ChunkManager extends Closeable {
     /**
      * Retrieve a chunk.
      * If it is not cached, it may load from the provider
-     * @param x chunk x
-     * @param z chunk z
+     *
+     * @param x                chunk x
+     * @param z                chunk z
      * @param loadFromProvider should it load from the world provider if not cached
      * @return {@link Chunk}
      */
@@ -30,23 +32,26 @@ public interface ChunkManager extends Closeable {
     /**
      * Send a {@link Chunk} to a {@link Player} immediately.
      * The chunk will be fetched if it is not cached
+     *
      * @param player the {@link Player}
-     * @param x chunk x chunk x
-     * @param z chunk z chunk z
+     * @param x      chunk x chunk x
+     * @param z      chunk z chunk z
      */
     void sendChunk(Player player, int x, int z);
 
     /**
      * Send a {@link Chunk} to a {@link Player}.
+     *
      * @param player the {@link Player}
-     * @param x chunk x
-     * @param z chunk z
-     * @param async if this should be done on a separate thread
+     * @param x      chunk x
+     * @param z      chunk z
+     * @param async  if this should be done on a separate thread
      */
     void sendChunk(Player player, int x, int z, boolean async);
 
     /**
      * Add a {@link ChunkLoader} that keeps chunks loaded and ticking.
+     *
      * @param chunkLoader chunk loader
      * @return if the chunk loader was added
      */
@@ -54,6 +59,7 @@ public interface ChunkManager extends Closeable {
 
     /**
      * Remove a {@link ChunkLoader} that keeps chunks loaded and ticking.
+     *
      * @param chunkLoader chunk loader
      * @return if the chunk loader was removed
      */

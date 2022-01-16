@@ -37,7 +37,9 @@ public class EntityPhysicsEngine {
     }
 
     /**
-     * Retrieve whether ticking this physics engine will update the position of entities or if it will only change the calculated velocity.
+     * Retrieve whether ticking this physics engine will update the position of entities or if it will only change the
+     * calculated velocity.
+     *
      * @return if this engine will update the position of entities.
      */
     public boolean shouldUpdatePosition() {
@@ -45,7 +47,9 @@ public class EntityPhysicsEngine {
     }
 
     /**
-     * Change whether ticking this physics engine will update the position of entities or if it will only change the calculated velocity.
+     * Change whether ticking this physics engine will update the position of entities or if it will only change the
+     * calculated velocity.
+     *
      * @param enabled if this engine will update the position of entities.
      */
     public void setPositionUpdate(boolean enabled) {

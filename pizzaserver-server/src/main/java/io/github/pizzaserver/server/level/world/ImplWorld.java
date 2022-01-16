@@ -344,6 +344,7 @@ public class ImplWorld implements World {
 
     /**
      * Retrieve the default save data for a player spawning in this world.
+     *
      * @return default {@link PlayerData} for players spawning in this world
      */
     public PlayerData getDefaultPlayerData() {

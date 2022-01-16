@@ -13,12 +13,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     protected Vector3f knockback;
 
     public EntityDamageByEntityEvent(
-            Entity entity,
-            Entity attacker,
-            DamageCause cause,
-            float damage,
-            int noHitTicks,
-            Vector3f knockback) {
+            Entity entity, Entity attacker, DamageCause cause, float damage, int noHitTicks, Vector3f knockback) {
         super(entity, cause, damage, noHitTicks);
         this.attacker = attacker;
         this.knockback = knockback;

@@ -13,6 +13,7 @@ public interface BlockEntityType {
 
     /**
      * Retrieve the blocks that this block entity is associated with.
+     *
      * @return block types
      */
     Set<String> getBlockIds();

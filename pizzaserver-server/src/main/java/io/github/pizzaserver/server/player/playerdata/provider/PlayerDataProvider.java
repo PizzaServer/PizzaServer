@@ -10,6 +10,7 @@ public interface PlayerDataProvider {
 
     /**
      * Save {@link PlayerData} to a provider.
+     *
      * @param uuid The {@link UUID} of the player we are saving the data of
      * @param data the {@link PlayerData} of the player
      */
@@ -17,6 +18,7 @@ public interface PlayerDataProvider {
 
     /**
      * Load the data of a player's {@link UUID}.
+     *
      * @param uuid the {@link UUID} of the player we are retrieving the data of
      * @return player data if any is present
      */

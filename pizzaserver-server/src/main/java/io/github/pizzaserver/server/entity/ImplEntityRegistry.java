@@ -25,9 +25,7 @@ public class ImplEntityRegistry implements EntityRegistry {
 
     @Override
     public <T extends EntityComponent> void registerComponent(
-            Class<T> componentClazz,
-            T defaultComponent,
-            EntityComponentHandler<T> handler) {
+            Class<T> componentClazz, T defaultComponent, EntityComponentHandler<T> handler) {
         this.componentHandlers.put(componentClazz, handler);
         this.defaultComponents.put(componentClazz, defaultComponent);
     }

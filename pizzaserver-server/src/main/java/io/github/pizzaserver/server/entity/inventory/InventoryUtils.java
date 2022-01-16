@@ -15,6 +15,7 @@ public class InventoryUtils {
 
     /**
      * Retrieve the max slot count for a container.
+     *
      * @param containerType container type
      * @return slots
      */
@@ -24,6 +25,7 @@ public class InventoryUtils {
 
     /**
      * Retrieve the slot types a container can have.
+     *
      * @param containerType container type
      * @return all container slot types
      */

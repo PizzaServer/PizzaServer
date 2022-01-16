@@ -28,6 +28,7 @@ public class MCWorldBlockPalette implements BlockPalette {
 
     /**
      * Create a palette based on palette data serialized for disk.
+     *
      * @param buffer disk buffer
      * @throws IOException if it failed to read the disk serialized block palette
      */

@@ -12,6 +12,7 @@ public interface BlockEntityRegistry {
 
     /**
      * Retrieves the block entity type equivalent of a block type if one exists.
+     *
      * @param block block to look for
      * @return block entity type if any exists
      */

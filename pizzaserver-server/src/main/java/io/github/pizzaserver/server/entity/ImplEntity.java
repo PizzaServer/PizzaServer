@@ -357,6 +357,7 @@ public class ImplEntity implements Entity {
     /**
      * Set the internal position of the entity.
      * Used internally to setup and to clean up the entity
+     *
      * @param location entity location
      */
     public void setPosition(Location location) {
@@ -1071,6 +1072,7 @@ public class ImplEntity implements Entity {
      * Damage this entity.
      * The event should be nothing more than the raw damage caused by the damage type.
      * It should not take into consideration armour points/effects as they are handled in this method.
+     *
      * @param event damage event
      * @return if the damage went through
      */

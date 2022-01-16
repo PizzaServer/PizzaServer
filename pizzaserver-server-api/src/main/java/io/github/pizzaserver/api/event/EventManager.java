@@ -26,6 +26,7 @@ public interface EventManager {
 
     /**
      * Registers a listener to this EventManager.
+     *
      * @param listener the listener to be registered.
      * @return listener for storing an instance.
      */
@@ -33,13 +34,15 @@ public interface EventManager {
 
     /**
      * Removes listener from this EventManager and any child EventManager's.
+     *
      * @param listener the listener to be removed.
      */
     void removeListener(Object listener);
 
     /**
      * Removes a listener from the managers listener list.
-     * @param listener the listener to be removed.
+     *
+     * @param listener           the listener to be removed.
      * @param removeFromChildren should instances of this listener be removed in child EventManager's ?
      */
     void removeListener(Object listener, boolean removeFromChildren);

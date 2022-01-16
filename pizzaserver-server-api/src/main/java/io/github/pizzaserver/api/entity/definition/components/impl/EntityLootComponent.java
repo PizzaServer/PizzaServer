@@ -23,7 +23,9 @@ public class EntityLootComponent extends EntityComponent {
 
     /**
      * Defines the loot dropped when killed.
+     *
      * @return loot dropped
+     *
      * @deprecated When loot tables are implemented, this should be replaced.
      */
     @Deprecated

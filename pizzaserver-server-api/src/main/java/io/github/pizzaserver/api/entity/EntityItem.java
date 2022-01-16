@@ -17,6 +17,7 @@ public interface EntityItem extends Entity {
 
     /**
      * Retrieve a random motion as if an item was mined.
+     *
      * @return random motion
      */
     static Vector3f getRandomMotion() {

@@ -27,12 +27,14 @@ public interface AdventureSettings {
 
     /**
      * If this player bypasses the world immutable check.
+     *
      * @return if this player bypasses the world immutable check
      */
     boolean isWorldBuilder();
 
     /**
      * Set if this player bypasses the world immutable check.
+     *
      * @param enabled if this player bypasses the world immutable check.
      */
     AdventureSettings setIsWorldBuilder(boolean enabled);

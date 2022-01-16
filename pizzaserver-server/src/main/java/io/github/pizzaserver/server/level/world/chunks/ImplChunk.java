@@ -120,6 +120,7 @@ public class ImplChunk implements Chunk {
     /**
      * Add this entity this chunk.
      * The entity is also spawned to any viewers of this chunk within render distance.
+     *
      * @param entity the entity to spawn
      */
     public void addEntity(ImplEntity entity) {
@@ -137,6 +138,7 @@ public class ImplChunk implements Chunk {
     /**
      * Remove this entity from this chunk.
      * The entity is also despawned from any viewers of this chunk who are no longer within render distance.
+     *
      * @param entity the entity to spawn
      */
     public void removeEntity(Entity entity) {
@@ -343,10 +345,11 @@ public class ImplChunk implements Chunk {
 
     /**
      * Send all layers of a block to the client.
+     *
      * @param player the player being sent the layers
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
+     * @param x      x coordinate
+     * @param y      y coordinate
+     * @param z      z coordinate
      */
     public void sendBlock(Player player, int x, int y, int z) {
         int subChunkIndex = y / 16;
@@ -361,11 +364,12 @@ public class ImplChunk implements Chunk {
 
     /**
      * Send a layer of a block to the client.
+     *
      * @param player the player being sent the layer
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
-     * @param layer layer
+     * @param x      x coordinate
+     * @param y      y coordinate
+     * @param z      z coordinate
+     * @param layer  layer
      */
     public void sendBlock(Player player, int x, int y, int z, int layer) {
         int chunkBlockX = x & 15;

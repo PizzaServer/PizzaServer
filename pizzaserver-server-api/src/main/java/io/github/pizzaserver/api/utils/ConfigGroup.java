@@ -158,6 +158,7 @@ public class ConfigGroup {
     /**
      * Given a string such as root.subroot.property
      * This will return the ConfigGroup of root.subroot
+     *
      * @param key key to fetch the parent group of
      * @return parent config group of key provided
      */
@@ -177,6 +178,7 @@ public class ConfigGroup {
     /**
      * Given a string such as root.subroot.property
      * This will return the ending part of the string (in this case, property)
+     *
      * @param key key to fetch the property part of
      * @return property part
      */

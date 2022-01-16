@@ -14,8 +14,9 @@ public class DefaultBlockBehavior implements BlockBehavior {
 
     /**
      * Retrieve the loot that should be dropped when this block is broken.
+     *
      * @param entity entity who broke this block
-     * @param block the block that was broken
+     * @param block  the block that was broken
      * @return the
      */
     protected Set<Item> getDrops(Entity entity, Block block) {

@@ -371,6 +371,7 @@ public class ImplServer extends Server {
 
     /**
      * Retrieve the {@link PlayerDataProvider} used to save and store player data.
+     *
      * @return {@link PlayerDataProvider}
      */
     public PlayerDataProvider getPlayerProvider() {

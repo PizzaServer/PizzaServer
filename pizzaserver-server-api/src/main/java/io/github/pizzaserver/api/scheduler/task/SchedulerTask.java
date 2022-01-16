@@ -23,6 +23,7 @@ public abstract class SchedulerTask {
 
     /**
      * Retrieve task id.
+     *
      * @return the unique id of the task.
      */
     public UUID getTaskID() {
@@ -31,6 +32,7 @@ public abstract class SchedulerTask {
 
     /**
      * Retrieve if this task is cancelled.
+     *
      * @return true if the task has been cancelled.
      */
     public final boolean isCancelled() {

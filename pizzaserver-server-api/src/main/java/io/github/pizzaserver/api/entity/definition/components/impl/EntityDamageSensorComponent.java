@@ -46,6 +46,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Set the cause that this sensor will listen for.
+         *
          * @param cause damage cause
          */
         public Sensor setCause(DamageCause cause) {
@@ -55,6 +56,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Get the cause that this sensor is listening for.
+         *
          * @return damage cause
          */
         public Optional<DamageCause> getCause() {
@@ -63,6 +65,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Set the amount of damage to add to the total damage.
+         *
          * @param modifier amount of damage to add
          */
         public Sensor setDamageModifier(float modifier) {
@@ -72,6 +75,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Get the amount of damage to be added to the total damage.
+         *
          * @return amount of damage to add
          */
         public float getDamageModifier() {
@@ -80,6 +84,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Set the damage multiplier for the total damage.
+         *
          * @param multiplier multiplier
          */
         public Sensor setDamageMultiplier(float multiplier) {
@@ -89,6 +94,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Get the damage multiplier for the total damage.
+         *
          * @return damage multiplier
          */
         public float getDamageMultiplier() {
@@ -106,6 +112,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Set the sound to be sent when damage is dealt to the entity.
+         *
          * @param sound sound
          */
         public Sensor setSound(String sound) {
@@ -115,6 +122,7 @@ public class EntityDamageSensorComponent extends EntityComponent {
 
         /**
          * Get the sound to be sent when damage is dealt to the entity.
+         *
          * @return sound
          */
         public Optional<String> getSound() {

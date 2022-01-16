@@ -17,7 +17,9 @@ public class KeyLock<K> {
     private final Map<K, Map<Long, Integer>> lockCount = new HashMap<>();
 
     /**
-     * Obtain a lock on a key, blocking any other Thread from obtaining this lock until it is unlocked by the capturing Thread.
+     * Obtain a lock on a key, blocking any other Thread from obtaining this lock until it is unlocked by the capturing
+     * Thread.
+     *
      * @param key Key to assign the lock under
      */
     public void lock(K key) {
@@ -33,7 +35,9 @@ public class KeyLock<K> {
     }
 
     /**
-     * Attempt to obtain a lock on a key. Blocking any other Thread from obtaining this lock until it is unlocked by the capturing Thread.
+     * Attempt to obtain a lock on a key. Blocking any other Thread from obtaining this lock until it is unlocked by the
+     * capturing Thread.
+     *
      * @param key Key to assign the lock under
      * @return whether of not acquiring the lock was successful
      */
@@ -55,6 +59,7 @@ public class KeyLock<K> {
     /**
      * Retrieve the lock used for LOCKING.
      * If no lock exists, a new lock is created.
+     *
      * @param key the key of the lock
      * @return the {@link Lock}
      */
@@ -71,6 +76,7 @@ public class KeyLock<K> {
     /**
      * Increment the amount of locks held on a key
      * This should be called while holding a synchronization lock on the this.locks property
+     *
      * @param key the key of the lock to be incremented
      */
     private void incrementLockCount(K key) {
@@ -86,6 +92,7 @@ public class KeyLock<K> {
 
     /**
      * Unlock a lock the current Thread has obtained using the key given.
+     *
      * @param key key the lock was assigned under
      */
     public void unlock(K key) {
@@ -101,10 +108,12 @@ public class KeyLock<K> {
     /**
      * Retrieve the lock associated with a key if one exists.
      * Otherwise an exception will be thrown.
+     *
      * @param key the key associated with the lock
      * @return the {@link Lock} under this key
+     *
      * @throws IllegalArgumentException if no lock exists under this key
-     * @throws IllegalStateException if the thread trying to unlock this key does not have a lock on it
+     * @throws IllegalStateException    if the thread trying to unlock this key does not have a lock on it
      */
     private Lock getLockForUnlocking(K key) {
         long threadId = Thread.currentThread().getId();
@@ -123,6 +132,7 @@ public class KeyLock<K> {
     /**
      * Decrement the amount of holds on a lock
      * This should be called while holding a synchronization lock on the this.locks property
+     *
      * @param key the key associated with the lock
      */
     private void decrementLockCount(K key) {

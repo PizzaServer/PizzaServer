@@ -19,6 +19,7 @@ public class MCWorldSubChunk implements BedrockSubChunk {
 
     /**
      * Parse a sub chunk based off of the subchunk data retrieved from an .mcworld file
+     *
      * @param buffer sub chunk data
      * @throws IOException if it failed to read the subchunk data
      */

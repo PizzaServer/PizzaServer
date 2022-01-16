@@ -8,6 +8,7 @@ public interface Watchable {
 
     /**
      * Retrieve all of the {@link Player}s who can see this.
+     *
      * @return a set of all players containing those who can see this.
      */
     Set<Player> getViewers();

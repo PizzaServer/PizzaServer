@@ -69,6 +69,7 @@ public class PlayerBlockBreakingManager {
 
     /**
      * Retrieve the amount of ticks it would take to break the current block the player is mining.
+     *
      * @return the amount of ticks or -1 if the player is not breaking a block
      */
     public int getBreakTicks() {

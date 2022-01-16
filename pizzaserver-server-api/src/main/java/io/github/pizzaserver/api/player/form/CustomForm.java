@@ -28,6 +28,7 @@ public class CustomForm extends Form {
 
     /**
      * Get the server setting icon if present.
+     *
      * @return icon if present
      */
     public Optional<FormImage> getIcon() {
@@ -49,6 +50,7 @@ public class CustomForm extends Form {
 
         /**
          * This icon only exists for server setting forms.
+         *
          * @param icon icon of the form
          * @return icon
          */

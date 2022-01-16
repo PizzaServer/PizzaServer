@@ -199,6 +199,7 @@ public abstract class BaseBlock implements Block {
 
     /**
      * This will not clone the location of the block.
+     *
      * @return block
      */
     @Override

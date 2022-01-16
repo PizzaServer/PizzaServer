@@ -114,8 +114,10 @@ public class PlayerChunkManager {
 
     /**
      * Called when chunks need to be sent/removed or when entities need to be checked for their entity render distance.
+     *
      * @param oldLocation old location before their current one
-     * @param oldRadius old chunk radius before their current one (or the existing if the chunk radius was not modified)
+     * @param oldRadius   old chunk radius before their current one (or the existing if the chunk radius was not
+     *                    modified)
      */
     private void updateChunks(Location oldLocation, int oldRadius) {
         this.sendNetworkChunkPublisher();
@@ -128,8 +130,9 @@ public class PlayerChunkManager {
 
     /**
      * Despawns all entities this player can no longer see.
+     *
      * @param oldLocation old location where the entities were visible
-     * @param oldRadius old chunk radius or the existing one if it was not changed
+     * @param oldRadius   old chunk radius or the existing one if it was not changed
      */
     private void despawnEntitiesFromOldLocation(Location oldLocation, int oldRadius) {
         for (Vector2i oldChunkCoordinate : this.currentVisibleChunkCoordinates) {
@@ -169,8 +172,9 @@ public class PlayerChunkManager {
 
     /**
      * Sends new chunks to the player as needed and tries spawning entities for each visible chunk.
+     *
      * @param oldLocation old location before the need for the chunk update
-     * @param oldRadius old radius if it was changed, otherwise the existing one
+     * @param oldRadius   old radius if it was changed, otherwise the existing one
      */
     private void updateVisibleChunks(Location oldLocation, int oldRadius) {
         Set<Vector2i> previouslyVisibleChunks = new HashSet<>(this.currentVisibleChunkCoordinates);
@@ -216,9 +220,10 @@ public class PlayerChunkManager {
 
     /**
      * Attempts to spawn all entities in a chunk to the player if possible after moving to a new chunk.
-     * @param chunk chunk to try spawning the entities of
+     *
+     * @param chunk       chunk to try spawning the entities of
      * @param oldLocation the old location they were in
-     * @param oldRadius old radius if it was changed, otherwise the existing one
+     * @param oldRadius   old radius if it was changed, otherwise the existing one
      */
     private void trySpawningEntities(Chunk chunk, Location oldLocation, int oldRadius) {
         // For each chunk, check if the entities can now be rendered to this player.

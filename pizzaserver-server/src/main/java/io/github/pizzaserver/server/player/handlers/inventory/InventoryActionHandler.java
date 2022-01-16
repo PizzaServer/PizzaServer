@@ -10,6 +10,7 @@ public abstract class InventoryActionHandler<T extends StackRequestActionWrapper
 
     /**
      * Returns if the action is valid. (slots exist and action makes sense to be sent)
+     *
      * @param player player who sent the request
      * @param action action being validated
      * @return if the action is valid
@@ -19,6 +20,7 @@ public abstract class InventoryActionHandler<T extends StackRequestActionWrapper
     /**
      * Run the action after validating it.
      * The action should be validated before this is called
+     *
      * @param player player who sent the request
      * @param action action being validated
      * @return if the action went through successfully
@@ -27,6 +29,7 @@ public abstract class InventoryActionHandler<T extends StackRequestActionWrapper
 
     /**
      * Validates the action before running it.
+     *
      * @param player player who sent the request
      * @param action action being validated
      * @return if the action went through successfully

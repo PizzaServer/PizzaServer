@@ -256,8 +256,9 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
 
     /**
      * Broadcasts mob equipment packet to all viewers of this entity.
-     * @param item the item stack being sent
-     * @param slot the slot to send it as
+     *
+     * @param item     the item stack being sent
+     * @param slot     the slot to send it as
      * @param mainHand if the item is in the main hand
      */
     protected void broadcastMobEquipmentPacket(Item item, int slot, boolean mainHand) {

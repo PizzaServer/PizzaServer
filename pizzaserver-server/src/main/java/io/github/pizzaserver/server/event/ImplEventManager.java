@@ -214,8 +214,9 @@ public class ImplEventManager implements EventManager {
      * Checks to see if a class extends an event, adding it to a list of
      * identified classes. It crawls through all the superclasses and interfaces
      * of a class with recursion.
+     *
      * @param classIn the class to be checked.
-     * @param list a list of all the previously checked classes.
+     * @param list    a list of all the previously checked classes.
      */
     @SuppressWarnings("unchecked") // It's checked with Class#isAssaignableFrom() :)
     private static void adoptSuperclasses(Class<?> classIn, ArrayList<Class<? extends Event>> list) {

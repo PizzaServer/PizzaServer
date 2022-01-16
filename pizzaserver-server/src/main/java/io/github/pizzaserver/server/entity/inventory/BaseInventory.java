@@ -96,7 +96,8 @@ public abstract class BaseInventory implements Inventory {
 
     /**
      * Get a slot in the inventory.
-     * @param slot the slot
+     *
+     * @param slot  the slot
      * @param clone if the Item should be cloned or if it should retrieve the actual object
      * @return Item in that slot
      */
@@ -116,9 +117,10 @@ public abstract class BaseInventory implements Inventory {
 
     /**
      * Change a slot in the inventory.
-     * @param player the player who is changing the slot if any exists
-     * @param slot the slot changed
-     * @param item the new item stack
+     *
+     * @param player        the player who is changing the slot if any exists
+     * @param slot          the slot changed
+     * @param item          the new item stack
      * @param keepNetworkId if the network id of the Item should be kept or if a new one should be generated
      */
     public void setSlot(Player player, int slot, Item item, boolean keepNetworkId) {
@@ -242,6 +244,7 @@ public abstract class BaseInventory implements Inventory {
 
     /**
      * Tries to open the inventory.
+     *
      * @param player the player to open this inventory to
      * @return if the inventory was opened
      */
@@ -259,6 +262,7 @@ public abstract class BaseInventory implements Inventory {
 
     /**
      * Close this inventory for a player.
+     *
      * @param player the player to close this inventory for
      * @return if the inventory was closed
      */
@@ -310,9 +314,10 @@ public abstract class BaseInventory implements Inventory {
 
     /**
      * Helper method to send a slot of an inventory.
-     * @param player player to send the slot to
-     * @param item the item stack to send
-     * @param slot the slot
+     *
+     * @param player      player to send the slot to
+     * @param item        the item stack to send
+     * @param slot        the slot
      * @param inventoryId the id of the inventory
      */
     protected static void sendInventorySlot(Player player, Item item, int slot, int inventoryId) {
@@ -325,8 +330,9 @@ public abstract class BaseInventory implements Inventory {
 
     /**
      * Helper method to send slots of an inventory.
-     * @param player player to send the slots to
-     * @param slots the slots
+     *
+     * @param player      player to send the slots to
+     * @param slots       the slots
      * @param inventoryId the inventory id
      */
     protected static void sendInventorySlots(Player player, Item[] slots, int inventoryId) {

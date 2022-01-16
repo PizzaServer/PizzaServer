@@ -21,6 +21,7 @@ public class EntityPhysicsComponent extends EntityComponent {
 
     /**
      * If this entity should collide with other entities.
+     *
      * @return if this entity should collide with other entities.
      */
     public boolean hasCollision() {
@@ -65,6 +66,7 @@ public class EntityPhysicsComponent extends EntityComponent {
 
         /**
          * If this entity should collide with other entities.
+         *
          * @return if this entity should collide with other entities.
          */
         public boolean hasCollision() {

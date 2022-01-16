@@ -131,6 +131,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
 
     /**
      * Check if the tick sent in a player auth input packet is the next tick we are looking for.
+     *
      * @param tick the tick
      * @return if it is valid
      */

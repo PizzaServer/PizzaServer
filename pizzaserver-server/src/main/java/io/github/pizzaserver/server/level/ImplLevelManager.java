@@ -195,14 +195,15 @@ public class ImplLevelManager implements LevelManager, Closeable {
     /**
      * Retrieve a provider object given a level file that may or may not exist.
      * If it does not exist, one will be created.
-     * @param levelFile level file to read/write to
+     *
+     * @param levelFile    level file to read/write to
      * @param providerType provider type to open the file as
      * @return provider
+     *
      * @throws IOException if an exception occurred while reading the file
      */
     protected BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> getProvider(
-            File levelFile,
-            ProviderType providerType) throws IOException {
+            File levelFile, ProviderType providerType) throws IOException {
         switch (providerType) {
             case LEVELDB:
                 return new MCWorldLevel(levelFile);

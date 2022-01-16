@@ -11,11 +11,12 @@ public interface ItemBehavior<T extends Item> {
     /**
      * Called when the player interacts with a block using this item.
      *
-     * @param player the player
-     * @param item the item
-     * @param block the block interacted with
+     * @param player    the player
+     * @param item      the item
+     * @param block     the block interacted with
      * @param blockFace the block face that was clicked
-     * @return if the interaction was successful. an incorrect interaction will resend the item slot and the blocks interacted with
+     * @return if the interaction was successful. an incorrect interaction will resend the item slot and the blocks
+     * interacted with
      */
     boolean onInteract(Player player, T item, Block block, BlockFace blockFace);
 
@@ -23,7 +24,7 @@ public interface ItemBehavior<T extends Item> {
      * Called when the player interacts with an entity using this item.
      *
      * @param player the player
-     * @param item the item
+     * @param item   the item
      * @param entity the entity interacted with
      */
     void onInteract(Player player, T item, Entity entity);

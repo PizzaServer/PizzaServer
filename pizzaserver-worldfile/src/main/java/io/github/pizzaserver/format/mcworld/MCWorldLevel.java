@@ -26,6 +26,7 @@ public class MCWorldLevel implements BedrockLevel<MCWorldChunkProvider> {
 
     /**
      * Read the contents in an exported Bedrock world file.
+     *
      * @param mcWorldDirectory Folder of the unzipped contents in the .mcworld file
      */
     public MCWorldLevel(File mcWorldDirectory) throws IOException {
@@ -62,6 +63,7 @@ public class MCWorldLevel implements BedrockLevel<MCWorldChunkProvider> {
 
     /**
      * Parse the level.dat file and retrieve the world info
+     *
      * @throws IOException if file cannot be read
      */
     @Override

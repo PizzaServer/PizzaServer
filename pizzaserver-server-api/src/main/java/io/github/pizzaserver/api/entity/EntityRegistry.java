@@ -12,20 +12,20 @@ public interface EntityRegistry {
 
     /**
      * Register an entity type.
+     *
      * @param entityDefinition definition class
      */
     void registerDefinition(EntityDefinition entityDefinition);
 
     /**
      * Register a new entity component.
-     * @param componentClazz class of the component
+     *
+     * @param componentClazz   class of the component
      * @param defaultComponent default settings component
-     * @param handler handles applying/removing said component
+     * @param handler          handles applying/removing said component
      */
     <T extends EntityComponent> void registerComponent(
-            Class<T> componentClazz,
-            T defaultComponent,
-            EntityComponentHandler<T> handler);
+            Class<T> componentClazz, T defaultComponent, EntityComponentHandler<T> handler);
 
     EntityDefinition getDefinition(String entityId);
 

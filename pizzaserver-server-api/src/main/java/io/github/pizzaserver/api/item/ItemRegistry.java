@@ -9,13 +9,15 @@ public interface ItemRegistry {
 
     /**
      * Register an item.
+     *
      * @param item if implementing a custom item, you must implement CustomItem instead of Item
      */
     void register(Item item);
 
     /**
      * Register an item and tie it to a behavior.
-     * @param item if implementing a custom item, you must implement CustomItem instead of Item
+     *
+     * @param item     if implementing a custom item, you must implement CustomItem instead of Item
      * @param behavior behavior of item
      */
     <T extends Item> void register(T item, ItemBehavior<T> behavior);

@@ -27,6 +27,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
     /**
      * Retrieve all extra blocks this entity can breathe in regardless of canBreathSolids().
+     *
      * @return all extra blocks this entity can breathe in
      */
     public Set<Block> getBreathableBlocks() {
@@ -35,6 +36,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
     /**
      * Retrieve all extra blocks this entity cannot breathe in regardless of canBreathSolids().
+     *
      * @return all extra blocks this entity cannot breathe in
      */
     public Set<Block> getNonBreathableBlocks() {
@@ -47,6 +49,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
     /**
      * Amount of seconds it takes to recover all of your air supply from 0.
+     *
      * @return amount of seconds
      */
     public float getInhaleTime() {
@@ -55,6 +58,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
     /**
      * Amount of seconds your air supply lasts.
+     *
      * @return amount of seconds
      */
     public float getTotalSupplyTime() {
@@ -63,6 +67,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
     /**
      * How often you will take suffocation damage in ticks.
+     *
      * @return ticks
      */
     public int getSuffocationInterval() {
@@ -92,6 +97,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
         /**
          * Retrieve all extra blocks this entity can breathe in regardless of canBreathSolids().
+         *
          * @return all extra blocks this entity can breathe in
          */
         public Set<Block> getBreathableBlocks() {
@@ -100,6 +106,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
         /**
          * Set extra blocks that this entity can breathe in regardless of canBreathSolids().
+         *
          * @param breathableBlocks extra blocks this entity can breathe in
          */
         public Properties setBreathableBlocks(Set<Block> breathableBlocks) {
@@ -109,6 +116,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
         /**
          * Retrieve all extra blocks this entity cannot breathe in regardless of canBreathSolids().
+         *
          * @return all extra blocks this entity cannot breathe in
          */
         public Set<Block> getNonBreathableBlocks() {
@@ -117,6 +125,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
         /**
          * Set extra blocks that this entity cannot breathe in regardless of canBreathSolids().
+         *
          * @param nonBreathableBlocks all extra blocks this entity cannot breathe in
          */
         public Properties setNonBreathableBlocks(Set<Block> nonBreathableBlocks) {
@@ -135,6 +144,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
         /**
          * Get the amount of seconds it takes to recover all of your oxygen from 0.
+         *
          * @return amount of seconds
          */
         public float getInhaleTime() {
@@ -151,6 +161,7 @@ public class EntityBreathableComponent extends EntityComponent {
 
         /**
          * Amount of seconds this entity's air supply lasts.
+         *
          * @return amount of seconds
          */
         public float getTotalSupplyTime() {

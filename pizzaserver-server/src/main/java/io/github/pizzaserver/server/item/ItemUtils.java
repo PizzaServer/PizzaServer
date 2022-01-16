@@ -14,6 +14,7 @@ public class ItemUtils {
 
     /**
      * Serialize the item stack to be network ready.
+     *
      * @param version Minecraft version to serialize against
      * @return serialized data
      */

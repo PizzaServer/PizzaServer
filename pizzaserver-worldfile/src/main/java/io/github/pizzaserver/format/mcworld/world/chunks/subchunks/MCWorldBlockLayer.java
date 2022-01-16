@@ -23,18 +23,15 @@ public class MCWorldBlockLayer implements BlockLayer {
 
     /**
      * Create a block layer based off of mcworld data.
-     * @param palette the block palette
-     * @param buffer the buffer that needs to be parsed (mcworld data)
-     * @param bitsPerBlock amount of bits per block
+     *
+     * @param palette       the block palette
+     * @param buffer        the buffer that needs to be parsed (mcworld data)
+     * @param bitsPerBlock  amount of bits per block
      * @param blocksPerWord amount of minecraft blocks that are in each word
      * @param wordsPerChunk amount of LE ints that contain all the blocks in this layer
      */
     public MCWorldBlockLayer(
-            MCWorldBlockPalette palette,
-            ByteBuf buffer,
-            int bitsPerBlock,
-            int blocksPerWord,
-            int wordsPerChunk) {
+            MCWorldBlockPalette palette, ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
         this(palette);
         int pos = 0;
         for (int chunk = 0; chunk < wordsPerChunk; chunk++) {

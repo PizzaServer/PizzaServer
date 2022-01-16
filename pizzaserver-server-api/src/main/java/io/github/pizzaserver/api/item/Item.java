@@ -50,6 +50,7 @@ public abstract class Item implements Cloneable {
     /**
      * Returns the id of this stack as represented over the network.
      * An id of -1 means that this stack has not been assigned a network id
+     *
      * @return stack id
      */
     public int getNetworkId() {
@@ -92,6 +93,7 @@ public abstract class Item implements Cloneable {
 
     /**
      * Return the amount of damage this item does to an entity.
+     *
      * @return damage
      */
     public int getDamage() {
@@ -159,6 +161,7 @@ public abstract class Item implements Cloneable {
     /**
      * Checks if this item has the same data as another item.
      * This will check the item id, nbt, and meta, but NOT the count.
+     *
      * @param otherItem the other item we are trying to check
      * @return if the two stacks have the same data
      */
@@ -169,6 +172,7 @@ public abstract class Item implements Cloneable {
 
     /**
      * Checks if an item looks the same compared to this item.
+     *
      * @param otherItem the other item
      * @return if they are visually the same
      */
@@ -179,6 +183,7 @@ public abstract class Item implements Cloneable {
 
     /**
      * Checks if this ItemStack is air or if there is no items in this stack.
+     *
      * @return if the ItemStack is air or if there is no items in this stack.
      */
     public boolean isEmpty() {
@@ -191,6 +196,7 @@ public abstract class Item implements Cloneable {
 
     /**
      * Create a copy of this item but with a new network id assigned.
+     *
      * @return new item with a new network id assigned
      */
     public Item newNetworkCopy() {
@@ -203,6 +209,7 @@ public abstract class Item implements Cloneable {
 
     /**
      * Create a copy of this item but with a new network id assigned.
+     *
      * @param networkId network id to assign this stack
      * @return new item with a new network id assigned
      */
@@ -247,6 +254,7 @@ public abstract class Item implements Cloneable {
     /**
      * Ensures that the item provided will exist.
      * If the item provided is null, it will return an air stack
+     *
      * @param otherItem other item
      * @return item or air
      */
