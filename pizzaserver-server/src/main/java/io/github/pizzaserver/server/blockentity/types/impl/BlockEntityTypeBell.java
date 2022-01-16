@@ -34,20 +34,22 @@ public class BlockEntityTypeBell implements BlockEntityType {
     @Override
     public BlockEntityBell deserializeDisk(World world, NbtMap diskNBT) {
         return new BlockEntityBell(new BlockLocation(world,
-                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+                                                     Vector3i.from(diskNBT.getInt("x"),
+                                                                   diskNBT.getInt("y"),
+                                                                   diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
-                .putBoolean("Ringing", false)
-                .putInt("Ticks", 0)
-                .putInt("Direction", 0)
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", blockEntity.getLocation().getX())
+                     .putInt("y", blockEntity.getLocation().getY())
+                     .putInt("z", blockEntity.getLocation().getZ())
+                     .putBoolean("Ringing", false)
+                     .putInt("Ticks", 0)
+                     .putInt("Direction", 0)
+                     .build();
         // TODO: proper serialization
     }
 
@@ -55,5 +57,4 @@ public class BlockEntityTypeBell implements BlockEntityType {
     public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return diskNBT;
     }
-
 }

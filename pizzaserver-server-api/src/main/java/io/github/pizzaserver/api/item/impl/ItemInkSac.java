@@ -17,5 +17,4 @@ public class ItemInkSac extends Item {
     public String getName() {
         return "Ink Sac";
     }
-
 }

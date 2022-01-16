@@ -173,7 +173,5 @@ public class EntityBreathableComponent extends EntityComponent {
             this.suffocationInterval = interval;
             return this;
         }
-
     }
-
 }

@@ -17,5 +17,4 @@ public class ItemGlisteringMelonSlice extends Item {
     public String getName() {
         return "Glistering Melon Slice";
     }
-
 }

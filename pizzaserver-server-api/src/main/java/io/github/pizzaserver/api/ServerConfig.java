@@ -111,5 +111,4 @@ public class ServerConfig {
     public boolean isDebugLoggingEnabled() {
         return this.config.getBoolean("debug.messages");
     }
-
 }

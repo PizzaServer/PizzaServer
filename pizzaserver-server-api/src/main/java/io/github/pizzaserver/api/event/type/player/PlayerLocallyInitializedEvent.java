@@ -7,5 +7,4 @@ public class PlayerLocallyInitializedEvent extends BasePlayerEvent {
     public PlayerLocallyInitializedEvent(Player player) {
         super(player);
     }
-
 }

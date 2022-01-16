@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 public class BlockWool extends BaseBlock implements Flammable {
 
     private static final List<NbtMap> BLOCK_STATES = Arrays.stream(DyeColor.values())
-            .map(color -> NbtMap.builder()
-                    .putString("color", color.getId())
-                    .build())
-            .collect(Collectors.toList());
+                                                           .map(color -> NbtMap.builder()
+                                                                               .putString("color", color.getId())
+                                                                               .build())
+                                                           .collect(Collectors.toList());
 
     public BlockWool() {
         this(DyeColor.WHITE);
@@ -79,5 +79,4 @@ public class BlockWool extends BaseBlock implements Flammable {
     public int getFlameOdds() {
         return 60;
     }
-
 }

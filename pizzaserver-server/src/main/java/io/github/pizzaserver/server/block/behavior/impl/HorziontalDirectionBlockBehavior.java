@@ -12,5 +12,4 @@ public class HorziontalDirectionBlockBehavior extends DefaultBlockBehavior {
         block.setBlockState(entity.getHorizontalDirection().opposite().getBlockStateIndex());
         return true;
     }
-
 }

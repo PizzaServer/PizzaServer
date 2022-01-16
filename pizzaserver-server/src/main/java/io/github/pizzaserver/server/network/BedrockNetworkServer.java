@@ -51,7 +51,9 @@ public class BedrockNetworkServer {
 
             @Override
             public void onSessionCreation(BedrockServerSession connection) {
-                connection.setCompressionLevel(BedrockNetworkServer.this.getPizzaServer().getConfig().getNetworkCompressionLevel());
+                connection.setCompressionLevel(BedrockNetworkServer.this.getPizzaServer()
+                                                                        .getConfig()
+                                                                        .getNetworkCompressionLevel());
                 PlayerSession playerSession = new PlayerSession(connection);
                 BedrockNetworkServer.this.getPizzaServer().registerSession(playerSession);
 
@@ -60,13 +62,20 @@ public class BedrockNetworkServer {
                         playerSession.queueIncomingPacket(packet);
                     }
                 });
-                connection.addDisconnectHandler(disconnectReason -> BedrockNetworkServer.this.getPizzaServer().getScheduler().prepareTask(() -> {
-                    BedrockNetworkServer.this.getPizzaServer().unregisterSession(playerSession);
-                    if (playerSession.getPlayer() != null) {
-                        playerSession.getPlayer().onDisconnect();
-                        BedrockNetworkServer.this.updatePong();
-                    }
-                }).schedule());
+                connection.addDisconnectHandler(disconnectReason -> BedrockNetworkServer.this.getPizzaServer()
+                                                                                             .getScheduler()
+                                                                                             .prepareTask(() -> {
+                                                                                                 BedrockNetworkServer.this.getPizzaServer()
+                                                                                                                          .unregisterSession(
+                                                                                                                                  playerSession);
+                                                                                                 if (playerSession.getPlayer()
+                                                                                                         != null) {
+                                                                                                     playerSession.getPlayer()
+                                                                                                                  .onDisconnect();
+                                                                                                     BedrockNetworkServer.this.updatePong();
+                                                                                                 }
+                                                                                             })
+                                                                                             .schedule());
             }
         });
         this.bedrockServer.bind().get();
@@ -102,5 +111,4 @@ public class BedrockNetworkServer {
     public BedrockPong getPong() {
         return this.pong;
     }
-
 }

@@ -22,7 +22,10 @@ public interface EntityRegistry {
      * @param defaultComponent default settings component
      * @param handler handles applying/removing said component
      */
-    <T extends EntityComponent> void registerComponent(Class<T> componentClazz, T defaultComponent, EntityComponentHandler<T> handler);
+    <T extends EntityComponent> void registerComponent(
+            Class<T> componentClazz,
+            T defaultComponent,
+            EntityComponentHandler<T> handler);
 
     EntityDefinition getDefinition(String entityId);
 
@@ -43,5 +46,4 @@ public interface EntityRegistry {
     static EntityRegistry getInstance() {
         return Server.getInstance().getEntityRegistry();
     }
-
 }

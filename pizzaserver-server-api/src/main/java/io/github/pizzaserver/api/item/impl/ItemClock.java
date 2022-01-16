@@ -17,5 +17,4 @@ public class ItemClock extends Item {
     public String getName() {
         return "Clock";
     }
-
 }

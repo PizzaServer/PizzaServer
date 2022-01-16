@@ -8,5 +8,4 @@ public abstract class EntityComponent {
     public String toString() {
         return this.getName();
     }
-
 }

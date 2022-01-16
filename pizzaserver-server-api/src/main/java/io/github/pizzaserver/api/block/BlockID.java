@@ -5,7 +5,7 @@ package io.github.pizzaserver.api.block;
  */
 public class BlockID {
 
-    private BlockID() {}
+    private BlockID() { }
 
     public static final String ACACIA_BUTTON = "minecraft:acacia_button";
     public static final String AIR = "minecraft:air";
@@ -72,5 +72,4 @@ public class BlockID {
     public static final String WARPED_BUTTON = "minecraft:warped_button";
     public static final String WOODEN_BUTTON = "minecraft:wooden_button";
     public static final String WOOL = "minecraft:wool";
-
 }

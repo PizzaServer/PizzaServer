@@ -14,5 +14,4 @@ public interface ChunkLoader {
      * @return coordinates
      */
     Set<Vector2i> getCoordinates();
-
 }

@@ -41,5 +41,4 @@ public class ItemChainmailLeggings extends ItemArmor {
     public int getMaxDurability() {
         return 225;
     }
-
 }

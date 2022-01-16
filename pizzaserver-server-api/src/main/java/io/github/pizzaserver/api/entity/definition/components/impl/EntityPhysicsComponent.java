@@ -132,7 +132,5 @@ public class EntityPhysicsComponent extends EntityComponent {
             this.pistonPushable = pistonPushable;
             return this;
         }
-
     }
-
 }

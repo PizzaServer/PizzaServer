@@ -17,5 +17,4 @@ public class ItemQuartz extends Item {
     public String getName() {
         return "Quartz";
     }
-
 }

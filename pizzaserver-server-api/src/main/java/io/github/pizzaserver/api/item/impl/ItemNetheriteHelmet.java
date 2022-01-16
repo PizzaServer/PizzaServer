@@ -41,5 +41,4 @@ public class ItemNetheriteHelmet extends ItemArmor {
     public int getMaxDurability() {
         return 407;
     }
-
 }

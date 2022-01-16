@@ -47,7 +47,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case START_SNEAKING:
                     case SNEAKING:
                         if (!this.player.isSneaking()) {
-                            PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
+                            PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player,
+                                                                                                         true);
                             this.player.getServer().getEventManager().call(startSneakingEvent);
                             if (startSneakingEvent.isCancelled()) {
                                 this.player.getMetaData().update();
@@ -58,7 +59,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         break;
                     case STOP_SNEAKING:
                         if (this.player.isSneaking()) {
-                            PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player, false);
+                            PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player,
+                                                                                                        false);
                             this.player.getServer().getEventManager().call(stopSneakingEvent);
                             if (stopSneakingEvent.isCancelled()) {
                                 this.player.getMetaData().update();
@@ -114,7 +116,9 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         // However, if we ever want to implement server-side knockback using the rewind system. This may be useful.
                         break;
                     default:
-                        this.player.getServer().getLogger().debug("Unknown input retrieved in AuthInputHandler: " + input);
+                        this.player.getServer()
+                                   .getLogger()
+                                   .debug("Unknown input retrieved in AuthInputHandler: " + input);
                         break;
                 }
             }
@@ -140,7 +144,9 @@ public class AuthInputHandler implements BedrockPacketHandler {
             }
         } else {
             if (this.nextExpectedTick != tick) {
-                this.player.getServer().getLogger().debug(String.format("Player sent tick %d when expecting %d.", tick, this.nextExpectedTick));
+                this.player.getServer()
+                           .getLogger()
+                           .debug(String.format("Player sent tick %d when expecting %d.", tick, this.nextExpectedTick));
                 return false;
             }
             this.nextExpectedTick++;
@@ -154,27 +160,38 @@ public class AuthInputHandler implements BedrockPacketHandler {
             switch (action.getAction()) {
                 case START_BREAK:
                 case BLOCK_CONTINUE_DESTROY:
-                    if (this.player.isAlive() && this.player.canReach(action.getBlockPosition(), this.player.inCreativeMode() ? 13 : 7)) {
-                        BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), action.getBlockPosition(), 0);
+                    if (this.player.isAlive() && this.player.canReach(action.getBlockPosition(),
+                                                                      this.player.inCreativeMode() ? 13 : 7)) {
+                        BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(),
+                                                                                action.getBlockPosition(),
+                                                                                0);
 
                         boolean isAlreadyBreakingBlock = this.player.getBlockBreakingManager().getBlock().isPresent();
-                        boolean breakingSameBlock = isAlreadyBreakingBlock
-                                && action.getBlockPosition().equals(this.player.getBlockBreakingManager().getBlock().get().getLocation().toVector3i());
+                        boolean breakingSameBlock = isAlreadyBreakingBlock && action.getBlockPosition()
+                                                                                    .equals(this.player.getBlockBreakingManager()
+                                                                                                       .getBlock()
+                                                                                                       .get()
+                                                                                                       .getLocation()
+                                                                                                       .toVector3i());
                         if (breakingSameBlock) {
                             this.player.getBlockBreakingManager().sendUpdatedBreakProgress();
                         } else {
                             if (isAlreadyBreakingBlock) {
-                                BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this.player, this.player.getBlockBreakingManager().getBlock().get());
+                                BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this.player,
+                                                                                                  this.player.getBlockBreakingManager()
+                                                                                                             .getBlock()
+                                                                                                             .get());
                                 this.player.getServer().getEventManager().call(blockStopBreakEvent);
 
                                 this.player.getBlockBreakingManager().stopBreaking();
                             }
 
                             boolean canBreakNewBlock = !(blockBreakingLocation.getBlock() instanceof Liquid)
-                                    && !blockBreakingLocation.getBlock().isAir()
-                                    && this.player.getAdventureSettings().canMine();
+                                    && !blockBreakingLocation.getBlock().isAir() && this.player.getAdventureSettings()
+                                                                                               .canMine();
                             if (canBreakNewBlock) {
-                                BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());
+                                BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player,
+                                                                                                     blockBreakingLocation.getBlock());
                                 this.player.getServer().getEventManager().call(blockStartBreakEvent);
                                 if (!blockStartBreakEvent.isCancelled()) {
                                     this.player.getBlockBreakingManager().startBreaking(blockBreakingLocation);
@@ -186,38 +203,56 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     break;
                 case BLOCK_PREDICT_DESTROY:
                     Optional<Block> blockMining = this.player.getBlockBreakingManager().getBlock();
-                    boolean isCorrectBlockCoordinates = blockMining.isPresent() && action.getBlockPosition().equals(blockMining.get().getLocation().toVector3i());
-                    boolean canBreakBlock = isCorrectBlockCoordinates && this.player.getBlockBreakingManager().canBreakBlock();
+                    boolean isCorrectBlockCoordinates = blockMining.isPresent() && action.getBlockPosition()
+                                                                                         .equals(blockMining.get()
+                                                                                                            .getLocation()
+                                                                                                            .toVector3i());
+                    boolean canBreakBlock =
+                            isCorrectBlockCoordinates && this.player.getBlockBreakingManager().canBreakBlock();
 
                     if (!isCorrectBlockCoordinates) {
-                        this.player.getServer().getLogger().debug(String.format("%s tried to destroy a block while not breaking the block.", this.player.getUsername()));
+                        this.player.getServer()
+                                   .getLogger()
+                                   .debug(String.format("%s tried to destroy a block while not breaking the block.",
+                                                        this.player.getUsername()));
                     }
 
                     if (canBreakBlock) {
-                        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player, this.player.getWorld().getBlock(action.getBlockPosition()));
+                        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player,
+                                                                              this.player.getWorld()
+                                                                                         .getBlock(action.getBlockPosition()));
                         this.player.getServer().getEventManager().call(blockBreakEvent);
 
                         if (!blockBreakEvent.isCancelled()) {
                             this.player.getBlockBreakingManager().breakBlock();
                             return;
                         } else {
-                            ((ImplWorld) this.player.getBlockBreakingManager().getBlock().get().getWorld())
-                                    .sendBlock(this.player, this.player.getBlockBreakingManager().getBlock().get().getLocation().toVector3i());
+                            ((ImplWorld) this.player.getBlockBreakingManager().getBlock().get().getWorld()).sendBlock(
+                                    this.player,
+                                    this.player.getBlockBreakingManager().getBlock().get().getLocation().toVector3i());
                         }
                     } else {
-                        this.player.getServer().getLogger().debug(String.format("%s tried to destroy a block but was not allowed.", this.player.getUsername()));
+                        this.player.getServer()
+                                   .getLogger()
+                                   .debug(String.format("%s tried to destroy a block but was not allowed.",
+                                                        this.player.getUsername()));
                     }
                     break;
                 case ABORT_BREAK:
                     if (this.player.getBlockBreakingManager().getBlock().isPresent()) {
-                        BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this.player, this.player.getBlockBreakingManager().getBlock().get());
+                        BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this.player,
+                                                                                          this.player.getBlockBreakingManager()
+                                                                                                     .getBlock()
+                                                                                                     .get());
                         this.player.getServer().getEventManager().call(blockStopBreakEvent);
 
                         this.player.getBlockBreakingManager().stopBreaking();
                     }
                     break;
                 default:
-                    this.player.getServer().getLogger().debug("Unknown block input action retrieved: " + action.getAction());
+                    this.player.getServer()
+                               .getLogger()
+                               .debug("Unknown block input action retrieved: " + action.getAction());
                     break;
             }
         }
@@ -233,10 +268,10 @@ public class AuthInputHandler implements BedrockPacketHandler {
             this.player.setHeadYaw(rotation.getZ());
         }
 
-        boolean updatePosition = position.distance(this.player.getLocation().toVector3f()) > MOVEMENT_DISTANCE_THRESHOLD;
+        boolean updatePosition =
+                position.distance(this.player.getLocation().toVector3f()) > MOVEMENT_DISTANCE_THRESHOLD;
         if (updatePosition) {
             this.player.moveTo(position.getX(), position.getY() - this.player.getEyeHeight(), position.getZ());
         }
     }
-
 }

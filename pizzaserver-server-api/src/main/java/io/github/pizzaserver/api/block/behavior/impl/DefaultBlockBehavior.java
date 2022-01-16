@@ -22,7 +22,7 @@ public class DefaultBlockBehavior implements BlockBehavior {
         boolean correctTool = false;
         if (entity.getInventory().getHeldItem() instanceof ToolItemComponent itemToolComponent) {
             correctTool = itemToolComponent.getToolTier().getStrength() >= block.getToolTierRequired().getStrength()
-                && itemToolComponent.getToolType() == block.getToolTypeRequired();
+                    && itemToolComponent.getToolType() == block.getToolTypeRequired();
         }
 
         if (block.canBeMinedWithHand() || correctTool) {
@@ -35,10 +35,10 @@ public class DefaultBlockBehavior implements BlockBehavior {
     @Override
     public void onBreak(Entity entity, Block block) {
         for (Item loot : this.getDrops(entity, block)) {
-            block.getWorld().addItemEntity(loot,
-                    block.getLocation().toVector3f().add(0.5f, 0.5f, 0.5f),
-                    EntityItem.getRandomMotion());
+            block.getWorld()
+                 .addItemEntity(loot,
+                                block.getLocation().toVector3f().add(0.5f, 0.5f, 0.5f),
+                                EntityItem.getRandomMotion());
         }
     }
-
 }

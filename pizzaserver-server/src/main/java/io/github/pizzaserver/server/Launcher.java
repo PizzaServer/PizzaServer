@@ -9,5 +9,4 @@ public class Launcher {
         VanillaContentLoader.load();
         server.boot();
     }
-
 }

@@ -34,22 +34,24 @@ public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
             }
             Block placedBlock = itemBlock.getBlock();
             placedBlock.setLocation(blockAtPlacementPos.getWorld(),
-                    blockAtPlacementPos.getX(),
-                    blockAtPlacementPos.getY(),
-                    blockAtPlacementPos.getZ(),
-                    (block instanceof Liquid) ? 1 : 0);
+                                    blockAtPlacementPos.getX(),
+                                    blockAtPlacementPos.getY(),
+                                    blockAtPlacementPos.getZ(),
+                                    (block instanceof Liquid) ? 1 : 0);
             if (!placedBlock.getBehavior().prepareForPlacement(player, placedBlock, blockFace)) {
                 return false;
             }
 
             if (placedBlock.hasCollision()) {
                 // Collision check with nearby entities
-                Set<Entity> nearByEntities = block.getLocation().getWorld().getEntitiesNear(block.getLocation().toVector3f(), 16);
+                Set<Entity> nearByEntities = block.getLocation()
+                                                  .getWorld()
+                                                  .getEntitiesNear(block.getLocation().toVector3f(), 16);
                 for (Entity entity : nearByEntities) {
-                    boolean entityCollidesWithBlock = placedBlock.getBoundingBox().collidesWith(entity.getBoundingBox())
-                            && entity.hasCollision()
-                            && !(entity instanceof EntityItem)
-                            && (entity.getViewers().contains(player) || entity.equals(player));
+                    boolean entityCollidesWithBlock =
+                            placedBlock.getBoundingBox().collidesWith(entity.getBoundingBox()) && entity.hasCollision()
+                                    && !(entity instanceof EntityItem) && (entity.getViewers().contains(player)
+                                    || entity.equals(player));
 
                     if (entityCollidesWithBlock) {
                         return false;
@@ -82,5 +84,4 @@ public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
             return itemBlock.isEmpty();
         }
     }
-
 }

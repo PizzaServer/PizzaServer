@@ -48,5 +48,4 @@ public class EntityDimensionsComponent extends EntityComponent {
     public String getName() {
         return "minecraft:entity_dimensions";
     }
-
 }

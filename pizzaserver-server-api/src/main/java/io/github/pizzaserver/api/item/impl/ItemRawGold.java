@@ -17,5 +17,4 @@ public class ItemRawGold extends Item {
     public String getName() {
         return "Raw Gold";
     }
-
 }

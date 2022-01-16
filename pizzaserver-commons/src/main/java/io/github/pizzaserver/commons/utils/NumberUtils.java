@@ -9,5 +9,4 @@ public class NumberUtils {
     public static boolean isNearlyEqual(double a, double b) {
         return Math.abs(a - b) < 0.001d;
     }
-
 }

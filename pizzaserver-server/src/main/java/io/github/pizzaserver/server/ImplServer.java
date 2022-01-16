@@ -266,9 +266,9 @@ public class ImplServer extends Server {
     public Set<Player> getPlayers() {
         synchronized (this.sessions) {
             return this.sessions.stream()
-                    .map(PlayerSession::getPlayer)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
+                                .map(PlayerSession::getPlayer)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toSet());
         }
     }
 
@@ -279,9 +279,12 @@ public class ImplServer extends Server {
             return exactMatch;
         }
 
-        return this.getPlayers().stream()
-                .filter(player -> player.getUsername()
-                        .toLowerCase(Locale.ROOT).startsWith(username.toLowerCase(Locale.ROOT))).findAny();
+        return this.getPlayers()
+                   .stream()
+                   .filter(player -> player.getUsername()
+                                           .toLowerCase(Locale.ROOT)
+                                           .startsWith(username.toLowerCase(Locale.ROOT)))
+                   .findAny();
     }
 
     @Override
@@ -472,6 +475,7 @@ public class ImplServer extends Server {
 
 
     private class ServerExitListener extends Thread {
+
         @Override
         public void run() {
             if (ImplServer.this.running) {
@@ -488,5 +492,4 @@ public class ImplServer extends Server {
     public static ImplServer getInstance() {
         return (ImplServer) Server.getInstance();
     }
-
 }

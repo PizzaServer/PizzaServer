@@ -37,11 +37,9 @@ public class ZipResourcePackTests {
                     }
                 }
             }
-
         } catch (IOException exception) {
             throw new AssertionError(exception);
         }
-
     }
 
     private static ResourcePack getResourcePack(Path tempDirPath) {
@@ -69,5 +67,4 @@ public class ZipResourcePackTests {
         }
         return tempResourcePackFile;
     }
-
 }

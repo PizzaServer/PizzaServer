@@ -36,5 +36,4 @@ public class BlockCopperOre extends BaseBlock {
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
     }
-
 }

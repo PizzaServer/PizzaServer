@@ -41,5 +41,4 @@ public class BlockClay extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

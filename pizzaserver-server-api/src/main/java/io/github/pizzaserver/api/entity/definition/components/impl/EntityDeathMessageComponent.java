@@ -21,5 +21,4 @@ public class EntityDeathMessageComponent extends EntityComponent {
     public String getName() {
         return "pizzaserver:death_message";
     }
-
 }

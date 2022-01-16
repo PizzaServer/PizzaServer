@@ -17,5 +17,4 @@ public class ItemRawIron extends Item {
     public String getName() {
         return "Raw Iron";
     }
-
 }

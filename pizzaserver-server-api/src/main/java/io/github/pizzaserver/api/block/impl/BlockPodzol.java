@@ -46,5 +46,4 @@ public class BlockPodzol extends BaseBlock {
     public ToolType getToolTypeRequired() {
         return ToolType.SHOVEL;
     }
-
 }

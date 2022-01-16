@@ -58,5 +58,4 @@ public interface ChunkManager extends Closeable {
      * @return if the chunk loader was removed
      */
     boolean removeChunkLoader(ChunkLoader chunkLoader);
-
 }

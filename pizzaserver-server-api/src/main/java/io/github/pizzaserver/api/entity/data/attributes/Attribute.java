@@ -12,7 +12,12 @@ public class Attribute {
     private float currentValue;
 
 
-    public Attribute(AttributeType attributeType, float minimumValue, float maximumValue, float defaultValue, float currentValue) {
+    public Attribute(
+            AttributeType attributeType,
+            float minimumValue,
+            float maximumValue,
+            float defaultValue,
+            float currentValue) {
         this.type = attributeType;
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
@@ -38,8 +43,10 @@ public class Attribute {
 
     public void setMaximumValue(float maximumValue) {
         this.maximumValue = maximumValue;
-        this.setDefaultValue(Math.max(this.getMinimumValue(), Math.min(this.getDefaultValue(), this.getMaximumValue())));
-        this.setCurrentValue(Math.max(this.getMinimumValue(), Math.min(this.getCurrentValue(), this.getMaximumValue())));
+        this.setDefaultValue(Math.max(this.getMinimumValue(),
+                                      Math.min(this.getDefaultValue(), this.getMaximumValue())));
+        this.setCurrentValue(Math.max(this.getMinimumValue(),
+                                      Math.min(this.getCurrentValue(), this.getMaximumValue())));
     }
 
     public float getDefaultValue() {
@@ -60,19 +67,16 @@ public class Attribute {
 
     public AttributeData serialize() {
         return new AttributeData(this.getType().getId(),
-                this.getMinimumValue(),
-                this.getMaximumValue(),
-                this.getCurrentValue(),
-                this.getDefaultValue());
+                                 this.getMinimumValue(),
+                                 this.getMaximumValue(),
+                                 this.getCurrentValue(),
+                                 this.getDefaultValue());
     }
 
     @Override
     public int hashCode() {
-        return ((int) (37 * this.type.hashCode()
-                + (37 * this.getCurrentValue())
-                + (37 * this.getDefaultValue())
-                + (37 * this.getMaximumValue())
-                + (37 * this.getMinimumValue())));
+        return ((int) (37 * this.type.hashCode() + (37 * this.getCurrentValue()) + (37 * this.getDefaultValue()) + (37
+                * this.getMaximumValue()) + (37 * this.getMinimumValue())));
     }
 
     @Override

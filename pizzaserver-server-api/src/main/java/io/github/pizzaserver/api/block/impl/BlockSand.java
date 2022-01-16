@@ -15,12 +15,8 @@ public class BlockSand extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
-            this.add(NbtMap.builder()
-                    .putString("sand_type", "normal")
-                    .build());
-            this.add(NbtMap.builder()
-                    .putString("sand_type", "red")
-                    .build());
+            this.add(NbtMap.builder().putString("sand_type", "normal").build());
+            this.add(NbtMap.builder().putString("sand_type", "red").build());
         }
     };
 
@@ -94,7 +90,4 @@ public class BlockSand extends BaseBlock {
     public ItemBlock toStack() {
         return new ItemBlock(this.getBlockId(), 1, this.getBlockState());
     }
-
-
-
 }

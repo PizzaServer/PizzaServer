@@ -12,20 +12,20 @@ public abstract class BlockColoredTorch extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = Collections.unmodifiableList(new ArrayList<>() {
         {
-            String[] directions = new String[]{ "unknown", "west", "east", "north", "south", "top" };
+            String[] directions = new String[] {"unknown", "west", "east", "north", "south", "top"};
 
             for (String direction : directions) {
                 this.add(NbtMap.builder()
-                        .putByte("color_bit", (byte) 0)
-                        .putString("torch_facing_direction", direction)
-                        .build());
+                               .putByte("color_bit", (byte) 0)
+                               .putString("torch_facing_direction", direction)
+                               .build());
             }
 
             for (String direction : directions) {
                 this.add(NbtMap.builder()
-                        .putByte("color_bit", (byte) 1)
-                        .putString("torch_facing_direction", direction)
-                        .build());
+                               .putByte("color_bit", (byte) 1)
+                               .putString("torch_facing_direction", direction)
+                               .build());
             }
         }
     });
@@ -50,5 +50,4 @@ public abstract class BlockColoredTorch extends BaseBlock {
     public List<NbtMap> getNBTStates() {
         return BLOCK_STATES;
     }
-
 }

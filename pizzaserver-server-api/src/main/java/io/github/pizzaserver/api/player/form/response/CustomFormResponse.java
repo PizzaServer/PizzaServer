@@ -112,7 +112,5 @@ public class CustomFormResponse extends FormResponse<CustomForm> {
         public CustomFormResponse build() {
             return new CustomFormResponse(this.form, this.player, this.closed, this.responses);
         }
-
     }
-
 }

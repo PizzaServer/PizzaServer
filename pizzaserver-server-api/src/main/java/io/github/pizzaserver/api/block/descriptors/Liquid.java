@@ -10,5 +10,4 @@ public interface Liquid extends Block {
     default boolean isSwimmable() {
         return true;
     }
-
 }

@@ -47,5 +47,4 @@ public class BlockBookshelf extends BaseBlock implements Flammable {
     public int getFlameOdds() {
         return 20;
     }
-
 }

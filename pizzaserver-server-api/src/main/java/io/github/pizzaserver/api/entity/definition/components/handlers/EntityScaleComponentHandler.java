@@ -15,5 +15,4 @@ public class EntityScaleComponentHandler extends EntityComponentHandler<EntitySc
     public void onUnregistered(Entity entity, EntityScaleComponent component) {
         entity.setScale(entity.getComponent(EntityScaleComponent.class).getScale());
     }
-
 }

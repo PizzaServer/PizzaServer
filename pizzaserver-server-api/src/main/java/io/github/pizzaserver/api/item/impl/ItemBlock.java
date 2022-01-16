@@ -56,5 +56,4 @@ public class ItemBlock extends Item {
     public void setBlocksCanPlaceOn(Set<String> blocksCanPlaceOn) {
         this.blocksCanPlaceOn = new HashSet<>(blocksCanPlaceOn);
     }
-
 }

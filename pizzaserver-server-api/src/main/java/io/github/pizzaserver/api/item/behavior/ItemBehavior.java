@@ -27,5 +27,4 @@ public interface ItemBehavior<T extends Item> {
      * @param entity the entity interacted with
      */
     void onInteract(Player player, T item, Entity entity);
-
 }

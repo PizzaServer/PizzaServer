@@ -33,5 +33,4 @@ public enum DyeColor {
     public String getDisplayName() {
         return this.displayName;
     }
-
 }

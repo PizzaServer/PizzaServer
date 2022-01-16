@@ -41,6 +41,4 @@ public class BlockGrass extends BaseBlock {
     public ToolType getToolTypeRequired() {
         return ToolType.SHOVEL;
     }
-
-
 }

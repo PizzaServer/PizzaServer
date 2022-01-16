@@ -36,5 +36,4 @@ public final class SchedulerTaskEntry {
     public long getNextTick() {
         return this.nextTick;
     }
-
 }

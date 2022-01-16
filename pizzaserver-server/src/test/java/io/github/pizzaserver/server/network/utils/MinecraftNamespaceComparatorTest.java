@@ -20,5 +20,4 @@ public class MinecraftNamespaceComparatorTest {
         assertEquals(1, MinecraftNamespaceComparator.compare("a:element", "b:element"));
         assertEquals(-1, MinecraftNamespaceComparator.compare("b:element", "a:element"));
     }
-
 }

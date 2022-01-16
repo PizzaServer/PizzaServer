@@ -36,5 +36,4 @@ public abstract class BasePlayerEvent extends Event {
             this.isCancelled = isCancelled;
         }
     }
-
 }

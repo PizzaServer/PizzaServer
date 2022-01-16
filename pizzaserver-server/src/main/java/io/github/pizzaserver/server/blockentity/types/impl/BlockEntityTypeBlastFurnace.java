@@ -31,5 +31,4 @@ public class BlockEntityTypeBlastFurnace extends BlockEntityTypeFurnace {
     public BlockEntityBlastFurnace create(Block block) {
         return new BlockEntityBlastFurnace(block.getLocation());
     }
-
 }

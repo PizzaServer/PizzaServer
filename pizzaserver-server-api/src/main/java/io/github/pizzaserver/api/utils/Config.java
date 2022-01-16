@@ -20,7 +20,6 @@ public class Config extends ConfigGroup {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-
     }
 
     public void save(OutputStream stream) {
@@ -30,5 +29,4 @@ public class Config extends ConfigGroup {
             e.printStackTrace();
         }
     }
-
 }

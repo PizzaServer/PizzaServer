@@ -64,12 +64,12 @@ public class ImplScoreboard implements Scoreboard {
     public List<ScoreboardLine> getSortedLines() {
         if (this.getSortOrder() == SortOrder.DESCENDING) {
             return this.lines.stream()
-                    .sorted(Comparator.comparingInt(ScoreboardLine::getScore).reversed())
-                    .collect(Collectors.toList());
+                             .sorted(Comparator.comparingInt(ScoreboardLine::getScore).reversed())
+                             .collect(Collectors.toList());
         }
         return this.lines.stream()
-                .sorted(Comparator.comparingInt(ScoreboardLine::getScore))
-                .collect(Collectors.toList());
+                         .sorted(Comparator.comparingInt(ScoreboardLine::getScore))
+                         .collect(Collectors.toList());
     }
 
     @Override
@@ -114,7 +114,10 @@ public class ImplScoreboard implements Scoreboard {
 
             SetScorePacket setScorePacket = new SetScorePacket();
             setScorePacket.setAction(SetScorePacket.Action.SET);
-            setScorePacket.setInfos(this.getLines().stream().map(line -> ((ImplScoreboardLine) line).getScoreInfo()).collect(Collectors.toList()));
+            setScorePacket.setInfos(this.getLines()
+                                        .stream()
+                                        .map(line -> ((ImplScoreboardLine) line).getScoreInfo())
+                                        .collect(Collectors.toList()));
             player.sendPacket(setScorePacket);
         }
         return true;
@@ -141,5 +144,4 @@ public class ImplScoreboard implements Scoreboard {
         objectivePacket.setSortOrder(this.getSortOrder().ordinal());
         player.sendPacket(objectivePacket);
     }
-
 }

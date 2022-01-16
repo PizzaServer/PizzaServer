@@ -150,5 +150,4 @@ public class ImplBossBar implements BossBar {
         }
         return false;
     }
-
 }

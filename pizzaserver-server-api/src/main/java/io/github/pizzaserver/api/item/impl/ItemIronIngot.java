@@ -17,5 +17,4 @@ public class ItemIronIngot extends Item {
     public String getName() {
         return "Iron Ingot";
     }
-
 }

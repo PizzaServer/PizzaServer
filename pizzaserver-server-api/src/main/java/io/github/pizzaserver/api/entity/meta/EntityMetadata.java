@@ -52,5 +52,4 @@ public interface EntityMetadata {
     Vector3f getVector3f(EntityData propertyName);
 
     EntityMetadata putVector3f(EntityData propertyName, Vector3f value);
-
 }

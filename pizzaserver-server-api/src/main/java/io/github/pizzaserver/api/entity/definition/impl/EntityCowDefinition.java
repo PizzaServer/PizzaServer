@@ -17,10 +17,10 @@ public class EntityCowDefinition extends BaseEntityDefinition {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
                 new EntityDimensionsComponent(0.9f, 1.3f),
                 new EntityHealthComponent(10f, 10f),
-                new EntityBreathableComponent(new EntityBreathableComponent.Properties()
-                        .setTotalSupplyTime(15)
-                        .setSuffocationInterval(10)
-                        .setGenerateBubblesInWater(true)) }));
+                new EntityBreathableComponent(new EntityBreathableComponent.Properties().setTotalSupplyTime(15)
+                                                                                        .setSuffocationInterval(10)
+                                                                                        .setGenerateBubblesInWater(true))
+        }));
     }
 
     @Override
@@ -37,6 +37,4 @@ public class EntityCowDefinition extends BaseEntityDefinition {
     public void onCreation(Entity entity) {
         entity.addComponentGroup("minecraft:default");
     }
-
-
 }

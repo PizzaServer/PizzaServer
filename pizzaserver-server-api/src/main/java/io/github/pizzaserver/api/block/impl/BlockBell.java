@@ -15,20 +15,20 @@ public class BlockBell extends BaseBlock implements BlockEntityContainer<BlockEn
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
-            String[] attachmentTypes = new String[]{ "standing", "hanging", "side", "multiple" };
+            String[] attachmentTypes = new String[] {"standing", "hanging", "side", "multiple"};
 
             for (String attachmentType : attachmentTypes) {
                 for (int direction = 0; direction < 4; direction++) {
                     this.add(NbtMap.builder()
-                            .putString("attachment", attachmentType)
-                            .putInt("direction", direction)
-                            .putByte("toggle_bit", (byte) 0)
-                            .build());
+                                   .putString("attachment", attachmentType)
+                                   .putInt("direction", direction)
+                                   .putByte("toggle_bit", (byte) 0)
+                                   .build());
                     this.add(NbtMap.builder()
-                            .putString("attachment", attachmentType)
-                            .putInt("direction", direction)
-                            .putByte("toggle_bit", (byte) 1)
-                            .build());
+                                   .putString("attachment", attachmentType)
+                                   .putInt("direction", direction)
+                                   .putByte("toggle_bit", (byte) 1)
+                                   .build());
                 }
             }
         }
@@ -69,5 +69,4 @@ public class BlockBell extends BaseBlock implements BlockEntityContainer<BlockEn
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
     }
-
 }

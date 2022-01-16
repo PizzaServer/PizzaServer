@@ -17,5 +17,4 @@ public class ItemShulkerShell extends Item {
     public String getName() {
         return "Shulker Shell";
     }
-
 }

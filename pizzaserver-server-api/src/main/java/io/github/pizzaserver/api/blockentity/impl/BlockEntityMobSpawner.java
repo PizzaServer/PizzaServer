@@ -18,5 +18,4 @@ public class BlockEntityMobSpawner extends BaseBlockEntity {
     public BlockEntityType getType() {
         return BlockEntityRegistry.getInstance().getBlockEntityType(ID);
     }
-
 }

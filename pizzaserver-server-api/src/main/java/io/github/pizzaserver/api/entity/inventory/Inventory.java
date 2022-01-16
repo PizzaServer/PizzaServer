@@ -81,7 +81,7 @@ public interface Inventory extends Watchable {
      * @param items items to add
      * @return remainder of the items that could not be added
      */
-    Set<Item> addItems(Item ...items);
+    Set<Item> addItems(Item... items);
 
     /**
      * Try to add items to this inventory.
@@ -118,5 +118,4 @@ public interface Inventory extends Watchable {
      * @return excess amount
      */
     int getExcessIfAdded(Item item);
-
 }

@@ -41,7 +41,8 @@ public class MCWorldLevel implements BedrockLevel<MCWorldChunkProvider> {
         if (!(dbDirectory.exists() && dbDirectory.isDirectory())) {
             throw new FileNotFoundException("Could not find db directory");
         }
-        this.chunkProvider = new MCWorldChunkProvider(LevelDB.PROVIDER.open(dbDirectory, new Options().createIfMissing(true)));
+        this.chunkProvider = new MCWorldChunkProvider(LevelDB.PROVIDER.open(dbDirectory,
+                                                                            new Options().createIfMissing(true)));
     }
 
     @Override
@@ -72,5 +73,4 @@ public class MCWorldLevel implements BedrockLevel<MCWorldChunkProvider> {
     public void close() throws IOException {
         this.chunkProvider.close();
     }
-
 }

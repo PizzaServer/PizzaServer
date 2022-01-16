@@ -27,5 +27,4 @@ public class EntityScaleComponent extends EntityComponent {
     public String toString() {
         return super.toString() + "(scale=" + this.getScale() + ")";
     }
-
 }

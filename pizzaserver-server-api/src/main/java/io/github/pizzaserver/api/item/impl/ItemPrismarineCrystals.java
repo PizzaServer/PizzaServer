@@ -17,5 +17,4 @@ public class ItemPrismarineCrystals extends Item {
     public String getName() {
         return "Prismarine Crystals";
     }
-
 }

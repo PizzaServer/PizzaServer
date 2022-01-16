@@ -29,7 +29,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     public static final int PROTOCOL = 475;
     public static final String VERSION = "1.18";
 
-    public V475MinecraftVersion() throws IOException {}
+    public V475MinecraftVersion() throws IOException { }
 
 
     @Override
@@ -49,18 +49,19 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
     @Override
     protected void loadBiomeDefinitions() throws IOException {
-        try (NBTInputStream inputStream = NbtUtils.createNetworkReader(this.getProtocolResourceStream("biome_definitions.nbt"))) {
+        try (NBTInputStream inputStream = NbtUtils.createNetworkReader(this.getProtocolResourceStream(
+                "biome_definitions.nbt"))) {
             this.biomesDefinitions = (NbtMap) inputStream.readTag();
         }
     }
 
     @Override
     protected void loadBlockStates() throws IOException {
-        try (InputStream blockStatesFileStream = this.getProtocolResourceStream("block_states.nbt");
-             NBTInputStream blockStatesNBTStream = NbtUtils.createNetworkReader(blockStatesFileStream)) {
+        try (InputStream blockStatesFileStream = this.getProtocolResourceStream("block_states.nbt"); NBTInputStream blockStatesNBTStream = NbtUtils.createNetworkReader(
+                blockStatesFileStream)) {
             // keySet returns in ascending rather than descending so we have to reverse it
-            SortedMap<String, List<NbtMap>> sortedBlockRuntimeStates =
-                    new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
+            SortedMap<String, List<NbtMap>> sortedBlockRuntimeStates = new TreeMap<>(Collections.reverseOrder(
+                    MinecraftNamespaceComparator::compare));
 
             // Parse block states
             while (blockStatesFileStream.available() > 0) {
@@ -93,29 +94,31 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
     protected BlockPropertyData getBlockPropertyData(Block block) {
         NbtMapBuilder componentsNBT = NbtMap.builder()
-                .putCompound("minecraft:block_light_absorption", NbtMap.builder()
-                        .putInt("value", block.getLightAbsorption())
-                        .build())
-                .putCompound("minecraft:block_light_emission", NbtMap.builder()
-                        .putFloat("emission", block.getLightEmission())
-                        .build())
-                .putCompound("minecraft:friction", NbtMap.builder()
-                        .putFloat("value", block.getFriction())
-                        .build())
-                .putCompound("minecraft:rotation", NbtMap.builder()
-                        .putFloat("x", 0)
-                        .putFloat("y", 0)
-                        .putFloat("z", 0)
-                        .build());
+                                            .putCompound("minecraft:block_light_absorption",
+                                                         NbtMap.builder()
+                                                               .putInt("value", block.getLightAbsorption())
+                                                               .build())
+                                            .putCompound("minecraft:block_light_emission",
+                                                         NbtMap.builder()
+                                                               .putFloat("emission", block.getLightEmission())
+                                                               .build())
+                                            .putCompound("minecraft:friction",
+                                                         NbtMap.builder()
+                                                               .putFloat("value", block.getFriction())
+                                                               .build())
+                                            .putCompound("minecraft:rotation",
+                                                         NbtMap.builder()
+                                                               .putFloat("x", 0)
+                                                               .putFloat("y", 0)
+                                                               .putFloat("z", 0)
+                                                               .build());
         if (block.getGeometry().isPresent()) {
-            componentsNBT.putCompound("minecraft:geometry", NbtMap.builder()
-                            .putString("value", block.getGeometry().get())
-                    .build());
+            componentsNBT.putCompound("minecraft:geometry",
+                                      NbtMap.builder().putString("value", block.getGeometry().get()).build());
         }
 
-        return new BlockPropertyData(block.getBlockId(), NbtMap.builder()
-                .putCompound("components", componentsNBT.build())
-                .build());
+        return new BlockPropertyData(block.getBlockId(),
+                                     NbtMap.builder().putCompound("components", componentsNBT.build()).build());
     }
 
     @Override
@@ -136,7 +139,8 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                 this.itemRuntimeIds.put(itemId, runtimeId);
                 this.itemEntries.add(new StartGamePacket.ItemEntry(itemId, (short) runtimeId, false));
             }
-            this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
+            this.itemRuntimeIds.put("minecraft:air",
+                                    0);    // A void item is equal to 0 and this reduces data sent over the network
 
             // Register custom items
             for (CustomItem customItem : ItemRegistry.getInstance().getCustomItems()) {
@@ -150,11 +154,13 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
-            SortedSet<Block> sortedCustomBlocks =
-                    new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+            SortedSet<Block> sortedCustomBlocks = new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(
+                    blockTypeA.getBlockId(),
+                    blockTypeB.getBlockId()));
             sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
             for (Block customBlock : sortedCustomBlocks) {
-                this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+                this.itemRuntimeIds.put(customBlock.getBlockId(),
+                                        255 - customBlockIdStart++);  // (255 - index) = item runtime id
             }
         }
     }
@@ -165,80 +171,82 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         int rId = 0;    // TODO: what is the purpose of this?
         for (EntityDefinition definition : EntityRegistry.getInstance().getDefinitions()) {
             entities.add(NbtMap.builder()
-                    .putString("bid", "")
-                    .putBoolean("hasspawnegg", definition.hasSpawnEgg())
-                    .putString("id", definition.getId())
-                    .putInt("rid",  rId++)
-                    .putBoolean("summonable", definition.isSummonable())
-                    .build());
+                               .putString("bid", "")
+                               .putBoolean("hasspawnegg", definition.hasSpawnEgg())
+                               .putString("id", definition.getId())
+                               .putInt("rid", rId++)
+                               .putBoolean("summonable", definition.isSummonable())
+                               .build());
         }
-        this.availableEntities = NbtMap.builder()
-                .putList("idlist", NbtType.COMPOUND, entities)
-                .build();
+        this.availableEntities = NbtMap.builder().putList("idlist", NbtType.COMPOUND, entities).build();
     }
 
     @Override
     protected void loadItemComponents() {
         this.itemComponents.clear();
         for (CustomItem customItem : ItemRegistry.getInstance().getCustomItems()) {
-            this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
+            this.itemComponents.add(new ComponentItemData(customItem.getItemId(),
+                                                          this.getItemComponentNBT(customItem)));
         }
     }
 
     protected NbtMap getItemComponentNBT(CustomItem item) {
         NbtMapBuilder container = NbtMap.builder();
-        container.putInt("id", this.getItemRuntimeId(item.getItemId()))
-                .putString("name", item.getItemId());
+        container.putInt("id", this.getItemRuntimeId(item.getItemId())).putString("name", item.getItemId());
 
         NbtMapBuilder components = NbtMap.builder();
 
         // Write non-required components if present
         if (item instanceof ArmorItemComponent armorItemComponent) {
-            components.putCompound("minecraft:armor", NbtMap.builder()
-                    .putInt("protection", armorItemComponent.getProtection())
-                    .build());
+            components.putCompound("minecraft:armor",
+                                   NbtMap.builder().putInt("protection", armorItemComponent.getProtection()).build());
         }
         if (item instanceof CooldownItemComponent cooldownItemComponent) {
-            components.putCompound("minecraft:cooldown", NbtMap.builder()
-                    .putString("category", cooldownItemComponent.getCooldownCategory())
-                    .putFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f)
-                    .build());
+            components.putCompound("minecraft:cooldown",
+                                   NbtMap.builder()
+                                         .putString("category", cooldownItemComponent.getCooldownCategory())
+                                         .putFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f)
+                                         .build());
         }
         if (item instanceof DurableItemComponent durableItemComponent) {
-            components.putCompound("minecraft:durability", NbtMap.builder()
-                    .putInt("max_durability", durableItemComponent.getMaxDurability())
-                    .build());
+            components.putCompound("minecraft:durability",
+                                   NbtMap.builder()
+                                         .putInt("max_durability", durableItemComponent.getMaxDurability())
+                                         .build());
         }
         if (item instanceof FoodItemComponent foodItemComponent) {
-            components.putCompound("minecraft:food", NbtMap.builder()
-                    .putBoolean("can_always_eat", foodItemComponent.canAlwaysBeEaten())
-                    .build());
+            components.putCompound("minecraft:food",
+                                   NbtMap.builder()
+                                         .putBoolean("can_always_eat", foodItemComponent.canAlwaysBeEaten())
+                                         .build());
         }
         if (item instanceof PlantableItemComponent) {
             components.putCompound("minecraft:block_placer", NbtMap.EMPTY);
         }
 
         NbtMap itemProperties = NbtMap.builder()
-                .putCompound("minecraft:icon", NbtMap.builder()
-                        .putString("texture", item.getIconName())
-                        .build())
-                .putBoolean("allow_off_hand", item.isAllowedInOffHand())
-                .putInt("creative_category", 2)
-                .putInt("damage", item.getDamage())
-                .putBoolean("foil", item.hasFoil())
-                .putBoolean("hand_equipped", item.isHandEquipped())
-                .putBoolean("liquid_clipped", item.canUseOnLiquid())
-                .putInt("max_stack_size", item.getMaxStackSize())
-                .putFloat("mining_speed", 0)  // Block breaking is handled server-side. Doing this gives greater block break control in the item type class
-                .putBoolean("mirrored_art", item.isMirroredArt())
-                .putBoolean("stacked_by_data", item.isStackedByMeta())
-                .putInt("use_animation", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseAnimationType().ordinal() : 0)
-                .putInt("use_duration", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseDurationTicks() : 0)
-                .build();
+                                      .putCompound("minecraft:icon",
+                                                   NbtMap.builder().putString("texture", item.getIconName()).build())
+                                      .putBoolean("allow_off_hand", item.isAllowedInOffHand())
+                                      .putInt("creative_category", 2)
+                                      .putInt("damage", item.getDamage())
+                                      .putBoolean("foil", item.hasFoil())
+                                      .putBoolean("hand_equipped", item.isHandEquipped())
+                                      .putBoolean("liquid_clipped", item.canUseOnLiquid())
+                                      .putInt("max_stack_size", item.getMaxStackSize())
+                                      .putFloat("mining_speed",
+                                                0)  // Block breaking is handled server-side. Doing this gives greater block break control in the item type class
+                                      .putBoolean("mirrored_art", item.isMirroredArt())
+                                      .putBoolean("stacked_by_data", item.isStackedByMeta())
+                                      .putInt("use_animation",
+                                              item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseAnimationType()
+                                                                                                                     .ordinal() : 0)
+                                      .putInt("use_duration",
+                                              item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseDurationTicks() : 0)
+                                      .build();
         components.putCompound("item_properties", itemProperties);
 
         container.putCompound("components", components.build());
         return container.build();
     }
-
 }

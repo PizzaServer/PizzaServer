@@ -17,5 +17,4 @@ public class ItemPaper extends Item {
     public String getName() {
         return "Paper";
     }
-
 }

@@ -17,5 +17,4 @@ public class ItemBlazePowder extends Item {
     public String getName() {
         return "Blaze Powder";
     }
-
 }

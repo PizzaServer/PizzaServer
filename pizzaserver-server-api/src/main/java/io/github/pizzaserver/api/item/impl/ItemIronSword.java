@@ -50,5 +50,4 @@ public class ItemIronSword extends Item implements DurableItemComponent, ToolIte
     public int getMaxDurability() {
         return 251;
     }
-
 }

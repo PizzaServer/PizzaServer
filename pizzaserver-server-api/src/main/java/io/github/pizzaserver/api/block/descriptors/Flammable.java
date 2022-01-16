@@ -18,5 +18,4 @@ public interface Flammable extends Block {
      * @return Chance of catching fire
      */
     int getFlameOdds();
-
 }

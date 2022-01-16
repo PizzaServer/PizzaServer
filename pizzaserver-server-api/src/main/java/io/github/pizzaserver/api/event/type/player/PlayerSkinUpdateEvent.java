@@ -28,5 +28,4 @@ public class PlayerSkinUpdateEvent extends BasePlayerEvent.Cancellable {
     public void setNewSkin(Skin skin) {
         this.newSkin = skin;
     }
-
 }

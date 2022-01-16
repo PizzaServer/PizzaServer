@@ -200,7 +200,9 @@ public class ImplLevelManager implements LevelManager, Closeable {
      * @return provider
      * @throws IOException if an exception occurred while reading the file
      */
-    protected BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> getProvider(File levelFile, ProviderType providerType) throws IOException {
+    protected BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> getProvider(
+            File levelFile,
+            ProviderType providerType) throws IOException {
         switch (providerType) {
             case LEVELDB:
                 return new MCWorldLevel(levelFile);

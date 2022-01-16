@@ -14,12 +14,8 @@ public class BlockDirt extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
-            this.add(NbtMap.builder()
-                    .putString("dirt_type", "normal")
-                    .build());
-            this.add(NbtMap.builder()
-                    .putString("dirt_type", "coarse")
-                    .build());
+            this.add(NbtMap.builder().putString("dirt_type", "normal").build());
+            this.add(NbtMap.builder().putString("dirt_type", "coarse").build());
         }
     };
 
@@ -74,5 +70,4 @@ public class BlockDirt extends BaseBlock {
     public ToolType getToolTypeRequired() {
         return ToolType.SHOVEL;
     }
-
 }

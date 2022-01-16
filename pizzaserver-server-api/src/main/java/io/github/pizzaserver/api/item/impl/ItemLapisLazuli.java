@@ -17,5 +17,4 @@ public class ItemLapisLazuli extends Item {
     public String getName() {
         return "Lapis Lazuli";
     }
-
 }

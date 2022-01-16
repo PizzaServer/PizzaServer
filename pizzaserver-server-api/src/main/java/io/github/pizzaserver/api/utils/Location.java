@@ -42,7 +42,7 @@ public class Location {
 
     public Chunk getChunk() {
         if (this.getWorld() == null) {
-            return  null;
+            return null;
         }
         return this.getWorld().getChunk(this.getChunkX(), this.getChunkZ());
     }
@@ -76,11 +76,7 @@ public class Location {
 
     @Override
     public String toString() {
-        return "Location(level=" + this.getWorld().getLevel().getName()
-                + ", world=" + this.getWorld().getDimension()
-                + ", x=" + this.getX()
-                + ", y=" + this.getY()
-                + ", z=" + this.getZ() + ")";
+        return "Location(level=" + this.getWorld().getLevel().getName() + ", world=" + this.getWorld().getDimension()
+                + ", x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + ")";
     }
-
 }

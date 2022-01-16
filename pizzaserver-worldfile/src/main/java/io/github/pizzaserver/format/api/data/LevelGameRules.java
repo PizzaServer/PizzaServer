@@ -237,5 +237,4 @@ public class LevelGameRules {
     public void setTNTExplodesEnabled(boolean enabled) {
         this.tntExplodes = enabled;
     }
-
 }

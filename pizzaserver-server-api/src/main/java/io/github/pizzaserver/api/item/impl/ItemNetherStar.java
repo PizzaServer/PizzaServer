@@ -17,5 +17,4 @@ public class ItemNetherStar extends Item {
     public String getName() {
         return "Nether Star";
     }
-
 }

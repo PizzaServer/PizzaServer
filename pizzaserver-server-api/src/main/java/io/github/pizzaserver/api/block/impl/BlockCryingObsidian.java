@@ -41,5 +41,4 @@ public class BlockCryingObsidian extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.DIAMOND;
     }
-
 }

@@ -36,5 +36,4 @@ public abstract class BaseBlockEvent extends Event {
             this.isCancelled = isCancelled;
         }
     }
-
 }

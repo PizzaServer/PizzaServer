@@ -18,5 +18,4 @@ public class BlockStopBreakEvent extends BaseBlockEvent {
     public Player getPlayer() {
         return this.player;
     }
-
 }

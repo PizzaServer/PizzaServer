@@ -56,5 +56,4 @@ public class BlockWoodenButton extends BlockButton {
             case CRIMSON -> BlockID.CRIMSON_BUTTON;
         };
     }
-
 }

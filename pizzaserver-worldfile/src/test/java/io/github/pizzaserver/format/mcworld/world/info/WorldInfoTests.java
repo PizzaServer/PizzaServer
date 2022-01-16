@@ -28,5 +28,4 @@ public class WorldInfoTests {
             ResourceUtils.deleteDirectoryContents(temporaryDir);
         }
     }
-
 }

@@ -16,12 +16,8 @@ public class PlayerData {
     private final float yaw;
 
 
-    private PlayerData(String levelName,
-                       Dimension dimension,
-                       Gamemode gamemode,
-                       Vector3f position,
-                       float pitch,
-                       float yaw) {
+    private PlayerData(
+            String levelName, Dimension dimension, Gamemode gamemode, Vector3f position, float pitch, float yaw) {
         this.levelName = levelName;
         this.dimension = dimension;
         this.gamemode = gamemode;
@@ -100,16 +96,12 @@ public class PlayerData {
         }
 
         public PlayerData build() {
-            return new PlayerData(
-                    Check.nullParam(this.levelName, "levelName"),
-                    Check.nullParam(this.dimension, "dimension"),
-                    Check.nullParam(this.gamemode, "gamemode"),
-                    Check.nullParam(this.position, "position"),
-                    this.pitch,
-                    this.yaw
-            );
+            return new PlayerData(Check.nullParam(this.levelName, "levelName"),
+                                  Check.nullParam(this.dimension, "dimension"),
+                                  Check.nullParam(this.gamemode, "gamemode"),
+                                  Check.nullParam(this.position, "position"),
+                                  this.pitch,
+                                  this.yaw);
         }
-
     }
-
 }

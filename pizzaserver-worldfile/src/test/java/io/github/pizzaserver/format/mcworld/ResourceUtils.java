@@ -35,14 +35,11 @@ public class ResourceUtils {
 
                     entry = zipStream.getNextEntry();
                 }
-
             }
         }
     }
 
     public static void deleteDirectoryContents(Path targetDirectoryLocation) throws IOException {
-        Files.walk(targetDirectoryLocation)
-            .forEach(file -> file.toFile().delete());
+        Files.walk(targetDirectoryLocation).forEach(file -> file.toFile().delete());
     }
-
 }

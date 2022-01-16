@@ -24,5 +24,4 @@ public class BlockPlaceEvent extends BaseBlockEvent.Cancellable {
     public Block getBlockPlacedAgainst() {
         return this.blockPlacedAgainst;
     }
-
 }

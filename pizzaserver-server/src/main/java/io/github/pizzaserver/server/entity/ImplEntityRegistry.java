@@ -24,7 +24,10 @@ public class ImplEntityRegistry implements EntityRegistry {
     }
 
     @Override
-    public <T extends EntityComponent> void registerComponent(Class<T> componentClazz, T defaultComponent, EntityComponentHandler<T> handler) {
+    public <T extends EntityComponent> void registerComponent(
+            Class<T> componentClazz,
+            T defaultComponent,
+            EntityComponentHandler<T> handler) {
         this.componentHandlers.put(componentClazz, handler);
         this.defaultComponents.put(componentClazz, defaultComponent);
     }
@@ -45,9 +48,12 @@ public class ImplEntityRegistry implements EntityRegistry {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends EntityComponent> EntityComponentHandler<T> getComponentHandler(Class<T> componentClazz) {
-        EntityComponentHandler<T> handler = (EntityComponentHandler<T>) this.componentHandlers.getOrDefault(componentClazz, null);
+        EntityComponentHandler<T> handler = (EntityComponentHandler<T>) this.componentHandlers.getOrDefault(
+                componentClazz,
+                null);
         if (handler == null) {
-            throw new NullPointerException("Misconfigured component. The requested component does not have a component handler.");
+            throw new NullPointerException(
+                    "Misconfigured component. The requested component does not have a component handler.");
         }
 
         return handler;
@@ -58,7 +64,8 @@ public class ImplEntityRegistry implements EntityRegistry {
     public <T extends EntityComponent> T getDefaultComponent(Class<T> componentClazz) {
         T defaultComponent = (T) this.defaultComponents.getOrDefault(componentClazz, null);
         if (defaultComponent == null) {
-            throw new NullPointerException("Misconfigured component. The requested component does not have a default component.");
+            throw new NullPointerException(
+                    "Misconfigured component. The requested component does not have a default component.");
         }
 
         return defaultComponent;
@@ -100,5 +107,4 @@ public class ImplEntityRegistry implements EntityRegistry {
     public Set<EntityDefinition> getDefinitions() {
         return Collections.unmodifiableSet(new HashSet<>(this.definitions.values()));
     }
-
 }

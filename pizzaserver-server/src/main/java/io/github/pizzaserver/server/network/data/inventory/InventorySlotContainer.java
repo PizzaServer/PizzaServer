@@ -21,9 +21,8 @@ public class InventorySlotContainer {
     private boolean modified;
 
 
-    public InventorySlotContainer(ImplPlayer player,
-                                  ContainerSlotType slotType,
-                                  int slot) {
+    public InventorySlotContainer(
+            ImplPlayer player, ContainerSlotType slotType, int slot) {
         this.player = player;
         this.slotType = slotType;
         this.slot = slot;
@@ -39,7 +38,8 @@ public class InventorySlotContainer {
 
     public BaseInventory getInventory() {
         Optional<Inventory> openInventory = this.player.getOpenInventory();
-        if (openInventory.isPresent() && InventoryUtils.getSlotTypes(openInventory.get().getContainerType()).contains(this.slotType)) {
+        if (openInventory.isPresent() && InventoryUtils.getSlotTypes(openInventory.get().getContainerType())
+                                                       .contains(this.slotType)) {
             return (BaseInventory) openInventory.get();
         } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getContainerType()).contains(this.slotType)) {
             return this.player.getInventory();
@@ -142,5 +142,4 @@ public class InventorySlotContainer {
     public boolean exists() {
         return this.getItemStack() != null;
     }
-
 }

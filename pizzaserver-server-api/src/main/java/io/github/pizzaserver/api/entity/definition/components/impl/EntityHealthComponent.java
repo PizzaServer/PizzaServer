@@ -19,7 +19,7 @@ public class EntityHealthComponent extends EntityComponent {
     }
 
     public EntityHealthComponent(float minimumRandomHealth, float maximumRandomHealth, float maximumHealth) {
-        this.healthRange = new float[]{ minimumRandomHealth, maximumRandomHealth };
+        this.healthRange = new float[] {minimumRandomHealth, maximumRandomHealth};
         this.maximumHealth = maximumHealth;
     }
 
@@ -35,5 +35,4 @@ public class EntityHealthComponent extends EntityComponent {
     public float getMaximumHealth() {
         return this.maximumHealth;
     }
-
 }

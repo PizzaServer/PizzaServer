@@ -135,7 +135,9 @@ public class ImplEntity implements Entity {
         // Unregister previous active components and register new active components
         for (EntityComponent newComponent : group.getComponents()) {
             Class<? extends EntityComponent> newComponentClazz = newComponent.getClass();
-            EntityComponentHandler handler = this.getServer().getEntityRegistry().getComponentHandler(newComponentClazz);
+            EntityComponentHandler handler = this.getServer()
+                                                 .getEntityRegistry()
+                                                 .getComponentHandler(newComponentClazz);
 
             for (EntityComponentGroup existingComponentGroup : this.componentGroups) {
                 if (existingComponentGroup.hasComponent(newComponentClazz)) {
@@ -178,7 +180,9 @@ public class ImplEntity implements Entity {
             // Unregister components of the group from this entity and then find and apply the new active components of the same types.
             for (EntityComponent removeComponent : removingComponentGroup.getComponents()) {
                 Class<? extends EntityComponent> removeComponentClazz = removeComponent.getClass();
-                EntityComponentHandler handler = this.getServer().getEntityRegistry().getComponentHandler(removeComponentClazz);
+                EntityComponentHandler handler = this.getServer()
+                                                     .getEntityRegistry()
+                                                     .getComponentHandler(removeComponentClazz);
 
                 if (!activeHigherComponents.contains(removeComponentClazz)) {
                     handler.onUnregistered(this, removingComponentGroup.getComponent(removeComponentClazz));
@@ -268,7 +272,8 @@ public class ImplEntity implements Entity {
         if (this.isSwimming()) {
             return this.getWorld().getBlock(this.getLocation().toVector3i());
         } else {
-            return this.getWorld().getBlock(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0).floor().toInt());
+            return this.getWorld()
+                       .getBlock(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0).floor().toInt());
         }
     }
 
@@ -758,7 +763,9 @@ public class ImplEntity implements Entity {
     protected void updateBossBarVisibility() {
         if (this.getBossBar().isPresent()) {
             for (Player viewer : this.getViewers()) {
-                if (viewer.getLocation().toVector3f().distance(this.getLocation().toVector3f()) <= this.getBossBar().get().getRenderRange()) {
+                if (viewer.getLocation().toVector3f().distance(this.getLocation().toVector3f()) <= this.getBossBar()
+                                                                                                       .get()
+                                                                                                       .getRenderRange()) {
                     // In range
                     this.bossBar.spawnTo(viewer);
                 } else {
@@ -830,7 +837,10 @@ public class ImplEntity implements Entity {
                 deathMessage = this.getDeathMessage().orElse(null);
             }
 
-            EntityDeathEvent deathEvent = new EntityDeathEvent(this, this.getLoot(), deathMessage, this.getServer().getPlayers());
+            EntityDeathEvent deathEvent = new EntityDeathEvent(this,
+                                                               this.getLoot(),
+                                                               deathMessage,
+                                                               this.getServer().getPlayers());
             this.getServer().getEventManager().call(deathEvent);
 
             for (Item itemStack : deathEvent.getDrops()) {
@@ -860,10 +870,9 @@ public class ImplEntity implements Entity {
             return Optional.empty();
         }
 
-        TextMessage.Builder textBuilder = new TextMessage.Builder()
-                .setType(TextPacket.Type.TRANSLATION)
-                .setTranslationRequired(true)
-                .addParameter(this.getName());
+        TextMessage.Builder textBuilder = new TextMessage.Builder().setType(TextPacket.Type.TRANSLATION)
+                                                                   .setTranslationRequired(true)
+                                                                   .addParameter(this.getName());
 
         if (this.lastDamageEvent instanceof EntityDamageByEntityEvent) {
             textBuilder.addParameter(((EntityDamageByEntityEvent) this.lastDamageEvent).getAttacker().getName());
@@ -949,7 +958,9 @@ public class ImplEntity implements Entity {
         this.getMetaData().tryUpdate();
 
         if (this.hasComponent(EntityBurnsInDaylightComponent.class) && this.getWorld().isDay()) {
-            Block highestBlockAboveEntity = this.getWorld().getHighestBlockAt((int) Math.floor(this.getX()), (int) Math.floor(this.getZ()));
+            Block highestBlockAboveEntity = this.getWorld()
+                                                .getHighestBlockAt((int) Math.floor(this.getX()),
+                                                                   (int) Math.floor(this.getZ()));
             if (highestBlockAboveEntity.getY() <= this.getY()) {
                 this.setFireTicks(20);
             }
@@ -960,7 +971,10 @@ public class ImplEntity implements Entity {
         } else {
             if (this.getFireTicks() > 0) {
                 if (this.getFireTicks() % 20 == 0) {
-                    EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
+                    EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this,
+                                                                                  DamageCause.FIRE_TICK,
+                                                                                  1f,
+                                                                                  NO_HIT_TICKS);
                     this.damage(fireTickDamageEvent);
                 }
                 this.setFireTicks(this.getFireTicks() - 1);
@@ -968,9 +982,10 @@ public class ImplEntity implements Entity {
 
             Block headBlock = this.getHeadBlock();
             EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
-            boolean isSuffocating = headBlock.hasCollision()
-                    && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
-                        || breathableComponent.getNonBreathableBlocks().contains(headBlock));
+            boolean isSuffocating = headBlock.hasCollision() && (
+                    !(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks()
+                                                                                  .contains(headBlock))
+                            || breathableComponent.getNonBreathableBlocks().contains(headBlock));
             if (isSuffocating) {
                 if (this.ticks % breathableComponent.getSuffocationInterval() == 0) {
                     EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
@@ -978,10 +993,10 @@ public class ImplEntity implements Entity {
                 }
             }
 
-            boolean losingOxygen = !headBlock.hasCollision()
-                    && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
-                                && !breathableComponent.getBreathableBlocks().contains(headBlock))
-                        || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
+            boolean losingOxygen = !headBlock.hasCollision() && (
+                    (breathableComponent.getNonBreathableBlocks().contains(headBlock)
+                            && !breathableComponent.getBreathableBlocks().contains(headBlock)) || !(
+                            headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
             if (losingOxygen) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
@@ -994,11 +1009,12 @@ public class ImplEntity implements Entity {
                 if (this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0) {
                     increment = this.getMaxAirSupplyTicks();
                 } else {
-                    increment = (int) Math.ceil(this.getMaxAirSupplyTicks() / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
+                    increment = (int) Math.ceil(
+                            this.getMaxAirSupplyTicks() / this.getComponent(EntityBreathableComponent.class)
+                                                              .getInhaleTime() / 20);
                 }
                 this.setAirSupplyTicks(this.getAirSupplyTicks() + increment);
             }
-
         }
 
         if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {
@@ -1059,9 +1075,8 @@ public class ImplEntity implements Entity {
      * @return if the damage went through
      */
     public boolean damage(EntityDamageEvent event) {
-        if (!this.isVulnerable()
-                || !this.isAlive()
-                || (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getAttacker().equals(this))) {
+        if (!this.isVulnerable() || !this.isAlive() || (event instanceof EntityDamageByEntityEvent
+                && ((EntityDamageByEntityEvent) event).getAttacker().equals(this))) {
             return false;
         }
 
@@ -1090,26 +1105,26 @@ public class ImplEntity implements Entity {
 
         // Apply KB resistance
         if (event instanceof EntityDamageByEntityEvent) {
-            ((EntityDamageByEntityEvent) event).setKnockback(((EntityDamageByEntityEvent) event).getKnockback().mul(1 - this.getKnockbackResistance()));
+            ((EntityDamageByEntityEvent) event).setKnockback(((EntityDamageByEntityEvent) event).getKnockback()
+                                                                                                .mul(1
+                                                                                                             - this.getKnockbackResistance()));
         }
 
         EntityFilterData damageFilterData;
         if (event instanceof EntityDamageByEntityEvent) {
-            damageFilterData = new EntityFilterData.Builder()
-                    .setSelf(this)
-                    .setOther(((EntityDamageByEntityEvent) event).getAttacker())
-                    .build();
+            damageFilterData = new EntityFilterData.Builder().setSelf(this)
+                                                             .setOther(((EntityDamageByEntityEvent) event).getAttacker())
+                                                             .build();
         } else {
-            damageFilterData = new EntityFilterData.Builder()
-                    .setSelf(this)
-                    .build();
+            damageFilterData = new EntityFilterData.Builder().setSelf(this).build();
         }
 
         EntityDamageSensorComponent damageSensorComponent = this.getComponent(EntityDamageSensorComponent.class);
         if (damageSensorComponent.getSensors().length > 0) {
             // Check entity's damage sensors to ensure we can attack the entity
             for (EntityDamageSensorComponent.Sensor sensor : damageSensorComponent.getSensors()) {
-                boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(event.getCause())).isPresent() || sensor.getCause().isEmpty();
+                boolean isAttackSensor = sensor.getCause().filter(cause -> cause.equals(event.getCause())).isPresent()
+                        || sensor.getCause().isEmpty();
 
                 if (isAttackSensor) {
                     boolean passedFilters = false;
@@ -1163,10 +1178,13 @@ public class ImplEntity implements Entity {
             Entity attacker = damageByEntityEvent.getAttacker();
 
             Vector2f directionVector = Vector2f.ZERO;
-            if (!(NumberUtils.isNearlyEqual(this.getX(), attacker.getX()) && NumberUtils.isNearlyEqual(this.getZ(), attacker.getZ()))) {
-                directionVector = Vector2f.from(this.getX() - attacker.getX(), this.getZ() - attacker.getZ()).normalize();
+            if (!(NumberUtils.isNearlyEqual(this.getX(), attacker.getX()) && NumberUtils.isNearlyEqual(this.getZ(),
+                                                                                                       attacker.getZ()))) {
+                directionVector = Vector2f.from(this.getX() - attacker.getX(), this.getZ() - attacker.getZ())
+                                          .normalize();
             }
-            Vector3f knockback = damageByEntityEvent.getKnockback().mul(directionVector.getX(), 1, directionVector.getY());
+            Vector3f knockback = damageByEntityEvent.getKnockback()
+                                                    .mul(directionVector.getX(), 1, directionVector.getY());
             this.setMotion(knockback);
         }
 
@@ -1189,21 +1207,20 @@ public class ImplEntity implements Entity {
     }
 
     public boolean withinEntityRenderDistanceTo(Player player) {
-        int chunkDistanceToViewer = (int) Math.round(Math.sqrt(Math.pow(player.getChunk().getX() - this.getChunk().getX(), 2) + Math.pow(player.getChunk().getZ() - this.getChunk().getZ(), 2)));
+        int chunkDistanceToViewer = (int) Math.round(Math.sqrt(
+                Math.pow(player.getChunk().getX() - this.getChunk().getX(), 2) + Math.pow(
+                        player.getChunk().getZ() - this.getChunk().getZ(), 2)));
         return chunkDistanceToViewer < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance();
     }
 
     public boolean canBeSpawnedTo(Player player) {
-        return !this.equals(player)
-                && !this.hasSpawnedTo(player)
-                && !this.isHiddenFrom(player)
-                && this.withinEntityRenderDistanceTo(player)
-                && this.getChunk().canBeVisibleTo(player);
+        return !this.equals(player) && !this.hasSpawnedTo(player) && !this.isHiddenFrom(player)
+                && this.withinEntityRenderDistanceTo(player) && this.getChunk().canBeVisibleTo(player);
     }
 
     public boolean shouldBeDespawnedFrom(Player player) {
-        return (!this.hasSpawned() || !this.getChunk().canBeVisibleTo(player) || !this.withinEntityRenderDistanceTo(player))
-                && this.hasSpawnedTo(player);
+        return (!this.hasSpawned() || !this.getChunk().canBeVisibleTo(player) || !this.withinEntityRenderDistanceTo(
+                player)) && this.hasSpawnedTo(player);
     }
 
     @Override
@@ -1278,7 +1295,8 @@ public class ImplEntity implements Entity {
     @Override
     public void showTo(Player player) {
         this.hiddenFrom.remove(player);
-        if (this.getChunk().canBeVisibleTo(player) && this.withinEntityRenderDistanceTo(player) && !this.hasSpawnedTo(player)) {
+        if (this.getChunk().canBeVisibleTo(player) && this.withinEntityRenderDistanceTo(player) && !this.hasSpawnedTo(
+                player)) {
             this.spawnTo(player);
         }
     }

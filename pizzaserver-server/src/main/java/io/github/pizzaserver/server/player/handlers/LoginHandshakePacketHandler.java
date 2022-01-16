@@ -75,7 +75,9 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
 
             KeyPair encryptionKeyPair = EncryptionUtils.createKeyPair();
             byte[] encryptionToken = EncryptionUtils.generateRandomToken();
-            encryptionSecretKey = EncryptionUtils.getSecretKey(encryptionKeyPair.getPrivate(), clientKey, encryptionToken);
+            encryptionSecretKey = EncryptionUtils.getSecretKey(encryptionKeyPair.getPrivate(),
+                                                               clientKey,
+                                                               encryptionToken);
 
             encryptionJWT = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
         } catch (Exception exception) {
@@ -118,9 +120,9 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
             this.session.getConnection().sendPacket(playStatusPacket);
 
             // Initialization successful.
-            this.session.getPacketHandlerPipeline().addLast(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
+            this.session.getPacketHandlerPipeline()
+                        .addLast(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
             this.session.getPacketHandlerPipeline().remove(this);
         }
     }
-
 }

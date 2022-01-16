@@ -46,7 +46,5 @@ public class KeyLockTest extends Thread {
         if (failed.get()) {
             fail("testThread obtained lock before it should have been able to.");
         }
-
     }
-
 }

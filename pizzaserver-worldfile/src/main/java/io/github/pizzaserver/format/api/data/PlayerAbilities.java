@@ -173,5 +173,4 @@ public class PlayerAbilities {
         this.walkSpeed = walkSpeed;
         return this;
     }
-
 }

@@ -17,5 +17,4 @@ public class ItemGlowInkSac extends Item {
     public String getName() {
         return "Glow Ink Sac";
     }
-
 }

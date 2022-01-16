@@ -60,7 +60,8 @@ public class PlayerBlockBreakingManager {
         // Due to issues with latency, we require at least 80% of the ticks to have ticked in order to break the block.
         // We cannot go 100% because it can cause visual annoyances for the client.
         // (this is because of the delay between the start break action being retrieved and the client thinking it broke the block)
-        long ticksRequiredToBreakBlock = (long) ((this.endBlockBreakTick - this.startBlockBreakTick) * 0.8) + this.startBlockBreakTick;
+        long ticksRequiredToBreakBlock =
+                (long) ((this.endBlockBreakTick - this.startBlockBreakTick) * 0.8) + this.startBlockBreakTick;
         boolean enoughTicksPassed = this.player.getServer().getTick() >= ticksRequiredToBreakBlock;
 
         return this.isBreakingBlock() && enoughTicksPassed;
@@ -79,10 +80,12 @@ public class PlayerBlockBreakingManager {
             boolean isCorrectTier = block.getToolTierRequired() == ToolTier.NONE;
             if (heldItem instanceof ToolItemComponent toolItemComponent) {
                 isCorrectTool = block.getToolTypeRequired() == toolItemComponent.getToolType();
-                isCorrectTier = toolItemComponent.getToolTier().getStrength() >= block.getToolTierRequired().getStrength();
+                isCorrectTier =
+                        toolItemComponent.getToolTier().getStrength() >= block.getToolTierRequired().getStrength();
             }
 
-            float breakTime = block.getHardness() * ((isCorrectTool && isCorrectTier) || block.canBeMinedWithHand() ? 1.5f : 5f);
+            float breakTime =
+                    block.getHardness() * ((isCorrectTool && isCorrectTier) || block.canBeMinedWithHand() ? 1.5f : 5f);
             if (isCorrectTool && heldItem instanceof ToolItemComponent toolItemComponent) {
                 breakTime /= toolItemComponent.getToolTier().getStrength();
             }
@@ -152,7 +155,8 @@ public class PlayerBlockBreakingManager {
         }
 
         this.breakTicks = this.getBreakTicks();
-        this.endBlockBreakTick = this.startBlockBreakTick + (int) Math.ceil(this.breakTicks * (1 - blockDestructionPercentage));
+        this.endBlockBreakTick =
+                this.startBlockBreakTick + (int) Math.ceil(this.breakTicks * (1 - blockDestructionPercentage));
 
         this.sendUpdatedBreakProgress();
     }
@@ -163,5 +167,4 @@ public class PlayerBlockBreakingManager {
         this.endBlockBreakTick = 0;
         this.breakTicks = 0;
     }
-
 }

@@ -16,5 +16,4 @@ public interface CooldownItemComponent {
      * @return amount of ticks
      */
     int getCooldownTicks();
-
 }

@@ -30,9 +30,9 @@ public class ImplBlockEntityInventory extends BaseInventory implements BlockEnti
     @Override
     public boolean canBeOpenedBy(Player player) {
         return super.canBeOpenedBy(player) && player.getWorld()
-                .getBlockEntity(this.getBlockEntity().getLocation().toVector3i())
-                .filter(otherBlockEntity -> otherBlockEntity.equals(this.getBlockEntity()))
-                .isPresent();
+                                                    .getBlockEntity(this.getBlockEntity().getLocation().toVector3i())
+                                                    .filter(otherBlockEntity -> otherBlockEntity.equals(this.getBlockEntity()))
+                                                    .isPresent();
     }
 
     @Override
@@ -61,5 +61,4 @@ public class ImplBlockEntityInventory extends BaseInventory implements BlockEnti
 
         this.sendSlots(player);
     }
-
 }

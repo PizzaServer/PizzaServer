@@ -26,5 +26,4 @@ public class InventoryDropItemEvent extends BaseInventoryEvent.Cancellable {
     public Item getDrop() {
         return this.drop;
     }
-
 }

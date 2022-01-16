@@ -19,5 +19,4 @@ public class ToggleElement extends CustomElement {
     public boolean isEnabled() {
         return this.enabled;
     }
-
 }

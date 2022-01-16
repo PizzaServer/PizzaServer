@@ -266,7 +266,11 @@ public interface World extends ChunkManager {
      * @return if the block update was queued
      */
     default boolean requestBlockUpdate(BlockUpdateType type, Vector3i blockCoordinates, int ticks) {
-        return this.requestBlockUpdate(type, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), ticks);
+        return this.requestBlockUpdate(type,
+                                       blockCoordinates.getX(),
+                                       blockCoordinates.getY(),
+                                       blockCoordinates.getZ(),
+                                       ticks);
     }
 
     /**
@@ -353,10 +357,20 @@ public interface World extends ChunkManager {
         this.playSound(sound, vector3, relativeVolumeDisabled, false, "");
     }
 
-    default void playSound(SoundEvent sound, Vector3f vector3, boolean relativeVolumeDisabled, boolean isBaby, String entityType) {
+    default void playSound(
+            SoundEvent sound,
+            Vector3f vector3,
+            boolean relativeVolumeDisabled,
+            boolean isBaby,
+            String entityType) {
         this.playSound(sound, vector3, relativeVolumeDisabled, isBaby, entityType, null);
     }
 
-    void playSound(SoundEvent sound, Vector3f vector3, boolean relativeVolumeDisabled, boolean isBaby, String entityType, Block block);
-
+    void playSound(
+            SoundEvent sound,
+            Vector3f vector3,
+            boolean relativeVolumeDisabled,
+            boolean isBaby,
+            String entityType,
+            Block block);
 }

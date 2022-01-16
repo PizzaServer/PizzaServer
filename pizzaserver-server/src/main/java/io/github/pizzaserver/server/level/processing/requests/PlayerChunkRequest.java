@@ -15,5 +15,4 @@ public class PlayerChunkRequest extends ChunkRequest {
     public ImplPlayer getPlayer() {
         return this.player;
     }
-
 }

@@ -36,5 +36,4 @@ public class BlockBuddingAmethyst extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

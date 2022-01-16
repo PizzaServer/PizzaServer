@@ -7,10 +7,9 @@ import java.util.function.Consumer;
 
 public interface PacketHandlerPipeline extends Consumer<BedrockPacket> {
 
-    PacketHandlerPipeline addFirst(BedrockPacketHandler ...handlers);
+    PacketHandlerPipeline addFirst(BedrockPacketHandler... handlers);
 
-    PacketHandlerPipeline addLast(BedrockPacketHandler ...handlers);
+    PacketHandlerPipeline addLast(BedrockPacketHandler... handlers);
 
-    PacketHandlerPipeline remove(BedrockPacketHandler ...handlers);
-
+    PacketHandlerPipeline remove(BedrockPacketHandler... handlers);
 }

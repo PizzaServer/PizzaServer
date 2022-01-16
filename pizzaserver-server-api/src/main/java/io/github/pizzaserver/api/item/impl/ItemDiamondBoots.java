@@ -41,5 +41,4 @@ public class ItemDiamondBoots extends ItemArmor {
     public int getMaxDurability() {
         return 429;
     }
-
 }

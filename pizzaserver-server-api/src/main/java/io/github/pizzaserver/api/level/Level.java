@@ -17,5 +17,4 @@ public interface Level {
     World getDimension(Dimension dimension);
 
     void save() throws IOException;
-
 }

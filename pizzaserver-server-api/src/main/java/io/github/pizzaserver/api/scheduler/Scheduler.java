@@ -19,15 +19,17 @@ public class Scheduler {
 
     protected int tickDelay; // The amount of server ticks between each scheduler tick.
 
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), runnable -> new Thread(runnable) {
-        @Override
-        public void interrupt() {
-            synchronized (Scheduler.this.activeThreads) {
-                Scheduler.this.activeThreads.remove(this);
-            }
-            super.interrupt();
-        }
-    });
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
+                                                                            runnable -> new Thread(runnable) {
+                                                                                @Override
+                                                                                public void interrupt() {
+                                                                                    synchronized (Scheduler.this.activeThreads) {
+                                                                                        Scheduler.this.activeThreads.remove(
+                                                                                                this);
+                                                                                    }
+                                                                                    super.interrupt();
+                                                                                }
+                                                                            });
     protected final Set<Thread> activeThreads;
 
     protected ArrayList<SchedulerTaskEntry> schedulerTasks;
@@ -133,22 +135,21 @@ public class Scheduler {
 
                                 try {
                                     task.getTask().run();
-
                                 } catch (Exception err) {
-                                    Scheduler.this.server.getLogger().error("Error thrown in a scheduler (asynchronous) task:", err);
+                                    Scheduler.this.server.getLogger()
+                                                         .error("Error thrown in a scheduler (asynchronous) task:",
+                                                                err);
                                 }
 
                                 synchronized (this.activeThreads) {
                                     this.activeThreads.remove(Thread.currentThread());
                                 }
                             }); // Start async task and move on.
-
                         } else {
                             // Run as sync. This task must complete before the next one
                             // is ran.
                             try {
                                 task.getTask().run();
-
                             } catch (Exception err) {
                                 this.server.getLogger().error("Error thrown in a scheduler (synchronous) task:");
                                 err.printStackTrace();
@@ -160,11 +161,13 @@ public class Scheduler {
                         if (task.isRepeating() && (!task.getTask().isCancelled())) {
                             long targetTick = taskTick + task.getRepeatInterval();
 
-                            SchedulerTaskEntry newTask = new SchedulerTaskEntry(task.getTask(), task.getRepeatInterval(), targetTick, task.isAsynchronous());
+                            SchedulerTaskEntry newTask = new SchedulerTaskEntry(task.getTask(),
+                                                                                task.getRepeatInterval(),
+                                                                                targetTick,
+                                                                                task.isAsynchronous());
                             this.queueTaskEntry(newTask);
                         }
                     }
-
                 } else if (taskTick > this.schedulerTick) {
                     // Upcoming task, do not remove from queue! :)
                     break;
@@ -284,7 +287,10 @@ public class Scheduler {
         public SchedulerTask schedule() {
             synchronized (this.scheduler) {
                 long nextTick = this.scheduler.schedulerTick + this.delay + 1;
-                SchedulerTaskEntry entry = new SchedulerTaskEntry(this.task, this.interval, nextTick, this.isAsynchronous);
+                SchedulerTaskEntry entry = new SchedulerTaskEntry(this.task,
+                                                                  this.interval,
+                                                                  nextTick,
+                                                                  this.isAsynchronous);
                 this.scheduler.queueTaskEntry(entry);
             }
             return this.task;

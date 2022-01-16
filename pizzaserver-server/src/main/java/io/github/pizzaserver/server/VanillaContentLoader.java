@@ -39,7 +39,9 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemBirchBoat(), new ItemBoatBehavior());
         ItemRegistry.getInstance().register(new ItemBlazePowder());
         ItemRegistry.getInstance().register(new ItemBlazeRod());
-        ItemRegistry.getInstance().register(new ItemBoat(), new ItemBoatBehavior());   // Why does Microsoft have minecraft:boat and minecraft:oak_boat?...
+        ItemRegistry.getInstance()
+                    .register(new ItemBoat(),
+                              new ItemBoatBehavior());   // Why does Microsoft have minecraft:boat and minecraft:oak_boat?...
         ItemRegistry.getInstance().register(new ItemBone());
         ItemRegistry.getInstance().register(new ItemBook());
         ItemRegistry.getInstance().register(new ItemBowl());
@@ -208,45 +210,66 @@ public class VanillaContentLoader {
     }
 
     private static void loadEntityComponents() {
-        EntityRegistry.getInstance().registerComponent(EntityScaleComponent.class,
-                new EntityScaleComponent(1),
-                new EntityScaleComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityDimensionsComponent.class,
-                new EntityDimensionsComponent(0f, 0f),
-                new EntityDimensionsComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityHealthComponent.class,
-                new EntityHealthComponent(0, 0, 0),
-                new EntityHealthComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityDamageSensorComponent.class,
-                new EntityDamageSensorComponent(new EntityDamageSensorComponent.Sensor[0]),
-                new EntityEmptyComponentHandler<>());
-        EntityRegistry.getInstance().registerComponent(EntityLootComponent.class,
-                new EntityLootComponent(new ArrayList<>()),
-                new EntityLootComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityDeathMessageComponent.class,
-                new EntityDeathMessageComponent(false),
-                new EntityDeathMessageComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityPhysicsComponent.class, new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
-                .setCollision(true)
-                .setGravity(true)
-                .setPushable(true)
-                .setPistonPushable(true)
-                .setGravityForce(0.08f)
-                .setDragForce(0.02f)
-                .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityBossComponent.class,
-                new EntityBossComponent(),
-                new EntityBossComponentHandler());
-        EntityRegistry.getInstance().registerComponent(EntityBurnsInDaylightComponent.class,
-                new EntityBurnsInDaylightComponent(),
-                new EntityEmptyComponentHandler<>());
-        EntityRegistry.getInstance().registerComponent(EntityBreathableComponent.class,
-                new EntityBreathableComponent(new EntityBreathableComponent.Properties()
-                    .setGenerateBubblesInWater(true)
-                    .setSuffocationInterval(10)
-                    .setInhaleTime(5)
-                    .setTotalSupplyTime(15)
-        ), new EntityBreathableComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityScaleComponent.class,
+                                         new EntityScaleComponent(1),
+                                         new EntityScaleComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityDimensionsComponent.class,
+                                         new EntityDimensionsComponent(0f, 0f),
+                                         new EntityDimensionsComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityHealthComponent.class,
+                                         new EntityHealthComponent(0, 0, 0),
+                                         new EntityHealthComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityDamageSensorComponent.class,
+                                         new EntityDamageSensorComponent(new EntityDamageSensorComponent.Sensor[0]),
+                                         new EntityEmptyComponentHandler<>());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityLootComponent.class,
+                                         new EntityLootComponent(new ArrayList<>()),
+                                         new EntityLootComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityDeathMessageComponent.class,
+                                         new EntityDeathMessageComponent(false),
+                                         new EntityDeathMessageComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityPhysicsComponent.class,
+                                         new EntityPhysicsComponent(new EntityPhysicsComponent.Properties().setCollision(
+                                                                                                                   true)
+                                                                                                           .setGravity(
+                                                                                                                   true)
+                                                                                                           .setPushable(
+                                                                                                                   true)
+                                                                                                           .setPistonPushable(
+                                                                                                                   true)
+                                                                                                           .setGravityForce(
+                                                                                                                   0.08f)
+                                                                                                           .setDragForce(
+                                                                                                                   0.02f)
+                                                                                                           .setApplyDragBeforeGravity(
+                                                                                                                   false)),
+                                         new EntityPhysicsComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityBossComponent.class,
+                                         new EntityBossComponent(),
+                                         new EntityBossComponentHandler());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityBurnsInDaylightComponent.class,
+                                         new EntityBurnsInDaylightComponent(),
+                                         new EntityEmptyComponentHandler<>());
+        EntityRegistry.getInstance()
+                      .registerComponent(EntityBreathableComponent.class,
+                                         new EntityBreathableComponent(new EntityBreathableComponent.Properties().setGenerateBubblesInWater(
+                                                                                                                         true)
+                                                                                                                 .setSuffocationInterval(
+                                                                                                                         10)
+                                                                                                                 .setInhaleTime(
+                                                                                                                         5)
+                                                                                                                 .setTotalSupplyTime(
+                                                                                                                         15)),
+                                         new EntityBreathableComponentHandler());
     }
 
     private static void loadEntities() {
@@ -255,5 +278,4 @@ public class VanillaContentLoader {
         EntityRegistry.getInstance().registerDefinition(new EntityHumanDefinition());
         EntityRegistry.getInstance().registerDefinition(new EntityItemDefinition());
     }
-
 }

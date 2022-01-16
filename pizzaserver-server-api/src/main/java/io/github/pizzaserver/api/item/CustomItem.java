@@ -43,5 +43,4 @@ public abstract class CustomItem extends Item {
     public boolean isMirroredArt() {
         return false;
     }
-
 }

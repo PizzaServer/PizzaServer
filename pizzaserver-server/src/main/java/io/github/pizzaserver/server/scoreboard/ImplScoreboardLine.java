@@ -75,5 +75,4 @@ public class ImplScoreboardLine implements ScoreboardLine {
     public ScoreInfo getScoreInfo() {
         return new ScoreInfo(this.lineId, this.scoreboard.getObjectiveId(), this.getScore(), this.getText());
     }
-
 }

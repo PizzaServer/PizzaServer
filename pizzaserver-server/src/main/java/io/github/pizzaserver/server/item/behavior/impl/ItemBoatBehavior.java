@@ -31,5 +31,4 @@ public class ItemBoatBehavior extends DefaultItemBehavior<ItemBaseBoat> {
         player.getWorld().addEntity(boatEntity, spawnLocation);
         return true;
     }
-
 }

@@ -35,10 +35,7 @@ public class EntityDeathEvent extends BaseEntityEvent {
     }
 
     public void setDeathMessage(String message) {
-        this.deathMessage = new TextMessage.Builder()
-                .setType(TextPacket.Type.RAW)
-                .setMessage(message)
-                .build();
+        this.deathMessage = new TextMessage.Builder().setType(TextPacket.Type.RAW).setMessage(message).build();
     }
 
     public List<Item> getDrops() {
@@ -56,5 +53,4 @@ public class EntityDeathEvent extends BaseEntityEvent {
     public void setRecipients(Set<Player> recipients) {
         this.recipients = recipients;
     }
-
 }

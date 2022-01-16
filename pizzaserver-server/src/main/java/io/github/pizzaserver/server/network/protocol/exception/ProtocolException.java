@@ -10,5 +10,4 @@ public class ProtocolException extends RuntimeException {
     public ProtocolException(MinecraftVersion version, String message) {
         super(String.format("[v%s] %s", version.getProtocol(), message));
     }
-
 }

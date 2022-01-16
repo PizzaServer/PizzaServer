@@ -16,9 +16,7 @@ public class BlockBlastFurnace extends BaseBlock implements BlockEntityContainer
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
             for (int direction = 0; direction < 6; direction++) {
-                this.add(NbtMap.builder()
-                        .putInt("facing_direction", direction)
-                        .build());
+                this.add(NbtMap.builder().putInt("facing_direction", direction).build());
             }
         }
     };
@@ -57,5 +55,4 @@ public class BlockBlastFurnace extends BaseBlock implements BlockEntityContainer
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
     }
-
 }

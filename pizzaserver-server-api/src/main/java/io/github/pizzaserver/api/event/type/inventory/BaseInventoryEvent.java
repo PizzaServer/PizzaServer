@@ -36,5 +36,4 @@ public class BaseInventoryEvent extends Event {
             this.isCancelled = isCancelled;
         }
     }
-
 }

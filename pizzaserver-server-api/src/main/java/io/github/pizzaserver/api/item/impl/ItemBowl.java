@@ -17,5 +17,4 @@ public class ItemBowl extends Item {
     public String getName() {
         return "Bowl";
     }
-
 }

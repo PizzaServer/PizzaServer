@@ -28,14 +28,15 @@ public class LoginData {
     private final boolean authenticated;
 
 
-    private LoginData(String xuid,
-                      String identityPublicKey,
-                      UUID uuid,
-                      String username,
-                      String languageCode,
-                      Device device,
-                      Skin skin,
-                      boolean authenticated) {
+    private LoginData(
+            String xuid,
+            String identityPublicKey,
+            UUID uuid,
+            String username,
+            String languageCode,
+            Device device,
+            Skin skin,
+            boolean authenticated) {
         this.xuid = xuid;
         this.identityPublicKey = identityPublicKey;
         this.uuid = uuid;
@@ -108,7 +109,9 @@ public class LoginData {
             authenticated = EncryptionUtils.verifyChain(chainArray);
 
             // Retrieve xuid, uuid, and username
-            String chainPayload = JWSObject.parse(((String) chainArray.get(chainArray.size() - 1))).getPayload().toString();
+            String chainPayload = JWSObject.parse(((String) chainArray.get(chainArray.size() - 1)))
+                                           .getPayload()
+                                           .toString();
             JsonObject jsonPayload = GSON.fromJson(chainPayload, JsonObject.class);
             xuid = jsonPayload.getAsJsonObject("extraData").get("XUID").getAsString();
             uuid = UUID.fromString(jsonPayload.getAsJsonObject("extraData").get("identity").getAsString());
@@ -130,13 +133,13 @@ public class LoginData {
         }
 
         return Optional.of(new LoginData(xuid,
-                identityPublicKey,
-                uuid,
-                username,
-                languageCode,
-                device,
-                skin,
-                authenticated));
+                                         identityPublicKey,
+                                         uuid,
+                                         username,
+                                         languageCode,
+                                         device,
+                                         skin,
+                                         authenticated));
     }
 
     private static Skin extractSkin(AsciiString skinChain) throws Exception {
@@ -146,20 +149,22 @@ public class LoginData {
         List<AnimationData> animations = new ArrayList<>();
         for (JsonElement element : skinJSON.get("AnimatedImageData").getAsJsonArray()) {
             JsonObject animation = element.getAsJsonObject();
-            animations.add(
-                    new AnimationData(ImageData.of(animation.get("ImageWidth").getAsInt(), animation.get("ImageHeight").getAsInt(), Base64.getDecoder().decode(animation.get("Image").getAsString())),
-                            AnimatedTextureType.values()[animation.get("Type").getAsInt()],
-                            animation.get("Frames").getAsInt()));
+            animations.add(new AnimationData(ImageData.of(animation.get("ImageWidth").getAsInt(),
+                                                          animation.get("ImageHeight").getAsInt(),
+                                                          Base64.getDecoder()
+                                                                .decode(animation.get("Image").getAsString())),
+                                             AnimatedTextureType.values()[animation.get("Type").getAsInt()],
+                                             animation.get("Frames").getAsInt()));
         }
 
         List<PersonaPieceData> pieces = new ArrayList<>();
         for (JsonElement element : skinJSON.get("PersonaPieces").getAsJsonArray()) {
             JsonObject piece = element.getAsJsonObject();
             pieces.add(new PersonaPieceData(piece.get("PieceId").getAsString(),
-                            piece.get("PieceType").getAsString(),
-                            piece.get("PackId").getAsString(),
-                            piece.get("IsDefault").getAsBoolean(),
-                            piece.get("ProductId").getAsString()));
+                                            piece.get("PieceType").getAsString(),
+                                            piece.get("PackId").getAsString(),
+                                            piece.get("IsDefault").getAsBoolean(),
+                                            piece.get("ProductId").getAsString()));
         }
 
         List<PersonaPieceTintData> tints = new ArrayList<>();
@@ -174,30 +179,34 @@ public class LoginData {
             tints.add(new PersonaPieceTintData(tint.get("PieceType").getAsString(), colors));
         }
 
-        return new Skin.Builder()
-                .setSkinId(skinJSON.get("SkinId").getAsString())
-                .setFullSkinId(UUID.randomUUID().toString())
-                .setPlayFabId(skinJSON.has("PlayFabId") ? skinJSON.get("PlayFabId").getAsString() : "")
-                .setSkinResourcePatch(new String(Base64.getDecoder().decode(skinJSON.get("SkinResourcePatch").getAsString())))
-                .setGeometryData(new String(Base64.getDecoder().decode(skinJSON.get("SkinGeometryData").getAsString())))
-                .setSkinHeight(skinJSON.get("SkinImageHeight").getAsInt())
-                .setSkinWidth(skinJSON.get("SkinImageWidth").getAsInt())
-                .setSkinData(Base64.getDecoder().decode(skinJSON.get("SkinData").getAsString()))
-                .setCapeHeight(skinJSON.get("CapeImageHeight").getAsInt())
-                .setCapeWidth(skinJSON.get("CapeImageWidth").getAsInt())
-                .setCapeData(Base64.getDecoder().decode(skinJSON.get("CapeData").getAsString()))
-                .setCapeId(skinJSON.get("CapeId").getAsString())
-                .setCapeOnClassic(skinJSON.get("CapeOnClassicSkin").getAsBoolean())
-                .setPremium(skinJSON.get("PremiumSkin").getAsBoolean())
-                /* Parse persona specific data */
-                .setPersona(skinJSON.get("PersonaSkin").getAsBoolean())
-                .setAnimationData(new String(Base64.getDecoder().decode(skinJSON.get("SkinAnimationData").getAsString())))
-                .setArmSize(skinJSON.get("ArmSize").getAsString())
-                .setSkinColour(skinJSON.get("SkinColor").getAsString())
-                .setAnimations(animations)
-                .setPieces(pieces)
-                .setTints(tints)
-                .build();
+        return new Skin.Builder().setSkinId(skinJSON.get("SkinId").getAsString())
+                                 .setFullSkinId(UUID.randomUUID().toString())
+                                 .setPlayFabId(skinJSON.has("PlayFabId") ? skinJSON.get("PlayFabId").getAsString() : "")
+                                 .setSkinResourcePatch(new String(Base64.getDecoder()
+                                                                        .decode(skinJSON.get("SkinResourcePatch")
+                                                                                        .getAsString())))
+                                 .setGeometryData(new String(Base64.getDecoder()
+                                                                   .decode(skinJSON.get("SkinGeometryData")
+                                                                                   .getAsString())))
+                                 .setSkinHeight(skinJSON.get("SkinImageHeight").getAsInt())
+                                 .setSkinWidth(skinJSON.get("SkinImageWidth").getAsInt())
+                                 .setSkinData(Base64.getDecoder().decode(skinJSON.get("SkinData").getAsString()))
+                                 .setCapeHeight(skinJSON.get("CapeImageHeight").getAsInt())
+                                 .setCapeWidth(skinJSON.get("CapeImageWidth").getAsInt())
+                                 .setCapeData(Base64.getDecoder().decode(skinJSON.get("CapeData").getAsString()))
+                                 .setCapeId(skinJSON.get("CapeId").getAsString())
+                                 .setCapeOnClassic(skinJSON.get("CapeOnClassicSkin").getAsBoolean())
+                                 .setPremium(skinJSON.get("PremiumSkin").getAsBoolean())
+                                 /* Parse persona specific data */.setPersona(skinJSON.get("PersonaSkin")
+                                                                                      .getAsBoolean())
+                                 .setAnimationData(new String(Base64.getDecoder()
+                                                                    .decode(skinJSON.get("SkinAnimationData")
+                                                                                    .getAsString())))
+                                 .setArmSize(skinJSON.get("ArmSize").getAsString())
+                                 .setSkinColour(skinJSON.get("SkinColor").getAsString())
+                                 .setAnimations(animations)
+                                 .setPieces(pieces)
+                                 .setTints(tints)
+                                 .build();
     }
-
 }

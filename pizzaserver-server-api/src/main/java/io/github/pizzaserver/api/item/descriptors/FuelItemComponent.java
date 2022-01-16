@@ -10,5 +10,4 @@ public interface FuelItemComponent {
      * @return amount of ticks
      */
     int getFuelTicks();
-
 }

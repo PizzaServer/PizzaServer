@@ -13,5 +13,4 @@ public class EntityPhysicsComponentHandler extends EntityComponentHandler<Entity
         entity.setPushable(component.isPushable());
         entity.setPistonPushable(component.isPistonPushable());
     }
-
 }

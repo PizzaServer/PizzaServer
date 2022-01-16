@@ -68,7 +68,7 @@ public class ReadWriteKeyLockTest {
         latch.await();
 
         assertTrue(lock.tryReadLock(1),
-                "Was unable to acquire read lock on another thread while holding one on the main thread despite no write locks");
+                   "Was unable to acquire read lock on another thread while holding one on the main thread despite no write locks");
     }
 
     @Test
@@ -109,5 +109,4 @@ public class ReadWriteKeyLockTest {
         lock.writeLock(2);
         assertTrue(lock.tryWriteLock(2), "was unable to acquire write lock twice on the same thread");
     }
-
 }

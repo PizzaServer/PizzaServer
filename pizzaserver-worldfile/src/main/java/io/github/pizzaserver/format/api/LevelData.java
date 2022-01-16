@@ -238,5 +238,4 @@ public interface LevelData {
     String getPrid();
 
     void setPrid(String prid);
-
 }

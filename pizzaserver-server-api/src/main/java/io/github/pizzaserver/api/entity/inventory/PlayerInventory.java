@@ -31,5 +31,4 @@ public interface PlayerInventory extends EntityInventory {
      * @param item item held by the player's cursor
      */
     void setCursor(Item item);
-
 }

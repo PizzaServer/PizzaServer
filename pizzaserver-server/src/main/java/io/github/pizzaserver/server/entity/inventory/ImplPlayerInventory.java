@@ -22,7 +22,10 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
 
 
     public ImplPlayerInventory(Player player) {
-        super(player, ContainerType.INVENTORY, InventoryUtils.getSlotCount(ContainerType.INVENTORY), ContainerId.INVENTORY);
+        super(player,
+              ContainerType.INVENTORY,
+              InventoryUtils.getSlotCount(ContainerType.INVENTORY),
+              ContainerId.INVENTORY);
     }
 
     @Override
@@ -52,7 +55,9 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     @Override
     public void setArmour(Item helmet, Item chestplate, Item leggings, Item boots) {
         super.setArmour(helmet, chestplate, leggings, boots);
-        sendInventorySlots(this.getEntity(), new Item[]{ this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots() }, ContainerId.ARMOR);
+        sendInventorySlots(this.getEntity(),
+                           new Item[] {this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()},
+                           ContainerId.ARMOR);
     }
 
     @Override
@@ -115,7 +120,8 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
             mobEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
             mobEquipmentPacket.setHotbarSlot(slot);
             mobEquipmentPacket.setInventorySlot(slot);
-            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(this.getSlot(slot), this.getEntity().getVersion()));
+            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(this.getSlot(slot),
+                                                                     this.getEntity().getVersion()));
             this.getEntity().sendPacket(mobEquipmentPacket);
 
             sendInventorySlot(this.getEntity(), this.getSlot(slot), slot, this.getId());
@@ -135,7 +141,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     @Override
     public void setOffhandItem(Item offHand) {
         super.setOffhandItem(offHand);
-        sendInventorySlots(this.getEntity(), new Item[]{ this.getOffhandItem() }, ContainerId.OFFHAND);
+        sendInventorySlots(this.getEntity(), new Item[] {this.getOffhandItem()}, ContainerId.OFFHAND);
     }
 
     @Override
@@ -153,7 +159,8 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
         if (cursor == null || cursor.isEmpty()) {
             this.cursor = null;
         } else {
-            this.cursor = keepNetworkId ? Item.getAirIfNull(cursor).clone() : Item.getAirIfNull(cursor).newNetworkCopy();
+            this.cursor = keepNetworkId ? Item.getAirIfNull(cursor).clone() : Item.getAirIfNull(cursor)
+                                                                                  .newNetworkCopy();
         }
     }
 
@@ -180,5 +187,4 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
     public Set<Player> getViewers() {   // The player is ALWAYS a viewer. However, it is possible to open and close the inventory
         return Collections.singleton(this.getEntity());
     }
-
 }

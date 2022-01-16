@@ -25,5 +25,4 @@ public class ButtonElement {
     public FormImage getImage() {
         return this.image;
     }
-
 }

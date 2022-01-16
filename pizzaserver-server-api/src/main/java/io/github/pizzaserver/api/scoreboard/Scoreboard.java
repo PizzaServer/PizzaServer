@@ -25,5 +25,4 @@ public interface Scoreboard extends Watchable {
     EntityScoreboardLine addLine(Entity entity, int score);
 
     boolean removeLine(ScoreboardLine display);
-
 }

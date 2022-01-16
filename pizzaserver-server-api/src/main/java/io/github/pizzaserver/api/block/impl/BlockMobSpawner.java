@@ -38,5 +38,4 @@ public class BlockMobSpawner extends BaseBlock implements BlockEntityContainer<B
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
     }
-
 }

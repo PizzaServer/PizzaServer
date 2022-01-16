@@ -24,7 +24,7 @@ public class MCWorldBlockPalette implements BlockPalette {
     private int paletteEntries = 0;
 
 
-    public MCWorldBlockPalette() {}
+    public MCWorldBlockPalette() { }
 
     /**
      * Create a palette based on palette data serialized for disk.
@@ -93,7 +93,8 @@ public class MCWorldBlockPalette implements BlockPalette {
 
         if (resizeStartingIndex > -1) {
             int oldTotalPaletteEntries = this.paletteEntries;
-            int freeIndexAt = resizeStartingIndex - 1;  // New entry position - incremented everytime we relocate a entry
+            int freeIndexAt =
+                    resizeStartingIndex - 1;  // New entry position - incremented everytime we relocate a entry
             for (int index = resizeStartingIndex; index < oldTotalPaletteEntries; index++) {
                 if (this.entries.containsKey(index)) {
                     Entry entry = this.entries.remove(index);
@@ -124,10 +125,10 @@ public class MCWorldBlockPalette implements BlockPalette {
         try (NBTOutputStream outputStream = NbtUtils.createWriterLE(new ByteBufOutputStream(buffer))) {
             for (BlockPalette.Entry data : entries) {
                 NbtMap compound = NbtMap.builder()
-                        .putString("name", data.getId())
-                        .putInt("version", data.getVersion())
-                        .putCompound("states", data.getState())
-                        .build();
+                                        .putString("name", data.getId())
+                                        .putInt("version", data.getVersion())
+                                        .putCompound("states", data.getState())
+                                        .build();
 
                 outputStream.writeTag(compound);
             }
@@ -180,7 +181,5 @@ public class MCWorldBlockPalette implements BlockPalette {
         public NbtMap getState() {
             return this.state;
         }
-
     }
-
 }

@@ -21,5 +21,4 @@ public enum WoodType {
     public String getName() {
         return this.name;
     }
-
 }

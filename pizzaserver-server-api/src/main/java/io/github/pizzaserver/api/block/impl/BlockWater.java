@@ -13,15 +13,13 @@ public class BlockWater extends BaseBlock implements Liquid {
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
             for (int depth = 0; depth < 16; depth++) {
-                this.add(NbtMap.builder()
-                        .putInt("liquid_depth", depth)
-                        .build());
+                this.add(NbtMap.builder().putInt("liquid_depth", depth).build());
             }
         }
     };
 
 
-    public BlockWater() {}
+    public BlockWater() { }
 
     public BlockWater(int depth) {
         this.setLiquidDepth(depth);
@@ -74,5 +72,4 @@ public class BlockWater extends BaseBlock implements Liquid {
     public boolean isReplaceable() {
         return true;
     }
-
 }

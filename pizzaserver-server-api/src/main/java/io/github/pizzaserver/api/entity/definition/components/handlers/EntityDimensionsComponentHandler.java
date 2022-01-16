@@ -13,5 +13,4 @@ public class EntityDimensionsComponentHandler extends EntityComponentHandler<Ent
         entity.setEyeHeight(component.getEyeHeight());
         entity.setBaseOffset(component.getBaseOffset());
     }
-
 }

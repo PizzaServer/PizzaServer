@@ -2,7 +2,7 @@ package io.github.pizzaserver.api.item.data;
 
 public class ItemID {
 
-    private ItemID() {}
+    private ItemID() { }
 
     public static final String ACACIA_BOAT = "minecraft:acacia_boat";
     public static final String AMETHYST_SHARD = "minecraft:amethyst_shard";
@@ -101,5 +101,4 @@ public class ItemID {
     public static final String SUGAR = "minecraft:sugar";
     public static final String WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
     public static final String WOODEN_SWORD = "minecraft:wooden_sword";
-
 }

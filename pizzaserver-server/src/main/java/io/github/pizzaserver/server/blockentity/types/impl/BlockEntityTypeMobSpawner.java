@@ -34,37 +34,38 @@ public class BlockEntityTypeMobSpawner implements BlockEntityType {
     @Override
     public BlockEntityMobSpawner deserializeDisk(World world, NbtMap diskNBT) {
         return new BlockEntityMobSpawner(new BlockLocation(world,
-                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+                                                           Vector3i.from(diskNBT.getInt("x"),
+                                                                         diskNBT.getInt("y"),
+                                                                         diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
-                .putString("EntityIdentifier", "")
-                .putFloat("DisplayEntityWidth", 1)
-                .putFloat("DisplayEntityHeight", 1)
-                .putFloat("DisplayEntityScale", 1)
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", blockEntity.getLocation().getX())
+                     .putInt("y", blockEntity.getLocation().getY())
+                     .putInt("z", blockEntity.getLocation().getZ())
+                     .putString("EntityIdentifier", "")
+                     .putFloat("DisplayEntityWidth", 1)
+                     .putFloat("DisplayEntityHeight", 1)
+                     .putFloat("DisplayEntityScale", 1)
+                     .build();
         // TODO: Implement proper serialization
     }
 
     @Override
     public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", diskNBT.getInt("x"))
-                .putInt("y", diskNBT.getInt("y"))
-                .putInt("z", diskNBT.getInt("z"))
-                .putInt("EntityId", 0)
-                .putFloat("DisplayEntityWidth", 1)
-                .putFloat("DisplayEntityHeight", 1)
-                .putFloat("DisplayEntityScale", 1)
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", diskNBT.getInt("x"))
+                     .putInt("y", diskNBT.getInt("y"))
+                     .putInt("z", diskNBT.getInt("z"))
+                     .putInt("EntityId", 0)
+                     .putFloat("DisplayEntityWidth", 1)
+                     .putFloat("DisplayEntityHeight", 1)
+                     .putFloat("DisplayEntityScale", 1)
+                     .build();
         // TODO: Implement proper serialization
     }
-
 }

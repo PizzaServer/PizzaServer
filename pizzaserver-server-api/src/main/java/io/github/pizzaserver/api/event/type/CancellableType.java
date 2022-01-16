@@ -9,5 +9,4 @@ public interface CancellableType {
     }
 
     void setCancelled(boolean isCancelled);
-
 }

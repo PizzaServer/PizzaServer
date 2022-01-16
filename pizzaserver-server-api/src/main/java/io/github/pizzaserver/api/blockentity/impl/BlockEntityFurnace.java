@@ -18,5 +18,4 @@ public class BlockEntityFurnace extends BaseBlockEntity {
     public BlockEntityType getType() {
         return BlockEntityRegistry.getInstance().getBlockEntityType(ID);
     }
-
 }

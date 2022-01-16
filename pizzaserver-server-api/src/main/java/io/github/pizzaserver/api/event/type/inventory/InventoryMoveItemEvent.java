@@ -26,17 +26,18 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     protected int destinationItemSlot;
     protected Item destinationCurrentItemStack;
 
-    public InventoryMoveItemEvent(Entity entity,
-                                  StackRequestActionType action,
-                                  Inventory inventory,
-                                  ContainerSlotType slotType,
-                                  int movedItemSlot,
-                                  Item movedItem,
-                                  int movedItemCount,
-                                  Inventory destinationInventory,
-                                  ContainerSlotType destinationSlotType,
-                                  int destinationItemSlot,
-                                  Item destinationItem) {
+    public InventoryMoveItemEvent(
+            Entity entity,
+            StackRequestActionType action,
+            Inventory inventory,
+            ContainerSlotType slotType,
+            int movedItemSlot,
+            Item movedItem,
+            int movedItemCount,
+            Inventory destinationInventory,
+            ContainerSlotType destinationSlotType,
+            int destinationItemSlot,
+            Item destinationItem) {
         super(inventory);
         this.entity = entity;
 
@@ -93,5 +94,4 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     public Item getTargetItem() {
         return this.destinationCurrentItemStack;
     }
-
 }

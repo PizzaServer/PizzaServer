@@ -41,5 +41,4 @@ public class ItemChainmailChestplate extends ItemArmor {
     public int getMaxDurability() {
         return 240;
     }
-
 }

@@ -36,5 +36,4 @@ public class BlockCoal extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

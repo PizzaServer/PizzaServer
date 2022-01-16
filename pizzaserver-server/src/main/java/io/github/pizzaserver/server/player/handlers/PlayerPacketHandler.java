@@ -187,8 +187,10 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         if (this.player.isAlive()) {
             switch (packet.getAction()) {
                 case OPEN_INVENTORY:
-                    if (this.player.getOpenInventory().isEmpty() && this.player.getInventory().canBeOpenedBy(this.player)) {
-                        InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(this.player, this.player.getInventory());
+                    if (this.player.getOpenInventory().isEmpty() && this.player.getInventory()
+                                                                               .canBeOpenedBy(this.player)) {
+                        InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(this.player,
+                                                                                       this.player.getInventory());
                         Server.getInstance().getEventManager().call(inventoryOpenEvent);
                         if (!inventoryOpenEvent.isCancelled()) {
                             this.player.openInventory(this.player.getInventory());
@@ -205,5 +207,4 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         this.player.closeOpenInventory();
         return true;
     }
-
 }

@@ -21,5 +21,4 @@ public interface ResourcePackManager {
      * @return all resource packs
      */
     Map<UUID, ResourcePack> getPacks();
-
 }

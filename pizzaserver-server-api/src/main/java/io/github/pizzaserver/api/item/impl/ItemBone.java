@@ -17,5 +17,4 @@ public class ItemBone extends Item {
     public String getName() {
         return "Bone";
     }
-
 }

@@ -6,7 +6,7 @@ import io.github.pizzaserver.server.network.data.inventory.actions.StackRequestA
 
 public abstract class InventoryActionHandler<T extends StackRequestActionWrapper<? extends StackRequestActionData>> {
 
-    protected InventoryActionHandler() {}
+    protected InventoryActionHandler() { }
 
     /**
      * Returns if the action is valid. (slots exist and action makes sense to be sent)
@@ -34,5 +34,4 @@ public abstract class InventoryActionHandler<T extends StackRequestActionWrapper
     public boolean tryAction(Player player, T action) {
         return this.isValid(player, action) && this.runAction(player, action);
     }
-
 }

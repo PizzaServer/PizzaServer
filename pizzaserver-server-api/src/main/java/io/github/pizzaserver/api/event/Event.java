@@ -8,6 +8,7 @@ public abstract class Event {
     // It's a class and not an interface because events should
     // Just be their own thing.
 
+
     public static abstract class Cancellable extends Event implements CancellableType {
 
         protected boolean isCancelled;
@@ -26,5 +27,4 @@ public abstract class Event {
             this.isCancelled = isCancelled;
         }
     }
-
 }

@@ -50,5 +50,4 @@ public class ItemDiamondSword extends Item implements DurableItemComponent, Tool
     public int getMaxDurability() {
         return 1562;
     }
-
 }

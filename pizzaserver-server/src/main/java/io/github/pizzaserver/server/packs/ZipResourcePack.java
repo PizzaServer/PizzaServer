@@ -88,19 +88,14 @@ public class ZipResourcePack implements ResourcePack {
         zipFile.close();
 
         JsonObject manifest = new Gson().fromJson(content, JsonObject.class);
-        this.uuid = UUID.fromString(
-                manifest.get("header")
-                        .getAsJsonObject()
-                        .get("uuid")
-                        .getAsString()
-        );
+        this.uuid = UUID.fromString(manifest.get("header").getAsJsonObject().get("uuid").getAsString());
 
-        JsonArray versionList = manifest.get("header")
-                .getAsJsonObject()
-                .get("version")
-                .getAsJsonArray();
+        JsonArray versionList = manifest.get("header").getAsJsonObject().get("version").getAsJsonArray();
 
-        this.version = String.join(".", versionList.get(0).getAsString(), versionList.get(1).getAsString(), versionList.get(2).getAsString());
+        this.version = String.join(".",
+                                   versionList.get(0).getAsString(),
+                                   versionList.get(1).getAsString(),
+                                   versionList.get(2).getAsString());
     }
 
     /**
@@ -120,16 +115,15 @@ public class ZipResourcePack implements ResourcePack {
             }
 
             // The last data chunk doesn't use as much space
-            byte[] data = parseDataChunk(stream, new byte[(int) (this.dataLength - (chunksLength - 1) * this.getMaxChunkLength())]);
+            byte[] data = parseDataChunk(stream,
+                                         new byte[(int) (this.dataLength
+                                                 - (chunksLength - 1) * this.getMaxChunkLength())]);
             this.chunks[chunksLength - 1] = data;
-
         }
-
     }
 
     private static byte[] parseDataChunk(InputStream stream, byte[] data) throws IOException {
         stream.read(data);
         return data;
     }
-
 }

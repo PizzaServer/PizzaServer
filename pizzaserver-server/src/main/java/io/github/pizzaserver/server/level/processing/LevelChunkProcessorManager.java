@@ -27,7 +27,9 @@ public class LevelChunkProcessorManager {
         this.levelManager = levelManager;
 
         // Create LevelChunkProcessor thread pool
-        this.processorsThreadPool = Executors.newFixedThreadPool(levelManager.getServer().getConfig().getMaxChunkThreads());
+        this.processorsThreadPool = Executors.newFixedThreadPool(levelManager.getServer()
+                                                                             .getConfig()
+                                                                             .getMaxChunkThreads());
         ((ThreadPoolExecutor) this.processorsThreadPool).setThreadFactory(runnable -> {
             Thread processingThread = new Thread(runnable);
             processingThread.setName("Chunk Processing Thread #" + this.processorThreadCount.incrementAndGet());
@@ -73,5 +75,4 @@ public class LevelChunkProcessorManager {
     public void close() {
         this.processorsThreadPool.shutdownNow();
     }
-
 }

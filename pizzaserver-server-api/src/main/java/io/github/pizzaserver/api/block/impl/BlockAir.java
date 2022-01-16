@@ -34,5 +34,4 @@ public class BlockAir extends BaseBlock {
     public boolean isReplaceable() {
         return true;
     }
-
 }

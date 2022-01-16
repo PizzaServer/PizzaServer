@@ -17,10 +17,10 @@ public class BlockBed extends BaseBlock implements BlockEntityContainer<BlockEnt
                 for (int headPieceBit = 0; headPieceBit <= 1; headPieceBit++) {
                     for (int occupiedBit = 0; occupiedBit <= 1; occupiedBit++) {
                         this.add(NbtMap.builder()
-                                .putInt("direction", direction)
-                                .putByte("head_piece_bit", (byte) headPieceBit)
-                                .putByte("occupied_bit", (byte) occupiedBit)
-                                .build());
+                                       .putInt("direction", direction)
+                                       .putByte("head_piece_bit", (byte) headPieceBit)
+                                       .putByte("occupied_bit", (byte) occupiedBit)
+                                       .build());
                     }
                 }
             }
@@ -52,5 +52,4 @@ public class BlockBed extends BaseBlock implements BlockEntityContainer<BlockEnt
     public float getHardness() {
         return 0.2f;
     }
-
 }

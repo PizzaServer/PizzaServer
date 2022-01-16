@@ -14,5 +14,4 @@ public class EntityBreathableComponentHandler extends EntityComponentHandler<Ent
             entity.setAirSupplyTicks(entity.getMaxAirSupplyTicks());
         }
     }
-
 }

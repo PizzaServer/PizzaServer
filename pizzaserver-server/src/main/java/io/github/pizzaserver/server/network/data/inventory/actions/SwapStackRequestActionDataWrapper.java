@@ -11,8 +11,12 @@ public class SwapStackRequestActionDataWrapper extends StackRequestActionWrapper
 
     public SwapStackRequestActionDataWrapper(ImplPlayer player, SwapStackRequestActionData action) {
         super(player);
-        this.source = new InventorySlotContainer(player, action.getSource().getContainer(), action.getSource().getSlot());
-        this.destination = new InventorySlotContainer(player, action.getDestination().getContainer(), action.getDestination().getSlot());
+        this.source = new InventorySlotContainer(player,
+                                                 action.getSource().getContainer(),
+                                                 action.getSource().getSlot());
+        this.destination = new InventorySlotContainer(player,
+                                                      action.getDestination().getContainer(),
+                                                      action.getDestination().getSlot());
     }
 
     public InventorySlotContainer getSource() {
@@ -22,5 +26,4 @@ public class SwapStackRequestActionDataWrapper extends StackRequestActionWrapper
     public InventorySlotContainer getDestination() {
         return this.destination;
     }
-
 }

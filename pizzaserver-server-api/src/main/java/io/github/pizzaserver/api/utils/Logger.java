@@ -20,5 +20,4 @@ public interface Logger {
     void debug(Throwable exception);
 
     void debug(String message, Throwable exception);
-
 }

@@ -55,7 +55,10 @@ public final class Check {
 
     public static int inclusiveLowerBound(int val, int bound, String name) {
         if (val < bound) {
-            throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Lower = %s)", name, val, bound));
+            throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Lower = %s)",
+                                                          name,
+                                                          val,
+                                                          bound));
         } else {
             return val;
         }
@@ -63,7 +66,10 @@ public final class Check {
 
     public static int inclusiveUpperBound(int val, int bound, String name) {
         if (val > bound) {
-            throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Upper = %s)", name, val, bound));
+            throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Upper = %s)",
+                                                          name,
+                                                          val,
+                                                          bound));
         } else {
             return val;
         }
@@ -72,5 +78,4 @@ public final class Check {
     public static boolean isNull(Object obj) {
         return obj == null;
     }
-
 }

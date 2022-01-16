@@ -17,5 +17,4 @@ public class ItemMagmaCream extends Item {
     public String getName() {
         return "Magma Cream";
     }
-
 }

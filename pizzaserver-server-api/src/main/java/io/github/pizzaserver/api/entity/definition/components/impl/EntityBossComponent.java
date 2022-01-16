@@ -64,5 +64,4 @@ public class EntityBossComponent extends EntityComponent {
     public String getName() {
         return "minecraft:boss";
     }
-
 }

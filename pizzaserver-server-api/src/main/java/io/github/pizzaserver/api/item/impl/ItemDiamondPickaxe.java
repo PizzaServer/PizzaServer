@@ -50,5 +50,4 @@ public class ItemDiamondPickaxe extends Item implements DurableItemComponent, To
     public int getMaxDurability() {
         return 1561;
     }
-
 }

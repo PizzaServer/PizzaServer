@@ -43,37 +43,38 @@ public class BlockEntityTypeFurnace implements BlockEntityType {
     @Override
     public BlockEntityFurnace deserializeDisk(World world, NbtMap diskNBT) {
         return new BlockEntityFurnace(new BlockLocation(world,
-                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+                                                        Vector3i.from(diskNBT.getInt("x"),
+                                                                      diskNBT.getInt("y"),
+                                                                      diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
-                .putShort("CookTime", (short) 0)
-                .putShort("BurnTime", (short) 0)
-                .putShort("BurnDuration", (short) 0)
-                .putList("Items", NbtType.COMPOUND, Collections.emptyList())
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", blockEntity.getLocation().getX())
+                     .putInt("y", blockEntity.getLocation().getY())
+                     .putInt("z", blockEntity.getLocation().getZ())
+                     .putShort("CookTime", (short) 0)
+                     .putShort("BurnTime", (short) 0)
+                     .putShort("BurnDuration", (short) 0)
+                     .putList("Items", NbtType.COMPOUND, Collections.emptyList())
+                     .build();
         // TODO: proper serialization
     }
 
     @Override
     public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", diskNBT.getInt("x"))
-                .putInt("y", diskNBT.getInt("y"))
-                .putInt("z", diskNBT.getInt("z"))
-                .putShort("CookTime", (short) 0)
-                .putShort("BurnTime", (short) 0)
-                .putShort("BurnDuration", (short) 0)
-                .putList("Items", NbtType.COMPOUND, Collections.emptyList())
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", diskNBT.getInt("x"))
+                     .putInt("y", diskNBT.getInt("y"))
+                     .putInt("z", diskNBT.getInt("z"))
+                     .putShort("CookTime", (short) 0)
+                     .putShort("BurnTime", (short) 0)
+                     .putShort("BurnDuration", (short) 0)
+                     .putList("Items", NbtType.COMPOUND, Collections.emptyList())
+                     .build();
         // TODO: proper serialization
     }
-
 }

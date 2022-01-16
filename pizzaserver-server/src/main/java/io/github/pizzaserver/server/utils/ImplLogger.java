@@ -85,5 +85,4 @@ public class ImplLogger implements Logger {
     public void debug(String message, Throwable exception) {
         this.logger.debug(message, exception);
     }
-
 }

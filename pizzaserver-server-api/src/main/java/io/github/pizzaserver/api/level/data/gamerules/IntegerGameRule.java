@@ -10,5 +10,4 @@ public class IntegerGameRule extends GameRule<Integer> {
     public GameRuleType getType() {
         return GameRuleType.INT;
     }
-
 }

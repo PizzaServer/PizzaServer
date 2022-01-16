@@ -21,5 +21,4 @@ public final class EventHandlerReference {
     public Method getMethod() {
         return this.method;
     }
-
 }

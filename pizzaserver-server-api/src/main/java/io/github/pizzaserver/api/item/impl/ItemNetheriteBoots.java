@@ -41,5 +41,4 @@ public class ItemNetheriteBoots extends ItemArmor {
     public int getMaxDurability() {
         return 481;
     }
-
 }

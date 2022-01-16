@@ -43,5 +43,4 @@ public enum Device {
         }
         return Device.UNKNOWN;
     }
-
 }

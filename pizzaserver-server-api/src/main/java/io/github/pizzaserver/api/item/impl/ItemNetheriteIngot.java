@@ -17,5 +17,4 @@ public class ItemNetheriteIngot extends Item {
     public String getName() {
         return "Netherite Ingot";
     }
-
 }

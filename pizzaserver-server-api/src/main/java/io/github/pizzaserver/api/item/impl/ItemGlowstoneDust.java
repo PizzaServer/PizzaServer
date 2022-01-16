@@ -17,5 +17,4 @@ public class ItemGlowstoneDust extends Item {
     public String getName() {
         return "Glowstone Dust";
     }
-
 }

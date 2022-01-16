@@ -33,5 +33,4 @@ public class EntityPickupItemEvent extends BaseEntityEvent.Cancellable {
     public void setPickedUpCount(int pickedUpCount) {
         this.pickedUpCount = pickedUpCount;
     }
-
 }

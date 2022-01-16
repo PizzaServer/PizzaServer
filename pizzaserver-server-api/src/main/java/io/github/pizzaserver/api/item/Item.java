@@ -110,9 +110,7 @@ public abstract class Item implements Cloneable {
     public void setCustomName(String customName) {
         NbtMap displayNBT;
         if (customName != null) {
-            displayNBT = this.getNBT().getCompound("display").toBuilder()
-                    .putString("Name", customName)
-                    .build();
+            displayNBT = this.getNBT().getCompound("display").toBuilder().putString("Name", customName).build();
         } else {
             NbtMapBuilder displayNBTBuilder = this.getNBT().getCompound("display").toBuilder();
             displayNBTBuilder.remove("Name");
@@ -126,9 +124,11 @@ public abstract class Item implements Cloneable {
     }
 
     public void setLore(List<String> lore) {
-        NbtMap displayNBT = this.getNBT().getCompound("display").toBuilder()
-                .putList("Lore", NbtType.STRING, lore)
-                .build();
+        NbtMap displayNBT = this.getNBT()
+                                .getCompound("display")
+                                .toBuilder()
+                                .putList("Lore", NbtType.STRING, lore)
+                                .build();
         this.setNBT(this.getNBT().toBuilder().putCompound("display", displayNBT).build());
     }
 
@@ -163,8 +163,7 @@ public abstract class Item implements Cloneable {
      * @return if the two stacks have the same data
      */
     public boolean hasSameDataAs(Item otherItem) {
-        return (otherItem.getItemId().equals(this.getItemId())
-                && otherItem.getNBT().equals(this.getNBT())
+        return (otherItem.getItemId().equals(this.getItemId()) && otherItem.getNBT().equals(this.getNBT())
                 && otherItem.getMeta() == this.getMeta());
     }
 
@@ -174,9 +173,8 @@ public abstract class Item implements Cloneable {
      * @return if they are visually the same
      */
     public boolean visuallySameAs(Item otherItem) {
-        return otherItem.getNBT().equals(this.getNBT())
-                && (otherItem.getMeta() == this.getMeta() || (otherItem instanceof DurableItemComponent))
-                && otherItem.getItemId().equals(this.getItemId());
+        return otherItem.getNBT().equals(this.getNBT()) && (otherItem.getMeta() == this.getMeta()
+                || (otherItem instanceof DurableItemComponent)) && otherItem.getItemId().equals(this.getItemId());
     }
 
     /**
@@ -234,20 +232,16 @@ public abstract class Item implements Cloneable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Item otherItem) {
-            return otherItem.getItemId().equals(this.getItemId())
-                    && otherItem.getMeta() == this.getMeta()
-                    && otherItem.getCount() == this.getCount()
-                    && otherItem.getNBT().equals(this.getNBT());
+            return otherItem.getItemId().equals(this.getItemId()) && otherItem.getMeta() == this.getMeta()
+                    && otherItem.getCount() == this.getCount() && otherItem.getNBT().equals(this.getNBT());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return (this.getItemId().hashCode() * 73)
-                + (this.getMeta() * 73)
-                + (this.getCount() * 73)
-                + (this.getNBT().hashCode());
+        return (this.getItemId().hashCode() * 73) + (this.getMeta() * 73) + (this.getCount() * 73) + (this.getNBT()
+                                                                                                          .hashCode());
     }
 
     /**
@@ -262,10 +256,10 @@ public abstract class Item implements Cloneable {
 
     public static boolean canBePlacedInSlot(Item item, ContainerSlotType containerSlotType, int slot) {
         return switch (containerSlotType) {
-            case ARMOR -> item instanceof ArmorItemComponent && slot == ((ArmorItemComponent) item).getArmorSlot().ordinal();
+            case ARMOR -> item instanceof ArmorItemComponent && slot == ((ArmorItemComponent) item).getArmorSlot()
+                                                                                                   .ordinal();
             case OFFHAND -> item.isAllowedInOffHand();
             default -> true;
         };
     }
-
 }

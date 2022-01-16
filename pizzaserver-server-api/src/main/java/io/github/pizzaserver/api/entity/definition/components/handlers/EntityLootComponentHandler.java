@@ -17,5 +17,4 @@ public class EntityLootComponentHandler extends EntityComponentHandler<EntityLoo
     public void onUnregistered(Entity entity, EntityLootComponent component) {
         entity.setLoot(new ArrayList<>());
     }
-
 }

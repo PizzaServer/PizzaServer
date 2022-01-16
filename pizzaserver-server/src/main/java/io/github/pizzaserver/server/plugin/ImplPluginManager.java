@@ -11,5 +11,4 @@ public class ImplPluginManager implements PluginManager {
     public ImplPluginManager(Server server) {
         this.server = server;
     }
-
 }

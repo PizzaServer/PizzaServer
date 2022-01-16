@@ -37,5 +37,4 @@ public interface BlockEntity {
      * @param player the player who broke the block
      */
     void onBreak(Player player);
-
 }

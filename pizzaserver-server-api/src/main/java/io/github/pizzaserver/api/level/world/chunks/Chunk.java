@@ -288,7 +288,11 @@ public interface Chunk extends Watchable {
     void setAndUpdateBlock(Block block, int x, int y, int z, int layer);
 
     default boolean requestBlockUpdate(BlockUpdateType type, Vector3i blockCoordinates, int ticks) {
-        return this.requestBlockUpdate(type, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), ticks);
+        return this.requestBlockUpdate(type,
+                                       blockCoordinates.getX(),
+                                       blockCoordinates.getY(),
+                                       blockCoordinates.getZ(),
+                                       ticks);
     }
 
     /**
@@ -318,7 +322,4 @@ public interface Chunk extends Watchable {
      * Stops operations of this chunk and saves it to the provider asynchronously.
      */
     void close();
-
-
-
 }

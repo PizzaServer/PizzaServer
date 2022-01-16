@@ -17,5 +17,4 @@ public class ItemLeather extends Item {
     public String getName() {
         return "Leather";
     }
-
 }

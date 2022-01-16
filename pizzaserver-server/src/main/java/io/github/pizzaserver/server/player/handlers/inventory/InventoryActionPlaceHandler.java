@@ -21,13 +21,17 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
             Item destinationItemStack = action.getDestination().getItemStack();
 
             // the slots must be either of the same type or the destination has to be air
-            boolean canMergeItemData = sourceItemStack.hasSameDataAs(destinationItemStack) || destinationItemStack.isEmpty();
+            boolean canMergeItemData =
+                    sourceItemStack.hasSameDataAs(destinationItemStack) || destinationItemStack.isEmpty();
 
             // final destination slot cannot exceed max count
             boolean doesNotExceedMaxCount = action.getCountRequested() > 0
-                    && destinationItemStack.getCount() + action.getCountRequested() <= sourceItemStack.getMaxStackSize();
+                    && destinationItemStack.getCount() + action.getCountRequested()
+                    <= sourceItemStack.getMaxStackSize();
 
-            boolean canPutItemTypeInSlot = Item.canBePlacedInSlot(sourceItemStack, action.getDestination().getSlotType(), action.getDestination().getSlot())
+            boolean canPutItemTypeInSlot = Item.canBePlacedInSlot(sourceItemStack,
+                                                                  action.getDestination().getSlotType(),
+                                                                  action.getDestination().getSlot())
                     && action.getDestination().getSlotType() != ContainerSlotType.CURSOR;
 
             return canMergeItemData && doesNotExceedMaxCount && canPutItemTypeInSlot;
@@ -46,7 +50,10 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
 
         // Create new stack with the amount that will be placed down + existing destination count
         int placedStackAmount = playerRequestedAmount + destination.getItemStack().getCount();
-        Item placedStack = ItemRegistry.getInstance().getItem(source.getItemStack().getItemId(), placedStackAmount, source.getItemStack().getMeta());
+        Item placedStack = ItemRegistry.getInstance()
+                                       .getItem(source.getItemStack().getItemId(),
+                                                placedStackAmount,
+                                                source.getItemStack().getMeta());
         placedStack.setNBT(source.getItemStack().getNBT());
 
         // Remove the amount placed from our source
@@ -55,16 +62,16 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
 
         // Call the event
         InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
-                StackRequestActionType.PLACE,
-                source.getInventory(),
-                source.getSlotType(),
-                source.getSlot(),
-                source.getItemStack(),
-                playerRequestedAmount,
-                destination.getInventory(),
-                destination.getSlotType(),
-                destination.getSlot(),
-                destination.getItemStack());
+                                                                                   StackRequestActionType.PLACE,
+                                                                                   source.getInventory(),
+                                                                                   source.getSlotType(),
+                                                                                   source.getSlot(),
+                                                                                   source.getItemStack(),
+                                                                                   playerRequestedAmount,
+                                                                                   destination.getInventory(),
+                                                                                   destination.getSlotType(),
+                                                                                   destination.getSlot(),
+                                                                                   destination.getItemStack());
         player.getServer().getEventManager().call(inventoryMoveItemEvent);
         if (inventoryMoveItemEvent.isCancelled()) {
             return false;
@@ -74,5 +81,4 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
         source.setItemStack(newSourceStack);
         return true;
     }
-
 }

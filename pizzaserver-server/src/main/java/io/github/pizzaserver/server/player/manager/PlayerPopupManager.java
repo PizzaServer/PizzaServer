@@ -109,36 +109,37 @@ public class PlayerPopupManager {
     private void callCloseFormCallback(Form form, Consumer<FormResponse<? extends Form>> callback) {
         switch (form.getType()) {
             case MODAL:
-                callCallback(callback, new ModalFormResponse.Builder()
-                        .setForm((ModalForm) form)
-                        .setPlayer(this.player)
-                        .setClosed(true)
-                        .build());
+                callCallback(callback,
+                             new ModalFormResponse.Builder().setForm((ModalForm) form)
+                                                            .setPlayer(this.player)
+                                                            .setClosed(true)
+                                                            .build());
                 break;
             case CUSTOM:
-                callCallback(callback, new CustomFormResponse.Builder()
-                        .setForm((CustomForm) form)
-                        .setPlayer(this.player)
-                        .setClosed(true)
-                        .setResponses(new JsonArray())
-                        .build());
+                callCallback(callback,
+                             new CustomFormResponse.Builder().setForm((CustomForm) form)
+                                                             .setPlayer(this.player)
+                                                             .setClosed(true)
+                                                             .setResponses(new JsonArray())
+                                                             .build());
                 break;
             case SIMPLE:
-                callCallback(callback, new SimpleFormResponse.Builder()
-                        .setForm((SimpleForm) form)
-                        .setPlayer(this.player)
-                        .setClosed(true)
-                        .build());
+                callCallback(callback,
+                             new SimpleFormResponse.Builder().setForm((SimpleForm) form)
+                                                             .setPlayer(this.player)
+                                                             .setClosed(true)
+                                                             .build());
                 break;
         }
     }
 
-    private static void callCallback(Consumer<FormResponse<? extends Form>> callback, FormResponse<? extends Form> response) {
+    private static void callCallback(
+            Consumer<FormResponse<? extends Form>> callback,
+            FormResponse<? extends Form> response) {
         try {
             callback.accept(response);
         } catch (Exception exception) {
             ImplServer.getInstance().getLogger().error("An exception occurred when calling a form callback", exception);
         }
     }
-
 }

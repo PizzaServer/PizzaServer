@@ -55,5 +55,4 @@ public interface MinecraftVersion extends MinecraftDataMapper {
     List<BlockPropertyData> getCustomBlockProperties();
 
     List<ComponentItemData> getItemComponents();
-
 }

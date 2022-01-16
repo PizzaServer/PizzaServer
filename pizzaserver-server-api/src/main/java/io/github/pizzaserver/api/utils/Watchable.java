@@ -11,5 +11,4 @@ public interface Watchable {
      * @return a set of all players containing those who can see this.
      */
     Set<Player> getViewers();
-
 }

@@ -16,14 +16,8 @@ public class BlockCampfire extends BaseBlock implements BlockEntityContainer<Blo
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
             for (int direction = 0; direction < 4; direction++) {
-                this.add(NbtMap.builder()
-                        .putInt("direction", direction)
-                        .putByte("extinguished", (byte) 0)
-                        .build());
-                this.add(NbtMap.builder()
-                        .putInt("direction", direction)
-                        .putByte("extinguished", (byte) 1)
-                        .build());
+                this.add(NbtMap.builder().putInt("direction", direction).putByte("extinguished", (byte) 0).build());
+                this.add(NbtMap.builder().putInt("direction", direction).putByte("extinguished", (byte) 1).build());
             }
         }
     };
@@ -67,5 +61,4 @@ public class BlockCampfire extends BaseBlock implements BlockEntityContainer<Blo
     public ToolType getToolTypeRequired() {
         return ToolType.AXE;
     }
-
 }

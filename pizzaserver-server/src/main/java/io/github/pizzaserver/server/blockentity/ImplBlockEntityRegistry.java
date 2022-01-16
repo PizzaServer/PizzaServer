@@ -44,5 +44,4 @@ public class ImplBlockEntityRegistry implements BlockEntityRegistry {
     public boolean hasBlockEntityType(String blockEntityId) {
         return entitiesByBlockTypeId.containsKey(blockEntityId);
     }
-
 }

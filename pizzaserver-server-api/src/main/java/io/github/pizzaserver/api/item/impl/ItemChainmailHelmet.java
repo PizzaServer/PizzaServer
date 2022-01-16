@@ -41,5 +41,4 @@ public class ItemChainmailHelmet extends ItemArmor {
     public int getMaxDurability() {
         return 165;
     }
-
 }

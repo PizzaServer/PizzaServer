@@ -59,7 +59,7 @@ public class SimpleForm extends Form {
             return this;
         }
 
-        public Builder addButtons(ButtonElement ...buttons) {
+        public Builder addButtons(ButtonElement... buttons) {
             for (ButtonElement button : buttons) {
                 this.addButton(button);
             }
@@ -69,7 +69,5 @@ public class SimpleForm extends Form {
         public SimpleForm build() {
             return new SimpleForm(this.title, this.content, this.buttons);
         }
-
     }
-
 }

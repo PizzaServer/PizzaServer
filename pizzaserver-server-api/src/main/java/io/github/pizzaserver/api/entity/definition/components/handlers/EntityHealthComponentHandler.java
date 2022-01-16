@@ -18,5 +18,4 @@ public class EntityHealthComponentHandler extends EntityComponentHandler<EntityH
             entity.setHealth((float) Math.floor(Math.random() * (maximumHealth - minimumHealth) + minimumHealth));
         }
     }
-
 }

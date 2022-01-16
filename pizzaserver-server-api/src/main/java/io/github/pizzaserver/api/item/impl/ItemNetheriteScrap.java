@@ -17,5 +17,4 @@ public class ItemNetheriteScrap extends Item {
     public String getName() {
         return "Netherite Scrap";
     }
-
 }

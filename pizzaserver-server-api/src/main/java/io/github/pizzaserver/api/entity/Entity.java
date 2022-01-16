@@ -334,5 +334,4 @@ public interface Entity extends Watchable {
     boolean despawnFrom(Player player);
 
     void despawn();
-
 }

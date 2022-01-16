@@ -18,5 +18,4 @@ public class PlayerToggleSwimEvent extends BasePlayerEvent.Cancellable {
     public boolean isSwimming() {
         return this.swimming;
     }
-
 }

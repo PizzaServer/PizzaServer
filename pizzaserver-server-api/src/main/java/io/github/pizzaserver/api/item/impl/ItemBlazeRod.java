@@ -17,5 +17,4 @@ public class ItemBlazeRod extends Item {
     public String getName() {
         return "Blaze Rod";
     }
-
 }

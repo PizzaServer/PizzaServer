@@ -155,5 +155,4 @@ public interface Block extends Cloneable {
     }
 
     Block clone();
-
 }

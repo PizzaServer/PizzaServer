@@ -17,5 +17,4 @@ public class ItemGhastTear extends Item {
     public String getName() {
         return "Ghast Tear";
     }
-
 }

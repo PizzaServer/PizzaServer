@@ -44,8 +44,7 @@ public class MCWorldChunk implements BedrockChunk {
             byte[] data2d,
             byte[] blockEntityData,
             byte[] entityData,
-            byte[][] subChunks
-    ) throws IOException {
+            byte[][] subChunks) throws IOException {
         this.chunkVersion = chunkVersion;
         this.x = x;
         this.z = z;
@@ -81,8 +80,8 @@ public class MCWorldChunk implements BedrockChunk {
      * @throws IOException if it failed to parse the entity NBT
      */
     private void parseEntityNBT(byte[] blockEntityData, byte[] entityData) throws IOException {
-        try (InputStream blockEntityDataStream = new ByteArrayInputStream(blockEntityData);
-                NBTInputStream blockEntityNBTInputStream = NbtUtils.createReaderLE(blockEntityDataStream)) {
+        try (InputStream blockEntityDataStream = new ByteArrayInputStream(blockEntityData); NBTInputStream blockEntityNBTInputStream = NbtUtils.createReaderLE(
+                blockEntityDataStream)) {
             while (blockEntityDataStream.available() > 0) {
                 NbtMap compound = (NbtMap) blockEntityNBTInputStream.readTag();
                 this.blockEntityNBTs.add(compound);
@@ -91,8 +90,8 @@ public class MCWorldChunk implements BedrockChunk {
             throw new ChunkParseException("Failed to read block entity NBT", exception);
         }
 
-        try (InputStream entityDataStream = new ByteArrayInputStream(entityData);
-                NBTInputStream entityNBTInputStream = NbtUtils.createReaderLE(entityDataStream)) {
+        try (InputStream entityDataStream = new ByteArrayInputStream(entityData); NBTInputStream entityNBTInputStream = NbtUtils.createReaderLE(
+                entityDataStream)) {
             while (entityDataStream.available() > 0) {
                 NbtMap compound = (NbtMap) entityNBTInputStream.readTag();
                 this.entityNBTs.add(compound);
@@ -225,7 +224,8 @@ public class MCWorldChunk implements BedrockChunk {
 
     @Override
     public void serializeForDisk(ByteBuf buffer) {
-        throw new UnsupportedOperationException("Cannot serialize MCWorldChunk for disk. Serialize subchunks individually instead");
+        throw new UnsupportedOperationException(
+                "Cannot serialize MCWorldChunk for disk. Serialize subchunks individually instead");
     }
 
     @Override
@@ -248,7 +248,8 @@ public class MCWorldChunk implements BedrockChunk {
                         NbtMap networkBlockEntityNBT = dataMapper.getNetworkBlockEntityNBT(diskBlockEntityNBT);
                         outputStream.writeTag(networkBlockEntityNBT);
                     } catch (NullPointerException exception) {
-                        throw new ChunkSerializationException("Could not serialize block entity data due to null block entity data returned by data mapper.");
+                        throw new ChunkSerializationException(
+                                "Could not serialize block entity data due to null block entity data returned by data mapper.");
                     }
                 }
             }
@@ -312,18 +313,14 @@ public class MCWorldChunk implements BedrockChunk {
         }
 
         public MCWorldChunk build() throws IOException {
-            return new MCWorldChunk(
-                    this.x,
-                    this.z,
-                    Check.nullParam(this.dimension, "dimension"),
-                    this.chunkVersion,
-                    Check.nullParam(this.heightAndBiomeData, "heightAndBiomeData"),
-                    Check.nullParam(this.blockEntityData, "blockEntityData"),
-                    Check.nullParam(this.entityData, "entityData"),
-                    Check.nullParam(this.subChunks, "subChunks")
-            );
+            return new MCWorldChunk(this.x,
+                                    this.z,
+                                    Check.nullParam(this.dimension, "dimension"),
+                                    this.chunkVersion,
+                                    Check.nullParam(this.heightAndBiomeData, "heightAndBiomeData"),
+                                    Check.nullParam(this.blockEntityData, "blockEntityData"),
+                                    Check.nullParam(this.entityData, "entityData"),
+                                    Check.nullParam(this.subChunks, "subChunks"));
         }
-
     }
-
 }

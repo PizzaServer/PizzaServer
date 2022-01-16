@@ -26,5 +26,4 @@ public abstract class ChunkRequest {
     public int getZ() {
         return this.z;
     }
-
 }

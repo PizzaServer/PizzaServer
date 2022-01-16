@@ -28,5 +28,4 @@ public interface BlockEntityType {
     default NbtMap serializeForNetwork(BlockEntity blockEntity) {
         return this.serializeForNetwork(this.serializeForDisk(blockEntity));
     }
-
 }

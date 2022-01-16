@@ -29,7 +29,12 @@ public class MCWorldBlockLayer implements BlockLayer {
      * @param blocksPerWord amount of minecraft blocks that are in each word
      * @param wordsPerChunk amount of LE ints that contain all the blocks in this layer
      */
-    public MCWorldBlockLayer(MCWorldBlockPalette palette, ByteBuf buffer, int bitsPerBlock, int blocksPerWord, int wordsPerChunk) {
+    public MCWorldBlockLayer(
+            MCWorldBlockPalette palette,
+            ByteBuf buffer,
+            int bitsPerBlock,
+            int blocksPerWord,
+            int wordsPerChunk) {
         this(palette);
         int pos = 0;
         for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
@@ -144,5 +149,4 @@ public class MCWorldBlockLayer implements BlockLayer {
     private static int getBlockIndex(int x, int y, int z) {
         return (x << 8) | (z << 4) | y;
     }
-
 }

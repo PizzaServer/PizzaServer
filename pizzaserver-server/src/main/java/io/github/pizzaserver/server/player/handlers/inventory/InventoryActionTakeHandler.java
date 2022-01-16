@@ -19,19 +19,19 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
         InventorySlotContainer destinationSlot = action.getDestination();
 
         // Validate the slots exist and that the player is requesting a valid slot/amount
-        boolean slotsValid = sourceSlot.exists()
-                && destinationSlot.exists()
-                && destinationSlot.getSlotType() == ContainerSlotType.CURSOR
-                && action.getCountRequested() > 0;
+        boolean slotsValid = sourceSlot.exists() && destinationSlot.exists()
+                && destinationSlot.getSlotType() == ContainerSlotType.CURSOR && action.getCountRequested() > 0;
         if (slotsValid) {
             // (Verify that either the destination is air or the source can be merged with the destination)
             int destinationSlotCount = destinationSlot.getItemStack().getCount();
             int sourceSlotCount = sourceSlot.getItemStack().getCount();
             int maxStackCountAllowed = sourceSlot.getItemStack().getMaxStackSize();
 
-            boolean underStackLimit = destinationSlotCount + Math.min(action.getCountRequested(), sourceSlotCount) <= maxStackCountAllowed;
+            boolean underStackLimit = destinationSlotCount + Math.min(action.getCountRequested(), sourceSlotCount)
+                    <= maxStackCountAllowed;
             boolean destinationIsAir = destinationSlot.getItemStack().isEmpty();
-            boolean canAddSourceToStack = destinationSlot.getItemStack().hasSameDataAs(sourceSlot.getItemStack()) || destinationIsAir;
+            boolean canAddSourceToStack =
+                    destinationSlot.getItemStack().hasSameDataAs(sourceSlot.getItemStack()) || destinationIsAir;
 
             return underStackLimit && canAddSourceToStack;
         } else {
@@ -62,16 +62,17 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
         }
 
         InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
-                StackRequestActionType.TAKE,
-                source.getInventory(),
-                action.getSource().getSlotType(),
-                action.getSource().getSlot(),
-                source.getItemStack(),
-                pickedUpStackCount,
-                destination.getInventory(),
-                action.getDestination().getSlotType(),
-                action.getDestination().getSlot(),
-                destination.getItemStack());
+                                                                                   StackRequestActionType.TAKE,
+                                                                                   source.getInventory(),
+                                                                                   action.getSource().getSlotType(),
+                                                                                   action.getSource().getSlot(),
+                                                                                   source.getItemStack(),
+                                                                                   pickedUpStackCount,
+                                                                                   destination.getInventory(),
+                                                                                   action.getDestination()
+                                                                                         .getSlotType(),
+                                                                                   action.getDestination().getSlot(),
+                                                                                   destination.getItemStack());
         player.getServer().getEventManager().call(inventoryMoveItemEvent);
         if (inventoryMoveItemEvent.isCancelled()) {
             return false;
@@ -85,5 +86,4 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
         source.setItemStack(currentStack);
         return true;
     }
-
 }

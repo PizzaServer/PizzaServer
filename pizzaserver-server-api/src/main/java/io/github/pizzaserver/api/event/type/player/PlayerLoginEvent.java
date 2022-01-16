@@ -42,7 +42,4 @@ public class PlayerLoginEvent extends BasePlayerEvent.Cancellable {
     public void setYaw(float yaw) {
         this.yaw = yaw;
     }
-
-
-
 }

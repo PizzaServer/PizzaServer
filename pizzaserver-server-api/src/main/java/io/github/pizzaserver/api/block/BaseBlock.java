@@ -109,8 +109,7 @@ public abstract class BaseBlock implements Block {
 
     @Override
     public BoundingBox getBoundingBox() {
-        return new BoundingBox(Vector3f.ZERO, Vector3f.from(1, 1, 1))
-                .translate(this.getLocation().toVector3f());
+        return new BoundingBox(Vector3f.ZERO, Vector3f.from(1, 1, 1)).translate(this.getLocation().toVector3f());
     }
 
     @Override
@@ -216,9 +215,7 @@ public abstract class BaseBlock implements Block {
 
     @Override
     public int hashCode() {
-        return (93 * this.blockState)
-                + (93 * this.getBlockId().hashCode())
-                + (93 * this.getLocation().hashCode());
+        return (93 * this.blockState) + (93 * this.getBlockId().hashCode()) + (93 * this.getLocation().hashCode());
     }
 
     @Override
@@ -229,5 +226,4 @@ public abstract class BaseBlock implements Block {
         }
         return false;
     }
-
 }

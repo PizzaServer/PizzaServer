@@ -25,7 +25,7 @@ public interface BlockBehavior {
      * @param block the block being placed
      * @param face the face this block was placed on
      */
-    default void onPlace(Entity entity, Block block, BlockFace face) {}
+    default void onPlace(Entity entity, Block block, BlockFace face) { }
 
     /**
      * Called when the right click button is used against this block.
@@ -44,33 +44,32 @@ public interface BlockBehavior {
      * @param entity the entity that broke this block.
      * @param block the block broken
      */
-    default void onBreak(Entity entity, Block block) {}
+    default void onBreak(Entity entity, Block block) { }
 
     /**
      * Called whenever an entity moves onto this block.
      * @param entity the entity walking on the block
      * @param block the block walked on
      */
-    default void onWalkedOn(Entity entity, Block block) {}
+    default void onWalkedOn(Entity entity, Block block) { }
 
     /**
      * Called whenever an entity walks off of this block.
      * @param entity the entity who walked off this block
      * @param block the block walked off of
      */
-    default void onWalkedOff(Entity entity, Block block) {}
+    default void onWalkedOff(Entity entity, Block block) { }
 
     /**
      * Called every tick an entity is on this block.
      * @param entity the entity who is on this block
      * @param block the block the entity is standing on
      */
-    default void onStandingOn(Entity entity, Block block) {}
+    default void onStandingOn(Entity entity, Block block) { }
 
     /**
      * Called whenever the block is updated.
      * @param block the block being updated
      */
-    default void onUpdate(BlockUpdateType type, Block block) {}
-
+    default void onUpdate(BlockUpdateType type, Block block) { }
 }

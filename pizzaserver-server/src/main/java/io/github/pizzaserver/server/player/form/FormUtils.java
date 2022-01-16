@@ -21,7 +21,7 @@ public class FormUtils {
     protected static final Gson GSON = new Gson();
 
 
-    private FormUtils() {}
+    private FormUtils() { }
 
     public static String toJSON(Form form) {
         return GSON.toJson(form);
@@ -31,38 +31,42 @@ public class FormUtils {
         boolean closed = data.equals("null");
         switch (form.getType()) {
             case MODAL:
-                return new ModalFormResponse.Builder()
-                        .setForm((ModalForm) form)
-                        .setPlayer(player)
-                        .setResult(data.equals("true"))
-                        .setClosed(closed)
-                        .build();
+                return new ModalFormResponse.Builder().setForm((ModalForm) form)
+                                                      .setPlayer(player)
+                                                      .setResult(data.equals("true"))
+                                                      .setClosed(closed)
+                                                      .build();
             case SIMPLE:
                 int simpleResponse = 0;
                 try {
                     simpleResponse = Integer.parseInt(data);
                 } catch (NumberFormatException exception) {
-                    ImplServer.getInstance().getLogger().debug("Invalid integer provided in simple form response from client.");
+                    ImplServer.getInstance()
+                              .getLogger()
+                              .debug("Invalid integer provided in simple form response from client.");
                     closed = true;
                 }
 
                 if (simpleResponse < 0 || simpleResponse >= ((SimpleForm) form).getButtons().size()) {
-                    ImplServer.getInstance().getLogger().debug("Out of bounds integer provided in simple form response from client.");
+                    ImplServer.getInstance()
+                              .getLogger()
+                              .debug("Out of bounds integer provided in simple form response from client.");
                     closed = true;
                 }
 
-                return new SimpleFormResponse.Builder()
-                        .setForm((SimpleForm) form)
-                        .setPlayer(player)
-                        .setClosed(closed)
-                        .setResponse(simpleResponse)
-                        .build();
+                return new SimpleFormResponse.Builder().setForm((SimpleForm) form)
+                                                       .setPlayer(player)
+                                                       .setClosed(closed)
+                                                       .setResponse(simpleResponse)
+                                                       .build();
             case CUSTOM:
                 JsonArray responses = closed ? new JsonArray() : GSON.fromJson(data, JsonArray.class);
 
                 // Check if invalid response amount was returned.
                 if (responses.size() != ((CustomForm) form).getElements().size()) {
-                    ImplServer.getInstance().getLogger().debug("Invalid amount of form response elements returned by client.");
+                    ImplServer.getInstance()
+                              .getLogger()
+                              .debug("Invalid amount of form response elements returned by client.");
                     closed = true;
                     responses = new JsonArray();
                 }
@@ -71,19 +75,20 @@ public class FormUtils {
                 for (int i = 0; i < responses.size(); i++) {
                     CustomElement customElement = ((CustomForm) form).getElements().get(i);
                     if (isInvalidElementResponse(responses.get(i), customElement)) {
-                        ImplServer.getInstance().getLogger().debug("Invalid response for custom form element returned by client.");
+                        ImplServer.getInstance()
+                                  .getLogger()
+                                  .debug("Invalid response for custom form element returned by client.");
                         closed = true;
                         responses = new JsonArray();
                         break;
                     }
                 }
 
-                return new CustomFormResponse.Builder()
-                        .setForm((CustomForm) form)
-                        .setPlayer(player)
-                        .setClosed(closed)
-                        .setResponses(responses)
-                        .build();
+                return new CustomFormResponse.Builder().setForm((CustomForm) form)
+                                                       .setPlayer(player)
+                                                       .setClosed(closed)
+                                                       .setResponses(responses)
+                                                       .build();
         }
 
         throw new AssertionError("Unknown form response type");
@@ -113,7 +118,8 @@ public class FormUtils {
                     return true;
                 }
                 float sliderValue = primitive.getAsFloat();
-                return sliderValue < ((SliderElement) element).getMin() || sliderValue > ((SliderElement) element).getMax();
+                return sliderValue < ((SliderElement) element).getMin()
+                        || sliderValue > ((SliderElement) element).getMax();
             case STEP_SLIDER:
                 if (!primitive.isNumber()) {
                     return true;
@@ -126,5 +132,4 @@ public class FormUtils {
                 return true;
         }
     }
-
 }

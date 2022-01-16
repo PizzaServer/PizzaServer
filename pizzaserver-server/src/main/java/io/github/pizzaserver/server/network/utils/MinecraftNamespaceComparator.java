@@ -23,5 +23,4 @@ public class MinecraftNamespaceComparator {
         String namespaceB = idB.substring(0, idB.indexOf(":"));
         return namespaceB.compareTo(namespaceA);
     }
-
 }

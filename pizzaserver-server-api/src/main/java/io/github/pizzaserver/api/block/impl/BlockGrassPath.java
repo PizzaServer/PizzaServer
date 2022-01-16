@@ -41,5 +41,4 @@ public class BlockGrassPath extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

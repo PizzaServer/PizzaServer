@@ -35,5 +35,4 @@ public class RectangleChunkLoader implements ChunkLoader {
     public Set<Vector2i> getCoordinates() {
         return this.coordinates;
     }
-
 }

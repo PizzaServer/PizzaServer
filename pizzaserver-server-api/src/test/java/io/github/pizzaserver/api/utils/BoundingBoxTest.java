@@ -27,7 +27,7 @@ public class BoundingBoxTest {
         BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
         assertTrue(boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(1, 0, 0)))
-                                && boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(-1, 0, 0))));
+                           && boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(-1, 0, 0))));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class BoundingBoxTest {
         BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
         assertFalse(boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(2, 0, 0)))
-                        || boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(-2, 0, 0))));
+                            || boundingBox.collidesWithXAxis(boundingBox.translate(Vector3f.from(-2, 0, 0))));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class BoundingBoxTest {
         BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
         assertTrue(boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, 0.99f, 0)))
-                && boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, -0.99f, 0))));
+                           && boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, -0.99f, 0))));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class BoundingBoxTest {
         BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
         assertFalse(boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, 1, 0)))
-                || boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, -1, 0))));
+                            || boundingBox.collidesWithYAxis(boundingBox.translate(Vector3f.from(0, -1, 0))));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class BoundingBoxTest {
         BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
         assertTrue(boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, 1)))
-                && boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, -1))));
+                           && boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, -1))));
     }
 
     @Test
@@ -67,7 +67,6 @@ public class BoundingBoxTest {
         BoundingBox boundingBox = new BoundingBox(Vector3f.from(-1, 1, -1), Vector3f.from(1, 0, 1));
 
         assertFalse(boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, 2)))
-                || boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, -2))));
+                            || boundingBox.collidesWithZAxis(boundingBox.translate(Vector3f.from(0, 0, -2))));
     }
-
 }

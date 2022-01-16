@@ -19,5 +19,4 @@ public class PlayerEntityInteractEvent extends BasePlayerEvent.Cancellable {
     public Entity getEntity() {
         return this.entity;
     }
-
 }

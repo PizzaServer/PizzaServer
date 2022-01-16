@@ -34,13 +34,15 @@ public class MCWorldSubChunk implements BedrockSubChunk {
                 totalLayers = 1;
                 break;
             default:
-                throw new UnsupportedOperationException("Missing implementation for v" + this.subChunkVersion + " chunks");
+                throw new UnsupportedOperationException(
+                        "Missing implementation for v" + this.subChunkVersion + " chunks");
         }
 
         for (int layerI = 0; layerI < totalLayers; layerI++) {
             int bitsPerBlock = buffer.readByte() >> 1;
             int blocksPerWord = 32 / bitsPerBlock;
-            int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord); // there are 4096 blocks in a chunk stored in x words
+            int wordsPerChunk = (int) Math.ceil(
+                    4096d / blocksPerWord); // there are 4096 blocks in a chunk stored in x words
 
             // We want to read the palette first so that we can translate what blocks are immediately.
             int chunkBlocksIndex = buffer.readerIndex();
@@ -51,7 +53,11 @@ public class MCWorldSubChunk implements BedrockSubChunk {
 
             // Go back and parse the blocks.
             buffer.setIndex(chunkBlocksIndex, buffer.writerIndex());
-            MCWorldBlockLayer layer = new MCWorldBlockLayer(palette, buffer, bitsPerBlock, blocksPerWord, wordsPerChunk);
+            MCWorldBlockLayer layer = new MCWorldBlockLayer(palette,
+                                                            buffer,
+                                                            bitsPerBlock,
+                                                            blocksPerWord,
+                                                            wordsPerChunk);
             synchronized (this.layers) {
                 this.layers.add(layer);
             }
@@ -106,5 +112,4 @@ public class MCWorldSubChunk implements BedrockSubChunk {
             layer.serializeForNetwork(buffer, runtimeMapper);
         }
     }
-
 }

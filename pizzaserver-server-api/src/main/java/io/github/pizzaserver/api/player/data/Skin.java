@@ -62,8 +62,7 @@ public class Skin {
             List<PersonaPieceTintData> tints,
             boolean premium,
             boolean trusted,
-            boolean primaryUser
-    ) {
+            boolean primaryUser) {
         this.skinId = skinId;
         this.fullSkinId = fullSkinId;
         this.playFabId = playFabId;
@@ -111,8 +110,7 @@ public class Skin {
             byte[] capeData,
             boolean premium,
             boolean trusted,
-            boolean primaryUser
-    ) {
+            boolean primaryUser) {
         this.skinId = skinId;
         this.fullSkinId = fullSkinId;
         this.playFabId = playFabId;
@@ -336,53 +334,52 @@ public class Skin {
 
     public SerializedSkin serialize() {
         return SerializedSkin.of(this.getSkinId(),
-                this.getPlayFabId(),
-                this.getSkinResourcePatch(),
-                ImageData.of(this.getSkinWidth(), this.getSkinHeight(), this.getSkinData()),
-                this.getAnimations(),
-                ImageData.of(this.getCapeWidth(), this.getCapeHeight(), this.getCapeData()),
-                this.getGeometryData(),
-                this.getGeometryVersion(),
-                this.getAnimationData(),
-                this.isPremium(),
-                this.isPersona(),
-                this.isCapeOnClassic(),
-                this.isPrimaryUser(),
-                this.getCapeId(),
-                this.getFullSkinId(),
-                this.getArmSize(),
-                this.getSkinColour(),
-                this.getPieces(),
-                this.getTints());
+                                 this.getPlayFabId(),
+                                 this.getSkinResourcePatch(),
+                                 ImageData.of(this.getSkinWidth(), this.getSkinHeight(), this.getSkinData()),
+                                 this.getAnimations(),
+                                 ImageData.of(this.getCapeWidth(), this.getCapeHeight(), this.getCapeData()),
+                                 this.getGeometryData(),
+                                 this.getGeometryVersion(),
+                                 this.getAnimationData(),
+                                 this.isPremium(),
+                                 this.isPersona(),
+                                 this.isCapeOnClassic(),
+                                 this.isPrimaryUser(),
+                                 this.getCapeId(),
+                                 this.getFullSkinId(),
+                                 this.getArmSize(),
+                                 this.getSkinColour(),
+                                 this.getPieces(),
+                                 this.getTints());
     }
 
     public static Skin deserialize(SerializedSkin serializedSkin) {
-        return new Skin.Builder()
-                .setSkinId(serializedSkin.getSkinId())
-                .setFullSkinId(serializedSkin.getFullSkinId())
-                .setPlayFabId(serializedSkin.getPlayFabId())
-                .setSkinResourcePatch(serializedSkin.getSkinResourcePatch())
-                .setGeometryData(serializedSkin.getGeometryData())
-                .setGeometryVersion(serializedSkin.getGeometryDataEngineVersion())
-                .setSkinHeight(serializedSkin.getSkinData().getHeight())
-                .setSkinWidth(serializedSkin.getSkinData().getWidth())
-                .setSkinData(serializedSkin.getSkinData().getImage())
-                .setCapeHeight(serializedSkin.getCapeData().getHeight())
-                .setCapeWidth(serializedSkin.getCapeData().getWidth())
-                .setCapeData(serializedSkin.getCapeData().getImage())
-                .setCapeId(serializedSkin.getCapeId())
-                .setCapeOnClassic(serializedSkin.isCapeOnClassic())
-                .setAnimationData(serializedSkin.getAnimationData())
-                .setArmSize(serializedSkin.getArmSize())
-                .setSkinColour(serializedSkin.getSkinColor())
-                .setAnimations(serializedSkin.getAnimations())
-                .setPieces(serializedSkin.getPersonaPieces())
-                .setTints(serializedSkin.getTintColors())
-                .setPersona(serializedSkin.isPersona())
-                .setPremium(serializedSkin.isPremium())
-                .setTrusted(false)
-                .setPrimaryUser(serializedSkin.isPrimaryUser())
-                .build();
+        return new Skin.Builder().setSkinId(serializedSkin.getSkinId())
+                                 .setFullSkinId(serializedSkin.getFullSkinId())
+                                 .setPlayFabId(serializedSkin.getPlayFabId())
+                                 .setSkinResourcePatch(serializedSkin.getSkinResourcePatch())
+                                 .setGeometryData(serializedSkin.getGeometryData())
+                                 .setGeometryVersion(serializedSkin.getGeometryDataEngineVersion())
+                                 .setSkinHeight(serializedSkin.getSkinData().getHeight())
+                                 .setSkinWidth(serializedSkin.getSkinData().getWidth())
+                                 .setSkinData(serializedSkin.getSkinData().getImage())
+                                 .setCapeHeight(serializedSkin.getCapeData().getHeight())
+                                 .setCapeWidth(serializedSkin.getCapeData().getWidth())
+                                 .setCapeData(serializedSkin.getCapeData().getImage())
+                                 .setCapeId(serializedSkin.getCapeId())
+                                 .setCapeOnClassic(serializedSkin.isCapeOnClassic())
+                                 .setAnimationData(serializedSkin.getAnimationData())
+                                 .setArmSize(serializedSkin.getArmSize())
+                                 .setSkinColour(serializedSkin.getSkinColor())
+                                 .setAnimations(serializedSkin.getAnimations())
+                                 .setPieces(serializedSkin.getPersonaPieces())
+                                 .setTints(serializedSkin.getTintColors())
+                                 .setPersona(serializedSkin.isPersona())
+                                 .setPremium(serializedSkin.isPremium())
+                                 .setTrusted(false)
+                                 .setPrimaryUser(serializedSkin.isPrimaryUser())
+                                 .build();
     }
 
 
@@ -538,55 +535,49 @@ public class Skin {
 
         public Skin build() {
             if (this.isPersona) {
-                return new Skin(
-                        this.skinId,
-                        this.fullSkinId,
-                        this.playFabId,
-                        this.skinResourcePatch,
-                        this.geometryData,
-                        this.geometryVersion,
-                        this.skinHeight,
-                        this.skinWidth,
-                        this.skinData,
-                        this.capeId,
-                        this.capeOnClassic,
-                        this.capeHeight,
-                        this.capeWidth,
-                        this.capeData,
-                        this.armSize,
-                        this.skinColor,
-                        this.animationData,
-                        this.animations,
-                        this.pieces,
-                        this.tints,
-                        this.premium,
-                        this.trusted,
-                        this.primaryUser
-                );
+                return new Skin(this.skinId,
+                                this.fullSkinId,
+                                this.playFabId,
+                                this.skinResourcePatch,
+                                this.geometryData,
+                                this.geometryVersion,
+                                this.skinHeight,
+                                this.skinWidth,
+                                this.skinData,
+                                this.capeId,
+                                this.capeOnClassic,
+                                this.capeHeight,
+                                this.capeWidth,
+                                this.capeData,
+                                this.armSize,
+                                this.skinColor,
+                                this.animationData,
+                                this.animations,
+                                this.pieces,
+                                this.tints,
+                                this.premium,
+                                this.trusted,
+                                this.primaryUser);
             } else {
-                return new Skin(
-                        this.skinId,
-                        this.fullSkinId,
-                        this.playFabId,
-                        this.skinResourcePatch,
-                        this.geometryData,
-                        this.geometryVersion,
-                        this.skinHeight,
-                        this.skinWidth,
-                        this.skinData,
-                        this.capeId,
-                        this.capeOnClassic,
-                        this.capeHeight,
-                        this.capeWidth,
-                        this.capeData,
-                        this.premium,
-                        this.trusted,
-                        this.primaryUser
-                );
+                return new Skin(this.skinId,
+                                this.fullSkinId,
+                                this.playFabId,
+                                this.skinResourcePatch,
+                                this.geometryData,
+                                this.geometryVersion,
+                                this.skinHeight,
+                                this.skinWidth,
+                                this.skinData,
+                                this.capeId,
+                                this.capeOnClassic,
+                                this.capeHeight,
+                                this.capeWidth,
+                                this.capeData,
+                                this.premium,
+                                this.trusted,
+                                this.primaryUser);
             }
         }
-
     }
-
 }
 

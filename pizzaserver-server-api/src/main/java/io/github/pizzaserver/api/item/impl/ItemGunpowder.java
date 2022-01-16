@@ -17,5 +17,4 @@ public class ItemGunpowder extends Item {
     public String getName() {
         return "Gunpowder";
     }
-
 }

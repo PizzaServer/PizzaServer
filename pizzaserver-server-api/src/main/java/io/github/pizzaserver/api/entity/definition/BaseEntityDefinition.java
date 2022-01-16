@@ -64,6 +64,5 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
     }
 
     @Override
-    public void onCreation(Entity entity) {}
-
+    public void onCreation(Entity entity) { }
 }

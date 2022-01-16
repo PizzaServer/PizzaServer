@@ -34,5 +34,4 @@ public interface ArmorItemComponent extends DurableItemComponent {
     default Item[] getRepairItems() {
         return new Item[0];
     }
-
 }

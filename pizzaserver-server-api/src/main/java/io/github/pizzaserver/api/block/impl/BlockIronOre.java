@@ -36,5 +36,4 @@ public class BlockIronOre extends BaseBlock {
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
     }
-
 }

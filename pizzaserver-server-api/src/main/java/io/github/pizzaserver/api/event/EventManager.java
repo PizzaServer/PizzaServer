@@ -43,5 +43,4 @@ public interface EventManager {
      * @param removeFromChildren should instances of this listener be removed in child EventManager's ?
      */
     void removeListener(Object listener, boolean removeFromChildren);
-
 }

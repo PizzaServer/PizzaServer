@@ -34,5 +34,4 @@ public interface BossBar extends Watchable {
         PURPLE,
         WHITE
     }
-
 }

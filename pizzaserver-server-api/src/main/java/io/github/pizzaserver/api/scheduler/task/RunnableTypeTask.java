@@ -14,5 +14,4 @@ public final class RunnableTypeTask extends SchedulerTask {
     public void run() {
         this.taskRunnable.run();
     }
-
 }

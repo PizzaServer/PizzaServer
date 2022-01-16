@@ -41,5 +41,4 @@ public class EntityComponentEvent {
             entity.addComponentGroup(addGroup);
         }
     }
-
 }

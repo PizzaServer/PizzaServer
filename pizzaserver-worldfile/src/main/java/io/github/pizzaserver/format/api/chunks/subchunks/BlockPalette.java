@@ -92,13 +92,12 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
         public boolean equals(Object obj) {
             if (obj instanceof Entry) {
                 Entry entry = (Entry) obj;
-                return entry.getState().equals(this.getState())
-                        && entry.getId().equals(this.getId());
+                return entry.getState().equals(this.getState()) && entry.getId().equals(this.getId());
             }
             return false;
         }
-
     }
+
 
     /**
      * Helper class that represents an empty air entry.
@@ -121,7 +120,5 @@ public interface BlockPalette extends BedrockNetworkDiskSerializable {
         public NbtMap getState() {
             return NbtMap.EMPTY;
         }
-
     }
-
 }

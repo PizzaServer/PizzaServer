@@ -27,5 +27,4 @@ public abstract class FormResponse<T extends Form> {
     public boolean wasClosed() {
         return this.closed;
     }
-
 }

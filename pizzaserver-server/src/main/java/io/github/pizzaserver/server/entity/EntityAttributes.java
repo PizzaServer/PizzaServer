@@ -18,7 +18,8 @@ public class EntityAttributes {
             this.put(AttributeType.SATURATION, new Attribute(AttributeType.SATURATION, 0f, Float.MAX_VALUE, 0f, 0f));
             this.put(AttributeType.EXPERIENCE, new Attribute(AttributeType.EXPERIENCE, 0f, 1f, 0f, 0f));
             this.put(AttributeType.EXPERIENCE_LEVEL, new Attribute(AttributeType.EXPERIENCE_LEVEL, 0f, 24791f, 0f, 0f));
-            this.put(AttributeType.MOVEMENT_SPEED, new Attribute(AttributeType.MOVEMENT_SPEED, 0f, Float.MAX_VALUE, 0.1f, 0.1f));
+            this.put(AttributeType.MOVEMENT_SPEED,
+                     new Attribute(AttributeType.MOVEMENT_SPEED, 0f, Float.MAX_VALUE, 0.1f, 0.1f));
         }
     };
 
@@ -34,5 +35,4 @@ public class EntityAttributes {
     public Set<Attribute> getAttributes() {
         return new HashSet<>(this.attributes.values());
     }
-
 }

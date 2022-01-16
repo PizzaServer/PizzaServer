@@ -159,7 +159,10 @@ public abstract class Server {
      * @param size size of the inventory. MUST be less than or equal to the regular inventory size of the container
      * @return inventory
      */
-    public abstract BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType, int size);
+    public abstract BlockEntityInventory createInventory(
+            BlockEntity blockEntity,
+            ContainerType containerType,
+            int size);
 
     public abstract BlockRegistry getBlockRegistry();
 
@@ -176,5 +179,4 @@ public abstract class Server {
     public static void setInstance(Server server) {
         instance = server;
     }
-
 }

@@ -32,9 +32,12 @@ public class PlayerBlockBreakingManagerTests {
         float minimumBreakPercentage = 0.8f;
 
         Server mockServer = mock(Server.class);
-        when(mockServer.getTick()).thenReturn(0L,   // starting tick
-                (long) Math.ceil(15L * minimumBreakPercentage) - 1, // tick of server before block can be broken
-                (long) Math.ceil(15L * minimumBreakPercentage));    // tick of server after block can be broken
+        when(mockServer.getTick()).thenReturn(0L,
+                                              // starting tick
+                                              (long) Math.ceil(15L * minimumBreakPercentage) - 1,
+                                              // tick of server before block can be broken
+                                              (long) Math.ceil(15L
+                                                                       * minimumBreakPercentage));    // tick of server after block can be broken
 
 
         World mockWorld = mock(World.class);
@@ -58,7 +61,8 @@ public class PlayerBlockBreakingManagerTests {
 
         blockBreakingManager.startBreaking(blockLocation);
         assertFalse(blockBreakingManager.canBreakBlock(), "player was able to break a dirt block too quick");
-        assertTrue(blockBreakingManager.canBreakBlock(), "player was not able to break a dirt block despite enough ticks passing.");
+        assertTrue(blockBreakingManager.canBreakBlock(),
+                   "player was not able to break a dirt block despite enough ticks passing.");
     }
 
     @Test
@@ -77,11 +81,10 @@ public class PlayerBlockBreakingManagerTests {
         Player mockPlayer = mock(Player.class);
         PlayerInventory mockPlayerInventory = mock(PlayerInventory.class);
         when(mockPlayer.getInventory()).thenReturn(mockPlayerInventory);
-        when(mockPlayerInventory.getHeldItem()).thenReturn(
-                new ItemBlock(new BlockAir()),
-                new ItemBlock(new BlockAir()),
-                correctTool,
-                correctToolAndTier);
+        when(mockPlayerInventory.getHeldItem()).thenReturn(new ItemBlock(new BlockAir()),
+                                                           new ItemBlock(new BlockAir()),
+                                                           correctTool,
+                                                           correctToolAndTier);
 
         PlayerBlockBreakingManager blockBreakingManager = new PlayerBlockBreakingManager(mockPlayer);
         BlockLocation blockLocation = new BlockLocation(mockWorld, 0, 0, 0, 0);
@@ -101,7 +104,8 @@ public class PlayerBlockBreakingManagerTests {
         int resultTicksWithToolAndTier = blockBreakingManager.getBreakTicks();
         assertEquals(expectedTicksWithoutTool, resultTicksWithoutTool, "break ticks without a tool was incorrect");
         assertEquals(expectedTicksWithTool, resultTicksWithTool, "break ticks with correct tool was incorrect");
-        assertTrue(resultTicksWithToolAndTier < resultTicksWithTool, "break ticks with best tool was slower than with the correct tool");
+        assertTrue(resultTicksWithToolAndTier < resultTicksWithTool,
+                   "break ticks with best tool was slower than with the correct tool");
     }
 
     @Test
@@ -134,7 +138,7 @@ public class PlayerBlockBreakingManagerTests {
         int originalTicksLeft = blockBreakingManager.getBreakTicks();
 
         blockBreakingManager.onChangedHeldItemWhileBreaking();
-        assertTrue(blockBreakingManager.getBreakTicks() != originalTicksLeft, "there was no change in break ticks when switching items");
+        assertTrue(blockBreakingManager.getBreakTicks() != originalTicksLeft,
+                   "there was no change in break ticks when switching items");
     }
-
 }

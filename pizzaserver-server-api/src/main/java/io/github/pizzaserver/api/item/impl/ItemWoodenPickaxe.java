@@ -50,5 +50,4 @@ public class ItemWoodenPickaxe extends Item implements DurableItemComponent, Too
     public int getMaxDurability() {
         return 60;
     }
-
 }

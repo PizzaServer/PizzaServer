@@ -17,9 +17,7 @@ public class BlockChest extends BaseBlock implements BlockEntityContainer<BlockE
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
             for (int i = 0; i < 6; i++) {
-                this.add(NbtMap.builder()
-                        .putInt("facing_direction", i)
-                        .build());
+                this.add(NbtMap.builder().putInt("facing_direction", i).build());
             }
         }
     };
@@ -75,5 +73,4 @@ public class BlockChest extends BaseBlock implements BlockEntityContainer<BlockE
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

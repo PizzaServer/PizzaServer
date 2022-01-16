@@ -21,5 +21,4 @@ public interface PlayerDataProvider {
      * @return player data if any is present
      */
     Optional<PlayerData> load(UUID uuid) throws IOException;
-
 }

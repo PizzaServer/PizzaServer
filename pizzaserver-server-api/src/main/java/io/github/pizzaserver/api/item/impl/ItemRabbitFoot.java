@@ -17,5 +17,4 @@ public class ItemRabbitFoot extends Item {
     public String getName() {
         return "Rabbit Foot";
     }
-
 }

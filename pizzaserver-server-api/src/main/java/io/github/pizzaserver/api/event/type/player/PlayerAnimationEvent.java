@@ -19,5 +19,4 @@ public class PlayerAnimationEvent extends BasePlayerEvent.Cancellable {
     public AnimatePacket.Action getAction() {
         return this.action;
     }
-
 }

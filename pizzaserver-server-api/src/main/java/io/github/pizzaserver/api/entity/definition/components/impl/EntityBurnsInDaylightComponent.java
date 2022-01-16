@@ -8,5 +8,4 @@ public class EntityBurnsInDaylightComponent extends EntityComponent {
     public String getName() {
         return "minecraft:burns_in_daylight";
     }
-
 }

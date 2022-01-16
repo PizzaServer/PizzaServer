@@ -36,5 +36,4 @@ public class BlockChiseledNetherBrick extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

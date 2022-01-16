@@ -17,5 +17,4 @@ public class ItemGoldNugget extends Item {
     public String getName() {
         return "Gold Nugget";
     }
-
 }

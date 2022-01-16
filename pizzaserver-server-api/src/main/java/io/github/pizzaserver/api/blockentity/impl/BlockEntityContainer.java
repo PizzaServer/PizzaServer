@@ -34,5 +34,4 @@ public abstract class BlockEntityContainer extends BaseBlockEntity {
         }
         return true;
     }
-
 }

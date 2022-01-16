@@ -49,5 +49,4 @@ public class EntityComponentGroup {
         }
         return (T) this.components.get(componentClazz);
     }
-
 }

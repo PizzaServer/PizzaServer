@@ -36,5 +36,4 @@ public class BlockCrackedDeepslateTile extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

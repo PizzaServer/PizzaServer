@@ -22,5 +22,4 @@ public interface BlockEntityRegistry {
     static BlockEntityRegistry getInstance() {
         return Server.getInstance().getBlockEntityRegistry();
     }
-
 }

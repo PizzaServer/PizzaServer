@@ -20,7 +20,9 @@ public class ImplLevel implements Level, Closeable {
 
     private final Map<Dimension, ImplWorld> dimensions = new HashMap<>();
 
-    public ImplLevel(ImplLevelManager levelManager, BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider) {
+    public ImplLevel(
+            ImplLevelManager levelManager,
+            BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider) {
         this.levelManager = levelManager;
         this.provider = provider;
 
@@ -74,5 +76,4 @@ public class ImplLevel implements Level, Closeable {
         }
         this.getProvider().close();
     }
-
 }

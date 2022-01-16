@@ -36,5 +36,4 @@ public class BlockCrackedDeepslateBrick extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

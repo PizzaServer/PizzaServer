@@ -8,5 +8,4 @@ public interface ToolItemComponent {
     ToolType getToolType();
 
     ToolTier getToolTier();
-
 }

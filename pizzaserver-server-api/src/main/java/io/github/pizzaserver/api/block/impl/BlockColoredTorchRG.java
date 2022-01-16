@@ -24,5 +24,4 @@ public class BlockColoredTorchRG extends BaseBlock {
     public float getHardness() {
         return 0;
     }
-
 }

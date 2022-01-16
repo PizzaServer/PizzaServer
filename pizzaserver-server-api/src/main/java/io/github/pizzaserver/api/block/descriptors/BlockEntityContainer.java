@@ -13,5 +13,4 @@ public interface BlockEntityContainer<T extends BlockEntity> extends Block {
         }
         return (T) blockEntity;
     }
-
 }

@@ -37,5 +37,4 @@ public abstract class BaseEntityEvent extends Event {
             this.isCancelled = isCancelled;
         }
     }
-
 }

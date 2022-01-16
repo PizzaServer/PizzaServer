@@ -21,8 +21,7 @@ public interface EntityItem extends Entity {
      */
     static Vector3f getRandomMotion() {
         return Vector3f.from(ThreadLocalRandom.current().nextFloat() * 0.2f,
-                ThreadLocalRandom.current().nextFloat() * 0.2f,
-                ThreadLocalRandom.current().nextFloat() * 0.2f);
+                             ThreadLocalRandom.current().nextFloat() * 0.2f,
+                             ThreadLocalRandom.current().nextFloat() * 0.2f);
     }
-
 }

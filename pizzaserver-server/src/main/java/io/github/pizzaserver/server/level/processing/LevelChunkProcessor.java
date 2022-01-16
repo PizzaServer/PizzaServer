@@ -41,13 +41,15 @@ public class LevelChunkProcessor implements Runnable {
                     request.getWorld().sendChunk(playerChunkRequest.getPlayer(), request.getX(), request.getZ(), false);
                 } else {
                     // unload request
-                    ((ImplWorld) request.getWorld()).getChunkManager().unloadChunk(request.getX(), request.getZ(), false, ((UnloadChunkRequest) request).isForced());
+                    ((ImplWorld) request.getWorld()).getChunkManager()
+                                                    .unloadChunk(request.getX(),
+                                                                 request.getZ(),
+                                                                 false,
+                                                                 ((UnloadChunkRequest) request).isForced());
                 }
             } catch (InterruptedException ignored) {
                 return;
             }
-
-
         }
     }
 
@@ -55,12 +57,14 @@ public class LevelChunkProcessor implements Runnable {
      * Resets the amount of chunk requests this processor can take in this tick.
      */
     public void reset() {
-        this.allowedRequests.set(this.levelChunkProcessorManager.getLevelManager().getServer().getConfig().getMaxChunkProcessingCountPerTick());
+        this.allowedRequests.set(this.levelChunkProcessorManager.getLevelManager()
+                                                                .getServer()
+                                                                .getConfig()
+                                                                .getMaxChunkProcessingCountPerTick());
 
         // Notify thread if it is asleep so that it can take in more requests
         synchronized (this) {
             this.notify();
         }
     }
-
 }

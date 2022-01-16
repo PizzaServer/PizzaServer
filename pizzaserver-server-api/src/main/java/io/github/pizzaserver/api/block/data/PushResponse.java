@@ -18,5 +18,4 @@ public enum PushResponse {
      * Break this block when pushed by a piston.
      */
     BREAK
-
 }

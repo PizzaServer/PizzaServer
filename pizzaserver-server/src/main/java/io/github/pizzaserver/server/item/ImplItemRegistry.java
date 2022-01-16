@@ -68,5 +68,4 @@ public class ImplItemRegistry implements ItemRegistry {
 
         return this.behaviors.get(item.getClass());
     }
-
 }

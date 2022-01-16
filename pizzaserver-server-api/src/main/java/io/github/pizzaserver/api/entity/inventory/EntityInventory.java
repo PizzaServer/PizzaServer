@@ -75,5 +75,4 @@ public interface EntityInventory extends Inventory {
      * @param offHand item in the offhand of the entity
      */
     void setOffhandItem(Item offHand);
-
 }

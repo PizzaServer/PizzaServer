@@ -10,5 +10,4 @@ public class OutdatedProtocolException extends ProtocolException {
     public OutdatedProtocolException(MinecraftVersion version, String message) {
         super(version, message);
     }
-
 }

@@ -21,5 +21,4 @@ public abstract class CustomElement {
     public String getText() {
         return this.text;
     }
-
 }

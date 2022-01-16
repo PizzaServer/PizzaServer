@@ -35,7 +35,9 @@ public class BlockEntityTypeBed implements BlockEntityType {
     @Override
     public BlockEntityBed deserializeDisk(World world, NbtMap diskNBT) {
         BlockEntityBed blockEntity = new BlockEntityBed(new BlockLocation(world,
-                        Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+                                                                          Vector3i.from(diskNBT.getInt("x"),
+                                                                                        diskNBT.getInt("y"),
+                                                                                        diskNBT.getInt("z"))));
 
         blockEntity.setColor(DyeColor.values()[diskNBT.getByte("color")]);
         return blockEntity;
@@ -44,17 +46,16 @@ public class BlockEntityTypeBed implements BlockEntityType {
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
-                .putByte("color", (byte) ((BlockEntityBed) blockEntity).getColor().ordinal())
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", blockEntity.getLocation().getX())
+                     .putInt("y", blockEntity.getLocation().getY())
+                     .putInt("z", blockEntity.getLocation().getZ())
+                     .putByte("color", (byte) ((BlockEntityBed) blockEntity).getColor().ordinal())
+                     .build();
     }
 
     @Override
     public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return diskNBT;
     }
-
 }

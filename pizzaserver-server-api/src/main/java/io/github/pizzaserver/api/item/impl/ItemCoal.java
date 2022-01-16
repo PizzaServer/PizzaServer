@@ -23,5 +23,4 @@ public class ItemCoal extends Item implements FuelItemComponent {
     public int getFuelTicks() {
         return 1600;
     }
-
 }

@@ -36,5 +36,4 @@ public class BlockChiseledDeepslate extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

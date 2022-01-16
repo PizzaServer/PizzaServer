@@ -24,17 +24,18 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
 
     static {
         try {
-            String defaultGeometryString = IOUtils.toString(ImplServer.class.getResourceAsStream("/skin/steve/geometry.json"), Charsets.UTF_8);
-            String defaultResourcePatchString = IOUtils.toString(ImplServer.class.getResourceAsStream("/skin/steve/resource_patch.json"), Charsets.UTF_8);
+            String defaultGeometryString = IOUtils.toString(ImplServer.class.getResourceAsStream(
+                    "/skin/steve/geometry.json"), Charsets.UTF_8);
+            String defaultResourcePatchString = IOUtils.toString(ImplServer.class.getResourceAsStream(
+                    "/skin/steve/resource_patch.json"), Charsets.UTF_8);
             byte[] skinData = IOUtils.toByteArray(ImplServer.class.getResourceAsStream("/skin/steve/skin_data"));
 
-            DEFAULT_STEVE = new Skin.Builder()
-                    .setSkinResourcePatch(defaultResourcePatchString)
-                    .setGeometryData(defaultGeometryString)
-                    .setSkinData(skinData)
-                    .setSkinHeight(64)
-                    .setSkinWidth(64)
-                    .build();
+            DEFAULT_STEVE = new Skin.Builder().setSkinResourcePatch(defaultResourcePatchString)
+                                              .setGeometryData(defaultGeometryString)
+                                              .setSkinData(skinData)
+                                              .setSkinHeight(64)
+                                              .setSkinWidth(64)
+                                              .build();
         } catch (IOException exception) {
             throw new AssertionError("Failed to parse default skin");
         }
@@ -99,18 +100,17 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
 
     @Override
     public PlayerList.Entry getPlayerListEntry() {
-        return new PlayerList.Entry.Builder()
-                .setUUID(this.getUUID())
-                .setXUID(this.getXUID())
-                .setUsername(this.getUsername())
-                .setEntityRuntimeId(this.getId())
-                .setDevice(this.getDevice())
-                .setSkin(this.getSkin())
-                .build();
+        return new PlayerList.Entry.Builder().setUUID(this.getUUID())
+                                             .setXUID(this.getXUID())
+                                             .setUsername(this.getUsername())
+                                             .setEntityRuntimeId(this.getId())
+                                             .setDevice(this.getDevice())
+                                             .setSkin(this.getSkin())
+                                             .build();
     }
 
     @Override
-    protected void endDeathAnimation() {}
+    protected void endDeathAnimation() { }
 
     @Override
     protected void sendMovementPacket() {
@@ -144,7 +144,8 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
             addPlayerPacket.getMetadata().putAll(this.getMetaData().serialize());
             addPlayerPacket.setDeviceId("");
             addPlayerPacket.setPlatformChatId("");
-            addPlayerPacket.setHand(ItemUtils.serializeForNetwork(this.getInventory().getHeldItem(), player.getVersion()));
+            addPlayerPacket.setHand(ItemUtils.serializeForNetwork(this.getInventory().getHeldItem(),
+                                                                  player.getVersion()));
             player.sendPacket(addPlayerPacket);
             this.sendEquipmentPacket(player);
 
@@ -157,5 +158,4 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
             return false;
         }
     }
-
 }

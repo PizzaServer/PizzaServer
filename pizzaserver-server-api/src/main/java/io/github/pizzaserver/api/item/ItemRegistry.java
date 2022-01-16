@@ -43,5 +43,4 @@ public interface ItemRegistry {
     static ItemRegistry getInstance() {
         return Server.getInstance().getItemRegistry();
     }
-
 }

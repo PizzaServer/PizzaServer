@@ -31,5 +31,4 @@ public interface BlockLayer extends BedrockNetworkDiskSerializable {
      * @param entry new entry to set the block to
      */
     void setBlockEntryAt(int x, int y, int z, BlockPalette.Entry entry);
-
 }

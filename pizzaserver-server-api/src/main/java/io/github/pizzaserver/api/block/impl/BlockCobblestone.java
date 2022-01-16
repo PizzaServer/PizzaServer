@@ -36,5 +36,4 @@ public class BlockCobblestone extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

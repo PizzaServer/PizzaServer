@@ -12,13 +12,9 @@ public class BlockBedrock extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
-            this.add(NbtMap.builder()
-                    .putByte("infiniburn_bit", (byte) 0)
-                    .build());
+            this.add(NbtMap.builder().putByte("infiniburn_bit", (byte) 0).build());
 
-            this.add(NbtMap.builder()
-                    .putByte("infiniburn_bit", (byte) 1)
-                    .build());
+            this.add(NbtMap.builder().putByte("infiniburn_bit", (byte) 1).build());
         }
     };
 
@@ -52,5 +48,4 @@ public class BlockBedrock extends BaseBlock {
     public PushResponse getPushResponse() {
         return PushResponse.DENY;
     }
-
 }

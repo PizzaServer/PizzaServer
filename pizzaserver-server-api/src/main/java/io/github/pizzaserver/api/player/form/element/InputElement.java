@@ -81,7 +81,5 @@ public class InputElement extends CustomElement {
         public InputElement build() {
             return new InputElement(this.text, this.value, this.placeholder);
         }
-
     }
-
 }

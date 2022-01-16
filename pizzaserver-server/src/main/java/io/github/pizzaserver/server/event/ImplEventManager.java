@@ -18,15 +18,9 @@ import java.util.HashMap;
 public class ImplEventManager implements EventManager {
 
     // Catalogues all listener events.
-    protected static HashMap
-            <
-                Class<?>, // Listener's Class
-                HashMap // Map tying event types to their event methods within the class.
-                    <
-                        Class<? extends Event>,
-                        ArrayList<EventHandlerReference>
-                    >
-            > listenerReference = new HashMap<>();
+    protected static HashMap<Class<?>, // Listener's Class
+            HashMap // Map tying event types to their event methods within the class.
+                    <Class<? extends Event>, ArrayList<EventHandlerReference>>> listenerReference = new HashMap<>();
 
     protected final Server server;
 
@@ -119,7 +113,6 @@ public class ImplEventManager implements EventManager {
                 }
                 this.invokeEvent(sourceListener, event, methodPair);
             }
-
         } else {
 
             for (int i = 0; i < callList.size(); i++) {
@@ -129,7 +122,6 @@ public class ImplEventManager implements EventManager {
                 this.invokeEvent(sourceListener, event, methodPair);
             }
         }
-
     }
 
 
@@ -176,7 +168,8 @@ public class ImplEventManager implements EventManager {
                         for (Class<? extends Event> cls : eventClasses) {
 
                             if (!listenerMethods.containsKey(cls)) {
-                                listenerMethods.put(cls, new ArrayList<>()); // Create new handler list if it doesn't exist.
+                                listenerMethods.put(cls,
+                                                    new ArrayList<>()); // Create new handler list if it doesn't exist.
                             }
                             listenerMethods.get(cls).add(pair);
                         }
@@ -211,7 +204,6 @@ public class ImplEventManager implements EventManager {
     private void invokeEvent(Object owningListener, Event event, EventHandlerReference methodPair) {
         try {
             methodPair.getMethod().invoke(owningListener, event);
-
         } catch (Exception err) {
             this.server.getLogger().error("An error was thrown during the invocation of an event:");
             err.printStackTrace();
@@ -252,5 +244,4 @@ public class ImplEventManager implements EventManager {
     public synchronized ImplEventManager[] getChildren() {
         return this.children.toArray(new ImplEventManager[0]);
     }
-
 }

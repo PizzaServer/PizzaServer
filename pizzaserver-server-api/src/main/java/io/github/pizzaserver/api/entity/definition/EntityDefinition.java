@@ -24,5 +24,4 @@ public interface EntityDefinition {
     Entity create();
 
     void onCreation(Entity entity);
-
 }

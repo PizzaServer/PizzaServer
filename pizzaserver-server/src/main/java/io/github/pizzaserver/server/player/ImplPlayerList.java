@@ -28,8 +28,8 @@ public class ImplPlayerList implements PlayerList {
     @Override
     public void addEntries(Collection<Entry> entries) {
         List<Entry> validEntries = entries.stream()
-                .filter(entry -> !this.entries.contains(entry))
-                .collect(Collectors.toList());
+                                          .filter(entry -> !this.entries.contains(entry))
+                                          .collect(Collectors.toList());
         if (validEntries.size() > 0) {
             this.entries.addAll(validEntries);
             this.sendPacket(PlayerListPacket.Action.ADD, validEntries);
@@ -46,9 +46,7 @@ public class ImplPlayerList implements PlayerList {
 
     @Override
     public void removeEntries(Collection<Entry> entries) {
-        Set<Entry> validEntries = entries.stream()
-                .filter(this.entries::contains)
-                .collect(Collectors.toSet());
+        Set<Entry> validEntries = entries.stream().filter(this.entries::contains).collect(Collectors.toSet());
         if (validEntries.size() > 0) {
             this.entries.removeAll(validEntries);
             this.sendPacket(PlayerListPacket.Action.REMOVE, validEntries);
@@ -68,7 +66,8 @@ public class ImplPlayerList implements PlayerList {
     private void sendPacket(PlayerListPacket.Action action, Collection<Entry> entries) {
         PlayerListPacket addPlayerListPacket = new PlayerListPacket();
         addPlayerListPacket.setAction(action);
-        addPlayerListPacket.getEntries().addAll(entries.stream().map(this::convertEntryToNetwork).collect(Collectors.toList()));
+        addPlayerListPacket.getEntries()
+                           .addAll(entries.stream().map(this::convertEntryToNetwork).collect(Collectors.toList()));
         this.player.sendPacket(addPlayerListPacket);
     }
 
@@ -83,5 +82,4 @@ public class ImplPlayerList implements PlayerList {
         networkEntry.setTrustedSkin(entry.getSkin().isTrusted());
         return networkEntry;
     }
-
 }

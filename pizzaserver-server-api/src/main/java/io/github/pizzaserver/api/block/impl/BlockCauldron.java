@@ -15,14 +15,14 @@ public class BlockCauldron extends BaseBlock implements BlockEntityContainer<Blo
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
-            String[] contentTypes = new String[]{ "water", "lava", "snow_powder" };
+            String[] contentTypes = new String[] {"water", "lava", "snow_powder"};
 
             for (String contentType : contentTypes) {
                 for (int fillLevel = 0; fillLevel < 7; fillLevel++) {
                     this.add(NbtMap.builder()
-                            .putString("cauldron_liquid", contentType)
-                            .putInt("fill_level", fillLevel)
-                            .build());
+                                   .putString("cauldron_liquid", contentType)
+                                   .putInt("fill_level", fillLevel)
+                                   .build());
                 }
             }
         }
@@ -62,5 +62,4 @@ public class BlockCauldron extends BaseBlock implements BlockEntityContainer<Blo
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

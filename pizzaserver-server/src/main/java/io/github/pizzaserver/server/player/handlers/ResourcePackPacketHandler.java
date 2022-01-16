@@ -27,14 +27,15 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
         ResourcePacksInfoPacket resourcePacksInfoPacket = new ResourcePacksInfoPacket();
         resourcePacksInfoPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
         for (ResourcePack pack : this.server.getResourcePackManager().getPacks().values()) {
-            resourcePacksInfoPacket.getResourcePackInfos().add(new ResourcePacksInfoPacket.Entry(pack.getUuid().toString(),
-                    pack.getVersion(),
-                    pack.getDataLength(),
-                    "",
-                    "",
-                    "",
-                    false,
-                    pack.isRayTracingEnabled()));
+            resourcePacksInfoPacket.getResourcePackInfos()
+                                   .add(new ResourcePacksInfoPacket.Entry(pack.getUuid().toString(),
+                                                                          pack.getVersion(),
+                                                                          pack.getDataLength(),
+                                                                          "",
+                                                                          "",
+                                                                          "",
+                                                                          false,
+                                                                          pack.isRayTracingEnabled()));
         }
         session.getConnection().sendPacket(resourcePacksInfoPacket);
     }
@@ -73,7 +74,10 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
                 ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                 stackPacket.setForcedToAccept(this.server.getResourcePackManager().arePacksRequired());
                 for (ResourcePack pack : this.server.getResourcePackManager().getPacks().values()) {
-                    stackPacket.getResourcePacks().add(new ResourcePackStackPacket.Entry(pack.getUuid().toString(), pack.getVersion(), ""));
+                    stackPacket.getResourcePacks()
+                               .add(new ResourcePackStackPacket.Entry(pack.getUuid().toString(),
+                                                                      pack.getVersion(),
+                                                                      ""));
                 }
                 stackPacket.setGameVersion(this.session.getVersion().getVersion());
                 stackPacket.getExperiments().add(new ExperimentData("data_driven_items", true));
@@ -95,7 +99,8 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
     public boolean handle(ResourcePackChunkRequestPacket packet) {
         ResourcePack pack = this.server.getResourcePackManager().getPacks().getOrDefault(packet.getPackId(), null);
         if (pack == null) {
-            this.server.getLogger().debug("Invalid resource pack UUID specified while handling ResourcePackChunkRequestPacket.");
+            this.server.getLogger()
+                       .debug("Invalid resource pack UUID specified while handling ResourcePackChunkRequestPacket.");
             this.session.getConnection().disconnect();
             return true;
         }
@@ -121,5 +126,4 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
         this.server.getLogger().debug("Packet violation for " + packet.getPacketType() + ": " + packet.getContext());
         return true;
     }
-
 }

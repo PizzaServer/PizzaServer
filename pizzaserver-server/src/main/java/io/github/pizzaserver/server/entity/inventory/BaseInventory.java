@@ -35,7 +35,8 @@ public abstract class BaseInventory implements Inventory {
 
     public BaseInventory(ContainerType containerType, int size, int id) {
         if (size > InventoryUtils.getSlotCount(containerType) || size < 0) {
-            throw new IllegalArgumentException("Slot count of " + containerType + " must be within 0-" + InventoryUtils.getSlotCount(containerType));
+            throw new IllegalArgumentException("Slot count of " + containerType + " must be within 0-"
+                                                       + InventoryUtils.getSlotCount(containerType));
         }
 
         this.size = size;
@@ -331,8 +332,9 @@ public abstract class BaseInventory implements Inventory {
     protected static void sendInventorySlots(Player player, Item[] slots, int inventoryId) {
         InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
         inventoryContentPacket.setContainerId(inventoryId);
-        inventoryContentPacket.setContents(Arrays.stream(slots).map(item -> ItemUtils.serializeForNetwork(item, player.getVersion())).collect(Collectors.toList()));
+        inventoryContentPacket.setContents(Arrays.stream(slots)
+                                                 .map(item -> ItemUtils.serializeForNetwork(item, player.getVersion()))
+                                                 .collect(Collectors.toList()));
         player.sendPacket(inventoryContentPacket);
     }
-
 }

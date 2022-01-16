@@ -62,5 +62,4 @@ public class PlayerSession {
             ReferenceCountUtil.release(packet);
         }
     }
-
 }

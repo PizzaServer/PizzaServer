@@ -9,7 +9,7 @@ import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 
 public class ItemUtils {
 
-    private ItemUtils() {}
+    private ItemUtils() { }
 
 
     /**
@@ -19,24 +19,25 @@ public class ItemUtils {
      */
     public static ItemData serializeForNetwork(Item item, MinecraftVersion version) {
         return ItemData.builder()
-                .id(version.getItemRuntimeId(item.getItemId()))
-                .netId(item.getNetworkId())
-                .count(item.getCount())
-                .damage(item.getMeta())
-                .canBreak(item.getBlocksCanBreak().toArray(String[]::new))
-                .canPlace(item instanceof ItemBlock blockItem ? blockItem.getBlocksCanPlaceOn().toArray(String[]::new) : new String[0])
-                .tag(item.getNBT())
-                .usingNetId(true)
-                .build();
+                       .id(version.getItemRuntimeId(item.getItemId()))
+                       .netId(item.getNetworkId())
+                       .count(item.getCount())
+                       .damage(item.getMeta())
+                       .canBreak(item.getBlocksCanBreak().toArray(String[]::new))
+                       .canPlace(item instanceof ItemBlock blockItem ? blockItem.getBlocksCanPlaceOn()
+                                                                                .toArray(String[]::new) : new String[0])
+                       .tag(item.getNBT())
+                       .usingNetId(true)
+                       .build();
     }
 
     public static NbtMap serializeWithSlotForDisk(Item item) {
         return NbtMap.builder()
-                .putString("Name", item.getItemId())
-                .putShort("Damage", (short) item.getMeta())
-                .putByte("Count", (byte) item.getCount())
-                .putCompound("tag", item.getNBT())
-                .build();
+                     .putString("Name", item.getItemId())
+                     .putShort("Damage", (short) item.getMeta())
+                     .putByte("Count", (byte) item.getCount())
+                     .putCompound("tag", item.getNBT())
+                     .build();
     }
 
     public static Item deserializeDiskNBTItem(NbtMap itemNBT) {
@@ -51,10 +52,12 @@ public class ItemUtils {
     }
 
     public static Item deserializeNetworkItem(ItemData itemData, MinecraftVersion version) {
-        Item itemStack = ItemRegistry.getInstance().getItem(version.getItemName(itemData.getId()), itemData.getCount(), itemData.getDamage())
-                .newNetworkCopy(itemData.getNetId());
+        Item itemStack = ItemRegistry.getInstance()
+                                     .getItem(version.getItemName(itemData.getId()),
+                                              itemData.getCount(),
+                                              itemData.getDamage())
+                                     .newNetworkCopy(itemData.getNetId());
         itemStack.setNBT(itemData.getTag());
         return itemStack;
     }
-
 }

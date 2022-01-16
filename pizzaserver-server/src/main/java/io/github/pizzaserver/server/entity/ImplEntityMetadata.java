@@ -173,5 +173,4 @@ public class ImplEntityMetadata implements EntityMetadata {
     public EntityDataMap serialize() {
         return this.dataMap;
     }
-
 }

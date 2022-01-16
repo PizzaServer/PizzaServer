@@ -25,5 +25,4 @@ public class PlayerInteractEvent extends BasePlayerEvent.Cancellable {
     public BlockFace getBlockFace() {
         return this.blockFace;
     }
-
 }

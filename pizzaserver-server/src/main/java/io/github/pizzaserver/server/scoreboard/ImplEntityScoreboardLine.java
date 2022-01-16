@@ -38,7 +38,10 @@ public class ImplEntityScoreboardLine extends ImplScoreboardLine implements Enti
             scorerType = ScoreInfo.ScorerType.PLAYER;
         }
 
-        return new ScoreInfo(this.lineId, this.scoreboard.getObjectiveId(), this.getScore(), scorerType, this.getEntity().getId());
+        return new ScoreInfo(this.lineId,
+                             this.scoreboard.getObjectiveId(),
+                             this.getScore(),
+                             scorerType,
+                             this.getEntity().getId());
     }
-
 }

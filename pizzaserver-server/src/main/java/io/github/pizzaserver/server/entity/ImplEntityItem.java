@@ -57,14 +57,15 @@ public class ImplEntityItem extends ImplEntity implements EntityItem {
             for (Player player : this.getChunk().getViewers()) {
                 if (player.getLocation().toVector3f().distance(this.getLocation().toVector3f()) <= 1) {
                     if (this.getPickupDelay() <= 0) {
-                        int pickedUpCount = this.getItem().getCount() - player.getInventory().getExcessIfAdded(this.getItem());
+                        int pickedUpCount =
+                                this.getItem().getCount() - player.getInventory().getExcessIfAdded(this.getItem());
                         if (pickedUpCount <= 0) {
                             continue;
                         }
 
                         EntityPickupItemEvent pickupItemEvent = new EntityPickupItemEvent(player, this, pickedUpCount);
                         this.getServer().getEventManager().call(pickupItemEvent);
-                        if (pickupItemEvent.isCancelled())  {
+                        if (pickupItemEvent.isCancelled()) {
                             continue;
                         }
 
@@ -121,5 +122,4 @@ public class ImplEntityItem extends ImplEntity implements EntityItem {
             return false;
         }
     }
-
 }

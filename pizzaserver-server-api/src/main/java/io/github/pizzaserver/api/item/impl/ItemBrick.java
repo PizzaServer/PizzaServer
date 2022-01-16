@@ -17,5 +17,4 @@ public class ItemBrick extends Item {
     public String getName() {
         return "Brick";
     }
-
 }

@@ -26,5 +26,4 @@ public abstract class ItemBaseBoat extends Item {
     public WoodType getWoodType() {
         return this.woodType;
     }
-
 }

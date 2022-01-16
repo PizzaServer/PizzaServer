@@ -17,5 +17,4 @@ public class ItemHeartOfTheSea extends Item {
     public String getName() {
         return "Heart of the Sea";
     }
-
 }

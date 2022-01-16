@@ -17,5 +17,4 @@ public class ItemSpruceBoat extends ItemBaseBoat {
     public String getName() {
         return "Spruce Boat";
     }
-
 }

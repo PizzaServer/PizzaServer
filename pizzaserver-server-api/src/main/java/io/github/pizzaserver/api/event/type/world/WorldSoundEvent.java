@@ -15,7 +15,13 @@ public class WorldSoundEvent extends BaseWorldEvent.Cancellable {
     private String entityIdentifier;
     private Block block;
 
-    public WorldSoundEvent(Location location, SoundEvent sound, boolean relativeVolumeDisabled, boolean isBaby, String entityIdentifier, Block block) {
+    public WorldSoundEvent(
+            Location location,
+            SoundEvent sound,
+            boolean relativeVolumeDisabled,
+            boolean isBaby,
+            String entityIdentifier,
+            Block block) {
         super(location.getWorld());
         this.sound = sound;
         this.location = location;

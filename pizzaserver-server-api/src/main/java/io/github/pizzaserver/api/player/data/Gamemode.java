@@ -17,5 +17,4 @@ public enum Gamemode {
     public String getName() {
         return this.name;
     }
-
 }

@@ -15,5 +15,4 @@ public class CreativeModePlacementOnlyBlockBehavior extends DefaultBlockBehavior
     public boolean prepareForPlacement(Entity entity, Block block, BlockFace face) {
         return (entity instanceof Player) && ((Player) entity).getGamemode() == Gamemode.CREATIVE;
     }
-
 }

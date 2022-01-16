@@ -29,5 +29,4 @@ public interface BedrockSubChunk extends BedrockNetworkDiskSerializable {
      * @param layer The {@link BlockLayer} to add
      */
     void addLayer(BlockLayer layer);
-
 }

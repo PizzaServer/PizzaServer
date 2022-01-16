@@ -5,5 +5,4 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 public interface BlockEntityInventory extends Inventory {
 
     BlockEntity getBlockEntity();
-
 }

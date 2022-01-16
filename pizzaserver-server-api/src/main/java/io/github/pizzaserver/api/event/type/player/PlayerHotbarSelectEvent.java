@@ -21,5 +21,4 @@ public class PlayerHotbarSelectEvent extends BasePlayerEvent.Cancellable {
     public void setSlot(int slot) {
         this.slot = slot;
     }
-
 }

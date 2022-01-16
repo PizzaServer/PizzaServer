@@ -12,7 +12,7 @@ public class MCWorldLevelBlockPaletteTest {
     public void resizeShouldProperlyMovePaletteIndexes() {
         MCWorldBlockPalette palette = new MCWorldBlockPalette();
 
-        MCWorldBlockPalette.MCWorldBlockPaletteEntry[] entries = new MCWorldBlockPalette.MCWorldBlockPaletteEntry[]{
+        MCWorldBlockPalette.MCWorldBlockPaletteEntry[] entries = new MCWorldBlockPalette.MCWorldBlockPaletteEntry[] {
                 new MCWorldBlockPalette.MCWorldBlockPaletteEntry("a", NbtMap.EMPTY, 0),
                 new MCWorldBlockPalette.MCWorldBlockPaletteEntry("b", NbtMap.EMPTY, 0),
                 new MCWorldBlockPalette.MCWorldBlockPaletteEntry("c", NbtMap.EMPTY, 0),
@@ -30,5 +30,4 @@ public class MCWorldLevelBlockPaletteTest {
         palette.resize();
         assertEquals(1, palette.getPaletteIndex(entries[4]));
     }
-
 }

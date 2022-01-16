@@ -105,5 +105,4 @@ public class ConfigTests {
         config.load(ConfigTests.class.getResourceAsStream("/config.yml"));
         return config;
     }
-
 }

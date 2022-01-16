@@ -28,5 +28,4 @@ public class EntityBossComponentHandler extends EntityComponentHandler<EntityBos
             entity.setBossBar(null);
         }
     }
-
 }

@@ -23,5 +23,4 @@ public abstract class EntityComponentHandler<T extends EntityComponent> {
     public void onUnregistered(Entity entity, T component) {
 
     }
-
 }

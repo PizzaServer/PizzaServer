@@ -19,5 +19,4 @@ public enum ToolTier {
     public int getStrength() {
         return this.strength;
     }
-
 }

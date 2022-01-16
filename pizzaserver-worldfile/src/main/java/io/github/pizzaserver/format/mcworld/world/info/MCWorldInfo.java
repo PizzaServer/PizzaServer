@@ -86,7 +86,7 @@ public class MCWorldInfo implements LevelData, Cloneable {
     private String prid;    // TODO: What is this?
 
 
-    public MCWorldInfo() {}
+    public MCWorldInfo() { }
 
     public MCWorldInfo(File levelDatFile) throws IOException {
 
@@ -133,53 +133,55 @@ public class MCWorldInfo implements LevelData, Cloneable {
                 this.setFlatWorldLayers(compound.getString("FlatWorldLayers"));
                 this.setLightningLevel(compound.getFloat("lightningLevel"));
                 this.setLightningTime(compound.getInt("lightningTime"));
-                this.setLimitedWorldCoordinates(Vector3i.from(
-                        compound.getInt("LimitedWorldOriginX"),
-                        compound.getInt("LimitedWorldOriginY"),
-                        compound.getInt("LimitedWorldOriginZ")));
+                this.setLimitedWorldCoordinates(Vector3i.from(compound.getInt("LimitedWorldOriginX"),
+                                                              compound.getInt("LimitedWorldOriginY"),
+                                                              compound.getInt("LimitedWorldOriginZ")));
                 this.setLimitedWorldWidth(compound.getInt("limitedWorldWidth"));
                 this.setNetherScale(compound.getInt("NetherScale"));
                 this.setRainLevel(compound.getFloat("rainLevel"));
                 this.setRainTime(compound.getInt("rainTime"));
                 this.setSeed(compound.getLong("RandomSeed"));
-                this.setWorldSpawn(Vector3i.from(
-                        compound.getInt("SpawnX"),
-                        compound.getInt("SpawnY"),
-                        compound.getInt("SpawnZ")
-                ));
+                this.setWorldSpawn(Vector3i.from(compound.getInt("SpawnX"),
+                                                 compound.getInt("SpawnY"),
+                                                 compound.getInt("SpawnZ")));
                 this.setStartWithMapEnabled(compound.getBoolean("startWithMapEnabled"));
                 this.setTime(compound.getLong("Time"));
                 this.setWorldType(compound.getInt("Generator"));
                 this.setBaseGameVersion(compound.getString("baseGameVersion"));
                 this.setInventoryVersion(compound.getString("InventoryVersion"));
                 this.setLastPlayed(compound.getLong("LastPlayed"));
-                this.setMinimumCompatibleClientVersion(compound.getList("MinimumCompatibleClientVersion", NbtType.INT).stream().mapToInt(Integer::intValue).toArray());
-                this.setLastOpenedWithVersion(compound.getList("lastOpenedWithVersion", NbtType.INT).stream().mapToInt(Integer::intValue).toArray());
+                this.setMinimumCompatibleClientVersion(compound.getList("MinimumCompatibleClientVersion", NbtType.INT)
+                                                               .stream()
+                                                               .mapToInt(Integer::intValue)
+                                                               .toArray());
+                this.setLastOpenedWithVersion(compound.getList("lastOpenedWithVersion", NbtType.INT)
+                                                      .stream()
+                                                      .mapToInt(Integer::intValue)
+                                                      .toArray());
                 this.setPlatform(compound.getInt("Platform"));
                 this.setProtocol(compound.getInt("NetworkVersion"));
                 this.setPrid(compound.getString("prid"));
 
                 NbtMap abilities = compound.getCompound("abilities");
-                this.setPlayerAbilities(
-                        new PlayerAbilities()
-                                .setCanAttackMobs(abilities.getBoolean("attackmobs"))
-                                .setCanAttackPlayers(abilities.getBoolean("attackplayers"))
-                                .setCanBuild(abilities.getBoolean("build"))
-                                .setCanFly(abilities.getBoolean("mayfly"))
-                                .setCanInstaBuild(abilities.getBoolean("instabuild"))
-                                .setCanMine(abilities.getBoolean("mine"))
-                                .setCanOpenContainers(abilities.getBoolean("opencontainers"))
-                                .setCanTeleport(abilities.getBoolean("teleport"))
-                                .setCanUseDoorsAndSwitches(abilities.getBoolean("doorsandswitches"))
-                                .setFlySpeed(abilities.getFloat("flySpeed"))
-                                .setIsFlying(abilities.getBoolean("flying"))
-                                .setIsInvulnerable(abilities.getBoolean("invulnerable"))
-                                .setIsOp(abilities.getBoolean("op"))
-                                .setIsLightning(abilities.getBoolean("lightning"))
-                                .setPermissionsLevel(abilities.getInt("permissionsLevel"))
-                                .setPlayerPermissionsLevel(abilities.getInt("playerPermissionsLevel"))
-                                .setWalkSpeed(abilities.getFloat("walkSpeed"))
-                );
+                this.setPlayerAbilities(new PlayerAbilities().setCanAttackMobs(abilities.getBoolean("attackmobs"))
+                                                             .setCanAttackPlayers(abilities.getBoolean("attackplayers"))
+                                                             .setCanBuild(abilities.getBoolean("build"))
+                                                             .setCanFly(abilities.getBoolean("mayfly"))
+                                                             .setCanInstaBuild(abilities.getBoolean("instabuild"))
+                                                             .setCanMine(abilities.getBoolean("mine"))
+                                                             .setCanOpenContainers(abilities.getBoolean("opencontainers"))
+                                                             .setCanTeleport(abilities.getBoolean("teleport"))
+                                                             .setCanUseDoorsAndSwitches(abilities.getBoolean(
+                                                                     "doorsandswitches"))
+                                                             .setFlySpeed(abilities.getFloat("flySpeed"))
+                                                             .setIsFlying(abilities.getBoolean("flying"))
+                                                             .setIsInvulnerable(abilities.getBoolean("invulnerable"))
+                                                             .setIsOp(abilities.getBoolean("op"))
+                                                             .setIsLightning(abilities.getBoolean("lightning"))
+                                                             .setPermissionsLevel(abilities.getInt("permissionsLevel"))
+                                                             .setPlayerPermissionsLevel(abilities.getInt(
+                                                                     "playerPermissionsLevel"))
+                                                             .setWalkSpeed(abilities.getFloat("walkSpeed")));
 
                 LevelGameRules gameRules = new LevelGameRules();
                 gameRules.setCommandBlockOutputEnabled(compound.getBoolean("commandblockoutput"));
@@ -802,5 +804,4 @@ public class MCWorldInfo implements LevelData, Cloneable {
             return null;
         }
     }
-
 }

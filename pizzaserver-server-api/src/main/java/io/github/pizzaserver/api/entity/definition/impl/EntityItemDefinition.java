@@ -13,16 +13,16 @@ public class EntityItemDefinition extends BaseEntityDefinition {
 
 
     public EntityItemDefinition() {
-        this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[]{
+        this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
                 new EntityDimensionsComponent(0.25f, 0.25f),
-                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
-                        .setPushable(false)
-                        .setPistonPushable(true)
-                        .setGravity(true)
-                        .setCollision(false)
-                        .setGravityForce(0.04f)
-                        .setDragForce(0.02f)
-                        .setApplyDragBeforeGravity(true)) }));
+                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties().setPushable(false)
+                                                                                  .setPistonPushable(true)
+                                                                                  .setGravity(true)
+                                                                                  .setCollision(false)
+                                                                                  .setGravityForce(0.04f)
+                                                                                  .setDragForce(0.02f)
+                                                                                  .setApplyDragBeforeGravity(true))
+        }));
     }
 
     @Override
@@ -50,5 +50,4 @@ public class EntityItemDefinition extends BaseEntityDefinition {
         entity.addComponentGroup("minecraft:default");
         entity.setVulnerable(false);
     }
-
 }

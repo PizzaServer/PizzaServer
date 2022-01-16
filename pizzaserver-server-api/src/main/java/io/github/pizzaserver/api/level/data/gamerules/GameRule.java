@@ -36,7 +36,5 @@ public abstract class GameRule<T> {
         public int getId() {
             return this.id;
         }
-
     }
-
 }

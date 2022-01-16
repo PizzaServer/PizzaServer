@@ -18,5 +18,4 @@ public enum DisplaySlot {
     public String getId() {
         return this.id;
     }
-
 }

@@ -39,5 +39,4 @@ public enum GameRuleID {
     public String getName() {
         return this.id;
     }
-
 }

@@ -46,5 +46,4 @@ public interface EntityHuman extends Entity {
     void setSkin(Skin skin);
 
     PlayerList.Entry getPlayerListEntry();
-
 }

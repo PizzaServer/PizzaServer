@@ -16,5 +16,4 @@ public interface BedrockLevel<T extends BedrockChunkProvider<? extends MCWorldCh
     void setLevelData(LevelData levelData) throws IOException;
 
     File getFile();
-
 }

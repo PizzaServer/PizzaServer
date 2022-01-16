@@ -48,7 +48,5 @@ public class SimpleFormResponse extends FormResponse<SimpleForm> {
         public SimpleFormResponse build() {
             return new SimpleFormResponse(this.form, this.player, this.closed, this.response);
         }
-
     }
-
 }

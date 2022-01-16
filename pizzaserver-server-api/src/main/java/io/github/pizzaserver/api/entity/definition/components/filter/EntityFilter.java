@@ -31,5 +31,4 @@ public class EntityFilter implements Predicate<EntityFilterData> {
     public Optional<String> getTriggerEventId() {
         return Optional.ofNullable(this.triggerEventId);
     }
-
 }

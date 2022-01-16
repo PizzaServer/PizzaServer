@@ -17,5 +17,4 @@ public class ItemPrismarineShard extends Item {
     public String getName() {
         return "Prismarine Shard";
     }
-
 }

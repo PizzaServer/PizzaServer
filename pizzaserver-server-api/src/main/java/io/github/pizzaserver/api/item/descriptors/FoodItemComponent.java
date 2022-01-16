@@ -56,5 +56,4 @@ public interface FoodItemComponent {
      * @return how long to show the animation for
      */
     int getUseDurationTicks();
-
 }

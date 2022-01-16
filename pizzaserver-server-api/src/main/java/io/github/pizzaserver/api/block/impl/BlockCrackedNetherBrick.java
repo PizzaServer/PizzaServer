@@ -36,5 +36,4 @@ public class BlockCrackedNetherBrick extends BaseBlock {
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }
-
 }

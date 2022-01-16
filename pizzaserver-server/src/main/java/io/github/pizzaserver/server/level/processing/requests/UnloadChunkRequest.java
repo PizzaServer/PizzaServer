@@ -14,5 +14,4 @@ public class UnloadChunkRequest extends ChunkRequest {
     public boolean isForced() {
         return this.forced;
     }
-
 }

@@ -39,7 +39,9 @@ public class BlockEntityTypeChest implements BlockEntityType {
     @Override
     public BlockEntityChest deserializeDisk(World world, NbtMap diskNBT) {
         BlockEntityChest chestEntity = new BlockEntityChest(new BlockLocation(world,
-                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+                                                                              Vector3i.from(diskNBT.getInt("x"),
+                                                                                            diskNBT.getInt("y"),
+                                                                                            diskNBT.getInt("z"))));
 
         List<NbtMap> itemNBTs = diskNBT.getList("Items", NbtType.COMPOUND);
         for (NbtMap itemNBT : itemNBTs) {
@@ -62,24 +64,23 @@ public class BlockEntityTypeChest implements BlockEntityType {
         }
 
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putList("Items", NbtType.COMPOUND, itemNBTs)
-                .putByte("isMovable", (byte) 1) // TODO: retrieve from block entity
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
-                .build();
+                     .putString("id", this.getId())
+                     .putList("Items", NbtType.COMPOUND, itemNBTs)
+                     .putByte("isMovable", (byte) 1) // TODO: retrieve from block entity
+                     .putInt("x", blockEntity.getLocation().getX())
+                     .putInt("y", blockEntity.getLocation().getY())
+                     .putInt("z", blockEntity.getLocation().getZ())
+                     .build();
     }
 
     @Override
     public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putByte("isMovable", diskNBT.getByte("isMovable"))
-                .putInt("x", diskNBT.getInt("x"))
-                .putInt("y", diskNBT.getInt("y"))
-                .putInt("z", diskNBT.getInt("z"))
-                .build();
+                     .putString("id", this.getId())
+                     .putByte("isMovable", diskNBT.getByte("isMovable"))
+                     .putInt("x", diskNBT.getInt("x"))
+                     .putInt("y", diskNBT.getInt("y"))
+                     .putInt("z", diskNBT.getInt("z"))
+                     .build();
     }
-
 }

@@ -34,5 +34,4 @@ public class ServerProtocol {
             Server.getInstance().getLogger().info("Loaded protocol version v" + version.getProtocol());
         }
     }
-
 }

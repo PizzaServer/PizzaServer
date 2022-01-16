@@ -22,11 +22,8 @@ public class FormImage {
 
 
     public enum Type {
-        @SerializedName("url")
-        URL,
+        @SerializedName("url") URL,
 
-        @SerializedName("path")
-        PATH
+        @SerializedName("path") PATH
     }
-
 }

@@ -42,29 +42,30 @@ public class BlockEntityTypeCampfire implements BlockEntityType {
     @Override
     public BlockEntity deserializeDisk(World world, NbtMap diskNBT) {
         return new BlockEntityCampfire(new BlockLocation(world,
-                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+                                                         Vector3i.from(diskNBT.getInt("x"),
+                                                                       diskNBT.getInt("y"),
+                                                                       diskNBT.getInt("z"))));
     }
 
     @Override
     public NbtMap serializeForDisk(BlockEntity blockEntity) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", blockEntity.getLocation().getX())
+                     .putInt("y", blockEntity.getLocation().getY())
+                     .putInt("z", blockEntity.getLocation().getZ())
+                     .build();
         // TODO: proper serialization
     }
 
     @Override
     public NbtMap serializeForNetwork(NbtMap diskNBT) {
         return NbtMap.builder()
-                .putString("id", this.getId())
-                .putInt("x", diskNBT.getInt("x"))
-                .putInt("y", diskNBT.getInt("y"))
-                .putInt("z", diskNBT.getInt("z"))
-                .build();
+                     .putString("id", this.getId())
+                     .putInt("x", diskNBT.getInt("x"))
+                     .putInt("y", diskNBT.getInt("y"))
+                     .putInt("z", diskNBT.getInt("z"))
+                     .build();
         // TODO: proper serialization
     }
-
 }

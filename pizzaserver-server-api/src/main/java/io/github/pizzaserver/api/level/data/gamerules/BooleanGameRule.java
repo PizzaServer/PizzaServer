@@ -10,5 +10,4 @@ public class BooleanGameRule extends GameRule<Boolean> {
     public GameRuleType getType() {
         return GameRuleType.BOOLEAN;
     }
-
 }

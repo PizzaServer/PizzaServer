@@ -7,5 +7,4 @@ public enum Dimension {
     NETHER,
 
     END
-
 }

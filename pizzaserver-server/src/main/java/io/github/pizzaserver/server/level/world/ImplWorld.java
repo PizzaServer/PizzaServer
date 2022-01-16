@@ -48,10 +48,12 @@ public class ImplWorld implements World {
         this.dimension = dimension;
 
         Vector3i worldSpawnCoordinates = this.level.getProvider().getLevelData().getWorldSpawn();
-        if (worldSpawnCoordinates.getY() > 255) {    // Hack to get around Minecraft worlds having REALLY high y spawn coordinates in the level.dat
+        if (worldSpawnCoordinates.getY()
+                > 255) {    // Hack to get around Minecraft worlds having REALLY high y spawn coordinates in the level.dat
             worldSpawnCoordinates = Vector3i.from(worldSpawnCoordinates.getX(),
-                    this.getHighestBlockAt(worldSpawnCoordinates.getX(), worldSpawnCoordinates.getZ()).getY(),
-                    worldSpawnCoordinates.getZ());
+                                                  this.getHighestBlockAt(worldSpawnCoordinates.getX(),
+                                                                         worldSpawnCoordinates.getZ()).getY(),
+                                                  worldSpawnCoordinates.getZ());
         }
         this.setSpawnCoordinates(worldSpawnCoordinates);
     }
@@ -308,8 +310,19 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public void playSound(SoundEvent sound, Vector3f position, boolean relativeVolumeDisabled, boolean isBaby, String entityType, Block block) {
-        WorldSoundEvent event = new WorldSoundEvent(new Location(this, position), sound, relativeVolumeDisabled, isBaby, entityType, block);
+    public void playSound(
+            SoundEvent sound,
+            Vector3f position,
+            boolean relativeVolumeDisabled,
+            boolean isBaby,
+            String entityType,
+            Block block) {
+        WorldSoundEvent event = new WorldSoundEvent(new Location(this, position),
+                                                    sound,
+                                                    relativeVolumeDisabled,
+                                                    isBaby,
+                                                    entityType,
+                                                    block);
         this.getServer().getEventManager().call(event);
 
         if (!event.isCancelled()) {
@@ -320,7 +333,9 @@ public class ImplWorld implements World {
                 packet.setRelativeVolumeDisabled(relativeVolumeDisabled);
                 packet.setBabySound(isBaby);
                 packet.setIdentifier(entityType);
-                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
+                packet.setExtraData(block != null ? player.getVersion()
+                                                          .getBlockRuntimeId(block.getBlockId(),
+                                                                             block.getNBTState()) : -1);
 
                 player.sendPacket(packet);
             }
@@ -332,14 +347,13 @@ public class ImplWorld implements World {
      * @return default {@link PlayerData} for players spawning in this world
      */
     public PlayerData getDefaultPlayerData() {
-        return new PlayerData.Builder()
-                .setLevelName(this.getLevel().getProvider().getFile().getName())
-                .setDimension(this.getDimension())
-                .setGamemode(Gamemode.SURVIVAL)
-                .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toFloat())
-                .setYaw(this.getServer().getConfig().getDefaultYaw())
-                .setPitch(this.getServer().getConfig().getDefaultPitch())
-                .build();
+        return new PlayerData.Builder().setLevelName(this.getLevel().getProvider().getFile().getName())
+                                       .setDimension(this.getDimension())
+                                       .setGamemode(Gamemode.SURVIVAL)
+                                       .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toFloat())
+                                       .setYaw(this.getServer().getConfig().getDefaultYaw())
+                                       .setPitch(this.getServer().getConfig().getDefaultPitch())
+                                       .build();
     }
 
     @Override
@@ -356,7 +370,8 @@ public class ImplWorld implements World {
     public boolean equals(Object obj) {
         if (obj instanceof ImplWorld) {
             ImplWorld otherWorld = (ImplWorld) obj;
-            return otherWorld.getDimension().equals(this.getDimension()) && otherWorld.getLevel().equals(this.getLevel());
+            return otherWorld.getDimension().equals(this.getDimension()) && otherWorld.getLevel()
+                                                                                      .equals(this.getLevel());
         }
         return false;
     }
@@ -364,5 +379,4 @@ public class ImplWorld implements World {
     private static int getChunkCoordinate(int i) {
         return (int) Math.floor(i / 16d);
     }
-
 }

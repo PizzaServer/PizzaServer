@@ -38,5 +38,4 @@ public class EntityDamageEvent extends BaseEntityEvent.Cancellable {
     public void setNoHitTicks(int noHitTicks) {
         this.noHitTicks = noHitTicks;
     }
-
 }

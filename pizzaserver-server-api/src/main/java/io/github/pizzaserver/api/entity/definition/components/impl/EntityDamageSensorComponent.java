@@ -129,7 +129,5 @@ public class EntityDamageSensorComponent extends EntityComponent {
         public List<EntityFilter> getFilters() {
             return Collections.unmodifiableList(this.filters);
         }
-
     }
-
 }

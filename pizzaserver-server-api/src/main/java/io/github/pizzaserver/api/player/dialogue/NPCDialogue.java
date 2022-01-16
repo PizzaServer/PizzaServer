@@ -14,5 +14,4 @@ public class NPCDialogue {
     public int getId() {
         return this.id;
     }
-
 }

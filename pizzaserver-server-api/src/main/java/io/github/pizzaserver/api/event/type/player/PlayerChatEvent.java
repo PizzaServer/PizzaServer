@@ -30,5 +30,4 @@ public class PlayerChatEvent extends BasePlayerEvent.Cancellable {
     public void setRecipients(Set<Player> recipients) {
         this.recipients = recipients;
     }
-
 }

@@ -50,5 +50,4 @@ public class ItemNetheriteSword extends Item implements DurableItemComponent, To
     public int getMaxDurability() {
         return 2032;
     }
-
 }

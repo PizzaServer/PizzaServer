@@ -113,5 +113,4 @@ public interface BedrockChunk extends BedrockNetworkDiskSerializable {
      * @return the subchunk requested
      */
     BedrockSubChunk getSubChunk(int index);
-
 }

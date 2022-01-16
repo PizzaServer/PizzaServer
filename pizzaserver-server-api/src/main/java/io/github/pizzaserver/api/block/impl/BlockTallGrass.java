@@ -14,9 +14,8 @@ public class BlockTallGrass extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
-            Arrays.asList("default", "tall", "fern", "snow").forEach(grassType -> this.add(NbtMap.builder()
-                    .putString("tall_grass_type", grassType)
-                    .build()));
+            Arrays.asList("default", "tall", "fern", "snow")
+                  .forEach(grassType -> this.add(NbtMap.builder().putString("tall_grass_type", grassType).build()));
         }
     };
 
@@ -73,5 +72,4 @@ public class BlockTallGrass extends BaseBlock {
     public boolean isReplaceable() {
         return true;
     }
-
 }

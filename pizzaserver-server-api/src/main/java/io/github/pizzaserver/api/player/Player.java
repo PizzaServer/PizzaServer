@@ -273,5 +273,4 @@ public interface Player extends EntityHuman {
      * @return if the save was successful
      */
     boolean save();
-
 }

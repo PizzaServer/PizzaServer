@@ -29,5 +29,4 @@ public class CircularChunkLoader implements ChunkLoader {
     public Set<Vector2i> getCoordinates() {
         return this.coordinates;
     }
-
 }

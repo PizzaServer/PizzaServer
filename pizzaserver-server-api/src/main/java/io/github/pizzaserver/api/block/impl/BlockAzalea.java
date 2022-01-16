@@ -24,5 +24,4 @@ public class BlockAzalea extends BaseBlock {
     public boolean canBeMinedWithHand() {
         return true;
     }
-
 }

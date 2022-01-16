@@ -10,5 +10,4 @@ public class FloatGameRule extends GameRule<Float> {
     public GameRuleType getType() {
         return GameRuleType.FLOAT;
     }
-
 }

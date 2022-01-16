@@ -48,7 +48,5 @@ public class ModalFormResponse extends FormResponse<ModalForm> {
         public ModalFormResponse build() {
             return new ModalFormResponse(this.form, this.player, this.closed, this.result);
         }
-
     }
-
 }

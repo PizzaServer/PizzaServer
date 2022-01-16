@@ -67,7 +67,5 @@ public class ModalForm extends Form {
         public ModalForm build() {
             return new ModalForm(this.title, this.content, this.trueButton, this.falseButton);
         }
-
     }
-
 }

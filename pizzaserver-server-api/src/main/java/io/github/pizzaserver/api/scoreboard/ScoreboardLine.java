@@ -9,5 +9,4 @@ public interface ScoreboardLine {
     int getScore();
 
     void setScore(int score);
-
 }

@@ -77,7 +77,5 @@ public class CustomForm extends Form {
         public CustomForm build() {
             return new CustomForm(this.title, this.icon, this.elements);
         }
-
     }
-
 }

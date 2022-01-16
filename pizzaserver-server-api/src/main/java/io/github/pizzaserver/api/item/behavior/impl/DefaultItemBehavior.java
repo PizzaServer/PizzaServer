@@ -16,6 +16,5 @@ public class DefaultItemBehavior<T extends Item> implements ItemBehavior<T> {
     }
 
     @Override
-    public void onInteract(Player player, T item, Entity entity) {}
-
+    public void onInteract(Player player, T item, Entity entity) { }
 }

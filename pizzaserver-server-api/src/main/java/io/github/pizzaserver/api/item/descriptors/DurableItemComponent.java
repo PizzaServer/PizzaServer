@@ -17,5 +17,4 @@ public interface DurableItemComponent {
     default boolean isRepairable() {
         return false;
     }
-
 }

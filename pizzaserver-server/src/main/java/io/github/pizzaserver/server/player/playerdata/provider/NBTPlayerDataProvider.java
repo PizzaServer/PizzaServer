@@ -73,7 +73,6 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
         } finally {
             this.keyLock.unlock(uuid);
         }
-
     }
 
     private File resolvePlayerNBTFile(UUID uuid) {
@@ -82,26 +81,26 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
 
     private static NbtMap getPlayerNBTDataFormat(PlayerData data) {
         return NbtMap.builder()
-                .putString("levelName", data.getLevelName())
-                .putInt("dimension", data.getDimension().ordinal())
-                .putInt("gamemode", data.getGamemode().ordinal())
-                .putFloat("positionX", data.getPosition().getX())
-                .putFloat("positionY", data.getPosition().getY())
-                .putFloat("positionZ", data.getPosition().getZ())
-                .putFloat("pitch", data.getPitch())
-                .putFloat("yaw", data.getYaw())
-                .build();
+                     .putString("levelName", data.getLevelName())
+                     .putInt("dimension", data.getDimension().ordinal())
+                     .putInt("gamemode", data.getGamemode().ordinal())
+                     .putFloat("positionX", data.getPosition().getX())
+                     .putFloat("positionY", data.getPosition().getY())
+                     .putFloat("positionZ", data.getPosition().getZ())
+                     .putFloat("pitch", data.getPitch())
+                     .putFloat("yaw", data.getYaw())
+                     .build();
     }
 
     private static PlayerData getPlayerDataFormat(NbtMap data) {
-        return new PlayerData.Builder()
-                .setLevelName(data.getString("levelName"))
-                .setDimension(Dimension.values()[data.getInt("dimension")])
-                .setGamemode(Gamemode.values()[data.getInt("gamemode")])
-                .setPosition(Vector3f.from(data.getFloat("positionX"), data.getFloat("positionY"), data.getFloat("positionZ")))
-                .setPitch(data.getFloat("pitch"))
-                .setYaw(data.getFloat("yaw"))
-                .build();
+        return new PlayerData.Builder().setLevelName(data.getString("levelName"))
+                                       .setDimension(Dimension.values()[data.getInt("dimension")])
+                                       .setGamemode(Gamemode.values()[data.getInt("gamemode")])
+                                       .setPosition(Vector3f.from(data.getFloat("positionX"),
+                                                                  data.getFloat("positionY"),
+                                                                  data.getFloat("positionZ")))
+                                       .setPitch(data.getFloat("pitch"))
+                                       .setYaw(data.getFloat("yaw"))
+                                       .build();
     }
-
 }

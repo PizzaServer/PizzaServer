@@ -55,7 +55,7 @@ public class StepSliderElement extends CustomElement {
             return this;
         }
 
-        public Builder addSteps(String ...steps) {
+        public Builder addSteps(String... steps) {
             for (String step : steps) {
                 this.addStep(step);
             }
@@ -70,8 +70,5 @@ public class StepSliderElement extends CustomElement {
         public StepSliderElement build() {
             return new StepSliderElement(this.text, this.steps, this.defaultIndex);
         }
-
-
     }
-
 }

@@ -17,5 +17,4 @@ public class ItemNetherBrick extends Item {
     public String getName() {
         return "Nether Brick";
     }
-
 }

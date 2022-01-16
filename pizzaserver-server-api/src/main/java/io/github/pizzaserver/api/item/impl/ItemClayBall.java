@@ -17,5 +17,4 @@ public class ItemClayBall extends Item {
     public String getName() {
         return "Clay Ball";
     }
-
 }

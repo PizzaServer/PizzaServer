@@ -17,5 +17,4 @@ public class ItemDragonBreath extends Item {
     public String getName() {
         return "Dragon's Breath";
     }
-
 }

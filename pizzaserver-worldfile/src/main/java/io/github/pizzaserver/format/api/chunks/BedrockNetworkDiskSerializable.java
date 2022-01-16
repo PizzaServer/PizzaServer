@@ -10,5 +10,4 @@ public interface BedrockNetworkDiskSerializable {
     void serializeForDisk(ByteBuf buffer) throws IOException;
 
     void serializeForNetwork(ByteBuf buffer, MinecraftDataMapper runtimeMapper) throws IOException;
-
 }

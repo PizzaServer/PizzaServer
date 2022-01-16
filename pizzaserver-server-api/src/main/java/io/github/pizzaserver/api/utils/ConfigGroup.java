@@ -11,7 +11,7 @@ public class ConfigGroup {
     protected Map<String, Object> properties = new LinkedHashMap<>();
 
 
-    public ConfigGroup() {}
+    public ConfigGroup() { }
 
     public ConfigGroup(Map<String, Object> properties) {
         this.properties = properties;
@@ -34,10 +34,9 @@ public class ConfigGroup {
 
     public List<String> getStringList(String key) {
         ConfigGroup group = this.getParentGroupFromKey(key);
-        return ((List<String>) group.getProperties().get(getPropertyFromKey(key)))
-                .stream()
-                .map(Object::toString)
-                .collect(Collectors.toList());
+        return ((List<String>) group.getProperties().get(getPropertyFromKey(key))).stream()
+                                                                                  .map(Object::toString)
+                                                                                  .collect(Collectors.toList());
     }
 
     public void setBoolean(String key, boolean value) {
@@ -57,10 +56,9 @@ public class ConfigGroup {
 
     public List<Boolean> getBooleanList(String key) {
         ConfigGroup group = this.getParentGroupFromKey(key);
-        return ((List<Boolean>) group.getProperties().get(getPropertyFromKey(key)))
-                .stream()
-                .map(obj -> Boolean.valueOf(obj.toString()))
-                .collect(Collectors.toList());
+        return ((List<Boolean>) group.getProperties().get(getPropertyFromKey(key))).stream()
+                                                                                   .map(obj -> Boolean.valueOf(obj.toString()))
+                                                                                   .collect(Collectors.toList());
     }
 
     public void setInteger(String key, int value) {
@@ -80,11 +78,10 @@ public class ConfigGroup {
 
     public List<Integer> getIntegerList(String key) {
         ConfigGroup group = this.getParentGroupFromKey(key);
-        return ((List<Object>) group.getProperties().get(getPropertyFromKey(key)))
-                .stream()
-                .mapToInt(obj -> Integer.parseInt(obj.toString()))
-                .boxed()
-                .collect(Collectors.toList());
+        return ((List<Object>) group.getProperties().get(getPropertyFromKey(key))).stream()
+                                                                                  .mapToInt(obj -> Integer.parseInt(obj.toString()))
+                                                                                  .boxed()
+                                                                                  .collect(Collectors.toList());
     }
 
     public void setDouble(String key, double value) {
@@ -104,11 +101,11 @@ public class ConfigGroup {
 
     public List<Double> getDoubleList(String key) {
         ConfigGroup group = this.getParentGroupFromKey(key);
-        return ((List<Object>) group.getProperties().get(getPropertyFromKey(key)))
-                .stream()
-                .mapToDouble(obj -> Double.parseDouble(obj.toString()))
-                .boxed()
-                .collect(Collectors.toList());
+        return ((List<Object>) group.getProperties().get(getPropertyFromKey(key))).stream()
+                                                                                  .mapToDouble(obj -> Double.parseDouble(
+                                                                                          obj.toString()))
+                                                                                  .boxed()
+                                                                                  .collect(Collectors.toList());
     }
 
     public void setLong(String key, long value) {
@@ -128,11 +125,10 @@ public class ConfigGroup {
 
     public List<Long> getLongList(String key) {
         ConfigGroup group = this.getParentGroupFromKey(key);
-        return ((List<Object>) group.getProperties().get(getPropertyFromKey(key)))
-                .stream()
-                .mapToLong(obj -> Long.parseLong(obj.toString()))
-                .boxed()
-                .collect(Collectors.toList());
+        return ((List<Object>) group.getProperties().get(getPropertyFromKey(key))).stream()
+                                                                                  .mapToLong(obj -> Long.parseLong(obj.toString()))
+                                                                                  .boxed()
+                                                                                  .collect(Collectors.toList());
     }
 
     public void setGroup(String key, ConfigGroup newGroup) {
@@ -201,5 +197,4 @@ public class ConfigGroup {
             return false;
         }
     }
-
 }

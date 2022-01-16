@@ -41,5 +41,4 @@ public class ItemIronLeggings extends ItemArmor {
     public int getMaxDurability() {
         return 225;
     }
-
 }

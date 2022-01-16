@@ -19,5 +19,4 @@ public interface PlantableItemComponent {
      * @return block types this item can be used on
      */
     Block[] getPlaceableBlockTypes();
-
 }

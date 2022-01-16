@@ -22,12 +22,13 @@ public class StackResponse {
         if (!this.changes.containsKey(slotContainer.getSlotType())) {
             this.changes.put(slotContainer.getSlotType(), new ArrayList<>());
         }
-        this.changes.get(slotContainer.getSlotType()).add(new ItemStackResponsePacket.ItemEntry((byte) slotContainer.getSlot(),
-                (byte) slotContainer.getSlot(),
-                (byte) slotContainer.getItemStack().getCount(),
-                slotContainer.getItemStack().getNetworkId(),
-                slotContainer.getItemStack().getCustomName().orElse(""),
-                slotContainer.getItemStack().getMeta()));
+        this.changes.get(slotContainer.getSlotType())
+                    .add(new ItemStackResponsePacket.ItemEntry((byte) slotContainer.getSlot(),
+                                                               (byte) slotContainer.getSlot(),
+                                                               (byte) slotContainer.getItemStack().getCount(),
+                                                               slotContainer.getItemStack().getNetworkId(),
+                                                               slotContainer.getItemStack().getCustomName().orElse(""),
+                                                               slotContainer.getItemStack().getMeta()));
     }
 
     public ItemStackResponsePacket.Response serialize() {
@@ -38,5 +39,4 @@ public class StackResponse {
 
         return new ItemStackResponsePacket.Response(ItemStackResponsePacket.ResponseStatus.OK, this.requestId, payload);
     }
-
 }

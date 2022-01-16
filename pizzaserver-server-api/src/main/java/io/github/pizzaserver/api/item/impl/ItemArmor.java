@@ -17,5 +17,4 @@ public abstract class ItemArmor extends Item implements ArmorItemComponent, Dura
     public ItemArmor(String itemId, int count, int meta) {
         super(itemId, count, meta);
     }
-
 }

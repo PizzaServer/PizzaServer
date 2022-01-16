@@ -65,5 +65,4 @@ public abstract class BaseBlockEntity implements BlockEntity {
     public NbtMap getDiskData() {
         return this.getType().serializeForDisk(this);
     }
-
 }

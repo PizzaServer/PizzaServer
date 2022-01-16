@@ -18,5 +18,4 @@ public class BlockStartBreakEvent extends BaseBlockEvent.Cancellable {
     public Player getPlayer() {
         return this.player;
     }
-
 }

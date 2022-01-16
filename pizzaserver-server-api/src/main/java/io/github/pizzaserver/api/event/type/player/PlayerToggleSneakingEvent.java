@@ -22,5 +22,4 @@ public class PlayerToggleSneakingEvent extends BasePlayerEvent.Cancellable {
     public void setSneaking(boolean sneaking) {
         this.sneaking = sneaking;
     }
-
 }

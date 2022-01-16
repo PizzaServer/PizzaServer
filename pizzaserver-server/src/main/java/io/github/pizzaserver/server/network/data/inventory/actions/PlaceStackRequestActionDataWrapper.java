@@ -13,8 +13,12 @@ public class PlaceStackRequestActionDataWrapper extends StackRequestActionWrappe
     public PlaceStackRequestActionDataWrapper(ImplPlayer player, PlaceStackRequestActionData action) {
         super(player);
         this.amount = action.getCount();
-        this.source = new InventorySlotContainer(player, action.getSource().getContainer(), action.getSource().getSlot());
-        this.destination = new InventorySlotContainer(player, action.getDestination().getContainer(), action.getDestination().getSlot());
+        this.source = new InventorySlotContainer(player,
+                                                 action.getSource().getContainer(),
+                                                 action.getSource().getSlot());
+        this.destination = new InventorySlotContainer(player,
+                                                      action.getDestination().getContainer(),
+                                                      action.getDestination().getSlot());
     }
 
     public int getCountRequested() {
@@ -28,5 +32,4 @@ public class PlaceStackRequestActionDataWrapper extends StackRequestActionWrappe
     public InventorySlotContainer getDestination() {
         return this.destination;
     }
-
 }

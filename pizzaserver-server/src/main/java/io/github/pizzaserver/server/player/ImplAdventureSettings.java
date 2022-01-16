@@ -312,5 +312,4 @@ public class ImplAdventureSettings implements AdventureSettings {
             this.player.sendPacket(adventureSettingsPacket);
         }
     }
-
 }

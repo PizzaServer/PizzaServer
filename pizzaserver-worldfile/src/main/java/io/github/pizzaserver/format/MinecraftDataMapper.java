@@ -21,5 +21,4 @@ public interface MinecraftDataMapper {
      * @return network NBT
      */
     NbtMap getNetworkBlockEntityNBT(NbtMap diskBlockEntityNBT);
-
 }

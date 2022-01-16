@@ -45,5 +45,4 @@ public class ItemShears extends Item implements ToolItemComponent, DurableItemCo
     public int getMaxDurability() {
         return 60;
     }
-
 }

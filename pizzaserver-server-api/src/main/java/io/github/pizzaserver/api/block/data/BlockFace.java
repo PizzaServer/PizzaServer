@@ -36,5 +36,4 @@ public enum BlockFace {
     public static BlockFace resolve(int index) {
         return BlockFace.values()[index % 6];
     }
-
 }

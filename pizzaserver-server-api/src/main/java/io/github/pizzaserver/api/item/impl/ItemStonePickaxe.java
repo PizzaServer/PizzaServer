@@ -50,5 +50,4 @@ public class ItemStonePickaxe extends Item implements DurableItemComponent, Tool
     public int getMaxDurability() {
         return 130;
     }
-
 }

@@ -30,5 +30,4 @@ public class BlockBarrier extends BaseBlock {
     public PushResponse getPushResponse() {
         return PushResponse.DENY;
     }
-
 }

@@ -17,5 +17,4 @@ public class ItemNautilusShell extends Item {
     public String getName() {
         return "Nautilus Shell";
     }
-
 }

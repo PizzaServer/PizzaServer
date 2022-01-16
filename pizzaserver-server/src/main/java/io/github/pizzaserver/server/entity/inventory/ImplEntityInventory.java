@@ -86,7 +86,8 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
         if (helmet == null || helmet.isEmpty()) {
             this.helmet = null;
         } else {
-            this.helmet = keepNetworkId ? Item.getAirIfNull(helmet).clone() : Item.getAirIfNull(helmet).newNetworkCopy();
+            this.helmet = keepNetworkId ? Item.getAirIfNull(helmet).clone() : Item.getAirIfNull(helmet)
+                                                                                  .newNetworkCopy();
         }
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
@@ -114,7 +115,8 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
         if (chestplate == null || chestplate.isEmpty()) {
             this.chestplate = null;
         } else {
-            this.chestplate = keepNetworkId ? Item.getAirIfNull(chestplate).clone() : Item.getAirIfNull(chestplate).newNetworkCopy();
+            this.chestplate = keepNetworkId ? Item.getAirIfNull(chestplate).clone() : Item.getAirIfNull(chestplate)
+                                                                                          .newNetworkCopy();
         }
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
@@ -142,7 +144,8 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
         if (leggings == null || leggings.isEmpty()) {
             this.leggings = null;
         } else {
-            this.leggings = keepNetworkId ? Item.getAirIfNull(leggings).clone() : Item.getAirIfNull(leggings).newNetworkCopy();
+            this.leggings = keepNetworkId ? Item.getAirIfNull(leggings).clone() : Item.getAirIfNull(leggings)
+                                                                                      .newNetworkCopy();
         }
         this.broadcastMobArmourEquipmentPacket(); // TODO when entity support is implemented: check if entity supports armor before sending
     }
@@ -180,8 +183,10 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
             MobArmorEquipmentPacket mobArmourEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmourEquipmentPacket.setRuntimeEntityId(this.getEntity().getId());
             mobArmourEquipmentPacket.setHelmet(ItemUtils.serializeForNetwork(this.getHelmet(), player.getVersion()));
-            mobArmourEquipmentPacket.setChestplate(ItemUtils.serializeForNetwork(this.getChestplate(), player.getVersion()));
-            mobArmourEquipmentPacket.setLeggings(ItemUtils.serializeForNetwork(this.getLeggings(), player.getVersion()));
+            mobArmourEquipmentPacket.setChestplate(ItemUtils.serializeForNetwork(this.getChestplate(),
+                                                                                 player.getVersion()));
+            mobArmourEquipmentPacket.setLeggings(ItemUtils.serializeForNetwork(this.getLeggings(),
+                                                                               player.getVersion()));
             mobArmourEquipmentPacket.setBoots(ItemUtils.serializeForNetwork(this.getBoots(), player.getVersion()));
             player.sendPacket(mobArmourEquipmentPacket);
         }
@@ -210,9 +215,12 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
         if (mainHand == null || mainHand.isEmpty()) {
             this.mainHand = null;
         } else {
-            this.mainHand = keepNetworkId ? Item.getAirIfNull(mainHand).clone() : Item.getAirIfNull(mainHand).newNetworkCopy();
+            this.mainHand = keepNetworkId ? Item.getAirIfNull(mainHand).clone() : Item.getAirIfNull(mainHand)
+                                                                                      .newNetworkCopy();
         }
-        this.broadcastMobEquipmentPacket(this.getHeldItem(), 0, true); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobEquipmentPacket(this.getHeldItem(),
+                                         0,
+                                         true); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     @Override
@@ -238,9 +246,12 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
         if (offHand == null || offHand.isEmpty()) {
             this.offHand = null;
         } else {
-            this.offHand = keepNetworkId ? Item.getAirIfNull(offHand).clone() : Item.getAirIfNull(offHand).newNetworkCopy();
+            this.offHand = keepNetworkId ? Item.getAirIfNull(offHand).clone() : Item.getAirIfNull(offHand)
+                                                                                    .newNetworkCopy();
         }
-        this.broadcastMobEquipmentPacket(this.getHeldItem(), 1, false); // TODO when entity support is implemented: check if entity supports armor before sending
+        this.broadcastMobEquipmentPacket(this.getHeldItem(),
+                                         1,
+                                         false); // TODO when entity support is implemented: check if entity supports armor before sending
     }
 
     /**
@@ -281,5 +292,4 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
 
         this.sendSlots(player);
     }
-
 }

@@ -50,5 +50,4 @@ public class ItemNetheritePickaxe extends Item implements DurableItemComponent, 
     public int getMaxDurability() {
         return 2031;
     }
-
 }

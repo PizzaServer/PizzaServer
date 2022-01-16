@@ -56,5 +56,4 @@ public interface LevelManager {
     Level createLevel(String name, ProviderType providerType) throws IOException;
 
     CompletableFuture<Level> createLevelAsync(String name, ProviderType providerType);
-
 }

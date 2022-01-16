@@ -12,16 +12,16 @@ public abstract class BlockButton extends BaseBlock {
         {
             for (int i = 0; i < 6; i++) {
                 this.add(NbtMap.builder()
-                        .putByte("button_pressed_bit", (byte) 0)
-                        .putInt("facing_direction", i)
-                        .build());
+                               .putByte("button_pressed_bit", (byte) 0)
+                               .putInt("facing_direction", i)
+                               .build());
             }
 
             for (int i = 0; i < 6; i++) {
                 this.add(NbtMap.builder()
-                        .putByte("button_pressed_bit", (byte) 1)
-                        .putInt("facing_direction", i)
-                        .build());
+                               .putByte("button_pressed_bit", (byte) 1)
+                               .putInt("facing_direction", i)
+                               .build());
             }
         }
     };
@@ -57,5 +57,4 @@ public abstract class BlockButton extends BaseBlock {
     public List<NbtMap> getNBTStates() {
         return BLOCK_STATES;
     }
-
 }

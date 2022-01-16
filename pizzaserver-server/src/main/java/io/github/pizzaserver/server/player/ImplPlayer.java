@@ -136,7 +136,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             }
             if (data == null) {
                 String defaultWorldName = this.getServer().getConfig().getDefaultWorldName();
-                ImplWorld defaultWorld = this.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
+                ImplWorld defaultWorld = this.getServer()
+                                             .getLevelManager()
+                                             .getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
                 if (defaultWorld == null) {
                     this.disconnect();
                     this.getServer().getLogger().error("Failed to find a world by the name of " + defaultWorldName);
@@ -213,7 +215,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setDefaultSpawn(world.getSpawnCoordinates());
             startGamePacket.setDayCycleStopTime(world.getTime());
             startGamePacket.setLevelName(this.getServer().getMotd());
-            startGamePacket.setLevelId(Base64.getEncoder().encodeToString(startGamePacket.getLevelName().getBytes(StandardCharsets.UTF_8)));
+            startGamePacket.setLevelId(Base64.getEncoder()
+                                             .encodeToString(startGamePacket.getLevelName()
+                                                                            .getBytes(StandardCharsets.UTF_8)));
             startGamePacket.setGeneratorId(1);
             startGamePacket.setDefaultPlayerPermission(PlayerPermission.MEMBER);
             startGamePacket.setServerChunkTickRange(this.getServer().getConfig().getChunkRadius());
@@ -255,10 +259,12 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
 
             // Sent the full player list to this player
-            List<PlayerList.Entry> entries = this.getServer().getPlayers().stream()
-                    .filter(otherPlayer -> !otherPlayer.isHiddenFrom(this))
-                    .map(Player::getPlayerListEntry)
-                    .collect(Collectors.toList());
+            List<PlayerList.Entry> entries = this.getServer()
+                                                 .getPlayers()
+                                                 .stream()
+                                                 .filter(otherPlayer -> !otherPlayer.isHiddenFrom(this))
+                                                 .map(Player::getPlayerListEntry)
+                                                 .collect(Collectors.toList());
             this.getPlayerList().addEntries(entries);
 
             location.getWorld().addEntity(this, location.toVector3f());
@@ -401,7 +407,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         // Direction check
         Vector3f playerDirectionVector = this.getDirectionVector();
-        Vector3f targetDirectionVector = vector3.sub(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0)).normalize();
+        Vector3f targetDirectionVector = vector3.sub(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0))
+                                                .normalize();
 
         // Must be in same direction ( > 0) but we allow a little leeway to account for attacking an entity in the same position as you
         return playerDirectionVector.dot(targetDirectionVector) > -1;
@@ -501,21 +508,22 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
      * @throws IOException if an exception occurred while reading the data
      */
     public Optional<PlayerData> getSavedData() throws IOException {
-        return this.getServer().getPlayerProvider()
-                .load(this.getUUID());
+        return this.getServer().getPlayerProvider().load(this.getUUID());
     }
 
     @Override
     public boolean save() {
         if (this.hasSpawned()) {
-            PlayerData playerData = new PlayerData.Builder()
-                    .setLevelName(this.getLevel().getProvider().getFile().getName())
-                    .setDimension(this.getLocation().getWorld().getDimension())
-                    .setGamemode(this.getGamemode())
-                    .setPosition(this.getLocation().toVector3f())
-                    .setPitch(this.getPitch())
-                    .setYaw(this.getYaw())
-                    .build();
+            PlayerData playerData = new PlayerData.Builder().setLevelName(this.getLevel()
+                                                                              .getProvider()
+                                                                              .getFile()
+                                                                              .getName())
+                                                            .setDimension(this.getLocation().getWorld().getDimension())
+                                                            .setGamemode(this.getGamemode())
+                                                            .setPosition(this.getLocation().toVector3f())
+                                                            .setPitch(this.getPitch())
+                                                            .setYaw(this.getYaw())
+                                                            .build();
             try {
                 this.getServer().getPlayerProvider().save(this.getUUID(), playerData);
                 return true;
@@ -562,7 +570,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         if (this.hasSpawned()) {
             UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
             updateAttributesPacket.setRuntimeEntityId(this.getId());
-            updateAttributesPacket.setAttributes(attributes.stream().map(Attribute::serialize).collect(Collectors.toList()));
+            updateAttributesPacket.setAttributes(attributes.stream()
+                                                           .map(Attribute::serialize)
+                                                           .collect(Collectors.toList()));
             this.sendPacket(updateAttributesPacket);
         }
     }
@@ -684,7 +694,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     @Override
     public Location getSpawn() {
         if (this.getHome().isPresent()) {
-            return new Location(this.getWorld(), this.getHome().get().toLocation().toVector3f().add(0, this.getEyeHeight(), 0));
+            return new Location(this.getWorld(),
+                                this.getHome().get().toLocation().toVector3f().add(0, this.getEyeHeight(), 0));
         } else {
             World world = this.getServer().getLevelManager().getDefaultLevel().getDimension(Dimension.OVERWORLD);
             return new Location(world, world.getSpawnCoordinates().add(0, this.getEyeHeight(), 0));
@@ -733,20 +744,16 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public void sendMessage(String message) {
-        this.sendMessage(new TextMessage.Builder()
-                .setType(TextPacket.Type.RAW)
-                .setMessage(message)
-                .build());
+        this.sendMessage(new TextMessage.Builder().setType(TextPacket.Type.RAW).setMessage(message).build());
     }
 
     @Override
     public void sendPlayerMessage(Player sender, String message) {
-        this.sendMessage(new TextMessage.Builder()
-                        .setType(TextPacket.Type.CHAT)
-                        .setSourceName(sender.getUsername())
-                        .setMessage(message)
-                        .setXUID(sender.getXUID())
-                        .build());
+        this.sendMessage(new TextMessage.Builder().setType(TextPacket.Type.CHAT)
+                                                  .setSourceName(sender.getUsername())
+                                                  .setMessage(message)
+                                                  .setXUID(sender.getXUID())
+                                                  .build());
     }
 
     public PlayerChunkManager getChunkManager() {
@@ -943,22 +950,28 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
 
         // Make sure that the block we're breaking is within reach!
-        boolean stopBreakingBlock = this.getBlockBreakingManager().getBlock().isPresent()
-                && !(this.canReach(this.getBlockBreakingManager().getBlock().get().getLocation().toVector3i(), this.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7)
-                        && this.isAlive()
+        boolean stopBreakingBlock = this.getBlockBreakingManager().getBlock().isPresent() && !(
+                this.canReach(this.getBlockBreakingManager().getBlock().get().getLocation().toVector3i(),
+                              this.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7) && this.isAlive()
                         && this.getAdventureSettings().canMine());
         if (stopBreakingBlock) {
-            BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakingManager().getBlock().get());
+            BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this,
+                                                                              this.getBlockBreakingManager()
+                                                                                  .getBlock()
+                                                                                  .get());
             this.getServer().getEventManager().call(blockStopBreakEvent);
 
             this.getBlockBreakingManager().stopBreaking();
         }
 
-        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
+        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18
+                && this.ticks % 80 == 0) {
             this.setHealth(this.getHealth() + 1);
         }
 
-        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();
+        boolean shouldCloseOpenInventory = this.getOpenInventory()
+                                               .filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this))
+                                               .isPresent();
         if (shouldCloseOpenInventory) {
             this.closeOpenInventory();
         }
@@ -982,8 +995,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getChunkManager().onSpawned();
 
         this.getInventory().sendSlots(this);
-        this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true)
-                .putFlag(EntityFlag.BREATHING, true);
+        this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true).putFlag(EntityFlag.BREATHING, true);
         this.sendAttributes();
         this.getAdventureSettings().send();
 
@@ -1017,5 +1029,4 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             }
         }
     }
-
 }

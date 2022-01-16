@@ -25,5 +25,4 @@ public abstract class Form {
     public String getTitle() {
         return this.title;
     }
-
 }

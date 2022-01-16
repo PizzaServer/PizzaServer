@@ -10,5 +10,4 @@ public abstract class StackRequestActionWrapper<T extends StackRequestActionData
     public StackRequestActionWrapper(ImplPlayer player) {
         this.player = player;
     }
-
 }

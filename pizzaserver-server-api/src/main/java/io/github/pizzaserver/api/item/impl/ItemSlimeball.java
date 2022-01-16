@@ -17,5 +17,4 @@ public class ItemSlimeball extends Item {
     public String getName() {
         return "Slimeball";
     }
-
 }

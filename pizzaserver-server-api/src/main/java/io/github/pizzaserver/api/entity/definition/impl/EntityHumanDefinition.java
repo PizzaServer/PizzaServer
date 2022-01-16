@@ -18,18 +18,17 @@ public class EntityHumanDefinition extends BaseEntityDefinition {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
                 new EntityDimensionsComponent(0.6f, 1.8f, 1.62f, 1.62f),
                 new EntityHealthComponent(20f, 20f),
-                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
-                        .setGravity(true)
-                        .setCollision(true)
-                        .setPistonPushable(true)
-                        .setPushable(false)
-                        .setGravityForce(0.08f)
-                        .setDragForce(0.02f)),
-                new EntityBreathableComponent(new EntityBreathableComponent.Properties()
-                        .setTotalSupplyTime(20)
-                        .setSuffocationInterval(10)
-                        .setGenerateBubblesInWater(true)
-                        .setInhaleTime(3.75f)) }));
+                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties().setGravity(true)
+                                                                                  .setCollision(true)
+                                                                                  .setPistonPushable(true)
+                                                                                  .setPushable(false)
+                                                                                  .setGravityForce(0.08f)
+                                                                                  .setDragForce(0.02f)),
+                new EntityBreathableComponent(new EntityBreathableComponent.Properties().setTotalSupplyTime(20)
+                                                                                        .setSuffocationInterval(10)
+                                                                                        .setGenerateBubblesInWater(true)
+                                                                                        .setInhaleTime(3.75f))
+        }));
     }
 
     @Override
@@ -56,5 +55,4 @@ public class EntityHumanDefinition extends BaseEntityDefinition {
     public void onCreation(Entity entity) {
         entity.addComponentGroup("minecraft:default");
     }
-
 }

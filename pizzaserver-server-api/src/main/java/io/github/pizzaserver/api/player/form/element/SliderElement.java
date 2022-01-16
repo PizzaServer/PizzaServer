@@ -76,7 +76,5 @@ public class SliderElement extends CustomElement {
         public SliderElement build() {
             return new SliderElement(this.text, this.value, this.min, this.max, this.step);
         }
-
     }
-
 }

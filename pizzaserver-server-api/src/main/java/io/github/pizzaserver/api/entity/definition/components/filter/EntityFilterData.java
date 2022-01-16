@@ -14,10 +14,8 @@ public class EntityFilterData {
     private final Block block;
 
 
-    private EntityFilterData(Entity self,
-                             Entity other,
-                             Item item,
-                             Block block) {
+    private EntityFilterData(
+            Entity self, Entity other, Item item, Block block) {
         this.self = self;
         this.other = other;
         this.item = item;
@@ -73,7 +71,5 @@ public class EntityFilterData {
         public EntityFilterData build() {
             return new EntityFilterData(this.self, this.other, this.item, this.block);
         }
-
     }
-
 }

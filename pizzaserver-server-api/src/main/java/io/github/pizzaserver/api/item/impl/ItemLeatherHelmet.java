@@ -41,5 +41,4 @@ public class ItemLeatherHelmet extends ItemArmor {
     public int getMaxDurability() {
         return 55;
     }
-
 }

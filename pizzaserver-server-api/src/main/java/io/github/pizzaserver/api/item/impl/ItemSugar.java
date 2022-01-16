@@ -17,5 +17,4 @@ public class ItemSugar extends Item {
     public String getName() {
         return "Sugar";
     }
-
 }

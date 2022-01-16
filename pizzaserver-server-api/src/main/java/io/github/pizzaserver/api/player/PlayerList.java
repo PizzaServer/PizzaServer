@@ -60,15 +60,16 @@ public interface PlayerList {
         private final boolean host;
 
 
-        private Entry(UUID uuid,
-                      long entityRuntimeId,
-                      String username,
-                      String xuid,
-                      String platformChatId,
-                      Device device,
-                      Skin skin,
-                      boolean teacher,
-                      boolean host) {
+        private Entry(
+                UUID uuid,
+                long entityRuntimeId,
+                String username,
+                String xuid,
+                String platformChatId,
+                Device device,
+                Skin skin,
+                boolean teacher,
+                boolean host) {
             this.uuid = uuid;
             this.entityRuntimeId = entityRuntimeId;
             this.username = username;
@@ -126,13 +127,10 @@ public interface PlayerList {
 
         @Override
         public int hashCode() {
-            return (43 * this.getUUID().hashCode())
-                    + (int) (43 * this.getEntityRuntimeId())
-                    + (43 * this.getUsername().hashCode())
-                    + (43 * this.getXUID().hashCode())
-                    + (43 * this.getPlatformChatId().hashCode())
-                    + (43 * this.getDevice().hashCode())
-                    + (43 * this.getSkin().hashCode());
+            return (43 * this.getUUID().hashCode()) + (int) (43 * this.getEntityRuntimeId()) + (43 * this.getUsername()
+                                                                                                         .hashCode())
+                    + (43 * this.getXUID().hashCode()) + (43 * this.getPlatformChatId().hashCode()) + (43
+                    * this.getDevice().hashCode()) + (43 * this.getSkin().hashCode());
         }
 
         @Override
@@ -141,10 +139,10 @@ public interface PlayerList {
                 PlayerList.Entry otherEntry = (PlayerList.Entry) obj;
                 return otherEntry.getUUID().equals(this.getUUID())
                         && NumberUtils.isNearlyEqual(otherEntry.getEntityRuntimeId(), this.getEntityRuntimeId())
-                        && otherEntry.getUsername().equals(this.getUsername())
-                        && otherEntry.getXUID().equals(this.getXUID())
-                        && otherEntry.getPlatformChatId().equals(this.getPlatformChatId())
-                        && otherEntry.getDevice().equals(this.getDevice())
+                        && otherEntry.getUsername().equals(this.getUsername()) && otherEntry.getXUID()
+                                                                                            .equals(this.getXUID())
+                        && otherEntry.getPlatformChatId().equals(this.getPlatformChatId()) && otherEntry.getDevice()
+                                                                                                        .equals(this.getDevice())
                         && otherEntry.getSkin().equals(this.getSkin());
             }
             return false;
@@ -185,7 +183,7 @@ public interface PlayerList {
                 return this;
             }
 
-            public Builder setPlatformChatId(String  platformChatId) {
+            public Builder setPlatformChatId(String platformChatId) {
                 this.platformChatId = platformChatId;
                 return this;
             }
@@ -211,19 +209,16 @@ public interface PlayerList {
             }
 
             public Entry build() {
-                return new Entry(
-                        Check.nullParam(this.uuid, "uuid"),
-                        this.entityRuntimeId,
-                        Check.nullParam(this.username, "username"),
-                        Check.nullParam(this.xuid, "xuid"),
-                        this.platformChatId,
-                        this.device,
-                        this.skin,
-                        this.teacher,
-                        this.host
-                );
+                return new Entry(Check.nullParam(this.uuid, "uuid"),
+                                 this.entityRuntimeId,
+                                 Check.nullParam(this.username, "username"),
+                                 Check.nullParam(this.xuid, "xuid"),
+                                 this.platformChatId,
+                                 this.device,
+                                 this.skin,
+                                 this.teacher,
+                                 this.host);
             }
         }
     }
-
 }

@@ -54,7 +54,7 @@ public class DropdownElement extends CustomElement {
             return this;
         }
 
-        public Builder addOptions(String ...options) {
+        public Builder addOptions(String... options) {
             for (String option : options) {
                 this.addOption(option);
             }
@@ -69,8 +69,5 @@ public class DropdownElement extends CustomElement {
         public DropdownElement build() {
             return new DropdownElement(this.text, this.options, this.defaultOption);
         }
-
     }
-
-
 }

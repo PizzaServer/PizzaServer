@@ -43,5 +43,4 @@ public interface BlockRegistry {
     static BlockRegistry getInstance() {
         return Server.getInstance().getBlockRegistry();
     }
-
 }

@@ -98,14 +98,17 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         if (this.itemRuntimeIds.inverse().containsKey(runtimeId)) {
             return this.itemRuntimeIds.inverse().get(runtimeId);
         } else {
-            throw new ProtocolException(this, "Attempted to retrieve item name for non-existent runtime id: " + runtimeId);
+            throw new ProtocolException(this,
+                                        "Attempted to retrieve item name for non-existent runtime id: " + runtimeId);
         }
     }
 
     @Override
     public NbtMap getNetworkBlockEntityNBT(NbtMap diskBlockEntityNBT) {
         String blockEntityId = diskBlockEntityNBT.getString("id");
-        BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
+        BlockEntityType blockEntityType = ImplServer.getInstance()
+                                                    .getBlockEntityRegistry()
+                                                    .getBlockEntityType(blockEntityId);
         return blockEntityType.serializeForNetwork(diskBlockEntityNBT);
     }
 
@@ -162,12 +165,10 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
         public boolean equals(Object obj) {
             if (obj instanceof BlockStateData) {
                 BlockStateData otherStateData = (BlockStateData) obj;
-                return otherStateData.getBlockId().equals(this.getBlockId())
-                        && otherStateData.getNBT().equals(this.getNBT());
+                return otherStateData.getBlockId().equals(this.getBlockId()) && otherStateData.getNBT()
+                                                                                              .equals(this.getNBT());
             }
             return false;
         }
-
     }
-
 }

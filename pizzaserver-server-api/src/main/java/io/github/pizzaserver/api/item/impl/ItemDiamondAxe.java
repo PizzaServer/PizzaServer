@@ -50,5 +50,4 @@ public class ItemDiamondAxe extends Item implements DurableItemComponent, ToolIt
     public int getMaxDurability() {
         return 1562;
     }
-
 }

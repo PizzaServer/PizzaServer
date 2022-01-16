@@ -36,5 +36,4 @@ public abstract class BaseServerEvent extends Event {
             this.isCancelled = isCancelled;
         }
     }
-
 }

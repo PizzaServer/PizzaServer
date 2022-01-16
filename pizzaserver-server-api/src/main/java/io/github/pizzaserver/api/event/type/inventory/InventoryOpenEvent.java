@@ -19,5 +19,4 @@ public class InventoryOpenEvent extends BaseInventoryEvent.Cancellable {
     public Player getPlayer() {
         return this.player;
     }
-
 }

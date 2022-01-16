@@ -41,5 +41,4 @@ public class ItemNetheriteLeggings extends ItemArmor {
     public int getMaxDurability() {
         return 555;
     }
-
 }

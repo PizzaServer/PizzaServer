@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.block.BlockID;
 
 public class BlockFlowingWater extends BlockWater {
 
-    public BlockFlowingWater() {}
+    public BlockFlowingWater() { }
 
     public BlockFlowingWater(int depth) {
         super(depth);
@@ -19,5 +19,4 @@ public class BlockFlowingWater extends BlockWater {
     public String getName() {
         return "Flowing Water";
     }
-
 }

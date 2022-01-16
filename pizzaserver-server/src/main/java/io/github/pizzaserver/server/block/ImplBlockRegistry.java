@@ -63,5 +63,4 @@ public class ImplBlockRegistry implements BlockRegistry {
 
         return this.behaviors.get(block.getClass());
     }
-
 }

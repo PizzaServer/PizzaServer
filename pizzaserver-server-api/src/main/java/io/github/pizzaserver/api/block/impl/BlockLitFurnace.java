@@ -13,5 +13,4 @@ public class BlockLitFurnace extends BlockFurnace {
     public String getName() {
         return "Lit Furnace";
     }
-
 }

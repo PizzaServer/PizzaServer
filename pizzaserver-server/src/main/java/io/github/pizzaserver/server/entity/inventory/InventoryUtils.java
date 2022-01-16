@@ -10,7 +10,7 @@ public class InventoryUtils {
     private static final Map<ContainerType, Integer> containerSizes = new HashMap<>();
     private static final Map<ContainerType, Set<ContainerSlotType>> containerSlotTypes = new HashMap<>();
 
-    private InventoryUtils() {}
+    private InventoryUtils() { }
 
 
     /**
@@ -37,14 +37,14 @@ public class InventoryUtils {
     }
 
     static {
-        register(ContainerType.CONTAINER, 27, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
-        register(ContainerType.INVENTORY,  36, new ContainerSlotType[] {
+        register(ContainerType.CONTAINER, 27, new ContainerSlotType[] {ContainerSlotType.CONTAINER});
+        register(ContainerType.INVENTORY, 36, new ContainerSlotType[] {
                 ContainerSlotType.ARMOR,
                 ContainerSlotType.INVENTORY,
                 ContainerSlotType.HOTBAR,
                 ContainerSlotType.HOTBAR_AND_INVENTORY,
                 ContainerSlotType.CURSOR,
-                ContainerSlotType.OFFHAND });
+                ContainerSlotType.OFFHAND
+        });
     }
-
 }

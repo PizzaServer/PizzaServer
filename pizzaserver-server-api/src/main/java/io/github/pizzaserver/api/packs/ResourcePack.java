@@ -48,5 +48,4 @@ public interface ResourcePack {
      * @return chunk data
      */
     byte[] getChunk(int index);
-
 }

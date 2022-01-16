@@ -23,5 +23,4 @@ public class ServerPongUpdateEvent extends BaseServerEvent.Cancellable {
     public void setPong(BedrockPong pong) {
         this.pong = pong;
     }
-
 }

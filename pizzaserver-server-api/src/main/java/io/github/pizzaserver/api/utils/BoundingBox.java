@@ -13,11 +13,21 @@ public class BoundingBox {
 
 
     public BoundingBox(BoundingBox boundingBox) {
-        this(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ(), boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ());
+        this(boundingBox.getMinX(),
+             boundingBox.getMinY(),
+             boundingBox.getMinZ(),
+             boundingBox.getMaxX(),
+             boundingBox.getMaxY(),
+             boundingBox.getMaxZ());
     }
 
     public BoundingBox(Vector3f coordinatesA, Vector3f coordinatesB) {
-        this(coordinatesA.getX(), coordinatesA.getY(), coordinatesA.getZ(), coordinatesB.getX(), coordinatesB.getY(), coordinatesB.getZ());
+        this(coordinatesA.getX(),
+             coordinatesA.getY(),
+             coordinatesA.getZ(),
+             coordinatesB.getX(),
+             coordinatesB.getY(),
+             coordinatesB.getZ());
     }
 
     public BoundingBox(float x1, float y1, float z1, float x2, float y2, float z2) {
@@ -60,11 +70,21 @@ public class BoundingBox {
     }
 
     public BoundingBox translate(float x, float y, float z) {
-        return new BoundingBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
+        return new BoundingBox(this.minX + x,
+                               this.minY + y,
+                               this.minZ + z,
+                               this.maxX + x,
+                               this.maxY + y,
+                               this.maxZ + z);
     }
 
     public BoundingBox grow(float amount) {
-        return new BoundingBox(this.minX - amount, this.minY - amount, this.minZ - amount, this.maxX + amount, this.maxY + amount, this.maxZ + amount);
+        return new BoundingBox(this.minX - amount,
+                               this.minY - amount,
+                               this.minZ - amount,
+                               this.maxX + amount,
+                               this.maxY + amount,
+                               this.maxZ + amount);
     }
 
     public boolean collidesWith(BoundingBox otherBox) {
@@ -151,13 +171,7 @@ public class BoundingBox {
 
     @Override
     public String toString() {
-        return "BoundingBox(minX=" + this.getMinX()
-                + ", maxX=" + this.getMaxX()
-                + ", minY=" + this.getMinY()
-                + ", maxY=" + this.getMaxY()
-                + ", minZ=" + this.getMinZ()
-                + ", maxZ=" + this.getMaxZ()
-                + ")";
+        return "BoundingBox(minX=" + this.getMinX() + ", maxX=" + this.getMaxX() + ", minY=" + this.getMinY()
+                + ", maxY=" + this.getMaxY() + ", minZ=" + this.getMinZ() + ", maxZ=" + this.getMaxZ() + ")";
     }
-
 }

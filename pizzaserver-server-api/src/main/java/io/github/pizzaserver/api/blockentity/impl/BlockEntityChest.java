@@ -17,5 +17,4 @@ public class BlockEntityChest extends BlockEntityContainer {
     public BlockEntityType getType() {
         return BlockEntityRegistry.getInstance().getBlockEntityType(ID);
     }
-
 }

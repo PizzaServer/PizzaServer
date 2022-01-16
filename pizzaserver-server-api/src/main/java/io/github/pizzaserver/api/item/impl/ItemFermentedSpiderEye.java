@@ -17,5 +17,4 @@ public class ItemFermentedSpiderEye extends Item {
     public String getName() {
         return "Fermented Spider Eye";
     }
-
 }

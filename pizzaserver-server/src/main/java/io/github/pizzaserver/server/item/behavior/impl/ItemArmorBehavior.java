@@ -33,5 +33,4 @@ public class ItemArmorBehavior extends DefaultItemBehavior<ItemArmor> {
         player.getInventory().setHeldItem(oldItemStack);
         return true;
     }
-
 }

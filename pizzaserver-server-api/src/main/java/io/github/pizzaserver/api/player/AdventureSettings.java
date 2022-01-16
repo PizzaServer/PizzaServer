@@ -80,5 +80,4 @@ public interface AdventureSettings {
     PlayerPermission getPlayerPermission();
 
     AdventureSettings setPlayerPermission(PlayerPermission playerPermission);
-
 }

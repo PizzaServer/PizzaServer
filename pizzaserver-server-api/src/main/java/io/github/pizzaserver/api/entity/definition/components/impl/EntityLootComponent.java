@@ -30,5 +30,4 @@ public class EntityLootComponent extends EntityComponent {
     public List<Item> getLoot() {
         return this.loot;
     }
-
 }

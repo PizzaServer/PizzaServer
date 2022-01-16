@@ -36,5 +36,4 @@ public abstract class SchedulerTask {
     public final boolean isCancelled() {
         return this.isCancelled;
     }
-
 }

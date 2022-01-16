@@ -19,5 +19,4 @@ public class InventoryCloseEvent extends BaseInventoryEvent {
     public Player getPlayer() {
         return this.player;
     }
-
 }

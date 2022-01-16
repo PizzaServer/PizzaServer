@@ -41,5 +41,4 @@ public class ItemNetheriteChestplate extends ItemArmor {
     public int getMaxDurability() {
         return 592;
     }
-
 }

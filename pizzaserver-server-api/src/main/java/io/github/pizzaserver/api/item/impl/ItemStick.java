@@ -17,5 +17,4 @@ public class ItemStick extends Item {
     public String getName() {
         return "Stick";
     }
-
 }

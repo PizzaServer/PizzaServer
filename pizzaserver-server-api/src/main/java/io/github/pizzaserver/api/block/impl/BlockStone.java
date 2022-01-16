@@ -15,8 +15,14 @@ public class BlockStone extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
-            Arrays.asList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth")
-                    .forEach(stoneType -> this.add(NbtMap.builder().putString("stone_type", stoneType).build()));
+            Arrays.asList("stone",
+                          "granite",
+                          "granite_smooth",
+                          "diorite",
+                          "diorite_smooth",
+                          "andesite",
+                          "andesite_smooth")
+                  .forEach(stoneType -> this.add(NbtMap.builder().putString("stone_type", stoneType).build()));
         }
     };
 
@@ -71,5 +77,4 @@ public class BlockStone extends BaseBlock {
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
     }
-
 }
