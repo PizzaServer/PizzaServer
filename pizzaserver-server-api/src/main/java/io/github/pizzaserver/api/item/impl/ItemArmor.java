@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.item.impl;
 
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
 import io.github.pizzaserver.api.item.descriptors.ArmorItemComponent;
+import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
 
 public abstract class ItemArmor extends Item implements ArmorItemComponent, DurableItemComponent {
 

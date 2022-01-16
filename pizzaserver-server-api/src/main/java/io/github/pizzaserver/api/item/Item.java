@@ -6,9 +6,9 @@ import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.behavior.ItemBehavior;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.item.descriptors.ArmorItemComponent;
 import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.*;
 
