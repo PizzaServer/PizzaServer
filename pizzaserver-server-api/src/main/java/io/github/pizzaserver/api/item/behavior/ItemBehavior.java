@@ -16,7 +16,7 @@ public interface ItemBehavior<T extends Item> {
      * @param block     the block interacted with
      * @param blockFace the block face that was clicked
      * @return if the interaction was successful. an incorrect interaction will resend the item slot and the blocks
-     * interacted with
+     *         interacted with.
      */
     boolean onInteract(Player player, T item, Block block, BlockFace blockFace);
 
