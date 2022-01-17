@@ -5,7 +5,7 @@ package io.github.pizzaserver.api.block;
  */
 public class BlockID {
 
-    private BlockID() {}
+    public BlockID() {}
 
     public static final String ACACIA_BUTTON = "minecraft:acacia_button";
     public static final String AIR = "minecraft:air";
@@ -22,6 +22,8 @@ public class BlockID {
     public static final String BIRCH_BUTTON = "minecraft:birch_button";
     public static final String BLACK_GLAZED_TERRACOTTA = "minecraft:black_glazed_terracotta";
     public static final String BLACKSTONE = "minecraft:blackstone";
+    public static final String BLACKSTONE_SLAB = "minecraft:blackstone_slab";
+    public static final String BLACKSTONE_DOUBLE_SLAB = "minecraft:blackstone_double_slab";
     public static final String BLAST_FURNACE = "minecraft:blast_furnace";
     public static final String BLUE_ICE = "minecraft:blue_ice";
     public static final String BLUE_GLAZED_TERRACOTTA = "minecraft:blue_glazed_terracotta";
@@ -40,6 +42,8 @@ public class BlockID {
     public static final String COAL = "minecraft:coal_block";
     public static final String COAL_ORE = "minecraft:coal_ore";
     public static final String COBBLED_DEEPSLATE = "minecraft:cobbled_deepslate";
+    public static final String COBBLED_DEEPSLATE_SLAB = "minecraft:cobbled_deepslate_slab";
+    public static final String COBBLED_DEEPSLATE_DOUBLE_SLAB = "minecraft:cobbled_deepslate_double_slab";
     public static final String COBBLESTONE = "minecraft:cobblestone";
     public static final String COLORED_TORCH_BP = "minecraft:colored_torch_bp";
     public static final String COLORED_TORCH_RG = "minecraft:colored_torch_rg";
@@ -52,10 +56,14 @@ public class BlockID {
     public static final String CRACKED_POLISHED_BLACKSTONE_BRICK = "minecraft:cracked_polished_blackstone_bricks";
     public static final String CRIMSON_BUTTON = "minecraft:crimson_button";
     public static final String CRIMSON_NYLIUM = "minecraft:crimson_nylium";
+    public static final String CRIMSON_SLAB = "minecraft:crimson_slab";
     public static final String CRYING_OBSIDIAN = "minecraft:crying_obsidian";
+    public static final String CUT_COPPER_SLAB = "minecraft:cut_copper_slab";
     public static final String CYAN_GLAZED_TERRACOTTA = "minecraft:cyan_glazed_terracotta";
     public static final String DARK_OAK_BUTTON = "minecraft:dark_oak_button";
     public static final String DEADBUSH = "minecraft:deadbush";
+    public static final String DEEPSLATE_BRICK_SLAB = "minecraft:deepslate_brick_slab";
+    public static final String DEEPSLATE_BRICK_DOUBLE_SLAB = "minecraft:deepslate_brick_double_slab";
     public static final String DEEPSLATE_BRICKS = "minecraft:deepslate_bricks";
     public static final String DEEPSLATE_COAL_ORE = "minecraft:deepslate_coal_ore";
     public static final String DEEPSLATE_COPPER_ORE = "minecraft:deepslate_copper_ore";
@@ -65,10 +73,22 @@ public class BlockID {
     public static final String DEEPSLATE_IRON_ORE = "minecraft:deepslate_iron_ore";
     public static final String DEEPSLATE_LAPIS_ORE = "minecraft:deepslate_lapis_ore";
     public static final String DEEPSLATE_REDSTONE_ORE = "minecraft:deepslate_redstone_ore";
+    public static final String DEEPSLATE_TILE_SLAB = "minecraft:deepslate_tile_slab";
+    public static final String DEEPSLATE_TILE_DOUBLE_SLAB = "minecraft:deepslate_tile_double_slab";
     public static final String DENY = "minecraft:deny";
     public static final String DIAMOND_ORE = "minecraft:diamond_ore";
     public static final String DIRT = "minecraft:dirt";
+    public static final String DOUBLE_CRIMSON_SLAB = "minecraft:DOUBLE_CRIMSON_SLAB";
+    public static final String DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
+    public static final String DOUBLE_STONE_SLAB = "minecraft:double_stone_slab";
+    public static final String DOUBLE_STONE_SLAB2 = "minecraft:double_stone_slab2";
+    public static final String DOUBLE_STONE_SLAB3 = "minecraft:double_stone_slab3";
+    public static final String DOUBLE_STONE_SLAB4 = "minecraft:double_stone_slab4";
+    public static final String DOUBLE_WARPED_SLAB = "minecraft:double_warped_slab";
+    public static final String DOUBLE_WOODEN_SLAB = "minecraft:double_wooden_slab";
     public static final String EMERALD_ORE = "minecraft:emerald_ore";
+    public static final String EXPOSED_CUT_COPPER_SLAB = "minecraft:exposed_cut_copper_slab";
+    public static final String EXPOSED_DOUBLE_CUT_COPPER_SLAB = "minecraft:exposed_double_cut_copper_slab";
     public static final String FLOWING_WATER = "minecraft:flowing_water";
     public static final String FURNACE = "minecraft:furnace";
     public static final String GOLD_ORE = "minecraft:gold_ore";
@@ -95,9 +115,17 @@ public class BlockID {
     public static final String NETHER_REACTOR = "minecraft:netherreactor";
     public static final String OAK_BUTTON = "minecraft:wooden_button";
     public static final String ORANGE_GLAZED_TERRACOTTA = "minecraft:orange_glazed_terracotta";
+    public static final String OXIDIZED_CUT_COPPER_SLAB = "minecraft:oxidized_cut_copper_slab";
+    public static final String OXIDIZED_DOUBLE_CUT_COPPER_SLAB = "minecraft:odixized_double_cut_copper_slab";
     public static final String PINK_GLAZED_TERRACOTTA = "minecraft:pink_glazed_terracotta";
     public static final String PODZOL = "minecraft:podzol";
     public static final String POLISHED_BLACKSTONE_BUTTON = "minecraft:polished_blackstone_button";
+    public static final String POLISHED_BLACKSTONE_SLAB = "minecraft:polished_blackstone_slab";
+    public static final String POLISHED_BLACKSTONE_DOUBLE_SLAB = "minecraft:polished_blackstone_double_slab";
+    public static final String POLISHED_BLACKSTONE_BRICK_SLAB = "minecraft:polished_blackstone_brick_slab";
+    public static final String POLISHED_BLACKSTONE_DOUBLE_BRICK_SLAB = "minecraft:polished_blackstone_brick_double_slab";
+    public static final String POLISHED_DEEPSLATE_SLAB = "minecraft:polished_deepslate_slab";
+    public static final String POLISHED_DEEPSLATE_DOUBLE_SLAB = "minecraft:polished_deepslate_double_slab";
     public static final String PURPLE_GLAZED_TERRACOTTA = "minecraft:purple_glazed_terracotta";
     public static final String REDSTONE_ORE = "minecraft:redstone_ore";
     public static final String REDSTONE_WIRE = "minecraft:redstone_wire";
@@ -110,12 +138,28 @@ public class BlockID {
     public static final String SOUL_CAMPFIRE = "minecraft:soul_campfire";
     public static final String STONE_BUTTON = "minecraft:stone_button";
     public static final String STONE = "minecraft:stone";
+    public static final String STONE_SLAB = "minecraft:stone_slab";
+    public static final String STONE_SLAB2 = "minecraft:stone_slab2";
+    public static final String STONE_SLAB3 = "minecraft:stone_slab3";
+    public static final String STONE_SLAB4 = "minecraft:stone_slab4";
     public static final String TALL_GRASS = "minecraft:tallgrass";
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
+    public static final String WARPED_SLAB = "minecraft:warped_slab";
+    public static final String WAXED_CUT_COPPER_SLAB = "minecraft:waxed_cut_copper_slab";
+    public static final String WAXED_DOUBLE_CUT_COPPER_SLAB = "minecraft:waxed_double_cut_copper_slab";
+    public static final String WAXED_WEATHERED_CUT_COPPER_SLAB = "minecraft:waxed_weathered_cut_copper_slab";
+    public static final String WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB = "minecraft:waxed_weathered_double_cut_copper_slab";
+    public static final String WAXED_OXIDIZED_CUT_COPPER_SLAB = "minecraft:waxed_oxidized_cut_copper_slab";
+    public static final String WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB = "minecraft:waxed_oxidized_double_cut_copper_slab";
+    public static final String WAXED_EXPOSED_CUT_COPPER_SLAB = "minecraft:waxed_exposed_cut_copper_slab";
+    public static final String WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB = "MINECRAFT:waxed_exposed_double_cut_copper_slab";
+    public static final String WEATHERED_CUT_COPPER_SLAB = "minecraft:weathered_cut_copper_slab";
+    public static final String WEATHERED_DOUBLE_CUT_COPPER_SLAB = "minecraft:weathered_double_cut_copper_slab";
     public static final String WHITE_GLAZED_TERRACOTTA = "minecraft:white_glazed_terracotta";
     public static final String WOODEN_BUTTON = "minecraft:wooden_button";
     public static final String WOOL = "minecraft:wool";
+    public static final String WOODEN_SLAB = "minecraft:wooden_slab";
     public static final String YELLOW_GLAZED_TERRACOTTA = "minecraft:yellow_glazed_terracotta";
 
 }

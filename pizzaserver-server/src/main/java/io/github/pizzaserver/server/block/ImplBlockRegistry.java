@@ -20,13 +20,14 @@ public class ImplBlockRegistry implements BlockRegistry {
 
     @Override
     public void register(Block block, BlockBehavior behavior) {
-        if (!block.getBlockId().startsWith("minecraft:")) {
-            this.customTypes.add(block);
+        Block registeredBlock = block.clone();
+        if (!registeredBlock.getBlockId().startsWith("minecraft:")) {
+            this.customTypes.add(registeredBlock);
         }
 
-        this.blocks.put(block.getBlockId(), block);
-        this.behaviors.put(block.getClass(), behavior);
-        ItemRegistry.getInstance().register(new ItemBlock(block), new ItemBlockBehavior());
+        this.blocks.put(registeredBlock.getBlockId(), registeredBlock);
+        this.behaviors.put(registeredBlock.getClass(), behavior);
+        ItemRegistry.getInstance().register(new ItemBlock(registeredBlock), new ItemBlockBehavior());
     }
 
     @Override

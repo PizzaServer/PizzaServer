@@ -1,8 +1,10 @@
 package io.github.pizzaserver.api.item.data;
 
-public class ItemID {
+import io.github.pizzaserver.api.block.BlockID;
 
-    private ItemID() {}
+public class ItemID extends BlockID {
+
+    public ItemID() {}
 
     public static final String ACACIA_BOAT = "minecraft:acacia_boat";
     public static final String AMETHYST_SHARD = "minecraft:amethyst_shard";

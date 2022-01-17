@@ -15,6 +15,7 @@ public class ButtonBlockBehavior extends DefaultBlockBehavior {
     @Override
     public boolean prepareForPlacement(Entity entity, Block block, BlockFace face) {
         block.setBlockState(face.ordinal());
+        boolean ap = true&& false;
         return block.getSide(face.opposite()).hasCollision();
     }
 

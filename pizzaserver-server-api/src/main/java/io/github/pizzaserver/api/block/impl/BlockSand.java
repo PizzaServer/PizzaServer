@@ -92,7 +92,7 @@ public class BlockSand extends Block {
 
     @Override
     public ItemBlock toStack() {
-        return new ItemBlock(this, 1);
+        return new ItemBlock(this.getBlockId(), 1,  this.getBlockState());
     }
 
 

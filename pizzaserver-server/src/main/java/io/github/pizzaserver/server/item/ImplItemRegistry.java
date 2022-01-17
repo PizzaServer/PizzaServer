@@ -25,16 +25,18 @@ public class ImplItemRegistry implements ItemRegistry {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Item> void register(T item, ItemBehavior<T> behavior) {
-        if (!item.getItemId().startsWith("minecraft:")) {
-            if (!(item instanceof CustomItem)) {
+        T registeredItem = (T) item.clone();
+        if (!registeredItem.getItemId().startsWith("minecraft:")) {
+            if (!(registeredItem instanceof CustomItem)) {
                 throw new IllegalArgumentException("The provided item type does not extend CustomItemType");
             }
-            this.customItems.add((CustomItem) item);
+            this.customItems.add((CustomItem) registeredItem);
         }
 
-        this.items.put(item.getItemId(), item);
-        this.behaviors.put(item.getClass(), behavior);
+        this.items.put(registeredItem.getItemId(), registeredItem);
+        this.behaviors.put(registeredItem.getClass(), behavior);
     }
 
     @Override
