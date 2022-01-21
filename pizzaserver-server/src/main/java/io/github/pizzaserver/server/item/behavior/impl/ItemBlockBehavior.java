@@ -25,6 +25,11 @@ public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
         if (!player.getAdventureSettings().canBuild()) {
             return false;
         }
+        if (block.isAir()) {
+            // We cannot place blocks against air.
+            // only resend the block if we are holding a non-air block.
+            return itemBlock.isEmpty();
+        }
 
         Block replacedBlock;
         if (!(block instanceof Liquid) && block.isReplaceable()) {
