@@ -671,6 +671,16 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public boolean isSprinting() {
+        return this.getMetaData().hasFlag(EntityFlag.SPRINTING);
+    }
+
+    @Override
+    public void setSprinting(boolean sprinting) {
+        this.getMetaData().putFlag(EntityFlag.SPRINTING, sprinting);
+    }
+
+    @Override
     public int getFireTicks() {
         return this.fireTicks;
     }

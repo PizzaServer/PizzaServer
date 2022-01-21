@@ -11,6 +11,7 @@ import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSneakingEvent;
+import io.github.pizzaserver.api.event.type.player.PlayerToggleSprintingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSwimEvent;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.level.world.ImplWorld;
@@ -91,10 +92,28 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case START_SPRINTING:
                     case SPRINTING:
                     case SPRINT_DOWN:
-                        // TODO: start sprint
+                        if (!this.player.isSprinting()) {
+                            PlayerToggleSprintingEvent startSprintEvent = new PlayerToggleSprintingEvent(this.player, true);
+                            this.player.getServer().getEventManager().call(startSprintEvent);
+
+                            if (!startSprintEvent.isCancelled()) {
+                                this.player.setSprinting(true);
+                            } else {
+                                this.player.getMetaData().update();
+                            }
+                        }
                         break;
                     case STOP_SPRINTING:
-                        // TODO: stop sprint
+                        if (this.player.isSprinting()) {
+                            PlayerToggleSprintingEvent stopSprintEvent = new PlayerToggleSprintingEvent(this.player, false);
+                            this.player.getServer().getEventManager().call(stopSprintEvent);
+
+                            if (!stopSprintEvent.isCancelled()) {
+                                this.player.setSprinting(false);
+                            } else {
+                                this.player.getMetaData().update();
+                            }
+                        }
                         break;
                     case PERFORM_BLOCK_ACTIONS:
                         this.handleBlockActions(packet.getPlayerActions());

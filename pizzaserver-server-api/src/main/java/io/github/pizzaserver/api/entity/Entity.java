@@ -249,6 +249,10 @@ public interface Entity extends Watchable {
 
     void setSwimming(boolean swimming);
 
+    boolean isSprinting();
+
+    void setSprinting(boolean sprinting);
+
     int getFireTicks();
 
     void setFireTicks(int ticks);
