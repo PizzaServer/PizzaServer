@@ -1,59 +1,34 @@
 package io.github.pizzaserver.api.block.impl;
 
-import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.item.data.ToolTier;
-import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.block.data.FurnaceType;
 
-import java.util.ArrayList;
-import java.util.List;
+public class BlockBlastFurnace extends BlockFurnace {
 
-public class BlockBlastFurnace extends Block {
+    public BlockBlastFurnace() {
+        this(FurnaceType.UNLIT);
+    }
 
-    private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
-        {
-            for (int direction = 0; direction < 6; direction++) {
-                this.add(NbtMap.builder()
-                        .putInt("facing_direction", direction)
-                        .build());
-            }
-        }
-    };
+    public BlockBlastFurnace(FurnaceType type) {
+        this.setLit(type == FurnaceType.LIT);
+    }
 
     @Override
     public String getBlockId() {
-        return BlockID.BLAST_FURNACE;
+        if (this.isLit()) {
+            return BlockID.LIT_BLAST_FURNACE;
+        } else {
+            return BlockID.BLAST_FURNACE;
+        }
     }
 
     @Override
     public String getName() {
-        return "Blast Furnace";
-    }
-
-    @Override
-    public List<NbtMap> getNBTStates() {
-        return BLOCK_STATES;
-    }
-
-    @Override
-    public float getBlastResistance() {
-        return 3.5f;
-    }
-
-    @Override
-    public float getHardness() {
-        return 3.5f;
-    }
-
-    @Override
-    public ToolTier getToolTierRequired() {
-        return ToolTier.WOOD;
-    }
-
-    @Override
-    public ToolType getToolTypeRequired() {
-        return ToolType.PICKAXE;
+        if (this.isLit()) {
+            return "Lit Blast Furnace";
+        } else {
+            return "Blast Furnace";
+        }
     }
 
 }

@@ -232,7 +232,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockLight());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIGHT_BLUE), new HorizontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIME), new HorizontalDirectionBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockLitBlastFurnace(), new HorizontalDirectionBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockBlastFurnace(FurnaceType.LIT), new HorizontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLitDeepslateRedstoneOre(), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockFurnace(FurnaceType.LIT), new HorizontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLitRedstoneOre(), new RedstoneOreBehavior());
@@ -254,7 +254,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockPolishedDeepslateSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedDeepslateSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PURPLE), new HorizontalDirectionBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockRedstoneWire());
+        BlockRegistry.getInstance().register(new BlockRedstoneWire(), new RequiresSolidBottomBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.RED), new HorizontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockRedstoneOre(), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockReserved6());
