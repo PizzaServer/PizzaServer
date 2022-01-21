@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.item.behavior.impl;
 
+import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.item.Item;
@@ -10,7 +11,7 @@ import io.github.pizzaserver.api.player.Player;
 public class ItemArmorBehavior extends DefaultItemBehavior<ItemArmor> {
 
     @Override
-    public boolean onInteract(Player player, ItemArmor item, Block block, BlockFace blockFace) {
+    public boolean onInteract(Player player, ItemArmor item, Block block, BlockFace blockFace, Vector3f clickPosition) {
         Item oldItemStack = null;
         switch (item.getArmorSlot()) {
             case HELMET:

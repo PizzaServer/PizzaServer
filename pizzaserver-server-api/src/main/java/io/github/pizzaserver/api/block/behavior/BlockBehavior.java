@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.block.behavior;
 
+import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
@@ -14,9 +15,10 @@ public interface BlockBehavior {
      * @param entity entity who placed the block
      * @param block the block being placed
      * @param face the face this block was placed on
+     * @param clickPosition where this block was clicked
      * @return if the block should be placed
      */
-    default boolean prepareForPlacement(Entity entity, Block block, BlockFace face) {
+    default boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
         return true;
     }
 
@@ -33,9 +35,10 @@ public interface BlockBehavior {
      * @param player the player who interacted with the block
      * @param block the block interacted with
      * @param face block face that was clicked
+     * @param clickPosition where the block was clicked
      * @return if the item used to interact with this block should be called
      */
-    default boolean onInteract(Player player, Block block, BlockFace face) {
+    default boolean onInteract(Player player, Block block, BlockFace face, Vector3f clickPosition) {
         return true;
     }
 

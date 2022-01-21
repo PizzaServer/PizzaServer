@@ -44,6 +44,11 @@ public class ItemBlock extends Item {
         return this.block.getName();
     }
 
+    @Override
+    public String getItemId() {
+        return this.block.getBlockId();
+    }
+
     public Block getBlock() {
         return this.block;
     }

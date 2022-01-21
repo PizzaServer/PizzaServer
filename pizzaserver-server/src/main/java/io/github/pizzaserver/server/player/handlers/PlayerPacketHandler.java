@@ -99,14 +99,15 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(new ItemBlock(BlockID.DEEPSLATE_REDSTONE_ORE, 10));
+        this.player.getInventory().addItem(new ItemBlock(BlockID.WOODEN_SLAB, 10));
         this.player.getInventory().addItem(new ItemBoat());
         this.player.getInventory().addItem(new ItemSlimeball());
         this.player.getInventory().addItem(new ItemHeartOfTheSea());
         this.player.getInventory().addItem(new ItemNetheriteSword());
         this.player.getInventory().addItem(new ItemNetheriteChestplate());
         this.player.getInventory().addItem(new ItemDiamondChestplate());
-        this.player.getInventory().addItem(new ItemClock());
+        this.player.getInventory().addItem(new ItemStonePickaxe());
+        this.player.getInventory().addItem(new ItemDiamondAxe());
         this.player.getInventory().addItem(new ItemBlock(new BlockChest()));
         this.player.getInventory().addItem(new ItemBlock(new BlockCobblestone(), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);

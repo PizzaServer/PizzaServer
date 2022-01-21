@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.item.behavior;
 
+import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.entity.Entity;
@@ -15,9 +16,10 @@ public interface ItemBehavior<T extends Item> {
      * @param item the item
      * @param block the block interacted with
      * @param blockFace the block face that was clicked
+     * @param clickPosition where the block was clicked
      * @return if the interaction was successful. an incorrect interaction will resend the item slot and the blocks interacted with
      */
-    boolean onInteract(Player player, T item, Block block, BlockFace blockFace);
+    boolean onInteract(Player player, T item, Block block, BlockFace blockFace, Vector3f clickPosition);
 
     /**
      * Called when the player interacts with an entity using this item.

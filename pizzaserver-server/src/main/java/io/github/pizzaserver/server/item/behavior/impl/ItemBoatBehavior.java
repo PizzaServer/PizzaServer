@@ -15,7 +15,7 @@ import io.github.pizzaserver.api.player.Player;
 public class ItemBoatBehavior extends DefaultItemBehavior<ItemBaseBoat> {
 
     @Override
-    public boolean onInteract(Player player, ItemBaseBoat item, Block block, BlockFace blockFace) {
+    public boolean onInteract(Player player, ItemBaseBoat item, Block block, BlockFace blockFace, Vector3f clickPosition) {
         item.setCount(item.getCount() - 1);
         player.getInventory().setHeldItem(item);
 

@@ -3,6 +3,7 @@ package io.github.pizzaserver.api.block.impl;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.data.FurnaceType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
@@ -21,14 +22,41 @@ public class BlockFurnace extends Block {
         }
     };
 
+    private boolean lit;
+
+
+    public BlockFurnace() {
+        this(FurnaceType.UNLIT);
+    }
+
+    public BlockFurnace(FurnaceType furnaceType) {
+        this.setLit(furnaceType == FurnaceType.LIT);
+    }
+
+    public boolean isLit() {
+        return this.lit;
+    }
+
+    public void setLit(boolean lit) {
+        this.lit = lit;
+    }
+
     @Override
     public String getBlockId() {
-        return BlockID.FURNACE;
+        if (this.isLit()) {
+            return BlockID.LIT_FURNACE;
+        } else {
+            return BlockID.FURNACE;
+        }
     }
 
     @Override
     public String getName() {
-        return "Furnace";
+        if (this.isLit()) {
+            return "Lit Furnace";
+        } else {
+            return "Furnace";
+        }
     }
 
     @Override

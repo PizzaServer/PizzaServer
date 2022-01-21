@@ -154,7 +154,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
             switch (action.getAction()) {
                 case START_BREAK:
                 case BLOCK_CONTINUE_DESTROY:
-                    if (this.player.isAlive() && this.player.canReach(action.getBlockPosition(), this.player.inCreativeMode() ? 13 : 7)) {
+                    if (this.player.isAlive() && this.player.canReach(action.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7)) {
                         BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), action.getBlockPosition(), 0);
 
                         boolean isAlreadyBreakingBlock = this.player.getBlockBreakingManager().getBlock().isPresent();
@@ -206,6 +206,11 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         }
                     } else {
                         this.player.getServer().getLogger().debug(String.format("%s tried to destroy a block but was not allowed.", this.player.getUsername()));
+
+                        // Prevent malicious clients from requesting far away blocks to load unloaded chunks
+                        if (action.getBlockPosition().distance(this.player.getLocation().toVector3i()) < this.player.getChunkRadius() * 16) {
+                            this.player.getWorld().sendBlock(this.player, action.getBlockPosition());
+                        }
                     }
                     break;
                 case ABORT_BREAK:

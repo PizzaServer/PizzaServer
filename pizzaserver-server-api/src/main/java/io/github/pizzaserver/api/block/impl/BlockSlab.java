@@ -4,11 +4,15 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.SlabType;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public abstract class BlockSlab extends Block {
 
@@ -53,9 +57,11 @@ public abstract class BlockSlab extends Block {
         }
 
         if (this.isUpperSlab()) {
-            return new BoundingBox(Vector3f.from(0, 0.5f, 0), Vector3f.from(1, 1, 1));
+            return new BoundingBox(Vector3f.from(0, 0.5f, 0), Vector3f.from(1, 1, 1))
+                    .translate(this.getLocation().toVector3f());
         } else {
-            return new BoundingBox(Vector3f.from(0, 0, 0), Vector3f.from(1, 0.5f, 1));
+            return new BoundingBox(Vector3f.from(0, 0, 0), Vector3f.from(1, 0.5f, 1))
+                    .translate(this.getLocation().toVector3f());
         }
     }
 
@@ -65,10 +71,16 @@ public abstract class BlockSlab extends Block {
     }
 
     @Override
-    public ItemBlock toStack() {
-        ItemBlock itemBlock = super.toStack();
-        itemBlock.setCount(this.isDouble() ? 2 : 1);
-        return itemBlock;
+    public Set<Item> getDrops(Entity entity) {
+        if (this.isDouble()) {
+            ItemBlock clonedBlockStack = this.toStack();
+            clonedBlockStack.setCount(2);
+            ((BlockSlab) clonedBlockStack.getBlock()).setDouble(false);
+
+            return Collections.singleton(clonedBlockStack);
+        } else {
+            return super.getDrops(entity);
+        }
     }
 
 }

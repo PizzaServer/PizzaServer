@@ -25,11 +25,11 @@ public enum StoneSlabType {
     POLISHED_DIORITE("Polished Diorite Slab"),
     GRANITE("Granite Slab"),
     POLISHED_GRANITE("Polished Granite Slab"),
-    MOSSY_STONE_BRICK(""),
-    SMOOTH_QUARTZ,
-    STONE,
-    CUT_SANDSTONE,
-    CUT_RED_SANDSTONE;
+    MOSSY_STONE_BRICK("Mossy Stone Brick Slab"),
+    SMOOTH_QUARTZ("Smooth Quartz Slab"),
+    STONE("Stone Slab"),
+    CUT_SANDSTONE("Cut Sandstone Slab"),
+    CUT_RED_SANDSTONE("Cut Red Sandstone Slab");
 
 
     private final String displayName;

@@ -77,18 +77,6 @@ public abstract class Server {
     public abstract void setMaximumPlayerCount(int players);
 
     /**
-     * Retrieve the target ticks per second for the server.
-     * @return target tps
-     */
-    public abstract int getTargetTps();
-
-    /**
-     * Change the target ticks per second for the server.
-     * @param newTps new ticks per second
-     */
-    public abstract void setTargetTps(int newTps);
-
-    /**
      * Retrieve the last recorded ticks per second.
      * @return current tps
      */

@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.block.behavior.impl;
 
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
@@ -13,14 +14,13 @@ import io.github.pizzaserver.api.player.Player;
 public class ButtonBlockBehavior extends DefaultBlockBehavior {
 
     @Override
-    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face) {
+    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
         block.setBlockState(face.ordinal());
-        boolean ap = true&& false;
         return block.getSide(face.opposite()).hasCollision();
     }
 
     @Override
-    public boolean onInteract(Player player, Block block, BlockFace face) {
+    public boolean onInteract(Player player, Block block, BlockFace face, Vector3f clickPosition) {
         if (block.getBlockState() < 6) {
             block.setBlockState(block.getBlockState() + 6);   // Power it on
             block.getWorld().setAndUpdateBlock(block, block.getLocation().toVector3i());

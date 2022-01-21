@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.block.behavior.impl;
 
+import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
@@ -11,7 +12,7 @@ import io.github.pizzaserver.api.item.impl.ItemBlock;
 public class RequiresSolidBottomBlockBehavior extends DefaultBlockBehavior {
 
     @Override
-    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face) {
+    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
         return block.getSide(BlockFace.BOTTOM).hasCollision();
     }
 

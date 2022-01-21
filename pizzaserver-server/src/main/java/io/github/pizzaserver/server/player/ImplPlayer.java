@@ -336,7 +336,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean inCreativeMode() {
+    public boolean isCreativeMode() {
         return this.getGamemode() == Gamemode.CREATIVE;
     }
 
@@ -373,17 +373,17 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public boolean canReach(Entity entity) {
-        return this.canReach(entity.getLocation().toVector3f(), this.inCreativeMode() ? 9 : 6);
+        return this.canReach(entity.getLocation().toVector3f(), this.isCreativeMode() ? 9 : 6);
     }
 
     @Override
     public boolean canReach(BlockEntity blockEntity) {
-        return this.canReach(blockEntity.getLocation().toVector3f(), this.inCreativeMode() ? 13 : 7);
+        return this.canReach(blockEntity.getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
     }
 
     @Override
     public boolean canReach(Block block) {
-        return this.canReach(block.getLocation().toVector3f(), this.inCreativeMode() ? 13 : 7);
+        return this.canReach(block.getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
     }
 
     public boolean canReach(Vector3i vector3, float maxDistance) {

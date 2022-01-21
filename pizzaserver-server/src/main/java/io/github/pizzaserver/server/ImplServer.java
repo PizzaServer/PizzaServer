@@ -74,7 +74,6 @@ public class ImplServer extends Server {
 
     protected final Logger logger;
 
-    protected int targetTps;
     protected int currentTps;
     protected long currentTick;
 
@@ -117,7 +116,6 @@ public class ImplServer extends Server {
         ServerProtocol.loadVersions();
 
         this.getResourcePackManager().loadPacks();
-        this.setTargetTps(20);
 
         try {
             this.getNetwork().boot(this.getIp(), this.getPort());
@@ -138,7 +136,7 @@ public class ImplServer extends Server {
         long nanoSleepTime = 0;
 
         while (this.running) {
-            long idealNanoSleepPerTick = TimeUnit.SECONDS.toNanos(1) / this.targetTps;
+            long idealNanoSleepPerTick = TimeUnit.SECONDS.toNanos(1) / 20;
 
             // Figure out how long it took to tick
             long startTickTime = System.nanoTime();
@@ -302,16 +300,6 @@ public class ImplServer extends Server {
     @Override
     public int getMaximumPlayerCount() {
         return this.maximumPlayersAllowed;
-    }
-
-    @Override
-    public int getTargetTps() {
-        return this.targetTps;
-    }
-
-    @Override
-    public void setTargetTps(int newTps) {
-        this.targetTps = newTps;
     }
 
     @Override

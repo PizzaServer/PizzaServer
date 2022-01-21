@@ -48,7 +48,7 @@ public interface Player extends EntityHuman {
 
     void setGamemode(Gamemode gamemode);
 
-    boolean inCreativeMode();
+    boolean isCreativeMode();
 
     boolean isAdventureMode();
 

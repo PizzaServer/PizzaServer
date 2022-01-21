@@ -162,6 +162,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                 case NORMAL -> this.handleDropInventoryTransaction(packet);
                 case ITEM_USE -> this.handleUseInventoryTransaction(packet.getBlockPosition(),
                         BlockFace.resolve(packet.getBlockFace()),
+                        packet.getClickPosition(),
                         packet.getHotbarSlot(),
                         packet.getActionType(),
                         packet.getItemInHand());
@@ -179,6 +180,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
         if (this.player.isAlive() && this.player.hasSpawned() && packet.getItemUseTransaction() != null) {
             this.handleUseInventoryTransaction(packet.getItemUseTransaction().getBlockPosition(),
                     BlockFace.resolve(packet.getItemUseTransaction().getBlockFace()),
+                    packet.getItemUseTransaction().getClickPosition(),
                     packet.getItemUseTransaction().getHotbarSlot(),
                     packet.getItemUseTransaction().getActionType(),
                     packet.getItemUseTransaction().getItemInHand());
@@ -229,7 +231,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
         }
     }
 
-    private void handleUseInventoryTransaction(Vector3i blockCoordinates, BlockFace blockFace, int hotbarSlot, int actionType, ItemData itemData) {
+    private void handleUseInventoryTransaction(Vector3i blockCoordinates, BlockFace blockFace, Vector3f clickPosition, int hotbarSlot, int actionType, ItemData itemData) {
         double distanceToBlock = this.player.getLocation().toVector3f().distance(blockCoordinates.toFloat());
         if (distanceToBlock > this.player.getChunkRadius() * 16) {
             // Prevent malicious clients from causing an OutOfMemory error by sending a transaction
@@ -237,7 +239,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
             return;
         }
 
-        if (this.player.canReach(blockCoordinates, this.player.inCreativeMode() ? 13 : 7)) {
+        if (this.player.canReach(blockCoordinates, this.player.isCreativeMode() ? 13 : 7)) {
             Block block = this.player.getWorld().getBlock(blockCoordinates);
 
             boolean isCurrentSelectedSlot = hotbarSlot == this.player.getInventory().getSelectedSlot();
@@ -251,12 +253,12 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                         case InventoryTransactionAction.USE_CLICK_BLOCK:
                         case InventoryTransactionAction.USE_CLICK_AIR:
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
-                            boolean callItemInteractAllowedByBlock = block.getBehavior().onInteract(this.player, block, blockFace);
+                            boolean callItemInteractAllowedByBlock = block.getBehavior().onInteract(this.player, block, blockFace, clickPosition);
                             boolean callItemInteractAllowedByBlockEntity = block.getWorld().getBlockEntity(blockCoordinates).isEmpty()
                                     || block.getWorld().getBlockEntity(blockCoordinates).get().onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
-                                boolean successfulInteraction = heldItemStack.getBehavior().onInteract(this.player, heldItemStack, block, blockFace);
+                                boolean successfulInteraction = heldItemStack.getBehavior().onInteract(this.player, heldItemStack, block, blockFace, clickPosition);
                                 if (successfulInteraction) {
                                     return; // Item interaction succeeded. Returning ensures the interaction does not get reset
                                 }
@@ -295,7 +297,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
             return;
         }
 
-        if (this.player.canReach(entity.get().getLocation().toVector3f(), this.player.inCreativeMode() ? 9 : 6)) {
+        if (this.player.canReach(entity.get().getLocation().toVector3f(), this.player.isCreativeMode() ? 9 : 6)) {
             ImplEntity implEntity = (ImplEntity) entity.get();
             switch (packet.getActionType()) {
                 case InventoryTransactionAction.USE_ENTITY_INTERACT:

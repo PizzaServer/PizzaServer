@@ -12,16 +12,17 @@ import java.util.List;
 
 public class BlockStoneSlab extends BlockSlab {
 
-    private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
-        {
-            addStoneStates("stone_slab_type", Arrays.asList("smooth_stone", "sandstone", "wood", "cobblestone", "brick", "stone_brick", "quartz", "nether_brick"));
-            addStoneStates("stone_slab_type_2", Arrays.asList("red_sandstone", "purpur", "prismarine_rough", "prismarine_dark", "prismarine_brick", "mossy_cobblestone",
-                    "smooth_sandstone", "red_nether_brick"));
-            addStoneStates("stone_slab_type_3", Arrays.asList("end_stone_brick", "smooth_red_sandstone", "polished_andesite", "andesite", "diorite", "polished_diorite",
-                    "granite", "polished_granite"));
-            addStoneStates("stone_slab_type_4", Arrays.asList("mossy_stone_brick", "smooth_quartz", "stone", "cut_sandstone", "cut_red_sandstone"));
-        }
-    };
+    private static final List<NbtMap> BLOCK_STATES = new ArrayList<>();
+
+    static {
+        addStoneStates("stone_slab_type", Arrays.asList("smooth_stone", "sandstone", "wood", "cobblestone", "brick", "stone_brick", "quartz", "nether_brick"));
+        addStoneStates("stone_slab_type_2", Arrays.asList("red_sandstone", "purpur", "prismarine_rough", "prismarine_dark", "prismarine_brick", "mossy_cobblestone",
+                "smooth_sandstone", "red_nether_brick"));
+        addStoneStates("stone_slab_type_3", Arrays.asList("end_stone_brick", "smooth_red_sandstone", "polished_andesite", "andesite", "diorite", "polished_diorite",
+                "granite", "polished_granite"));
+        addStoneStates("stone_slab_type_4", Arrays.asList("mossy_stone_brick", "smooth_quartz", "stone", "cut_sandstone", "cut_red_sandstone"));
+    }
+
 
     public BlockStoneSlab() {
         this(StoneSlabType.STONE);
@@ -88,13 +89,13 @@ public class BlockStoneSlab extends BlockSlab {
     public ItemBlock toStack() {
         return switch (this.getStoneType()) {
             case SMOOTH_STONE, SANDSTONE, WOOD, COBBLESTONE, BRICK, STONE_BRICK, QUARTZ, NETHER_BRICK
-                    -> new ItemBlock(this.getBlockId(), this.isDouble() ? 2 : 1, this.getStoneType().ordinal());
+                    -> new ItemBlock(this.getBlockId(), 1, this.getStoneType().ordinal());
             case RED_SANDSTONE, PURPUR, PRISMARINE_ROUGH, PRISMARINE_DARK, PRISMARINE_BRICK, MOSSY_COBBLESTONE, SMOOTH_SANDSTONE, RED_NETHER_BRICK
-                    -> new ItemBlock(this.getBlockId(), this.isDouble() ? 2 : 1, this.getStoneType().ordinal() - 8);
+                    -> new ItemBlock(this.getBlockId(), 1, this.getStoneType().ordinal() - 8);
             case END_STONE_BRICK, SMOOTH_RED_SANDSTONE, POLISHED_ANDESITE, ANDESITE, DIORITE, POLISHED_DIORITE, GRANITE, POLISHED_GRANITE
-                    -> new ItemBlock(this.getBlockId(), this.isDouble() ? 2 : 1, this.getStoneType().ordinal() - 16);
+                    -> new ItemBlock(this.getBlockId(), 1, this.getStoneType().ordinal() - 16);
             case MOSSY_STONE_BRICK, SMOOTH_QUARTZ, STONE, CUT_SANDSTONE, CUT_RED_SANDSTONE
-                    -> new ItemBlock(this.getBlockId(), this.isDouble() ? 2 : 1, this.getStoneType().ordinal() - 24);
+                    -> new ItemBlock(this.getBlockId(), 1, this.getStoneType().ordinal() - 24);
         };
     }
 

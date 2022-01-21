@@ -83,6 +83,7 @@ public class BlockWoodenSlab extends BlockSlab {
     @Override
     public void setBlockState(int index) {
         // Prevent the block state from going outside its range since Mojang has different block states for crimson/warped
+        boolean wantsUpperSlab = index % 2 == 1;
         switch (this.getWoodType()) {
             case OAK:
             case SPRUCE:
@@ -91,13 +92,15 @@ public class BlockWoodenSlab extends BlockSlab {
             case ACACIA:
             case DARK_OAK:
                 if (index <= 1) {
-                    throw new IndexOutOfBoundsException("The block state index is out of bounds.");
+                    this.setBlockState(this.getWoodType().ordinal() * 2 + 2 + (wantsUpperSlab ? 1 : 0));
+                    return;
                 }
                 break;
             case CRIMSON:
             case WARPED:
                 if (index >= 2) {
-                    throw new IndexOutOfBoundsException("The block state index is out of bounds.");
+                    this.setBlockState(wantsUpperSlab ? 1 : 0);
+                    return;
                 }
                 break;
         }
@@ -181,7 +184,7 @@ public class BlockWoodenSlab extends BlockSlab {
     @Override
     public ItemBlock toStack() {
         return switch (this.getWoodType()) {
-            case OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK -> new ItemBlock(this.getBlockId(), this.isDouble() ? 2 : 1, this.getWoodType().ordinal());
+            case OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK -> new ItemBlock(this.getBlockId(), 1, this.getWoodType().ordinal());
             case CRIMSON, WARPED -> super.toStack();
         };
     }
