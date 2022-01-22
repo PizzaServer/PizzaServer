@@ -206,6 +206,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockDiamondBlock());
         BlockRegistry.getInstance().register(new BlockDiamondOre());
         BlockRegistry.getInstance().register(new BlockDirt());
+        BlockRegistry.getInstance().register(new BlockDirt(DirtType.ROOTED));
         BlockRegistry.getInstance().register(new BlockStoneSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.RED_SANDSTONE, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.END_STONE_BRICK, SlabType.DOUBLE), new SlabBlockBehavior());

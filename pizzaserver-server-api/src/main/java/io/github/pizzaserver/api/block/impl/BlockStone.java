@@ -44,6 +44,18 @@ public class BlockStone extends Block {
     }
 
     @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta < StoneType.values().length) {
+            this.setBlockState(meta);
+        }
+    }
+
+    @Override
     public String getName() {
         return switch (this.getStoneType()) {
             case STONE -> "Stone";
@@ -79,11 +91,6 @@ public class BlockStone extends Block {
     @Override
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
-    }
-
-    @Override
-    public ItemBlock toStack() {
-        return new ItemBlock(this, 1);
     }
 
 }

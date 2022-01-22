@@ -27,16 +27,17 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block) {
-        this(block, 1);
+        this(block, 1, block.getStackMeta());
     }
 
     public ItemBlock(Block block, int count) {
-        this(block, count, 0);
+        this(block, count, block.getStackMeta());
     }
 
     public ItemBlock(Block block, int count, int meta) {
         super(block.getBlockId(), count, meta);
         this.block = block.clone();
+        this.block.updateFromStackMeta(meta);
     }
 
     @Override
@@ -47,6 +48,16 @@ public class ItemBlock extends Item {
     @Override
     public String getItemId() {
         return this.block.getBlockId();
+    }
+
+    @Override
+    public int getMeta() {
+        return this.getBlock().getStackMeta();
+    }
+
+    @Override
+    public void setMeta(int meta) {
+        this.getBlock().updateFromStackMeta(meta);
     }
 
     public Block getBlock() {

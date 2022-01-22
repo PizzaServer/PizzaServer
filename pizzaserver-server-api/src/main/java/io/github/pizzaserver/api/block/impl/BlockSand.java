@@ -95,6 +95,16 @@ public class BlockSand extends Block {
         return new ItemBlock(this.getBlockId(), 1,  this.getBlockState());
     }
 
+    @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
 
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta <= 1) {
+            this.setBlockState(meta);
+        }
+    }
 
 }

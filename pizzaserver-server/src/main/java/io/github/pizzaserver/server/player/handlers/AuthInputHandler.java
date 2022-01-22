@@ -10,10 +10,12 @@ import io.github.pizzaserver.api.block.descriptors.Liquid;
 import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
+import io.github.pizzaserver.api.event.type.player.PlayerMoveEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSneakingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSprintingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSwimEvent;
 import io.github.pizzaserver.api.utils.BlockLocation;
+import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
@@ -47,6 +49,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case SNEAK_DOWN:
                     case START_SNEAKING:
                     case SNEAKING:
+                    case PERSIST_SNEAK:
                         if (!this.player.isSneaking()) {
                             PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSneakingEvent);
@@ -128,7 +131,6 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case JUMP_DOWN:
                     case JUMPING:
                     case START_JUMPING:
-                    case PERSIST_SNEAK:
                         // For now, we don't need to handle this.
                         // However, if we ever want to implement server-side knockback using the rewind system. This may be useful.
                         break;
@@ -251,13 +253,26 @@ public class AuthInputHandler implements BedrockPacketHandler {
         boolean updateRotation = Math.abs(this.player.getPitch() - rotation.getX()) > ROTATION_UPDATE_THRESHOLD
                 || Math.abs(this.player.getYaw() - rotation.getY()) > ROTATION_UPDATE_THRESHOLD
                 || Math.abs(this.player.getHeadYaw() - rotation.getZ()) > ROTATION_UPDATE_THRESHOLD;
+        boolean updatePosition = position.distance(this.player.getLocation().toVector3f()) > MOVEMENT_DISTANCE_THRESHOLD;
+
+        if (updateRotation || updatePosition) {
+            Location newLocation = new Location(this.player.getWorld(), position.getX(), position.getY(), position.getZ());
+
+            PlayerMoveEvent moveEvent = new PlayerMoveEvent(this.player, this.player.getLocation(), newLocation);
+            this.player.getServer().getEventManager().call(moveEvent);
+
+            if (moveEvent.isCancelled()) {
+                this.player.teleport(this.player.getLocation());
+                return;
+            }
+        }
+
         if (updateRotation) {
             this.player.setPitch(rotation.getX());
             this.player.setYaw(rotation.getY());
             this.player.setHeadYaw(rotation.getZ());
         }
 
-        boolean updatePosition = position.distance(this.player.getLocation().toVector3f()) > MOVEMENT_DISTANCE_THRESHOLD;
         if (updatePosition) {
             this.player.moveTo(position.getX(), position.getY() - this.player.getEyeHeight(), position.getZ());
         }

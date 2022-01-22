@@ -21,6 +21,7 @@ public class ItemUtils {
         return ItemData.builder()
                 .id(version.getItemRuntimeId(item.getItemId()))
                 .netId(item.getNetworkId())
+                .blockRuntimeId(item instanceof ItemBlock ? version.getBlockRuntimeId(item.getItemId(), ((ItemBlock) item).getBlock().getNBTState()) : 0)
                 .count(item.getCount())
                 .damage(item.getMeta())
                 .canBreak(item.getBlocksCanBreak().toArray(String[]::new))

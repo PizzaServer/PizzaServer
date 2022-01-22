@@ -79,6 +79,7 @@ public class BlockID {
     public static final String DIAMOND_BLOCK = "minecraft:diamond_block";
     public static final String DIAMOND_ORE = "minecraft:diamond_ore";
     public static final String DIRT = "minecraft:dirt";
+    public static final String DIRT_WITH_ROOTS = "minecraft:dirt_with_roots";
     public static final String DOUBLE_CRIMSON_SLAB = "minecraft:DOUBLE_CRIMSON_SLAB";
     public static final String DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
     public static final String DOUBLE_STONE_SLAB = "minecraft:double_stone_slab";

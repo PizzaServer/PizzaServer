@@ -24,7 +24,6 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.entity.ImplEntity;
-import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.data.inventory.InventoryTransactionAction;
 import io.github.pizzaserver.server.network.data.inventory.StackResponse;
 import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
@@ -123,11 +122,6 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
     public boolean handle(MobEquipmentPacket packet) {
         boolean isHotbarSlot = packet.getHotbarSlot() >= 0 && packet.getHotbarSlot() < 9;
         if (isHotbarSlot && packet.getContainerId() == ContainerId.INVENTORY) {
-            // If their item does not match up with the server side item resend the server's slot
-            if (!ItemUtils.deserializeNetworkItem(packet.getItem(), this.player.getVersion()).equals(this.player.getInventory().getSlot(packet.getHotbarSlot()))) {
-                this.player.getInventory().sendSlot(this.player, packet.getHotbarSlot());
-            }
-
             // Handle hotbar slot change
             if (packet.getHotbarSlot() != this.player.getInventory().getSelectedSlot()) {
                 PlayerHotbarSelectEvent playerHotbarSelectEvent = new PlayerHotbarSelectEvent(this.player, packet.getHotbarSlot());

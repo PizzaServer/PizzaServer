@@ -4,6 +4,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.descriptors.Liquid;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.ArrayList;
 import java.util.List;

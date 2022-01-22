@@ -58,4 +58,16 @@ public class BlockLight extends Block {
         return BLOCK_STATES;
     }
 
+    @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta <= 15) {
+            this.setLightLevel(meta);
+        }
+    }
+
 }

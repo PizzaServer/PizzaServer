@@ -72,11 +72,11 @@ public abstract class BlockSlab extends Block {
 
     @Override
     public Set<Item> getDrops(Entity entity) {
+        ItemBlock clonedBlockStack = this.toStack();
+        ((BlockSlab) clonedBlockStack.getBlock()).setUpperSlab(false);
         if (this.isDouble()) {
-            ItemBlock clonedBlockStack = this.toStack();
             clonedBlockStack.setCount(2);
             ((BlockSlab) clonedBlockStack.getBlock()).setDouble(false);
-
             return Collections.singleton(clonedBlockStack);
         } else {
             return super.getDrops(entity);

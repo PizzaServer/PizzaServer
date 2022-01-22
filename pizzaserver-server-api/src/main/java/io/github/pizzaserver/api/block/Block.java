@@ -246,8 +246,22 @@ public abstract class Block implements Cloneable {
     }
 
     public ItemBlock toStack() {
-        return new ItemBlock(this.getBlockId(), 1);
+        return new ItemBlock(this.getBlockId(), 1, this.getStackMeta());
     }
+
+    /**
+     * Retrieve the meta assigned to this block when serializing as an item.
+     * @return stack meta
+     */
+    public int getStackMeta() {
+        return 0;
+    }
+
+    /**
+     * Modify this block appropriately based on the item equivalent form of this block's meta.
+     * @param meta stack meta
+     */
+    public void updateFromStackMeta(int meta) {}
 
     public BlockBehavior getBehavior() {
         return BlockRegistry.getInstance().getBlockBehavior(this);

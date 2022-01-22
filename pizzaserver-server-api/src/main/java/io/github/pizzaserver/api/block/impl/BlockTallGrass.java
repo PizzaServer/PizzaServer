@@ -78,4 +78,16 @@ public class BlockTallGrass extends Block {
         return Collections.emptySet();
     }
 
+    @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta <= 2) {
+            this.setTallGrassType(TallGrassType.values()[meta]);
+        }
+    }
+
 }
