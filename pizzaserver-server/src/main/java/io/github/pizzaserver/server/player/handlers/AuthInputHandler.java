@@ -6,6 +6,8 @@ import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.descriptors.Liquid;
 import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
@@ -175,7 +177,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
             switch (action.getAction()) {
                 case START_BREAK:
                 case BLOCK_CONTINUE_DESTROY:
-                    if (this.player.isAlive() && this.player.canReach(action.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7)) {
+                    if (this.player.isAlive()
+                            && this.player.canReach(action.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7)) {
                         BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), action.getBlockPosition(), 0);
 
                         boolean isAlreadyBreakingBlock = this.player.getBlockBreakingManager().getBlock().isPresent();
@@ -195,6 +198,11 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                     && !blockBreakingLocation.getBlock().isAir()
                                     && this.player.getAdventureSettings().canMine();
                             if (canBreakNewBlock) {
+                                // Special case: Fire does not trigger BLOCK_PREDICT_DESTROY
+                                if (!this.playerMinedNormalBlockOrFireBlock(blockBreakingLocation.getBlock(), BlockFace.resolve(action.getFace()))) {
+                                    break;
+                                }
+
                                 BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());
                                 this.player.getServer().getEventManager().call(blockStartBreakEvent);
                                 if (!blockStartBreakEvent.isCancelled()) {
@@ -222,7 +230,6 @@ public class AuthInputHandler implements BedrockPacketHandler {
 
                         if (!blockBreakEvent.isCancelled()) {
                             this.player.getBlockBreakingManager().breakBlock();
-                            return;
                         } else {
                             ((ImplWorld) this.player.getBlockBreakingManager().getBlock().get().getWorld())
                                     .sendBlock(this.player, this.player.getBlockBreakingManager().getBlock().get().getLocation().toVector3i());
@@ -249,6 +256,41 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     break;
             }
         }
+    }
+
+    /**
+     * Fire blocks are handled differently from other blocks when mined.
+     * Returns if the player successfully broke fire block or if the player was not mining a fire block.
+     * @param block the block retrieved from the auth packet
+     * @param face the block face retrieved from the auth packet
+     * @return if the player successfully broke fire block or if the player was not mining a fire block
+     */
+    private boolean playerMinedNormalBlockOrFireBlock(Block block, BlockFace face) {
+        Block possibleFireBlock = block.getSide(face);
+
+        boolean isBlockFire = possibleFireBlock.getBlockId().equals(BlockID.FIRE);
+        if (isBlockFire) {
+            // Special case: Fire does not fire BLOCK_PREDICT_DESTROY
+            BlockStartBreakEvent startBreakEvent = new BlockStartBreakEvent(this.player, possibleFireBlock);
+            this.player.getServer().getEventManager().call(startBreakEvent);
+            if (startBreakEvent.isCancelled()) {
+                this.player.getWorld().sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
+                return false;
+            }
+
+            BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player, possibleFireBlock);
+            this.player.getServer().getEventManager().call(blockBreakEvent);
+            if (!blockBreakEvent.isCancelled()) {
+                this.player.getBlockBreakingManager().startBreaking(possibleFireBlock.getLocation());
+                this.player.getBlockBreakingManager().breakBlock();
+                return true;
+            } else {
+                this.player.getWorld().sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void handleMovement(Vector3f position, Vector3f rotation) {
