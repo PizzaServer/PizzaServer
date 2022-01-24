@@ -256,9 +256,9 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIME), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIME), new HorizontalDirectionBlockBehavior());
         BlockRegistry.getInstance().register(new BlockBlastFurnace(LitType.LIT), new HorizontalDirectionBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockLitDeepslateRedstoneOre(), new RedstoneOreBehavior());
+        BlockRegistry.getInstance().register(new BlockDeepslateRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockFurnace(LitType.LIT), new HorizontalDirectionBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockLitRedstoneOre(), new RedstoneOreBehavior());
+        BlockRegistry.getInstance().register(new BlockRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.MAGENTA), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.MAGENTA), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.MAGENTA), new HorizontalDirectionBlockBehavior());

@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.block.impl;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.data.LitType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
@@ -13,9 +14,32 @@ import java.util.Set;
 
 public class BlockRedstoneOre extends Block {
 
+    protected boolean lit;
+
+
+    public BlockRedstoneOre() {
+        this(LitType.UNLIT);
+    }
+
+    public BlockRedstoneOre(LitType litType) {
+        this.setLit(litType == LitType.LIT);
+    }
+
+    public void setLit(boolean lit) {
+        this.lit = lit;
+    }
+
+    public boolean isLit() {
+        return this.lit;
+    }
+
     @Override
     public String getBlockId() {
-        return BlockID.REDSTONE_ORE;
+        if (this.isLit()) {
+            return BlockID.LIT_REDSTONE_ORE;
+        } else {
+            return BlockID.REDSTONE_ORE;
+        }
     }
 
     @Override
