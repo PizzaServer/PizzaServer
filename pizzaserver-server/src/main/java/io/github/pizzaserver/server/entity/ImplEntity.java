@@ -264,6 +264,32 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public Set<Block> getCollisionBlocks() {
+        BoundingBox entityBoundingBox = this.getBoundingBox().grow(0.5f);
+        int minBlockXCheck = (int) entityBoundingBox.getMinX();
+        int minBlockYCheck = (int) entityBoundingBox.getMinY();
+        int minBlockZCheck = (int) entityBoundingBox.getMinZ();
+        int maxBlockXCheck = (int) entityBoundingBox.getMaxX();
+        int maxBlockYCheck = (int) entityBoundingBox.getMaxY();
+        int maxBlockZCheck = (int) entityBoundingBox.getMaxZ();
+
+        Set<Block> collidingBlocks = new HashSet<>();
+
+        for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
+            for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
+                for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
+                    Block block = this.getWorld().getBlock(x, y, z);
+                    if (block.getBoundingBox().collidesWith(entityBoundingBox)) {
+                        collidingBlocks.add(block);
+                    }
+                }
+            }
+        }
+
+        return collidingBlocks;
+    }
+
+    @Override
     public Block getHeadBlock() {
         if (this.isSwimming()) {
             return this.getWorld().getBlock(this.getLocation().toVector3i());
@@ -1018,6 +1044,12 @@ public class ImplEntity implements Entity {
         if (this.deathAnimationTicks != -1 && --this.deathAnimationTicks <= 0) {
             this.endDeathAnimation();
             this.despawn();
+        }
+
+        for (Block block : this.getCollisionBlocks()) {
+            if (block.getBoundingBox().collidesWith(this.getBoundingBox())) {
+                block.getBehavior().onCollision(this, block);
+            }
         }
 
         Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());

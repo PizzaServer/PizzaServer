@@ -70,4 +70,9 @@ public class BlockLight extends Block {
         }
     }
 
+    @Override
+    public boolean canBeIgnited() {
+        return false;
+    }
+
 }

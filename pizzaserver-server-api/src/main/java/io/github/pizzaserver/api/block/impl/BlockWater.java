@@ -76,4 +76,9 @@ public class BlockWater extends Block implements Liquid {
         return true;
     }
 
+    @Override
+    public boolean canBeIgnited() {
+        return false;
+    }
+
 }

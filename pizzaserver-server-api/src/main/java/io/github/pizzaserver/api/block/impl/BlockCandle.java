@@ -97,6 +97,11 @@ public class BlockCandle extends Block {
     }
 
     @Override
+    public boolean canBeIgnited() {
+        return false;
+    }
+
+    @Override
     public List<NbtMap> getNBTStates() {
         return BLOCK_STATES;
     }

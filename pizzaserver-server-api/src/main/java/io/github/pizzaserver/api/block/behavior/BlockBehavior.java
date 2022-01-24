@@ -72,6 +72,13 @@ public interface BlockBehavior {
     default void onStandingOn(Entity entity, Block block) {}
 
     /**
+     * Called ever tick an entity is colliding with a block.
+     * @param entity the entity who is colliding with the block
+     * @param block the block they're colliding with
+     */
+    default void onCollision(Entity entity, Block block) {}
+
+    /**
      * Called whenever the block is updated.
      * @param block the block being updated
      */

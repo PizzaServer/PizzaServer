@@ -14,8 +14,6 @@ import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
-import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;

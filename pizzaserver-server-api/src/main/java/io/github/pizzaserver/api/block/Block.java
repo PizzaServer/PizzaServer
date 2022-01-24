@@ -193,6 +193,22 @@ public abstract class Block implements Cloneable {
     }
 
     /**
+     * If this block can be set on fire.
+     * @return if this block can be set on fire.
+     */
+    public boolean canBeIgnited() {
+        return true;
+    }
+
+    /**
+     * If the fire on this block should ever be extinguished.
+     * @return if the fire on this block can burn forever.
+     */
+    public boolean canBurnForever() {
+        return false;
+    }
+
+    /**
      * Retrieve the friction entities should receive on this block.
      * MUST be within the range 0-1
      * @return friction of this block

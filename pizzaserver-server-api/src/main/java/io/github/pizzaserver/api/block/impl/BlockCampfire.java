@@ -57,6 +57,11 @@ public class BlockCampfire extends Block {
     }
 
     @Override
+    public boolean canBeIgnited() {
+        return false;
+    }
+
+    @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }

@@ -49,4 +49,9 @@ public class BlockRedstoneWire extends Block {
         return BLOCK_STATES;
     }
 
+    @Override
+    public boolean canBeIgnited() {
+        return false;
+    }
+
 }

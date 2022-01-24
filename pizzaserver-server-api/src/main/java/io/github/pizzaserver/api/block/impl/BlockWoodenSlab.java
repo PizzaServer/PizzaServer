@@ -4,6 +4,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.SlabType;
 import io.github.pizzaserver.api.block.data.WoodType;
+import io.github.pizzaserver.api.block.descriptors.Flammable;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BlockWoodenSlab extends BlockSlab {
+public class BlockWoodenSlab extends BlockSlab implements Flammable {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -179,6 +180,16 @@ public class BlockWoodenSlab extends BlockSlab {
     @Override
     public List<NbtMap> getNBTStates() {
         return BLOCK_STATES;
+    }
+
+    @Override
+    public int getBurnOdds() {
+        return 5;
+    }
+
+    @Override
+    public int getFlameOdds() {
+        return 20;
     }
 
     @Override

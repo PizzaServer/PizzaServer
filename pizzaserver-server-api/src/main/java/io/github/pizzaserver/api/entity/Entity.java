@@ -69,6 +69,12 @@ public interface Entity extends Watchable {
     boolean isOnGround();
 
     /**
+     * Retrieve the blocks this entity's bounding box is currently colliding with.
+     * @return the blocks this entity is colliding with.
+     */
+    Set<Block> getCollisionBlocks();
+
+    /**
      * Retrieve the block that this entity's head is in.
      * @return the block the entity's head is in
      */

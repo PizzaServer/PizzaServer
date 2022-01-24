@@ -81,6 +81,11 @@ public class BlockFire extends Block {
     }
 
     @Override
+    public boolean canBeIgnited() {
+        return false;
+    }
+
+    @Override
     public Set<Item> getDrops(Entity entity) {
         return Collections.emptySet();
     }

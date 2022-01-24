@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.block.behavior.impl;
 
+import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.behavior.impl.RequiresSolidBottomBlockBehavior;
@@ -10,7 +11,14 @@ import io.github.pizzaserver.api.entity.Entity;
 public class FireBlockBehavior extends RequiresSolidBottomBlockBehavior {
 
     @Override
-    public void onStandingOn(Entity entity, Block block) {
+    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
+        Block originBlock = block.getSide(face.opposite());
+        return originBlock.canBeIgnited()
+                && super.prepareForPlacement(entity, block, face, clickPosition);
+    }
+
+    @Override
+    public void onCollision(Entity entity, Block block) {
         entity.setFireTicks(160);
     }
 
