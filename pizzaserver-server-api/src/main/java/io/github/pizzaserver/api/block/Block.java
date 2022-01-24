@@ -279,7 +279,7 @@ public abstract class Block implements Cloneable {
      */
     public void updateFromStackMeta(int meta) {}
 
-    public BlockBehavior getBehavior() {
+    public BlockBehavior<Block> getBehavior() {
         return BlockRegistry.getInstance().getBlockBehavior(this);
     }
 

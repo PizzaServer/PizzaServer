@@ -6,25 +6,18 @@ import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockSlab;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.EntityItem;
-import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
-import io.github.pizzaserver.api.player.Player;
 
-import java.util.Set;
-
-public class SlabBlockBehavior extends DefaultBlockBehavior {
+public class SlabBlockBehavior extends DefaultBlockBehavior<BlockSlab> {
 
     @Override
-    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
-        BlockSlab slabBlock = (BlockSlab) block;
+    public boolean prepareForPlacement(Entity entity, BlockSlab slab, BlockFace face, Vector3f clickPosition) {
         boolean isUpperSlab = face == BlockFace.BOTTOM || (clickPosition.getY() >= 0.5f && face != BlockFace.TOP);
-        slabBlock.setUpperSlab(isUpperSlab);
+        slab.setUpperSlab(isUpperSlab);
 
-        Block originBlock = block.getWorld().getBlock(block.getLocation().toVector3i().add(face.opposite().getOffset()));
-        boolean shouldTryCombiningSlabsBasedOnOriginSlab = originBlock.toStack().hasSameDataAs(block.toStack())
+        Block originBlock = slab.getWorld().getBlock(slab.getLocation().toVector3i().add(face.opposite().getOffset()));
+        boolean shouldTryCombiningSlabsBasedOnOriginSlab = originBlock.toStack().hasSameDataAs(slab.toStack())
                 && originBlock instanceof BlockSlab
-                && !slabBlock.isDouble();
+                && !slab.isDouble();
 
         if (shouldTryCombiningSlabsBasedOnOriginSlab) {
             boolean isOriginBlockUpperSlab = ((BlockSlab) originBlock).isUpperSlab();
@@ -32,31 +25,31 @@ public class SlabBlockBehavior extends DefaultBlockBehavior {
             boolean shouldMakeDoubleSlabs = (face == BlockFace.TOP && !isOriginBlockUpperSlab)
                     || (face == BlockFace.BOTTOM && isOriginBlockUpperSlab);
             if (shouldMakeDoubleSlabs) {
-                slabBlock.setDouble(true);
-                slabBlock.setLocation(block.getWorld(), block.getLocation().toVector3i().add(face.opposite().getOffset()), block.getLayer());
+                slab.setDouble(true);
+                slab.setLocation(slab.getWorld(), slab.getLocation().toVector3i().add(face.opposite().getOffset()), slab.getLayer());
 
-                return !this.collideWithEntities(entity, slabBlock);
+                return !this.collideWithEntities(entity, slab);
             }
         }
 
 
-        Block replacedBlock = block.getWorld().getBlock(block.getLocation().toVector3i());
-        boolean shouldTryCombiningSlabsBasedOnReplacedSlab = replacedBlock.toStack().hasSameDataAs(block.toStack())
+        Block replacedBlock = slab.getWorld().getBlock(slab.getLocation().toVector3i());
+        boolean shouldTryCombiningSlabsBasedOnReplacedSlab = replacedBlock.toStack().hasSameDataAs(slab.toStack())
                 && replacedBlock instanceof BlockSlab
-                && !slabBlock.isDouble();
+                && !slab.isDouble();
         if (shouldTryCombiningSlabsBasedOnReplacedSlab) {
             boolean isReplacedBlockUpperSlab = ((BlockSlab) replacedBlock).isUpperSlab();
 
             boolean shouldMakeDoubleSlabs = face != BlockFace.TOP && face != BlockFace.BOTTOM
-                    && ((slabBlock.isUpperSlab() && !isReplacedBlockUpperSlab)
-                            || (!slabBlock.isUpperSlab() && isReplacedBlockUpperSlab));
+                    && ((slab.isUpperSlab() && !isReplacedBlockUpperSlab)
+                            || (!slab.isUpperSlab() && isReplacedBlockUpperSlab));
             if (shouldMakeDoubleSlabs) {
-                slabBlock.setDouble(true);
-                return !this.collideWithEntities(entity, slabBlock);
+                slab.setDouble(true);
+                return !this.collideWithEntities(entity, slab);
             }
         }
 
-        return super.prepareForPlacement(entity, slabBlock, face, clickPosition);
+        return super.prepareForPlacement(entity, slab, face, clickPosition);
     }
 
 }

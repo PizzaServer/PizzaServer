@@ -10,16 +10,14 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.impl.ItemFlintAndSteel;
 import io.github.pizzaserver.api.player.Player;
 
-public class CandleBlockBehavior extends RequiresSolidBottomBlockBehavior {
+public class CandleBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockCandle> {
 
     @Override
-    public boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
-        BlockCandle candle = (BlockCandle) block;
-
+    public boolean prepareForPlacement(Entity entity, BlockCandle candle, BlockFace face, Vector3f clickPosition) {
         // If the player clicks the candle block
-        Block baseBlock = block.getSide(face.opposite());
+        Block baseBlock = candle.getSide(face.opposite());
         boolean isDirectlyAddingCandleToBlock = baseBlock instanceof BlockCandle baseCandle
-                && baseCandle.getBlockId().equals(block.getBlockId())
+                && baseCandle.getBlockId().equals(candle.getBlockId())
                 && baseCandle.getCandleCount() != 4;
 
         if (isDirectlyAddingCandleToBlock) {
@@ -34,9 +32,9 @@ public class CandleBlockBehavior extends RequiresSolidBottomBlockBehavior {
         }
 
         // If the player clicks the block under the candle
-        Block replacedBlock = block.getWorld().getBlock(block.getLocation().toVector3i());
+        Block replacedBlock = candle.getWorld().getBlock(candle.getLocation().toVector3i());
         boolean isDirectingAddingCandleToParentBlock = replacedBlock instanceof BlockCandle replacedCandle
-                && replacedCandle.getBlockId().equals(block.getBlockId())
+                && replacedCandle.getBlockId().equals(candle.getBlockId())
                 && replacedCandle.getCandleCount() != 4;
 
         if (isDirectingAddingCandleToParentBlock) {
@@ -49,19 +47,19 @@ public class CandleBlockBehavior extends RequiresSolidBottomBlockBehavior {
             return true;
         }
 
-        return super.prepareForPlacement(entity, block, face, clickPosition);
+        return super.prepareForPlacement(entity, candle, face, clickPosition);
     }
 
     @Override
-    public boolean onInteract(Player player, Block block, BlockFace face, Vector3f clickPosition) {
+    public boolean onInteract(Player player, BlockCandle candle, BlockFace face, Vector3f clickPosition) {
         Item itemInHand = player.getInventory().getHeldItem();
         if (itemInHand instanceof ItemFlintAndSteel) {
-            if (((BlockCandle) block).isLit()) {
+            if (candle.isLit()) {
                 return false;
             }
 
-            ((BlockCandle) block).setLit(true);
-            player.getWorld().setAndUpdateBlock(block, block.getLocation().toVector3i());
+            candle.setLit(true);
+            player.getWorld().setAndUpdateBlock(candle, candle.getLocation().toVector3i());
         }
         return true;
     }

@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
 
-public interface BlockBehavior {
+public interface BlockBehavior<T extends Block> {
 
     /**
      * Called before an entity places a block.
@@ -18,7 +18,7 @@ public interface BlockBehavior {
      * @param clickPosition where this block was clicked
      * @return if the block should be placed
      */
-    default boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
+    default boolean prepareForPlacement(Entity entity, T block, BlockFace face, Vector3f clickPosition) {
         return true;
     }
 
@@ -28,7 +28,7 @@ public interface BlockBehavior {
      * @param block the block being placed
      * @param face the face this block was placed on
      */
-    default void onPlace(Entity entity, Block block, BlockFace face) {}
+    default void onPlace(Entity entity, T block, BlockFace face) {}
 
     /**
      * Called when the right click button is used against this block.
@@ -38,7 +38,7 @@ public interface BlockBehavior {
      * @param clickPosition where the block was clicked
      * @return if the item used to interact with this block should be called
      */
-    default boolean onInteract(Player player, Block block, BlockFace face, Vector3f clickPosition) {
+    default boolean onInteract(Player player, T block, BlockFace face, Vector3f clickPosition) {
         return true;
     }
 
@@ -48,40 +48,40 @@ public interface BlockBehavior {
      * @param entity the entity that broke this block.
      * @param block the block broken
      */
-    default void onBreak(Entity entity, Block block) {}
+    default void onBreak(Entity entity, T block) {}
 
     /**
      * Called whenever an entity moves onto this block.
      * @param entity the entity walking on the block
      * @param block the block walked on
      */
-    default void onWalkedOn(Entity entity, Block block) {}
+    default void onWalkedOn(Entity entity, T block) {}
 
     /**
      * Called whenever an entity walks off of this block.
      * @param entity the entity who walked off this block
      * @param block the block walked off of
      */
-    default void onWalkedOff(Entity entity, Block block) {}
+    default void onWalkedOff(Entity entity, T block) {}
 
     /**
      * Called every tick an entity is on this block.
      * @param entity the entity who is on this block
      * @param block the block the entity is standing on
      */
-    default void onStandingOn(Entity entity, Block block) {}
+    default void onStandingOn(Entity entity, T block) {}
 
     /**
      * Called ever tick an entity is colliding with a block.
      * @param entity the entity who is colliding with the block
      * @param block the block they're colliding with
      */
-    default void onCollision(Entity entity, Block block) {}
+    default void onCollision(Entity entity, T block) {}
 
     /**
      * Called whenever the block is updated.
      * @param block the block being updated
      */
-    default void onUpdate(BlockUpdateType type, Block block) {}
+    default void onUpdate(BlockUpdateType type, T block) {}
 
 }

@@ -12,10 +12,10 @@ import java.util.Set;
 public interface BlockRegistry {
 
     default void register(Block block) {
-        this.register(block, new DefaultBlockBehavior());
+        this.register(block, new DefaultBlockBehavior<>());
     }
 
-    void register(Block block, BlockBehavior behavior);
+    <T extends Block> void register(T block, BlockBehavior<T> behavior);
 
     /**
      * Check if a block id was registered.
@@ -34,11 +34,11 @@ public interface BlockRegistry {
 
     Block getBlock(String blockId, int state);
 
-    default BlockBehavior getBlockBehavior(String blockId) {
+    default BlockBehavior<? extends Block> getBlockBehavior(String blockId) {
         return this.getBlockBehavior(this.getBlock(blockId));
     }
 
-    BlockBehavior getBlockBehavior(Block block);
+    <T extends Block> BlockBehavior<T> getBlockBehavior(T block);
 
     static BlockRegistry getInstance() {
         return Server.getInstance().getBlockRegistry();

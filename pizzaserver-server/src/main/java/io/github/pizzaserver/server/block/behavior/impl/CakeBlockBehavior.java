@@ -9,15 +9,13 @@ import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.player.Player;
 
-public class CakeBlockBehavior extends DefaultBlockBehavior {
+public class CakeBlockBehavior extends DefaultBlockBehavior<BlockCake> {
 
     @Override
-    public boolean onInteract(Player player, Block block, BlockFace face, Vector3f clickPosition) {
+    public boolean onInteract(Player player, BlockCake cake, BlockFace face, Vector3f clickPosition) {
         if (player.isSneaking()) {
             return true;
         }
-
-        BlockCake cake = (BlockCake) block;
 
         // Handle case where the player wants to place a candle on the block.
         if (player.getInventory().getHeldItem() instanceof ItemBlock
@@ -31,7 +29,7 @@ public class CakeBlockBehavior extends DefaultBlockBehavior {
                 candleCakeBlock = new BlockCandleCake();
             }
 
-            block.getWorld().setAndUpdateBlock(candleCakeBlock, block.getLocation().toVector3i());
+            cake.getWorld().setAndUpdateBlock(candleCakeBlock, cake.getLocation().toVector3i());
             return false;
         }
 
