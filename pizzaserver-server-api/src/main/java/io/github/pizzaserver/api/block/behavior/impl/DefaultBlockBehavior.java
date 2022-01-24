@@ -21,15 +21,12 @@ public class DefaultBlockBehavior implements BlockBehavior {
             return false;
         }
 
+        return this.canReplaceOldBlockWithNewBlock(block);
+    }
+
+    protected boolean canReplaceOldBlockWithNewBlock(Block block) {
         Block replacedBlock = block.getWorld().getBlock(block.getLocation().toVector3i());
-        if (replacedBlock.isAir() || replacedBlock.isReplaceable()) {
-            return true;
-        } else {
-            // air blocks don't change the world at all and cannot really be placed.
-            // but for all other blocks return false since the block should not have
-            // been placed clientside.
-            return block.isAir();
-        }
+        return replacedBlock.isAir() || replacedBlock.isReplaceable();
     }
 
     protected boolean collideWithEntities(Entity entity, Block block) {

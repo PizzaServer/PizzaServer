@@ -21,6 +21,7 @@ import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Skin;
+import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 public class PlayerPacketHandler implements BedrockPacketHandler {
@@ -102,20 +103,21 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(new ItemBlock(BlockID.WOODEN_SLAB, 10));
+        this.player.getInventory().addItem(new ItemBlock(BlockID.CANDLE, 10));
         this.player.getInventory().addItem(new ItemBoat());
         this.player.getInventory().addItem(new ItemSlimeball());
         this.player.getInventory().addItem(new ItemHeartOfTheSea());
         this.player.getInventory().addItem(new ItemNetheriteSword());
-        this.player.getInventory().addItem(new ItemNetheriteChestplate());
+        this.player.getInventory().addItem(new ItemFlintAndSteel());
         this.player.getInventory().addItem(new ItemDiamondChestplate());
         this.player.getInventory().addItem(new ItemStonePickaxe());
         this.player.getInventory().addItem(new ItemDiamondAxe());
         this.player.getInventory().addItem(new ItemBlock(new BlockDirt(DirtType.ROOTED)));
         this.player.getInventory().addItem(new ItemBlock(new BlockWoodenSlab(WoodType.BIRCH), 10));
         this.player.getInventory().addItem(new ItemBlock(new BlockSand(SandType.RED)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockSand(SandType.NORMAL)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockCobblestone(), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockColoredCandleCake(DyeColor.GREEN)));
+        this.player.getInventory().addItem(new ItemBlock(new BlockColoredCandle(DyeColor.CYAN)));
+        this.player.getInventory().addItem(new ItemBlock(new BlockTallGrass(), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
         this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

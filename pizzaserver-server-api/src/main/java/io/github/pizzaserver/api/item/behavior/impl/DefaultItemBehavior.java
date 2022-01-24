@@ -10,7 +10,6 @@ import io.github.pizzaserver.api.player.Player;
 
 public class DefaultItemBehavior<T extends Item> implements ItemBehavior<T> {
 
-
     @Override
     public boolean onInteract(Player player, T item, Block block, BlockFace blockFace, Vector3f clickPosition) {
         return true;

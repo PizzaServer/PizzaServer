@@ -979,6 +979,7 @@ public class ImplEntity implements Entity {
             Block headBlock = this.getHeadBlock();
             EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
             boolean isSuffocating = headBlock.hasCollision()
+                    && headBlock.getBoundingBox().collidesWith(this.getBoundingBox())
                     && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
                         || breathableComponent.getNonBreathableBlocks().contains(headBlock));
             if (isSuffocating) {

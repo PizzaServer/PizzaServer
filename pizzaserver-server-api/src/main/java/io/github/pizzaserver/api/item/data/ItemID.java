@@ -40,6 +40,7 @@ public class ItemID extends BlockID {
     public static final String FEATHER = "minecraft:feather";
     public static final String FERMENTED_SPIDER_EYE = "minecraft:fermented_spider_eye";
     public static final String FLINT = "minecraft:flint";
+    public static final String FLINT_AND_STEEL = "minecraft:flint_and_steel";
     public static final String GHAST_TEAR = "minecraft:ghast_tear";
     public static final String GLISTERING_MELON_SLICE = "minecraft:glistering_melon_slice";
     public static final String GLOW_INK_SAC = "minecraft:glow_ink_sac";

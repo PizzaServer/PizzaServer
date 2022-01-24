@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.block.data;
 
-public enum FurnaceType {
+public enum LitType {
     UNLIT,
     LIT
 }

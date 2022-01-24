@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.block.impl;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.data.FurnaceType;
+import io.github.pizzaserver.api.block.data.LitType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
@@ -26,11 +26,11 @@ public class BlockFurnace extends Block {
 
 
     public BlockFurnace() {
-        this(FurnaceType.UNLIT);
+        this(LitType.UNLIT);
     }
 
-    public BlockFurnace(FurnaceType furnaceType) {
-        this.setLit(furnaceType == FurnaceType.LIT);
+    public BlockFurnace(LitType litType) {
+        this.setLit(litType == LitType.LIT);
     }
 
     public boolean isLit() {

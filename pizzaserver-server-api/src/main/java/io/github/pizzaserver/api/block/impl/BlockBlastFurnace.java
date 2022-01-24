@@ -1,16 +1,16 @@
 package io.github.pizzaserver.api.block.impl;
 
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.data.FurnaceType;
+import io.github.pizzaserver.api.block.data.LitType;
 
 public class BlockBlastFurnace extends BlockFurnace {
 
     public BlockBlastFurnace() {
-        this(FurnaceType.UNLIT);
+        this(LitType.UNLIT);
     }
 
-    public BlockBlastFurnace(FurnaceType type) {
-        this.setLit(type == FurnaceType.LIT);
+    public BlockBlastFurnace(LitType type) {
+        this.setLit(type == LitType.LIT);
     }
 
     @Override

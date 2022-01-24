@@ -199,6 +199,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 this.player.getServer().getEventManager().call(blockStartBreakEvent);
                                 if (!blockStartBreakEvent.isCancelled()) {
                                     this.player.getBlockBreakingManager().startBreaking(blockBreakingLocation);
+                                } else {
+                                    this.player.getWorld().sendBlock(this.player, blockBreakingLocation.toVector3i());
                                 }
                             }
                         }

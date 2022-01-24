@@ -13,7 +13,8 @@ public class RequiresSolidBottomBlockBehavior extends DefaultBlockBehavior {
 
     @Override
     public boolean prepareForPlacement(Entity entity, Block block, BlockFace face, Vector3f clickPosition) {
-        return block.getSide(BlockFace.BOTTOM).hasCollision();
+        return block.getSide(BlockFace.BOTTOM).hasCollision()
+                && super.prepareForPlacement(entity, block, face, clickPosition);
     }
 
     @Override
