@@ -179,16 +179,17 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             // Get their spawn location
             World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
-            Location location;
+            Vector3f rotation = Vector3f.from(data.getPitch(), data.getYaw(), data.getYaw());
+            Location spawnLocation;
             if (world == null) { // Was the world deleted? Set it to the default world if so
                 String defaultWorldName = this.getServer().getConfig().getDefaultWorldName();
                 world = this.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
-                location = new Location(world, world.getSpawnCoordinates());
+                spawnLocation = new Location(world, world.getSpawnCoordinates(), rotation);
             } else {
-                location = new Location(world, data.getPosition());
+                spawnLocation = new Location(world, data.getPosition(), rotation);
             }
 
-            PlayerLoginEvent playerLoginEvent = new PlayerLoginEvent(this, location, data.getPitch(), data.getYaw());
+            PlayerLoginEvent playerLoginEvent = new PlayerLoginEvent(this, spawnLocation);
             this.getServer().getEventManager().call(playerLoginEvent);
             if (playerLoginEvent.isCancelled()) {
                 this.disconnect();
@@ -205,8 +206,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setUniqueEntityId(this.getId());
             startGamePacket.setRuntimeEntityId(this.getId());
             startGamePacket.setPlayerGameType(GameType.from(this.getGamemode().ordinal()));
-            startGamePacket.setPlayerPosition(location.toVector3f().add(0, this.getEyeHeight(), 0));
-            startGamePacket.setRotation(Vector2f.from(this.getPitch(), this.getYaw()));
+            startGamePacket.setPlayerPosition(spawnLocation.toVector3f().add(0, this.getEyeHeight(), 0));
+            startGamePacket.setRotation(Vector2f.from(spawnLocation.getPitch(), spawnLocation.getYaw()));
             startGamePacket.setDimensionId(world.getDimension().ordinal());
             startGamePacket.setLevelGameType(GameType.SURVIVAL);
             startGamePacket.setDifficulty(Difficulty.PEACEFUL.ordinal());
@@ -261,7 +262,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                     .collect(Collectors.toList());
             this.getPlayerList().addEntries(entries);
 
-            location.getWorld().addEntity(this, location.toVector3f());
+            spawnLocation.getWorld().addEntity(this, spawnLocation.toVector3f());
             this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemID.SHIELD));
             this.getPacketHandlerPipeline().addLast(new PlayerPacketHandler(this));
             this.getPacketHandlerPipeline().addLast(new InventoryTransactionHandler(this));
@@ -650,31 +651,22 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public void teleport(World world, float x, float y, float z) {
-        this.teleport(world, x, y, z, world.getDimension());
-    }
+    public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
+        super.teleport(world, x, y, z, pitch, yaw, headYaw);
 
-    @Override
-    public void teleport(float x, float y, float z, Dimension transferDimension) {
-        this.teleport(this.getWorld(), x, y, z, transferDimension);
-    }
-
-    @Override
-    public void teleport(Location location, Dimension transferDimension) {
-        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), transferDimension);
-    }
-
-    @Override
-    public void teleport(World world, float x, float y, float z, Dimension transferDimension) {
-        World oldWorld = this.getWorld();
-
-        super.teleport(world, x, y, z);
-        MoveEntityAbsolutePacket teleportPacket = new MoveEntityAbsolutePacket();
+        MovePlayerPacket teleportPacket = new MovePlayerPacket();
         teleportPacket.setRuntimeEntityId(this.getId());
         teleportPacket.setPosition(Vector3f.from(x, y + this.getEyeHeight(), z));
-        teleportPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
-        teleportPacket.setTeleported(true);
+        teleportPacket.setRotation(Vector3f.from(pitch, yaw, headYaw));
+        teleportPacket.setMode(MovePlayerPacket.Mode.TELEPORT);
+        teleportPacket.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
         this.sendPacket(teleportPacket);
+    }
+
+    @Override
+    public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension) {
+        World oldWorld = this.getWorld();
+        this.teleport(world, x, y, z, pitch, yaw, headYaw);
 
         if (!oldWorld.getDimension().equals(transferDimension)) {
             this.setDimensionTransferScreen(transferDimension);
@@ -968,7 +960,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public void moveTo(float x, float y, float z) {
-        Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z));
+        Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z), Vector3f.from(this.pitch, this.yaw, this.headYaw));
         super.moveTo(x, y, z);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {

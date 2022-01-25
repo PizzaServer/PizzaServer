@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api.entity;
 
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -108,11 +109,50 @@ public interface Entity extends Watchable {
      */
     Chunk getChunk();
 
-    void teleport(float x, float y, float z);
+    default void teleport(Vector3i position) {
+        this.teleport(position, Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+    }
 
-    void teleport(Location location);
+    default void teleport(Vector3f position) {
+        this.teleport(position.toFloat(), Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+    }
 
-    void teleport(World world, float x, float y, float z);
+    default void teleport(Vector3i position, Vector3f rotation) {
+        this.teleport(position.toFloat(), rotation);
+    }
+
+    default void teleport(Vector3f position, Vector3f rotation) {
+        this.teleport(position.getX(),
+                position.getY(),
+                position.getZ(),
+                rotation.getX(),
+                rotation.getY(),
+                rotation.getZ());
+    }
+
+    default void teleport(float x, float y, float z) {
+        this.teleport(this.getWorld(), x, y, z);
+    }
+
+    default void teleport(float x, float y, float z, float pitch, float yaw, float headYaw) {
+        this.teleport(this.getWorld(), x, y, z, pitch, yaw, headYaw);
+    }
+
+    default void teleport(Location location) {
+        this.teleport(location.getWorld(),
+                location.getX(),
+                location.getY(),
+                location.getZ(),
+                location.getPitch(),
+                location.getYaw(),
+                location.getHeadYaw());
+    }
+
+    default void teleport(World world, float x, float y, float z) {
+        this.teleport(world, x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+    }
+
+    void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw);
 
     /**
      * Retrieve the current velocity of the entity.

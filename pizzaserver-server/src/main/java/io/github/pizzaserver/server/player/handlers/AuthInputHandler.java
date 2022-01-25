@@ -300,7 +300,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
         boolean updatePosition = position.distance(this.player.getLocation().toVector3f()) > MOVEMENT_DISTANCE_THRESHOLD;
 
         if (updateRotation || updatePosition) {
-            Location newLocation = new Location(this.player.getWorld(), position.getX(), position.getY(), position.getZ());
+            Location newLocation = new Location(this.player.getWorld(), position, rotation);
 
             PlayerMoveEvent moveEvent = new PlayerMoveEvent(this.player, this.player.getLocation(), newLocation);
             this.player.getServer().getEventManager().call(moveEvent);
@@ -309,16 +309,13 @@ public class AuthInputHandler implements BedrockPacketHandler {
                 this.player.teleport(this.player.getLocation());
                 return;
             }
-        }
 
-        if (updateRotation) {
-            this.player.setPitch(rotation.getX());
-            this.player.setYaw(rotation.getY());
-            this.player.setHeadYaw(rotation.getZ());
-        }
-
-        if (updatePosition) {
-            this.player.moveTo(position.getX(), position.getY() - this.player.getEyeHeight(), position.getZ());
+            this.player.moveTo(position.getX(),
+                    position.getY() - this.player.getEyeHeight(),
+                    position.getZ(),
+                    rotation.getX(),
+                    rotation.getY(),
+                    rotation.getZ());
         }
     }
 

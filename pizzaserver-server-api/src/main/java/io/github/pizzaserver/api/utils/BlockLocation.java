@@ -86,8 +86,7 @@ public class BlockLocation {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof BlockLocation) {
-            BlockLocation otherBlockLocation = (BlockLocation) obj;
+        if (obj instanceof BlockLocation otherBlockLocation) {
             return otherBlockLocation.getWorld().equals(this.getWorld())
                     && otherBlockLocation.getX() == this.getX()
                     && otherBlockLocation.getY() == this.getY()

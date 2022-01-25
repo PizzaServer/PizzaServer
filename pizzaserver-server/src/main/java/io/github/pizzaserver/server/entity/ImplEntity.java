@@ -310,7 +310,9 @@ public class ImplEntity implements Entity {
 
     @Override
     public Location getLocation() {
-        return new Location(this.world, Vector3f.from(this.getX(), this.getY(), this.getZ()));
+        return new Location(this.world,
+                Vector3f.from(this.getX(), this.getY(), this.getZ()),
+                Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
     }
 
     @Override
@@ -382,40 +384,37 @@ public class ImplEntity implements Entity {
      */
     public void setPosition(Location location) {
         if (location != null) {
-            this.setPosition(location.getWorld(), location.getX(), location.getY(), location.getZ());
+            this.setPosition(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw(), location.getHeadYaw());
         } else {
-            this.setPosition(null, 0, 0, 0);
+            this.setPosition(null, 0, 0, 0, 0, 0, 0);
         }
     }
 
-    public void setPosition(World world, float x, float y, float z) {
+    public void setPosition(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.headYaw = headYaw;
         this.recalculateBoundingBox();
     }
 
     @Override
-    public void teleport(float x, float y, float z) {
-        this.teleport(this.getWorld(), x, y, z);
-    }
-
-    @Override
-    public void teleport(Location location) {
-        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ());
-    }
-
-    @Override
-    public void teleport(World world, float x, float y, float z) {
+    public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
         World oldWorld = this.getWorld();
         this.moveUpdate = true;
 
         if (!world.equals(oldWorld)) {
+            this.setPitch(pitch);
+            this.setYaw(yaw);
+            this.setHeadYaw(headYaw);
+
             oldWorld.removeEntity(this);
             world.addEntity(this, Vector3f.from(x, y, z));
         } else {
-            this.setPosition(new Location(this.world, this.x, this.y, this.z));
+            this.setPosition(new Location(world, x, y, z, pitch, yaw, headYaw));
         }
     }
 
@@ -954,11 +953,15 @@ public class ImplEntity implements Entity {
     }
 
     public void moveTo(float x, float y, float z) {
+        this.moveTo(x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+    }
+
+    public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
         this.moveUpdate = true;
         Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
 
         ImplChunk currentChunk = this.getChunk();
-        this.setPosition(this.getWorld(), x, y, z);
+        this.setPosition(this.getWorld(), x, y, z, pitch, yaw, headYaw);
 
         ImplChunk newChunk = this.getWorld().getChunk((int) Math.floor(this.x / 16), (int) Math.floor(this.z / 16));
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
