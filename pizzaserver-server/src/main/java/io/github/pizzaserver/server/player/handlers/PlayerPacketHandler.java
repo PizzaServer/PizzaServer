@@ -115,7 +115,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         this.player.getInventory().addItem(new ItemBlock(new BlockSand(SandType.RED)));
         this.player.getInventory().addItem(new ItemBlock(new BlockColoredCandleCake(DyeColor.GREEN)));
         this.player.getInventory().addItem(new ItemBlock(new BlockColoredCandle(DyeColor.CYAN)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockTallGrass(), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockCarpet(DyeColor.BLUE), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
         this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

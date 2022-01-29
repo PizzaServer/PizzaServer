@@ -22,7 +22,7 @@ public interface ItemRegistry {
 
     boolean hasItemType(String itemId);
 
-    Set<CustomItem> getCustomItems();
+    Set<Item> getCustomItems();
 
     default Item getItem(String itemId) {
         return this.getItem(itemId, 1);

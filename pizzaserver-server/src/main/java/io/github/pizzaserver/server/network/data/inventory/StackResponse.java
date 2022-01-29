@@ -27,7 +27,7 @@ public class StackResponse {
                 (byte) slotContainer.getItemStack().getCount(),
                 slotContainer.getItemStack().getNetworkId(),
                 slotContainer.getItemStack().getCustomName().orElse(""),
-                slotContainer.getItemStack().getMeta()));
+                slotContainer.getItemStack().getNBT().getInt("Damage")));
     }
 
     public ItemStackResponsePacket.Response serialize() {

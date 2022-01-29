@@ -13,7 +13,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
-import io.github.pizzaserver.api.item.CustomItem;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
@@ -139,7 +139,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
             // Register custom items
-            for (CustomItem customItem : ItemRegistry.getInstance().getCustomItems()) {
+            for (Item customItem : ItemRegistry.getInstance().getCustomItems()) {
                 int runtimeId = customItemIdStart++;
                 this.itemRuntimeIds.put(customItem.getItemId(), runtimeId);
                 this.itemEntries.add(new StartGamePacket.ItemEntry(customItem.getItemId(), (short) runtimeId, true));
@@ -180,12 +180,12 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     @Override
     protected void loadItemComponents() {
         this.itemComponents.clear();
-        for (CustomItem customItem : ItemRegistry.getInstance().getCustomItems()) {
+        for (Item customItem : ItemRegistry.getInstance().getCustomItems()) {
             this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
         }
     }
 
-    protected NbtMap getItemComponentNBT(CustomItem item) {
+    protected NbtMap getItemComponentNBT(Item item) {
         NbtMapBuilder container = NbtMap.builder();
         container.putInt("id", this.getItemRuntimeId(item.getItemId()))
                 .putString("name", item.getItemId());
@@ -220,17 +220,17 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
         NbtMap itemProperties = NbtMap.builder()
                 .putCompound("minecraft:icon", NbtMap.builder()
-                        .putString("texture", item.getIconName())
+                        .putString("texture", ((CustomItemComponent) item).getIconName())
                         .build())
                 .putBoolean("allow_off_hand", item.isAllowedInOffHand())
                 .putInt("creative_category", 2)
                 .putInt("damage", item.getDamage())
-                .putBoolean("foil", item.hasFoil())
-                .putBoolean("hand_equipped", item.isHandEquipped())
+                .putBoolean("foil", ((CustomItemComponent) item).hasFoil())
+                .putBoolean("hand_equipped", ((CustomItemComponent) item).isHandEquipped())
                 .putBoolean("liquid_clipped", item.canUseOnLiquid())
                 .putInt("max_stack_size", item.getMaxStackSize())
                 .putFloat("mining_speed", 0)  // Block breaking is handled server-side. Doing this gives greater block break control in the item type class
-                .putBoolean("mirrored_art", item.isMirroredArt())
+                .putBoolean("mirrored_art", ((CustomItemComponent) item).isMirroredArt())
                 .putBoolean("stacked_by_data", item.isStackedByMeta())
                 .putInt("use_animation", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseAnimationType().ordinal() : 0)
                 .putInt("use_duration", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseDurationTicks() : 0)

@@ -3,10 +3,7 @@ package io.github.pizzaserver.server.player.handlers;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.inventory.*;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.PlaceStackRequestActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.SwapStackRequestActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.TakeStackRequestActionData;
+import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.*;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
@@ -21,9 +18,11 @@ import io.github.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.InventoryTransactionAction;
 import io.github.pizzaserver.server.network.data.inventory.StackResponse;
 import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
@@ -86,12 +85,16 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                                 response.addChange(swapStackWrapper.getDestination());
                             }
                             break;
+                        case MINE_BLOCK:
+                            response.addChange(new InventorySlotContainer(this.player,
+                                    ContainerSlotType.HOTBAR,
+                                    ((MineBlockStackRequestActionData) action).getHotbarSlot()));
+                            break;
                         case DROP:
                         case DESTROY:
                         case CONSUME:
                         case LAB_TABLE_COMBINE:
                         case BEACON_PAYMENT:
-                        case MINE_BLOCK:
                         case CRAFT_RECIPE:
                         case CRAFT_RECIPE_AUTO:
                         case CRAFT_CREATIVE:
@@ -275,7 +278,9 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
 
         // This packet is spammed by the client and sending the inventory slot EVERY single time causes ugly visual effects
         // while towering up with blocks. This fixes it by only sending the item again if the counts do not match up.
-        if (itemData.getCount() != this.player.getInventory().getHeldItem().getCount()) {
+        // However, durable items bypass this check as the count will not change despite usage of the item.
+        if ((itemData.getCount() != this.player.getInventory().getHeldItem().getCount())
+                || (this.player.getInventory().getHeldItem() instanceof DurableItemComponent)) {
             this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
         }
     }

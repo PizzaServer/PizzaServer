@@ -1,28 +1,20 @@
-package io.github.pizzaserver.api.item;
+package io.github.pizzaserver.api.item.descriptors;
 
-public abstract class CustomItem extends Item {
-
-    public CustomItem(String itemId, int count) {
-        super(itemId, count);
-    }
-
-    public CustomItem(String itemId, int count, int meta) {
-        super(itemId, count, meta);
-    }
+public interface CustomItemComponent {
 
     /**
      * The name of the icon provided in the minecraft:icon component.
      *
      * @return minecraft:icon value
      */
-    public abstract String getIconName();
+    String getIconName();
 
     /**
      * Returns if this item should be held visually like a tool.
      *
      * @return if the item should be held visually like a tool
      */
-    public boolean isHandEquipped() {
+    default boolean isHandEquipped() {
         return false;
     }
 
@@ -31,7 +23,7 @@ public abstract class CustomItem extends Item {
      *
      * @return if the item should appear enchanted
      */
-    public boolean hasFoil() {
+    default boolean hasFoil() {
         return false;
     }
 
@@ -40,7 +32,7 @@ public abstract class CustomItem extends Item {
      *
      * @return if this item should appear flipped on the client
      */
-    public boolean isMirroredArt() {
+    default boolean isMirroredArt() {
         return false;
     }
 

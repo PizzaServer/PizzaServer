@@ -46,7 +46,9 @@ public class PlayerBlockBreakingManager {
         block.getWorld().getBlockEntity(block.getLocation().toVector3i())
                 .ifPresent(blockEntity -> blockEntity.onBreak(this.player));
         this.player.getWorld().setAndUpdateBlock(BlockID.AIR, block.getLocation().toVector3i());
+
         block.getBehavior().onBreak(this.player, block);
+        this.player.getInventory().getHeldItem().getBehavior().onBreak(this.player, this.player.getInventory().getHeldItem(), block);
 
         this.resetMiningData();
     }

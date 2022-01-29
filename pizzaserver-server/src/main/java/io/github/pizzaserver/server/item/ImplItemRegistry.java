@@ -1,10 +1,10 @@
 package io.github.pizzaserver.server.item;
 
-import io.github.pizzaserver.api.item.CustomItem;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
+import io.github.pizzaserver.api.item.descriptors.CustomItemComponent;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ public class ImplItemRegistry implements ItemRegistry {
     private final Map<String, Item> items = new HashMap<>();
     private final Map<Class<? extends Item>, ItemBehavior<? extends Item>> behaviors = new HashMap<>();
 
-    private final Set<CustomItem> customItems = new HashSet<>();
+    private final Set<Item> customItems = new HashSet<>();
 
 
     @Override
@@ -29,10 +29,10 @@ public class ImplItemRegistry implements ItemRegistry {
     public <T extends Item> void register(T item, ItemBehavior<T> behavior) {
         T registeredItem = (T) item.clone();
         if (!registeredItem.getItemId().startsWith("minecraft:")) {
-            if (!(registeredItem instanceof CustomItem)) {
+            if (!(registeredItem instanceof CustomItemComponent)) {
                 throw new IllegalArgumentException("The provided item type does not extend CustomItemType");
             }
-            this.customItems.add((CustomItem) registeredItem);
+            this.customItems.add(registeredItem);
         }
 
         this.items.put(registeredItem.getItemId(), registeredItem);
@@ -45,7 +45,7 @@ public class ImplItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public Set<CustomItem> getCustomItems() {
+    public Set<Item> getCustomItems() {
         return this.customItems;
     }
 

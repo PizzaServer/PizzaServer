@@ -21,7 +21,7 @@ public class RequiresSolidBottomBlockBehavior<T extends Block> extends DefaultBl
     public void onUpdate(BlockUpdateType type, T block) {
         Block parentBlock = block.getSide(BlockFace.BOTTOM);
         if (!parentBlock.hasCollision()) {
-            block.getWorld().addItemEntity(new ItemBlock(block.getBlockId(), 1),
+            block.getWorld().addItemEntity(new ItemBlock(block.getBlockId(), 1, block.getStackMeta()),
                     block.getLocation().toVector3f(),
                     EntityItem.getRandomMotion());
             block.getWorld().setAndUpdateBlock(BlockID.AIR, block.getLocation().toLocation().toVector3i());

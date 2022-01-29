@@ -42,6 +42,7 @@ public class BlockID {
     public static final String CAMPFIRE = "minecraft:campfire";
     public static final String CANDLE = "minecraft:candle";
     public static final String CANDLE_CAKE = "minecraft:candle_cake";
+    public static final String CARPET = "minecraft:carpet";
     public static final String CAULDRON = "minecraft:cauldron";
     public static final String CHEST = "minecraft:chest";
     public static final String CHISELED_DEEPSLATE = "minecraft:chiseled_deepslate";
@@ -66,6 +67,7 @@ public class BlockID {
     public static final String CRIMSON_BUTTON = "minecraft:crimson_button";
     public static final String CRIMSON_NYLIUM = "minecraft:crimson_nylium";
     public static final String CRIMSON_SLAB = "minecraft:crimson_slab";
+    public static final String CRIMSON_STEM = "minecraft:crimson_stem";
     public static final String CRYING_OBSIDIAN = "minecraft:crying_obsidian";
     public static final String CUT_COPPER_SLAB = "minecraft:cut_copper_slab";
     public static final String CYAN_CANDLE = "minecraft:cyan_candle";
@@ -137,6 +139,8 @@ public class BlockID {
     public static final String LIT_DEEPSLATE_REDSTONE_ORE = "minecraft:lit_deepslate_redstone_ore";
     public static final String LIT_FURNACE = "minecraft:lit_furnace";
     public static final String LIT_REDSTONE_ORE = "minecraft:lit_redstone_ore";
+    public static final String LOG = "minecraft:log";
+    public static final String LOG2 = "minecraft:log2";
     public static final String MAGENTA_CANDLE = "minecraft:magenta_candle";
     public static final String MAGENTA_CANDLE_CAKE = "minecraft:magenta_candle_cake";
     public static final String MAGENTA_GLAZED_TERRACOTTA = "minecraft:magenta_glazed_terracotta";
@@ -144,6 +148,7 @@ public class BlockID {
     public static final String NETHERRACK = "minecraft:netherrack";
     public static final String NETHER_REACTOR = "minecraft:netherreactor";
     public static final String OAK_BUTTON = "minecraft:wooden_button";
+    public static final String OBSIDIAN = "minecraft:obsidian";
     public static final String ORANGE_CANDLE = "minecraft:orange_candle";
     public static final String ORANGE_CANDLE_CAKE = "minecraft:orange_candle_cake";
     public static final String ORANGE_GLAZED_TERRACOTTA = "minecraft:orange_glazed_terracotta";
@@ -183,6 +188,7 @@ public class BlockID {
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
     public static final String WARPED_SLAB = "minecraft:warped_slab";
+    public static final String WARPED_STEM = "minecraft:warped_stem";
     public static final String WAXED_CUT_COPPER_SLAB = "minecraft:waxed_cut_copper_slab";
     public static final String WAXED_DOUBLE_CUT_COPPER_SLAB = "minecraft:waxed_double_cut_copper_slab";
     public static final String WAXED_WEATHERED_CUT_COPPER_SLAB = "minecraft:waxed_weathered_cut_copper_slab";

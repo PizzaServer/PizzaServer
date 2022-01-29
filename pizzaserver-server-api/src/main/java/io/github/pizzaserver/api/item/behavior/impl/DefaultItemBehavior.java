@@ -18,4 +18,7 @@ public class DefaultItemBehavior<T extends Item> implements ItemBehavior<T> {
     @Override
     public void onInteract(Player player, T item, Entity entity) {}
 
+    @Override
+    public void onBreak(Player player, T item, Block block) {}
+
 }

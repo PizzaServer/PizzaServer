@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.item.behavior.impl;
+package io.github.pizzaserver.api.item.behavior.impl;
 
 import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;

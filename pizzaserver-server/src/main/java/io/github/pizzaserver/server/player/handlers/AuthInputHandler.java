@@ -3,7 +3,11 @@ package io.github.pizzaserver.server.player.handlers;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
 import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
+import com.nukkitx.protocol.bedrock.data.inventory.ItemStackRequest;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
+import com.nukkitx.protocol.bedrock.packet.ItemStackRequestPacket;
+import com.nukkitx.protocol.bedrock.packet.ItemStackResponsePacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
@@ -19,8 +23,10 @@ import io.github.pizzaserver.api.event.type.player.PlayerToggleSwimEvent;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.level.world.ImplWorld;
+import io.github.pizzaserver.server.network.protocol.ImplPacketHandlerPipeline;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,6 +128,14 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         break;
                     case PERFORM_BLOCK_ACTIONS:
                         this.handleBlockActions(packet.getPlayerActions());
+                        break;
+                    case PERFORM_ITEM_STACK_REQUEST:
+                        ItemStackRequestPacket requestPacket = new ItemStackRequestPacket();
+                        requestPacket.getRequests().add(new ItemStackRequest(packet.getItemStackRequest().getRequestId(),
+                                packet.getItemStackRequest().getActions(),
+                                packet.getItemStackRequest().getFilterStrings()));
+
+                        ((ImplPacketHandlerPipeline) this.player.getPacketHandlerPipeline()).accept(requestPacket);
                         break;
                     case UP:
                     case DOWN:
