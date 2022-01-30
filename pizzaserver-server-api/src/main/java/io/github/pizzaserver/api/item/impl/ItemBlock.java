@@ -2,13 +2,14 @@ package io.github.pizzaserver.api.item.impl;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.Item;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ItemBlock extends Item {
+public class ItemBlock extends BaseItem {
 
     private final Block block;
     private Set<String> blocksCanPlaceOn = Collections.emptySet();

@@ -1,6 +1,8 @@
 package io.github.pizzaserver.api.item.descriptors;
 
-public interface CustomItemComponent {
+import io.github.pizzaserver.api.item.Item;
+
+public interface CustomItem extends Item {
 
     /**
      * The name of the icon provided in the minecraft:icon component.

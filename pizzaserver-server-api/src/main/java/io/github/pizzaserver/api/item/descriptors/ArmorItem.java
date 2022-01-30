@@ -6,7 +6,7 @@ import io.github.pizzaserver.api.item.data.ArmorSlot;
 /**
  * Represents an item that is considered armor.
  */
-public interface ArmorItemComponent extends DurableItemComponent {
+public interface ArmorItem extends DurableItem {
 
     ArmorSlot getArmorSlot();
 

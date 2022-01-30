@@ -193,47 +193,47 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         NbtMapBuilder components = NbtMap.builder();
 
         // Write non-required components if present
-        if (item instanceof ArmorItemComponent armorItemComponent) {
+        if (item instanceof ArmorItem armorItemComponent) {
             components.putCompound("minecraft:armor", NbtMap.builder()
                     .putInt("protection", armorItemComponent.getProtection())
                     .build());
         }
-        if (item instanceof CooldownItemComponent cooldownItemComponent) {
+        if (item instanceof CooldownItem cooldownItem) {
             components.putCompound("minecraft:cooldown", NbtMap.builder()
-                    .putString("category", cooldownItemComponent.getCooldownCategory())
-                    .putFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f)
+                    .putString("category", cooldownItem.getCooldownCategory())
+                    .putFloat("duration", (cooldownItem.getCooldownTicks() * 20) / 20f)
                     .build());
         }
-        if (item instanceof DurableItemComponent durableItemComponent) {
+        if (item instanceof DurableItem durableItem) {
             components.putCompound("minecraft:durability", NbtMap.builder()
-                    .putInt("max_durability", durableItemComponent.getMaxDurability())
+                    .putInt("max_durability", durableItem.getMaxDurability())
                     .build());
         }
-        if (item instanceof FoodItemComponent foodItemComponent) {
+        if (item instanceof FoodItem foodItem) {
             components.putCompound("minecraft:food", NbtMap.builder()
-                    .putBoolean("can_always_eat", foodItemComponent.canAlwaysBeEaten())
+                    .putBoolean("can_always_eat", foodItem.canAlwaysBeEaten())
                     .build());
         }
-        if (item instanceof PlantableItemComponent) {
+        if (item instanceof PlantableItem) {
             components.putCompound("minecraft:block_placer", NbtMap.EMPTY);
         }
 
         NbtMap itemProperties = NbtMap.builder()
                 .putCompound("minecraft:icon", NbtMap.builder()
-                        .putString("texture", ((CustomItemComponent) item).getIconName())
+                        .putString("texture", ((CustomItem) item).getIconName())
                         .build())
                 .putBoolean("allow_off_hand", item.isAllowedInOffHand())
                 .putInt("creative_category", 2)
                 .putInt("damage", item.getDamage())
-                .putBoolean("foil", ((CustomItemComponent) item).hasFoil())
-                .putBoolean("hand_equipped", ((CustomItemComponent) item).isHandEquipped())
+                .putBoolean("foil", ((CustomItem) item).hasFoil())
+                .putBoolean("hand_equipped", ((CustomItem) item).isHandEquipped())
                 .putBoolean("liquid_clipped", item.canUseOnLiquid())
                 .putInt("max_stack_size", item.getMaxStackSize())
                 .putFloat("mining_speed", 0)  // Block breaking is handled server-side. Doing this gives greater block break control in the item type class
-                .putBoolean("mirrored_art", ((CustomItemComponent) item).isMirroredArt())
+                .putBoolean("mirrored_art", ((CustomItem) item).isMirroredArt())
                 .putBoolean("stacked_by_data", item.isStackedByMeta())
-                .putInt("use_animation", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseAnimationType().ordinal() : 0)
-                .putInt("use_duration", item instanceof FoodItemComponent foodItemComponent ? foodItemComponent.getUseDurationTicks() : 0)
+                .putInt("use_animation", item instanceof FoodItem foodItemComponent ? foodItemComponent.getUseAnimationType().ordinal() : 0)
+                .putInt("use_duration", item instanceof FoodItem foodItemComponent ? foodItemComponent.getUseDurationTicks() : 0)
                 .build();
         components.putCompound("item_properties", itemProperties);
 

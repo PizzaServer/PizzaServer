@@ -1,9 +1,11 @@
 package io.github.pizzaserver.api.item.descriptors;
 
+import io.github.pizzaserver.api.item.Item;
+
 /**
  * Represents an item that has a cooldown when used.
  */
-public interface CooldownItemComponent {
+public interface CooldownItem extends Item {
 
     /**
      * Retrieve the cooldown category this item falls under.

@@ -184,6 +184,14 @@ public class BlockID {
     public static final String STONE_SLAB2 = "minecraft:stone_slab2";
     public static final String STONE_SLAB3 = "minecraft:stone_slab3";
     public static final String STONE_SLAB4 = "minecraft:stone_slab4";
+    public static final String STRIPPED_ACACIA_LOG = "minecraft:stripped_acacia_log";
+    public static final String STRIPPED_BIRCH_LOG = "minecraft:stripped_birch_log";
+    public static final String STRIPPED_DARK_OAK_LOG = "minecraft:stripped_dark_oak_log";
+    public static final String STRIPPED_JUNGLE_LOG = "minecraft:stripped_jungle_log";
+    public static final String STRIPPED_OAK_LOG = "minecraft:stripped_oak_log";
+    public static final String STRIPPED_SPRUCE_LOG = "minecraft:stripped_spruce_log";
+    public static final String STRIPPED_CRIMSON_STEM = "minecraft:stripped_crimson_stem";
+    public static final String STRIPPED_WARPED_STEM = "minecraft:stripped_warped_stem";
     public static final String TALL_GRASS = "minecraft:tallgrass";
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";

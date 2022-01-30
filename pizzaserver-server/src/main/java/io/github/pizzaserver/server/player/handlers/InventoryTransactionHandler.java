@@ -18,7 +18,7 @@ import io.github.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
+import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -280,7 +280,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
         // while towering up with blocks. This fixes it by only sending the item again if the counts do not match up.
         // However, durable items bypass this check as the count will not change despite usage of the item.
         if ((itemData.getCount() != this.player.getInventory().getHeldItem().getCount())
-                || (this.player.getInventory().getHeldItem() instanceof DurableItemComponent)) {
+                || (this.player.getInventory().getHeldItem() instanceof DurableItem)) {
             this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
         }
     }

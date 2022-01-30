@@ -1,9 +1,10 @@
 package io.github.pizzaserver.api.item.impl;
 
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
 
-public class ItemClayBall extends Item {
+public class ItemClayBall extends BaseItem {
 
     public ItemClayBall() {
         this(1);

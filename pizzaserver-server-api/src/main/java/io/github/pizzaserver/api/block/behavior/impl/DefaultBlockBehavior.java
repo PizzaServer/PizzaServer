@@ -7,10 +7,9 @@ import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.descriptors.ToolItemComponent;
+import io.github.pizzaserver.api.item.descriptors.ToolItem;
 import io.github.pizzaserver.api.player.Player;
 
-import java.util.Collections;
 import java.util.Set;
 
 public class DefaultBlockBehavior<T extends Block> implements BlockBehavior<T> {
@@ -52,7 +51,7 @@ public class DefaultBlockBehavior<T extends Block> implements BlockBehavior<T> {
     @Override
     public void onBreak(Entity entity, T block) {
         boolean correctTool = false;
-        if (entity.getInventory().getHeldItem() instanceof ToolItemComponent itemToolComponent) {
+        if (entity.getInventory().getHeldItem() instanceof ToolItem itemToolComponent) {
             correctTool = itemToolComponent.getToolTier().getStrength() >= block.getToolTierRequired().getStrength()
                     && itemToolComponent.getToolType() == block.getToolTypeRequired();
         }

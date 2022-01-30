@@ -1,9 +1,10 @@
 package io.github.pizzaserver.api.item.impl;
 
 import io.github.pizzaserver.api.block.data.WoodType;
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.Item;
 
-public abstract class ItemBaseBoat extends Item {
+public abstract class ItemBaseBoat extends BaseItem {
 
     private final WoodType woodType;
 

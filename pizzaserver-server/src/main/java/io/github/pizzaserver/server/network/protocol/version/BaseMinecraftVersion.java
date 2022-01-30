@@ -60,7 +60,12 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     @Override
     public int getBlockRuntimeId(String name, NbtMap state) {
         BlockStateData key = new BlockStateData(name, state);
-        return this.blockStates.get(key);
+        try {
+            return this.blockStates.get(key);
+        } catch (NullPointerException exception) {
+            Server.getInstance().getLogger().debug("Unknown block runtime id requested: " + name + " " + state);
+            throw exception;
+        }
     }
 
     @Override

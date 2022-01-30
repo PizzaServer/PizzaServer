@@ -30,7 +30,7 @@ import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.descriptors.ArmorItemComponent;
+import io.github.pizzaserver.api.item.descriptors.ArmorItem;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
@@ -808,17 +808,17 @@ public class ImplEntity implements Entity {
     public int getArmourPoints() {
         int armourPoints = 0;
 
-        if (this.getInventory().getHelmet() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getHelmet()).getProtection();
+        if (this.getInventory().getHelmet() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getHelmet()).getProtection();
         }
-        if (this.getInventory().getChestplate() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getChestplate()).getProtection();
+        if (this.getInventory().getChestplate() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getChestplate()).getProtection();
         }
-        if (this.getInventory().getLeggings() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getLeggings()).getProtection();
+        if (this.getInventory().getLeggings() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getLeggings()).getProtection();
         }
-        if (this.getInventory().getBoots() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getBoots()).getProtection();
+        if (this.getInventory().getBoots() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getBoots()).getProtection();
         }
 
         return armourPoints;
@@ -1081,17 +1081,17 @@ public class ImplEntity implements Entity {
 
     private float getKnockbackResistance() {
         float totalResistance = 0;
-        if (this.getInventory().getHelmet() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getHelmet()).getKnockbackResistance();
+        if (this.getInventory().getHelmet() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getHelmet()).getKnockbackResistance();
         }
-        if (this.getInventory().getChestplate() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getChestplate()).getKnockbackResistance();
+        if (this.getInventory().getChestplate() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getChestplate()).getKnockbackResistance();
         }
-        if (this.getInventory().getLeggings() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getLeggings()).getKnockbackResistance();
+        if (this.getInventory().getLeggings() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getLeggings()).getKnockbackResistance();
         }
-        if (this.getInventory().getBoots() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getBoots()).getKnockbackResistance();
+        if (this.getInventory().getBoots() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getBoots()).getKnockbackResistance();
         }
 
         return Math.max(0, Math.min(1, totalResistance));

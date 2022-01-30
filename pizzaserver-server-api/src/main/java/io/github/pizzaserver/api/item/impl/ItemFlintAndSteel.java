@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.item.impl;
 
-import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.data.ItemID;
-import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
+import io.github.pizzaserver.api.item.descriptors.DurableItem;
 
-public class ItemFlintAndSteel extends Item implements DurableItemComponent {
+public class ItemFlintAndSteel extends BaseItem implements DurableItem {
 
     public ItemFlintAndSteel() {
         this(1);

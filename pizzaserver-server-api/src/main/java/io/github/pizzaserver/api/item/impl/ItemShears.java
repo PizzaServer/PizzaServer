@@ -1,13 +1,13 @@
 package io.github.pizzaserver.api.item.impl;
 
-import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.descriptors.ToolItemComponent;
+import io.github.pizzaserver.api.item.descriptors.ToolItem;
 import io.github.pizzaserver.api.item.data.ItemID;
-import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
+import io.github.pizzaserver.api.item.descriptors.DurableItem;
 
-public class ItemShears extends Item implements ToolItemComponent, DurableItemComponent {
+public class ItemShears extends BaseItem implements ToolItem, DurableItem {
 
     public ItemShears() {
         this(1);

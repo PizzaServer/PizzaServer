@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.descriptors.ToolItemComponent;
+import io.github.pizzaserver.api.item.descriptors.ToolItem;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
@@ -74,13 +74,13 @@ public class PlayerBlockBreakingManager {
             Item heldItem = this.player.getInventory().getHeldItem();
             boolean isCorrectTool = block.getToolTypeRequired() == ToolType.NONE;
             boolean isCorrectTier = block.getToolTierRequired() == ToolTier.NONE;
-            if (heldItem instanceof ToolItemComponent toolItemComponent) {
+            if (heldItem instanceof ToolItem toolItemComponent) {
                 isCorrectTool = block.getToolTypeRequired() == toolItemComponent.getToolType();
                 isCorrectTier = toolItemComponent.getToolTier().getStrength() >= block.getToolTierRequired().getStrength();
             }
 
             float breakTime = block.getHardness() * ((isCorrectTool && isCorrectTier) || block.canBeMinedWithHand() ? 1.5f : 5f);
-            if (isCorrectTool && heldItem instanceof ToolItemComponent toolItemComponent) {
+            if (isCorrectTool && heldItem instanceof ToolItem toolItemComponent) {
                 breakTime /= toolItemComponent.getToolTier().getStrength();
             }
             // TODO: haste/mining fatigue checks

@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Represents an item that can be eaten.
  */
-public interface FoodItemComponent {
+public interface FoodItem extends Item {
 
     /**
      * Retrieve the amount of nutrition this item provides the player when eaten.
