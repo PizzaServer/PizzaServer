@@ -934,17 +934,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.sendPacket(setEntityDataPacket);
         }
 
-        // Make sure that the block we're breaking is within reach!
-        boolean stopBreakingBlock = this.getBlockBreakingManager().getBlock().isPresent()
-                && !(this.canReach(this.getBlockBreakingManager().getBlock().get().getLocation().toVector3i(), this.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7)
-                        && this.isAlive()
-                        && this.getAdventureSettings().canMine());
-        if (stopBreakingBlock) {
-            BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakingManager().getBlock().get());
-            this.getServer().getEventManager().call(blockStopBreakEvent);
-
-            this.getBlockBreakingManager().stopBreaking();
-        }
+        this.getBlockBreakingManager().tick();
 
         if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
             this.setHealth(this.getHealth() + 1);
@@ -975,7 +965,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.getInventory().sendSlots(this);
         this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true)
-                .putFlag(EntityFlag.BREATHING, true);
+                .putFlag(EntityFlag.BREATHING, true)
+                .putFlag(EntityFlag.CAN_CLIMB, true);
         this.sendAttributes();
         this.getAdventureSettings().send();
 

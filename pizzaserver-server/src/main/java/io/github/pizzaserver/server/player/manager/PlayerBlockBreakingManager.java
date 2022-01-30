@@ -4,6 +4,8 @@ import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.data.BlockFace;
+import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -18,6 +20,7 @@ public class PlayerBlockBreakingManager {
     private final Player player;
 
     private BlockLocation blockMiningLocation;
+    private BlockFace blockFaceMiningAgainst;
     private long startBlockBreakTick;
     private long endBlockBreakTick;
 
@@ -26,6 +29,30 @@ public class PlayerBlockBreakingManager {
 
     public PlayerBlockBreakingManager(Player player) {
         this.player = player;
+    }
+
+    public void tick() {
+        if (this.getBlock().isPresent()) {
+            Block block = this.getBlock().get();
+
+            for (Player viewer : block.getLocation().getChunk().getViewers()) {
+                LevelEventPacket breakParticlePacket = new LevelEventPacket();
+                breakParticlePacket.setType(LevelEventType.PARTICLE_CRACK_BLOCK);
+                breakParticlePacket.setPosition(this.blockMiningLocation.toVector3f());
+                breakParticlePacket.setData(viewer.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) | (this.blockFaceMiningAgainst.ordinal() << 24));
+                viewer.sendPacket(breakParticlePacket);
+            }
+
+            // Make sure that the block we're breaking is within reach!
+            boolean stopBreakingBlock = !(this.player.canReach(block)
+                    && this.player.isAlive()
+                    && this.player.getAdventureSettings().canMine());
+            if (stopBreakingBlock) {
+                BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this.player, block);
+                this.player.getServer().getEventManager().call(blockStopBreakEvent);
+                this.stopBreaking();
+            }
+        }
     }
 
     public Optional<Block> getBlock() {
@@ -51,6 +78,18 @@ public class PlayerBlockBreakingManager {
         this.player.getInventory().getHeldItem().getBehavior().onBreak(this.player, this.player.getInventory().getHeldItem(), block);
 
         this.resetMiningData();
+
+        if (!block.getBlockId().equals(BlockID.FIRE)) {
+            for (Player viewer : block.getLocation().getChunk().getViewers()) {
+                int blockRuntimeId = viewer.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState());
+
+                LevelEventPacket breakParticlePacket = new LevelEventPacket();
+                breakParticlePacket.setType(LevelEventType.PARTICLE_DESTROY_BLOCK);
+                breakParticlePacket.setPosition(block.getLocation().toVector3f());
+                breakParticlePacket.setData(blockRuntimeId);
+                viewer.sendPacket(breakParticlePacket);
+            }
+        }
     }
 
     public boolean canBreakBlock() {
@@ -93,12 +132,13 @@ public class PlayerBlockBreakingManager {
         }
     }
 
-    public void startBreaking(BlockLocation blockLocation) {
+    public void startBreaking(BlockLocation blockLocation, BlockFace blockFaceMiningAgainst) {
         if (this.isBreakingBlock()) {
             this.stopBreaking();
         }
 
         this.blockMiningLocation = blockLocation;
+        this.blockFaceMiningAgainst = blockFaceMiningAgainst;
         this.breakTicks = this.getBreakTicks();
         this.startBlockBreakTick = this.player.getServer().getTick();
         this.endBlockBreakTick = this.startBlockBreakTick + this.breakTicks;
@@ -126,11 +166,17 @@ public class PlayerBlockBreakingManager {
         this.resetMiningData();
     }
 
+    /**
+     * Send the new block break progress to all viewers of this block.
+     * Additionally,
+     */
     public void sendUpdatedBreakProgress() {
         if (this.breakTicks > 0) {
+            Block block = this.blockMiningLocation.getBlock();
+
             LevelEventPacket breakUpdatePacket = new LevelEventPacket();
             breakUpdatePacket.setType(LevelEventType.BLOCK_UPDATE_BREAK);
-            breakUpdatePacket.setPosition(this.blockMiningLocation.toVector3f());
+            breakUpdatePacket.setPosition(block.getLocation().toVector3f());
             breakUpdatePacket.setData(65535 / this.breakTicks);
 
             for (Player player : this.blockMiningLocation.getChunk().getViewers()) {
@@ -156,6 +202,7 @@ public class PlayerBlockBreakingManager {
 
     private void resetMiningData() {
         this.blockMiningLocation = null;
+        this.blockFaceMiningAgainst = null;
         this.startBlockBreakTick = 0;
         this.endBlockBreakTick = 0;
         this.breakTicks = 0;

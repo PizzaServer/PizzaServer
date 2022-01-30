@@ -1,6 +1,7 @@
 package io.github.pizzaserver.server.player.handlers;
 
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
 import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
@@ -8,6 +9,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ItemStackRequest;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.ItemStackRequestPacket;
 import com.nukkitx.protocol.bedrock.packet.ItemStackResponsePacket;
+import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
@@ -20,6 +22,7 @@ import io.github.pizzaserver.api.event.type.player.PlayerMoveEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSneakingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSprintingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSwimEvent;
+import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.level.world.ImplWorld;
@@ -204,7 +207,6 @@ public class AuthInputHandler implements BedrockPacketHandler {
                             if (isAlreadyBreakingBlock) {
                                 BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this.player, this.player.getBlockBreakingManager().getBlock().get());
                                 this.player.getServer().getEventManager().call(blockStopBreakEvent);
-
                                 this.player.getBlockBreakingManager().stopBreaking();
                             }
 
@@ -220,7 +222,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());
                                 this.player.getServer().getEventManager().call(blockStartBreakEvent);
                                 if (!blockStartBreakEvent.isCancelled()) {
-                                    this.player.getBlockBreakingManager().startBreaking(blockBreakingLocation);
+                                    this.player.getBlockBreakingManager().startBreaking(blockBreakingLocation, BlockFace.resolve(action.getFace()));
                                 } else {
                                     this.player.getWorld().sendBlock(this.player, blockBreakingLocation.toVector3i());
                                 }
@@ -295,7 +297,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
             BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player, possibleFireBlock);
             this.player.getServer().getEventManager().call(blockBreakEvent);
             if (!blockBreakEvent.isCancelled()) {
-                this.player.getBlockBreakingManager().startBreaking(possibleFireBlock.getLocation());
+                this.player.getBlockBreakingManager().startBreaking(possibleFireBlock.getLocation(), face);
                 this.player.getBlockBreakingManager().breakBlock();
                 return true;
             } else {
