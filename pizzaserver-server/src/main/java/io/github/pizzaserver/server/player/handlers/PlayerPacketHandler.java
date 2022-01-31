@@ -101,24 +101,11 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(new ItemBlock(BlockID.CANDLE, 10));
-        this.player.getInventory().addItem(new ItemBoat());
-        this.player.getInventory().addItem(new ItemSlimeball());
-        this.player.getInventory().addItem(new ItemHeartOfTheSea());
-        this.player.getInventory().addItem(new ItemNetheriteSword());
-        this.player.getInventory().addItem(new ItemFlintAndSteel());
-        this.player.getInventory().addItem(new ItemDiamondChestplate());
-        this.player.getInventory().addItem(new ItemStonePickaxe());
-        this.player.getInventory().addItem(new ItemDiamondAxe());
-        this.player.getInventory().addItem(new ItemBlock(new BlockDirt(DirtType.ROOTED)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWoodenSlab(WoodType.BIRCH), 10));
-        this.player.getInventory().addItem(new ItemBlock(new BlockSand(SandType.RED)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockColoredCandleCake(DyeColor.GREEN)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.CRIMSON)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.OAK)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.DARK_OAK)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.ACACIA)));
-        this.player.getInventory().addItem(new ItemBlock(new BlockCarpet(DyeColor.BLUE), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.CRIMSON), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.OAK), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.BIRCH), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.DARK_OAK), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.ACACIA), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
         this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {

@@ -25,10 +25,12 @@ import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.InventoryTransactionAction;
 import io.github.pizzaserver.server.network.data.inventory.StackResponse;
+import io.github.pizzaserver.server.network.data.inventory.actions.DropStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.network.data.inventory.actions.TakeStackRequestActionDataWrapper;
 import io.github.pizzaserver.server.player.ImplPlayer;
+import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionDropHandler;
 import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionPlaceHandler;
 import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionSwapHandler;
 import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionTakeHandler;
@@ -91,6 +93,12 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                                     ((MineBlockStackRequestActionData) action).getHotbarSlot()));
                             break;
                         case DROP:
+                            DropStackRequestActionDataWrapper dropStackWrapper = new DropStackRequestActionDataWrapper(this.player, (DropStackRequestActionData) action);
+                            continueActions = InventoryActionDropHandler.INSTANCE.tryAction(this.player, dropStackWrapper);
+                            if (continueActions) {
+                                response.addChange(dropStackWrapper.getSource());
+                            }
+                            break;
                         case DESTROY:
                         case CONSUME:
                         case LAB_TABLE_COMBINE:
@@ -129,23 +137,21 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
             if (packet.getHotbarSlot() != this.player.getInventory().getSelectedSlot()) {
                 PlayerHotbarSelectEvent playerHotbarSelectEvent = new PlayerHotbarSelectEvent(this.player, packet.getHotbarSlot());
                 this.player.getServer().getEventManager().call(playerHotbarSelectEvent);
-
-                if (!playerHotbarSelectEvent.isCancelled()) {
-                    // Server approves of hotbar slot change.
-
-                    // Check if we need to recalculate our break time for the block we may be breaking.
-                    boolean differentItemTypes = !this.player.getInventory().getHeldItem().equals(this.player.getInventory().getSlot(packet.getHotbarSlot()));
-                    boolean needToRecalculateBlockBreakTime = this.player.getBlockBreakingManager().isBreakingBlock()
-                            && differentItemTypes;
-
-                    this.player.getInventory().setSelectedSlot(packet.getHotbarSlot(), true);
-
-                    if (needToRecalculateBlockBreakTime) {
-                        this.player.getBlockBreakingManager().onChangedHeldItemWhileBreaking();
-                    }
-                } else {
+                if (playerHotbarSelectEvent.isCancelled()) {
                     // Reset their selected slot back to the old slot
                     this.player.getInventory().setSelectedSlot(this.player.getInventory().getSelectedSlot());
+                    return true;
+                }
+
+                // Server approves of hotbar slot change.
+                // Check if we need to recalculate our break time for the block we may be breaking.
+                boolean differentItemTypes = !this.player.getInventory().getHeldItem().equals(this.player.getInventory().getSlot(packet.getHotbarSlot()));
+                boolean needToRecalculateBlockBreakTime = this.player.getBlockBreakingManager().isBreakingBlock()
+                        && differentItemTypes;
+
+                this.player.getInventory().setSelectedSlot(packet.getHotbarSlot(), true);
+                if (needToRecalculateBlockBreakTime) {
+                    this.player.getBlockBreakingManager().onChangedHeldItemWhileBreaking();
                 }
             }
         }

@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class ItemBlock extends BaseItem {
 
-    private final Block block;
+    private Block block;
     private Set<String> blocksCanPlaceOn = Collections.emptySet();
 
 
@@ -71,6 +71,13 @@ public class ItemBlock extends BaseItem {
 
     public void setBlocksCanPlaceOn(Set<String> blocksCanPlaceOn) {
         this.blocksCanPlaceOn = new HashSet<>(blocksCanPlaceOn);
+    }
+
+    @Override
+    public ItemBlock clone() {
+        ItemBlock clone = (ItemBlock) super.clone();
+        clone.block = this.getBlock().clone();
+        return clone;
     }
 
 }

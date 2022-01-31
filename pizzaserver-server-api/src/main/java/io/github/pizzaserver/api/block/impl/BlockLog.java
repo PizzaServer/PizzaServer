@@ -1,21 +1,17 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.PillarAxis;
 import io.github.pizzaserver.api.block.data.StrippedType;
 import io.github.pizzaserver.api.block.data.WoodType;
-import io.github.pizzaserver.api.block.descriptors.Flammable;
-import io.github.pizzaserver.api.item.data.ToolTier;
-import io.github.pizzaserver.api.item.data.ToolType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class BlockLog extends Block implements Flammable {
+public class BlockLog extends BlockStrippableWoodenLikeBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -45,9 +41,6 @@ public class BlockLog extends Block implements Flammable {
         }
     };
 
-    private WoodType woodType;
-    private boolean stripped;
-
 
     public BlockLog() {
         this(WoodType.OAK);
@@ -66,18 +59,18 @@ public class BlockLog extends Block implements Flammable {
     }
 
     public BlockLog(WoodType woodType, StrippedType strippedType, PillarAxis axis) {
-        this.setWoodType(woodType);
-        this.setStripped(strippedType == StrippedType.STRIPPED);
-        this.setPillarAxis(axis);
+        super(woodType, strippedType, axis);
     }
 
+    @Override
     public WoodType getWoodType() {
         return this.woodType;
     }
 
+    @Override
     public void setWoodType(WoodType woodType) {
         PillarAxis axis = this.getPillarAxis();
-        this.woodType = woodType;
+        super.setWoodType(woodType);
 
         switch (woodType) {
             case OAK:
@@ -95,14 +88,16 @@ public class BlockLog extends Block implements Flammable {
         }
     }
 
+    @Override
     public boolean isStripped() {
         return this.stripped;
     }
 
+    @Override
     public void setStripped(boolean stripped) {
         if (this.stripped != stripped) {
             PillarAxis axis = this.getPillarAxis();
-            this.stripped = stripped;
+            super.setStripped(stripped);
 
             if (stripped) {
                 // unstripped to stripped
@@ -119,11 +114,13 @@ public class BlockLog extends Block implements Flammable {
         }
     }
 
+    @Override
     public PillarAxis getPillarAxis() {
         int axisIndex = this.getBlockState() < 3 ? this.getBlockState() : (this.getBlockState() - 3 - (this.getWoodType().ordinal() * 3));
         return PillarAxis.values()[axisIndex];
     }
 
+    @Override
     public void setPillarAxis(PillarAxis pillarAxis) {
         if (this.isStripped() || (this.getWoodType() == WoodType.CRIMSON || this.getWoodType() == WoodType.WARPED)) {
             this.setBlockState(pillarAxis.ordinal());
@@ -204,41 +201,6 @@ public class BlockLog extends Block implements Flammable {
             return;
         }
         super.setBlockState(index);
-    }
-
-    @Override
-    public float getHardness() {
-        return 2;
-    }
-
-    @Override
-    public float getBlastResistance() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeMinedWithHand() {
-        return true;
-    }
-
-    @Override
-    public ToolType getToolTypeRequired() {
-        return ToolType.AXE;
-    }
-
-    @Override
-    public ToolTier getToolTierRequired() {
-        return ToolTier.WOOD;
-    }
-
-    @Override
-    public int getBurnOdds() {
-        return 5;
-    }
-
-    @Override
-    public int getFlameOdds() {
-        return 5;
     }
 
     @Override

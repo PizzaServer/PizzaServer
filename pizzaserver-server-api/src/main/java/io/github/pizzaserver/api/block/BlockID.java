@@ -8,6 +8,7 @@ public class BlockID {
     public BlockID() {}
 
     public static final String ACACIA_BUTTON = "minecraft:acacia_button";
+    public static final String ACACIA_PRESSURE_PLATE = "minecraft:acacia_pressure_plate";
     public static final String AIR = "minecraft:air";
     public static final String ALLOW = "minecraft:allow";
     public static final String AMETHYST = "minecraft:amethyst_block";
@@ -20,6 +21,7 @@ public class BlockID {
     public static final String BEDROCK = "minecraft:bedrock";
     public static final String BELL = "minecraft:bell";
     public static final String BIRCH_BUTTON = "minecraft:birch_button";
+    public static final String BIRCH_PRESSURE_PLATE = "minecraft:birch_pressure_plate";
     public static final String BLACK_CANDLE = "minecraft:black_candle";
     public static final String BLACK_CANDLE_CAKE = "minecraft:black_candle_cake";
     public static final String BLACK_GLAZED_TERRACOTTA = "minecraft:black_glazed_terracotta";
@@ -64,8 +66,11 @@ public class BlockID {
     public static final String CRACKED_DEEPSLATE_TILE = "minecraft:cracked_deepslate_tiles";
     public static final String CRACKED_NETHER_BRICK = "minecraft:cracked_nether_bricks";
     public static final String CRACKED_POLISHED_BLACKSTONE_BRICK = "minecraft:cracked_polished_blackstone_bricks";
+    public static final String CRAFTING_TABLE = "minecraft:crafting_table";
     public static final String CRIMSON_BUTTON = "minecraft:crimson_button";
+    public static final String CRIMSON_HYPHAE = "minecraft:crimson_hyphae";
     public static final String CRIMSON_NYLIUM = "minecraft:crimson_nylium";
+    public static final String CRIMSON_PRESSURE_PLATE = "minecraft:crimson_pressure_plate";
     public static final String CRIMSON_SLAB = "minecraft:crimson_slab";
     public static final String CRIMSON_STEM = "minecraft:crimson_stem";
     public static final String CRYING_OBSIDIAN = "minecraft:crying_obsidian";
@@ -74,6 +79,7 @@ public class BlockID {
     public static final String CYAN_CANDLE_CAKE = "minecraft:cyan_candle_cake";
     public static final String CYAN_GLAZED_TERRACOTTA = "minecraft:cyan_glazed_terracotta";
     public static final String DARK_OAK_BUTTON = "minecraft:dark_oak_button";
+    public static final String DARK_OAK_PRESSURE_PLATE = "minecraft:dark_oak_pressure_plate";
     public static final String DEADBUSH = "minecraft:deadbush";
     public static final String DEEPSLATE_BRICK_SLAB = "minecraft:deepslate_brick_slab";
     public static final String DEEPSLATE_BRICK_DOUBLE_SLAB = "minecraft:deepslate_brick_double_slab";
@@ -123,6 +129,7 @@ public class BlockID {
     public static final String IRON_BLOCK = "minecraft:iron_block";
     public static final String IRON_ORE = "minecraft:iron_ore";
     public static final String JUNGLE_BUTTON = "minecraft:jungle_button";
+    public static final String JUNGLE_PRESSURE_PLATE = "minecraft:jungle_pressure_plate";
     public static final String LAPIS_BLOCK = "minecraft:lapis_block";
     public static final String LAPIS_ORE = "minecraft:lapis_ore";
     public static final String LIGHT_BLOCK = "minecraft:light_block";
@@ -177,6 +184,7 @@ public class BlockID {
     public static final String SAND = "minecraft:sand";
     public static final String SNOW = "minecraft:snow";
     public static final String SPRUCE_BUTTON = "minecraft:spruce_button";
+    public static final String SPRUCE_PRESSURE_PLATE = "minecraft:spruce_pressure_plate";
     public static final String SOUL_CAMPFIRE = "minecraft:soul_campfire";
     public static final String STONE_BUTTON = "minecraft:stone_button";
     public static final String STONE = "minecraft:stone";
@@ -186,17 +194,21 @@ public class BlockID {
     public static final String STONE_SLAB4 = "minecraft:stone_slab4";
     public static final String STRIPPED_ACACIA_LOG = "minecraft:stripped_acacia_log";
     public static final String STRIPPED_BIRCH_LOG = "minecraft:stripped_birch_log";
+    public static final String STRIPPED_CRIMSON_HYPHAE = "minecraft:stripped_crimson_hyphae";
+    public static final String STRIPPED_CRIMSON_STEM = "minecraft:stripped_crimson_stem";
     public static final String STRIPPED_DARK_OAK_LOG = "minecraft:stripped_dark_oak_log";
     public static final String STRIPPED_JUNGLE_LOG = "minecraft:stripped_jungle_log";
     public static final String STRIPPED_OAK_LOG = "minecraft:stripped_oak_log";
     public static final String STRIPPED_SPRUCE_LOG = "minecraft:stripped_spruce_log";
-    public static final String STRIPPED_CRIMSON_STEM = "minecraft:stripped_crimson_stem";
     public static final String STRIPPED_WARPED_STEM = "minecraft:stripped_warped_stem";
+    public static final String STRIPPED_WARPED_HYPHAE = "minecraft:stripped_warped_hyphae";
     public static final String TALL_GRASS = "minecraft:tallgrass";
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
+    public static final String WARPED_HYPHAE = "minecraft:warped_hyphae";
     public static final String WARPED_SLAB = "minecraft:warped_slab";
     public static final String WARPED_STEM = "minecraft:warped_stem";
+    public static final String WARPED_PRESSURE_PLATE = "minecraft:warped_pressure_plate";
     public static final String WAXED_CUT_COPPER_SLAB = "minecraft:waxed_cut_copper_slab";
     public static final String WAXED_DOUBLE_CUT_COPPER_SLAB = "minecraft:waxed_double_cut_copper_slab";
     public static final String WAXED_WEATHERED_CUT_COPPER_SLAB = "minecraft:waxed_weathered_cut_copper_slab";
@@ -210,7 +222,9 @@ public class BlockID {
     public static final String WHITE_CANDLE = "minecraft:white_candle";
     public static final String WHITE_CANDLE_CAKE = "minecraft:white_candle_cake";
     public static final String WHITE_GLAZED_TERRACOTTA = "minecraft:white_glazed_terracotta";
+    public static final String WOOD = "minecraft:wood";
     public static final String WOODEN_BUTTON = "minecraft:wooden_button";
+    public static final String WOODEN_PRESSURE_PLATE = "minecraft:wooden_pressure_plate";
     public static final String WOOL = "minecraft:wool";
     public static final String WOODEN_SLAB = "minecraft:wooden_slab";
     public static final String YELLOW_CANDLE = "minecraft:yellow_candle";
