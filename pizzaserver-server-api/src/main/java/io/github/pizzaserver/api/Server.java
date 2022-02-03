@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
+import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.level.LevelManager;
 import io.github.pizzaserver.api.packs.ResourcePackManager;
@@ -154,6 +155,8 @@ public abstract class Server {
     public abstract BlockEntityRegistry getBlockEntityRegistry();
 
     public abstract ItemRegistry getItemRegistry();
+
+    public abstract CreativeRegistry getCreativeRegistry();
 
     public abstract EntityRegistry getEntityRegistry();
 

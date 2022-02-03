@@ -71,7 +71,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     }
 
     public Item getMovedItem() {
-        return this.movedItem;
+        return this.movedItem.clone();
     }
 
     public int getMovedItemCount() {
@@ -91,7 +91,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     }
 
     public Item getTargetItem() {
-        return this.destinationCurrentItemStack;
+        return this.destinationCurrentItemStack.clone();
     }
 
 }

@@ -12,7 +12,10 @@ import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.entity.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
+import io.github.pizzaserver.api.item.CreativeRegistry;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.scheduler.Scheduler;
@@ -27,6 +30,7 @@ import io.github.pizzaserver.server.entity.inventory.ImplBlockEntityInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.entity.inventory.InventoryUtils;
 import io.github.pizzaserver.server.event.ImplEventManager;
+import io.github.pizzaserver.server.item.ImplCreativeRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.level.ImplLevelManager;
 import io.github.pizzaserver.server.network.BedrockNetworkServer;
@@ -54,6 +58,7 @@ public class ImplServer extends Server {
 
     protected BlockRegistry blockRegistry = new ImplBlockRegistry();
     protected ItemRegistry itemRegistry = new ImplItemRegistry();
+    protected CreativeRegistry creativeRegistry = new ImplCreativeRegistry();
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
     protected BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
 
@@ -87,7 +92,7 @@ public class ImplServer extends Server {
     protected ServerConfig config;
 
 
-    public ImplServer(String rootDirectory) {
+    public ImplServer(String rootDirectory) throws IOException {
         Server.setInstance(this);
 
         this.rootDirectory = rootDirectory;
@@ -103,6 +108,18 @@ public class ImplServer extends Server {
 
         this.levelManager = new ImplLevelManager(this);
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
+
+        VanillaContentLoader.load();
+        ServerProtocol.setupVersions();
+
+        int minimumServerProtocol = Server.getInstance().getConfig().getMinimumSupportedProtocol();
+        MinecraftVersion serverProtocolVersion = ServerProtocol
+                .getProtocol(minimumServerProtocol)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown protocol version found when attempting to load creative items: " + minimumServerProtocol));
+
+        for (Item item : serverProtocolVersion.getDefaultCreativeItems()) {
+            CreativeRegistry.getInstance().register(item);
+        }
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
         // TODO: load plugins
@@ -415,6 +432,11 @@ public class ImplServer extends Server {
     @Override
     public ItemRegistry getItemRegistry() {
         return this.itemRegistry;
+    }
+
+    @Override
+    public CreativeRegistry getCreativeRegistry() {
+        return this.creativeRegistry;
     }
 
     @Override

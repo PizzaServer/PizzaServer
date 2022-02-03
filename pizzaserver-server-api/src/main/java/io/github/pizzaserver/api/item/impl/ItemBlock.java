@@ -80,4 +80,19 @@ public class ItemBlock extends BaseItem {
         return clone;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ItemBlock otherItem) {
+            return super.equals(obj)
+                    && otherItem.getBlock().getBlockState() == this.getBlock().getBlockState();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + (93 * this.getBlock().getBlockState());
+    }
+
+
 }

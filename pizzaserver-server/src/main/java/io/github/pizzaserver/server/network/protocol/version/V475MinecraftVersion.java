@@ -16,6 +16,7 @@ import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.io.IOException;
@@ -155,6 +156,41 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
             for (Block customBlock : sortedCustomBlocks) {
                 this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+            }
+        }
+    }
+
+    @Override
+    protected void loadDefaultCreativeItems() throws IOException {
+        try (Reader creativeItemsReader = new InputStreamReader(this.getProtocolResourceStream("creative_items.json"))) {
+            JsonArray jsonCreativeItems = GSON.fromJson(creativeItemsReader, JsonObject.class).getAsJsonArray("items");
+
+            for (JsonElement jsonCreativeItem : jsonCreativeItems) {
+                JsonObject creativeJSONObj = jsonCreativeItem.getAsJsonObject();
+
+                String id = creativeJSONObj.get("id").getAsString();
+                int meta = creativeJSONObj.has("damage") ? creativeJSONObj.get("damage").getAsInt() : 0;
+                int blockRuntimeId = creativeJSONObj.has("blockRuntimeId") ? creativeJSONObj.get("blockRuntimeId").getAsInt() : 0;
+
+                if (!ItemRegistry.getInstance().hasItem(id)) {
+                    // TODO: debug log this as this is a missing item!
+                    continue;
+                }
+
+                Item item;
+                if (creativeJSONObj.has("blockRuntimeId")) {
+                    Block block = this.getBlockFromRuntimeId(blockRuntimeId);
+                    if (block == null) {
+                        // TODO: debug log this to as this is a missing block!
+                        continue;
+                    }
+
+                    item = new ItemBlock(block);
+                } else {
+                    item = ItemRegistry.getInstance().getItem(id, 1, meta);
+                }
+
+                this.creativeItems.add(item);
             }
         }
     }

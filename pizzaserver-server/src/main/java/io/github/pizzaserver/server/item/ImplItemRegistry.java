@@ -41,7 +41,7 @@ public class ImplItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public boolean hasItemType(String itemId) {
+    public boolean hasItem(String itemId) {
         return this.items.containsKey(itemId);
     }
 

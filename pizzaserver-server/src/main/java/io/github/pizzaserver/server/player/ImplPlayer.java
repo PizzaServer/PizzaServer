@@ -11,6 +11,7 @@ import com.nukkitx.protocol.bedrock.data.entity.EntityFlags;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -23,7 +24,12 @@ import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
+import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.data.ItemID;
+import io.github.pizzaserver.api.item.impl.ItemAcaciaBoat;
+import io.github.pizzaserver.api.item.impl.ItemArrow;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.item.impl.ItemDiamond;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
@@ -48,6 +54,7 @@ import io.github.pizzaserver.server.entity.ImplEntityHuman;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.entity.inventory.BaseInventory;
 import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
@@ -241,9 +248,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             itemComponentPacket.getItems().addAll(this.getVersion().getItemComponents());
             this.sendPacket(itemComponentPacket);
 
-            // TODO: Add creative contents to prevent mobile clients from crashing
             CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
-            creativeContentPacket.setContents(new ItemData[0]);
+            creativeContentPacket.setContents(CreativeRegistry.getInstance()
+                    .getItems().stream()
+                    .map(item -> ItemUtils.serializeForNetwork(item, this.getVersion()))
+                    .toArray(ItemData[]::new));
             this.sendPacket(creativeContentPacket);
 
             BiomeDefinitionListPacket biomeDefinitionPacket = new BiomeDefinitionListPacket();
@@ -347,7 +356,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean inSurvivalMode() {
+    public boolean isSurvivalMode() {
         return this.getGamemode() == Gamemode.SURVIVAL;
     }
 

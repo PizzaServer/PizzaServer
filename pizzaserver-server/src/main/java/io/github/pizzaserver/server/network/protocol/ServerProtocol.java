@@ -17,21 +17,24 @@ public class ServerProtocol {
 
     private static final Map<Integer, BaseMinecraftVersion> VERSIONS = new HashMap<>();
 
-    /**
-     * Called to load all version resources at boot rather than when a player joins.
-     */
-    public static void loadVersions() throws IOException {
-        loadVersion(new V475MinecraftVersion());
-    }
-
     public static Optional<BaseMinecraftVersion> getProtocol(int protocol) {
         return Optional.ofNullable(VERSIONS.getOrDefault(protocol, null));
     }
 
-    private static void loadVersion(BaseMinecraftVersion version) {
+    public static void setupVersions() throws IOException {
+        setupVersion(new V475MinecraftVersion());
+    }
+
+    private static void setupVersion(BaseMinecraftVersion version) throws IOException  {
         if (version.getProtocol() >= Server.getInstance().getConfig().getMinimumSupportedProtocol()) {
             VERSIONS.put(version.getProtocol(), version);
-            Server.getInstance().getLogger().info("Loaded protocol version v" + version.getProtocol());
+            version.preLoad();
+        }
+    }
+
+    public static void loadVersions() throws IOException {
+        for (BaseMinecraftVersion version : VERSIONS.values()) {
+            version.postLoad();
         }
     }
 

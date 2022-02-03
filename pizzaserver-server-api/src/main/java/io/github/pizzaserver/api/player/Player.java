@@ -54,7 +54,7 @@ public interface Player extends EntityHuman {
 
     boolean isAdventureMode();
 
-    boolean inSurvivalMode();
+    boolean isSurvivalMode();
 
     AdventureSettings getAdventureSettings();
 
