@@ -74,7 +74,7 @@ public class BlockStoneSlab extends BlockSlab {
                     -> BlockID.DOUBLE_STONE_SLAB3;
             case MOSSY_STONE_BRICK, SMOOTH_QUARTZ, STONE, CUT_SANDSTONE, CUT_RED_SANDSTONE
                     -> BlockID.DOUBLE_STONE_SLAB4;
-        };  // TODO: test more with this... (STACK META!!)
+        };
     }
 
     @Override

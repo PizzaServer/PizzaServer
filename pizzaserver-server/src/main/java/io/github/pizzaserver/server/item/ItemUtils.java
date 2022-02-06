@@ -18,10 +18,11 @@ public class ItemUtils {
      * @return serialized data
      */
     public static ItemData serializeForNetwork(Item item, MinecraftVersion version) {
+        int blockRuntimeId = item instanceof ItemBlock itemBlock ? version.getBlockRuntimeId(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) : 0;
         return ItemData.builder()
                 .id(version.getItemRuntimeId(item.getItemId()))
                 .netId(item.getNetworkId())
-                .blockRuntimeId(item instanceof ItemBlock ? version.getBlockRuntimeId(item.getItemId(), ((ItemBlock) item).getBlock().getNBTState()) : 0)
+                .blockRuntimeId(blockRuntimeId)
                 .count(item.getCount())
                 .damage(item.getMeta())
                 .canBreak(item.getBlocksCanBreak().toArray(String[]::new))
