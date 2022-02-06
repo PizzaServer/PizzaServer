@@ -1,11 +1,11 @@
-package io.github.pizzaserver.server.entity.inventory;
+package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;

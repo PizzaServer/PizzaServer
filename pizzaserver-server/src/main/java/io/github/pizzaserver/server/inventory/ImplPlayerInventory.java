@@ -1,11 +1,11 @@
-package io.github.pizzaserver.server.entity.inventory;
+package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.player.Player;

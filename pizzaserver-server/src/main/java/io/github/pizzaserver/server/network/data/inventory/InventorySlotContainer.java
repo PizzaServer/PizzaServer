@@ -1,14 +1,14 @@
 package io.github.pizzaserver.server.network.data.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.server.entity.inventory.BaseInventory;
-import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
-import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
-import io.github.pizzaserver.server.entity.inventory.InventoryUtils;
+import io.github.pizzaserver.server.inventory.BaseInventory;
+import io.github.pizzaserver.server.inventory.ImplEntityInventory;
+import io.github.pizzaserver.server.inventory.ImplPlayerInventory;
+import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Optional;

@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.event.type.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.item.Item;
 
 /**

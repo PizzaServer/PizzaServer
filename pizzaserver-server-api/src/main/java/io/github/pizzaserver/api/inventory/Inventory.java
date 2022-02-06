@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.entity.inventory;
+package io.github.pizzaserver.api.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.item.Item;
