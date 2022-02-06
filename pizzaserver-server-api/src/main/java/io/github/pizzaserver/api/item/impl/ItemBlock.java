@@ -48,7 +48,7 @@ public class ItemBlock extends BaseItem {
 
     @Override
     public String getItemId() {
-        return this.block.getBlockId();
+        return this.block.getItemId();
     }
 
     @Override

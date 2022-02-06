@@ -52,6 +52,10 @@ public abstract class Block implements Cloneable {
      */
     public abstract float getHardness();
 
+    public String getItemId() {
+        return this.getBlockId();
+    }
+
     public BlockLocation getLocation() {
         return new BlockLocation(this.world, this.x, this.y, this.z, this.layer);
     }

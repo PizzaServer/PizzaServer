@@ -154,7 +154,7 @@ public class BlockWood extends BlockStrippableWoodenLikeBlock {
             case JUNGLE:
             case ACACIA:
             case DARK_OAK:
-                if (index < 3 || index >= 36) {
+                if (index < 3 || index > 36) {
                     this.setBlockState(3 + (this.getWoodType().ordinal() * 6) + (this.getPillarAxis().ordinal() * 2) + (index % 2));
                     return;
                 }
@@ -163,7 +163,7 @@ public class BlockWood extends BlockStrippableWoodenLikeBlock {
                 break;
             case CRIMSON:
             case WARPED:
-                if (index < 0 || index >= 3) {
+                if (index < 0 || index > 3) {
                     this.setBlockState(index % 3);
                     return;
                 }

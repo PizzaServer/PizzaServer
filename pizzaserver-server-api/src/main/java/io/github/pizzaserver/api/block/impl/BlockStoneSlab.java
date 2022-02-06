@@ -64,6 +64,20 @@ public class BlockStoneSlab extends BlockSlab {
     }
 
     @Override
+    public String getItemId() {
+        return switch (this.getStoneType()) {
+            case SMOOTH_STONE, SANDSTONE, WOOD, COBBLESTONE, BRICK, STONE_BRICK, QUARTZ, NETHER_BRICK
+                    -> BlockID.DOUBLE_STONE_SLAB;
+            case RED_SANDSTONE, PURPUR, PRISMARINE_ROUGH, PRISMARINE_DARK, PRISMARINE_BRICK, MOSSY_COBBLESTONE, SMOOTH_SANDSTONE, RED_NETHER_BRICK
+                    -> BlockID.DOUBLE_STONE_SLAB2;
+            case END_STONE_BRICK, SMOOTH_RED_SANDSTONE, POLISHED_ANDESITE, ANDESITE, DIORITE, POLISHED_DIORITE, GRANITE, POLISHED_GRANITE
+                    -> BlockID.DOUBLE_STONE_SLAB3;
+            case MOSSY_STONE_BRICK, SMOOTH_QUARTZ, STONE, CUT_SANDSTONE, CUT_RED_SANDSTONE
+                    -> BlockID.DOUBLE_STONE_SLAB4;
+        };  // TODO: test more with this... (STACK META!!)
+    }
+
+    @Override
     public String getName() {
         return this.getStoneType().getDisplayName();
     }

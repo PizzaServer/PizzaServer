@@ -19,6 +19,7 @@ import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Logger;
+import io.github.pizzaserver.api.utils.ServerState;
 
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +31,7 @@ public abstract class Server {
 
     private static Server instance;
 
+    public abstract ServerState getState();
 
     /**
      * Return all {@link Player}s who been spawned into the server.

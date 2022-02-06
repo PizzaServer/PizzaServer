@@ -2,7 +2,7 @@ package io.github.pizzaserver.server.item;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.github.pizzaserver.api.item.BaseItem;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -23,6 +23,10 @@ public class ImplCreativeRegistry implements CreativeRegistry {
     public int register(Item item) {
         if (!ItemRegistry.getInstance().hasItem(item.getItemId())) {
             throw new IllegalArgumentException("Cannot register creative item without registering it to the ItemRegistry first");
+        }
+        if (this.items.inverse().containsKey(item)) {
+            Server.getInstance().getLogger().debug("Attempted to register creative item " + item.getItemId() + " " + item.getMeta() + " twice.");
+            return this.getNetworkIdByItem(item);
         }
 
         int networkId = this.nextCreativeNetworkId++;

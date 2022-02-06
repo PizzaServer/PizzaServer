@@ -22,8 +22,6 @@ public interface ItemRegistry {
 
     boolean hasItem(String itemId);
 
-    Set<Item> getCustomItems();
-
     default Item getItem(String itemId) {
         return this.getItem(itemId, 1);
     }

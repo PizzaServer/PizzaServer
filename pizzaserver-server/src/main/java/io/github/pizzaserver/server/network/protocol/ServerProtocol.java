@@ -21,20 +21,13 @@ public class ServerProtocol {
         return Optional.ofNullable(VERSIONS.getOrDefault(protocol, null));
     }
 
-    public static void setupVersions() throws IOException {
+    public static void loadVersions() throws IOException {
         setupVersion(new V475MinecraftVersion());
     }
 
-    private static void setupVersion(BaseMinecraftVersion version) throws IOException  {
+    private static void setupVersion(BaseMinecraftVersion version)  {
         if (version.getProtocol() >= Server.getInstance().getConfig().getMinimumSupportedProtocol()) {
             VERSIONS.put(version.getProtocol(), version);
-            version.preLoad();
-        }
-    }
-
-    public static void loadVersions() throws IOException {
-        for (BaseMinecraftVersion version : VERSIONS.values()) {
-            version.postLoad();
         }
     }
 

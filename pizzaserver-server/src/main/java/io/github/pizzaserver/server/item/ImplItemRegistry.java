@@ -1,11 +1,13 @@
 package io.github.pizzaserver.server.item;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
 import io.github.pizzaserver.api.item.descriptors.CustomItem;
+import io.github.pizzaserver.api.utils.ServerState;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +30,10 @@ public class ImplItemRegistry implements ItemRegistry {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Item> void register(T item, ItemBehavior<T> behavior) {
+        if (Server.getInstance().getState() != ServerState.REGISTERING) {
+            throw new IllegalStateException("The server is not in the REGISTERING state");
+        }
+
         T registeredItem = (T) item.clone();
         if (!registeredItem.getItemId().startsWith("minecraft:")) {
             if (!(registeredItem instanceof CustomItem)) {
@@ -45,7 +51,6 @@ public class ImplItemRegistry implements ItemRegistry {
         return this.items.containsKey(itemId);
     }
 
-    @Override
     public Set<Item> getCustomItems() {
         return this.customItems;
     }

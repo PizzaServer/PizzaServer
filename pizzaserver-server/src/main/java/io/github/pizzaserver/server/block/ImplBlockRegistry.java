@@ -1,10 +1,12 @@
 package io.github.pizzaserver.server.block;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.behavior.BlockBehavior;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.item.behavior.impl.ItemBlockBehavior;
 
 import java.util.*;
@@ -20,6 +22,10 @@ public class ImplBlockRegistry implements BlockRegistry {
 
     @Override
     public <T extends Block> void register(T block, BlockBehavior<T> behavior) {
+        if (Server.getInstance().getState() != ServerState.REGISTERING) {
+            throw new IllegalStateException("The server is not in the REGISTERING state");
+        }
+
         Block registeredBlock = block.clone();
         if (!registeredBlock.getBlockId().startsWith("minecraft:")) {
             this.customTypes.add(registeredBlock);

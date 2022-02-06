@@ -5,6 +5,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockCampfire;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityCampfire;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -14,7 +15,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BlockEntityTypeCampfire implements BlockEntityType {
+public class BlockEntityTypeCampfire implements BlockEntityType<BlockCampfire> {
 
     private static final Set<String> BLOCK_TYPES = new HashSet<>() {
         {
@@ -35,7 +36,7 @@ public class BlockEntityTypeCampfire implements BlockEntityType {
     }
 
     @Override
-    public BlockEntityCampfire create(Block block) {
+    public BlockEntityCampfire create(BlockCampfire block) {
         return new BlockEntityCampfire(block.getLocation());
     }
 

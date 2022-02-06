@@ -11,12 +11,14 @@ import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockStoneSlab;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.io.IOException;
@@ -140,7 +142,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
             // Register custom items
-            for (Item customItem : ItemRegistry.getInstance().getCustomItems()) {
+            for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
                 int runtimeId = customItemIdStart++;
                 this.itemRuntimeIds.put(customItem.getItemId(), runtimeId);
                 this.itemEntries.add(new StartGamePacket.ItemEntry(customItem.getItemId(), (short) runtimeId, true));
@@ -152,7 +154,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
             SortedSet<Block> sortedCustomBlocks =
-                    new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+                    new TreeSet<>(MinecraftNamespaceComparator::compareBlocks);
             sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
             for (Block customBlock : sortedCustomBlocks) {
                 this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
@@ -216,7 +218,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     @Override
     protected void loadItemComponents() {
         this.itemComponents.clear();
-        for (Item customItem : ItemRegistry.getInstance().getCustomItems()) {
+        for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
             this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
         }
     }

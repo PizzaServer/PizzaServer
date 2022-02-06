@@ -39,18 +39,13 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     protected final List<ComponentItemData> itemComponents = new ArrayList<>();
 
 
-    public void preLoad() throws IOException {
+    public BaseMinecraftVersion() throws IOException {
         this.loadBlockStates();
         this.loadRuntimeItems();
         this.loadBiomeDefinitions();
         this.loadEntitiesNBT();
         this.loadItemComponents();
         this.loadDefaultCreativeItems();
-        Server.getInstance().getLogger().debug("Preloaded v" + this.getProtocol());
-    }
-
-    public void postLoad() throws IOException {
-        Server.getInstance().getLogger().debug("Loaded v" + this.getProtocol());
     }
 
     protected abstract void loadBiomeDefinitions() throws IOException;
@@ -122,7 +117,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     @Override
     public NbtMap getNetworkBlockEntityNBT(NbtMap diskBlockEntityNBT) {
         String blockEntityId = diskBlockEntityNBT.getString("id");
-        BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
+        BlockEntityType<? extends Block> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
         return blockEntityType.serializeForNetwork(diskBlockEntityNBT);
     }
 
