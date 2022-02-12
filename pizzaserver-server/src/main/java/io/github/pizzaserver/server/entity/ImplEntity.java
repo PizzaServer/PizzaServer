@@ -1022,7 +1022,7 @@ public class ImplEntity implements Entity {
                     && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
                                 && !breathableComponent.getBreathableBlocks().contains(headBlock))
                         || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
-            if (losingOxygen) {
+            if (losingOxygen && !(this instanceof Player player && player.isCreativeMode())) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
                     this.damage(drowningEvent);
