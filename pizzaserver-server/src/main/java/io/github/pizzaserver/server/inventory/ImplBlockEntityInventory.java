@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.blockentity.impl.BlockEntityContainer;
 import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.player.Player;
 
-public class ImplBlockEntityInventory extends BaseInventory implements BlockEntityInventory {
+public class ImplBlockEntityInventory extends ImplOpenableInventory implements BlockEntityInventory {
 
     protected final BlockEntity blockEntity;
 

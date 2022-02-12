@@ -3,12 +3,10 @@ package io.github.pizzaserver.server.network.data.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.OpenableInventory;
 import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.server.inventory.BaseInventory;
-import io.github.pizzaserver.server.inventory.ImplEntityInventory;
-import io.github.pizzaserver.server.inventory.ImplPlayerInventory;
-import io.github.pizzaserver.server.inventory.InventoryUtils;
+import io.github.pizzaserver.server.inventory.*;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Optional;
@@ -38,11 +36,13 @@ public class InventorySlotContainer {
     }
 
     public BaseInventory getInventory() {
-        Optional<Inventory> openInventory = this.player.getOpenInventory();
+        Optional<OpenableInventory> openInventory = this.player.getOpenInventory();
         if (openInventory.isPresent() && InventoryUtils.getSlotTypes(openInventory.get().getContainerType()).contains(this.slotType)) {
             return (BaseInventory) openInventory.get();
         } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getContainerType()).contains(this.slotType)) {
             return this.player.getInventory();
+        } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getCraftingGrid().getContainerType()).contains(this.slotType)) {
+            return (ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid();
         } else {
             return null;
         }
@@ -75,6 +75,12 @@ public class InventorySlotContainer {
                         case 3 -> entityInventory.getBoots();
                         default -> null;
                     };
+                } else {
+                    return null;
+                }
+            case CREATIVE_OUTPUT:
+                if (inventory instanceof ImplPlayerCraftingInventory craftingInventory) {
+                    return craftingInventory.getCreativeOutput();
                 } else {
                     return null;
                 }
@@ -122,6 +128,10 @@ public class InventorySlotContainer {
                     }
                 }
                 break;
+            case CREATIVE_OUTPUT:
+                if (this.getInventory() instanceof ImplPlayerCraftingInventory craftingInventory) {
+                    craftingInventory.setCreativeOutput(itemStack);
+                }
             default:
                 if (this.slot >= 0 && this.slot < this.getInventory().getSize()) {
                     this.getInventory().setSlot(this.player, this.slot, itemStack, true);

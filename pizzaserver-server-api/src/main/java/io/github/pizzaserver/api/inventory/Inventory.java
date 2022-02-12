@@ -106,13 +106,6 @@ public interface Inventory extends Watchable {
     void sendSlot(Player player, int slot);
 
     /**
-     * Check if this player has permission to open this inventory by themselves.
-     * @param player if the player has permission to open this inventory
-     * @return if the player has permission to open the inventory by themselves
-     */
-    boolean canBeOpenedBy(Player player);
-
-    /**
      * Check how many items in the stack provided will be left over if this item were to be added to the entity inventory.
      * @param item item to find the excess of
      * @return excess amount

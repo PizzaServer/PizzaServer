@@ -187,9 +187,13 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                         continue;
                     }
 
-                    item = new ItemBlock(block);
+                    item = new ItemBlock(block, 1);
                 } else {
-                    item = ItemRegistry.getInstance().getItem(id, 1, meta);
+                    if (creativeJSONObj.has("damage")) {
+                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
+                    } else {
+                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
+                    }
                 }
 
                 this.creativeItems.add(item);

@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.OpenableInventory;
 import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
@@ -75,7 +76,7 @@ public interface Player extends EntityHuman {
      * Get the current open inventory of the player if any exist.
      * @return the open inventory if the player has one open
      */
-    Optional<Inventory> getOpenInventory();
+    Optional<OpenableInventory> getOpenInventory();
 
     /**
      * Try to close our current open inventory.
@@ -90,7 +91,7 @@ public interface Player extends EntityHuman {
      * @param inventory The inventory to open
      * @return if the inventory was opened
      */
-    boolean openInventory(Inventory inventory);
+    boolean openInventory(OpenableInventory inventory);
 
     /**
      * Get the amount of food strength the player has.

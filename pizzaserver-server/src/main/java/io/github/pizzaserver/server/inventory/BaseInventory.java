@@ -24,7 +24,7 @@ public abstract class BaseInventory implements Inventory {
     protected Item[] slots;
     protected final ContainerType containerType;
 
-    private final Set<Player> viewers = new HashSet<>();
+    protected final Set<Player> viewers = new HashSet<>();
 
 
     public BaseInventory(ContainerType containerType, int size) {
@@ -128,7 +128,7 @@ public abstract class BaseInventory implements Inventory {
 
         for (Player viewer : this.getViewers()) {
             if (!viewer.equals(player)) {
-                sendInventorySlot(viewer, this.getSlot(slot), slot, this.getId());
+                this.sendSlot(viewer, slot);
             }
         }
     }
@@ -224,59 +224,16 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void sendSlots(Player player) {
-        sendInventorySlots(player, this.getSlots(), this.getId());
+        if (this.getViewers().contains(player)) {
+            sendInventorySlots(player, this.getSlots(), this.getId());
+        }
     }
 
     @Override
     public void sendSlot(Player player, int slot) {
-        sendInventorySlot(player, this.getSlot(slot), slot, this.getId());
-    }
-
-    @Override
-    public boolean canBeOpenedBy(Player player) {
-        return !this.viewers.contains(player);
-    }
-
-    /**
-     * Tries to open the inventory.
-     * @param player the player to open this inventory to
-     * @return if the inventory was opened
-     */
-    public boolean openFor(Player player) {
-        if (this.canBeOpenedBy(player)) {
-            this.viewers.add(player);
-            this.sendContainerOpenPacket(player);
-            return true;
-        } else {
-            return false;
+        if (this.getViewers().contains(player)) {
+            sendInventorySlot(player, this.getSlot(slot), slot, this.getId());
         }
-    }
-
-    protected abstract void sendContainerOpenPacket(Player player);
-
-    /**
-     * Close this inventory for a player.
-     * @param player the player to close this inventory for
-     * @return if the inventory was closed
-     */
-    public boolean closeFor(Player player) {
-        if (this.viewers.contains(player)) {
-            this.viewers.remove(player);
-
-            ContainerClosePacket containerClosePacket = new ContainerClosePacket();
-            containerClosePacket.setId((byte) this.getId());
-            player.sendPacket(containerClosePacket);
-
-            InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
-            Server.getInstance().getEventManager().call(inventoryCloseEvent);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean shouldBeClosedFor(Player player) {
-        return this.getViewers().contains(player);
     }
 
     @Override

@@ -82,8 +82,15 @@ public class BlockWool extends Block implements Flammable {
     }
 
     @Override
-    public ItemBlock toStack() {
-        return new ItemBlock(this, 1);
+    public int getStackMeta() {
+        return this.getColor().ordinal();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta < DyeColor.values().length) {
+            this.setBlockState(meta);
+        }
     }
 
 }

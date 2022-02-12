@@ -4,30 +4,36 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
-import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.inventory.PlayerCraftingInventory;
 import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
 public class ImplPlayerInventory extends ImplEntityInventory implements PlayerInventory {
 
     private int selectedSlot;
-    private Item cursor = ItemRegistry.getInstance().getItem(BlockID.AIR);
+    private Item cursor = null;
+
+    private final PlayerCraftingInventory craftingInventory;
 
 
     public ImplPlayerInventory(Player player) {
         super(player, ContainerType.INVENTORY, InventoryUtils.getSlotCount(ContainerType.INVENTORY), ContainerId.INVENTORY);
+        this.craftingInventory = new ImplPlayerCraftingInventory(player);
     }
 
     @Override
     public Player getEntity() {
         return (Player) super.getEntity();
+    }
+
+    @Override
+    public PlayerCraftingInventory getCraftingGrid() {
+        return this.craftingInventory;
     }
 
     @Override
@@ -140,7 +146,7 @@ public class ImplPlayerInventory extends ImplEntityInventory implements PlayerIn
 
     @Override
     public Item getCursor() {
-        return Optional.ofNullable(this.cursor).orElse(ItemRegistry.getInstance().getItem(BlockID.AIR)).clone();
+        return Item.getAirIfNull(this.cursor).clone();
     }
 
     @Override

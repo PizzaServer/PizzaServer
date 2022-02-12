@@ -18,6 +18,7 @@ import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.player.ImplPlayer;
@@ -108,6 +109,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.ACACIA), 64));
         EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
         this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
+        this.player.setGamemode(Gamemode.CREATIVE);
         if (packet.getType() == TextPacket.Type.CHAT) {
             String message = packet.getMessage().strip();
             if (message.length() > 512) {

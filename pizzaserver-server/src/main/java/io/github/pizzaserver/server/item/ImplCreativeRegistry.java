@@ -54,7 +54,12 @@ public class ImplCreativeRegistry implements CreativeRegistry {
 
     @Override
     public Optional<Item> getItemByNetworkId(int networkId) {
-        return Optional.ofNullable(this.items.getOrDefault(networkId, null));
+        if (this.items.containsKey(networkId)) {
+            Item creativeItem = this.items.get(networkId).newNetworkCopy();
+            return Optional.of(creativeItem);
+        } else {
+            return Optional.empty();
+        }
     }
 
 }
