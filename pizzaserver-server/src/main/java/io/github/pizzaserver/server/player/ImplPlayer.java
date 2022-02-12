@@ -19,7 +19,6 @@ import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
@@ -949,9 +948,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public void moveTo(float x, float y, float z) {
+    public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
         Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z), Vector3f.from(this.pitch, this.yaw, this.headYaw));
-        super.moveTo(x, y, z);
+        super.moveTo(x, y, z, pitch, yaw, headYaw);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
             this.getChunkManager().onChunkChange(oldLocation);

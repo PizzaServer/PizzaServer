@@ -180,6 +180,7 @@ public class PlayerChunkManager {
                     boolean isChunkVisibleToPlayer = previouslyVisibleChunks.remove(chunkCoordinates);
                     if (!isChunkVisibleToPlayer) {
                         this.player.getLocation().getWorld().sendChunk(this.player, chunkX, chunkZ);
+                        System.out.println("sending chunk");
                     } else {
                         this.trySpawningEntities(this.player.getWorld().getChunk(chunkX, chunkZ), oldLocation, oldRadius);
                     }
