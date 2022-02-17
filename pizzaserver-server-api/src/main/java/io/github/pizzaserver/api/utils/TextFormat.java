@@ -18,6 +18,7 @@ public enum TextFormat {
     LIGHT_PURPLE('d'),
     YELLOW('e'),
     WHITE('f'),
+    MINECOIN_GOLD('g'),
     OBFUSUCATE('k'),
     BOLD('l'),
     STRIKETHROUGH('m'),
