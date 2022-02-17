@@ -954,9 +954,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public void moveTo(float x, float y, float z) {
+    public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
         Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z), Vector3f.from(this.pitch, this.yaw, this.headYaw));
-        super.moveTo(x, y, z);
+        super.moveTo(x, y, z, pitch, yaw, headYaw);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
             this.getChunkManager().onChunkChange(oldLocation);

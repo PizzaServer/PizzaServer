@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>com.nukkitx.protocol</groupId>
-            <artifactId>bedrock-v475</artifactId>
+            <artifactId>bedrock-v486</artifactId>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
