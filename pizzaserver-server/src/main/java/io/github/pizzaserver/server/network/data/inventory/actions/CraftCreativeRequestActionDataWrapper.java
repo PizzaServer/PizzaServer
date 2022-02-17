@@ -16,7 +16,7 @@ public class CraftCreativeRequestActionDataWrapper extends StackRequestActionWra
     public CraftCreativeRequestActionDataWrapper(ImplPlayer player, CraftCreativeStackRequestActionData action) {
         super(player);
         this.creativeItem = CreativeRegistry.getInstance().getItemByNetworkId(action.getCreativeItemNetworkId()).orElse(null);
-        this.destination = new InventorySlotContainer(player, ContainerSlotType.CREATIVE_OUTPUT, ImplPlayerCraftingInventory.RESULT_SLOT);
+        this.destination = new InventorySlotContainer(player, ContainerSlotType.CREATIVE_OUTPUT, 0);
     }
 
     public Item getItem() {

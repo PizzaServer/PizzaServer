@@ -38,10 +38,13 @@ public class InventorySlotContainer {
     public BaseInventory getInventory() {
         Optional<OpenableInventory> openInventory = this.player.getOpenInventory();
         if (openInventory.isPresent() && InventoryUtils.getSlotTypes(openInventory.get().getContainerType()).contains(this.slotType)) {
+            // the inventory targeted was the open inventory.
             return (BaseInventory) openInventory.get();
         } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getContainerType()).contains(this.slotType)) {
+            // the inventory targeted was their own inventory.
             return this.player.getInventory();
         } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getCraftingGrid().getContainerType()).contains(this.slotType)) {
+            // the inventory targeted was their crafting grid.
             return (ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid();
         } else {
             return null;
@@ -66,8 +69,7 @@ public class InventorySlotContainer {
                     return null;
                 }
             case ARMOR:
-                if (this.getInventory() instanceof EntityInventory) {
-                    EntityInventory entityInventory = (EntityInventory) this.getInventory();
+                if (this.getInventory() instanceof EntityInventory entityInventory) {
                     return switch (this.getSlot()) {
                         case 0 -> entityInventory.getHelmet();
                         case 1 -> entityInventory.getChestplate();
