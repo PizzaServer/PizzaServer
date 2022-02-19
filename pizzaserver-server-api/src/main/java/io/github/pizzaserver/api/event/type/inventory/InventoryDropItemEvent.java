@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.event.type.inventory;
 
-import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 
@@ -24,7 +24,7 @@ public class InventoryDropItemEvent extends BaseInventoryEvent.Cancellable {
     }
 
     public Item getDrop() {
-        return this.drop;
+        return this.drop.clone();
     }
 
 }

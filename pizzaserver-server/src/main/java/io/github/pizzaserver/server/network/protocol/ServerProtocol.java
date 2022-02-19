@@ -25,11 +25,11 @@ public class ServerProtocol {
         loadVersion(new V475MinecraftVersion());
         loadVersion(new V486MinecraftVersion());
     }
-
+  
     public static Optional<BaseMinecraftVersion> getProtocol(int protocol) {
         return Optional.ofNullable(VERSIONS.getOrDefault(protocol, null));
     }
-
+  
     private static void loadVersion(BaseMinecraftVersion version) {
         if (version.getProtocol() >= Server.getInstance().getConfig().getMinimumSupportedProtocol()) {
             VERSIONS.put(version.getProtocol(), version);

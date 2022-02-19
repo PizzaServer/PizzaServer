@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.entity.inventory;
+package io.github.pizzaserver.api.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.item.Item;
@@ -104,13 +104,6 @@ public interface Inventory extends Watchable {
      * @param slot the slot
      */
     void sendSlot(Player player, int slot);
-
-    /**
-     * Check if this player has permission to open this inventory by themselves.
-     * @param player if the player has permission to open this inventory
-     * @return if the player has permission to open the inventory by themselves
-     */
-    boolean canBeOpenedBy(Player player);
 
     /**
      * Check how many items in the stack provided will be left over if this item were to be added to the entity inventory.

@@ -48,7 +48,7 @@ public class ItemBlock extends BaseItem {
 
     @Override
     public String getItemId() {
-        return this.block.getBlockId();
+        return this.block.getItemId();
     }
 
     @Override
@@ -79,5 +79,20 @@ public class ItemBlock extends BaseItem {
         clone.block = this.getBlock().clone();
         return clone;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ItemBlock otherItem) {
+            return super.equals(obj)
+                    && otherItem.getBlock().getBlockState() == this.getBlock().getBlockState();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + (93 * this.getBlock().getBlockState());
+    }
+
 
 }

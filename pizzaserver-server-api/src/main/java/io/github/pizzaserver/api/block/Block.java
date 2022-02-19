@@ -52,6 +52,16 @@ public abstract class Block implements Cloneable {
      */
     public abstract float getHardness();
 
+    /**
+     * Retrieve the id used when serializing this block into an item.
+     * Some blocks have different item ids compared to their block ids.
+     * (e.g. stone_slab4 is a block id, however there is no runtime item state for it. Instead, double_stone_slab4 is used)
+     * @return item id
+     */
+    public String getItemId() {
+        return this.getBlockId();
+    }
+
     public BlockLocation getLocation() {
         return new BlockLocation(this.world, this.x, this.y, this.z, this.layer);
     }
