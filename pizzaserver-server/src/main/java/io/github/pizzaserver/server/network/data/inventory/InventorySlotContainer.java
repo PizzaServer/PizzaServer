@@ -45,6 +45,10 @@ public class InventorySlotContainer {
             return this.player.getInventory();
         } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getCraftingGrid().getContainerType()).contains(this.slotType)) {
             // the inventory targeted was their crafting grid.
+            if (!this.player.isCreativeMode() && this.slotType == ContainerSlotType.CREATIVE_OUTPUT) {
+                // Cannot interact with creative output while not in creative mode.
+                return null;
+            }
             return (ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid();
         } else {
             return null;
