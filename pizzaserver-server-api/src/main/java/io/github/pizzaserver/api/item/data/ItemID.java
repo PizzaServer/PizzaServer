@@ -72,6 +72,7 @@ public class ItemID extends BlockID {
     public static final String LEATHER_HELMET = "minecraft:leather_helmet";
     public static final String LEATHER_LEGGINGS = "minecraft:leather_leggings";
     public static final String MAGMA_CREAM = "minecraft:magma_cream";
+    public static final String MELON_SLICE = "minecraft:melon_slice";
     public static final String NAUTILUS_SHELL = "minecraft:nautilus_shell";
     public static final String NETHER_STAR = "minecraft:nether_star";
     public static final String NETHER_BRICK = "minecraft:netherbrick";

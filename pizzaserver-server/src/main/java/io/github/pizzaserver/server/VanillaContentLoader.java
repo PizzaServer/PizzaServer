@@ -101,6 +101,7 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemLeatherHelmet(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemLeatherLeggings(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemMagmaCream());
+        ItemRegistry.getInstance().register(new ItemMelonSlice());
         ItemRegistry.getInstance().register(new ItemNautilusShell());
         ItemRegistry.getInstance().register(new ItemNetherBrick());
         ItemRegistry.getInstance().register(new ItemNetherStar());
@@ -277,6 +278,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.MAGENTA), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.MAGENTA), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.MAGENTA), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockMelon());
         BlockRegistry.getInstance().register(new BlockMobSpawner());
         BlockRegistry.getInstance().register(new BlockNetherrack());
         BlockRegistry.getInstance().register(new BlockNetherReactor());

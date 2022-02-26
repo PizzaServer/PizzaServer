@@ -151,6 +151,7 @@ public class BlockID {
     public static final String MAGENTA_CANDLE = "minecraft:magenta_candle";
     public static final String MAGENTA_CANDLE_CAKE = "minecraft:magenta_candle_cake";
     public static final String MAGENTA_GLAZED_TERRACOTTA = "minecraft:magenta_glazed_terracotta";
+    public static final String MELON_BLOCK = "minecraft:melon_block";
     public static final String MOB_SPAWNER = "minecraft:mob_spawner";
     public static final String NETHERRACK = "minecraft:netherrack";
     public static final String NETHER_REACTOR = "minecraft:netherreactor";
