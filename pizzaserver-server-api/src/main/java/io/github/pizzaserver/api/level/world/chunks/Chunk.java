@@ -308,6 +308,12 @@ public interface Chunk extends Watchable {
 
     void addBlockEvent(int x, int y, int z, int type, int data);
 
+    default void addBlockEvent(Player player, Vector3i blockCoordinates, int type, int data) {
+        this.addBlockEvent(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), type, data);
+    }
+
+    void addBlockEvent(Player player, int x, int y, int z, int type, int data);
+
     /**
      * Check if this chunk can be closed.
      * @return if the chunk can be closed

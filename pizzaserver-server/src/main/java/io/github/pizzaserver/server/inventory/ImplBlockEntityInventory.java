@@ -38,8 +38,8 @@ public class ImplBlockEntityInventory extends ImplOpenableInventory implements B
     @Override
     public boolean closeFor(Player player) {
         if (super.closeFor(player)) {
-            if (this.getBlockEntity() instanceof BlockEntityContainer && this.getViewers().isEmpty()) {
-                player.getWorld().addBlockEvent(this.getBlockEntity().getLocation().toVector3i(), 1, 0);
+            if (this.getBlockEntity() instanceof BlockEntityContainer container && this.getViewers().isEmpty()) {
+                container.showCloseAnimation();
             }
             return true;
         }
