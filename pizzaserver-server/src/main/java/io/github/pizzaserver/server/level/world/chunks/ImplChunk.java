@@ -302,15 +302,20 @@ public class ImplChunk implements Chunk {
 
     @Override
     public void addBlockEvent(int x, int y, int z, int type, int data) {
+        for (Player viewer : this.getViewers()) {
+            this.addBlockEvent(viewer, x, y, z, type, data);
+        }
+    }
+
+    @Override
+    public void addBlockEvent(Player player, int x, int y, int z, int type, int data) {
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + (x & 15), y, this.getZ() * 16 + (z & 15));
         BlockEventPacket blockEventPacket = new BlockEventPacket();
         blockEventPacket.setBlockPosition(blockCoordinates);
         blockEventPacket.setEventType(type);
         blockEventPacket.setEventData(data);
 
-        for (Player viewer : this.getViewers()) {
-            viewer.sendPacket(blockEventPacket);
-        }
+        player.sendPacket(blockEventPacket);
     }
 
     private void doBlockUpdate(BlockUpdateType type, int x, int y, int z) {
