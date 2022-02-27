@@ -24,7 +24,7 @@ import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreatha
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityBurnsInDaylightComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
@@ -37,7 +37,7 @@ import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
+import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.ImplWorld;

@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.block.impl.BlockAir;
 import io.github.pizzaserver.api.block.impl.BlockDirt;
 import io.github.pizzaserver.api.block.impl.BlockIronOre;
 import io.github.pizzaserver.api.block.impl.BlockStone;
-import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.item.impl.ItemShears;

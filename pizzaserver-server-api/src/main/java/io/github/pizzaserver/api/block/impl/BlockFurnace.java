@@ -4,13 +4,14 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.LitType;
+import io.github.pizzaserver.api.blockentity.impl.BlockEntityFurnace;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockFurnace extends Block {
+public class BlockFurnace extends BlockBlockEntity<BlockEntityFurnace> {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

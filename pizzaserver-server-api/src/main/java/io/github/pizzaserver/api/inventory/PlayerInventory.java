@@ -1,9 +1,9 @@
-package io.github.pizzaserver.api.entity.inventory;
+package io.github.pizzaserver.api.inventory;
 
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 
-public interface PlayerInventory extends EntityInventory {
+public interface PlayerInventory extends EntityInventory, OpenableInventory {
 
     Player getEntity();
 
@@ -31,5 +31,7 @@ public interface PlayerInventory extends EntityInventory {
      * @param item item held by the player's cursor
      */
     void setCursor(Item item);
+
+    PlayerCraftingInventory getCraftingGrid();
 
 }

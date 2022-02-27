@@ -1,13 +1,13 @@
-package io.github.pizzaserver.server.entity.inventory;
+package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityContainer;
-import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.player.Player;
 
-public class ImplBlockEntityInventory extends BaseInventory implements BlockEntityInventory {
+public class ImplBlockEntityInventory extends ImplOpenableInventory implements BlockEntityInventory {
 
     protected final BlockEntity blockEntity;
 

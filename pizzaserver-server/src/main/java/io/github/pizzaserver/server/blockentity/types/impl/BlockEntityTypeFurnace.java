@@ -6,6 +6,7 @@ import com.nukkitx.nbt.NbtType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockFurnace;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityFurnace;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -16,7 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BlockEntityTypeFurnace implements BlockEntityType {
+public class BlockEntityTypeFurnace implements BlockEntityType<BlockFurnace> {
 
     private static final Set<String> BLOCK_TYPES = new HashSet<>() {
         {
@@ -36,7 +37,7 @@ public class BlockEntityTypeFurnace implements BlockEntityType {
     }
 
     @Override
-    public BlockEntityFurnace create(Block block) {
+    public BlockEntityFurnace create(BlockFurnace block) {
         return new BlockEntityFurnace(block.getLocation());
     }
 
