@@ -32,11 +32,11 @@ public class BlockChest extends Block {
     }
 
     public HorizontalDirection getDirection() {
-        return HorizontalDirection.fromBlockStateIndex(this.getBlockState());
+        return HorizontalDirection.fromOmniBlockStateIndex(this.getBlockState());
     }
 
     public void setDirection(HorizontalDirection direction) {
-        this.setBlockState(direction.getBlockStateIndex());
+        this.setBlockState(direction.getOmniBlockStateIndex());
     }
 
     @Override
