@@ -182,6 +182,13 @@ public class ImplWorld implements World {
     }
 
     @Override
+    public void addBlockEvent(Player player, int x, int y, int z, int type, int data) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        this.getChunk(chunkX, chunkZ).addBlockEvent(player, x & 15, y, z & 15, type, data);
+    }
+
+    @Override
     public void addItemEntity(Item item, Vector3f position, Vector3f velocity) {
         this.addItemEntity(this.getServer().getEntityRegistry().getItemEntity(item), position, velocity);
     }

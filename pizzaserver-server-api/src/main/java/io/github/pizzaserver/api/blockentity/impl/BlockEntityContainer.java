@@ -28,11 +28,31 @@ public abstract class BlockEntityContainer extends BaseBlockEntity {
             Server.getInstance().getEventManager().call(inventoryOpenEvent);
             if (!inventoryOpenEvent.isCancelled()) {
                 player.openInventory(this.inventory);
-                player.getWorld().addBlockEvent(this.getLocation().toVector3i(), 1, 1);
+                this.showOpenAnimation();
                 return false;
             }
         }
         return true;
+    }
+
+    public void showOpenAnimation() {
+        for (Player player : this.getLocation().getChunk().getViewers()) {
+            this.showOpenAnimation(player);
+        }
+    }
+
+    public void showOpenAnimation(Player player) {
+        player.getWorld().addBlockEvent(player, this.getLocation().toVector3i(), 1, 1);
+    }
+
+    public void showCloseAnimation() {
+        for (Player player : this.getLocation().getChunk().getViewers()) {
+            this.showCloseAnimation(player);
+        }
+    }
+
+    public void showCloseAnimation(Player player) {
+        player.getWorld().addBlockEvent(player, this.getLocation().toVector3i(), 1, 0);
     }
 
 }
