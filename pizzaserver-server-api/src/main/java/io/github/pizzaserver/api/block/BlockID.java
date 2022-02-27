@@ -173,6 +173,7 @@ public class BlockID {
     public static final String POLISHED_BLACKSTONE_DOUBLE_BRICK_SLAB = "minecraft:polished_blackstone_brick_double_slab";
     public static final String POLISHED_DEEPSLATE_SLAB = "minecraft:polished_deepslate_slab";
     public static final String POLISHED_DEEPSLATE_DOUBLE_SLAB = "minecraft:polished_deepslate_double_slab";
+    public static final String PUMPKIN = "minecraft:pumpkin";
     public static final String PURPLE_CANDLE = "minecraft:purple_candle";
     public static final String PURPLE_CANDLE_CAKE = "minecraft:purple_candle_cake";
     public static final String PURPLE_GLAZED_TERRACOTTA = "minecraft:purple_glazed_terracotta";
