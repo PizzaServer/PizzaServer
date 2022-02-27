@@ -1,4 +1,4 @@
-package io.github.pizzaserver.format.api.provider.mcworld;
+package io.github.pizzaserver.format.api.provider;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,12 +12,10 @@ import java.util.zip.ZipInputStream;
 
 public class ResourceUtils {
 
-    public static void copyTestWorld(Path targetDirectoryLocation) throws IOException {
-
-        // Setup
+    public static void extractZipContents(String zipFileName, Path targetDirectoryLocation) throws IOException {
         File targetDirectory = targetDirectoryLocation.toFile();
-        File tempZipFile = targetDirectory.toPath().resolve("testworld.zip").toFile();
-        Files.copy(ResourceUtils.class.getResourceAsStream("/testworld.zip"), tempZipFile.toPath());
+        File tempZipFile = targetDirectory.toPath().resolve(zipFileName + ".zip").toFile();
+        Files.copy(ResourceUtils.class.getResourceAsStream("/" + zipFileName + ".zip"), tempZipFile.toPath());
 
         // Extract contents
         try (ZipFile zipFile = new ZipFile(tempZipFile)) {

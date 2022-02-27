@@ -1,13 +1,12 @@
-package io.github.pizzaserver.format.api.provider.mcworld.word.chunks.subchunks;
+package io.github.pizzaserver.format.api.dimension.chunks.subchunk.utils;
 
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.format.api.dimension.chunks.subchunk.BlockPaletteEntry;
-import io.github.pizzaserver.format.api.dimension.chunks.subchunk.utils.Palette;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MCWorldLevelBlockPaletteTest {
+public class PaletteTest {
 
     @Test
     public void resizeShouldProperlyMovePaletteIndexes() {
