@@ -8,7 +8,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.ReadWriteKeyLock;
 import io.github.pizzaserver.commons.utils.Tuple;
-import io.github.pizzaserver.format.api.chunks.BedrockChunk;
+import io.github.pizzaserver.format.api.dimension.chunks.BedrockChunk;
 import io.github.pizzaserver.server.level.processing.requests.PlayerChunkRequest;
 import io.github.pizzaserver.server.level.processing.requests.UnloadChunkRequest;
 import io.github.pizzaserver.server.level.world.ImplWorld;
@@ -74,8 +74,8 @@ public class WorldChunkManager implements ChunkManager {
                 try {
                     BedrockChunk internalChunk = this.world.getLevel()
                             .getProvider()
-                            .getChunkProvider()
-                            .getChunk(x, z, this.world.getDimension().ordinal());
+                            .getDimension(this.world.getDimension().ordinal())
+                            .getChunk(x, z);
 
                     chunk = new ImplChunk.Builder()
                             .setWorld(this.world)

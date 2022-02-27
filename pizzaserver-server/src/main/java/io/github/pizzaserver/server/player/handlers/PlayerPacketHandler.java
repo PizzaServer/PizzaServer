@@ -101,13 +101,6 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.CRIMSON), 64));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.OAK), 64));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.BIRCH), 64));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.DARK_OAK), 64));
-        this.player.getInventory().addItem(new ItemBlock(new BlockWood(WoodType.ACACIA), 64));
-        EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
-        this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {
             String message = packet.getMessage().strip();
             if (message.length() > 512) {

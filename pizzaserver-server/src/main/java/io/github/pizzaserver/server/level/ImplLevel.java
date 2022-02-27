@@ -4,8 +4,6 @@ import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.format.api.BedrockLevel;
-import io.github.pizzaserver.format.api.chunks.BedrockChunk;
-import io.github.pizzaserver.format.api.chunks.BedrockChunkProvider;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 
@@ -17,13 +15,13 @@ import java.util.Map;
 public class ImplLevel implements Level, Closeable {
 
     private final ImplLevelManager levelManager;
-    private final BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider;
+    private final BedrockLevel provider;
 
     private final Map<Dimension, ImplWorld> dimensions = new HashMap<>();
 
     private Difficulty difficulty;
 
-    public ImplLevel(ImplLevelManager levelManager, BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider) {
+    public ImplLevel(ImplLevelManager levelManager, BedrockLevel provider) {
         this.levelManager = levelManager;
         this.provider = provider;
 
@@ -58,7 +56,7 @@ public class ImplLevel implements Level, Closeable {
         return this.levelManager.getServer();
     }
 
-    public BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> getProvider() {
+    public BedrockLevel getProvider() {
         return this.provider;
     }
 

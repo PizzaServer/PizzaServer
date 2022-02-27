@@ -1,7 +1,9 @@
 package io.github.pizzaserver.server.level.world.chunks;
 
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.NBTOutputStream;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import com.nukkitx.protocol.bedrock.packet.BlockEventPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
@@ -17,17 +19,21 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.commons.utils.Check;
-import io.github.pizzaserver.format.api.chunks.BedrockChunk;
-import io.github.pizzaserver.format.api.chunks.subchunks.BedrockSubChunk;
-import io.github.pizzaserver.format.api.chunks.subchunks.BlockLayer;
-import io.github.pizzaserver.format.api.chunks.subchunks.BlockPalette;
+import io.github.pizzaserver.format.api.dimension.chunks.BedrockChunk;
+import io.github.pizzaserver.format.api.dimension.chunks.subchunk.BedrockSubChunk;
+import io.github.pizzaserver.format.api.dimension.chunks.subchunk.BlockLayer;
+import io.github.pizzaserver.format.api.dimension.chunks.subchunk.BlockPaletteEntry;
+import io.github.pizzaserver.format.api.utils.BedrockNetworkUtils;
+import io.github.pizzaserver.format.api.utils.VarInts;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.data.BlockUpdateEntry;
+import io.github.pizzaserver.server.level.world.chunks.utils.ChunkUtils;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
 import java.util.*;
@@ -64,10 +70,6 @@ public class ImplChunk implements Chunk {
 
 
     protected ImplChunk(ImplWorld world, int x, int z, BedrockChunk chunk) {
-        if (chunk.getSubChunks().size() != 16) {
-            throw new IllegalArgumentException("Tried to construct chunk with only " + chunk.getSubChunks().size() + " subchunks instead of 16.");
-        }
-
         this.world = world;
         this.x = x;
         this.z = z;
@@ -104,11 +106,13 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public byte getBiomeAt(int x, int z) {
-        if (x > 15 || z > 15 || x < 0 || z < 0) {
-            throw new IllegalArgumentException("Could not fetch biome of block outside of chunk");
-        }
-        return this.chunk.getBiomeAt(x, z);
+    public int getBiomeAt(int x, int y, int z) {
+        Check.inclusiveBounds(x, 0, 15, "x");
+        Check.inclusiveBounds(y, -64, 320, "y");
+        Check.inclusiveBounds(z, 0, 15, "z");
+
+        int subChunkY = (int) Math.floor(y / 16d);
+        return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, Math.abs(y) & 15, z & 15);
     }
 
     /**
@@ -162,7 +166,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Block getHighestBlockAt(int x, int z) {
-        int chunkBlockY = Math.max(0, this.chunk.getHighestBlockAt(x & 15, z & 15) - 1);
+        int chunkBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(x & 15, z & 15) - 1);
         return this.getBlock(x, chunkBlockY, z);
     }
 
@@ -173,12 +177,12 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
-        if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
+        if (y >= 320 || y < -64 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not get block outside chunk");
         }
         int subChunkIndex = y / 16;
         int chunkBlockX = x & 15;
-        int subChunkY = y & 15;
+        int chunkBlockY = Math.abs(y) & 15;
         int chunkBlockZ = z & 15;
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
@@ -186,14 +190,15 @@ public class ImplChunk implements Chunk {
         readLock.lock();
 
         try {
-            BedrockSubChunk subChunk = this.chunk.getSubChunk(subChunkIndex);
+            BedrockSubChunk subChunk = this.getSubChunk(subChunkIndex);
             if (subChunk.getLayers().size() <= layer) {
                 // layer does not exist: return air block
                 Block block = BlockRegistry.getInstance().getBlock(BlockID.AIR);
                 block.setLocation(this.getWorld(), blockCoordinates, layer);
                 return block;
             }
-            BlockPalette.Entry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, subChunkY, chunkBlockZ);
+
+            BlockPaletteEntry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
             Block block;
             if (BlockRegistry.getInstance().hasBlock(paletteEntry.getId())) {
                 // Block id is registered
@@ -246,18 +251,18 @@ public class ImplChunk implements Chunk {
 
         try {
             // Update internal sub chunk
-            BedrockSubChunk subChunk = this.chunk.getSubChunks().get(subChunkIndex);
+            BedrockSubChunk subChunk = this.getSubChunk(subChunkIndex);
             BlockLayer mainBlockLayer = subChunk.getLayer(layer);
-            BlockPalette.Entry entry = mainBlockLayer.getPalette().create(block.getBlockId(), block.getNBTState(), ServerProtocol.LATEST_BLOCK_STATES_VERSION);
+            BlockPaletteEntry entry = new BlockPaletteEntry(block.getBlockId(), ServerProtocol.LATEST_BLOCK_STATES_VERSION, block.getNBTState());
             mainBlockLayer.setBlockEntryAt(chunkBlockX, subChunkBlockY, chunkBlockZ, entry);
 
-            int highestBlockY = Math.max(0, this.chunk.getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
+            int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
             if (y >= highestBlockY) {
                 int newHighestBlockY = y;
                 while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
                     newHighestBlockY--;
                 }
-                this.chunk.setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
+                this.chunk.getHeightMap().setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
             }
 
             // Send update block packet
@@ -311,7 +316,7 @@ public class ImplChunk implements Chunk {
         int chunkBlockX = x & 15;
         int chunkBlockZ = z & 15;
 
-        int layers = Math.max(this.chunk.getSubChunk(subChunkIndex).getLayers().size(), 1);
+        int layers = Math.max(this.getSubChunk(subChunkIndex).getLayers().size(), 1);
 
         for (int layer = 0; layer < layers; layer++) {
             Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
@@ -330,7 +335,7 @@ public class ImplChunk implements Chunk {
         int subChunkIndex = y / 16;
 
         // Ensure that at least the foremost layer is sent to the client
-        int layers = Math.max(this.chunk.getSubChunk(subChunkIndex).getLayers().size(), 1);
+        int layers = Math.max(this.getSubChunk(subChunkIndex).getLayers().size(), 1);
 
         for (int layer = 0; layer < layers; layer++) {
             this.sendBlock(player, x & 15, y, z & 15, layer);
@@ -424,10 +429,31 @@ public class ImplChunk implements Chunk {
 
         ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         try {
-            int subChunkCount = this.chunk.getSubChunkCount();
-            this.chunk.serializeForNetwork(buffer, player.getVersion());
+            int subChunkCount = ChunkUtils.getSubChunkCount(this.chunk);
 
-            // TODO: Write block entities here
+            for (int i = -4; i < subChunkCount - 4; i++) {
+                BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), player.getVersion());
+            }
+
+            // Write biomes
+            BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap());
+
+            buffer.writeByte(0);    // border blocks
+            VarInts.writeUnsignedInt(buffer, 0);    // extra data
+
+            // Write block entities if any exist
+            if (!this.chunk.getBlockEntities().isEmpty()) {
+                try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
+                    for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities()) {
+                        try {
+                            NbtMap networkBlockEntityNBT = player.getVersion().getNetworkBlockEntityNBT(diskBlockEntityNBT);
+                            outputStream.writeTag(networkBlockEntityNBT);
+                        } catch (NullPointerException exception) {
+                            throw new IOException("Failed to send chunk due to unhandled block entity found: " + diskBlockEntityNBT);
+                        }
+                    }
+                }
+            }
 
             byte[] chunkData = new byte[buffer.readableBytes()];
             buffer.readBytes(chunkData);
@@ -436,7 +462,6 @@ public class ImplChunk implements Chunk {
             final int packetSubChunkCount = subChunkCount;
             this.getWorld().getServer().getScheduler().prepareTask(() -> {
                 if (player.isConnected() && player.getLocation().getWorld().equals(this.getWorld())) {
-                    // TODO: Supposedly tile entities are also packaged here
                     LevelChunkPacket chunkPacket = new LevelChunkPacket();
                     chunkPacket.setChunkX(this.getX());
                     chunkPacket.setChunkZ(this.getZ());
@@ -462,6 +487,14 @@ public class ImplChunk implements Chunk {
         } finally {
             buffer.release();
             readLock.unlock();
+        }
+    }
+
+    private BedrockSubChunk getSubChunk(int subChunkY) {
+        try {
+            return this.chunk.getSubChunk(subChunkY);
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to fetch sub chunk.");
         }
     }
 
@@ -517,8 +550,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ImplChunk) {
-            ImplChunk otherChunk = (ImplChunk) obj;
+        if (obj instanceof ImplChunk otherChunk) {
             return (otherChunk.getX() == this.getX()) && (otherChunk.getZ() == this.getZ()) && (otherChunk.getWorld().equals(this.getWorld()));
         }
         return false;
@@ -556,6 +588,7 @@ public class ImplChunk implements Chunk {
 
         public ImplChunk build() {
             Check.nullParam(this.world, "world");
+            Check.nullParam(this.chunk, "chunk");
             return new ImplChunk(this.world, this.x, this.z, this.chunk);
         }
 

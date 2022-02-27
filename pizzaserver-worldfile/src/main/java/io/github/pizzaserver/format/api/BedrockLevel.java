@@ -1,20 +1,37 @@
 package io.github.pizzaserver.format.api;
 
-import io.github.pizzaserver.format.api.chunks.BedrockChunkProvider;
-import io.github.pizzaserver.format.mcworld.world.chunks.MCWorldChunk;
+import io.github.pizzaserver.format.api.dimension.BedrockDimension;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-public interface BedrockLevel<T extends BedrockChunkProvider<? extends MCWorldChunk>> extends Closeable {
+public interface BedrockLevel extends Closeable {
 
-    T getChunkProvider();
+    /**
+     * Retrieve a specific dimension from this level.
+     * @param dimensionId dimension id
+     * @return dimension
+     */
+    BedrockDimension getDimension(int dimensionId);
 
+    /**
+     * Retrieve level data from the level.dat
+     * @return level data
+     */
     LevelData getLevelData();
 
-    void setLevelData(LevelData levelData) throws IOException;
+    /**
+     * Update the level.dat data file
+     * @param data new level data
+     * @throws IOException if failed to save
+     */
+    void setLevelData(LevelData data) throws IOException;
 
+    /**
+     * Retrieve the file/directory this level was created from.
+     * @return the file
+     */
     File getFile();
 
 }
