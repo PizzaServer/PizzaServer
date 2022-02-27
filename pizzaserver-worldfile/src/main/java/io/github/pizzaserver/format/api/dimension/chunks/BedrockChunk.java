@@ -123,8 +123,4 @@ public class BedrockChunk {
         }
     }
 
-    public Map<Integer, BedrockSubChunk> getLoadedSubChunks() {
-        return Collections.unmodifiableMap(this.subChunks);
-    }
-
 }

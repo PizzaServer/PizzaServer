@@ -14,7 +14,7 @@ public interface BedrockChunkProvider extends Closeable {
 
     void saveChunk(BedrockChunk chunk) throws IOException;
 
-    void saveSubChunk(BedrockSubChunk subChunk) throws IOException;
+    void saveSubChunk(int dimension, int x, int z, int subChunkIndex, BedrockSubChunk subChunk) throws IOException;
 
     boolean isClosed();
 

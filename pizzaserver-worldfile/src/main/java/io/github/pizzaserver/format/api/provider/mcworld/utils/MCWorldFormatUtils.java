@@ -48,7 +48,7 @@ public class MCWorldFormatUtils {
         return subChunk;
     }
 
-    public void writeSubChunk(ByteBuf buffer, BedrockSubChunk subChunk) throws IOException {
+    public static void writeSubChunk(ByteBuf buffer, BedrockSubChunk subChunk) throws IOException {
         buffer.writeByte(8);
         buffer.writeByte(subChunk.getLayers().size());
 

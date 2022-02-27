@@ -1,6 +1,7 @@
 package io.github.pizzaserver.format.api.provider.mcworld;
 
 import com.nukkitx.nbt.NBTInputStream;
+import com.nukkitx.nbt.NBTOutputStream;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtUtils;
 import io.github.pizzaserver.format.api.data.DimensionIds;
@@ -13,6 +14,7 @@ import io.github.pizzaserver.format.api.provider.mcworld.data.ChunkKey;
 import io.github.pizzaserver.format.api.provider.mcworld.data.MCWorldChunkData;
 import io.github.pizzaserver.format.api.provider.mcworld.utils.MCWorldFormatUtils;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import org.iq80.leveldb.DB;
 
@@ -38,16 +40,16 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
             throw new IllegalStateException("Cannot retrieve chunk on closed provider.");
         }
         // Extract chunk version
-        byte chunkVersion = this.getChunkVersion(x, z, dimension);
+        byte chunkVersion = this.getChunkVersion(dimension, x, z);
 
         // Extract height map and biome data
-        MCWorldChunkData chunkDataPalette = this.getChunkDataPalette(x, z, dimension);
+        MCWorldChunkData chunkDataPalette = this.getChunkData(dimension, x, z);
 
         // Extract block entities within this chunk
-        Set<NbtMap> blockEntities = this.getChunkBlockEntities(x, z, dimension);
+        Set<NbtMap> blockEntities = this.getBlockEntities(dimension, x, z);
 
         // Extract entities within this chunk
-        Set<NbtMap> entities = this.getChunkEntities(x, z, dimension);
+        Set<NbtMap> entities = this.getEntities(dimension, x, z);
 
         BedrockChunk chunk = new BedrockChunk(this, dimension, x, z);
         chunk.setVersion(chunkVersion);
@@ -77,7 +79,8 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
             subChunkData = new byte[]{ 8, 0 };
         }
 
-        ByteBuf buffer = Unpooled.copiedBuffer(subChunkData);
+        ByteBuf buffer = Unpooled.wrappedBuffer(subChunkData);
+        buffer.readerIndex(0);
 
         try {
             return MCWorldFormatUtils.readSubChunk(buffer);
@@ -86,7 +89,7 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
         }
     }
 
-    private byte getChunkVersion(int x, int z, int dimension) {
+    private byte getChunkVersion(int dimension, int x, int z) {
         byte[] versionKey;
         if (dimension == DimensionIds.OVERWORLD) {
             versionKey = ChunkKey.VERSION.getLevelDBKey(x, z);
@@ -103,7 +106,18 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
         return versionData[0];
     }
 
-    private MCWorldChunkData getChunkDataPalette(int x, int z, int dimension) throws IOException {
+    private void saveChunkVersion(int x, int z, int dimension, byte version) {
+        byte[] versionKey;
+        if (dimension == DimensionIds.OVERWORLD) {
+            versionKey = ChunkKey.VERSION.getLevelDBKey(x, z);
+        } else {
+            versionKey = ChunkKey.VERSION.getLevelDBKey(x, z, dimension);
+        }
+
+        this.database.put(versionKey, new byte[]{ version });
+    }
+
+    private MCWorldChunkData getChunkData(int dimension, int x, int z) throws IOException {
         byte[] heightAnd3DBiomeKey;
         byte[] heightAnd2DBiomeKey;
         if (dimension == DimensionIds.OVERWORLD) {
@@ -132,11 +146,7 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
             System.arraycopy(heightData, 0, data, 0, heightData.length);
             System.arraycopy(biomeData, 0, data, heightData.length, biomeData.length);
 
-            if (dimension == DimensionIds.OVERWORLD) {
-                this.database.put(ChunkKey.DATA_3D.getLevelDBKey(x, z), data);
-            } else {
-                this.database.put(ChunkKey.DATA_3D.getLevelDBKeyWithDimension(x, z, dimension), data);
-            }
+            this.database.put(heightAnd3DBiomeKey, data);
         } else if (heightAnd3DBiomeData != null) {
             // 3D biome data
             chunkData = MCWorldFormatUtils.read3DChunkData(heightAnd3DBiomeData);
@@ -148,7 +158,26 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
         return chunkData;
     }
 
-    private Set<NbtMap> getChunkBlockEntities(int x, int z, int dimension) throws IOException {
+    private void saveData(int dimension, int x, int z, MCWorldChunkData chunkData) throws IOException {
+        byte[] heightAnd3DBiomeKey;
+        if (dimension == DimensionIds.OVERWORLD) {
+            heightAnd3DBiomeKey = ChunkKey.DATA_3D.getLevelDBKey(x, z);
+        } else {
+            heightAnd3DBiomeKey = ChunkKey.DATA_3D.getLevelDBKeyWithDimension(x, z, dimension);
+        }
+
+        byte[] biomeData = MCWorldFormatUtils.biomeMapToBytes(chunkData.getBiomeMap());
+        byte[] heightData = MCWorldFormatUtils.heightMapToBytes(chunkData.getHeightMap());
+
+        // Put data together to form complete 3D data
+        byte[] data = new byte[biomeData.length + heightData.length];
+        System.arraycopy(heightData, 0, data, 0, heightData.length);
+        System.arraycopy(biomeData, 0, data, heightData.length, biomeData.length);
+
+        this.database.put(heightAnd3DBiomeKey, data);
+    }
+
+    private Set<NbtMap> getBlockEntities(int dimension, int x, int z) throws IOException {
         byte[] blockEntityKey;
         if (dimension == DimensionIds.OVERWORLD) {
             blockEntityKey = ChunkKey.BLOCK_ENTITIES.getLevelDBKey(x, z);
@@ -163,7 +192,7 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
 
         Set<NbtMap> blockEntities = new HashSet<>();
         try (InputStream blockEntityDataStream = new ByteArrayInputStream(blockEntityData);
-             NBTInputStream blockEntityNBTInputStream = NbtUtils.createReaderLE(blockEntityDataStream)) {
+                NBTInputStream blockEntityNBTInputStream = NbtUtils.createReaderLE(blockEntityDataStream)) {
             while (blockEntityDataStream.available() > 0) {
                 NbtMap blockEntityNBT = (NbtMap) blockEntityNBTInputStream.readTag();
                 blockEntities.add(blockEntityNBT);
@@ -173,7 +202,27 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
         return blockEntities;
     }
 
-    private Set<NbtMap> getChunkEntities(int x, int z, int dimension) throws IOException {
+    private void saveBlockEntities(int dimension, int x, int z, Set<NbtMap> blockEntities) throws IOException {
+        byte[] blockEntityKey;
+        if (dimension == DimensionIds.OVERWORLD) {
+            blockEntityKey = ChunkKey.BLOCK_ENTITIES.getLevelDBKey(x, z);
+        } else {
+            blockEntityKey = ChunkKey.BLOCK_ENTITIES.getLevelDBKeyWithDimension(x, z, dimension);
+        }
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                NBTOutputStream blockEntityNBTOutputStream = NbtUtils.createWriterLE(outputStream)) {
+            // Write block entities nbt
+            for (NbtMap blockEntity : blockEntities) {
+                blockEntityNBTOutputStream.writeTag(blockEntity);
+            }
+
+            byte[] data = outputStream.toByteArray();
+            this.database.put(blockEntityKey, data);
+        }
+    }
+
+    private Set<NbtMap> getEntities(int dimension, int x, int z) throws IOException {
         byte[] entitiesKey;
         if (dimension == DimensionIds.OVERWORLD) {
             entitiesKey = ChunkKey.ENTITIES.getLevelDBKey(x, z);
@@ -198,14 +247,69 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
         return entities;
     }
 
-    @Override
-    public void saveChunk(BedrockChunk bedrockChunk) throws IOException {
+    private void saveEntities(int dimension, int x, int z, Set<NbtMap> entities) throws IOException {
+        byte[] entitiesKey;
+        if (dimension == DimensionIds.OVERWORLD) {
+            entitiesKey = ChunkKey.ENTITIES.getLevelDBKey(x, z);
+        } else {
+            entitiesKey = ChunkKey.ENTITIES.getLevelDBKeyWithDimension(x, z, dimension);
+        }
 
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             NBTOutputStream entityNBTOutputStream = NbtUtils.createWriterLE(outputStream)) {
+            // Write block entities nbt
+            for (NbtMap entity : entities) {
+                entityNBTOutputStream.writeTag(entity);
+            }
+
+            byte[] data = outputStream.toByteArray();
+            this.database.put(entitiesKey, data);
+        }
     }
 
     @Override
-    public void saveSubChunk(BedrockSubChunk subChunk) throws IOException {
+    public void saveChunk(BedrockChunk bedrockChunk) throws IOException {
+        if (this.isClosed()) {
+            throw new IllegalStateException("Cannot retrieve chunk on closed provider.");
+        }
 
+        // Save chunk data
+        this.saveChunkVersion(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), bedrockChunk.getVersion());
+        this.saveData(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), new MCWorldChunkData(bedrockChunk.getHeightMap(), bedrockChunk.getBiomeMap()));
+        this.saveBlockEntities(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), bedrockChunk.getBlockEntities());
+        this.saveEntities(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), bedrockChunk.getEntities());
+
+        // Save every subchunk
+        for (int subChunkIndex = -4; subChunkIndex < 20; subChunkIndex++) {
+            BedrockSubChunk subChunk = this.getSubChunk(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), subChunkIndex);
+            this.saveSubChunk(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), subChunkIndex, subChunk);
+        }
+    }
+
+    @Override
+    public void saveSubChunk(int dimension, int x, int z, int subChunkIndex, BedrockSubChunk subChunk) throws IOException {
+        if (this.isClosed()) {
+            throw new IllegalStateException("Cannot retrieve chunk on closed provider.");
+        }
+
+        byte[] subChunkKey;
+        if (dimension == DimensionIds.OVERWORLD) {
+            subChunkKey = ChunkKey.SUB_CHUNK_DATA.getLevelDBKey(x, z, subChunkIndex);
+        } else {
+            subChunkKey = ChunkKey.SUB_CHUNK_DATA.getLevelDBKeyWithDimension(x, z, dimension, subChunkIndex);
+        }
+
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        try {
+            MCWorldFormatUtils.writeSubChunk(buffer, subChunk);
+
+            byte[] data = new byte[buffer.readableBytes()];
+            buffer.readBytes(data);
+
+            this.database.put(subChunkKey, data);
+        } finally {
+            buffer.release();
+        }
     }
 
     @Override
