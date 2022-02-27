@@ -54,6 +54,7 @@ public class BedrockSubChunkBiomeMap implements Cloneable {
      * @param biome the new biome we are changing this block column to
      */
     public void setBiomeAt(int x, int y, int z, int biome) {
+        this.palette.addEntry(biome);
         this.biomes[getChunkPosIndex(x, y, z)] = biome;
     }
 
