@@ -88,6 +88,7 @@ public class ItemID extends BlockID {
     public static final String PAPER = "minecraft:paper";
     public static final String PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
     public static final String PRISMARINE_SHARD = "minecraft:prismarine_shard";
+    public static final String PUMPKIN_SEEDS = "minecraft:pumpkin_seeds";
     public static final String QUARTZ = "minecraft:quartz";
     public static final String RABBIT_FOOT = "minecraft:rabbit_foot";
     public static final String RABBIT_HIDE = "minecraft:rabbit_hide";
@@ -103,6 +104,7 @@ public class ItemID extends BlockID {
     public static final String STONE_PICKAXE = "minecraft:stone_pickaxe";
     public static final String STONE_SWORD = "minecraft:stone_sword";
     public static final String SUGAR = "minecraft:sugar";
+    public static final String WHEAT_SEEDS = "minecraft:wheat_seeds";
     public static final String WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
     public static final String WOODEN_SWORD = "minecraft:wooden_sword";
 

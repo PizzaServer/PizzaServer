@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server;
 
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.behavior.impl.CreativeModePlacementOnlyBlockBehavior;
 import io.github.pizzaserver.api.block.behavior.impl.RequiresSolidBottomBlockBehavior;
@@ -117,6 +118,7 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemPaper());
         ItemRegistry.getInstance().register(new ItemPrismarineCrystals());
         ItemRegistry.getInstance().register(new ItemPrismarineShard());
+        ItemRegistry.getInstance().register(new ItemPumpkinSeeds());
         ItemRegistry.getInstance().register(new ItemQuartz());
         ItemRegistry.getInstance().register(new ItemRabbitFoot());
         ItemRegistry.getInstance().register(new ItemRabbitHide());
@@ -153,20 +155,20 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.BIRCH), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.BLACK), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.BLACK), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.BLACK), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.BLACK), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockBlackstone());
         BlockRegistry.getInstance().register(new BlockBlackstoneSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockBlackstoneSlab(SlabType.DOUBLE), new SlabBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockBlastFurnace(), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockBlastFurnace(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockBlueIce(), new IceBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.BLUE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.BLUE), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.BLUE), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.BLUE), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockBookshelf());
         BlockRegistry.getInstance().register(new BlockBrick());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.BROWN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.BROWN), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.BROWN), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.BROWN), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockBuddingAmethyst());
         BlockRegistry.getInstance().register(new BlockCake(), new CakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCalcite());
@@ -174,8 +176,9 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCandle(), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCandleCake(), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCarpet(), new RequiresSolidBottomBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockCarvedPumpkin());
         BlockRegistry.getInstance().register(new BlockCauldron());
-        BlockRegistry.getInstance().register(new BlockChest(), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockChest(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockChiseledDeepslate());
         BlockRegistry.getInstance().register(new BlockChiseledNetherBrick());
         BlockRegistry.getInstance().register(new BlockChiseledPolishedBlackstone());
@@ -208,7 +211,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.CYAN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.CYAN), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.CYAN), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.CYAN), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.DARK_OAK), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.DARK_OAK), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockDeadBush());
@@ -239,7 +242,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.EXPOSED), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.EXPOSED, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockFire(), new FireBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockFurnace(), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockFurnace(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockFlowingWater());
         BlockRegistry.getInstance().register(new BlockGoldOre());
         BlockRegistry.getInstance().register(new BlockGrass());
@@ -247,10 +250,10 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockGravel());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.GRAY), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.GRAY), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.GRAY), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.GRAY), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.GREEN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.GREEN), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.GREEN), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.GREEN), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockIce(), new IceBlockBehavior());
         BlockRegistry.getInstance().register(new BlockInvisibleBedrock());
         BlockRegistry.getInstance().register(new BlockIronBlock());
@@ -259,25 +262,26 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.JUNGLE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLapisBlock());
         BlockRegistry.getInstance().register(new BlockLapisOre());
+        BlockRegistry.getInstance().register(new BlockLeaves());
         BlockRegistry.getInstance().register(new BlockLight());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.LIGHT_BLUE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIGHT_BLUE), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIGHT_BLUE), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIGHT_BLUE), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.LIGHT_GRAY), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIGHT_GRAY), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIGHT_GRAY), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIGHT_GRAY), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.LIME), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIME), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIME), new HorizontalDirectionBlockBehavior<>());
-        BlockRegistry.getInstance().register(new BlockBlastFurnace(LitType.LIT), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIME), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockBlastFurnace(LitType.LIT), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockDeepslateRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
-        BlockRegistry.getInstance().register(new BlockFurnace(LitType.LIT), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockFurnace(LitType.LIT), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockLog(), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.ACACIA), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.MAGENTA), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.MAGENTA), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.MAGENTA), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.MAGENTA), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockMelon());
         BlockRegistry.getInstance().register(new BlockMobSpawner());
         BlockRegistry.getInstance().register(new BlockNetherrack());
@@ -286,14 +290,14 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.OAK), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.ORANGE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.ORANGE), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.ORANGE), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.ORANGE), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.OXIDIZED), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.OXIDIZED, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.PINK), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.PINK), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PINK), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PINK), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockPodzol());
-        BlockRegistry.getInstance().register(new BlockPumpkin());
+        BlockRegistry.getInstance().register(new BlockPumpkin(),new PumpkinBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneButton(), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneSlab(SlabType.DOUBLE), new SlabBlockBehavior());
@@ -303,11 +307,11 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockPolishedDeepslateSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.PURPLE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.PURPLE), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PURPLE), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PURPLE), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockRedstoneWire(), new RequiresSolidBottomBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.RED), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.RED), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.RED), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.RED), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockRedstoneOre(), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockReserved6());
         BlockRegistry.getInstance().register(new BlockSand());
@@ -351,7 +355,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.WEATHERED, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.WHITE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.WHITE), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.WHITE), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.WHITE), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockWood(), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWool());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(), new PressurePlateBlockBehavior());
@@ -359,7 +363,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.YELLOW), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.YELLOW), new CandleCakeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.YELLOW), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.YELLOW), new OmniHorizontalDirectionBlockBehavior<>());
     }
 
     private static void loadBlockEntities() {
