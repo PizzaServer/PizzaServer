@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api.block.data;
 
 import com.nukkitx.math.vector.Vector3i;
+import io.github.pizzaserver.api.utils.Direction;
 
 public enum BlockFace {
     BOTTOM(Vector3i.from(0, -1, 0)),
@@ -31,6 +32,10 @@ public enum BlockFace {
             case WEST -> EAST;
             case EAST -> WEST;
         };
+    }
+
+    public Direction toDirection() {
+        return Direction.fromBlockFace(this);
     }
 
     public static BlockFace resolve(int index) {
