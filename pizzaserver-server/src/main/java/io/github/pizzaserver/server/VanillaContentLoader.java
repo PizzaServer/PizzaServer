@@ -144,6 +144,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockAzalea(), new RequiresSolidBottomBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockAzaleaLeaves());
         BlockRegistry.getInstance().register(new BlockAzaleaLeavesFlowered());
+        BlockRegistry.getInstance().register(new BlockBarrel(), new BarrelBlockBehavior());
         BlockRegistry.getInstance().register(new BlockBarrier());
         BlockRegistry.getInstance().register(new BlockBed());
         BlockRegistry.getInstance().register(new BlockBedrock());
@@ -360,6 +361,7 @@ public class VanillaContentLoader {
     }
 
     private static void loadBlockEntities() {
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBarrel());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBed());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBell());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBlastFurnace());

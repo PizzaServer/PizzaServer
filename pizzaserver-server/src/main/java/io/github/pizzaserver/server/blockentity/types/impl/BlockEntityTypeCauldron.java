@@ -15,7 +15,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockEntityTypeCauldron implements BlockEntityType<BlockCauldron> {
+public class BlockEntityTypeCauldron implements BlockEntityType<BlockCauldron, BlockEntityCauldron> {
 
     @Override
     public String getId() {
@@ -39,7 +39,7 @@ public class BlockEntityTypeCauldron implements BlockEntityType<BlockCauldron> {
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntityCauldron blockEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
                 .putInt("x", blockEntity.getLocation().getX())

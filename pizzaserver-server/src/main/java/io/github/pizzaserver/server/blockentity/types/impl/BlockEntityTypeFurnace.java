@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BlockEntityTypeFurnace implements BlockEntityType<BlockFurnace> {
+public class BlockEntityTypeFurnace implements BlockEntityType<BlockFurnace, BlockEntityFurnace> {
 
     private static final Set<String> BLOCK_TYPES = new HashSet<>() {
         {
@@ -48,12 +48,12 @@ public class BlockEntityTypeFurnace implements BlockEntityType<BlockFurnace> {
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntityFurnace blockEntityFurnace) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
+                .putInt("x", blockEntityFurnace.getLocation().getX())
+                .putInt("y", blockEntityFurnace.getLocation().getY())
+                .putInt("z", blockEntityFurnace.getLocation().getZ())
                 .putShort("CookTime", (short) 0)
                 .putShort("BurnTime", (short) 0)
                 .putShort("BurnDuration", (short) 0)

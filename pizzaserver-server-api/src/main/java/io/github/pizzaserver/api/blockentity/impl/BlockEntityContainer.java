@@ -3,8 +3,10 @@ package io.github.pizzaserver.api.blockentity.impl;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.blockentity.BaseBlockEntity;
+import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
@@ -33,6 +35,19 @@ public abstract class BlockEntityContainer extends BaseBlockEntity {
             }
         }
         return true;
+    }
+
+    @Override
+    public void onBreak(Player player) {
+        for (Player viewer : this.inventory.getViewers()) {
+            viewer.closeOpenInventory();
+        }
+
+        for (Item item : this.getInventory().getSlots()) {
+            if (!item.isEmpty()) {
+                player.getWorld().addItemEntity(item, this.blockPosition.toVector3f().add(0.5f, 0.5f, 0.5f), EntityItem.getRandomMotion());
+            }
+        }
     }
 
     public void showOpenAnimation() {

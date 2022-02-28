@@ -235,15 +235,29 @@ public class ImplChunk implements Chunk {
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
 
-        // Remove old block entity at this position if present
-        this.getBlockEntity(x, y, z).ifPresent(this::removeBlockEntity);
+        // Remove old block entity at this position
+        // only if the new block does not support this block entity type
+        boolean tryAddingNewBlockEntity = true;
+        Optional<BlockEntity> oldBlockEntity = this.getBlockEntity(x, y, z);
+        if (oldBlockEntity.isPresent()) {
+            boolean oldBlockEntityCanStillBeUsed = oldBlockEntity.get().getType().getBlockIds().contains(block.getBlockId());
+
+            if (oldBlockEntityCanStillBeUsed) {
+                tryAddingNewBlockEntity = false;
+            } else {
+                this.removeBlockEntity(oldBlockEntity.get());
+            }
+        }
 
         // Add block entity if one exists for this block
-        BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block)
-                .orElse(null);
-        if (blockEntityType != null) {
-            BlockEntity blockEntity = blockEntityType.create(block);
-            this.addBlockEntity(blockEntity);
+        if (tryAddingNewBlockEntity) {
+            BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block)
+                    .orElse(null);
+
+            if (blockEntityType != null) {
+                BlockEntity blockEntity = blockEntityType.create(block);
+                this.addBlockEntity(blockEntity);
+            }
         }
 
         try {
