@@ -16,6 +16,7 @@ public class BlockID {
     public static final String AZALEA = "minecraft:azalea";
     public static final String AZALEA_LEAVES = "minecraft:azalea_leaves";
     public static final String AZALEA_LEAVES_FLOWERED = "minecraft:azalea_leaves_flowered";
+    public static final String BARREL = "minecraft:barrel";
     public static final String BARRIER = "minecraft:barrier";
     public static final String BED = "minecraft:bed";
     public static final String BEDROCK = "minecraft:bedrock";

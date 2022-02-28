@@ -15,7 +15,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockEntityTypeBell implements BlockEntityType<BlockBell> {
+public class BlockEntityTypeBell implements BlockEntityType<BlockBell, BlockEntityBell> {
 
     @Override
     public String getId() {
@@ -39,12 +39,12 @@ public class BlockEntityTypeBell implements BlockEntityType<BlockBell> {
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntityBell bellEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
+                .putInt("x", bellEntity.getLocation().getX())
+                .putInt("y", bellEntity.getLocation().getY())
+                .putInt("z", bellEntity.getLocation().getZ())
                 .putBoolean("Ringing", false)
                 .putInt("Ticks", 0)
                 .putInt("Direction", 0)

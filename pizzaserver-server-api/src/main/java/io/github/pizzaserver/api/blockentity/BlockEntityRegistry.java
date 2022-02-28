@@ -8,14 +8,14 @@ import java.util.Optional;
 
 public interface BlockEntityRegistry {
 
-    BlockEntityType<? extends Block> getBlockEntityType(String blockEntityId);
+    BlockEntityType<? extends Block, ? extends BlockEntity> getBlockEntityType(String blockEntityId);
 
     /**
      * Retrieves the block entity type equivalent of a block type if one exists.
      * @param block block to look for
      * @return block entity type if any exists
      */
-    Optional<BlockEntityType<? extends Block>> getBlockEntityType(Block block);
+    Optional<BlockEntityType<? extends Block, ? extends BlockEntity>> getBlockEntityType(Block block);
 
     boolean hasBlockEntityType(String blockEntityId);
 

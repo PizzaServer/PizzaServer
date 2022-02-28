@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.level.world.World;
 
 import java.util.Set;
 
-public interface BlockEntityType<T extends Block> {
+public interface BlockEntityType<T extends Block, B extends BlockEntity> {
 
     String getId();
 
@@ -17,15 +17,15 @@ public interface BlockEntityType<T extends Block> {
      */
     Set<String> getBlockIds();
 
-    BlockEntity create(T block);
+    B create(T block);
 
-    BlockEntity deserializeDisk(World world, NbtMap diskNBT);
+    B deserializeDisk(World world, NbtMap diskNBT);
 
-    NbtMap serializeForDisk(BlockEntity blockEntity);
+    NbtMap serializeForDisk(B blockEntity);
 
     NbtMap serializeForNetwork(NbtMap diskNBT);
 
-    default NbtMap serializeForNetwork(BlockEntity blockEntity) {
+    default NbtMap serializeForNetwork(B blockEntity) {
         return this.serializeForNetwork(this.serializeForDisk(blockEntity));
     }
 

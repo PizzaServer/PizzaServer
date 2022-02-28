@@ -21,6 +21,15 @@ public enum HorizontalDirection {
         }
     }
 
+    public Direction toDirection() {
+        return switch (this) {
+            case NORTH -> Direction.NORTH;
+            case SOUTH -> Direction.SOUTH;
+            case WEST -> Direction.WEST;
+            case EAST -> Direction.EAST;
+        };
+    }
+
     /**
      * Some block states have an up and down direction. We need to take that offset into consideration.
      * @return block state index of omni directional block
