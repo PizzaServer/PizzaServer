@@ -16,7 +16,7 @@ import io.github.pizzaserver.api.utils.DyeColor;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockEntityTypeBed implements BlockEntityType<BlockBed> {
+public class BlockEntityTypeBed implements BlockEntityType<BlockBed, BlockEntityBed> {
 
     @Override
     public String getId() {
@@ -46,13 +46,13 @@ public class BlockEntityTypeBed implements BlockEntityType<BlockBed> {
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntityBed bedEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
-                .putByte("color", (byte) ((BlockEntityBed) blockEntity).getColor().ordinal())
+                .putInt("x", bedEntity.getLocation().getX())
+                .putInt("y", bedEntity.getLocation().getY())
+                .putInt("z", bedEntity.getLocation().getZ())
+                .putByte("color", (byte) bedEntity.getColor().ordinal())
                 .build();
     }
 

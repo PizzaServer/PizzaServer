@@ -15,7 +15,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockEntityTypeMobSpawner implements BlockEntityType<BlockMobSpawner> {
+public class BlockEntityTypeMobSpawner implements BlockEntityType<BlockMobSpawner, BlockEntityMobSpawner> {
 
     @Override
     public String getId() {
@@ -39,12 +39,12 @@ public class BlockEntityTypeMobSpawner implements BlockEntityType<BlockMobSpawne
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntityMobSpawner blockEntityMobSpawner) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
+                .putInt("x", blockEntityMobSpawner.getLocation().getX())
+                .putInt("y", blockEntityMobSpawner.getLocation().getY())
+                .putInt("z", blockEntityMobSpawner.getLocation().getZ())
                 .putString("EntityIdentifier", "")
                 .putFloat("DisplayEntityWidth", 1)
                 .putFloat("DisplayEntityHeight", 1)

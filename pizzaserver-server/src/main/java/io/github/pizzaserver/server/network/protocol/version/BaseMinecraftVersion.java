@@ -12,6 +12,7 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
@@ -117,7 +118,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     @Override
     public NbtMap getNetworkBlockEntityNBT(NbtMap diskBlockEntityNBT) {
         String blockEntityId = diskBlockEntityNBT.getString("id");
-        BlockEntityType<? extends Block> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
+        BlockEntityType<? extends Block, ? extends BlockEntity> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
         return blockEntityType.serializeForNetwork(diskBlockEntityNBT);
     }
 

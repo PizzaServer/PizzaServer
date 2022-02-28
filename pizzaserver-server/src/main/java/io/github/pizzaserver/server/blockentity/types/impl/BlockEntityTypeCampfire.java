@@ -15,7 +15,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BlockEntityTypeCampfire implements BlockEntityType<BlockCampfire> {
+public class BlockEntityTypeCampfire implements BlockEntityType<BlockCampfire, BlockEntityCampfire> {
 
     private static final Set<String> BLOCK_TYPES = new HashSet<>() {
         {
@@ -41,18 +41,18 @@ public class BlockEntityTypeCampfire implements BlockEntityType<BlockCampfire> {
     }
 
     @Override
-    public BlockEntity deserializeDisk(World world, NbtMap diskNBT) {
+    public BlockEntityCampfire deserializeDisk(World world, NbtMap diskNBT) {
         return new BlockEntityCampfire(new BlockLocation(world,
                 Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntityCampfire campfireEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
+                .putInt("x", campfireEntity.getLocation().getX())
+                .putInt("y", campfireEntity.getLocation().getY())
+                .putInt("z", campfireEntity.getLocation().getZ())
                 .build();
         // TODO: proper serialization
     }
