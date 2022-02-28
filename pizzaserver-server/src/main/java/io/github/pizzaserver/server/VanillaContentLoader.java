@@ -176,7 +176,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCandle(), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCandleCake(), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCarpet(), new RequiresSolidBottomBlockBehavior<>());
-        BlockRegistry.getInstance().register(new BlockCarvedPumpkin());
+        BlockRegistry.getInstance().register(new BlockCarvedPumpkin(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockCauldron());
         BlockRegistry.getInstance().register(new BlockChest(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockChiseledDeepslate());
