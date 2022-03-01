@@ -96,6 +96,8 @@ public class BlockLeaves extends Block implements Flammable {
         return 60;
     }
 
+    //TODO: Add StackMeta thing to show correct leaf in inventory
+
     @Override
     public Set<Item> getDrops(Entity entity) {
         if (entity.getInventory().getHeldItem() instanceof ToolItem toolItemComponent
