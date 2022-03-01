@@ -19,7 +19,7 @@ public class PumpkinBlockBehavior extends DefaultBlockBehavior<BlockPumpkin> {
         if(player.getInventory().getHeldItem() instanceof ToolItem toolItem && toolItem.getToolType() == ToolType.SHEARS){
             EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(new ItemPumpkinSeeds());
             pumpkin.getWorld().addEntity(itemEntity,pumpkin.getLocation().toVector3f());
-            pumpkin.getWorld().setAndUpdateBlock(new BlockCarvedPumpkin(pumpkin.getDirection()),pumpkin.getLocation().toVector3i());
+            pumpkin.getWorld().setAndUpdateBlock(new BlockCarvedPumpkin(face.toDirection().toHorizontal()),pumpkin.getLocation().toVector3i());
         }
         return true;
     }
