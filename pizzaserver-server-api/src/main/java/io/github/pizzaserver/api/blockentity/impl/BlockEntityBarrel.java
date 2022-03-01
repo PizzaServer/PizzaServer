@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.blockentity.impl;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.block.impl.BlockBarrel;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -11,7 +12,7 @@ public class BlockEntityBarrel extends BlockEntityContainer {
     public static final String ID = "Barrel";
 
     public BlockEntityBarrel(BlockLocation blockLocation) {
-        super(blockLocation);
+        super(blockLocation, ContainerType.CONTAINER);
     }
 
     @Override

@@ -12,11 +12,12 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 
 public abstract class BlockEntityContainer extends BaseBlockEntity {
 
-    protected BlockEntityInventory inventory = Server.getInstance().createInventory(this, ContainerType.CONTAINER);
+    protected BlockEntityInventory inventory;
 
 
-    public BlockEntityContainer(BlockLocation blockLocation) {
+    public BlockEntityContainer(BlockLocation blockLocation, ContainerType containerType) {
         super(blockLocation);
+        this.inventory = Server.getInstance().createInventory(this, containerType);
     }
 
     public BlockEntityInventory getInventory() {
