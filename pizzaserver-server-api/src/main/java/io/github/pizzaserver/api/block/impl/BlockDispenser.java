@@ -4,6 +4,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.ActiveStatus;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityDispenser;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.utils.Direction;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BlockDispenser extends Block {
+public class BlockDispenser extends BlockBlockEntity<BlockEntityDispenser> {
 
     private static final List<NbtMap> BLOCK_STATES = Collections.unmodifiableList(new ArrayList<>() {
         {

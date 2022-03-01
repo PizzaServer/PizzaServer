@@ -20,7 +20,6 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
 
     public ImplBlockEntityContainer(BlockLocation location, ContainerType containerType) {
         super(location);
-
         this.inventory = Server.getInstance().createInventory(this, containerType);
     }
 
