@@ -34,7 +34,12 @@ public enum HorizontalDirection {
      * @return block state
      */
     public int getBlockStateIndex() {
-        return this.ordinal();
+        return switch (this) {
+            case SOUTH -> 0;
+            case WEST -> 1;
+            case NORTH -> 2;
+            case EAST -> 3;
+        };
     }
 
     /**
@@ -52,7 +57,15 @@ public enum HorizontalDirection {
      * @return direction representative from the block state index
      */
     public static HorizontalDirection fromBlockStateIndex(int index) {
-        return HorizontalDirection.values()[index];
+        if (index == 0) {
+            return SOUTH;
+        } else if (index == 1) {
+            return WEST;
+        } else if (index == 2) {
+            return NORTH;
+        } else {
+            return EAST;
+        }
     }
 
     public static HorizontalDirection fromYaw(float yaw) {

@@ -11,7 +11,7 @@ public class OmniHorizontalDirectionBlockBehavior<T extends Block> extends Defau
     @Override
     public boolean prepareForPlacement(Entity entity, T block, BlockFace face, Vector3f clickPosition) {
         block.setBlockState(entity.getHorizontalDirection().opposite().getOmniBlockStateIndex());
-        return true;
+        return super.prepareForPlacement(entity, block, face, clickPosition);
     }
 
 }
