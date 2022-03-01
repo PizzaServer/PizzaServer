@@ -3,12 +3,9 @@ package io.github.pizzaserver.server.blockentity.types.impl;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.impl.BlockChest;
-import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.impl.BlockEntityChest;
+import io.github.pizzaserver.api.block.impl.BlockDispenser;
+import io.github.pizzaserver.api.blockentity.impl.BlockEntityDispenser;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.world.World;
@@ -20,41 +17,41 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class BlockEntityTypeChest implements BlockEntityType<BlockChest, BlockEntityChest> {
+public class BlockEntityTypeDispenser implements BlockEntityType<BlockDispenser, BlockEntityDispenser> {
 
     @Override
     public String getId() {
-        return BlockEntityChest.ID;
+        return BlockEntityDispenser.ID;
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.CHEST);
+        return Collections.singleton(BlockID.DISPENSER);
     }
 
     @Override
-    public BlockEntityChest create(BlockChest block) {
-        return new BlockEntityChest(block.getLocation());
+    public BlockEntityDispenser create(BlockDispenser block) {
+        return new BlockEntityDispenser(block.getLocation());
     }
 
     @Override
-    public BlockEntityChest deserializeDisk(World world, NbtMap diskNBT) {
-        BlockEntityChest chestEntity = new BlockEntityChest(new BlockLocation(world,
+    public BlockEntityDispenser deserializeDisk(World world, NbtMap diskNBT) {
+        BlockEntityDispenser dispenserEntity = new BlockEntityDispenser(new BlockLocation(world,
                 Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
 
         List<NbtMap> itemNBTs = diskNBT.getList("Items", NbtType.COMPOUND);
         for (NbtMap itemNBT : itemNBTs) {
             int slot = itemNBT.getByte("slot");
-            chestEntity.getInventory().setSlot(slot, ItemUtils.deserializeDiskNBTItem(itemNBT));
+            dispenserEntity.getInventory().setSlot(slot, ItemUtils.deserializeDiskNBTItem(itemNBT));
         }
 
-        return chestEntity;
+        return dispenserEntity;
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntityChest blockEntityChest) {
+    public NbtMap serializeForDisk(BlockEntityDispenser blockEntity) {
         List<NbtMap> itemNBTs = new ArrayList<>();
-        for (Item item : blockEntityChest.getInventory().getSlots()) {
+        for (Item item : blockEntity.getInventory().getSlots()) {
             if (!item.isEmpty()) {
                 itemNBTs.add(ItemUtils.serializeWithSlotForDisk(item));
             }
@@ -63,10 +60,9 @@ public class BlockEntityTypeChest implements BlockEntityType<BlockChest, BlockEn
         return NbtMap.builder()
                 .putString("id", this.getId())
                 .putList("Items", NbtType.COMPOUND, itemNBTs)
-                .putByte("isMovable", (byte) 1) // TODO: retrieve from block entity
-                .putInt("x", blockEntityChest.getLocation().getX())
-                .putInt("y", blockEntityChest.getLocation().getY())
-                .putInt("z", blockEntityChest.getLocation().getZ())
+                .putInt("x", blockEntity.getLocation().getX())
+                .putInt("y", blockEntity.getLocation().getY())
+                .putInt("z", blockEntity.getLocation().getZ())
                 .build();
     }
 
