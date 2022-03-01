@@ -38,6 +38,7 @@ public class InventoryUtils {
 
     static {
         register(ContainerType.CONTAINER, 27, new ContainerSlotType[] { ContainerSlotType.CONTAINER, ContainerSlotType.BARREL });
+        register(ContainerType.DISPENSER, 9, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
         register(ContainerType.INVENTORY,  36, new ContainerSlotType[] {
                 ContainerSlotType.ARMOR,
                 ContainerSlotType.INVENTORY,

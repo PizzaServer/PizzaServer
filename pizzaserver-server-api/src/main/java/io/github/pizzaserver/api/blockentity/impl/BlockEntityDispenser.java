@@ -5,13 +5,12 @@ import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
-public class BlockEntityChest extends BlockEntityContainer {
+public class BlockEntityDispenser extends BlockEntityContainer {
 
-    public static final String ID = "Chest";
+    public static final String ID = "Dispenser";
 
-
-    public BlockEntityChest(BlockLocation blockLocation) {
-        super(blockLocation, ContainerType.CONTAINER);
+    public BlockEntityDispenser(BlockLocation blockLocation) {
+        super(blockLocation, ContainerType.DISPENSER);
     }
 
     @Override

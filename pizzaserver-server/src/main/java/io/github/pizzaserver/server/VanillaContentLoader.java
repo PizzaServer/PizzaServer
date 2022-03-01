@@ -230,6 +230,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockDiamondOre());
         BlockRegistry.getInstance().register(new BlockDirt());
         BlockRegistry.getInstance().register(new BlockDirt(DirtType.ROOTED));
+        BlockRegistry.getInstance().register(new BlockDispenser(), new DispenserBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.RED_SANDSTONE, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.END_STONE_BRICK, SlabType.DOUBLE), new SlabBlockBehavior());
@@ -366,6 +367,7 @@ public class VanillaContentLoader {
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBell());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBlastFurnace());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCampfire());
+        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeDispenser());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeFurnace());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCauldron());
         ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeChest());
