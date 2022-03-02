@@ -14,13 +14,19 @@ import java.util.Set;
 public class BlockMelon extends Block {
 
     @Override
-    public String getBlockId(){ return BlockID.MELON_BLOCK; }
+    public String getBlockId() {
+        return BlockID.MELON_BLOCK;
+    }
 
     @Override
-    public String getName(){ return "Melon"; }
+    public String getName() {
+        return "Melon";
+    }
 
     @Override
-    public float getHardness(){ return 1;}
+    public float getHardness() {
+        return 1;
+    }
 
     @Override
     public float getBlastResistance() {

@@ -147,6 +147,7 @@ public class BlockID {
     public static final String LIT_BLAST_FURNACE = "minecraft:lit_blast_furnace";
     public static final String LIT_DEEPSLATE_REDSTONE_ORE = "minecraft:lit_deepslate_redstone_ore";
     public static final String LIT_FURNACE = "minecraft:lit_furnace";
+    public static final String LIT_PUMPKIN = "minecraft:lit_pumpkin";
     public static final String LIT_REDSTONE_ORE = "minecraft:lit_redstone_ore";
     public static final String LOG = "minecraft:log";
     public static final String LOG2 = "minecraft:log2";

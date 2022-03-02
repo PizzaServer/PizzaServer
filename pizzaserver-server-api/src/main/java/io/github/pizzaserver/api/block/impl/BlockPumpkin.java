@@ -22,21 +22,31 @@ public class BlockPumpkin extends Block {
         }
     };
 
-    public BlockPumpkin() { this(HorizontalDirection.NORTH); }
+    public BlockPumpkin() {
+        this(HorizontalDirection.NORTH);
+    }
 
-    public BlockPumpkin(HorizontalDirection direction) { this.setDirection(direction); }
+    public BlockPumpkin(HorizontalDirection direction) {
+        this.setDirection(direction);
+    }
 
     public HorizontalDirection getDirection() {
         return HorizontalDirection.fromBlockStateIndex(this.getBlockState());
     }
 
-    public void setDirection(HorizontalDirection direction) { this.setBlockState(direction.getBlockStateIndex()); }
+    public void setDirection(HorizontalDirection direction) {
+        this.setBlockState(direction.getBlockStateIndex());
+    }
 
     @Override
-    public String getBlockId(){ return BlockID.PUMPKIN; }
+    public String getBlockId(){
+        return BlockID.PUMPKIN;
+    }
 
     @Override
-    public String getName(){ return "Pumpkin"; }
+    public String getName(){
+        return "Pumpkin";
+    }
 
     @Override
     public List<NbtMap> getNBTStates() {
@@ -44,7 +54,9 @@ public class BlockPumpkin extends Block {
     }
 
     @Override
-    public float getHardness(){ return 1;}
+    public float getHardness() {
+        return 1;
+    }
 
     @Override
     public float getBlastResistance() {

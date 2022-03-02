@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.utils.HorizontalDirection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockCarvedPumpkin extends Block {
+public class BlockLitPumpkin extends Block {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -21,12 +21,11 @@ public class BlockCarvedPumpkin extends Block {
             }
         }
     };
-
-    public BlockCarvedPumpkin() {
+    public BlockLitPumpkin() {
         this(HorizontalDirection.NORTH);
     }
 
-    public BlockCarvedPumpkin(HorizontalDirection direction) {
+    public BlockLitPumpkin(HorizontalDirection direction) {
         this.setDirection(direction);
     }
 
@@ -40,12 +39,12 @@ public class BlockCarvedPumpkin extends Block {
 
     @Override
     public String getBlockId() {
-        return BlockID.CARVED_PUMPKIN;
+        return BlockID.LIT_PUMPKIN;
     }
 
     @Override
     public String getName() {
-        return "Carved Pumpkin";
+        return "Jack O' Lantern";
     }
 
     @Override
@@ -76,5 +75,10 @@ public class BlockCarvedPumpkin extends Block {
     @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
+    }
+
+    @Override
+    public int getLightEmission() {
+        return 15;
     }
 }

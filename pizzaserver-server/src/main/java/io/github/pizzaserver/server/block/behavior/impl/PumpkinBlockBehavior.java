@@ -16,11 +16,15 @@ public class PumpkinBlockBehavior extends DefaultBlockBehavior<BlockPumpkin> {
 
     @Override
     public boolean onInteract(Player player, BlockPumpkin pumpkin, BlockFace face, Vector3f clickPosition){
-        if(player.getInventory().getHeldItem() instanceof ToolItem toolItem && toolItem.getToolType() == ToolType.SHEARS){
-            if(face == BlockFace.TOP || face  == BlockFace.BOTTOM) return true;
+        if (player.getInventory().getHeldItem() instanceof ToolItem toolItem && toolItem.getToolType() == ToolType.SHEARS){
+            if (face == BlockFace.TOP || face  == BlockFace.BOTTOM) {
+                return true;
+            }
+
             EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(new ItemPumpkinSeeds());
+
             pumpkin.getWorld().addEntity(itemEntity,pumpkin.getLocation().toVector3f());
-            pumpkin.getWorld().setAndUpdateBlock(new BlockCarvedPumpkin(face.toDirection().toHorizontal()),pumpkin.getLocation().toVector3i());
+            pumpkin.getWorld().setAndUpdateBlock(new BlockCarvedPumpkin(face.toDirection().toHorizontal()), pumpkin.getLocation().toVector3i());
         }
         return true;
     }
