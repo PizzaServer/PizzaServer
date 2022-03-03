@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.event.type.inventory;
 
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 
 /**
@@ -10,10 +10,10 @@ import io.github.pizzaserver.api.player.Player;
 public class InventoryDropItemEvent extends BaseInventoryEvent.Cancellable {
 
     protected Player player;
-    protected ItemStack drop;
+    protected Item drop;
 
 
-    public InventoryDropItemEvent(Inventory inventory, Player player, ItemStack drop) {
+    public InventoryDropItemEvent(Inventory inventory, Player player, Item drop) {
         super(inventory);
         this.player = player;
         this.drop = drop;
@@ -23,8 +23,8 @@ public class InventoryDropItemEvent extends BaseInventoryEvent.Cancellable {
         return this.player;
     }
 
-    public ItemStack getDrop() {
-        return this.drop;
+    public Item getDrop() {
+        return this.drop.clone();
     }
 
 }

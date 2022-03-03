@@ -1,9 +1,10 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.data.PushResponse;
 
-public class BlockAllow extends BaseBlock {
+public class BlockAllow extends Block {
 
     @Override
     public String getBlockId() {
@@ -23,6 +24,11 @@ public class BlockAllow extends BaseBlock {
     @Override
     public float getBlastResistance() {
         return -1;
+    }
+
+    @Override
+    public PushResponse getPushResponse() {
+        return PushResponse.DENY;
     }
 
 }

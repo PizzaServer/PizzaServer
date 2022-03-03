@@ -1,5 +1,8 @@
 package io.github.pizzaserver.server.network.utils;
 
+import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.item.Item;
+
 /**
  * Minecraft namespaces are sorted by their child key before the parent key.
  * bananas:cow goes before apples:dog
@@ -7,6 +10,14 @@ package io.github.pizzaserver.server.network.utils;
  * (e.g. sending block properties in the StartGamePacket)
  */
 public class MinecraftNamespaceComparator {
+
+    public static int compareBlocks(Block blockA, Block blockB) {
+        return compare(blockA.getBlockId(), blockB.getBlockId());
+    }
+
+    public static int compareItems(Item itemA, Item itemB) {
+        return compare(itemA.getItemId(), itemB.getItemId());
+    }
 
     public static int compare(String idA, String idB) {
         String childIdA = idA.substring(idA.indexOf(":") + 1);

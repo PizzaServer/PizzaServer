@@ -1,11 +1,17 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
-public class BlockGrass extends BaseBlock {
+import java.util.Collections;
+import java.util.Set;
+
+public class BlockGrass extends Block {
 
     @Override
     public String getBlockId() {
@@ -42,5 +48,9 @@ public class BlockGrass extends BaseBlock {
         return ToolType.SHOVEL;
     }
 
+    @Override
+    public Set<Item> getDrops(Entity entity) {
+        return Collections.singleton(new ItemBlock(BlockID.DIRT));
+    }
 
 }

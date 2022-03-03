@@ -1,17 +1,17 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.SandType;
-import io.github.pizzaserver.api.item.ItemStack;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockSand extends BaseBlock {
+public class BlockSand extends Block {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -91,10 +91,20 @@ public class BlockSand extends BaseBlock {
     }
 
     @Override
-    public ItemStack toStack() {
-        return new ItemStack(this.getBlockId(), 1, this.getBlockState());
+    public ItemBlock toStack() {
+        return new ItemBlock(this.getBlockId(), 1,  this.getBlockState());
     }
 
+    @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
 
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta <= 1) {
+            this.setBlockState(meta);
+        }
+    }
 
 }

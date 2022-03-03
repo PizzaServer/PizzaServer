@@ -1,15 +1,15 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityBed;
+import io.github.pizzaserver.api.utils.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockBed extends BaseBlock implements BlockEntityContainer<BlockEntityBed> {
+public class BlockBed extends BlockBlockEntity<BlockEntityBed> {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -27,6 +27,16 @@ public class BlockBed extends BaseBlock implements BlockEntityContainer<BlockEnt
         }
     };
 
+    private DyeColor color = DyeColor.WHITE;
+
+
+    public void setColor(DyeColor color) {
+        this.color = color;
+    }
+
+    public DyeColor getColor() {
+        return this.color;
+    }
 
     @Override
     public String getBlockId() {
@@ -51,6 +61,18 @@ public class BlockBed extends BaseBlock implements BlockEntityContainer<BlockEnt
     @Override
     public float getHardness() {
         return 0.2f;
+    }
+
+    @Override
+    public int getStackMeta() {
+        return this.getColor().ordinal();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta < DyeColor.values().length) {
+            this.setColor(DyeColor.values()[meta]);
+        }
     }
 
 }

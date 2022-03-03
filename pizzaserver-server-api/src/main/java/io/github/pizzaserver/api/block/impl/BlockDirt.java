@@ -1,16 +1,17 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.DirtType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockDirt extends BaseBlock {
+public class BlockDirt extends Block {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -20,6 +21,7 @@ public class BlockDirt extends BaseBlock {
             this.add(NbtMap.builder()
                     .putString("dirt_type", "coarse")
                     .build());
+            this.add(NbtMap.EMPTY);
         }
     };
 
@@ -42,12 +44,20 @@ public class BlockDirt extends BaseBlock {
 
     @Override
     public String getBlockId() {
-        return BlockID.DIRT;
+        if (this.getDirtType() == DirtType.ROOTED) {
+            return BlockID.DIRT_WITH_ROOTS;
+        } else {
+            return BlockID.DIRT;
+        }
     }
 
     @Override
     public String getName() {
-        return "Dirt";
+        if (this.getDirtType() == DirtType.ROOTED) {
+            return "Rooted Dirt";
+        } else {
+            return "Dirt";
+        }
     }
 
     @Override
@@ -58,6 +68,11 @@ public class BlockDirt extends BaseBlock {
     @Override
     public float getHardness() {
         return 0.5f;
+    }
+
+    @Override
+    public float getBlastResistance() {
+        return 0.1f;
     }
 
     @Override
@@ -73,6 +88,21 @@ public class BlockDirt extends BaseBlock {
     @Override
     public ToolType getToolTypeRequired() {
         return ToolType.SHOVEL;
+    }
+
+    @Override
+    public int getStackMeta() {
+        return switch (this.getDirtType()) {
+            case NORMAL, ROOTED -> 0;
+            case COARSE -> 1;
+        };
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (this.getDirtType() != DirtType.ROOTED && meta >= 0 && meta <= 1) {
+            this.setDirtType(DirtType.values()[meta]);
+        }
     }
 
 }

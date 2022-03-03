@@ -2,25 +2,25 @@ package io.github.pizzaserver.api.entity.definition.components.filter;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 
 import java.util.Optional;
 
 public class EntityFilterData {
 
-    private Entity self;
-    private Entity other;
-    private ItemStack itemStack;
-    private Block block;
+    private final Entity self;
+    private final Entity other;
+    private final Item item;
+    private final Block block;
 
 
     private EntityFilterData(Entity self,
                              Entity other,
-                             ItemStack itemStack,
+                             Item item,
                              Block block) {
         this.self = self;
         this.other = other;
-        this.itemStack = itemStack;
+        this.item = item;
         this.block = block;
     }
 
@@ -33,8 +33,8 @@ public class EntityFilterData {
         return Optional.ofNullable(this.other);
     }
 
-    public Optional<ItemStack> getItemStack() {
-        return Optional.ofNullable(this.itemStack);
+    public Optional<Item> getItem() {
+        return Optional.ofNullable(this.item);
     }
 
     public Optional<Block> getBlock() {
@@ -46,7 +46,7 @@ public class EntityFilterData {
 
         private Entity self;
         private Entity other;
-        private ItemStack itemStack;
+        private Item item;
         private Block block;
 
 
@@ -60,8 +60,8 @@ public class EntityFilterData {
             return this;
         }
 
-        public Builder setItemStack(ItemStack itemStack) {
-            this.itemStack = itemStack;
+        public Builder setItem(Item item) {
+            this.item = item;
             return this;
         }
 
@@ -71,7 +71,7 @@ public class EntityFilterData {
         }
 
         public EntityFilterData build() {
-            return new EntityFilterData(this.self, this.other, this.itemStack, this.block);
+            return new EntityFilterData(this.self, this.other, this.item, this.block);
         }
 
     }

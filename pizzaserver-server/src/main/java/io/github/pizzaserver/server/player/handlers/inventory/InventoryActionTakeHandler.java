@@ -3,7 +3,7 @@ package io.github.pizzaserver.server.player.handlers.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.actions.TakeStackRequestActionDataWrapper;
@@ -27,7 +27,7 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
             // (Verify that either the destination is air or the source can be merged with the destination)
             int destinationSlotCount = destinationSlot.getItemStack().getCount();
             int sourceSlotCount = sourceSlot.getItemStack().getCount();
-            int maxStackCountAllowed = sourceSlot.getItemStack().getItemType().getMaxStackSize();
+            int maxStackCountAllowed = sourceSlot.getItemStack().getMaxStackSize();
 
             boolean underStackLimit = destinationSlotCount + Math.min(action.getCountRequested(), sourceSlotCount) <= maxStackCountAllowed;
             boolean destinationIsAir = destinationSlot.getItemStack().isEmpty();
@@ -50,14 +50,14 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
 
 
         // Get a new item stack with the amount they picked up
-        ItemStack pickedUpStack;
+        Item pickedUpStack;
         if (destination.getItemStack().hasSameDataAs(source.getItemStack())) {
             // matching item in cursor: add to existing cursor (double-clicking an item stack to combine all common item stacks to one)
             pickedUpStack = destination.getItemStack();
             pickedUpStack.setCount(pickedUpStackCount + destination.getItemStack().getCount());
         } else {
             // air in cursor atm: new itemstack
-            pickedUpStack = source.getItemStack().newNetworkStack();
+            pickedUpStack = source.getItemStack().newNetworkCopy();
             pickedUpStack.setCount(pickedUpStackCount);
         }
 
@@ -78,7 +78,7 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
         }
 
         // Change the existing item stack to get rid of the picked up item count
-        ItemStack currentStack = source.getItemStack();
+        Item currentStack = source.getItemStack();
         currentStack.setCount(sourceStackCount - pickedUpStackCount);
 
         destination.setItemStack(pickedUpStack);

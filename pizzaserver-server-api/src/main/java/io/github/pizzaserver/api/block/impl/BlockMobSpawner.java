@@ -1,13 +1,11 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
-import io.github.pizzaserver.api.blockentity.impl.BlockEntityMobSpawner;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockMobSpawner extends BaseBlock implements BlockEntityContainer<BlockEntityMobSpawner> {
+public class BlockMobSpawner extends Block {
 
     @Override
     public String getBlockId() {

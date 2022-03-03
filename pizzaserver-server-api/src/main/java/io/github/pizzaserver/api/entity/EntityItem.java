@@ -1,15 +1,15 @@
 package io.github.pizzaserver.api.entity;
 
 import com.nukkitx.math.vector.Vector3f;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public interface EntityItem extends Entity {
 
-    ItemStack getItem();
+    Item getItem();
 
-    void setItem(ItemStack item);
+    void setItem(Item item);
 
     void setPickupDelay(int ticks);
 

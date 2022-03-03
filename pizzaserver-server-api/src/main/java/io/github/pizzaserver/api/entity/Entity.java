@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api.entity;
 
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -9,9 +10,9 @@ import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
@@ -69,6 +70,12 @@ public interface Entity extends Watchable {
     boolean isOnGround();
 
     /**
+     * Retrieve the blocks this entity's bounding box is currently colliding with.
+     * @return the blocks this entity is colliding with.
+     */
+    Set<Block> getCollisionBlocks();
+
+    /**
      * Retrieve the block that this entity's head is in.
      * @return the block the entity's head is in
      */
@@ -102,11 +109,50 @@ public interface Entity extends Watchable {
      */
     Chunk getChunk();
 
-    void teleport(float x, float y, float z);
+    default void teleport(Vector3i position) {
+        this.teleport(position, Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+    }
 
-    void teleport(Location location);
+    default void teleport(Vector3f position) {
+        this.teleport(position.toFloat(), Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+    }
 
-    void teleport(World world, float x, float y, float z);
+    default void teleport(Vector3i position, Vector3f rotation) {
+        this.teleport(position.toFloat(), rotation);
+    }
+
+    default void teleport(Vector3f position, Vector3f rotation) {
+        this.teleport(position.getX(),
+                position.getY(),
+                position.getZ(),
+                rotation.getX(),
+                rotation.getY(),
+                rotation.getZ());
+    }
+
+    default void teleport(float x, float y, float z) {
+        this.teleport(this.getWorld(), x, y, z);
+    }
+
+    default void teleport(float x, float y, float z, float pitch, float yaw, float headYaw) {
+        this.teleport(this.getWorld(), x, y, z, pitch, yaw, headYaw);
+    }
+
+    default void teleport(Location location) {
+        this.teleport(location.getWorld(),
+                location.getX(),
+                location.getY(),
+                location.getZ(),
+                location.getPitch(),
+                location.getYaw(),
+                location.getHeadYaw());
+    }
+
+    default void teleport(World world, float x, float y, float z) {
+        this.teleport(world, x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+    }
+
+    void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw);
 
     /**
      * Retrieve the current velocity of the entity.
@@ -249,6 +295,10 @@ public interface Entity extends Watchable {
 
     void setSwimming(boolean swimming);
 
+    boolean isSprinting();
+
+    void setSprinting(boolean sprinting);
+
     int getFireTicks();
 
     void setFireTicks(int ticks);
@@ -261,9 +311,9 @@ public interface Entity extends Watchable {
 
     void setMaxAirSupplyTicks(int ticks);
 
-    List<ItemStack> getLoot();
+    List<Item> getLoot();
 
-    void setLoot(List<ItemStack> loot);
+    void setLoot(List<Item> loot);
 
     EntityInventory getInventory();
 

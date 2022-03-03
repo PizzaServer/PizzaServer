@@ -2,8 +2,7 @@ package io.github.pizzaserver.server.player.handlers.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.ItemType;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
@@ -17,8 +16,8 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<SwapStack
     public boolean isValid(Player player, SwapStackRequestActionDataWrapper action) {
         if (action.getSource().exists() && action.getDestination().exists()) {
             // Ensure that the source and destination items are allowed in their new slots
-            return ItemType.canBePlacedInSlot(action.getSource().getItemStack().getItemType(), action.getDestination().getSlotType(), action.getDestination().getSlot())
-                    && ItemType.canBePlacedInSlot(action.getDestination().getItemStack().getItemType(), action.getSource().getSlotType(), action.getDestination().getSlot());
+            return Item.canBePlacedInSlot(action.getSource().getItemStack(), action.getDestination().getSlotType(), action.getDestination().getSlot())
+                    && Item.canBePlacedInSlot(action.getDestination().getItemStack(), action.getSource().getSlotType(), action.getDestination().getSlot());
         } else {
             return false;
         }
@@ -47,10 +46,9 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<SwapStack
         }
 
         // Swap item stacks
-        ItemStack originalSourceItemStack = source.getItemStack();
+        Item originalSourceItemStack = source.getItemStack();
         source.setItemStack(destination.getItemStack());
         destination.setItemStack(originalSourceItemStack);
-
         return true;
     }
 

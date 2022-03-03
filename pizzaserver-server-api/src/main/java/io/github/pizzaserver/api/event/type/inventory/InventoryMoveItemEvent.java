@@ -3,8 +3,8 @@ package io.github.pizzaserver.api.event.type.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.item.Item;
 
 /**
  * Called when an entity tries to move an item into an inventory slot.
@@ -18,25 +18,25 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     protected Inventory inventory;
     protected ContainerSlotType slotType;
     protected int movedItemSlot;
-    protected ItemStack movedItem;
+    protected Item movedItem;
     protected int movedItemCount;
 
     protected Inventory destinationInventory;
     protected ContainerSlotType destinationSlotType;
     protected int destinationItemSlot;
-    protected ItemStack destinationCurrentItemStack;
+    protected Item destinationCurrentItemStack;
 
     public InventoryMoveItemEvent(Entity entity,
                                   StackRequestActionType action,
                                   Inventory inventory,
                                   ContainerSlotType slotType,
                                   int movedItemSlot,
-                                  ItemStack movedItem,
+                                  Item movedItem,
                                   int movedItemCount,
                                   Inventory destinationInventory,
                                   ContainerSlotType destinationSlotType,
                                   int destinationItemSlot,
-                                  ItemStack destinationItem) {
+                                  Item destinationItem) {
         super(inventory);
         this.entity = entity;
 
@@ -70,8 +70,8 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
         return this.movedItemSlot;
     }
 
-    public ItemStack getMovedItem() {
-        return this.movedItem;
+    public Item getMovedItem() {
+        return this.movedItem.clone();
     }
 
     public int getMovedItemCount() {
@@ -90,8 +90,8 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
         return this.destinationItemSlot;
     }
 
-    public ItemStack getTargetItem() {
-        return this.destinationCurrentItemStack;
+    public Item getTargetItem() {
+        return this.destinationCurrentItemStack.clone();
     }
 
 }

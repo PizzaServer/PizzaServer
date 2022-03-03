@@ -2,20 +2,21 @@ package io.github.pizzaserver.server.player;
 
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockAir;
 import io.github.pizzaserver.api.block.impl.BlockDirt;
 import io.github.pizzaserver.api.block.impl.BlockIronOre;
 import io.github.pizzaserver.api.block.impl.BlockStone;
-import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.api.item.types.impl.ItemTypeShears;
-import io.github.pizzaserver.api.item.types.impl.ItemTypeStonePickaxe;
-import io.github.pizzaserver.api.item.types.impl.ItemTypeWoodenPickaxe;
+import io.github.pizzaserver.api.inventory.PlayerInventory;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.item.impl.ItemShears;
+import io.github.pizzaserver.api.item.impl.ItemStonePickaxe;
+import io.github.pizzaserver.api.item.impl.ItemWoodenPickaxe;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
-import io.github.pizzaserver.server.item.type.ImplBlockItemType;
 import io.github.pizzaserver.server.player.manager.PlayerBlockBreakingManager;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +44,7 @@ public class PlayerBlockBreakingManagerTests {
         Player mockPlayer = mock(Player.class);
         PlayerInventory mockPlayerInventory = mock(PlayerInventory.class);
         when(mockPlayer.getInventory()).thenReturn(mockPlayerInventory);
-        when(mockPlayerInventory.getHeldItem()).thenReturn(new ItemStack(new ItemTypeShears()));
+        when(mockPlayerInventory.getHeldItem()).thenReturn(new ItemShears());
 
         PlayerBlockBreakingManager blockBreakingManager = new PlayerBlockBreakingManager(mockPlayer);
         BlockLocation blockLocation = new BlockLocation(mockWorld, 0, 0, 0, 0);
@@ -56,15 +57,15 @@ public class PlayerBlockBreakingManagerTests {
         when(mockPlayer.getServer()).thenReturn(mockServer);
 
 
-        blockBreakingManager.startBreaking(blockLocation);
+        blockBreakingManager.startBreaking(blockLocation, BlockFace.NORTH);
         assertFalse(blockBreakingManager.canBreakBlock(), "player was able to break a dirt block too quick");
         assertTrue(blockBreakingManager.canBreakBlock(), "player was not able to break a dirt block despite enough ticks passing.");
     }
 
     @Test
     public void breakingShouldBeQuickerAndCorrectWithCorrectTool() {
-        ItemStack correctToolAndTier = new ItemStack(new ItemTypeStonePickaxe());
-        ItemStack correctTool = new ItemStack(new ItemTypeWoodenPickaxe());
+        Item correctToolAndTier = new ItemStonePickaxe();
+        Item correctTool = new ItemWoodenPickaxe();
         int expectedTicksWithTool = 150;
         int expectedTicksWithoutTool = 300;
 
@@ -78,8 +79,8 @@ public class PlayerBlockBreakingManagerTests {
         PlayerInventory mockPlayerInventory = mock(PlayerInventory.class);
         when(mockPlayer.getInventory()).thenReturn(mockPlayerInventory);
         when(mockPlayerInventory.getHeldItem()).thenReturn(
-                new ItemStack(new ImplBlockItemType(new BlockAir())),
-                new ItemStack(new ImplBlockItemType(new BlockAir())),
+                new ItemBlock(new BlockAir()),
+                new ItemBlock(new BlockAir()),
                 correctTool,
                 correctToolAndTier);
 
@@ -94,7 +95,7 @@ public class PlayerBlockBreakingManagerTests {
         when(mockPlayer.getServer()).thenReturn(mockServer);
 
 
-        blockBreakingManager.startBreaking(blockLocation);
+        blockBreakingManager.startBreaking(blockLocation, BlockFace.NORTH);
 
         int resultTicksWithoutTool = blockBreakingManager.getBreakTicks();
         int resultTicksWithTool = blockBreakingManager.getBreakTicks();
@@ -106,8 +107,8 @@ public class PlayerBlockBreakingManagerTests {
 
     @Test
     public void breakTimeShouldChangeIfHandItemChanges() {
-        ItemStack originalItem = new ItemStack(new ImplBlockItemType(new BlockAir()));
-        ItemStack switchingToItem = new ItemStack(new ItemTypeWoodenPickaxe());
+        Item originalItem = new ItemBlock(new BlockAir());
+        Item switchingToItem = new ItemWoodenPickaxe();
 
         Server mockServer = mock(Server.class);
         when(mockServer.getTick()).thenReturn(0L);
@@ -130,7 +131,7 @@ public class PlayerBlockBreakingManagerTests {
         when(mockPlayer.getServer()).thenReturn(mockServer);
 
 
-        blockBreakingManager.startBreaking(blockLocation);
+        blockBreakingManager.startBreaking(blockLocation, BlockFace.NORTH);
         int originalTicksLeft = blockBreakingManager.getBreakTicks();
 
         blockBreakingManager.onChangedHeldItemWhileBreaking();

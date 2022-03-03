@@ -12,7 +12,7 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.event.type.world.WorldSoundEvent;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.level.world.chunks.loader.ChunkLoader;
@@ -182,13 +182,8 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public void addItemEntity(ItemStack itemStack, Vector3f position) {
-        this.addItemEntity(itemStack, position, Vector3f.ZERO);
-    }
-
-    @Override
-    public void addItemEntity(ItemStack itemStack, Vector3f position, Vector3f velocity) {
-        this.addItemEntity(this.getServer().getEntityRegistry().getItemEntity(itemStack), position, velocity);
+    public void addItemEntity(Item item, Vector3f position, Vector3f velocity) {
+        this.addItemEntity(this.getServer().getEntityRegistry().getItemEntity(item), position, velocity);
     }
 
     @Override

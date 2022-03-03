@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
+import io.github.pizzaserver.api.block.data.LitType;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityFurnace;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -11,7 +11,7 @@ import io.github.pizzaserver.api.item.data.ToolType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockFurnace extends BaseBlock implements BlockEntityContainer<BlockEntityFurnace> {
+public class BlockFurnace extends BlockBlockEntity<BlockEntityFurnace> {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -23,14 +23,41 @@ public class BlockFurnace extends BaseBlock implements BlockEntityContainer<Bloc
         }
     };
 
+    private boolean lit;
+
+
+    public BlockFurnace() {
+        this(LitType.UNLIT);
+    }
+
+    public BlockFurnace(LitType litType) {
+        this.setLit(litType == LitType.LIT);
+    }
+
+    public boolean isLit() {
+        return this.lit;
+    }
+
+    public void setLit(boolean lit) {
+        this.lit = lit;
+    }
+
     @Override
     public String getBlockId() {
-        return BlockID.FURNACE;
+        if (this.isLit()) {
+            return BlockID.LIT_FURNACE;
+        } else {
+            return BlockID.FURNACE;
+        }
     }
 
     @Override
     public String getName() {
-        return "Furnace";
+        if (this.isLit()) {
+            return "Lit Furnace";
+        } else {
+            return "Furnace";
+        }
     }
 
     @Override

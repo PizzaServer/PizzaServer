@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.entity;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.EntityItem;
@@ -8,7 +9,8 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentHandler;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityItemDefinition;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.utils.ServerState;
 
 import java.util.*;
 
@@ -20,6 +22,10 @@ public class ImplEntityRegistry implements EntityRegistry {
 
     @Override
     public void registerDefinition(EntityDefinition entityDefinition) {
+        if (Server.getInstance().getState() != ServerState.REGISTERING) {
+            throw new IllegalStateException("The server is not in the REGISTERING state");
+        }
+
         this.definitions.put(entityDefinition.getId(), entityDefinition);
     }
 
@@ -90,9 +96,9 @@ public class ImplEntityRegistry implements EntityRegistry {
     }
 
     @Override
-    public EntityItem getItemEntity(ItemStack itemStack) {
+    public EntityItem getItemEntity(Item item) {
         EntityItem entity = (EntityItem) this.getEntity(EntityItemDefinition.ID);
-        entity.setItem(itemStack);
+        entity.setItem(item);
         return entity;
     }
 

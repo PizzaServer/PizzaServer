@@ -6,10 +6,11 @@ import com.nukkitx.nbt.NbtType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockChest;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityChest;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.item.ItemUtils;
@@ -19,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class BlockEntityTypeChest implements BlockEntityType {
+public class BlockEntityTypeChest implements BlockEntityType<BlockChest> {
 
     @Override
     public String getId() {
@@ -27,12 +28,12 @@ public class BlockEntityTypeChest implements BlockEntityType {
     }
 
     @Override
-    public Set<Block> getBlocks() {
-        return Collections.singleton(BlockRegistry.getInstance().getBlock(BlockID.CHEST));
+    public Set<String> getBlockIds() {
+        return Collections.singleton(BlockID.CHEST);
     }
 
     @Override
-    public BlockEntityChest create(Block block) {
+    public BlockEntityChest create(BlockChest block) {
         return new BlockEntityChest(block.getLocation());
     }
 
@@ -55,9 +56,9 @@ public class BlockEntityTypeChest implements BlockEntityType {
         BlockEntityChest blockEntityChest = (BlockEntityChest) blockEntity;
 
         List<NbtMap> itemNBTs = new ArrayList<>();
-        for (ItemStack itemStack : blockEntityChest.getInventory().getSlots()) {
-            if (!itemStack.isEmpty()) {
-                itemNBTs.add(ItemUtils.serializeWithSlotForDisk(itemStack));
+        for (Item item : blockEntityChest.getInventory().getSlots()) {
+            if (!item.isEmpty()) {
+                itemNBTs.add(ItemUtils.serializeWithSlotForDisk(item));
             }
         }
 

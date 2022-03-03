@@ -11,5 +11,10 @@ public enum BlockUpdateType {
      * Used when the block itself requires an update.
      * e.g. a button is pressed and needs to be reset to its original state later.
      */
-    BLOCK
+    BLOCK,
+
+    /**
+     * Used for when the chunk randomly requests an update for blocks.
+     */
+    RANDOM
 }

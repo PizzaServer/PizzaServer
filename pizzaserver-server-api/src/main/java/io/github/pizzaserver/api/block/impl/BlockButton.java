@@ -1,12 +1,12 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BlockButton extends BaseBlock {
+public abstract class BlockButton extends Block {
 
     protected static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

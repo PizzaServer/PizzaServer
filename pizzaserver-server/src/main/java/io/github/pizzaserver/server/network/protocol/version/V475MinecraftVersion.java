@@ -11,13 +11,14 @@ import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockStoneSlab;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.types.BlockItemType;
-import io.github.pizzaserver.api.item.types.CustomItemType;
-import io.github.pizzaserver.api.item.types.ItemType;
-import io.github.pizzaserver.api.item.types.component.*;
+import io.github.pizzaserver.api.item.descriptors.*;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
 import java.io.IOException;
@@ -141,12 +142,10 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
             // Register custom items
-            for (ItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
-                if (!(itemType instanceof BlockItemType)) { // We register item representations of custom blocks later
-                    int runtimeId = customItemIdStart++;
-                    this.itemRuntimeIds.put(itemType.getItemId(), runtimeId);
-                    this.itemEntries.add(new StartGamePacket.ItemEntry(itemType.getItemId(), (short) runtimeId, true));
-                }
+            for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
+                int runtimeId = customItemIdStart++;
+                this.itemRuntimeIds.put(customItem.getItemId(), runtimeId);
+                this.itemEntries.add(new StartGamePacket.ItemEntry(customItem.getItemId(), (short) runtimeId, true));
             }
 
             //Register custom block items
@@ -155,10 +154,49 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
             SortedSet<Block> sortedCustomBlocks =
-                    new TreeSet<>((blockTypeA, blockTypeB) -> MinecraftNamespaceComparator.compare(blockTypeA.getBlockId(), blockTypeB.getBlockId()));
+                    new TreeSet<>(MinecraftNamespaceComparator::compareBlocks);
             sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
             for (Block customBlock : sortedCustomBlocks) {
                 this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+            }
+        }
+    }
+
+    @Override
+    protected void loadDefaultCreativeItems() throws IOException {
+        try (Reader creativeItemsReader = new InputStreamReader(this.getProtocolResourceStream("creative_items.json"))) {
+            JsonArray jsonCreativeItems = GSON.fromJson(creativeItemsReader, JsonObject.class).getAsJsonArray("items");
+
+            for (JsonElement jsonCreativeItem : jsonCreativeItems) {
+                JsonObject creativeJSONObj = jsonCreativeItem.getAsJsonObject();
+
+                String id = creativeJSONObj.get("id").getAsString();
+                int meta = creativeJSONObj.has("damage") ? creativeJSONObj.get("damage").getAsInt() : 0;
+                int blockRuntimeId = creativeJSONObj.has("blockRuntimeId") ? creativeJSONObj.get("blockRuntimeId").getAsInt() : 0;
+
+                if (!ItemRegistry.getInstance().hasItem(id)) {
+                    // TODO: debug log this as this is a missing item!
+                    continue;
+                }
+
+                Item item;
+                if (creativeJSONObj.has("blockRuntimeId")) {
+                    Block block = this.getBlockFromRuntimeId(blockRuntimeId);
+                    if (block == null) {
+                        // TODO: debug log this to as this is a missing block!
+                        continue;
+                    }
+
+                    item = new ItemBlock(block, 1);
+                } else {
+                    if (creativeJSONObj.has("damage")) {
+                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
+                    } else {
+                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
+                    }
+                }
+
+                this.creativeItems.add(item);
             }
         }
     }
@@ -184,64 +222,60 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     @Override
     protected void loadItemComponents() {
         this.itemComponents.clear();
-        for (CustomItemType itemType : ItemRegistry.getInstance().getCustomTypes()) {
-            this.itemComponents.add(new ComponentItemData(itemType.getItemId(), this.getItemComponentNBT(itemType)));
+        for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
+            this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
         }
     }
 
-    protected NbtMap getItemComponentNBT(CustomItemType itemType) {
+    protected NbtMap getItemComponentNBT(Item item) {
         NbtMapBuilder container = NbtMap.builder();
-        container.putInt("id", this.getItemRuntimeId(itemType.getItemId()))
-                .putString("name", itemType.getItemId());
+        container.putInt("id", this.getItemRuntimeId(item.getItemId()))
+                .putString("name", item.getItemId());
 
         NbtMapBuilder components = NbtMap.builder();
-        components.putCompound("minecraft:icon", NbtMap.builder()
-                .putString("texture", itemType.getIconName())
-                .build());
 
         // Write non-required components if present
-        if (itemType instanceof ArmorItemComponent) {
-            ArmorItemComponent armorItemComponent = (ArmorItemComponent) itemType;
+        if (item instanceof ArmorItem armorItemComponent) {
             components.putCompound("minecraft:armor", NbtMap.builder()
                     .putInt("protection", armorItemComponent.getProtection())
                     .build());
         }
-        if (itemType instanceof CooldownItemComponent) {
-            CooldownItemComponent cooldownItemComponent = (CooldownItemComponent) itemType;
+        if (item instanceof CooldownItem cooldownItem) {
             components.putCompound("minecraft:cooldown", NbtMap.builder()
-                    .putString("category", cooldownItemComponent.getCooldownCategory())
-                    .putFloat("duration", (cooldownItemComponent.getCooldownTicks() * 20) / 20f)
+                    .putString("category", cooldownItem.getCooldownCategory())
+                    .putFloat("duration", (cooldownItem.getCooldownTicks() * 20) / 20f)
                     .build());
         }
-        if (itemType instanceof DurableItemComponent) {
-            DurableItemComponent durableItemComponent = (DurableItemComponent) itemType;
+        if (item instanceof DurableItem durableItem) {
             components.putCompound("minecraft:durability", NbtMap.builder()
-                    .putInt("max_durability", durableItemComponent.getMaxDurability())
+                    .putInt("max_durability", durableItem.getMaxDurability())
                     .build());
         }
-        if (itemType instanceof FoodItemComponent) {
-            FoodItemComponent foodItemComponent = (FoodItemComponent) itemType;
+        if (item instanceof FoodItem foodItem) {
             components.putCompound("minecraft:food", NbtMap.builder()
-                    .putBoolean("can_always_eat", foodItemComponent.canAlwaysBeEaten())
+                    .putBoolean("can_always_eat", foodItem.canAlwaysBeEaten())
                     .build());
         }
-        if (itemType instanceof PlantableItemComponent) {
+        if (item instanceof PlantableItem) {
             components.putCompound("minecraft:block_placer", NbtMap.EMPTY);
         }
 
         NbtMap itemProperties = NbtMap.builder()
-                .putBoolean("allow_off_hand", itemType.isAllowedInOffHand())
+                .putCompound("minecraft:icon", NbtMap.builder()
+                        .putString("texture", ((CustomItem) item).getIconName())
+                        .build())
+                .putBoolean("allow_off_hand", item.isAllowedInOffHand())
                 .putInt("creative_category", 2)
-                .putInt("damage", itemType.getDamage())
-                .putBoolean("foil", itemType.hasFoil())
-                .putBoolean("hand_equipped", itemType.isHandEquipped())
-                .putBoolean("liquid_clipped", itemType.canClickOnLiquids())
-                .putInt("max_stack_size", itemType.getMaxStackSize())
+                .putInt("damage", item.getDamage())
+                .putBoolean("foil", ((CustomItem) item).hasFoil())
+                .putBoolean("hand_equipped", ((CustomItem) item).isHandEquipped())
+                .putBoolean("liquid_clipped", item.canUseOnLiquid())
+                .putInt("max_stack_size", item.getMaxStackSize())
                 .putFloat("mining_speed", 0)  // Block breaking is handled server-side. Doing this gives greater block break control in the item type class
-                .putBoolean("mirrored_art", itemType.isMirroredArt())
-                .putBoolean("stacked_by_data", itemType.isStackedByDamage())
-                .putInt("use_animation", itemType.getUseAnimationType().ordinal())
-                .putInt("use_duration", itemType.getUseDuration())
+                .putBoolean("mirrored_art", ((CustomItem) item).isMirroredArt())
+                .putBoolean("stacked_by_data", item.isStackedByMeta())
+                .putInt("use_animation", item instanceof FoodItem foodItemComponent ? foodItemComponent.getUseAnimationType().ordinal() : 0)
+                .putInt("use_duration", item instanceof FoodItem foodItemComponent ? foodItemComponent.getUseDurationTicks() : 0)
                 .build();
         components.putCompound("item_properties", itemProperties);
 

@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.network.protocol;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
+import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.player.ImplPlayer;
 import io.netty.util.ReferenceCountUtil;
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PlayerSession {
 
     private final BedrockServerSession connection;
-    private final List<BedrockPacketHandler> handlers = Collections.synchronizedList(new ArrayList<>());
+    private final ImplPacketHandlerPipeline packetHandlerPipeline = new ImplPacketHandlerPipeline();
     private MinecraftVersion version;
     private ImplPlayer player;
 
@@ -38,12 +39,8 @@ public class PlayerSession {
         this.player = player;
     }
 
-    public void addPacketHandler(BedrockPacketHandler handler) {
-        this.handlers.add(handler);
-    }
-
-    public boolean removePacketHandler(BedrockPacketHandler handler) {
-        return this.handlers.remove(handler);
+    public ImplPacketHandlerPipeline getPacketHandlerPipeline() {
+        return this.packetHandlerPipeline;
     }
 
     public MinecraftVersion getVersion() {
@@ -59,13 +56,9 @@ public class PlayerSession {
     }
 
     public void processIncomingPackets() {
-        List<BedrockPacketHandler> currentHandlers = new ArrayList<>(this.handlers);
-
         BedrockPacket packet;
         while ((packet = this.incomingPacketsQueue.poll()) != null) {
-            for (BedrockPacketHandler handler : currentHandlers) {
-                packet.handle(handler);
-            }
+            this.getPacketHandlerPipeline().accept(packet);
             ReferenceCountUtil.release(packet);
         }
     }

@@ -118,8 +118,8 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
             this.session.getConnection().sendPacket(playStatusPacket);
 
             // Initialization successful.
-            this.session.addPacketHandler(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
-            this.session.removePacketHandler(this);
+            this.session.getPacketHandlerPipeline().addLast(new ResourcePackPacketHandler(this.server, this.session, this.loginData));
+            this.session.getPacketHandlerPipeline().remove(this);
         }
     }
 

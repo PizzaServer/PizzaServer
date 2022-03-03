@@ -8,9 +8,10 @@ import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
+import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.level.LevelManager;
 import io.github.pizzaserver.api.packs.ResourcePackManager;
@@ -19,6 +20,7 @@ import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Logger;
+import io.github.pizzaserver.api.utils.ServerState;
 
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +32,7 @@ public abstract class Server {
 
     private static Server instance;
 
+    public abstract ServerState getState();
 
     /**
      * Return all {@link Player}s who been spawned into the server.
@@ -76,18 +79,6 @@ public abstract class Server {
      * @param players max player count
      */
     public abstract void setMaximumPlayerCount(int players);
-
-    /**
-     * Retrieve the target ticks per second for the server.
-     * @return target tps
-     */
-    public abstract int getTargetTps();
-
-    /**
-     * Change the target ticks per second for the server.
-     * @param newTps new ticks per second
-     */
-    public abstract void setTargetTps(int newTps);
 
     /**
      * Retrieve the last recorded ticks per second.
@@ -167,6 +158,8 @@ public abstract class Server {
     public abstract BlockEntityRegistry getBlockEntityRegistry();
 
     public abstract ItemRegistry getItemRegistry();
+
+    public abstract CreativeRegistry getCreativeRegistry();
 
     public abstract EntityRegistry getEntityRegistry();
 

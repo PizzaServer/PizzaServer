@@ -20,15 +20,17 @@ import io.github.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
-import io.github.pizzaserver.api.item.types.ItemTypeID;
+import io.github.pizzaserver.api.inventory.OpenableInventory;
+import io.github.pizzaserver.api.item.CreativeRegistry;
+import io.github.pizzaserver.api.item.data.ItemID;
+import io.github.pizzaserver.api.item.impl.ItemStick;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
+import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
@@ -47,8 +49,9 @@ import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.entity.ImplEntityHuman;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.entity.inventory.BaseInventory;
-import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
+import io.github.pizzaserver.server.inventory.ImplOpenableInventory;
+import io.github.pizzaserver.server.inventory.ImplPlayerInventory;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
@@ -91,7 +94,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
     protected Dimension dimensionTransferScreen = null;
 
-    protected Inventory openInventory = null;
+    protected OpenableInventory openInventory = null;
 
     protected Gamemode gamemode;
     protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings(this);
@@ -180,16 +183,17 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             // Get their spawn location
             World world = this.server.getLevelManager().getLevelDimension(data.getLevelName(), data.getDimension());
-            Location location;
+            Vector3f rotation = Vector3f.from(data.getPitch(), data.getYaw(), data.getYaw());
+            Location spawnLocation;
             if (world == null) { // Was the world deleted? Set it to the default world if so
                 String defaultWorldName = this.getServer().getConfig().getDefaultWorldName();
                 world = this.getServer().getLevelManager().getLevelDimension(defaultWorldName, Dimension.OVERWORLD);
-                location = new Location(world, world.getSpawnCoordinates());
+                spawnLocation = new Location(world, world.getSpawnCoordinates(), rotation);
             } else {
-                location = new Location(world, data.getPosition());
+                spawnLocation = new Location(world, data.getPosition(), rotation);
             }
 
-            PlayerLoginEvent playerLoginEvent = new PlayerLoginEvent(this, location, data.getPitch(), data.getYaw());
+            PlayerLoginEvent playerLoginEvent = new PlayerLoginEvent(this, spawnLocation);
             this.getServer().getEventManager().call(playerLoginEvent);
             if (playerLoginEvent.isCancelled()) {
                 this.disconnect();
@@ -206,8 +210,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setUniqueEntityId(this.getId());
             startGamePacket.setRuntimeEntityId(this.getId());
             startGamePacket.setPlayerGameType(GameType.from(this.getGamemode().ordinal()));
-            startGamePacket.setPlayerPosition(location.toVector3f().add(0, this.getEyeHeight(), 0));
-            startGamePacket.setRotation(Vector2f.from(this.getPitch(), this.getYaw()));
+            startGamePacket.setPlayerPosition(spawnLocation.toVector3f().add(0, this.getEyeHeight(), 0));
+            startGamePacket.setRotation(Vector2f.from(spawnLocation.getPitch(), spawnLocation.getYaw()));
             startGamePacket.setDimensionId(world.getDimension().ordinal());
             startGamePacket.setLevelGameType(GameType.SURVIVAL);
             startGamePacket.setDifficulty(Difficulty.PEACEFUL.ordinal());
@@ -241,9 +245,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             itemComponentPacket.getItems().addAll(this.getVersion().getItemComponents());
             this.sendPacket(itemComponentPacket);
 
-            // TODO: Add creative contents to prevent mobile clients from crashing
             CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
-            creativeContentPacket.setContents(new ItemData[0]);
+            creativeContentPacket.setContents(CreativeRegistry.getInstance()
+                    .getItems().stream()
+                    .map(item -> ItemUtils.serializeForNetwork(item, this.getVersion()))
+                    .toArray(ItemData[]::new));
             this.sendPacket(creativeContentPacket);
 
             BiomeDefinitionListPacket biomeDefinitionPacket = new BiomeDefinitionListPacket();
@@ -261,11 +267,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                     .collect(Collectors.toList());
             this.getPlayerList().addEntries(entries);
 
-            location.getWorld().addEntity(this, location.toVector3f());
-            this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemTypeID.SHIELD));
-            this.session.addPacketHandler(new PlayerPacketHandler(this));
-            this.session.addPacketHandler(new AuthInputHandler(this));
-            this.session.addPacketHandler(new InventoryTransactionHandler(this));
+            spawnLocation.getWorld().addEntity(this, spawnLocation.toVector3f());
+            this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemID.SHIELD));
+            this.getPacketHandlerPipeline().addLast(new PlayerPacketHandler(this));
+            this.getPacketHandlerPipeline().addLast(new InventoryTransactionHandler(this));
+            this.getPacketHandlerPipeline().addLast(new AuthInputHandler(this));
             this.session.setPlayer(this);
 
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
@@ -339,7 +345,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean inCreativeMode() {
+    public boolean isCreativeMode() {
         return this.getGamemode() == Gamemode.CREATIVE;
     }
 
@@ -349,7 +355,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean inSurvivalMode() {
+    public boolean isSurvivalMode() {
         return this.getGamemode() == Gamemode.SURVIVAL;
     }
 
@@ -376,17 +382,17 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public boolean canReach(Entity entity) {
-        return this.canReach(entity.getLocation().toVector3f(), this.inCreativeMode() ? 9 : 6);
+        return this.canReach(entity.getLocation().toVector3f(), this.isCreativeMode() ? 9 : 6);
     }
 
     @Override
     public boolean canReach(BlockEntity blockEntity) {
-        return this.canReach(blockEntity.getLocation().toVector3f(), this.inCreativeMode() ? 13 : 7);
+        return this.canReach(blockEntity.getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
     }
 
     @Override
     public boolean canReach(Block block) {
-        return this.canReach(block.getLocation().toVector3f(), this.inCreativeMode() ? 13 : 7);
+        return this.canReach(block.getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
     }
 
     public boolean canReach(Vector3i vector3, float maxDistance) {
@@ -467,14 +473,14 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public Optional<Inventory> getOpenInventory() {
+    public Optional<OpenableInventory> getOpenInventory() {
         return Optional.ofNullable(this.openInventory);
     }
 
     @Override
     public boolean closeOpenInventory() {
-        Optional<Inventory> openInventory = this.getOpenInventory();
-        if (openInventory.isPresent() && !((BaseInventory) openInventory.get()).closeFor(this)) {
+        Optional<OpenableInventory> openInventory = this.getOpenInventory();
+        if (openInventory.isPresent() && !((ImplOpenableInventory) openInventory.get()).closeFor(this)) {
             return false;
         } else {
             this.openInventory = null;
@@ -483,10 +489,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean openInventory(Inventory inventory) {
+    public boolean openInventory(OpenableInventory inventory) {
         this.closeOpenInventory();
-        if (((BaseInventory) inventory).openFor(this)) {
+        if (((ImplOpenableInventory) inventory).openFor(this)) {
             this.openInventory = inventory;
+            this.getInventory().getCraftingGrid().setGridSlot(0, new ItemStick());
             return true;
         } else {
             return false;
@@ -653,31 +660,22 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public void teleport(World world, float x, float y, float z) {
-        this.teleport(world, x, y, z, world.getDimension());
-    }
+    public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
+        super.teleport(world, x, y, z, pitch, yaw, headYaw);
 
-    @Override
-    public void teleport(float x, float y, float z, Dimension transferDimension) {
-        this.teleport(this.getWorld(), x, y, z, transferDimension);
-    }
-
-    @Override
-    public void teleport(Location location, Dimension transferDimension) {
-        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), transferDimension);
-    }
-
-    @Override
-    public void teleport(World world, float x, float y, float z, Dimension transferDimension) {
-        World oldWorld = this.getWorld();
-
-        super.teleport(world, x, y, z);
-        MoveEntityAbsolutePacket teleportPacket = new MoveEntityAbsolutePacket();
+        MovePlayerPacket teleportPacket = new MovePlayerPacket();
         teleportPacket.setRuntimeEntityId(this.getId());
         teleportPacket.setPosition(Vector3f.from(x, y + this.getEyeHeight(), z));
-        teleportPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
-        teleportPacket.setTeleported(true);
+        teleportPacket.setRotation(Vector3f.from(pitch, yaw, headYaw));
+        teleportPacket.setMode(MovePlayerPacket.Mode.TELEPORT);
+        teleportPacket.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
         this.sendPacket(teleportPacket);
+    }
+
+    @Override
+    public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension) {
+        World oldWorld = this.getWorld();
+        this.teleport(world, x, y, z, pitch, yaw, headYaw);
 
         if (!oldWorld.getDimension().equals(transferDimension)) {
             this.setDimensionTransferScreen(transferDimension);
@@ -846,6 +844,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getPopupManager().hideDialogue();
     }
 
+    @Override
+    public PacketHandlerPipeline getPacketHandlerPipeline() {
+        return this.session.getPacketHandlerPipeline();
+    }
+
     /**
      * Ensure that only a scoreboard does not occupy another display slot already.
      * If it does, it should despawn that one.
@@ -940,23 +943,13 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.sendPacket(setEntityDataPacket);
         }
 
-        // Make sure that the block we're breaking is within reach!
-        boolean stopBreakingBlock = this.getBlockBreakingManager().getBlock().isPresent()
-                && !(this.canReach(this.getBlockBreakingManager().getBlock().get().getLocation().toVector3i(), this.getGamemode().equals(Gamemode.CREATIVE) ? 13 : 7)
-                        && this.isAlive()
-                        && this.getAdventureSettings().canMine());
-        if (stopBreakingBlock) {
-            BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this, this.getBlockBreakingManager().getBlock().get());
-            this.getServer().getEventManager().call(blockStopBreakEvent);
-
-            this.getBlockBreakingManager().stopBreaking();
-        }
+        this.getBlockBreakingManager().tick();
 
         if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
             this.setHealth(this.getHealth() + 1);
         }
 
-        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();
+        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((ImplOpenableInventory) inventory).shouldBeClosedFor(this)).isPresent();
         if (shouldCloseOpenInventory) {
             this.closeOpenInventory();
         }
@@ -965,9 +958,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public void moveTo(float x, float y, float z) {
-        Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z));
-        super.moveTo(x, y, z);
+    public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
+        Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z), Vector3f.from(this.pitch, this.yaw, this.headYaw));
+        super.moveTo(x, y, z, pitch, yaw, headYaw);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
             this.getChunkManager().onChunkChange(oldLocation);
@@ -981,7 +974,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.getInventory().sendSlots(this);
         this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true)
-                .putFlag(EntityFlag.BREATHING, true);
+                .putFlag(EntityFlag.BREATHING, true)
+                .putFlag(EntityFlag.CAN_CLIMB, true);
         this.sendAttributes();
         this.getAdventureSettings().send();
 

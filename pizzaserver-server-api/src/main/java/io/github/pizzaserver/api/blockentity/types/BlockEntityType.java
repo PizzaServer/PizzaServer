@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.level.world.World;
 
 import java.util.Set;
 
-public interface BlockEntityType {
+public interface BlockEntityType<T extends Block> {
 
     String getId();
 
@@ -15,9 +15,9 @@ public interface BlockEntityType {
      * Retrieve the blocks that this block entity is associated with.
      * @return block types
      */
-    Set<Block> getBlocks();
+    Set<String> getBlockIds();
 
-    BlockEntity create(Block block);
+    BlockEntity create(T block);
 
     BlockEntity deserializeDisk(World world, NbtMap diskNBT);
 

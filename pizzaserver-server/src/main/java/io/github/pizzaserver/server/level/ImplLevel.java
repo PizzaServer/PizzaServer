@@ -1,6 +1,7 @@
 package io.github.pizzaserver.server.level;
 
 import io.github.pizzaserver.api.level.Level;
+import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.format.api.BedrockLevel;
 import io.github.pizzaserver.format.api.chunks.BedrockChunk;
@@ -20,6 +21,8 @@ public class ImplLevel implements Level, Closeable {
 
     private final Map<Dimension, ImplWorld> dimensions = new HashMap<>();
 
+    private Difficulty difficulty;
+
     public ImplLevel(ImplLevelManager levelManager, BedrockLevel<? extends BedrockChunkProvider<? extends BedrockChunk>> provider) {
         this.levelManager = levelManager;
         this.provider = provider;
@@ -27,6 +30,8 @@ public class ImplLevel implements Level, Closeable {
         this.dimensions.put(Dimension.OVERWORLD, new ImplWorld(this, Dimension.OVERWORLD));
         this.dimensions.put(Dimension.NETHER, new ImplWorld(this, Dimension.NETHER));
         this.dimensions.put(Dimension.END, new ImplWorld(this, Dimension.END));
+
+        this.difficulty = Difficulty.values()[this.getProvider().getLevelData().getDifficulty()];
     }
 
     /**
@@ -63,8 +68,19 @@ public class ImplLevel implements Level, Closeable {
     }
 
     @Override
-    public void save() throws IOException {
+    public Difficulty getDifficulty() {
+        return this.difficulty;
+    }
 
+    @Override
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    @Override
+    public void save() throws IOException {
+        // TODO: save chunks
+        // TODO: save level data
     }
 
     @Override

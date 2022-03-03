@@ -37,7 +37,13 @@ public class ZipResourcePack implements ResourcePack {
 
     @Override
     public int getMaxChunkLength() {
-        return 102400; // While we can technically go higher, the Bedrock Dedicated Server keeps this at 102400.
+        // BDS: 102400
+        final long minChunkLength = 102400;
+
+        // more chunks will cause a clientside error with disconnect
+        final long maxChunks = 99;
+
+        return (int) Math.max((this.getDataLength() + maxChunks) / maxChunks, minChunkLength);
     }
 
     @Override
@@ -111,17 +117,18 @@ public class ZipResourcePack implements ResourcePack {
     private void parsePackData(File file) throws IOException {
         this.dataLength = file.length();
 
-        int chunksLength = (int) Math.ceil((float) this.dataLength / this.getMaxChunkLength());
-        this.chunks = new byte[chunksLength][];
+        int chunkLength = this.getMaxChunkLength();
+        int chunkCount = ((int) this.dataLength + chunkLength - 1) / chunkLength;
+        this.chunks = new byte[chunkCount][];
 
         try (InputStream stream = new FileInputStream(file)) {
-            for (int i = 0; i < chunksLength - 1; i++) {
-                this.chunks[i] = parseDataChunk(stream, new byte[this.getMaxChunkLength()]);
+            for (int i = 0; i < chunkCount - 1; i++) {
+                this.chunks[i] = parseDataChunk(stream, new byte[chunkLength]);
             }
 
             // The last data chunk doesn't use as much space
-            byte[] data = parseDataChunk(stream, new byte[(int) (this.dataLength - (chunksLength - 1) * this.getMaxChunkLength())]);
-            this.chunks[chunksLength - 1] = data;
+            byte[] data = parseDataChunk(stream, new byte[(int) (this.dataLength - (chunkCount - 1) * chunkLength)]);
+            this.chunks[chunkCount - 1] = data;
 
         }
 

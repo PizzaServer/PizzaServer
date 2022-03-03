@@ -22,7 +22,7 @@
         <dependency.io.github.pizzaserver.commons>1.0-SNAPSHOT</dependency.io.github.pizzaserver.commons>
         <dependency.io.github.pizzaserver.api>1.0-SNAPSHOT</dependency.io.github.pizzaserver.api>
         <dependency.io.github.pizzaserver.format>1.0-SNAPSHOT</dependency.io.github.pizzaserver.format>
-        <dependency.com.nukkitx.protocol>2.9.4-SNAPSHOT</dependency.com.nukkitx.protocol>
+        <dependency.com.nukkitx.protocol>2.9.5-SNAPSHOT</dependency.com.nukkitx.protocol>
         <dependency.com.nukkitx.nbt>2.0.1</dependency.com.nukkitx.nbt>
         <dependency.com.google.code.gson>2.8.6</dependency.com.google.code.gson>
         <dependency.org.yaml>1.27</dependency.org.yaml>
@@ -50,7 +50,7 @@
             </dependency>
             <dependency>
                 <groupId>com.nukkitx.protocol</groupId>
-                <artifactId>bedrock-v475</artifactId>
+                <artifactId>bedrock-v486</artifactId>
                 <version>${dependency.com.nukkitx.protocol}</version>
             </dependency>
             <dependency>

@@ -1,14 +1,12 @@
 package io.github.pizzaserver.server.network.data.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
-import io.github.pizzaserver.api.item.ItemStack;
-import io.github.pizzaserver.server.entity.inventory.BaseInventory;
-import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
-import io.github.pizzaserver.server.entity.inventory.ImplPlayerInventory;
-import io.github.pizzaserver.server.entity.inventory.InventoryUtils;
+import io.github.pizzaserver.api.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.OpenableInventory;
+import io.github.pizzaserver.api.inventory.PlayerInventory;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.server.inventory.*;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Optional;
@@ -38,17 +36,26 @@ public class InventorySlotContainer {
     }
 
     public BaseInventory getInventory() {
-        Optional<Inventory> openInventory = this.player.getOpenInventory();
+        Optional<OpenableInventory> openInventory = this.player.getOpenInventory();
         if (openInventory.isPresent() && InventoryUtils.getSlotTypes(openInventory.get().getContainerType()).contains(this.slotType)) {
+            // the inventory targeted was the open inventory.
             return (BaseInventory) openInventory.get();
         } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getContainerType()).contains(this.slotType)) {
+            // the inventory targeted was their own inventory.
             return this.player.getInventory();
+        } else if (InventoryUtils.getSlotTypes(this.player.getInventory().getCraftingGrid().getContainerType()).contains(this.slotType)) {
+            // the inventory targeted was their crafting grid.
+            if (!this.player.isCreativeMode() && this.slotType == ContainerSlotType.CREATIVE_OUTPUT) {
+                // Cannot interact with creative output while not in creative mode.
+                return null;
+            }
+            return (ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid();
         } else {
             return null;
         }
     }
 
-    public ItemStack getItemStack() {
+    public Item getItemStack() {
         BaseInventory inventory = this.getInventory();
         if (inventory == null) {
             return null;
@@ -66,20 +73,20 @@ public class InventorySlotContainer {
                     return null;
                 }
             case ARMOR:
-                if (this.getInventory() instanceof EntityInventory) {
-                    EntityInventory entityInventory = (EntityInventory) this.getInventory();
-                    switch (this.getSlot()) {
-                        case 0:
-                            return entityInventory.getHelmet();
-                        case 1:
-                            return entityInventory.getChestplate();
-                        case 2:
-                            return entityInventory.getLeggings();
-                        case 3:
-                            return entityInventory.getBoots();
-                        default:
-                            return null;
-                    }
+                if (this.getInventory() instanceof EntityInventory entityInventory) {
+                    return switch (this.getSlot()) {
+                        case 0 -> entityInventory.getHelmet();
+                        case 1 -> entityInventory.getChestplate();
+                        case 2 -> entityInventory.getLeggings();
+                        case 3 -> entityInventory.getBoots();
+                        default -> null;
+                    };
+                } else {
+                    return null;
+                }
+            case CREATIVE_OUTPUT:
+                if (inventory instanceof ImplPlayerCraftingInventory craftingInventory) {
+                    return craftingInventory.getCreativeOutput();
                 } else {
                     return null;
                 }
@@ -92,7 +99,7 @@ public class InventorySlotContainer {
         }
     }
 
-    public void setItemStack(ItemStack itemStack) {
+    public void setItemStack(Item itemStack) {
         if (!this.exists()) {
             throw new NullPointerException("Attempted to set non-existent item slot");
         }
@@ -127,6 +134,10 @@ public class InventorySlotContainer {
                     }
                 }
                 break;
+            case CREATIVE_OUTPUT:
+                if (this.getInventory() instanceof ImplPlayerCraftingInventory craftingInventory) {
+                    craftingInventory.setCreativeOutput(itemStack);
+                }
             default:
                 if (this.slot >= 0 && this.slot < this.getInventory().getSize()) {
                     this.getInventory().setSlot(this.player, this.slot, itemStack, true);

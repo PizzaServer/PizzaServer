@@ -2,7 +2,7 @@ package io.github.pizzaserver.api.event.type.entity;
 
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.item.ItemStack;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.TextMessage;
 
@@ -16,10 +16,10 @@ import java.util.Set;
 public class EntityDeathEvent extends BaseEntityEvent {
 
     protected TextMessage deathMessage;
-    protected List<ItemStack> drops;
+    protected List<Item> drops;
     protected Set<Player> recipients;
 
-    public EntityDeathEvent(Entity entity, List<ItemStack> drops, TextMessage deathMessage, Set<Player> recipients) {
+    public EntityDeathEvent(Entity entity, List<Item> drops, TextMessage deathMessage, Set<Player> recipients) {
         super(entity);
         this.drops = drops;
         this.deathMessage = deathMessage;
@@ -41,11 +41,11 @@ public class EntityDeathEvent extends BaseEntityEvent {
                 .build();
     }
 
-    public List<ItemStack> getDrops() {
+    public List<Item> getDrops() {
         return this.drops;
     }
 
-    public void setDrops(List<ItemStack> drops) {
+    public void setDrops(List<Item> drops) {
         this.drops = drops;
     }
 

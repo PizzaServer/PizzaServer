@@ -1,17 +1,18 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.StoneType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BlockStone extends BaseBlock {
+public class BlockStone extends Block {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -43,8 +44,28 @@ public class BlockStone extends BaseBlock {
     }
 
     @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta < StoneType.values().length) {
+            this.setBlockState(meta);
+        }
+    }
+
+    @Override
     public String getName() {
-        return "Stone";
+        return switch (this.getStoneType()) {
+            case STONE -> "Stone";
+            case GRANITE -> "Granite";
+            case GRANITE_SMOOTH -> "Smooth Granite";
+            case DIORITE -> "Diorite";
+            case DIORITE_SMOOTH -> "Smooth Diorite";
+            case ANDESITE -> "Andesite";
+            case ANDESITE_SMOOTH -> "Andesite Smooth";
+        };
     }
 
     @Override

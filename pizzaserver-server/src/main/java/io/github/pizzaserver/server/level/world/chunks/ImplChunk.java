@@ -10,7 +10,6 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
-import io.github.pizzaserver.api.block.descriptors.BlockEntityContainer;
 import io.github.pizzaserver.api.block.impl.BlockAir;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -220,6 +219,7 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setBlock(Block block, int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
@@ -236,16 +236,13 @@ public class ImplChunk implements Chunk {
         writeLock.lock();
 
         // Remove old block entity at this position if present
-        if (this.getBlock(x, y, z, layer) instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
-            if (blockWithBlockEntity.getBlockEntity() != null) {
-                this.removeBlockEntity(blockWithBlockEntity.getBlockEntity());
-            }
-        }
+        this.getBlockEntity(x, y, z).ifPresent(this::removeBlockEntity);
 
         // Add block entity if one exists for this block
-        Optional<BlockEntityType> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block);
-        if (blockEntityType.isPresent()) {
-            BlockEntity blockEntity = blockEntityType.get().create(block);
+        BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block)
+                .orElse(null);
+        if (blockEntityType != null) {
+            BlockEntity blockEntity = blockEntityType.create(block);
             this.addBlockEntity(blockEntity);
         }
 
@@ -294,6 +291,7 @@ public class ImplChunk implements Chunk {
     public boolean requestBlockUpdate(BlockUpdateType type, int x, int y, int z, int ticks) {
         Vector3i blockCoordinates = Vector3i.from(x & 15, y, z & 15);
         BlockUpdateEntry entry = new BlockUpdateEntry(type, blockCoordinates, ticks);
+        this.blockUpdates.remove(entry);
         return this.blockUpdates.add(entry);
     }
 
@@ -361,12 +359,8 @@ public class ImplChunk implements Chunk {
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
         player.sendPacket(updateBlockPacket);
 
-        if (block instanceof BlockEntityContainer<? extends BlockEntity> blockWithBlockEntity) {
-            if (blockWithBlockEntity.getBlockEntity() != null) {
-                BlockEntity blockEntity = blockWithBlockEntity.getBlockEntity();
-                this.sendBlockEntityData(player, blockEntity);
-            }
-        }
+        this.getWorld().getBlockEntity(block.getLocation().toVector3i()).ifPresent(blockEntity ->
+                this.sendBlockEntityData(player, blockEntity));
     }
 
     protected void sendBlockEntityData(Player player, BlockEntity blockEntity) {

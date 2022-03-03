@@ -180,6 +180,7 @@ public class LoginData {
                 .setPlayFabId(skinJSON.has("PlayFabId") ? skinJSON.get("PlayFabId").getAsString() : "")
                 .setSkinResourcePatch(new String(Base64.getDecoder().decode(skinJSON.get("SkinResourcePatch").getAsString())))
                 .setGeometryData(new String(Base64.getDecoder().decode(skinJSON.get("SkinGeometryData").getAsString())))
+                .setGeometryVersion(skinJSON.get("SkinGeometryDataEngineVersion").getAsString())
                 .setSkinHeight(skinJSON.get("SkinImageHeight").getAsInt())
                 .setSkinWidth(skinJSON.get("SkinImageWidth").getAsInt())
                 .setSkinData(Base64.getDecoder().decode(skinJSON.get("SkinData").getAsString()))
@@ -197,6 +198,8 @@ public class LoginData {
                 .setAnimations(animations)
                 .setPieces(pieces)
                 .setTints(tints)
+                .setPremium(skinJSON.get("PremiumSkin").getAsBoolean())
+                .setTrusted(false)
                 .build();
     }
 
