@@ -113,11 +113,11 @@ public interface Chunk extends Watchable {
      */
     Block getBlock(int x, int y, int z, int layer);
 
-    default Optional<BlockEntity> getBlockEntity(Vector3i blockCoordinates) {
+    default Optional<BlockEntity<? extends Block>> getBlockEntity(Vector3i blockCoordinates) {
         return this.getBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
     }
 
-    Optional<BlockEntity> getBlockEntity(int x, int y, int z);
+    Optional<BlockEntity<? extends Block>> getBlockEntity(int x, int y, int z);
 
     /**
      * Set a block in this chunk.

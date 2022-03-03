@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -18,6 +18,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
+import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Logger;
 import io.github.pizzaserver.api.utils.ServerState;
 
@@ -130,6 +131,12 @@ public abstract class Server {
 
     public abstract BossBar createBossBar();
 
+    public abstract <T extends BlockEntity<? extends Block>> T createBlockEntity(Class<T> blockEntityClazz, BlockLocation blockLocation);
+
+    public <T extends BlockEntity<? extends Block>> T createBlockEntity(Class<T> blockEntityClazz, T block) {
+        return this.createBlockEntity(blockEntityClazz, block.getLocation());
+    }
+
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType);
 
     /**
@@ -141,7 +148,7 @@ public abstract class Server {
      */
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType, int size);
 
-    public abstract BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType);
+    public abstract <T extends BlockEntity<? extends Block>> BlockEntityInventory<T> createInventory(T blockEntity, ContainerType containerType);
 
     /**
      * Create an inventory for a block entity.
@@ -150,11 +157,9 @@ public abstract class Server {
      * @param size size of the inventory. MUST be less than or equal to the regular inventory size of the container
      * @return inventory
      */
-    public abstract BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType, int size);
+    public abstract <T extends BlockEntity<R>, R extends Block> BlockEntityInventory<T> createInventory(BlockEntity<R> blockEntity, ContainerType containerType, int size);
 
     public abstract BlockRegistry getBlockRegistry();
-
-    public abstract BlockEntityRegistry getBlockEntityRegistry();
 
     public abstract ItemRegistry getItemRegistry();
 

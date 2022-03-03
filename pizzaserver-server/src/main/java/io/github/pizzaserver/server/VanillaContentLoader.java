@@ -17,7 +17,6 @@ import io.github.pizzaserver.api.item.behavior.impl.ItemToolBehavior;
 import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.block.behavior.impl.*;
-import io.github.pizzaserver.server.blockentity.types.impl.*;
 import io.github.pizzaserver.api.item.behavior.impl.ItemArmorBehavior;
 import io.github.pizzaserver.server.item.behavior.impl.ItemBoatBehavior;
 import io.github.pizzaserver.server.item.behavior.impl.ItemFlintAndSteelBehavior;
@@ -29,7 +28,6 @@ public class VanillaContentLoader {
     public static void load() {
         loadItems();
         loadBlocks();
-        loadBlockEntities();
         loadEntityComponents();
         loadEntities();
     }
@@ -359,20 +357,6 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.YELLOW), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.YELLOW), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.YELLOW), new OmniHorizontalDirectionBlockBehavior<>());
-    }
-
-    private static void loadBlockEntities() {
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBarrel());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBed());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBell());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBlastFurnace());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCampfire());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeDispenser());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeFurnace());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCauldron());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeChest());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeFurnace());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeMobSpawner());
     }
 
     private static void loadEntityComponents() {
