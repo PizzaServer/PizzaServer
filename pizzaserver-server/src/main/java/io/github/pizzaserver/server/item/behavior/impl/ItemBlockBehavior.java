@@ -12,6 +12,7 @@ import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
+import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 
 import java.util.Optional;
 import java.util.Set;
@@ -68,8 +69,8 @@ public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
 
         block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
         placedBlock.getBehavior().onPlace(player, placedBlock, blockFace);
-        Optional<BlockEntity> blockEntity = block.getWorld().getBlockEntity(block.getLocation().toVector3i());
-        blockEntity.ifPresent(entity -> entity.onPlace(player));
+        Optional<BlockEntity<? extends Block>> blockEntity = block.getWorld().getBlockEntity(block.getLocation().toVector3i());
+        blockEntity.ifPresent(entity -> ((BaseBlockEntity<? extends Block>) entity).onPlace(player));
         return true;
     }
 

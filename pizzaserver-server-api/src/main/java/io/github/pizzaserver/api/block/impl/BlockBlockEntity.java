@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.block.impl;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 
-public abstract class BlockBlockEntity<T extends BlockEntity> extends Block {
+public abstract class BlockBlockEntity<T extends BlockEntity<? extends Block>> extends Block {
 
     @SuppressWarnings("unchecked")
     public T getBlockEntity() {
