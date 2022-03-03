@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 
-public abstract class BlockBlockEntity<T extends BlockEntity> extends BaseBlock {
+public abstract class BlockBlockEntity<T extends BlockEntity<? extends Block>> extends BaseBlock {
 
     @SuppressWarnings("unchecked")
     public T getBlockEntity() {

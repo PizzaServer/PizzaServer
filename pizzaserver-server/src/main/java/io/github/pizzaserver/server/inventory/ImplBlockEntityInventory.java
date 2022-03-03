@@ -2,28 +2,29 @@ package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.impl.BlockEntityContainer;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
 import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.player.Player;
 
-public class ImplBlockEntityInventory extends ImplOpenableInventory implements BlockEntityInventory {
+public class ImplBlockEntityInventory<T extends BlockEntity<? extends Block>> extends ImplOpenableInventory implements BlockEntityInventory<T> {
 
-    protected final BlockEntity blockEntity;
+    protected final T blockEntity;
 
 
-    public ImplBlockEntityInventory(BlockEntity blockEntity, ContainerType containerType, int size) {
+    public ImplBlockEntityInventory(T blockEntity, ContainerType containerType, int size) {
         super(containerType, size);
         this.blockEntity = blockEntity;
     }
 
-    public ImplBlockEntityInventory(BlockEntity blockEntity, ContainerType containerType, int size, int id) {
+    public ImplBlockEntityInventory(T blockEntity, ContainerType containerType, int size, int id) {
         super(containerType, size, id);
         this.blockEntity = blockEntity;
     }
 
     @Override
-    public BlockEntity getBlockEntity() {
+    public T getBlockEntity() {
         return this.blockEntity;
     }
 
