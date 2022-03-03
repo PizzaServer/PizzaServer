@@ -134,6 +134,7 @@ public class BlockID {
     public static final String LAPIS_BLOCK = "minecraft:lapis_block";
     public static final String LAPIS_ORE = "minecraft:lapis_ore";
     public static final String LEAVES = "minecraft:leaves";
+    public static final String LEAVES2 = "minecraft:leaves2";
     public static final String LIGHT_BLOCK = "minecraft:light_block";
     public static final String LIGHT_BLUE_CANDLE = "minecraft:light_blue_candle";
     public static final String LIGHT_BLUE_CANDLE_CAKE = "minecraft:light_blue_candle_cake";

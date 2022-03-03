@@ -15,8 +15,8 @@ import io.github.pizzaserver.api.player.Player;
 public class PumpkinBlockBehavior extends DefaultBlockBehavior<BlockPumpkin> {
 
     @Override
-    public boolean onInteract(Player player, BlockPumpkin pumpkin, BlockFace face, Vector3f clickPosition){
-        if (player.getInventory().getHeldItem() instanceof ToolItem toolItem && toolItem.getToolType() == ToolType.SHEARS){
+    public boolean onInteract(Player player, BlockPumpkin pumpkin, BlockFace face, Vector3f clickPosition) {
+        if (player.getInventory().getHeldItem() instanceof ToolItem toolItem && toolItem.getToolType() == ToolType.SHEARS) {
             if (face == BlockFace.TOP || face  == BlockFace.BOTTOM) {
                 return true;
             }

@@ -21,6 +21,7 @@ public class BlockLitPumpkin extends Block {
             }
         }
     };
+
     public BlockLitPumpkin() {
         this(HorizontalDirection.NORTH);
     }

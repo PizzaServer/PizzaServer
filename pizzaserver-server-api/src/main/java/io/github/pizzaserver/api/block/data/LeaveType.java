@@ -4,7 +4,9 @@ public enum LeaveType {
     OAK("Oak"),
     SPRUCE("Spruce"),
     BIRCH("Birch"),
-    JUNGLE("Jungle");
+    JUNGLE("Jungle"),
+    ACACIA("Acacia"),
+    DARK_OAK("Dark Oak");
 
     private final String name;
 

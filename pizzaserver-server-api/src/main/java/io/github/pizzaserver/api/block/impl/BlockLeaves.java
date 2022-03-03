@@ -40,21 +40,56 @@ public class BlockLeaves extends Block implements Flammable {
                         .putByte("update_bit", (byte) 1)
                         .build());
             });
+            Arrays.asList("acacia", "dark_oak").forEach(leaveType -> {
+                this.add(NbtMap.builder()
+                        .putString("old_leaf_type", leaveType)
+                        .putByte("persistent_bit", (byte) 0)
+                        .putByte("update_bit", (byte) 0)
+                        .build());
+                this.add(NbtMap.builder()
+                        .putString("old_leaf_type", leaveType)
+                        .putByte("persistent_bit", (byte) 0)
+                        .putByte("update_bit", (byte) 1)
+                        .build());
+                this.add(NbtMap.builder()
+                        .putString("old_leaf_type", leaveType)
+                        .putByte("persistent_bit", (byte) 1)
+                        .putByte("update_bit", (byte) 0)
+                        .build());
+                this.add(NbtMap.builder()
+                        .putString("old_leaf_type", leaveType)
+                        .putByte("persistent_bit", (byte) 1)
+                        .putByte("update_bit", (byte) 1)
+                        .build());
+            });
         }
     };
 
-    public BlockLeaves() { this(LeaveType.OAK); }
-
-    public BlockLeaves(LeaveType leaveType) { this.setLeaveType(leaveType); }
-
-    public void setLeaveType(LeaveType leaveType){
-        this.leaveType = leaveType;
+    public BlockLeaves() {
+        this(LeaveType.OAK);
     }
 
-    public LeaveType getLeaveType(){ return this.leaveType; }
+    public BlockLeaves(LeaveType leaveType) {
+        this.setLeaveType(leaveType);
+    }
+
+    public void setLeaveType(LeaveType leaveType) {
+        this.leaveType = leaveType;
+
+        this.setBlockState(this.getLeaveType().ordinal());
+    }
+
+    public LeaveType getLeaveType() {
+        return this.leaveType;
+    }
 
     @Override
-    public String getBlockId() { return BlockID.LEAVES; }
+    public String getBlockId() {
+        return switch (leaveType) {
+            case OAK, SPRUCE, BIRCH, JUNGLE -> BlockID.LEAVES;
+            case ACACIA, DARK_OAK -> BlockID.LEAVES2;
+        };
+    }
 
     @Override
     public String getName() {
@@ -77,6 +112,26 @@ public class BlockLeaves extends Block implements Flammable {
     }
 
     @Override
+    public void setBlockState(int index) {
+        switch (this.getLeaveType()) {
+            case OAK, SPRUCE, BIRCH, JUNGLE -> {
+                if (index < 3 || index >= 15) {
+                    this.setBlockState(3 + this.getLeaveType().ordinal() * 3 + (index % 3));
+                    return;
+                }
+                this.leaveType = LeaveType.values()[(int) Math.floor((index - 3) / 3d)];
+            }
+            case ACACIA, DARK_OAK -> {
+                if (index < 15 || index >= 24) {
+                    this.setBlockState(3 + this.getLeaveType().ordinal() * 3 + (index % 3));
+                    return;
+                }
+                this.leaveType = LeaveType.values()[(int) Math.floor((index - 3) / 3d)];
+            }
+        }
+    }
+
+    @Override
     public boolean canBeMinedWithHand() {
         return true;
     }
@@ -96,7 +151,21 @@ public class BlockLeaves extends Block implements Flammable {
         return 60;
     }
 
-    //TODO: Add StackMeta thing to show correct leaf in inventory
+    @Override
+    public int getStackMeta() {
+        return switch (this.getLeaveType()) {
+            case OAK, SPRUCE, BIRCH, JUNGLE -> this.getLeaveType().ordinal();
+            case ACACIA, DARK_OAK -> this.getLeaveType().ordinal() - 4;
+        };
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        switch (this.getBlockId()) {
+            case BlockID.LEAVES -> this.setLeaveType(LeaveType.values()[Math.max(0, Math.min(meta, 3))]);
+            case BlockID.LEAVES2 -> this.setLeaveType(LeaveType.values()[Math.max(0, Math.min(meta, 1)) + 4]);
+        }
+    }
 
     @Override
     public Set<Item> getDrops(Entity entity) {
