@@ -162,6 +162,7 @@ public class ImplChunk implements Chunk {
 
     public void addBlockEntity(BlockEntity<? extends Block> blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
+
         synchronized (this.chunk) {
             this.chunk.addBlockEntity(BlockEntityHandler.toDiskNBT(blockEntity));
             this.chunkWasModified = true;

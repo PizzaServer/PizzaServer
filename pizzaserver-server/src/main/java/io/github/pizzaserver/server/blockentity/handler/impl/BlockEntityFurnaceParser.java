@@ -1,10 +1,8 @@
 package io.github.pizzaserver.server.blockentity.handler.impl;
 
-import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityFurnace;
-import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.blockentity.handler.BaseBlockEntityParser;
 import io.github.pizzaserver.server.blockentity.type.impl.ImplBlockEntityFurnace;
