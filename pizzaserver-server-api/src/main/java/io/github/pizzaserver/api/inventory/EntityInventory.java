@@ -1,9 +1,9 @@
-package io.github.pizzaserver.api.entity.inventory;
+package io.github.pizzaserver.api.inventory;
 
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 
-public interface EntityInventory extends Inventory {
+public interface EntityInventory extends Inventory, OpenableInventory {
 
     /**
      * Get the entity who owns this inventory.

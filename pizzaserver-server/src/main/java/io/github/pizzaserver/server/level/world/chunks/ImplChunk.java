@@ -224,6 +224,7 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setBlock(Block block, int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
@@ -243,9 +244,10 @@ public class ImplChunk implements Chunk {
         this.getBlockEntity(x, y, z).ifPresent(this::removeBlockEntity);
 
         // Add block entity if one exists for this block
-        Optional<BlockEntityType> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block);
-        if (blockEntityType.isPresent()) {
-            BlockEntity blockEntity = blockEntityType.get().create(block);
+        BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block)
+                .orElse(null);
+        if (blockEntityType != null) {
+            BlockEntity blockEntity = blockEntityType.create(block);
             this.addBlockEntity(blockEntity);
         }
 

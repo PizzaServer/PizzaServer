@@ -18,6 +18,7 @@ import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.player.ImplPlayer;

@@ -20,9 +20,7 @@ public interface ItemRegistry {
      */
     <T extends Item> void register(T item, ItemBehavior<T> behavior);
 
-    boolean hasItemType(String itemId);
-
-    Set<Item> getCustomItems();
+    boolean hasItem(String itemId);
 
     default Item getItem(String itemId) {
         return this.getItem(itemId, 1);

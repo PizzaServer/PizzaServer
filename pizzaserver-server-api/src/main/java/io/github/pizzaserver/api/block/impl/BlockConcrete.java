@@ -71,4 +71,16 @@ public class BlockConcrete extends Block {
         return BLOCK_STATES;
     }
 
+    @Override
+    public int getStackMeta() {
+        return this.getColor().ordinal();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta < DyeColor.values().length) {
+            this.setBlockState(meta);
+        }
+    }
+
 }

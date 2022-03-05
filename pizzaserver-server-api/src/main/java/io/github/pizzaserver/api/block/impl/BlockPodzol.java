@@ -39,11 +39,6 @@ public class BlockPodzol extends Block {
     }
 
     @Override
-    public boolean isReplaceable() {
-        return true;
-    }
-
-    @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }

@@ -22,18 +22,13 @@ import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.inventory.ImplPlayerCraftingInventory;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.InventoryTransactionAction;
 import io.github.pizzaserver.server.network.data.inventory.StackResponse;
-import io.github.pizzaserver.server.network.data.inventory.actions.DropStackRequestActionDataWrapper;
-import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
-import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
-import io.github.pizzaserver.server.network.data.inventory.actions.TakeStackRequestActionDataWrapper;
+import io.github.pizzaserver.server.network.data.inventory.actions.*;
 import io.github.pizzaserver.server.player.ImplPlayer;
-import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionDropHandler;
-import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionPlaceHandler;
-import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionSwapHandler;
-import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionTakeHandler;
+import io.github.pizzaserver.server.player.handlers.inventory.*;
 
 import java.util.Optional;
 
@@ -100,21 +95,37 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                             }
                             break;
                         case DESTROY:
+                            DestroyStackRequestActionDataWrapper destroyStackWrapper = new DestroyStackRequestActionDataWrapper(this.player, (DestroyStackRequestActionData) action);
+                            continueActions = InventoryActionDestroyHandler.INSTANCE.tryAction(this.player, destroyStackWrapper);
+                            if (continueActions) {
+                                response.addChange(destroyStackWrapper.getSource());
+                            }
+                            break;
+                        case CRAFT_CREATIVE:
+                            CraftCreativeRequestActionDataWrapper creativeStackWrapper = new CraftCreativeRequestActionDataWrapper(this.player, (CraftCreativeStackRequestActionData) action);
+                            continueActions = InventoryActionCraftCreativeHandler.INSTANCE.tryAction(this.player, creativeStackWrapper);
+                            if (continueActions) {
+                                response.addChange(creativeStackWrapper.getDestination());
+                            }
+                            break;
                         case CONSUME:
                         case LAB_TABLE_COMBINE:
                         case BEACON_PAYMENT:
                         case CRAFT_RECIPE:
                         case CRAFT_RECIPE_AUTO:
-                        case CRAFT_CREATIVE:
                         case CRAFT_RECIPE_OPTIONAL:
                         case CRAFT_REPAIR_AND_DISENCHANT:
                         case CRAFT_LOOM:
                         case CRAFT_NON_IMPLEMENTED_DEPRECATED:
                         case CRAFT_RESULTS_DEPRECATED:
                             break;
+                        default:
+                            this.player.getServer().getLogger().debug("Missing inventory action handler: " + action.getType());
+                            break;
                     }
-                    itemStackResponsePacket.getEntries().add(response.serialize());
                 }
+
+                itemStackResponsePacket.getEntries().add(response.serialize());
             }
             this.player.sendPacket(itemStackResponsePacket);
 
@@ -124,6 +135,12 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                     this.player.getOpenInventory().get().sendSlots(this.player);
                 }
                 this.player.getInventory().sendSlots(this.player);
+            }
+
+            // Handle incomplete crafting transactions.
+            if (!((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput().isEmpty()) {
+                ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                this.player.getServer().getLogger().debug(String.format("%s's creative output slot was not emptied at the end of their item request.", this.player.getUsername()));
             }
         }
         return true;

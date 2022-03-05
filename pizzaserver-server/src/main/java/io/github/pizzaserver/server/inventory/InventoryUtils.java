@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.entity.inventory;
+package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
@@ -45,6 +45,9 @@ public class InventoryUtils {
                 ContainerSlotType.HOTBAR_AND_INVENTORY,
                 ContainerSlotType.CURSOR,
                 ContainerSlotType.OFFHAND });
+        register(ContainerType.WORKBENCH, 5, new ContainerSlotType[] {
+                ContainerSlotType.CREATIVE_OUTPUT
+        });
     }
 
 }

@@ -19,4 +19,14 @@ public class ItemArrow extends BaseItem {
         return "Arrow";
     }
 
+    @Override
+    public boolean isAllowedInOffHand() {
+        return true;
+    }
+
+    @Override
+    public boolean isStackedByMeta() {
+        return true;
+    }
+
 }

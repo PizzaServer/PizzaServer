@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.blockentity.types.impl;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockFurnace;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityBlastFurnace;
 
 import java.util.HashSet;
@@ -28,7 +29,7 @@ public class BlockEntityTypeBlastFurnace extends BlockEntityTypeFurnace {
     }
 
     @Override
-    public BlockEntityBlastFurnace create(Block block) {
+    public BlockEntityBlastFurnace create(BlockFurnace block) {
         return new BlockEntityBlastFurnace(block.getLocation());
     }
 

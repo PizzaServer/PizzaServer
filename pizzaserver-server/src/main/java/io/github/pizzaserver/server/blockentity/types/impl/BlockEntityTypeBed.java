@@ -5,6 +5,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockBed;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityBed;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -15,7 +16,7 @@ import io.github.pizzaserver.api.utils.DyeColor;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockEntityTypeBed implements BlockEntityType {
+public class BlockEntityTypeBed implements BlockEntityType<BlockBed> {
 
     @Override
     public String getId() {
@@ -28,8 +29,11 @@ public class BlockEntityTypeBed implements BlockEntityType {
     }
 
     @Override
-    public BlockEntityBed create(Block block) {
-        return new BlockEntityBed(block.getLocation());
+    public BlockEntityBed create(BlockBed block) {
+        BlockEntityBed bedEntity = new BlockEntityBed(block.getLocation());
+        bedEntity.setColor(block.getColor());
+
+        return bedEntity;
     }
 
     @Override

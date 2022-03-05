@@ -1,4 +1,4 @@
-package io.github.pizzaserver.server.entity.inventory;
+package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
@@ -7,7 +7,7 @@ import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.player.Player;
@@ -15,7 +15,7 @@ import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Optional;
 
-public class ImplEntityInventory extends BaseInventory implements EntityInventory {
+public class ImplEntityInventory extends ImplOpenableInventory implements EntityInventory {
 
     protected final Entity entity;
 

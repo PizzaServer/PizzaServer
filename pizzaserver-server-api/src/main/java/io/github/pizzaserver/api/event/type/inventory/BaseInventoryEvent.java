@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.event.type.inventory;
 
-import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.event.Event;
 import io.github.pizzaserver.api.event.type.CancellableType;
 

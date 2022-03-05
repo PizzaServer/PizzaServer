@@ -125,7 +125,6 @@
         <module name="OneStatementPerLine"/>
         <module name="MultipleVariableDeclarations"/>
         <module name="ArrayTypeStyle"/>
-        <module name="FallThrough"/>
         <module name="UpperEll"/>
         <module name="EmptyLineSeparator">
             <property name="tokens"

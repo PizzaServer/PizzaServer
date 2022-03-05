@@ -5,6 +5,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockCauldron;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityCauldron;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
@@ -14,7 +15,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockEntityTypeCauldron implements BlockEntityType {
+public class BlockEntityTypeCauldron implements BlockEntityType<BlockCauldron> {
 
     @Override
     public String getId() {
@@ -27,7 +28,7 @@ public class BlockEntityTypeCauldron implements BlockEntityType {
     }
 
     @Override
-    public BlockEntityCauldron create(Block block) {
+    public BlockEntityCauldron create(BlockCauldron block) {
         return new BlockEntityCauldron(block.getLocation());
     }
 
