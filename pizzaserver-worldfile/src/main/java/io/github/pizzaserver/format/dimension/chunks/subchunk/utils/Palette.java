@@ -16,7 +16,7 @@ public class Palette<T> implements Cloneable {
      * Add a new block state to this palette.
      * @param entry the entry to be added
      */
-    public synchronized void addEntry(T entry) {
+    public void addEntry(T entry) {
         if (!this.entries.inverse().containsKey(entry)) {
             this.entries.put(this.paletteEntries++, entry);
         }
@@ -34,7 +34,7 @@ public class Palette<T> implements Cloneable {
      * Retrieve all of the current palette entries.
      * @return set of all block palette entries in this palette
      */
-    public synchronized Set<T> getEntries() {
+    public Set<T> getEntries() {
         return Collections.unmodifiableSet(this.entries.values());
     }
 
@@ -42,7 +42,7 @@ public class Palette<T> implements Cloneable {
      * Remove a entry from the palette.
      * @param entry the entry to remove
      */
-    public synchronized void removeEntry(T entry) {
+    public void removeEntry(T entry) {
         this.entries.inverse().remove(entry);
     }
 
@@ -51,7 +51,7 @@ public class Palette<T> implements Cloneable {
      * @param index the index of the entry
      * @return the entry associated with that index
      */
-    public synchronized T getEntry(int index) {
+    public T getEntry(int index) {
         return this.entries.get(index);
     }
 
@@ -60,7 +60,7 @@ public class Palette<T> implements Cloneable {
      * @param entry the entry
      * @return the index associated with the entry
      */
-    public synchronized int getPaletteIndex(T entry) {
+    public int getPaletteIndex(T entry) {
         return this.entries.inverse().get(entry);
     }
 
@@ -68,7 +68,7 @@ public class Palette<T> implements Cloneable {
      * Resize modifies the block palette indexes in order to take as less space as possible.
      * Unused palette entries are shifted.
      */
-    public synchronized void resize() {
+    public void resize() {
         int resizeStartingIndex = -1;   // The first entry index that we need to relocate
         for (int index = 0; index < this.paletteEntries; index++) {
             if (!this.entries.containsKey(index)) {

@@ -36,7 +36,7 @@ public class BlockLayer {
      * @param z z coordinate
      * @return the {@link BlockPaletteEntry} of the block at the coordinates
      */
-    public synchronized BlockPaletteEntry getBlockEntryAt(int x, int y, int z) {
+    public BlockPaletteEntry getBlockEntryAt(int x, int y, int z) {
         if (this.palette.size() == 0) {
             // if the palette is empty, then add an air entry in order to make this.blocks accurately return air for all 0s.
             this.palette.addEntry(new BlockPaletteEntry());
@@ -52,7 +52,7 @@ public class BlockLayer {
      * @param z z coordinate
      * @param entry new entry to set the block to
      */
-    public synchronized void setBlockEntryAt(int x, int y, int z, BlockPaletteEntry entry) {
+    public void setBlockEntryAt(int x, int y, int z, BlockPaletteEntry entry) {
         if (this.palette.size() == 0) {
             // If the palette is empty, then add an air entry to make every 0 in this.blocks return air.
             // Otherwise, when this method calls this.palette.add(entry), every 0 in this.blocks will be assigned that block.
@@ -66,7 +66,7 @@ public class BlockLayer {
     /**
      * Resize modifies the block layer values and removes unused block palette values.
      */
-    public synchronized void resize() {
+    public void resize() {
         // Get all the palette indexes being used
         Map<Integer, BlockPaletteEntry> usedEntries = new HashMap<>();
         for (int paletteIndex : this.blocks) {

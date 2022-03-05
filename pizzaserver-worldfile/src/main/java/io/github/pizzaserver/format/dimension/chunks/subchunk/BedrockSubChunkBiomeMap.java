@@ -22,7 +22,7 @@ public class BedrockSubChunkBiomeMap implements Cloneable {
      * @param position The coordinates in the chunk we need the biome of
      * @return the biome
      */
-    public synchronized int getBiomeAt(Vector3i position) {
+    public int getBiomeAt(Vector3i position) {
         return this.getBiomeAt(position.getX(), position.getY(), position.getZ());
     }
 
@@ -33,7 +33,7 @@ public class BedrockSubChunkBiomeMap implements Cloneable {
      * @param z z coordinate
      * @return the biome
      */
-    public synchronized int getBiomeAt(int x, int y, int z) {
+    public int getBiomeAt(int x, int y, int z) {
         return this.biomes[getChunkPosIndex(x, y, z)];
     }
 
@@ -53,7 +53,7 @@ public class BedrockSubChunkBiomeMap implements Cloneable {
      * @param z z coordinate
      * @param biome the new biome we are changing this block column to
      */
-    public synchronized void setBiomeAt(int x, int y, int z, int biome) {
+    public void setBiomeAt(int x, int y, int z, int biome) {
         this.palette.addEntry(biome);
         this.biomes[getChunkPosIndex(x, y, z)] = biome;
     }

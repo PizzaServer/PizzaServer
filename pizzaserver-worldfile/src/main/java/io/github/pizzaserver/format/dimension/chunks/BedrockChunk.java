@@ -6,7 +6,6 @@ import io.github.pizzaserver.format.provider.BedrockProvider;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a 16x16 chunk of blocks in a Minecraft world.
@@ -25,7 +24,7 @@ public class BedrockChunk {
     private Set<NbtMap> entities = new HashSet<>();
     private Set<NbtMap> blockEntities = new HashSet<>();
 
-    private final Map<Integer, BedrockSubChunk> subChunks = new ConcurrentHashMap<>();
+    private final Map<Integer, BedrockSubChunk> subChunks = new HashMap<>();
     private final BedrockProvider chunkProvider;
 
 
@@ -48,43 +47,43 @@ public class BedrockChunk {
         return this.dimension;
     }
 
-    public synchronized byte getVersion() {
+    public byte getVersion() {
         return this.version;
     }
 
-    public synchronized void setVersion(byte version) {
+    public void setVersion(byte version) {
         this.version = version;
     }
 
-    public synchronized Set<NbtMap> getEntities() {
+    public Set<NbtMap> getEntities() {
         return Collections.unmodifiableSet(this.entities);
     }
 
-    public synchronized void setEntities(Set<NbtMap> entities) {
+    public void setEntities(Set<NbtMap> entities) {
         this.entities = entities;
     }
 
-    public synchronized boolean addEntity(NbtMap entityNBT) {
+    public boolean addEntity(NbtMap entityNBT) {
         return this.entities.add(entityNBT);
     }
 
-    public synchronized boolean removeEntity(NbtMap entityNBT) {
+    public boolean removeEntity(NbtMap entityNBT) {
         return this.entities.remove(entityNBT);
     }
 
-    public synchronized Set<NbtMap> getBlockEntities() {
+    public Set<NbtMap> getBlockEntities() {
         return Collections.unmodifiableSet(this.blockEntities);
     }
 
-    public synchronized void setBlockEntities(Set<NbtMap> blockEntities) {
+    public void setBlockEntities(Set<NbtMap> blockEntities) {
         this.blockEntities = blockEntities;
     }
 
-    public synchronized boolean addBlockEntity(NbtMap blockEntityNBT) {
+    public boolean addBlockEntity(NbtMap blockEntityNBT) {
         return this.blockEntities.add(blockEntityNBT);
     }
 
-    public synchronized boolean removeBlockEntity(NbtMap blockEntityNBT) {
+    public boolean removeBlockEntity(NbtMap blockEntityNBT) {
         return this.blockEntities.remove(blockEntityNBT);
     }
 
@@ -92,19 +91,19 @@ public class BedrockChunk {
      * A height map is a array of 256 (16 * 16) integers that stores the highest blocks in a chunk.
      * @return int array
      */
-    public synchronized BedrockHeightMap getHeightMap() {
+    public BedrockHeightMap getHeightMap() {
         return this.heightMap;
     }
 
-    public synchronized void setHeightMap(BedrockHeightMap heightMap) {
+    public void setHeightMap(BedrockHeightMap heightMap) {
         this.heightMap = heightMap;
     }
 
-    public synchronized BedrockBiomeMap getBiomeMap() {
+    public BedrockBiomeMap getBiomeMap() {
         return this.biomeMap;
     }
 
-    public synchronized void setBiomeMap(BedrockBiomeMap biomeMap) {
+    public void setBiomeMap(BedrockBiomeMap biomeMap) {
         this.biomeMap = biomeMap;
     }
 
