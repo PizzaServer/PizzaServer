@@ -25,17 +25,6 @@ public class BlockEntityMobSpawnerParser extends BaseBlockEntityParser<BlockEnti
     }
 
     @Override
-    public NbtMap toNetworkNBT(BlockEntityMobSpawner blockEntity) {
-        return super.toNetworkNBT(blockEntity)
-                .toBuilder()
-                .putInt("EntityId", 0)
-                .putFloat("DisplayEntityWidth", 1)
-                .putFloat("DisplayEntityHeight", 1)
-                .putFloat("DisplayEntityScale", 1)
-                .build();
-    }
-
-    @Override
     public NbtMap toNetworkNBT(NbtMap diskNBT) {
         return super.toNetworkNBT(diskNBT)
                 .toBuilder()

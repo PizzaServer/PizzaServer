@@ -24,16 +24,6 @@ public class BlockEntityCauldronParser extends BaseBlockEntityParser<BlockEntity
     }
 
     @Override
-    public NbtMap toNetworkNBT(BlockEntityCauldron blockEntity) {
-        return super.toNetworkNBT(blockEntity)
-                .toBuilder()
-                .putShort("PotionType", (short) -1)
-                .putShort("PotionId", (short) -1)
-                .putBoolean("IsSplash", false)
-                .build();
-    }
-
-    @Override
     public NbtMap toNetworkNBT(NbtMap diskNBT) {
         return diskNBT;
     }

@@ -36,11 +36,6 @@ public class BlockEntityBedParser extends BaseBlockEntityParser<BlockEntityBed> 
     }
 
     @Override
-    public NbtMap toNetworkNBT(BlockEntityBed blockEntity) {
-        return this.toDiskNBT(blockEntity);
-    }
-
-    @Override
     public NbtMap toNetworkNBT(NbtMap diskNBT) {
         return diskNBT;
     }

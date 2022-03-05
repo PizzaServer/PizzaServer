@@ -23,16 +23,6 @@ public class BlockEntityBellParser extends BaseBlockEntityParser<BlockEntityBell
     }
 
     @Override
-    public NbtMap toNetworkNBT(BlockEntityBell blockEntity) {
-        return super.toNetworkNBT(blockEntity)
-                .toBuilder()
-                .putBoolean("Ringing", blockEntity.isRinging())
-                .putInt("Ticks", 0)
-                .putInt("Direction", 0)
-                .build();
-    }
-
-    @Override
     public NbtMap toNetworkNBT(NbtMap diskNBT) {
         return diskNBT;
     }
