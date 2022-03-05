@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.level.world.chunks.utils;
 
-import io.github.pizzaserver.format.api.dimension.chunks.BedrockChunk;
-import io.github.pizzaserver.format.api.dimension.chunks.subchunk.BedrockSubChunk;
+import io.github.pizzaserver.format.dimension.chunks.BedrockChunk;
+import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunk;
 
 import java.io.IOException;
 

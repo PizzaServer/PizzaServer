@@ -3,7 +3,7 @@ package io.github.pizzaserver.server.level;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.data.Dimension;
-import io.github.pizzaserver.format.api.BedrockLevel;
+import io.github.pizzaserver.format.BedrockLevel;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 
