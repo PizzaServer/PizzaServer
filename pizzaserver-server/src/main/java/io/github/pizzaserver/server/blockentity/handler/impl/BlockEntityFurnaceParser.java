@@ -30,16 +30,6 @@ public class BlockEntityFurnaceParser extends BaseBlockEntityParser<BlockEntityF
     }
 
     @Override
-    public NbtMap toNetworkNBT(BlockEntityFurnace blockEntity) {
-        return super.toNetworkNBT(blockEntity)
-                .toBuilder()
-                .putShort("CookTime", (short) 0)
-                .putShort("BurnTime", (short) 0)
-                .putShort("BurnDuration", (short) 0)
-                .build();
-    }
-
-    @Override
     public NbtMap toNetworkNBT(NbtMap diskNBT) {
         return super.toNetworkNBT(diskNBT)
                 .toBuilder()
