@@ -112,7 +112,9 @@ public class ImplChunk implements Chunk {
         Check.inclusiveBounds(z, 0, 15, "z");
 
         int subChunkY = (int) Math.floor(y / 16d);
-        return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, Math.abs(y) & 15, z & 15);
+        synchronized (this.chunk) {
+            return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, Math.abs(y) & 15, z & 15);
+        }
     }
 
     /**
@@ -166,7 +168,10 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Block getHighestBlockAt(int x, int z) {
-        int chunkBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(x & 15, z & 15) - 1);
+        int chunkBlockY;
+        synchronized (this.chunk) {
+            chunkBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(x & 15, z & 15) - 1);
+        }
         return this.getBlock(x, chunkBlockY, z);
     }
 
@@ -190,15 +195,18 @@ public class ImplChunk implements Chunk {
         readLock.lock();
 
         try {
-            BedrockSubChunk subChunk = this.getSubChunk(subChunkIndex);
-            if (subChunk.getLayers().size() <= layer) {
-                // layer does not exist: return air block
-                Block block = BlockRegistry.getInstance().getBlock(BlockID.AIR);
-                block.setLocation(this.getWorld(), blockCoordinates, layer);
-                return block;
-            }
+            BlockPaletteEntry paletteEntry;
+            synchronized (this.chunk) {
+                BedrockSubChunk subChunk = this.getSubChunk(subChunkIndex);
+                if (subChunk.getLayers().size() <= layer) {
+                    // layer does not exist: return air block
+                    Block block = BlockRegistry.getInstance().getBlock(BlockID.AIR);
+                    block.setLocation(this.getWorld(), blockCoordinates, layer);
+                    return block;
+                }
 
-            BlockPaletteEntry paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
+                paletteEntry = subChunk.getLayer(layer).getBlockEntryAt(chunkBlockX, chunkBlockY, chunkBlockZ);
+            }
             Block block;
             if (BlockRegistry.getInstance().hasBlock(paletteEntry.getId())) {
                 // Block id is registered
@@ -253,18 +261,21 @@ public class ImplChunk implements Chunk {
 
         try {
             // Update internal sub chunk
-            BedrockSubChunk subChunk = this.getSubChunk(subChunkIndex);
-            BlockLayer mainBlockLayer = subChunk.getLayer(layer);
-            BlockPaletteEntry entry = new BlockPaletteEntry(block.getBlockId(), ServerProtocol.LATEST_BLOCK_STATES_VERSION, block.getNBTState());
-            mainBlockLayer.setBlockEntryAt(chunkBlockX, subChunkBlockY, chunkBlockZ, entry);
+            synchronized (this.chunk) {
+                BedrockSubChunk subChunk = this.getSubChunk(subChunkIndex);
 
-            int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
-            if (y >= highestBlockY) {
-                int newHighestBlockY = y;
-                while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
-                    newHighestBlockY--;
+                BlockLayer mainBlockLayer = subChunk.getLayer(layer);
+                BlockPaletteEntry entry = new BlockPaletteEntry(block.getBlockId(), ServerProtocol.LATEST_BLOCK_STATES_VERSION, block.getNBTState());
+                mainBlockLayer.setBlockEntryAt(chunkBlockX, subChunkBlockY, chunkBlockZ, entry);
+
+                int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
+                if (y >= highestBlockY) {
+                    int newHighestBlockY = y;
+                    while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
+                        newHighestBlockY--;
+                    }
+                    this.chunk.getHeightMap().setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
                 }
-                this.chunk.getHeightMap().setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
             }
 
             // Send update block packet
@@ -318,7 +329,10 @@ public class ImplChunk implements Chunk {
         int chunkBlockX = x & 15;
         int chunkBlockZ = z & 15;
 
-        int layers = Math.max(this.getSubChunk(subChunkIndex).getLayers().size(), 1);
+        int layers;
+        synchronized (this.chunk) {
+            layers = Math.max(this.getSubChunk(subChunkIndex).getLayers().size(), 1);
+        }
 
         for (int layer = 0; layer < layers; layer++) {
             Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
@@ -337,7 +351,10 @@ public class ImplChunk implements Chunk {
         int subChunkIndex = y / 16;
 
         // Ensure that at least the foremost layer is sent to the client
-        int layers = Math.max(this.getSubChunk(subChunkIndex).getLayers().size(), 1);
+        int layers;
+        synchronized (this.chunk) {
+            layers = Math.max(this.getSubChunk(subChunkIndex).getLayers().size(), 1);
+        }
 
         for (int layer = 0; layer < layers; layer++) {
             this.sendBlock(player, x & 15, y, z & 15, layer);
@@ -431,27 +448,31 @@ public class ImplChunk implements Chunk {
 
         ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
         try {
-            int subChunkCount = ChunkUtils.getSubChunkCount(this.chunk);
+            int subChunkCount;
 
-            for (int i = -4; i < subChunkCount - 4; i++) {
-                BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), player.getVersion());
-            }
+            synchronized (this.chunk) {
+                subChunkCount = ChunkUtils.getSubChunkCount(this.chunk);
 
-            // Write biomes
-            BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap());
+                for (int i = -4; i < subChunkCount - 4; i++) {
+                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), player.getVersion());
+                }
 
-            buffer.writeByte(0);    // border blocks
-            VarInts.writeUnsignedInt(buffer, 0);    // extra data
+                // Write biomes
+                BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap());
 
-            // Write block entities if any exist
-            if (!this.chunk.getBlockEntities().isEmpty()) {
-                try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
-                    for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities()) {
-                        try {
-                            NbtMap networkBlockEntityNBT = player.getVersion().getNetworkBlockEntityNBT(diskBlockEntityNBT);
-                            outputStream.writeTag(networkBlockEntityNBT);
-                        } catch (NullPointerException exception) {
-                            throw new IOException("Failed to send chunk due to unhandled block entity found: " + diskBlockEntityNBT);
+                buffer.writeByte(0);    // border blocks
+                VarInts.writeUnsignedInt(buffer, 0);    // extra data
+
+                // Write block entities if any exist
+                if (!this.chunk.getBlockEntities().isEmpty()) {
+                    try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
+                        for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities()) {
+                            try {
+                                NbtMap networkBlockEntityNBT = player.getVersion().getNetworkBlockEntityNBT(diskBlockEntityNBT);
+                                outputStream.writeTag(networkBlockEntityNBT);
+                            } catch (NullPointerException exception) {
+                                throw new IOException("Failed to send chunk due to unhandled block entity found: " + diskBlockEntityNBT);
+                            }
                         }
                     }
                 }
