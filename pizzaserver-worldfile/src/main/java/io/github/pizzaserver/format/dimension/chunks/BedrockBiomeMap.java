@@ -15,7 +15,7 @@ public class BedrockBiomeMap {
      * @param subChunk sub chunk index
      * @return the biome map at that index if one exists
      */
-    public BedrockSubChunkBiomeMap getSubChunk(int subChunk) {
+    public synchronized BedrockSubChunkBiomeMap getSubChunk(int subChunk) {
         this.subChunkBiomes.computeIfAbsent(subChunk, ignored -> new BedrockSubChunkBiomeMap(new Palette<>()));
         return this.subChunkBiomes.get(subChunk);
     }
@@ -25,11 +25,11 @@ public class BedrockBiomeMap {
      * @param subChunk sub chunk index
      * @param biomeMap the biome map at that index
      */
-    public void setSubChunk(int subChunk, BedrockSubChunkBiomeMap biomeMap) {
+    public synchronized void setSubChunk(int subChunk, BedrockSubChunkBiomeMap biomeMap) {
         this.subChunkBiomes.put(subChunk, biomeMap);
     }
 
-    public List<BedrockSubChunkBiomeMap> getSubChunks() {
+    public synchronized List<BedrockSubChunkBiomeMap> getSubChunks() {
         return new ArrayList<>(this.subChunkBiomes.values());
     }
 

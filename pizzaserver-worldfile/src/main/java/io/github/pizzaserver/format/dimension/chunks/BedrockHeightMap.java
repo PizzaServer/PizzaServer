@@ -12,7 +12,7 @@ public class BedrockHeightMap {
      * @param position The {@link Vector2i} that is representative of the coordinates in the chunk we need the height of.
      * @return height
      */
-    public int getHighestBlockAt(Vector2i position) {
+    public synchronized int getHighestBlockAt(Vector2i position) {
         return this.getHighestBlockAt(position.getX(), position.getY());
     }
 
@@ -22,7 +22,7 @@ public class BedrockHeightMap {
      * @param z z coordinate
      * @return height
      */
-    public int getHighestBlockAt(int x, int z) {
+    public synchronized int getHighestBlockAt(int x, int z) {
         Check.inclusiveBounds(x, 0, 15, "x");
         Check.inclusiveBounds(z, 0, 15, "z");
 
@@ -34,7 +34,7 @@ public class BedrockHeightMap {
      * @param position coordinates
      * @param newHeight new height
      */
-    public void setHighestBlockAt(Vector2i position, int newHeight) {
+    public synchronized void setHighestBlockAt(Vector2i position, int newHeight) {
         this.setHighestBlockAt(position.getX(), position.getY(), newHeight);
     }
 
@@ -44,14 +44,14 @@ public class BedrockHeightMap {
      * @param z z coordinate
      * @param newHeight new height
      */
-    public void setHighestBlockAt(int x, int z, int newHeight) {
+    public synchronized void setHighestBlockAt(int x, int z, int newHeight) {
         Check.inclusiveBounds(x, 0, 15, "x");
         Check.inclusiveBounds(z, 0, 15, "z");
 
         this.heightMap[getChunkPosIndex(x, z)] = newHeight;
     }
 
-    public int[] array() {
+    public synchronized int[] array() {
         return this.heightMap;
     }
 

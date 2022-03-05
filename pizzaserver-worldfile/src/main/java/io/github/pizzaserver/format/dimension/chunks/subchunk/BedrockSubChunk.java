@@ -19,7 +19,7 @@ public class BedrockSubChunk {
      * Retrieve all of the {@link BlockLayer}s of this subchunk.
      * @return the {@link List} of {@link BlockLayer}s this subchunk holds.
      */
-    public List<BlockLayer> getLayers() {
+    public synchronized List<BlockLayer> getLayers() {
         return Collections.unmodifiableList(this.layers);
     }
 
@@ -29,7 +29,7 @@ public class BedrockSubChunk {
      * @param index block layer index
      * @return {@link BlockLayer}
      */
-    public BlockLayer getLayer(int index) {
+    public synchronized BlockLayer getLayer(int index) {
         while (index >= this.getLayers().size()) {
             Palette<BlockPaletteEntry> blockPalette = new Palette<>();
             blockPalette.addEntry(new BlockPaletteEntry());    // ensure the palette has air
@@ -44,11 +44,11 @@ public class BedrockSubChunk {
      * Add a new {@link BlockLayer} to this subchunk.
      * @param layer The {@link BlockLayer} to add
      */
-    public void addLayer(BlockLayer layer) {
+    public synchronized void addLayer(BlockLayer layer) {
         this.layers.add(layer);
     }
 
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return this.layers.size() == 0;
     }
 

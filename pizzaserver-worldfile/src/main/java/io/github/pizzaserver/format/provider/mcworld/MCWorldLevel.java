@@ -3,6 +3,7 @@ package io.github.pizzaserver.format.provider.mcworld;
 import io.github.pizzaserver.format.dimension.BedrockDimension;
 import io.github.pizzaserver.format.BedrockLevel;
 import io.github.pizzaserver.format.data.LevelData;
+import io.github.pizzaserver.format.provider.BedrockProvider;
 import net.daporkchop.ldbjni.LevelDB;
 import org.iq80.leveldb.Options;
 
@@ -19,7 +20,7 @@ public class MCWorldLevel implements BedrockLevel {
     protected static final String LEVEL_DAT_PATH = "level.dat";
 
     protected final File mcWorldDirectory;
-    protected final MCWorldProvider provider;
+    protected final BedrockProvider provider;
     protected LevelData levelData;
 
 
@@ -50,12 +51,13 @@ public class MCWorldLevel implements BedrockLevel {
     }
 
     @Override
-    public void setLevelData(LevelData data) throws IOException {
+    public synchronized void setLevelData(LevelData data) throws IOException {
+        this.levelData = data;
         this.provider.saveLevelData(data);
     }
 
     @Override
-    public LevelData getLevelData() {
+    public synchronized LevelData getLevelData() {
         return this.levelData;
     }
 
