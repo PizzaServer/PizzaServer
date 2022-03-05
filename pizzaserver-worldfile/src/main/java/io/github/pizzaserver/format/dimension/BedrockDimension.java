@@ -1,17 +1,17 @@
 package io.github.pizzaserver.format.dimension;
 
 import io.github.pizzaserver.format.dimension.chunks.BedrockChunk;
-import io.github.pizzaserver.format.provider.BedrockChunkProvider;
+import io.github.pizzaserver.format.provider.BedrockProvider;
 
 import java.io.IOException;
 
 public class BedrockDimension {
 
     private final int dimensionId;
-    private final BedrockChunkProvider provider;
+    private final BedrockProvider provider;
 
 
-    public BedrockDimension(BedrockChunkProvider provider, int dimensionId) {
+    public BedrockDimension(BedrockProvider provider, int dimensionId) {
         this.provider = provider;
         this.dimensionId = dimensionId;
     }

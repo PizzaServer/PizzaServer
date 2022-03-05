@@ -1,15 +1,16 @@
 package io.github.pizzaserver.format.provider.mcworld;
 
-import com.nukkitx.nbt.NBTInputStream;
-import com.nukkitx.nbt.NBTOutputStream;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtUtils;
+import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.*;
+import io.github.pizzaserver.format.data.LevelData;
 import io.github.pizzaserver.format.data.DimensionIds;
+import io.github.pizzaserver.format.data.LevelGameRules;
+import io.github.pizzaserver.format.data.PlayerAbilities;
 import io.github.pizzaserver.format.dimension.chunks.BedrockBiomeMap;
 import io.github.pizzaserver.format.dimension.chunks.BedrockChunk;
 import io.github.pizzaserver.format.dimension.chunks.BedrockHeightMap;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunk;
-import io.github.pizzaserver.format.provider.BedrockChunkProvider;
+import io.github.pizzaserver.format.provider.BedrockProvider;
 import io.github.pizzaserver.format.provider.mcworld.data.ChunkKey;
 import io.github.pizzaserver.format.provider.mcworld.data.MCWorldChunkData;
 import io.github.pizzaserver.format.provider.mcworld.utils.MCWorldFormatUtils;
@@ -22,15 +23,17 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MCWorldChunkProvider implements BedrockChunkProvider {
+public class MCWorldProvider implements BedrockProvider {
 
     private static final int CHUNK_VERSION = 27;
 
+    protected File levelFile;
     protected final DB database;
     private boolean closed;
 
 
-    public MCWorldChunkProvider(DB database) {
+    public MCWorldProvider(File levelFile, DB database) {
+        this.levelFile = levelFile;
         this.database = database;
     }
 
@@ -310,6 +313,16 @@ public class MCWorldChunkProvider implements BedrockChunkProvider {
         } finally {
             buffer.release();
         }
+    }
+
+    @Override
+    public LevelData getLevelData() throws IOException {
+        return MCWorldFormatUtils.readLevelData(this.levelFile);
+    }
+
+    @Override
+    public void saveLevelData(LevelData data) throws IOException {
+        MCWorldFormatUtils.writeLevelData(this.levelFile, data);
     }
 
     @Override

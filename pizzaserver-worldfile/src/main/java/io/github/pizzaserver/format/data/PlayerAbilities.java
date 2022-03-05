@@ -66,7 +66,7 @@ public class PlayerAbilities {
         return this;
     }
 
-    public boolean canMine(boolean canMine) {
+    public boolean canMine() {
         return this.canMine;
     }
 

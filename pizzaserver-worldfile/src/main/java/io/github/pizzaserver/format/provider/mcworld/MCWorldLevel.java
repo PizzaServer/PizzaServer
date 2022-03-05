@@ -2,8 +2,7 @@ package io.github.pizzaserver.format.provider.mcworld;
 
 import io.github.pizzaserver.format.dimension.BedrockDimension;
 import io.github.pizzaserver.format.BedrockLevel;
-import io.github.pizzaserver.format.LevelData;
-import io.github.pizzaserver.format.provider.mcworld.info.MCWorldLevelData;
+import io.github.pizzaserver.format.data.LevelData;
 import net.daporkchop.ldbjni.LevelDB;
 import org.iq80.leveldb.Options;
 
@@ -20,7 +19,7 @@ public class MCWorldLevel implements BedrockLevel {
     protected static final String LEVEL_DAT_PATH = "level.dat";
 
     protected final File mcWorldDirectory;
-    protected final MCWorldChunkProvider chunkProvider;
+    protected final MCWorldProvider provider;
     protected LevelData levelData;
 
 
@@ -35,24 +34,24 @@ public class MCWorldLevel implements BedrockLevel {
         if (!levelDatFile.exists()) {
             throw new FileNotFoundException("Could not find level.dat file");
         }
-        this.levelData = new MCWorldLevelData(levelDatFile);
 
         File dbDirectory = new File(this.mcWorldDirectory.getAbsolutePath(), DB_PATH);
         if (!(dbDirectory.exists() && dbDirectory.isDirectory())) {
             throw new FileNotFoundException("Could not find db directory");
         }
 
-        this.chunkProvider = new MCWorldChunkProvider(LevelDB.PROVIDER.open(dbDirectory, new Options().createIfMissing(true)));
+        this.provider = new MCWorldProvider(levelDatFile, LevelDB.PROVIDER.open(dbDirectory, new Options().createIfMissing(true)));
+        this.levelData = this.provider.getLevelData();
     }
 
     @Override
     public BedrockDimension getDimension(int dimensionId) {
-        return new BedrockDimension(this.chunkProvider, dimensionId);
+        return new BedrockDimension(this.provider, dimensionId);
     }
 
     @Override
     public void setLevelData(LevelData data) throws IOException {
-        // TODO: write info to disk
+        this.provider.saveLevelData(data);
     }
 
     @Override
@@ -67,7 +66,7 @@ public class MCWorldLevel implements BedrockLevel {
 
     @Override
     public void close() throws IOException {
-        this.chunkProvider.close();
+        this.provider.close();
     }
 
 }

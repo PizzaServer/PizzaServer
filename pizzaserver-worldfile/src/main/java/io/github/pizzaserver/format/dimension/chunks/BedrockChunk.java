@@ -2,7 +2,7 @@ package io.github.pizzaserver.format.dimension.chunks;
 
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunk;
-import io.github.pizzaserver.format.provider.BedrockChunkProvider;
+import io.github.pizzaserver.format.provider.BedrockProvider;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,10 +25,10 @@ public class BedrockChunk {
     private Set<NbtMap> blockEntities = new HashSet<>();
 
     private final Map<Integer, BedrockSubChunk> subChunks = new HashMap<>();
-    private final BedrockChunkProvider chunkProvider;
+    private final BedrockProvider chunkProvider;
 
 
-    public BedrockChunk(BedrockChunkProvider chunkProvider, int dimension, int x, int z) {
+    public BedrockChunk(BedrockProvider chunkProvider, int dimension, int x, int z) {
         this.chunkProvider = chunkProvider;
         this.dimension = dimension;
         this.x = x;

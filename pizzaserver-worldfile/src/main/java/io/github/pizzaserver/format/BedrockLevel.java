@@ -1,5 +1,6 @@
 package io.github.pizzaserver.format;
 
+import io.github.pizzaserver.format.data.LevelData;
 import io.github.pizzaserver.format.dimension.BedrockDimension;
 
 import java.io.Closeable;
