@@ -3,6 +3,7 @@ package io.github.pizzaserver.api.block.impl;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.data.LitType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.utils.HorizontalDirection;
@@ -22,12 +23,19 @@ public class BlockCarvedPumpkin extends Block {
         }
     };
 
+    private boolean lit;
+
     public BlockCarvedPumpkin() {
-        this(HorizontalDirection.NORTH);
+        this(LitType.UNLIT);
     }
 
-    public BlockCarvedPumpkin(HorizontalDirection direction) {
+    public BlockCarvedPumpkin(LitType litType) {
+        this(litType, HorizontalDirection.NORTH);
+    }
+
+    public BlockCarvedPumpkin(LitType litType, HorizontalDirection direction) {
         this.setDirection(direction);
+        this.setLit(litType == LitType.LIT);
     }
 
     public HorizontalDirection getDirection() {
@@ -38,13 +46,27 @@ public class BlockCarvedPumpkin extends Block {
         this.setBlockState(direction.getBlockStateIndex());
     }
 
+    public boolean isLit() {
+        return this.lit;
+    }
+
+    public void setLit(boolean lit) {
+        this.lit = lit;
+    }
+
     @Override
     public String getBlockId() {
+        if (this.isLit()) {
+            return BlockID.LIT_PUMPKIN;
+        }
         return BlockID.CARVED_PUMPKIN;
     }
 
     @Override
     public String getName() {
+        if (this.isLit()) {
+            return "Jack O' Lantern";
+        }
         return "Carved Pumpkin";
     }
 
@@ -76,5 +98,13 @@ public class BlockCarvedPumpkin extends Block {
     @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
+    }
+
+    @Override
+    public int getLightEmission() {
+        if (this.isLit()) {
+            return 15;
+        }
+        return 0;
     }
 }

@@ -14,8 +14,6 @@ import java.util.*;
 
 public class BlockLeaves extends Block implements Flammable {
 
-    protected LeaveType leaveType;
-
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
             Arrays.asList("oak", "spruce", "birch", "jungle").forEach(leaveType -> {
@@ -64,6 +62,8 @@ public class BlockLeaves extends Block implements Flammable {
             });
         }
     };
+
+    private LeaveType leaveType;
 
     public BlockLeaves() {
         this(LeaveType.OAK);

@@ -176,6 +176,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCandleCake(), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCarpet(), new RequiresSolidBottomBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockCarvedPumpkin(), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockCarvedPumpkin(LitType.LIT), new HorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockCauldron());
         BlockRegistry.getInstance().register(new BlockChest(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockChiseledDeepslate());
@@ -263,7 +264,6 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockLapisOre());
         BlockRegistry.getInstance().register(new BlockLeaves());
         BlockRegistry.getInstance().register(new BlockLight());
-        BlockRegistry.getInstance().register(new BlockLitPumpkin(), new HorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.LIGHT_BLUE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIGHT_BLUE), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.LIGHT_BLUE), new OmniHorizontalDirectionBlockBehavior<>());

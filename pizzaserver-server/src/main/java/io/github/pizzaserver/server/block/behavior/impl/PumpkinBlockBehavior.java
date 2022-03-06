@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.block.behavior.impl;
 import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
+import io.github.pizzaserver.api.block.data.LitType;
 import io.github.pizzaserver.api.block.impl.BlockCarvedPumpkin;
 import io.github.pizzaserver.api.block.impl.BlockPumpkin;
 import io.github.pizzaserver.api.entity.EntityItem;
@@ -24,7 +25,7 @@ public class PumpkinBlockBehavior extends DefaultBlockBehavior<BlockPumpkin> {
             EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(new ItemPumpkinSeeds());
 
             pumpkin.getWorld().addEntity(itemEntity,pumpkin.getLocation().toVector3f());
-            pumpkin.getWorld().setAndUpdateBlock(new BlockCarvedPumpkin(face.toDirection().toHorizontal()), pumpkin.getLocation().toVector3i());
+            pumpkin.getWorld().setAndUpdateBlock(new BlockCarvedPumpkin(LitType.UNLIT, face.toDirection().toHorizontal()), pumpkin.getLocation().toVector3i());
         }
         return true;
     }
