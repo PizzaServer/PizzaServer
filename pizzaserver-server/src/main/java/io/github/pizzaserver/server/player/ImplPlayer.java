@@ -213,7 +213,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setRotation(Vector2f.from(spawnLocation.getPitch(), spawnLocation.getYaw()));
             startGamePacket.setDimensionId(world.getDimension().ordinal());
             startGamePacket.setLevelGameType(GameType.SURVIVAL);
-            startGamePacket.setDifficulty(Difficulty.PEACEFUL.ordinal());
+            startGamePacket.setDifficulty(world.getLevel().getDifficulty().ordinal());
             startGamePacket.setDefaultSpawn(world.getSpawnCoordinates());
             startGamePacket.setDayCycleStopTime(world.getTime());
             startGamePacket.setLevelName(this.getServer().getMotd());
