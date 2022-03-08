@@ -55,6 +55,7 @@ import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
+import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.player.handlers.AuthInputHandler;
 import io.github.pizzaserver.server.player.handlers.InventoryTransactionHandler;
 import io.github.pizzaserver.server.player.handlers.PlayerPacketHandler;
@@ -214,7 +215,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setRotation(Vector2f.from(spawnLocation.getPitch(), spawnLocation.getYaw()));
             startGamePacket.setDimensionId(world.getDimension().ordinal());
             startGamePacket.setLevelGameType(GameType.SURVIVAL);
-            startGamePacket.setDifficulty(Difficulty.PEACEFUL.ordinal());
+            startGamePacket.setDifficulty(world.getLevel().getDifficulty().ordinal());
             startGamePacket.setDefaultSpawn(world.getSpawnCoordinates());
             startGamePacket.setDayCycleStopTime(world.getTime());
             startGamePacket.setLevelName(this.getServer().getMotd());
@@ -222,7 +223,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setGeneratorId(1);
             startGamePacket.setDefaultPlayerPermission(PlayerPermission.MEMBER);
             startGamePacket.setServerChunkTickRange(this.getServer().getConfig().getChunkRadius());
-            startGamePacket.setVanillaVersion("1.17.40");
+            startGamePacket.setVanillaVersion(ServerProtocol.LATEST_GAME_VERSION);
             startGamePacket.setPremiumWorldTemplateId("");
             startGamePacket.setInventoriesServerAuthoritative(true);
             startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));

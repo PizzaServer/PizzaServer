@@ -48,7 +48,7 @@ public interface Chunk extends Watchable {
      * @param z z coordinate
      * @return biome at the specified x and z coordinate
      */
-    byte getBiomeAt(int x, int z);
+    int getBiomeAt(int x, int y, int z);
 
     /**
      * Retrieve all of the {@link Entity}s that exist in this chunk.

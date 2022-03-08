@@ -99,7 +99,7 @@ public class PlayerBlockBreakingManager {
         long ticksRequiredToBreakBlock = (long) ((this.endBlockBreakTick - this.startBlockBreakTick) * 0.8) + this.startBlockBreakTick;
         boolean enoughTicksPassed = this.player.getServer().getTick() >= ticksRequiredToBreakBlock;
 
-        return this.isBreakingBlock() && enoughTicksPassed;
+        return this.getBlock().filter(block -> block.getHardness() != -1).isPresent() && enoughTicksPassed;
     }
 
     /**
