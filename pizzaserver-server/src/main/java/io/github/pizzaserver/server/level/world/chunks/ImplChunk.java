@@ -51,6 +51,7 @@ public class ImplChunk implements Chunk {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final BedrockChunk chunk;
+    private volatile boolean chunkWasModified;
 
     private final ImplWorld world;
     private final int x;
@@ -159,11 +160,13 @@ public class ImplChunk implements Chunk {
     public void addBlockEntity(BlockEntity blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
         this.blockEntities.put(blockCoordinates, blockEntity);
+        this.chunkWasModified = true;
     }
 
     public void removeBlockEntity(BlockEntity blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
         this.blockEntities.remove(blockCoordinates);
+        this.chunkWasModified = true;
     }
 
     @Override
@@ -232,7 +235,7 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void setBlock(Block block, int x, int y, int z, int layer) {
         if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
             throw new IllegalArgumentException("Could not change block outside chunk");
@@ -267,6 +270,7 @@ public class ImplChunk implements Chunk {
                 BlockLayer mainBlockLayer = subChunk.getLayer(layer);
                 BlockPaletteEntry entry = new BlockPaletteEntry(block.getBlockId(), ServerProtocol.LATEST_BLOCK_STATES_VERSION, block.getNBTState());
                 mainBlockLayer.setBlockEntryAt(chunkBlockX, subChunkBlockY, chunkBlockZ, entry);
+                this.chunkWasModified = true;
 
                 int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
                 if (y >= highestBlockY) {
@@ -518,6 +522,15 @@ public class ImplChunk implements Chunk {
             return this.chunk.getSubChunk(subChunkY);
         } catch (IOException exception) {
             throw new RuntimeException("Failed to fetch sub chunk.");
+        }
+    }
+
+    public void save() throws IOException {
+        synchronized (this.chunk) {
+            if (this.chunkWasModified) {
+                this.world.getLevel().getProvider().getDimension(this.chunk.getDimension())
+                        .saveChunk(this.chunk);
+            }
         }
     }
 

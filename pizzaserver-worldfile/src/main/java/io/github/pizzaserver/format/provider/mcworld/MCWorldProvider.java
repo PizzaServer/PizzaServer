@@ -284,7 +284,7 @@ public class MCWorldProvider implements BedrockProvider {
 
         // Save every subchunk
         for (int subChunkIndex = -4; subChunkIndex < 20; subChunkIndex++) {
-            BedrockSubChunk subChunk = this.getSubChunk(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), subChunkIndex);
+            BedrockSubChunk subChunk = bedrockChunk.getSubChunk(subChunkIndex);
             this.saveSubChunk(bedrockChunk.getDimension(), bedrockChunk.getX(), bedrockChunk.getZ(), subChunkIndex, subChunk);
         }
     }

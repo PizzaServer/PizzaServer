@@ -116,7 +116,7 @@ public class MCWorldFormatUtils {
                     break;
                 }
 
-                word |= layer.getPalette().getPaletteIndex(layer.getBlockEntryAt(pos >> 8, (pos >> 4) & 15, pos & 15)) << (bitsPerBlock * block);
+                word |= layer.getPalette().getPaletteIndex(layer.getBlockEntryAt(pos >> 8, pos & 15, (pos >> 4) & 15)) << (bitsPerBlock * block);
                 pos++;
             }
             buffer.writeIntLE(word);
