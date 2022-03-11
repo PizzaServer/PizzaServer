@@ -7,7 +7,13 @@ import io.github.pizzaserver.api.entity.definition.spawnrules.EntitySpawnRules;
 
 public interface EntityDefinition {
 
-    String getId();
+    /**
+     * Network entity id associated with this type.
+     * @return entity type runtime id
+     */
+    int getId();
+
+    String getEntityId();
 
     String getName();
 

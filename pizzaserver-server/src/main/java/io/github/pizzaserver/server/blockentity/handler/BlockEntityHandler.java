@@ -94,15 +94,17 @@ public class BlockEntityHandler {
 
     static {
         register(Collections.singleton(BlockID.BARREL), BlockEntityBarrel.ID, new BlockEntityBarrelParser());
-        register(Collections.singleton(BlockID.BELL), BlockEntityBell.ID, new BlockEntityBellParser());
+        // register(Collections.singleton(BlockID.BELL), BlockEntityBell.ID, new BlockEntityBellParser());
         register(Collections.singleton(BlockID.BED), BlockEntityBed.ID, new BlockEntityBedParser());
         register(Set.of(BlockID.BLAST_FURNACE, BlockID.LIT_BLAST_FURNACE), BlockEntityBlastFurnace.ID, new BlockEntityBlastFurnaceParser());
         register(Set.of(BlockID.CAMPFIRE, BlockID.SOUL_CAMPFIRE), BlockEntityCampfire.ID, new BlockEntityCampfireParser());
         register(Collections.singleton(BlockID.CAULDRON), BlockEntityCauldron.ID, new BlockEntityCauldronParser());
         register(Collections.singleton(BlockID.CHEST), BlockEntityChest.ID, new BlockEntityChestParser());
         register(Collections.singleton(BlockID.DISPENSER), BlockEntityDispenser.ID, new BlockEntityDispenserParser());
+        register(Collections.singleton(BlockID.DROPPER), BlockEntityDropper.ID, new BlockEntityDropperParser());
+        register(Collections.singleton(BlockID.HOPPER), BlockEntityHopper.ID, new BlockEntityHopperParser());
         register(Set.of(BlockID.FURNACE, BlockID.LIT_FURNACE), BlockEntityFurnace.ID, new BlockEntityFurnaceParser());
-        register(Collections.singleton(BlockID.MOB_SPAWNER), BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
+        // register(Collections.singleton(BlockID.MOB_SPAWNER), BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
     }
 
 }

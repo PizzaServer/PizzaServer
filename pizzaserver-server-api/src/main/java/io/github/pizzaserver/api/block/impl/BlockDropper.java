@@ -12,38 +12,38 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BlockDispenser extends Block {
+public class BlockDropper extends Block {
 
     private static final List<NbtMap> BLOCK_STATES = Collections.unmodifiableList(new ArrayList<>() {
         {
             for (int i = 0; i < 6; i++) {
                 this.add(NbtMap.builder()
                         .putInt("facing_direction", i)
-                        .putBoolean("triggered_bit", false)
+                        .putByte("triggered_bit", (byte) 0)
                         .build());
 
                 this.add(NbtMap.builder()
                         .putInt("facing_direction", i)
-                        .putBoolean("triggered_bit", true)
+                        .putByte("triggered_bit", (byte) 1)
                         .build());
             }
         }
     });
 
 
-    public BlockDispenser() {
+    public BlockDropper() {
         this(Direction.UP);
     }
 
-    public BlockDispenser(Direction direction) {
+    public BlockDropper(Direction direction) {
         this(direction, ActiveStatus.INACTIVE);
     }
 
-    public BlockDispenser(ActiveStatus activeStatus) {
+    public BlockDropper(ActiveStatus activeStatus) {
         this(Direction.UP, activeStatus);
     }
 
-    public BlockDispenser(Direction direction, ActiveStatus activeStatus) {
+    public BlockDropper(Direction direction, ActiveStatus activeStatus) {
         this.setDirection(direction);
         this.setTriggered(activeStatus == ActiveStatus.ACTIVE);
     }
@@ -66,12 +66,12 @@ public class BlockDispenser extends Block {
 
     @Override
     public String getBlockId() {
-        return BlockID.DISPENSER;
+        return BlockID.DROPPER;
     }
 
     @Override
     public String getName() {
-        return "Dispenser";
+        return "Dropper";
     }
 
     @Override

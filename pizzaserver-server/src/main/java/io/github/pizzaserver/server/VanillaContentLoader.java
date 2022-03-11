@@ -8,10 +8,7 @@ import io.github.pizzaserver.api.block.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.components.handlers.*;
 import io.github.pizzaserver.api.entity.definition.components.impl.*;
-import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.EntityItemDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.*;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.behavior.impl.ItemToolBehavior;
 import io.github.pizzaserver.api.item.impl.*;
@@ -146,7 +143,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockBarrier());
         BlockRegistry.getInstance().register(new BlockBed());
         BlockRegistry.getInstance().register(new BlockBedrock());
-        BlockRegistry.getInstance().register(new BlockBell());
+        BlockRegistry.getInstance().register(new BlockBell(), new BellBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.BIRCH), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.BIRCH), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.BLACK), new CandleBlockBehavior());
@@ -229,6 +226,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockDirt());
         BlockRegistry.getInstance().register(new BlockDirt(DirtType.ROOTED));
         BlockRegistry.getInstance().register(new BlockDispenser(), new DispenserBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockDropper(), new DropperBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.RED_SANDSTONE, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.END_STONE_BRICK, SlabType.DOUBLE), new SlabBlockBehavior());
@@ -250,6 +248,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.GREEN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.GREEN), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.GREEN), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockHopper(), new HopperBlockBehavior());
         BlockRegistry.getInstance().register(new BlockIce(), new IceBlockBehavior());
         BlockRegistry.getInstance().register(new BlockInvisibleBedrock());
         BlockRegistry.getInstance().register(new BlockIronBlock());
@@ -329,6 +328,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockLog(WoodType.WARPED, StrippedType.STRIPPED), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockSoulCampfire());
         BlockRegistry.getInstance().register(new BlockTallGrass());
+        BlockRegistry.getInstance().register(new BlockTrappedChest(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.WARPED), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.WARPED), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.WARPED), new StrippableWoodenLikeBlockBehavior());
@@ -406,6 +406,7 @@ public class VanillaContentLoader {
         EntityRegistry.getInstance().registerDefinition(new EntityCowDefinition());
         EntityRegistry.getInstance().registerDefinition(new EntityHumanDefinition());
         EntityRegistry.getInstance().registerDefinition(new EntityItemDefinition());
+        EntityRegistry.getInstance().registerDefinition(new EntityPigDefinition());
     }
 
 }

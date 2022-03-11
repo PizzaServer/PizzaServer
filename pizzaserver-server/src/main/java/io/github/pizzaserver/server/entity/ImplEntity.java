@@ -1270,7 +1270,7 @@ public class ImplEntity implements Entity {
             AddEntityPacket addEntityPacket = new AddEntityPacket();
             addEntityPacket.setUniqueEntityId(this.getId());
             addEntityPacket.setRuntimeEntityId(this.getId());
-            addEntityPacket.setIdentifier(this.getEntityDefinition().getId());
+            addEntityPacket.setIdentifier(this.getEntityDefinition().getEntityId());
             addEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
             addEntityPacket.setMotion(this.getMotion());
             addEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));

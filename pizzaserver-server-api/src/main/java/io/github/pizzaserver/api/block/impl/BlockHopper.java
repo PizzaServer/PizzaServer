@@ -9,41 +9,39 @@ import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.utils.Direction;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class BlockDispenser extends Block {
+public class BlockHopper extends Block {
 
-    private static final List<NbtMap> BLOCK_STATES = Collections.unmodifiableList(new ArrayList<>() {
+    private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
             for (int i = 0; i < 6; i++) {
                 this.add(NbtMap.builder()
                         .putInt("facing_direction", i)
-                        .putBoolean("triggered_bit", false)
+                        .putBoolean("toggle_bit", false)
                         .build());
-
                 this.add(NbtMap.builder()
                         .putInt("facing_direction", i)
-                        .putBoolean("triggered_bit", true)
+                        .putBoolean("toggle_bit", true)
                         .build());
             }
         }
-    });
+    };
 
 
-    public BlockDispenser() {
+    public BlockHopper() {
         this(Direction.UP);
     }
 
-    public BlockDispenser(Direction direction) {
+    public BlockHopper(Direction direction) {
         this(direction, ActiveStatus.INACTIVE);
     }
 
-    public BlockDispenser(ActiveStatus activeStatus) {
+    public BlockHopper(ActiveStatus activeStatus) {
         this(Direction.UP, activeStatus);
     }
 
-    public BlockDispenser(Direction direction, ActiveStatus activeStatus) {
+    public BlockHopper(Direction direction, ActiveStatus activeStatus) {
         this.setDirection(direction);
         this.setTriggered(activeStatus == ActiveStatus.ACTIVE);
     }
@@ -66,22 +64,27 @@ public class BlockDispenser extends Block {
 
     @Override
     public String getBlockId() {
-        return BlockID.DISPENSER;
+        return BlockID.HOPPER;
     }
 
     @Override
     public String getName() {
-        return "Dispenser";
+        return "Hopper";
     }
 
     @Override
     public float getHardness() {
-        return 3.5f;
+        return 3;
     }
 
     @Override
     public float getBlastResistance() {
-        return 3.5f;
+        return 4.8f;
+    }
+
+    @Override
+    public boolean isTransparent() {
+        return true;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class ImplEntityRegistry implements EntityRegistry {
             throw new IllegalStateException("The server is not in the REGISTERING state");
         }
 
-        this.definitions.put(entityDefinition.getId(), entityDefinition);
+        this.definitions.put(entityDefinition.getEntityId(), entityDefinition);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ImplEntityRegistry implements EntityRegistry {
     }
 
     @Override
-    public boolean hasEntityDefinition(String entityId) {
+    public boolean hasDefinition(String entityId) {
         return this.definitions.containsKey(entityId);
     }
 
@@ -79,7 +79,7 @@ public class ImplEntityRegistry implements EntityRegistry {
     public Entity getEntity(String entityId) {
         EntityDefinition entityDefinition = this.getDefinition(entityId);
         Entity entity;
-        switch (entityDefinition.getId()) {
+        switch (entityDefinition.getEntityId()) {
             case EntityHumanDefinition.ID:
                 entity = new ImplEntityHuman(entityDefinition);
                 break;
@@ -102,9 +102,8 @@ public class ImplEntityRegistry implements EntityRegistry {
         return entity;
     }
 
-    @Override
     public Set<EntityDefinition> getDefinitions() {
-        return Collections.unmodifiableSet(new HashSet<>(this.definitions.values()));
+        return Set.copyOf(this.definitions.values());
     }
 
 }

@@ -19,7 +19,7 @@ public class EntityBoatDefinition extends BaseEntityDefinition {
     }
 
     @Override
-    public String getId() {
+    public String getEntityId() {
         return ID;
     }
 

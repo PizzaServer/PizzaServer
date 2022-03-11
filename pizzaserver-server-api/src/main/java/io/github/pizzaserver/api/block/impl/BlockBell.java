@@ -3,8 +3,11 @@ package io.github.pizzaserver.api.block.impl;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.block.data.ActiveStatus;
+import io.github.pizzaserver.api.block.data.BellAttachmentType;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
+import io.github.pizzaserver.api.utils.HorizontalDirection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,62 @@ public class BlockBell extends BaseBlock {
         }
     };
 
+
+    public BlockBell() {
+        this(HorizontalDirection.NORTH);
+    }
+
+    public BlockBell(HorizontalDirection direction) {
+        this(direction, BellAttachmentType.HANGING);
+    }
+
+    public BlockBell(BellAttachmentType attachmentType) {
+        this(HorizontalDirection.NORTH, attachmentType);
+    }
+
+    public BlockBell(ActiveStatus activeStatus) {
+        this(HorizontalDirection.NORTH, BellAttachmentType.HANGING, activeStatus);
+    }
+
+    public BlockBell(HorizontalDirection direction, BellAttachmentType attachmentType) {
+        this(direction, attachmentType, ActiveStatus.INACTIVE);
+    }
+
+    public BlockBell(HorizontalDirection direction, BellAttachmentType attachmentType, ActiveStatus activeStatus) {
+        this.setDirection(direction);
+        this.setAttachmentType(attachmentType);
+        this.setRinging(activeStatus == ActiveStatus.ACTIVE);
+    }
+
+    public HorizontalDirection getDirection() {
+        return HorizontalDirection.fromBlockStateIndex((this.getBlockState() % 8 - (this.isRinging() ? 1 : 0)) / 2);
+    }
+
+    public void setDirection(HorizontalDirection direction) {
+        this.setBlockState((this.getAttachmentType().ordinal() * 8)
+                + (direction.getBlockStateIndex() * 2)
+                + (this.isRinging() ? 1 : 0));
+    }
+
+    public BellAttachmentType getAttachmentType() {
+        return BellAttachmentType.values()[this.getBlockState() / 8];
+    }
+
+    public void setAttachmentType(BellAttachmentType attachmentType) {
+        this.setBlockState((attachmentType.ordinal() * 8)
+                + (this.getDirection().getBlockStateIndex() * 2)
+                + (this.isRinging() ? 1 : 0));
+    }
+
+    public void setRinging(boolean ringing) {
+        this.setBlockState((this.getAttachmentType().ordinal() * 8)
+                + (this.getDirection().getBlockStateIndex() * 2)
+                + (ringing ? 1 : 0));
+    }
+
+    public boolean isRinging() {
+        return this.getBlockState() % 2 == 1;
+    }
 
     @Override
     public String getBlockId() {
