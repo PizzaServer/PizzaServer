@@ -70,6 +70,7 @@ public class ImplChunk implements Chunk {
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
 
 
+    @SuppressWarnings("rawtypes")
     protected ImplChunk(ImplWorld world, int x, int z, BedrockChunk chunk) {
         this.world = world;
         this.x = x;
@@ -77,7 +78,7 @@ public class ImplChunk implements Chunk {
         this.chunk = chunk;
         this.resetExpiryTime();
 
-        for (NbtMap blockEntityNBT : chunk.getBlockEntities()) {
+        for (NbtMap blockEntityNBT : new HashSet<>(chunk.getBlockEntities().values())) {
             String blockEntityId = blockEntityNBT.getString("id");
             BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
 
@@ -160,13 +161,21 @@ public class ImplChunk implements Chunk {
     public void addBlockEntity(BlockEntity blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
         this.blockEntities.put(blockCoordinates, blockEntity);
-        this.chunkWasModified = true;
+
+        synchronized (this.chunk) {
+            this.chunk.addBlockEntity(blockEntity.getDiskData());
+            this.chunkWasModified = true;
+        }
     }
 
     public void removeBlockEntity(BlockEntity blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
         this.blockEntities.remove(blockCoordinates);
-        this.chunkWasModified = true;
+
+        synchronized (this.chunk) {
+            this.chunk.removeBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+            this.chunkWasModified = true;
+        }
     }
 
     @Override
@@ -270,7 +279,6 @@ public class ImplChunk implements Chunk {
                 BlockLayer mainBlockLayer = subChunk.getLayer(layer);
                 BlockPaletteEntry entry = new BlockPaletteEntry(block.getBlockId(), ServerProtocol.LATEST_BLOCK_STATES_VERSION, block.getNBTState());
                 mainBlockLayer.setBlockEntryAt(chunkBlockX, subChunkBlockY, chunkBlockZ, entry);
-                this.chunkWasModified = true;
 
                 int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
                 if (y >= highestBlockY) {
@@ -280,6 +288,8 @@ public class ImplChunk implements Chunk {
                     }
                     this.chunk.getHeightMap().setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
                 }
+
+                this.chunkWasModified = true;
             }
 
             // Send update block packet
@@ -470,7 +480,7 @@ public class ImplChunk implements Chunk {
                 // Write block entities if any exist
                 if (!this.chunk.getBlockEntities().isEmpty()) {
                     try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
-                        for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities()) {
+                        for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities().values()) {
                             try {
                                 NbtMap networkBlockEntityNBT = player.getVersion().getNetworkBlockEntityNBT(diskBlockEntityNBT);
                                 outputStream.writeTag(networkBlockEntityNBT);

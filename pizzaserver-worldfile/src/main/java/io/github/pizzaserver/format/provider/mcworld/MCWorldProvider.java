@@ -4,8 +4,6 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.*;
 import io.github.pizzaserver.format.data.LevelData;
 import io.github.pizzaserver.format.data.DimensionIds;
-import io.github.pizzaserver.format.data.LevelGameRules;
-import io.github.pizzaserver.format.data.PlayerAbilities;
 import io.github.pizzaserver.format.dimension.chunks.BedrockBiomeMap;
 import io.github.pizzaserver.format.dimension.chunks.BedrockChunk;
 import io.github.pizzaserver.format.dimension.chunks.BedrockHeightMap;
@@ -21,6 +19,7 @@ import org.iq80.leveldb.DB;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class MCWorldProvider implements BedrockProvider {
@@ -58,8 +57,14 @@ public class MCWorldProvider implements BedrockProvider {
         chunk.setVersion(chunkVersion);
         chunk.setHeightMap(chunkDataPalette.getHeightMap());
         chunk.setBiomeMap(chunkDataPalette.getBiomeMap());
-        chunk.setBlockEntities(blockEntities);
-        chunk.setEntities(entities);
+
+        for (NbtMap blockEntityNBT : blockEntities) {
+            chunk.addBlockEntity(blockEntityNBT);
+        }
+
+        for (NbtMap entityNBT : entities) {
+            chunk.addEntity(entityNBT);
+        }
 
         return chunk;
     }
@@ -205,7 +210,7 @@ public class MCWorldProvider implements BedrockProvider {
         return blockEntities;
     }
 
-    private void saveBlockEntities(int dimension, int x, int z, Set<NbtMap> blockEntities) throws IOException {
+    private void saveBlockEntities(int dimension, int x, int z, Map<Vector3i, NbtMap> blockEntities) throws IOException {
         byte[] blockEntityKey;
         if (dimension == DimensionIds.OVERWORLD) {
             blockEntityKey = ChunkKey.BLOCK_ENTITIES.getLevelDBKey(x, z);
@@ -216,7 +221,7 @@ public class MCWorldProvider implements BedrockProvider {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 NBTOutputStream blockEntityNBTOutputStream = NbtUtils.createWriterLE(outputStream)) {
             // Write block entities nbt
-            for (NbtMap blockEntity : blockEntities) {
+            for (NbtMap blockEntity : blockEntities.values()) {
                 blockEntityNBTOutputStream.writeTag(blockEntity);
             }
 
