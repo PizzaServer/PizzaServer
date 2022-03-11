@@ -102,6 +102,8 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
+        this.player.getInventory().addItem(new ItemBlock(new BlockMobSpawner(), 64));
+        this.player.setGamemode(Gamemode.CREATIVE);
         if (packet.getType() == TextPacket.Type.CHAT) {
             String message = packet.getMessage().strip();
             if (message.length() > 512) {

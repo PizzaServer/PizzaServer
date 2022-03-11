@@ -109,6 +109,7 @@ public class BlockID {
     public static final String DOUBLE_STONE_SLAB4 = "minecraft:double_stone_slab4";
     public static final String DOUBLE_WARPED_SLAB = "minecraft:double_warped_slab";
     public static final String DOUBLE_WOODEN_SLAB = "minecraft:double_wooden_slab";
+    public static final String DROPPER = "minecraft:dropper";
     public static final String EMERALD_BLOCK = "minecraft:emerald_block";
     public static final String EMERALD_ORE = "minecraft:emerald_ore";
     public static final String EXPOSED_CUT_COPPER_SLAB = "minecraft:exposed_cut_copper_slab";
@@ -126,6 +127,7 @@ public class BlockID {
     public static final String GREEN_CANDLE = "minecraft:green_candle";
     public static final String GREEN_CANDLE_CAKE = "minecraft:green_candle_cake";
     public static final String GREEN_GLAZED_TERRACOTTA = "minecraft:green_glazed_terracotta";
+    public static final String HOPPER = "minecraft:hopper";
     public static final String ICE = "minecraft:ice";
     public static final String INVISIBLE_BEDROCK = "minecraft:invisibleBedrock";
     public static final String IRON_BLOCK = "minecraft:iron_block";
@@ -205,6 +207,7 @@ public class BlockID {
     public static final String STRIPPED_WARPED_STEM = "minecraft:stripped_warped_stem";
     public static final String STRIPPED_WARPED_HYPHAE = "minecraft:stripped_warped_hyphae";
     public static final String TALL_GRASS = "minecraft:tallgrass";
+    public static final String TRAPPED_CHEST = "minecraft:trapped_chest";
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
     public static final String WARPED_HYPHAE = "minecraft:warped_hyphae";

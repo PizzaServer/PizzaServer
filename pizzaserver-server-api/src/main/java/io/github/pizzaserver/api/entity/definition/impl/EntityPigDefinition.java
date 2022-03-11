@@ -7,29 +7,20 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponentGro
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreathableComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
-import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
 
-public class EntityHumanDefinition extends BaseEntityDefinition {
+public class EntityPigDefinition extends BaseEntityDefinition {
 
-    public static final String ID = "minecraft:player";
+    public static final String ID = "minecraft:pig";
 
 
-    public EntityHumanDefinition() {
+    public EntityPigDefinition() {
         this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
-                new EntityDimensionsComponent(0.6f, 1.8f, 1.62f, 1.62f),
-                new EntityHealthComponent(20f, 20f),
-                new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
-                        .setGravity(true)
-                        .setCollision(true)
-                        .setPistonPushable(true)
-                        .setPushable(false)
-                        .setGravityForce(0.08f)
-                        .setDragForce(0.02f)),
+                new EntityDimensionsComponent(0.9f, 0.9f),
+                new EntityHealthComponent(10f, 10f),
                 new EntityBreathableComponent(new EntityBreathableComponent.Properties()
-                        .setTotalSupplyTime(20)
+                        .setTotalSupplyTime(15)
                         .setSuffocationInterval(10)
-                        .setGenerateBubblesInWater(true)
-                        .setInhaleTime(3.75f)) }));
+                        .setGenerateBubblesInWater(true)) }));
     }
 
     @Override
@@ -39,17 +30,7 @@ public class EntityHumanDefinition extends BaseEntityDefinition {
 
     @Override
     public String getName() {
-        return "Human";
-    }
-
-    @Override
-    public boolean isSummonable() {
-        return false;
-    }
-
-    @Override
-    public boolean hasSpawnEgg() {
-        return false;
+        return "Pig";
     }
 
     @Override

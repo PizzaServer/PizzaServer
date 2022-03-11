@@ -28,7 +28,7 @@ public class ImplBlockEntityBell extends BaseBlockEntity<BlockBell> implements B
 
     @Override
     public boolean isRinging() {
-        return false;
+        return this.getBlock().isRinging();
     }
 
 }

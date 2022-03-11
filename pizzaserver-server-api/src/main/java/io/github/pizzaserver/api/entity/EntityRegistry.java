@@ -26,7 +26,7 @@ public interface EntityRegistry {
 
     EntityDefinition getDefinition(String entityId);
 
-    boolean hasEntityDefinition(String entityId);
+    boolean hasDefinition(String entityId);
 
     <T extends EntityComponent> EntityComponentHandler<T> getComponentHandler(Class<T> componentClazz);
 
@@ -37,8 +37,6 @@ public interface EntityRegistry {
     Entity getEntity(String entityId);
 
     EntityItem getItemEntity(Item item);
-
-    Set<EntityDefinition> getDefinitions();
 
     static EntityRegistry getInstance() {
         return Server.getInstance().getEntityRegistry();
