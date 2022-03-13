@@ -12,6 +12,10 @@ public class BellBlockBehavior extends DefaultBlockBehavior<BlockBell> {
 
     @Override
     public boolean prepareForPlacement(Entity entity, BlockBell block, BlockFace face, Vector3f clickPosition) {
+        if (!super.prepareForPlacement(entity, block, face, clickPosition)) {
+            return false;
+        }
+
         switch (face) {
             case BOTTOM -> block.setAttachmentType(BellAttachmentType.HANGING);
             case TOP -> block.setAttachmentType(BellAttachmentType.STANDING);
@@ -20,11 +24,15 @@ public class BellBlockBehavior extends DefaultBlockBehavior<BlockBell> {
 
         block.setDirection(entity.getHorizontalDirection().opposite());
 
-        if (!block.getSide(face.opposite()).hasCollision()) {
+        if (block.getSide(face.opposite()).isTransparent()) {
             return false;
         }
 
-        return super.prepareForPlacement(entity, block, face, clickPosition);
+        if (!block.getLocation().getBlock().isReplaceable()) {
+            return false;
+        }
+
+        return true;
     }
 
 }

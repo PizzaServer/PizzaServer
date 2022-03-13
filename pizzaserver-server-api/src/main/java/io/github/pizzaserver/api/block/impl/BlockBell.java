@@ -123,6 +123,11 @@ public class BlockBell extends Block {
     }
 
     @Override
+    public boolean isTransparent() {
+        return true;
+    }
+
+    @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
     }

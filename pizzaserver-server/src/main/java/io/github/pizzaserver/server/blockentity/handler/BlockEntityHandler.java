@@ -94,7 +94,7 @@ public class BlockEntityHandler {
 
     static {
         register(Collections.singleton(BlockID.BARREL), BlockEntityBarrel.ID, new BlockEntityBarrelParser());
-        // register(Collections.singleton(BlockID.BELL), BlockEntityBell.ID, new BlockEntityBellParser());
+        register(Collections.singleton(BlockID.BELL), BlockEntityBell.ID, new BlockEntityBellParser());
         register(Collections.singleton(BlockID.BED), BlockEntityBed.ID, new BlockEntityBedParser());
         register(Set.of(BlockID.BLAST_FURNACE, BlockID.LIT_BLAST_FURNACE), BlockEntityBlastFurnace.ID, new BlockEntityBlastFurnaceParser());
         register(Set.of(BlockID.CAMPFIRE, BlockID.SOUL_CAMPFIRE), BlockEntityCampfire.ID, new BlockEntityCampfireParser());
