@@ -18,9 +18,14 @@ public class BlockEntityMobSpawnerParser extends BaseBlockEntityParser<BlockEnti
 
     @Override
     public NbtMap toDiskNBT(BlockEntityMobSpawner blockEntity) {
+        String entityId = "";
+        if (blockEntity.getEntityDefinition().isPresent()) {
+            entityId = blockEntity.getEntityDefinition().get().getEntityId();
+        }
+
         return super.toDiskNBT(blockEntity)
                 .toBuilder()
-                .putString("EntityIdentifier", blockEntity.getEntityDefinition().getEntityId())
+                .putString("EntityIdentifier", entityId)
                 .putFloat("DisplayEntityWidth", 1)
                 .putFloat("DisplayEntityHeight", 1)
                 .putFloat("DisplayEntityScale", 1)
@@ -29,23 +34,7 @@ public class BlockEntityMobSpawnerParser extends BaseBlockEntityParser<BlockEnti
 
     @Override
     public NbtMap toNetworkNBT(NbtMap diskNBT) {
-        String entityId = diskNBT.getString("EntityIdentifier");
-
-        int entityRuntimeId;
-        if (!EntityRegistry.getInstance().hasDefinition(entityId)) {
-            entityRuntimeId = 0;
-            Server.getInstance().getLogger().debug("Could not find mob spawner entity runtime id for " + entityId);
-        } else {
-            entityRuntimeId = EntityRegistry.getInstance().getDefinition(entityId).getId();
-        }
-
-        return super.toNetworkNBT(diskNBT)
-                .toBuilder()
-                .putInt("EntityId", entityRuntimeId)
-                .putFloat("DisplayEntityWidth", 1)
-                .putFloat("DisplayEntityHeight", 1)
-                .putFloat("DisplayEntityScale", 1)
-                .build();
+        return diskNBT;
     }
 
 }

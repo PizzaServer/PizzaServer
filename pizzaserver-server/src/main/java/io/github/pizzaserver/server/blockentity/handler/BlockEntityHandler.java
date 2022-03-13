@@ -104,7 +104,7 @@ public class BlockEntityHandler {
         register(Collections.singleton(BlockID.DROPPER), BlockEntityDropper.ID, new BlockEntityDropperParser());
         register(Collections.singleton(BlockID.HOPPER), BlockEntityHopper.ID, new BlockEntityHopperParser());
         register(Set.of(BlockID.FURNACE, BlockID.LIT_FURNACE), BlockEntityFurnace.ID, new BlockEntityFurnaceParser());
-        // register(Collections.singleton(BlockID.MOB_SPAWNER), BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
+        register(Collections.singleton(BlockID.MOB_SPAWNER), BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
     }
 
 }
