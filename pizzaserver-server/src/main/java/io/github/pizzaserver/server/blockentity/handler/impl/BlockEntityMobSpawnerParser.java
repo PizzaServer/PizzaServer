@@ -1,7 +1,6 @@
 package io.github.pizzaserver.server.blockentity.handler.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityMobSpawner;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.impl.EntityPigDefinition;
