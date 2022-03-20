@@ -4,10 +4,8 @@ import com.nukkitx.protocol.bedrock.data.AdventureSetting;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
-import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.data.DirtType;
-import io.github.pizzaserver.api.block.data.SandType;
-import io.github.pizzaserver.api.block.data.WoodType;
+import io.github.pizzaserver.api.block.data.LeaveType;
+import io.github.pizzaserver.api.block.data.LitType;
 import io.github.pizzaserver.api.block.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.EntityHuman;
@@ -18,9 +16,7 @@ import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
-import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 public class PlayerPacketHandler implements BedrockPacketHandler {
@@ -102,6 +98,15 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
+        this.player.getInventory().addItem(new ItemBlock(new BlockPumpkin(), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockCarvedPumpkin(), 64));
+        this.player.getInventory().addItem(new ItemShears());
+        this.player.getInventory().addItem(new ItemBlock(new BlockLeaves(LeaveType.OAK), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockLeaves(LeaveType.JUNGLE), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockChest(), 64));
+        this.player.getInventory().addItem(new ItemBlock(new BlockCarvedPumpkin(LitType.LIT), 64));
+        EntityHuman entityHuman = (EntityHuman) EntityRegistry.getInstance().getEntity(EntityHumanDefinition.ID);
+        this.player.getWorld().addEntity(entityHuman, this.player.getLocation().toVector3f());
         if (packet.getType() == TextPacket.Type.CHAT) {
             String message = packet.getMessage().strip();
             if (message.length() > 512) {

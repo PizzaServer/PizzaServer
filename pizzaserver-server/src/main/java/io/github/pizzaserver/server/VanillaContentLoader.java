@@ -101,6 +101,7 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemLeatherHelmet(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemLeatherLeggings(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemMagmaCream());
+        ItemRegistry.getInstance().register(new ItemMelonSlice());
         ItemRegistry.getInstance().register(new ItemNautilusShell());
         ItemRegistry.getInstance().register(new ItemNetherBrick());
         ItemRegistry.getInstance().register(new ItemNetherStar());
@@ -116,6 +117,7 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemPaper());
         ItemRegistry.getInstance().register(new ItemPrismarineCrystals());
         ItemRegistry.getInstance().register(new ItemPrismarineShard());
+        ItemRegistry.getInstance().register(new ItemPumpkinSeeds());
         ItemRegistry.getInstance().register(new ItemQuartz());
         ItemRegistry.getInstance().register(new ItemRabbitFoot());
         ItemRegistry.getInstance().register(new ItemRabbitHide());
@@ -173,6 +175,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCandle(), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCandleCake(), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCarpet(), new RequiresSolidBottomBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockCarvedPumpkin(), new HorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockCarvedPumpkin(LitType.LIT), new HorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockCauldron());
         BlockRegistry.getInstance().register(new BlockChest(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockChiseledDeepslate());
@@ -258,6 +262,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.JUNGLE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLapisBlock());
         BlockRegistry.getInstance().register(new BlockLapisOre());
+        BlockRegistry.getInstance().register(new BlockLeaves());
         BlockRegistry.getInstance().register(new BlockLight());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.LIGHT_BLUE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIGHT_BLUE), new CandleCakeBlockBehavior());
@@ -277,6 +282,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.MAGENTA), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.MAGENTA), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.MAGENTA), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockMelon());
         BlockRegistry.getInstance().register(new BlockMobSpawner());
         BlockRegistry.getInstance().register(new BlockNetherrack());
         BlockRegistry.getInstance().register(new BlockNetherReactor());
@@ -291,6 +297,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.PINK), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PINK), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockPodzol());
+        BlockRegistry.getInstance().register(new BlockPumpkin(),new PumpkinBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneButton(), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneSlab(SlabType.DOUBLE), new SlabBlockBehavior());

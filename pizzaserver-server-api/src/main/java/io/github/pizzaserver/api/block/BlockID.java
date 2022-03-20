@@ -45,6 +45,7 @@ public class BlockID {
     public static final String CANDLE = "minecraft:candle";
     public static final String CANDLE_CAKE = "minecraft:candle_cake";
     public static final String CARPET = "minecraft:carpet";
+    public static final String CARVED_PUMPKIN = "minecraft:carved_pumpkin";
     public static final String CAULDRON = "minecraft:cauldron";
     public static final String CHEST = "minecraft:chest";
     public static final String CHISELED_DEEPSLATE = "minecraft:chiseled_deepslate";
@@ -132,6 +133,8 @@ public class BlockID {
     public static final String JUNGLE_PRESSURE_PLATE = "minecraft:jungle_pressure_plate";
     public static final String LAPIS_BLOCK = "minecraft:lapis_block";
     public static final String LAPIS_ORE = "minecraft:lapis_ore";
+    public static final String LEAVES = "minecraft:leaves";
+    public static final String LEAVES2 = "minecraft:leaves2";
     public static final String LIGHT_BLOCK = "minecraft:light_block";
     public static final String LIGHT_BLUE_CANDLE = "minecraft:light_blue_candle";
     public static final String LIGHT_BLUE_CANDLE_CAKE = "minecraft:light_blue_candle_cake";
@@ -145,12 +148,14 @@ public class BlockID {
     public static final String LIT_BLAST_FURNACE = "minecraft:lit_blast_furnace";
     public static final String LIT_DEEPSLATE_REDSTONE_ORE = "minecraft:lit_deepslate_redstone_ore";
     public static final String LIT_FURNACE = "minecraft:lit_furnace";
+    public static final String LIT_PUMPKIN = "minecraft:lit_pumpkin";
     public static final String LIT_REDSTONE_ORE = "minecraft:lit_redstone_ore";
     public static final String LOG = "minecraft:log";
     public static final String LOG2 = "minecraft:log2";
     public static final String MAGENTA_CANDLE = "minecraft:magenta_candle";
     public static final String MAGENTA_CANDLE_CAKE = "minecraft:magenta_candle_cake";
     public static final String MAGENTA_GLAZED_TERRACOTTA = "minecraft:magenta_glazed_terracotta";
+    public static final String MELON_BLOCK = "minecraft:melon_block";
     public static final String MOB_SPAWNER = "minecraft:mob_spawner";
     public static final String NETHERRACK = "minecraft:netherrack";
     public static final String NETHER_REACTOR = "minecraft:netherreactor";
@@ -172,6 +177,7 @@ public class BlockID {
     public static final String POLISHED_BLACKSTONE_DOUBLE_BRICK_SLAB = "minecraft:polished_blackstone_brick_double_slab";
     public static final String POLISHED_DEEPSLATE_SLAB = "minecraft:polished_deepslate_slab";
     public static final String POLISHED_DEEPSLATE_DOUBLE_SLAB = "minecraft:polished_deepslate_double_slab";
+    public static final String PUMPKIN = "minecraft:pumpkin";
     public static final String PURPLE_CANDLE = "minecraft:purple_candle";
     public static final String PURPLE_CANDLE_CAKE = "minecraft:purple_candle_cake";
     public static final String PURPLE_GLAZED_TERRACOTTA = "minecraft:purple_glazed_terracotta";
