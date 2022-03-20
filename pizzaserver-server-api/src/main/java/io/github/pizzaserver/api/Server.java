@@ -16,6 +16,7 @@ import io.github.pizzaserver.api.level.LevelManager;
 import io.github.pizzaserver.api.packs.ResourcePackManager;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
+import io.github.pizzaserver.api.recipe.RecipeRegistry;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Logger;
@@ -161,6 +162,8 @@ public abstract class Server {
     public abstract CreativeRegistry getCreativeRegistry();
 
     public abstract EntityRegistry getEntityRegistry();
+
+    public abstract RecipeRegistry getRecipeRegistry();
 
     public static Server getInstance() {
         return instance;

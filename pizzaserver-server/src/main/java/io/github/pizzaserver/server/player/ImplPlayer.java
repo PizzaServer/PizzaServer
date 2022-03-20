@@ -38,6 +38,8 @@ import io.github.pizzaserver.api.player.dialogue.NPCDialogue;
 import io.github.pizzaserver.api.player.dialogue.NPCDialogueResponse;
 import io.github.pizzaserver.api.player.form.Form;
 import io.github.pizzaserver.api.player.form.response.FormResponse;
+import io.github.pizzaserver.api.recipe.RecipeRegistry;
+import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
@@ -54,6 +56,7 @@ import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.player.handlers.AuthInputHandler;
 import io.github.pizzaserver.server.player.handlers.InventoryTransactionHandler;
 import io.github.pizzaserver.server.player.handlers.PlayerPacketHandler;
@@ -62,6 +65,8 @@ import io.github.pizzaserver.server.player.manager.PlayerChunkManager;
 import io.github.pizzaserver.server.player.manager.PlayerPopupManager;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
+import io.github.pizzaserver.server.recipe.ImplRecipeRegistry;
+import io.github.pizzaserver.server.recipe.RecipeUtils;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 
 import java.io.IOException;
@@ -226,8 +231,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setInventoriesServerAuthoritative(true);
             startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
             startGamePacket.getGamerules().add(new GameRuleData<>("showcoordinates", true));
-            startGamePacket.setItemEntries(this.getVersion().getItemEntries());
-            startGamePacket.getBlockProperties().addAll(this.getVersion().getCustomBlockProperties());
+            startGamePacket.setItemEntries(((BaseMinecraftVersion) this.getVersion()).getItemEntries());
+            startGamePacket.getBlockProperties().addAll(((BaseMinecraftVersion) this.getVersion()).getCustomBlockProperties());
             startGamePacket.setPlayerMovementSettings(movementSettings);
             startGamePacket.setCommandsEnabled(true);
             startGamePacket.setMultiplayerGame(true);
@@ -241,7 +246,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             // Send item components for custom items
             ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-            itemComponentPacket.getItems().addAll(this.getVersion().getItemComponents());
+            itemComponentPacket.getItems().addAll(((BaseMinecraftVersion) this.getVersion()).getItemComponents());
             this.sendPacket(itemComponentPacket);
 
             CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
@@ -251,12 +256,22 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                     .toArray(ItemData[]::new));
             this.sendPacket(creativeContentPacket);
 
+            CraftingDataPacket craftingDataPacket = new CraftingDataPacket();
+            craftingDataPacket.getCraftingData().addAll(new ArrayList<>() {
+                {
+                    for (Recipe recipe : ((ImplRecipeRegistry) RecipeRegistry.getInstance()).getRecipes()) {
+                        this.add(RecipeUtils.serializeForNetwork(recipe, ImplPlayer.this.getVersion()));
+                    }
+                }
+            });
+            this.sendPacket(craftingDataPacket);
+
             BiomeDefinitionListPacket biomeDefinitionPacket = new BiomeDefinitionListPacket();
-            biomeDefinitionPacket.setDefinitions(this.getVersion().getBiomeDefinitions());
+            biomeDefinitionPacket.setDefinitions(((BaseMinecraftVersion) this.getVersion()).getBiomeDefinitions());
             this.sendPacket(biomeDefinitionPacket);
 
             AvailableEntityIdentifiersPacket availableEntityIdentifiersPacket = new AvailableEntityIdentifiersPacket();
-            availableEntityIdentifiersPacket.setIdentifiers(this.getVersion().getEntityIdentifiers());
+            availableEntityIdentifiersPacket.setIdentifiers(((BaseMinecraftVersion) this.getVersion()).getEntityIdentifiers());
             this.sendPacket(availableEntityIdentifiersPacket);
 
 

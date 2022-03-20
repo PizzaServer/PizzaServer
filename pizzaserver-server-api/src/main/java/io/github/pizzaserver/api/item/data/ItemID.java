@@ -1,8 +1,6 @@
 package io.github.pizzaserver.api.item.data;
 
-import io.github.pizzaserver.api.block.BlockID;
-
-public class ItemID extends BlockID {
+public class ItemID {
 
     public ItemID() {}
 
@@ -25,6 +23,7 @@ public class ItemID extends BlockID {
     public static final String CLAY_BALL = "minecraft:clay_ball";
     public static final String CLOCK = "minecraft:clock";
     public static final String COAL = "minecraft:coal";
+    public static final String CONCRETE_POWDER = "minecraft:concrete_powder";
     public static final String COPPER_INGOT = "minecraft:copper_ingot";
     public static final String DARK_OAK_BOAT = "minecraft:dark_oak_boat";
     public static final String DIAMOND = "minecraft:diamond";

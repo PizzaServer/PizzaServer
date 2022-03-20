@@ -194,7 +194,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCrackedDeepslateTile());
         BlockRegistry.getInstance().register(new BlockCrackedNetherBrick());
         BlockRegistry.getInstance().register(new BlockCrackedPolishedBlackstoneBrick());
-        BlockRegistry.getInstance().register(new BlockCraftingTable());
+        BlockRegistry.getInstance().register(new BlockCraftingTable(), new CraftingTableBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.CRIMSON), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.CRIMSON), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.CRIMSON), new StrippableWoodenLikeBlockBehavior());

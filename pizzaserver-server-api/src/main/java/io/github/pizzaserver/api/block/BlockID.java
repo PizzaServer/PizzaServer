@@ -60,7 +60,7 @@ public class BlockID {
     public static final String COLORED_TORCH_BP = "minecraft:colored_torch_bp";
     public static final String COLORED_TORCH_RG = "minecraft:colored_torch_rg";
     public static final String CONCRETE = "minecraft:concrete";
-    public static final String CONCRETE_POWDER = "minecraft:concrete_powder";
+    public static final String CONCRETE_POWDER = "minecraft:concretePowder";
     public static final String COPPER_ORE = "minecraft:copper_ore";
     public static final String CRACKED_DEEPSLATE_BRICK = "minecraft:cracked_deepslate_bricks";
     public static final String CRACKED_DEEPSLATE_TILE = "minecraft:cracked_deepslate_tiles";

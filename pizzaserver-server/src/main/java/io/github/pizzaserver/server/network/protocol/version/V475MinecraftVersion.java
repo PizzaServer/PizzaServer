@@ -11,13 +11,15 @@ import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.impl.BlockStoneSlab;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.recipe.data.ShapelessRecipeBlockType;
+import io.github.pizzaserver.api.recipe.type.Recipe;
+import io.github.pizzaserver.api.recipe.type.ShapelessRecipe;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
@@ -192,12 +194,79 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                     if (creativeJSONObj.has("damage")) {
                         item = ItemRegistry.getInstance().getItem(id, 1, meta);
                     } else {
-                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
+                        item = ItemRegistry.getInstance().getItem(id, 1);
                     }
                 }
 
                 this.creativeItems.add(item);
             }
+        }
+    }
+
+    @Override
+    protected void loadDefaultRecipes() throws IOException {
+        try (Reader creativeItemsReader = new InputStreamReader(this.getProtocolResourceStream("recipes.json"))) {
+            JsonArray jsonRecipes = GSON.fromJson(creativeItemsReader, JsonObject.class).getAsJsonArray("recipes");
+
+            for (JsonElement element : jsonRecipes) {
+                JsonObject recipeJSON = element.getAsJsonObject();
+
+                int recipeType = recipeJSON.get("type").getAsInt();
+
+                // TODO: remove this. debug only to ignore other recipe types.
+                if (recipeType >= 3) {
+                    continue;
+                }
+                String recipeBlock = recipeJSON.get("block").getAsString();
+
+                Recipe recipe;
+                switch (recipeType) {
+                    case 0 -> {
+                        ShapelessRecipeBlockType blockType = ShapelessRecipeBlockType.fromRecipeBlock(recipeBlock);
+
+                        List<Item> input = new ArrayList<>();
+                        for (JsonElement itemElement : recipeJSON.get("input").getAsJsonArray()) {
+                            JsonObject itemJSON = itemElement.getAsJsonObject();
+
+                            String itemId = itemJSON.get("id").getAsString();
+                            int count = itemJSON.has("count") ? itemJSON.get("count").getAsInt() : 1;
+                            int meta = itemJSON.has("damage") ? itemJSON.get("damage").getAsInt() : 0;
+
+                            if (!ItemRegistry.getInstance().hasItem(itemId)) {
+                                continue;   // TODO: log this as an item is missing
+                            }
+
+                            input.add(ItemRegistry.getInstance().getItem(itemId, count, meta));
+                        }
+
+                        List<Item> output = new ArrayList<>();
+                        for (JsonElement itemElement : recipeJSON.get("output").getAsJsonArray()) {
+                            JsonObject itemJSON = itemElement.getAsJsonObject();
+
+                            String itemId = itemJSON.get("id").getAsString();
+                            int count = itemJSON.has("count") ? itemJSON.get("count").getAsInt() : 1;
+                            int meta = itemJSON.has("damage") ? itemJSON.get("damage").getAsInt() : 0;
+
+                            if (!ItemRegistry.getInstance().hasItem(itemId)) {
+                                continue;   // TODO: log this as an item is missing.
+                            }
+
+                            output.add(ItemRegistry.getInstance().getItem(itemId, count, meta));
+                        }
+
+                        if (input.size() == 0 || output.size() == 0) {
+                            continue;
+                        }
+                        recipe = new ShapelessRecipe(blockType, input.toArray(new Item[0]), output.toArray(new Item[0]));
+                    }
+                    case 1, 2 -> {
+                        continue;
+                    }
+                    default -> throw new IOException("Unexpected recipe type: " + recipeType);
+                }
+                this.defaultRecipes.add(recipe);
+            }
+
         }
     }
 
