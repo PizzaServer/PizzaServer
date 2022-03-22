@@ -112,4 +112,14 @@ public class ImplPlayerCraftingInventory extends BaseInventory implements Player
         return Collections.singleton(this.player);
     }
 
+    @Override
+    public boolean canBeOpenedBy(Player player) {
+        return this.getPlayer().equals(player);
+    }
+
+    @Override
+    protected void sendContainerOpenPacket(Player player) {
+        ((ImplPlayerInventory) this.getPlayer().getInventory()).sendContainerOpenPacket(player);
+    }
+
 }

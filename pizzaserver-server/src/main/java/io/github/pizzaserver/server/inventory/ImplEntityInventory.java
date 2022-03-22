@@ -15,7 +15,7 @@ import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Optional;
 
-public class ImplEntityInventory extends ImplOpenableInventory implements EntityInventory {
+public class ImplEntityInventory extends BaseInventory implements EntityInventory {
 
     protected final Entity entity;
 

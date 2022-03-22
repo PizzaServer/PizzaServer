@@ -112,4 +112,11 @@ public interface Inventory extends Watchable {
      */
     int getExcessIfAdded(Item item);
 
+    /**
+     * Check if this player has permission to open this inventory by themselves.
+     * @param player if the player has permission to open this inventory
+     * @return if the player has permission to open the inventory by themselves
+     */
+    boolean canBeOpenedBy(Player player);
+
 }

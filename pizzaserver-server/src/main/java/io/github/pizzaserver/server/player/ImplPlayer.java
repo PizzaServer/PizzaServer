@@ -24,7 +24,7 @@ import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
-import io.github.pizzaserver.api.inventory.OpenableInventory;
+import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
@@ -51,7 +51,7 @@ import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.entity.ImplEntityHuman;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.inventory.ImplOpenableInventory;
+import io.github.pizzaserver.server.inventory.BaseInventory;
 import io.github.pizzaserver.server.inventory.ImplPlayerInventory;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.world.ImplWorld;
@@ -100,7 +100,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
     protected Dimension dimensionTransferScreen = null;
 
-    protected OpenableInventory openInventory = null;
+    protected Inventory openInventory = null;
 
     protected Gamemode gamemode;
     protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings(this);
@@ -487,15 +487,15 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public Optional<OpenableInventory> getOpenInventory() {
+    public Optional<Inventory> getOpenInventory() {
         return Optional.ofNullable(this.openInventory);
     }
 
     @Override
     public boolean closeOpenInventory() {
-        Optional<OpenableInventory> openInventory = this.getOpenInventory();
+        Optional<Inventory> openInventory = this.getOpenInventory();
         if (openInventory.isPresent()) {
-            if (!((ImplOpenableInventory) openInventory.get()).closeFor(this)) {
+            if (!((BaseInventory) openInventory.get()).closeFor(this)) {
                 return false;
             } else {
                 this.tryDroppingCraftingGridItems();
@@ -536,9 +536,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean openInventory(OpenableInventory inventory) {
+    public boolean openInventory(Inventory inventory) {
         this.closeOpenInventory();
-        if (((ImplOpenableInventory) inventory).openFor(this)) {
+        if (((BaseInventory) inventory).openFor(this)) {
             this.openInventory = inventory;
             return true;
         } else {
@@ -995,7 +995,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.setHealth(this.getHealth() + 1);
         }
 
-        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((ImplOpenableInventory) inventory).shouldBeClosedFor(this)).isPresent();
+        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();
         if (shouldCloseOpenInventory) {
             this.closeOpenInventory();
         }

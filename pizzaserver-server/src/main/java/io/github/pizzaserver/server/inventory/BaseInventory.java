@@ -262,6 +262,53 @@ public abstract class BaseInventory implements Inventory {
         return remainingItem.getCount();
     }
 
+    protected abstract void sendContainerOpenPacket(Player player);
+
+    /**
+     * Close this inventory for a player.
+     * @param player the player to close this inventory for
+     * @return if the inventory was closed
+     */
+    public boolean closeFor(Player player) {
+        if (this.viewers.contains(player)) {
+            this.viewers.remove(player);
+
+            ContainerClosePacket containerClosePacket = new ContainerClosePacket();
+            containerClosePacket.setId((byte) this.getId());
+            player.sendPacket(containerClosePacket);
+
+            InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
+            Server.getInstance().getEventManager().call(inventoryCloseEvent);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean shouldBeClosedFor(Player player) {
+        return this.getViewers().contains(player);
+    }
+
+    /**
+     * Tries to open the inventory.
+     * @param player the player to open this inventory to
+     * @return if the inventory was opened
+     */
+    public boolean openFor(Player player) {
+        if (this.canBeOpenedBy(player)) {
+            this.viewers.add(player);
+            this.sendContainerOpenPacket(player);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean canBeOpenedBy(Player player) {
+        return !this.viewers.contains(player);
+    }
+
     /**
      * Helper method to send a slot of an inventory.
      * @param player player to send the slot to

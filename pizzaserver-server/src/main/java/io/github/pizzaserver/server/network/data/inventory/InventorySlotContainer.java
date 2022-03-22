@@ -33,7 +33,7 @@ public class InventorySlotContainer {
     }
 
     public BaseInventory getInventory() {
-        Optional<OpenableInventory> openInventory = this.player.getOpenInventory();
+        Optional<Inventory> openInventory = this.player.getOpenInventory();
         if (openInventory.isPresent() && InventoryUtils.getSlotTypes(openInventory.get().getContainerType()).contains(this.slotType)) {
             // the inventory targeted was the open inventory.
             return (BaseInventory) openInventory.get();

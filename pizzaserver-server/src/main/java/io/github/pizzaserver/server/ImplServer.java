@@ -3,13 +3,14 @@ package io.github.pizzaserver.server;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.ServerConfig;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.inventory.BlockInventory;
 import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
 import io.github.pizzaserver.api.item.CreativeRegistry;
@@ -19,7 +20,6 @@ import io.github.pizzaserver.api.item.impl.ItemDiamondAxe;
 import io.github.pizzaserver.api.item.impl.ItemFlintAndSteel;
 import io.github.pizzaserver.api.item.impl.ItemNetheriteChestplate;
 import io.github.pizzaserver.api.item.impl.ItemRawIron;
-import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.recipe.RecipeRegistry;
@@ -29,6 +29,7 @@ import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.api.recipe.type.ShapedRecipe;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
+import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Config;
 import io.github.pizzaserver.api.utils.Logger;
 import io.github.pizzaserver.api.utils.ServerState;
@@ -36,7 +37,7 @@ import io.github.pizzaserver.server.block.ImplBlockRegistry;
 import io.github.pizzaserver.server.blockentity.ImplBlockEntityRegistry;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.inventory.ImplBlockEntityInventory;
+import io.github.pizzaserver.server.inventory.ImplBlockInventory;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.event.ImplEventManager;
@@ -458,13 +459,8 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType) {
-        return this.createInventory(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
-    }
-
-    @Override
-    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType, int size) {
-        return new ImplBlockEntityInventory(blockEntity, containerType, size);
+    public BlockInventory createInventory(BlockLocation location, ContainerType containerType) {
+        return new ImplBlockInventory(location, containerType, InventoryUtils.getSlotCount(containerType));
     }
 
     @Override
