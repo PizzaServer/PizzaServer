@@ -1,14 +1,19 @@
 package io.github.pizzaserver.server.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import io.github.pizzaserver.api.inventory.PlayerCraftingInventory;
 import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.impl.ItemStick;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.Collections;
 import java.util.Set;
 
 public class ImplPlayerCraftingInventory extends BaseInventory implements PlayerCraftingInventory {
+
+    public static final int SLOT_OFFSET = 28;
 
     private final Player player;
     private Item creativeOutput;
@@ -92,12 +97,14 @@ public class ImplPlayerCraftingInventory extends BaseInventory implements Player
 
     @Override
     public void sendSlots(Player player) {
-
+        for (int slot = 0; slot < 4; slot++) {
+            this.sendSlot(player, slot);
+        }
     }
 
     @Override
     public void sendSlot(Player player, int slot) {
-
+        sendInventorySlot(player, this.getSlot(slot), slot + SLOT_OFFSET, ContainerId.UI);
     }
 
     @Override

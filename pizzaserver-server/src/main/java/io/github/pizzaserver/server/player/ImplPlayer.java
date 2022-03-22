@@ -13,19 +13,21 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityItem;
+import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
+import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
 import io.github.pizzaserver.api.inventory.OpenableInventory;
 import io.github.pizzaserver.api.item.CreativeRegistry;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
-import io.github.pizzaserver.api.item.impl.ItemStick;
-import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -492,11 +494,44 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     @Override
     public boolean closeOpenInventory() {
         Optional<OpenableInventory> openInventory = this.getOpenInventory();
-        if (openInventory.isPresent() && !((ImplOpenableInventory) openInventory.get()).closeFor(this)) {
-            return false;
+        if (openInventory.isPresent()) {
+            if (!((ImplOpenableInventory) openInventory.get()).closeFor(this)) {
+                return false;
+            } else {
+                this.tryDroppingCraftingGridItems();
+                this.openInventory = null;
+                return true;
+            }
         } else {
-            this.openInventory = null;
             return true;
+        }
+    }
+
+    /**
+     * Moves all items in the crafting grid to the player's inventory or to the ground.
+     * Normally this is handled by the client. but in the case scenario of malicious clients
+     * they could keep the items in their grid.
+     */
+    private void tryDroppingCraftingGridItems() {
+        for (int slot = 0; slot < 4; slot++) {
+            Item item = this.getInventory().getCraftingGrid().getGridSlot(slot);
+
+            Optional<Item> excess = this.getInventory().addItem(item);
+            if (excess.isPresent()) {
+                // the default behaviour is to try and drop the item. replicate it.
+                InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.getInventory().getCraftingGrid(), this, excess.get());
+                if (!dropItemEvent.isCancelled()) {
+                    Item droppedItem = dropItemEvent.getDrop();
+
+                    EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
+                    itemEntity.setPickupDelay(40);
+                    this.getWorld().addItemEntity(itemEntity, this.getLocation().toVector3f().add(0, 1.3f, 0), this.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
+
+                    this.getInventory().getCraftingGrid().setGridSlot(slot, null);
+                }
+            } else {
+                this.getInventory().getCraftingGrid().setGridSlot(slot, null);
+            }
         }
     }
 
@@ -505,7 +540,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.closeOpenInventory();
         if (((ImplOpenableInventory) inventory).openFor(this)) {
             this.openInventory = inventory;
-            this.getInventory().getCraftingGrid().setGridSlot(0, new ItemStick());
             return true;
         } else {
             return false;

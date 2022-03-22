@@ -46,7 +46,8 @@ public class InventoryUtils {
                 ContainerSlotType.CURSOR,
                 ContainerSlotType.OFFHAND });
         register(ContainerType.WORKBENCH, 5, new ContainerSlotType[] {
-                ContainerSlotType.CREATIVE_OUTPUT
+                ContainerSlotType.CREATIVE_OUTPUT,
+                ContainerSlotType.CRAFTING_INPUT
         });
     }
 

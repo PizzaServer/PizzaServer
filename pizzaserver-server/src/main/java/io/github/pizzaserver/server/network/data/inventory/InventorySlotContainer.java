@@ -1,10 +1,7 @@
 package io.github.pizzaserver.server.network.data.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
-import io.github.pizzaserver.api.inventory.EntityInventory;
-import io.github.pizzaserver.api.inventory.Inventory;
-import io.github.pizzaserver.api.inventory.OpenableInventory;
-import io.github.pizzaserver.api.inventory.PlayerInventory;
+import io.github.pizzaserver.api.inventory.*;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.server.inventory.*;
 import io.github.pizzaserver.server.player.ImplPlayer;
@@ -90,6 +87,14 @@ public class InventorySlotContainer {
                 } else {
                     return null;
                 }
+            case CRAFTING_INPUT:
+                if (inventory instanceof PlayerCraftingInventory craftingInventory
+                        && this.slot >= ImplPlayerCraftingInventory.SLOT_OFFSET
+                        && this.slot <= ImplPlayerCraftingInventory.SLOT_OFFSET + 3) {
+                    return craftingInventory.getSlot(this.slot - ImplPlayerCraftingInventory.SLOT_OFFSET);
+                } else {
+                    return null;
+                }
             default:
                 if (this.slot >= 0 && this.slot < this.getInventory().getSize()) {
                     return this.getInventory().getSlot(this.slot);
@@ -138,6 +143,13 @@ public class InventorySlotContainer {
                 if (this.getInventory() instanceof ImplPlayerCraftingInventory craftingInventory) {
                     craftingInventory.setCreativeOutput(itemStack);
                 }
+            case CRAFTING_INPUT:
+                if (this.getInventory() instanceof PlayerCraftingInventory
+                        && this.slot >= ImplPlayerCraftingInventory.SLOT_OFFSET
+                        && this.slot <= ImplPlayerCraftingInventory.SLOT_OFFSET + 3) {
+                    this.getInventory().setSlot(this.slot - ImplPlayerCraftingInventory.SLOT_OFFSET, itemStack);
+                }
+                break;
             default:
                 if (this.slot >= 0 && this.slot < this.getInventory().getSize()) {
                     this.getInventory().setSlot(this.player, this.slot, itemStack, true);
