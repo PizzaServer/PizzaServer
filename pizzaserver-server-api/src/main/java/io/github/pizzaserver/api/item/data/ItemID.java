@@ -8,13 +8,16 @@ public class ItemID {
     public static final String AMETHYST_SHARD = "minecraft:amethyst_shard";
     public static final String ARROW = "minecraft:arrow";
     public static final String BIRCH_BOAT = "minecraft:birch_boat";
+    public static final String BLACK_DYE = "minecraft:black_dye";
     public static final String BLAZE_POWDER = "minecraft:blaze_powder";
     public static final String BLAZE_ROD = "minecraft:blaze_rod";
+    public static final String BLUE_DYE = "minecraft:blue_dye";
     public static final String BOAT = "minecraft:boat";
     public static final String BONE = "minecraft:bone";
     public static final String BOOK = "minecraft:book";
     public static final String BOWL = "minecraft:bowl";
     public static final String BRICK = "minecraft:brick";
+    public static final String BROWN_DYE = "minecraft:brown_dye";
     public static final String CHAINMAIL_BOOTS = "minecraft:chainmail_boots";
     public static final String CHAINMAIL_CHESTPLATE = "minecraft:chainmail_chestplate";
     public static final String CHAINMAIL_HELMET = "minecraft:chainmail_helmet";
@@ -25,6 +28,7 @@ public class ItemID {
     public static final String COAL = "minecraft:coal";
     public static final String CONCRETE_POWDER = "minecraft:concrete_powder";
     public static final String COPPER_INGOT = "minecraft:copper_ingot";
+    public static final String CYAN_DYE = "minecraft:cyan_dye";
     public static final String DARK_OAK_BOAT = "minecraft:dark_oak_boat";
     public static final String DIAMOND = "minecraft:diamond";
     public static final String DIAMOND_AXE = "minecraft:diamond_axe";
@@ -52,6 +56,8 @@ public class ItemID {
     public static final String GOLDEN_LEGGINGS = "minecraft:golden_leggings";
     public static final String GOLDEN_PICKAXE = "minecraft:golden_pickaxe";
     public static final String GOLDEN_SWORD = "minecraft:golden_sword";
+    public static final String GRAY_DYE = "minecraft:gray_dye";
+    public static final String GREEN_DYE = "minecraft:green_dye";
     public static final String GUNPOWDER = "minecraft:gunpowder";
     public static final String HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
     public static final String INK_SAC = "minecraft:ink_sac";
@@ -70,6 +76,10 @@ public class ItemID {
     public static final String LEATHER_CHESTPLATE = "minecraft:leather_chestplate";
     public static final String LEATHER_HELMET = "minecraft:leather_helmet";
     public static final String LEATHER_LEGGINGS = "minecraft:leather_leggings";
+    public static final String LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
+    public static final String LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
+    public static final String LIME_DYE = "minecraft:lime_dye";
+    public static final String MAGENTA_DYE = "minecraft:magenta_dye";
     public static final String MAGMA_CREAM = "minecraft:magma_cream";
     public static final String NAUTILUS_SHELL = "minecraft:nautilus_shell";
     public static final String NETHER_STAR = "minecraft:nether_star";
@@ -83,15 +93,19 @@ public class ItemID {
     public static final String NETHERITE_SCRAP = "minecraft:netherite_scrap";
     public static final String NETHERITE_SWORD = "minecraft:netherite_sword";
     public static final String OAK_BOAT = "minecraft:oak_boat";
+    public static final String ORANGE_DYE = "minecraft:orange_dye";
     public static final String PAPER = "minecraft:paper";
+    public static final String PINK_DYE = "minecraft:pink_dye";
     public static final String PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
     public static final String PRISMARINE_SHARD = "minecraft:prismarine_shard";
+    public static final String PURPLE_DYE = "minecraft:purple_dye";
     public static final String QUARTZ = "minecraft:quartz";
     public static final String RABBIT_FOOT = "minecraft:rabbit_foot";
     public static final String RABBIT_HIDE = "minecraft:rabbit_hide";
     public static final String RAW_COPPER = "minecraft:raw_copper";
     public static final String RAW_GOLD = "minecraft:raw_gold";
     public static final String RAW_IRON = "minecraft:raw_iron";
+    public static final String RED_DYE = "minecraft:red_dye";
     public static final String SHEARS = "minecraft:shears";
     public static final String SHIELD = "minecraft:shield";
     public static final String SHULKER_SHELL = "minecraft:shulker_shell";
@@ -101,7 +115,9 @@ public class ItemID {
     public static final String STONE_PICKAXE = "minecraft:stone_pickaxe";
     public static final String STONE_SWORD = "minecraft:stone_sword";
     public static final String SUGAR = "minecraft:sugar";
+    public static final String WHITE_DYE = "minecraft:white_dye";
     public static final String WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
     public static final String WOODEN_SWORD = "minecraft:wooden_sword";
+    public static final String YELLOW_DYE = "minecraft:yellow_dye";
 
 }

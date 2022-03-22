@@ -17,4 +17,15 @@ public enum FurnaceRecipeBlockType {
     public String getRecipeBlockId() {
         return this.recipeBlockId;
     }
+
+    public static FurnaceRecipeBlockType fromRecipeBlock(String recipeBlockId) {
+        return switch (recipeBlockId) {
+            case "blast_furnace" -> BLAST_FURNACE;
+            case "campfire" -> CAMPFIRE;
+            case "furnace" -> FURNACE;
+            case "smoker" -> SMOKER;
+            case "soul_campfire" -> SOUL_CAMPFIRE;
+            default -> null;
+        };
+    }
 }

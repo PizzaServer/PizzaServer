@@ -39,13 +39,16 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemAmethystShard());
         ItemRegistry.getInstance().register(new ItemArrow());
         ItemRegistry.getInstance().register(new ItemBirchBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.BLACK));
         ItemRegistry.getInstance().register(new ItemBlazePowder());
         ItemRegistry.getInstance().register(new ItemBlazeRod());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.BLUE));
         ItemRegistry.getInstance().register(new ItemBoat(), new ItemBoatBehavior());   // Why does Microsoft have minecraft:boat and minecraft:oak_boat?...
         ItemRegistry.getInstance().register(new ItemBone());
         ItemRegistry.getInstance().register(new ItemBook());
         ItemRegistry.getInstance().register(new ItemBowl());
         ItemRegistry.getInstance().register(new ItemBrick());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.BROWN));
         ItemRegistry.getInstance().register(new ItemChainmailBoots(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemChainmailChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemChainmailHelmet(), new ItemArmorBehavior());
@@ -55,6 +58,7 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemClock());
         ItemRegistry.getInstance().register(new ItemCoal());
         ItemRegistry.getInstance().register(new ItemCopperIngot());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.CYAN));
         ItemRegistry.getInstance().register(new ItemDarkOakBoat(), new ItemBoatBehavior());
         ItemRegistry.getInstance().register(new ItemDiamond());
         ItemRegistry.getInstance().register(new ItemDiamondAxe(), new ItemToolBehavior());
@@ -82,6 +86,8 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemGoldenLeggings(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemGoldenPickaxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemGoldenSword(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.GRAY));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.GREEN));
         ItemRegistry.getInstance().register(new ItemGunpowder());
         ItemRegistry.getInstance().register(new ItemHeartOfTheSea());
         ItemRegistry.getInstance().register(new ItemInkSac());
@@ -100,6 +106,10 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemLeatherChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemLeatherHelmet(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemLeatherLeggings(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.LIGHT_BLUE));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.LIGHT_GRAY));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.LIME));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.MAGENTA));
         ItemRegistry.getInstance().register(new ItemMagmaCream());
         ItemRegistry.getInstance().register(new ItemNautilusShell());
         ItemRegistry.getInstance().register(new ItemNetherBrick());
@@ -113,15 +123,19 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemNetheriteScrap());
         ItemRegistry.getInstance().register(new ItemNetheriteSword(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemOakBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.ORANGE));
         ItemRegistry.getInstance().register(new ItemPaper());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.PINK));
         ItemRegistry.getInstance().register(new ItemPrismarineCrystals());
         ItemRegistry.getInstance().register(new ItemPrismarineShard());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.PURPLE));
         ItemRegistry.getInstance().register(new ItemQuartz());
         ItemRegistry.getInstance().register(new ItemRabbitFoot());
         ItemRegistry.getInstance().register(new ItemRabbitHide());
         ItemRegistry.getInstance().register(new ItemRawCopper());
         ItemRegistry.getInstance().register(new ItemRawGold());
         ItemRegistry.getInstance().register(new ItemRawIron());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.RED));
         ItemRegistry.getInstance().register(new ItemShears());
         ItemRegistry.getInstance().register(new ItemShulkerShell());
         ItemRegistry.getInstance().register(new ItemSlimeball());
@@ -130,8 +144,10 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemStonePickaxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemStoneSword(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemSugar());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.WHITE));
         ItemRegistry.getInstance().register(new ItemWoodenPickaxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemWoodenSword(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.YELLOW));
     }
 
     private static void loadBlocks() {

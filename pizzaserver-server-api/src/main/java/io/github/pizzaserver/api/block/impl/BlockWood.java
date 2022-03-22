@@ -182,7 +182,7 @@ public class BlockWood extends BlockStrippableWoodenLikeBlock {
 
     @Override
     public void updateFromStackMeta(int meta) {
-        if (this.getBlockId().equals(BlockID.WOOD)) {
+        if (this.getBlockId().equals(BlockID.WOOD) && meta < WoodType.values().length * 2) {
             if (meta >= 8) {
                 this.setWoodType(WoodType.values()[meta - 8]);
                 this.setStripped(true);

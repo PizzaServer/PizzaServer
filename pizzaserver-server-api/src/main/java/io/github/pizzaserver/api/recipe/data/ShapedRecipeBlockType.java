@@ -14,4 +14,11 @@ public enum ShapedRecipeBlockType {
         return this.recipeBlockId;
     }
 
+    public static ShapedRecipeBlockType fromRecipeBlock(String recipeBlockId) {
+        return switch (recipeBlockId) {
+            case "crafting_table" -> CRAFTING_TABLE;
+            default -> null;
+        };
+    }
+
 }

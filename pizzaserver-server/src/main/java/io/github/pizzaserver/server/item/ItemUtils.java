@@ -1,7 +1,9 @@
 package io.github.pizzaserver.server.item;
 
+import com.google.gson.JsonObject;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
@@ -57,6 +59,34 @@ public class ItemUtils {
                 .newNetworkCopy(itemData.getNetId());
         itemStack.setNBT(itemData.getTag());
         return itemStack;
+    }
+
+    public static Item fromJSON(JsonObject itemJSON, MinecraftVersion version) {
+        String itemId = itemJSON.get("id").getAsString();
+        int count = itemJSON.has("count") ? itemJSON.get("count").getAsInt() : 1;
+        int meta = itemJSON.has("damage") ? itemJSON.get("damage").getAsInt() : 0;
+        int blockRuntimeId = itemJSON.has("blockRuntimeId") ? itemJSON.get("blockRuntimeId").getAsInt() : 0;
+
+        if (!ItemRegistry.getInstance().hasItem(itemId)) {
+            // TODO: throw exception after all blocks/items implemented.
+            return null;
+        }
+
+        if (blockRuntimeId != 0) {
+            Block block = version.getBlockFromRuntimeId(blockRuntimeId);
+            if (block == null) {
+                // TODO: throw exception after all blocks/items implemented.
+                return null;
+            }
+
+            if (itemJSON.has("damage")) {
+                return new ItemBlock(block, count, meta);
+            } else {
+                return new ItemBlock(block, count);
+            }
+        }
+
+        return ItemRegistry.getInstance().getItem(itemId, count, meta);
     }
 
 }

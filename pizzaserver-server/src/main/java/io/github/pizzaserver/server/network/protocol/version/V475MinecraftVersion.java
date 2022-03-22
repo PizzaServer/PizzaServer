@@ -16,12 +16,11 @@ import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
-import io.github.pizzaserver.api.recipe.data.ShapelessRecipeBlockType;
 import io.github.pizzaserver.api.recipe.type.Recipe;
-import io.github.pizzaserver.api.recipe.type.ShapelessRecipe;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
+import io.github.pizzaserver.server.recipe.RecipeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -171,31 +170,11 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
             for (JsonElement jsonCreativeItem : jsonCreativeItems) {
                 JsonObject creativeJSONObj = jsonCreativeItem.getAsJsonObject();
+                Item item = ItemUtils.fromJSON(creativeJSONObj, this);
 
-                String id = creativeJSONObj.get("id").getAsString();
-                int meta = creativeJSONObj.has("damage") ? creativeJSONObj.get("damage").getAsInt() : 0;
-                int blockRuntimeId = creativeJSONObj.has("blockRuntimeId") ? creativeJSONObj.get("blockRuntimeId").getAsInt() : 0;
-
-                if (!ItemRegistry.getInstance().hasItem(id)) {
-                    // TODO: debug log this as this is a missing item!
+                if (item == null) {
+                    // TODO: throw exception after all blocks/items implemented.
                     continue;
-                }
-
-                Item item;
-                if (creativeJSONObj.has("blockRuntimeId")) {
-                    Block block = this.getBlockFromRuntimeId(blockRuntimeId);
-                    if (block == null) {
-                        // TODO: debug log this to as this is a missing block!
-                        continue;
-                    }
-
-                    item = new ItemBlock(block, 1);
-                } else {
-                    if (creativeJSONObj.has("damage")) {
-                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
-                    } else {
-                        item = ItemRegistry.getInstance().getItem(id, 1);
-                    }
                 }
 
                 this.creativeItems.add(item);
@@ -209,62 +188,13 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             JsonArray jsonRecipes = GSON.fromJson(creativeItemsReader, JsonObject.class).getAsJsonArray("recipes");
 
             for (JsonElement element : jsonRecipes) {
-                JsonObject recipeJSON = element.getAsJsonObject();
+                Recipe recipe = RecipeUtils.deserializeFromJSON(element.getAsJsonObject(), this);
 
-                int recipeType = recipeJSON.get("type").getAsInt();
-
-                // TODO: remove this. debug only to ignore other recipe types.
-                if (recipeType >= 3) {
-                    continue;
+                if (recipe != null) {
+                    // TODO: this check is unneeded in the future once all items are implemented
+                    // as methods like deserializeFromJSON will throw an exception instead of returning null.
+                    this.defaultRecipes.add(recipe);
                 }
-                String recipeBlock = recipeJSON.get("block").getAsString();
-
-                Recipe recipe;
-                switch (recipeType) {
-                    case 0 -> {
-                        ShapelessRecipeBlockType blockType = ShapelessRecipeBlockType.fromRecipeBlock(recipeBlock);
-
-                        List<Item> input = new ArrayList<>();
-                        for (JsonElement itemElement : recipeJSON.get("input").getAsJsonArray()) {
-                            JsonObject itemJSON = itemElement.getAsJsonObject();
-
-                            String itemId = itemJSON.get("id").getAsString();
-                            int count = itemJSON.has("count") ? itemJSON.get("count").getAsInt() : 1;
-                            int meta = itemJSON.has("damage") ? itemJSON.get("damage").getAsInt() : 0;
-
-                            if (!ItemRegistry.getInstance().hasItem(itemId)) {
-                                continue;   // TODO: log this as an item is missing
-                            }
-
-                            input.add(ItemRegistry.getInstance().getItem(itemId, count, meta));
-                        }
-
-                        List<Item> output = new ArrayList<>();
-                        for (JsonElement itemElement : recipeJSON.get("output").getAsJsonArray()) {
-                            JsonObject itemJSON = itemElement.getAsJsonObject();
-
-                            String itemId = itemJSON.get("id").getAsString();
-                            int count = itemJSON.has("count") ? itemJSON.get("count").getAsInt() : 1;
-                            int meta = itemJSON.has("damage") ? itemJSON.get("damage").getAsInt() : 0;
-
-                            if (!ItemRegistry.getInstance().hasItem(itemId)) {
-                                continue;   // TODO: log this as an item is missing.
-                            }
-
-                            output.add(ItemRegistry.getInstance().getItem(itemId, count, meta));
-                        }
-
-                        if (input.size() == 0 || output.size() == 0) {
-                            continue;
-                        }
-                        recipe = new ShapelessRecipe(blockType, input.toArray(new Item[0]), output.toArray(new Item[0]));
-                    }
-                    case 1, 2 -> {
-                        continue;
-                    }
-                    default -> throw new IOException("Unexpected recipe type: " + recipeType);
-                }
-                this.defaultRecipes.add(recipe);
             }
 
         }
