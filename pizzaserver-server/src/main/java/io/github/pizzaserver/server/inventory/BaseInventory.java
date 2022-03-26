@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -209,17 +210,26 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Set<Item> addItems(Collection<Item> items) {
-        return this.addItems(items.toArray(new Item[0]));
-    }
+    public Optional<Item> removeItem(Item item) {
+        Item remainingItem = Item.getAirIfNull(item).clone();
 
-    @Override
-    public Set<Item> addItems(Item... items) {
-        Set<Item> failedToAddItems = new HashSet<>();
-        for (Item Item : items) {
-            this.addItem(Item).ifPresent(failedToAddItems::add);
+        for (int slot = 0; slot < this.getSize(); slot++) {
+            if (remainingItem.getCount() <= 0) {
+                break;
+            }
+
+            Item slotStack = this.getSlot(slot);
+            if (slotStack.hasSameDataAs(remainingItem)) {
+                int removedAmount = Math.min(remainingItem.getCount(), slotStack.getCount());
+
+                slotStack.setCount(slotStack.getCount() - removedAmount);
+                this.setSlot(slot, slotStack);
+
+                remainingItem.setCount(remainingItem.getCount() - removedAmount);
+            }
         }
-        return failedToAddItems;
+
+        return Optional.ofNullable(remainingItem.isEmpty() ? null : remainingItem);
     }
 
     @Override

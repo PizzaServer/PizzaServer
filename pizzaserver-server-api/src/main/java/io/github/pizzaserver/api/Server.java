@@ -144,11 +144,11 @@ public abstract class Server {
      */
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType, int size);
 
-    public BlockInventory createInventory(Block block, ContainerType containerType) {
+    public BlockInventory<? extends Block> createInventory(Block block, ContainerType containerType) {
         return this.createInventory(block.getLocation(), containerType);
     }
 
-    public abstract BlockInventory createInventory(BlockLocation blockLocation, ContainerType containerType);
+    public abstract BlockInventory<? extends Block> createInventory(BlockLocation blockLocation, ContainerType containerType);
 
     public abstract BlockRegistry getBlockRegistry();
 

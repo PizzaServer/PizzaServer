@@ -2,10 +2,8 @@ package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
-import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import io.github.pizzaserver.api.inventory.PlayerCraftingInventory;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.impl.ItemStick;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.Collections;
@@ -20,7 +18,7 @@ public class ImplPlayerCraftingInventory extends BaseInventory implements Player
 
 
     public ImplPlayerCraftingInventory(Player player) {
-        super(ContainerType.WORKBENCH, 5);
+        super(ContainerType.WORKBENCH, 4);
         this.player = player;
     }
 

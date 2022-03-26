@@ -51,7 +51,7 @@ public class RecipeUtils {
                 ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;
 
                 return CraftingData.fromShapeless(shapelessRecipe.getUUID().toString(),
-                        Arrays.stream(shapelessRecipe.getInput()).map(item -> ItemUtils.serializeForNetwork(item, version)).toList(),
+                        Arrays.stream(shapelessRecipe.getIngredients()).map(item -> ItemUtils.serializeForNetwork(item, version)).toList(),
                         Arrays.stream(shapelessRecipe.getOutput()).map(item -> ItemUtils.serializeForNetwork(item, version)).toList(),
                         shapelessRecipe.getUUID(),
                         shapelessRecipe.getBlockType().getRecipeBlockId(),

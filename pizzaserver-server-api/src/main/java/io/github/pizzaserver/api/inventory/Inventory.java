@@ -4,10 +4,9 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.Watchable;
+import org.checkerframework.checker.nullness.Opt;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public interface Inventory extends Watchable {
 
@@ -77,20 +76,63 @@ public interface Inventory extends Watchable {
     /**
      * Try to add items to this inventory.
      * It will attempt to merge itself with any existing items that can merge
-     * with this items. If it cannot fully merge, it will return whatever could not be merged.
-     * @param items items to add
-     * @return remainder of the items that could not be added
-     */
-    Set<Item> addItems(Item ...items);
-
-    /**
-     * Try to add items to this inventory.
-     * It will attempt to merge itself with any existing items that can merge
      * with this item. If it cannot fully merge, it will return whatever could not be merged.
      * @param items items to add
      * @return remainder of the items that could not be added
      */
-    Set<Item> addItems(Collection<Item> items);
+    default List<Item> addItems(Collection<Item> items) {
+        return this.addItems(items.toArray(new Item[0]));
+    }
+
+    /**
+     * Try to add items to this inventory.
+     * It will attempt to merge itself with any existing items that can merge
+     * with this items. If it cannot fully merge, it will return whatever could not be merged.
+     * @param items items to add
+     * @return remainder of the items that could not be added
+     */
+    default List<Item> addItems(Item ...items) {
+        List<Item> excessItems = new ArrayList<>();
+
+        for (Item item : items) {
+            Optional<Item> excessItem = this.addItem(item);
+            excessItem.ifPresent(excessItems::add);
+        }
+        return excessItems;
+    }
+
+    /**
+     * Try to remove an item from the inventory.
+     * If the item cannot be fully removed, it will return whatever could not be removed.
+     * @param item item to remove
+     * @return remainder of the items that were not removed.
+     */
+    Optional<Item> removeItem(Item item);
+
+    /**
+     * Try to remove an item from the inventory.
+     * If the item cannot be fully removed, it will return whatever could not be removed.
+     * @param items items to remove
+     * @return remainder of the items that were not removed.
+     */
+    default List<Item> removeItems(Collection<Item> items) {
+        return this.removeItems(items.toArray(new Item[0]));
+    }
+
+    /**
+     * Try to remove an item from the inventory.
+     * If the item cannot be fully removed, it will return whatever could not be removed.
+     * @param items items to remove
+     * @return remainder of the items that were not removed.
+     */
+    default List<Item> removeItems(Item ...items) {
+        List<Item> remainingItems = new ArrayList<>();
+        for (Item item : items) {
+            this.removeItem(item).ifPresent(remainingItems::add);
+        }
+
+        return remainingItems;
+    }
 
     /**
      * Send this inventory to a player.

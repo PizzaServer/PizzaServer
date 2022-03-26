@@ -108,10 +108,15 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                                 response.addChange(creativeStackWrapper.getDestination());
                             }
                             break;
+                        case CRAFT_RECIPE:
+                            CraftRecipeRequestActionDataWrapper craftWrapper = new CraftRecipeRequestActionDataWrapper(this.player, (CraftRecipeStackRequestActionData) action);
+                            continueActions = InventoryActionCraftRecipeHandler.INSTANCE.tryAction(this.player, craftWrapper);
+                            // TODO: put item in creative output
+                            // TODO: remove items from crafting grid
+                            break;
                         case CONSUME:
                         case LAB_TABLE_COMBINE:
                         case BEACON_PAYMENT:
-                        case CRAFT_RECIPE:
                         case CRAFT_RECIPE_AUTO:
                         case CRAFT_RECIPE_OPTIONAL:
                         case CRAFT_REPAIR_AND_DISENCHANT:
@@ -139,7 +144,23 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
 
             // Handle incomplete crafting transactions.
             if (!((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput().isEmpty()) {
-                ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                Item item = ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput();
+                Optional<Item> excess = this.player.getInventory().addItem(item);
+
+                if (excess.isPresent()) {
+                    InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, excess.get());
+                    if (!dropItemEvent.isCancelled()) {
+                        Item droppedItem = dropItemEvent.getDrop();
+
+                        EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
+                        itemEntity.setPickupDelay(40);
+                        this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().toVector3f().add(0, 1.3f, 0), this.player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
+
+                        ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                    }
+                } else {
+                    ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                }
                 this.player.getServer().getLogger().debug(String.format("%s's creative output slot was not emptied at the end of their item request.", this.player.getUsername()));
             }
         }

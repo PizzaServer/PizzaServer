@@ -5,7 +5,7 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.block.impl.BlockCake;
 import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
@@ -16,17 +16,16 @@ import io.github.pizzaserver.api.event.EventManager;
 import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.impl.ItemDiamondAxe;
-import io.github.pizzaserver.api.item.impl.ItemFlintAndSteel;
-import io.github.pizzaserver.api.item.impl.ItemNetheriteChestplate;
-import io.github.pizzaserver.api.item.impl.ItemRawIron;
+import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.recipe.RecipeRegistry;
 import io.github.pizzaserver.api.recipe.data.ShapedRecipeBlockType;
 import io.github.pizzaserver.api.recipe.data.ShapedRecipeGrid;
+import io.github.pizzaserver.api.recipe.data.ShapelessRecipeBlockType;
 import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.api.recipe.type.ShapedRecipe;
+import io.github.pizzaserver.api.recipe.type.ShapelessRecipe;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.BlockLocation;
@@ -151,14 +150,6 @@ public class ImplServer extends Server {
         for (Recipe recipe : serverProtocolVersion.getDefaultRecipes()) {
             RecipeRegistry.getInstance().register(recipe);
         }
-        ShapedRecipe shapedRecipe = new ShapedRecipe(ShapedRecipeBlockType.CRAFTING_TABLE, new ShapedRecipeGrid.Builder(1, 2)
-                .setSlot(0, 0, new ItemDiamondAxe())
-                .setSlot(0, 1, new ItemRawIron())
-                .addOutput(new ItemFlintAndSteel())
-                .addOutput(new ItemRawIron())
-                .addOutput(new ItemNetheriteChestplate())
-                .build());
-        RecipeRegistry.getInstance().register(shapedRecipe);
 
         this.state = ServerState.ENABLING_PLUGINS;
         // TODO: call onEnable equiv method for plugins
@@ -459,8 +450,8 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public BlockInventory createInventory(BlockLocation location, ContainerType containerType) {
-        return new ImplBlockInventory(location, containerType, InventoryUtils.getSlotCount(containerType));
+    public BlockInventory<? extends Block> createInventory(BlockLocation location, ContainerType containerType) {
+        return new ImplBlockInventory<>(location, containerType, InventoryUtils.getSlotCount(containerType));
     }
 
     @Override

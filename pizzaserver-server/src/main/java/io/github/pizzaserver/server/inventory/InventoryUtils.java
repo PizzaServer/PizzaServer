@@ -45,7 +45,7 @@ public class InventoryUtils {
                 ContainerSlotType.HOTBAR_AND_INVENTORY,
                 ContainerSlotType.CURSOR,
                 ContainerSlotType.OFFHAND });
-        register(ContainerType.WORKBENCH, 5, new ContainerSlotType[] {
+        register(ContainerType.WORKBENCH, 4, new ContainerSlotType[] {
                 ContainerSlotType.CREATIVE_OUTPUT,
                 ContainerSlotType.CRAFTING_INPUT
         });

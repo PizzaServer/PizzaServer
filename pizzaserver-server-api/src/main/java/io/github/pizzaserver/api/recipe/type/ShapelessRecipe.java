@@ -7,23 +7,23 @@ import io.github.pizzaserver.commons.utils.Check;
 public class ShapelessRecipe extends Recipe {
 
     private final ShapelessRecipeBlockType blockType;
-    private final Item[] input;
+    private final Item[] ingredients;
     private final Item[] output;
 
-    public ShapelessRecipe(ShapelessRecipeBlockType blockType, Item[] input, Item[] output) {
+    public ShapelessRecipe(ShapelessRecipeBlockType blockType, Item[] ingredients, Item[] output) {
         Check.nullParam(blockType, "blockType");
 
-        if (input.length > 9 || input.length == 0) {
+        if (ingredients.length > 9 || ingredients.length == 0) {
             throw new IllegalArgumentException("The amount of items for a shapeless recipe must be within 1-9.");
         }
 
         this.blockType = blockType;
-        this.input = input;
+        this.ingredients = ingredients;
         this.output = output;
     }
 
-    public Item[] getInput() {
-        return this.input;
+    public Item[] getIngredients() {
+        return this.ingredients;
     }
 
     public Item[] getOutput() {

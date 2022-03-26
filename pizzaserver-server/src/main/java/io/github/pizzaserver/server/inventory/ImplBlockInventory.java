@@ -11,7 +11,7 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Optional;
 
-public class ImplBlockInventory extends BaseInventory implements BlockInventory {
+public class ImplBlockInventory<T extends Block> extends BaseInventory implements BlockInventory<T> {
 
     protected final BlockLocation blockLocation;
 
@@ -27,8 +27,9 @@ public class ImplBlockInventory extends BaseInventory implements BlockInventory 
     }
 
     @Override
-    public Block getBlock() {
-        return this.blockLocation.getBlock();
+    @SuppressWarnings("unchecked")
+    public T getBlock() {
+        return (T) this.blockLocation.getBlock();
     }
 
     @Override
