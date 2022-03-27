@@ -82,7 +82,7 @@ public class ImplChunk implements Chunk {
             String blockEntityId = blockEntityNBT.getString("id");
             BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
 
-            this.addBlockEntity(blockEntityType.deserializeDisk(this.getWorld(), blockEntityNBT));
+            this.addBlockEntity(blockEntityType.deserializeDisk(this, blockEntityNBT));
         }
     }
 
@@ -159,7 +159,7 @@ public class ImplChunk implements Chunk {
     }
 
     public void addBlockEntity(BlockEntity blockEntity) {
-        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getBlock().getX() & 15, blockEntity.getBlock().getY(), blockEntity.getBlock().getZ() & 15);
         this.blockEntities.put(blockCoordinates, blockEntity);
 
         synchronized (this.chunk) {
@@ -169,7 +169,7 @@ public class ImplChunk implements Chunk {
     }
 
     public void removeBlockEntity(BlockEntity blockEntity) {
-        Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
+        Vector3i blockCoordinates = Vector3i.from(blockEntity.getBlock().getX() & 15, blockEntity.getBlock().getY(), blockEntity.getBlock().getZ() & 15);
         this.blockEntities.remove(blockCoordinates);
 
         synchronized (this.chunk) {
@@ -194,7 +194,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
-        if (y >= 320 || y < -64 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
+        if (y >= 320 || y < -64) {
             throw new IllegalArgumentException("Could not get block outside chunk");
         }
         int subChunkIndex = y / 16;
@@ -246,7 +246,7 @@ public class ImplChunk implements Chunk {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void setBlock(Block block, int x, int y, int z, int layer) {
-        if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
+        if (y >= 256 || y < 0) {
             throw new IllegalArgumentException("Could not change block outside chunk");
         }
         int subChunkIndex = y / 16;
@@ -261,7 +261,7 @@ public class ImplChunk implements Chunk {
         writeLock.lock();
 
         // Remove old block entity at this position if present
-        this.getBlockEntity(x, y, z).ifPresent(this::removeBlockEntity);
+        this.getBlockEntity(chunkBlockX, y, chunkBlockZ).ifPresent(this::removeBlockEntity);
 
         // Add block entity if one exists for this block
         BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block)
@@ -401,7 +401,7 @@ public class ImplChunk implements Chunk {
 
     protected void sendBlockEntityData(Player player, BlockEntity blockEntity) {
         BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-        blockEntityDataPacket.setBlockPosition(blockEntity.getLocation().toVector3i());
+        blockEntityDataPacket.setBlockPosition(blockEntity.getBlock().getLocation().toVector3i());
         blockEntityDataPacket.setData(blockEntity.getNetworkData());
         player.sendPacket(blockEntityDataPacket);
     }

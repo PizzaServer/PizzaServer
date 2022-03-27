@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.recipe.type.Recipe;
+import io.github.pizzaserver.api.recipe.type.ShapedRecipe;
 import io.github.pizzaserver.api.recipe.type.ShapelessRecipe;
 import io.github.pizzaserver.server.inventory.ImplPlayerCraftingInventory;
 import io.github.pizzaserver.server.network.data.inventory.actions.CraftRecipeRequestActionDataWrapper;
@@ -37,7 +38,25 @@ public class InventoryActionCraftRecipeHandler extends InventoryActionHandler<Cr
 
                 return true;
             }
-            case FURNACE, SHAPED -> {
+            case SHAPED -> {
+                ShapedRecipe shapedRecipe = (ShapedRecipe) recipe;
+
+                // We have a 3x3 grid, but the shaped recipe can be formed anywhere in that grid. Attempt every offset.
+                for (int xOffset = 0; xOffset <= 3 - shapedRecipe.getGrid().getWidth(); xOffset++) {
+                    for (int yOffset = 0; yOffset <= 3 - shapedRecipe.getGrid().getHeight(); yOffset++) {
+                        // Using these offsets... try and see if every grid item matches!
+                        for (int x = 0; x < shapedRecipe.getGrid().getWidth(); x++) {
+                            for (int y = 0; y < shapedRecipe.getGrid().getHeight(); y++) {
+                                Item requiredItem = shapedRecipe.getGrid().getItem(x, y);
+                                // TODO: this cannot be finished without a way to differentiate between a crafting table and a crafting grid.
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+            case FURNACE -> {
                 return false;
             }
             default -> {

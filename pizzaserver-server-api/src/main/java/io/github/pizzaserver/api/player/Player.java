@@ -59,7 +59,7 @@ public interface Player extends EntityHuman {
 
     boolean canReach(Entity entity);
 
-    boolean canReach(BlockEntity blockEntity);
+    boolean canReach(BlockEntity<? extends Block> blockEntity);
 
     boolean canReach(Block block);
 

@@ -1,15 +1,15 @@
 package io.github.pizzaserver.api.blockentity;
 
 import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.utils.BlockLocation;
 
-public interface BlockEntity {
+public interface BlockEntity<T extends Block> {
 
     BlockEntityType getType();
 
-    BlockLocation getLocation();
+    T getBlock();
 
     NbtMap getNetworkData();
 

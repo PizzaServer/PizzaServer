@@ -1,23 +1,23 @@
 package io.github.pizzaserver.api.blockentity;
 
 import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.utils.BlockLocation;
 
-public abstract class BaseBlockEntity implements BlockEntity {
+public abstract class BaseBlockEntity<T extends Block> implements BlockEntity<T> {
 
-    protected BlockLocation blockPosition;
+    protected T block;
 
     protected boolean updated;
 
 
-    public BaseBlockEntity(BlockLocation blockPosition) {
-        this.blockPosition = blockPosition;
+    public BaseBlockEntity(T block) {
+        this.block = block;
     }
 
     @Override
-    public BlockLocation getLocation() {
-        return this.blockPosition;
+    public T getBlock() {
+        return this.block;
     }
 
     @Override

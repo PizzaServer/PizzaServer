@@ -5,6 +5,7 @@ import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockCraftingTable;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.inventory.ImplCraftingTableInventory;
 
 public class CraftingTableBehavior extends DefaultBlockBehavior<BlockCraftingTable> {
 
@@ -14,7 +15,8 @@ public class CraftingTableBehavior extends DefaultBlockBehavior<BlockCraftingTab
             return super.onInteract(player, block, face, clickPosition);
         }
 
-        return super.onInteract(player, block, face, clickPosition);
+        player.openInventory(new ImplCraftingTableInventory(block));
+        return false;
     }
 
 }

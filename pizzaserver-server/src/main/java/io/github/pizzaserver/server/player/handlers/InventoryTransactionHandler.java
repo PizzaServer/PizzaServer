@@ -22,6 +22,7 @@ import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.inventory.BaseInventory;
 import io.github.pizzaserver.server.inventory.ImplPlayerCraftingInventory;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.InventoryTransactionAction;
@@ -111,8 +112,6 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                         case CRAFT_RECIPE:
                             CraftRecipeRequestActionDataWrapper craftWrapper = new CraftRecipeRequestActionDataWrapper(this.player, (CraftRecipeStackRequestActionData) action);
                             continueActions = InventoryActionCraftRecipeHandler.INSTANCE.tryAction(this.player, craftWrapper);
-                            // TODO: put item in creative output
-                            // TODO: remove items from crafting grid
                             break;
                         case CONSUME:
                         case LAB_TABLE_COMBINE:

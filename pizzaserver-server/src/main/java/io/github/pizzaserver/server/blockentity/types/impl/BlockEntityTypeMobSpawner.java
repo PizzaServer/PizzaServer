@@ -2,14 +2,12 @@ package io.github.pizzaserver.server.blockentity.types.impl;
 
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.impl.BlockMobSpawner;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityMobSpawner;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
-import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Collections;
@@ -29,22 +27,22 @@ public class BlockEntityTypeMobSpawner implements BlockEntityType<BlockMobSpawne
 
     @Override
     public BlockEntityMobSpawner create(BlockMobSpawner block) {
-        return new BlockEntityMobSpawner(block.getLocation());
+        return new BlockEntityMobSpawner(block);
     }
 
     @Override
-    public BlockEntityMobSpawner deserializeDisk(World world, NbtMap diskNBT) {
-        return new BlockEntityMobSpawner(new BlockLocation(world,
-                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+    public BlockEntityMobSpawner deserializeDisk(Chunk chunk, NbtMap diskNBT) {
+        Vector3i coordinates = Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"));
+        return new BlockEntityMobSpawner((BlockMobSpawner) chunk.getBlock(coordinates));
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntity<BlockMobSpawner> blockEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
+                .putInt("x", blockEntity.getBlock().getX())
+                .putInt("y", blockEntity.getBlock().getY())
+                .putInt("z", blockEntity.getBlock().getZ())
                 .putString("EntityIdentifier", "")
                 .putFloat("DisplayEntityWidth", 1)
                 .putFloat("DisplayEntityHeight", 1)

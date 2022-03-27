@@ -400,8 +400,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean canReach(BlockEntity blockEntity) {
-        return this.canReach(blockEntity.getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
+    public boolean canReach(BlockEntity<? extends Block> blockEntity) {
+        return this.canReach(blockEntity.getBlock().getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
     }
 
     @Override

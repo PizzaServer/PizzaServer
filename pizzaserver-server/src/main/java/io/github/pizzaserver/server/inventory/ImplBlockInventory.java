@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityContainer;
 import io.github.pizzaserver.api.inventory.BlockInventory;
@@ -13,31 +14,22 @@ import java.util.Optional;
 
 public class ImplBlockInventory<T extends Block> extends BaseInventory implements BlockInventory<T> {
 
-    protected final BlockLocation blockLocation;
+    protected final T block;
 
 
-    public ImplBlockInventory(BlockLocation blockLocation, ContainerType containerType, int size) {
+    public ImplBlockInventory(T block, ContainerType containerType, int size) {
         super(containerType, size);
-        this.blockLocation = blockLocation;
-    }
-
-    public ImplBlockInventory(BlockLocation blockLocation, ContainerType containerType, int size, int id) {
-        super(containerType, size, id);
-        this.blockLocation = blockLocation;
+        this.block = block;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T getBlock() {
-        return (T) this.blockLocation.getBlock();
+        return this.block;
     }
 
     @Override
     public boolean canBeOpenedBy(Player player) {
-        return super.canBeOpenedBy(player) && player.getWorld()
-                .getBlockEntity(this.getBlock().getLocation().toVector3i())
-                .filter(blockEntity -> blockEntity.getType().getBlockIds().contains(this.getBlock().getBlockId()))
-                .isPresent();
+        return player.canReach(this.getBlock()) && super.canBeOpenedBy(player);
     }
 
     @Override
@@ -59,7 +51,13 @@ public class ImplBlockInventory<T extends Block> extends BaseInventory implement
 
     @Override
     public boolean shouldBeClosedFor(Player player) {
-        return !player.canReach(this.getBlock()) && super.shouldBeClosedFor(player);
+        Block currentBlockAtBlockPos = this.getBlock().getLocation().getBlock();
+
+        // check if we can reach the block and that the block id has not changed.
+        boolean canInteractWithBlock = player.canReach(this.getBlock())
+                && currentBlockAtBlockPos.getBlockId().equals(this.getBlock().getBlockId());
+
+        return !canInteractWithBlock && super.shouldBeClosedFor(player);
     }
 
     @Override

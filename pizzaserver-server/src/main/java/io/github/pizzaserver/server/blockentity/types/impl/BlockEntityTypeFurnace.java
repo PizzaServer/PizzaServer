@@ -3,14 +3,14 @@ package io.github.pizzaserver.server.blockentity.types.impl;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.block.impl.BlockBell;
 import io.github.pizzaserver.api.block.impl.BlockFurnace;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.blockentity.impl.BlockEntityBell;
 import io.github.pizzaserver.api.blockentity.impl.BlockEntityFurnace;
 import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
-import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Collections;
@@ -38,22 +38,22 @@ public class BlockEntityTypeFurnace implements BlockEntityType<BlockFurnace> {
 
     @Override
     public BlockEntityFurnace create(BlockFurnace block) {
-        return new BlockEntityFurnace(block.getLocation());
+        return new BlockEntityFurnace(block);
     }
 
     @Override
-    public BlockEntityFurnace deserializeDisk(World world, NbtMap diskNBT) {
-        return new BlockEntityFurnace(new BlockLocation(world,
-                Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"))));
+    public BlockEntityFurnace deserializeDisk(Chunk chunk, NbtMap diskNBT) {
+        Vector3i coordinates = Vector3i.from(diskNBT.getInt("x"), diskNBT.getInt("y"), diskNBT.getInt("z"));
+        return new BlockEntityFurnace((BlockFurnace) chunk.getBlock(coordinates));
     }
 
     @Override
-    public NbtMap serializeForDisk(BlockEntity blockEntity) {
+    public NbtMap serializeForDisk(BlockEntity<BlockFurnace> blockEntity) {
         return NbtMap.builder()
                 .putString("id", this.getId())
-                .putInt("x", blockEntity.getLocation().getX())
-                .putInt("y", blockEntity.getLocation().getY())
-                .putInt("z", blockEntity.getLocation().getZ())
+                .putInt("x", blockEntity.getBlock().getX())
+                .putInt("y", blockEntity.getBlock().getY())
+                .putInt("z", blockEntity.getBlock().getZ())
                 .putShort("CookTime", (short) 0)
                 .putShort("BurnTime", (short) 0)
                 .putShort("BurnDuration", (short) 0)
