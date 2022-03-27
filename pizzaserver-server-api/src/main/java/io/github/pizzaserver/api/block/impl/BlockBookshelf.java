@@ -1,12 +1,12 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.descriptors.Flammable;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockBookshelf extends Block implements Flammable {
+public class BlockBookshelf extends BaseBlock implements Flammable {
 
     @Override
     public String getBlockId() {

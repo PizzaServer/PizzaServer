@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.SlabType;
 import io.github.pizzaserver.api.entity.Entity;
@@ -14,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public abstract class BlockSlab extends Block {
+public abstract class BlockSlab extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

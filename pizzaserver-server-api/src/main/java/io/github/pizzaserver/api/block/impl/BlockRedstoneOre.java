@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.LitType;
 import io.github.pizzaserver.api.entity.Entity;
@@ -12,7 +12,7 @@ import io.github.pizzaserver.api.item.impl.ItemBlock;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockRedstoneOre extends Block {
+public class BlockRedstoneOre extends BaseBlock {
 
     protected boolean lit;
 

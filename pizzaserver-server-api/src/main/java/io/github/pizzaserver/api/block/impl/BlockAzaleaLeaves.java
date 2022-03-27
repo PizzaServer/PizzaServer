@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.descriptors.Flammable;
 import io.github.pizzaserver.api.entity.Entity;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class BlockAzaleaLeaves extends Block implements Flammable {
+public class BlockAzaleaLeaves extends BaseBlock implements Flammable {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
