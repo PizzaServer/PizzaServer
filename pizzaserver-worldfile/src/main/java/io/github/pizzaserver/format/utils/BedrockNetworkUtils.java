@@ -27,7 +27,7 @@ public class BedrockNetworkUtils {
     }
 
     public static void serializeBlockLayer(ByteBuf buffer, BlockLayer blockLayer, MinecraftSerializationHandler serializationHandler) {
-        int bitsPerBlock = Math.max(NumberUtils.log2Ceil(blockLayer.getPalette().getEntries().size()), 1);
+        int bitsPerBlock = NumberUtils.log2Ceil(blockLayer.getPalette().getEntries().size()) + 1;
         int blocksPerWord = 32 / bitsPerBlock;
         // integral ceiling division
         int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
@@ -77,7 +77,7 @@ public class BedrockNetworkUtils {
                 throw new IOException("biome sub chunk has no biomes present");
             }
 
-            int bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().getEntries().size());
+            int bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().getEntries().size()) + 1;
             int blocksPerWord = 0;
             int wordsPerChunk = 0;
 
