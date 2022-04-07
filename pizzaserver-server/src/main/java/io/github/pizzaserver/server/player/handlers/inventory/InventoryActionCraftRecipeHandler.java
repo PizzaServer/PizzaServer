@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.player.handlers.inventory;
 
+import io.github.pizzaserver.api.event.type.player.PlayerCraftEvent;
 import io.github.pizzaserver.api.inventory.CraftingInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
@@ -57,6 +58,13 @@ public class InventoryActionCraftRecipeHandler extends InventoryActionHandler<Cr
         CraftingInventory craftingInventory = this.getCraftingInventory(player);
 
         Recipe recipe = action.getRecipe().get();
+
+        PlayerCraftEvent craftEvent = new PlayerCraftEvent(player, craftingInventory, recipe);
+        player.getServer().getEventManager().call(craftEvent);
+        if (craftEvent.isCancelled()) {
+            return false;
+        }
+
         switch (recipe.getType()) {
             case SHAPELESS -> {
                 ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;
