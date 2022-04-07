@@ -1,8 +1,5 @@
 package io.github.pizzaserver.server.player.handlers.inventory;
 
-import io.github.pizzaserver.api.entity.EntityItem;
-import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.inventory.CraftingInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
@@ -11,6 +8,7 @@ import io.github.pizzaserver.api.recipe.type.ShapedRecipe;
 import io.github.pizzaserver.api.recipe.type.ShapelessRecipe;
 import io.github.pizzaserver.server.inventory.ImplPlayerCraftingInventory;
 import io.github.pizzaserver.server.network.data.inventory.actions.CraftRecipeRequestActionDataWrapper;
+import io.github.pizzaserver.server.player.ImplPlayer;
 
 import java.util.Optional;
 
@@ -88,18 +86,7 @@ public class InventoryActionCraftRecipeHandler extends InventoryActionHandler<Cr
                     Optional<Item> excess = player.getInventory().addItem(shapelessRecipe.getOutput()[i]);
 
                     // if it was unable to add all the output items, drop the output item.
-                    if (excess.isPresent()) {
-                        InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(player.getInventory(), player, excess.get());
-                        player.getServer().getEventManager().call(dropItemEvent);
-
-                        if (!dropItemEvent.isCancelled()) {
-                            Item droppedItem = dropItemEvent.getDrop();
-
-                            EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
-                            itemEntity.setPickupDelay(40);
-                            player.getWorld().addItemEntity(itemEntity, player.getLocation().toVector3f().add(0, 1.3f, 0), player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
-                        }
-                    }
+                    excess.ifPresent(item -> ((ImplPlayer) player).tryDroppingItem(player.getInventory(), item));
                 }
             }
         }

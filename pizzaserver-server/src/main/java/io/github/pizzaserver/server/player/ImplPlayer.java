@@ -524,21 +524,35 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             Optional<Item> excess = this.getInventory().addItem(item);
             if (excess.isPresent()) {
-                // the default behaviour is to try and drop the item. replicate it.
-                InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(inventory, this, excess.get());
-                if (!dropItemEvent.isCancelled()) {
-                    Item droppedItem = dropItemEvent.getDrop();
-
-                    EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
-                    itemEntity.setPickupDelay(40);
-                    this.getWorld().addItemEntity(itemEntity, this.getLocation().toVector3f().add(0, 1.3f, 0), this.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
-
+                // The default behaviour is to drop the item if we cannot add it to our inventory.
+                if (this.tryDroppingItem(inventory, excess.get())) {
                     inventory.setSlot(slot, null);
                 }
             } else {
                 inventory.setSlot(slot, null);
             }
         }
+    }
+
+    /**
+     * Attempts to drop an item from the player's inventory. (calls the InventoryDropItemEvent)
+     * @param inventory the inventory of the item being dropped
+     * @param item the item being dropped
+     * @return if the item was dropped.
+     */
+    public boolean tryDroppingItem(Inventory inventory, Item item) {
+        InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(inventory, this, item);
+        if (!dropItemEvent.isCancelled()) {
+            Item droppedItem = dropItemEvent.getDrop();
+
+            EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
+            itemEntity.setPickupDelay(40);
+            this.getWorld().addItemEntity(itemEntity, this.getLocation().toVector3f().add(0, 1.3f, 0), this.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override

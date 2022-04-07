@@ -147,14 +147,8 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                 Optional<Item> excess = this.player.getInventory().addItem(item);
 
                 if (excess.isPresent()) {
-                    InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, excess.get());
-                    if (!dropItemEvent.isCancelled()) {
-                        Item droppedItem = dropItemEvent.getDrop();
-
-                        EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
-                        itemEntity.setPickupDelay(40);
-                        this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().toVector3f().add(0, 1.3f, 0), this.player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
-
+                    // Try to drop the item if we can.
+                    if (this.player.tryDroppingItem(this.player.getInventory(), excess.get())) {
                         ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
                     }
                 } else {
@@ -248,17 +242,10 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                     Item droppedStack = itemStack.clone();
                     droppedStack.setCount(amountDropped);
 
-                    InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, droppedStack);
-                    this.player.getServer().getEventManager().call(dropItemEvent);
-                    if (!dropItemEvent.isCancelled()) {
-                        // update server inventory to reflect dropped count
+                    if (this.player.tryDroppingItem(this.player.getInventory(), droppedStack)) {
+                        // update inventory to reflect dropped count
                         itemStack.setCount(itemStack.getCount() - amountDropped);
                         this.player.getInventory().setSlot(this.player, nextAction.getSlot(), itemStack, true);
-
-                        // Drop item
-                        EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedStack);
-                        itemEntity.setPickupDelay(40);
-                        this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().toVector3f().add(0, 1.3f, 0), this.player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
                     } else {
                         // Revert clientside slot change
                         this.player.getInventory().sendSlot(this.player, nextAction.getSlot());
