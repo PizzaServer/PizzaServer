@@ -9,4 +9,14 @@ public interface PlayerCraftingInventory extends CraftingInventory, TemporaryInv
 
     Player getPlayer();
 
+    @Override
+    default int getGridHeight() {
+        return 2;
+    }
+
+    @Override
+    default int getGridWidth() {
+        return 2;
+    }
+
 }

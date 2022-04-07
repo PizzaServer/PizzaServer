@@ -64,7 +64,7 @@ public class ItemUtils {
     public static Item fromJSON(JsonObject itemJSON, MinecraftVersion version) {
         String itemId = itemJSON.get("id").getAsString();
         int count = itemJSON.has("count") ? itemJSON.get("count").getAsInt() : 1;
-        int meta = itemJSON.has("damage") ? itemJSON.get("damage").getAsInt() : 0;
+        int meta = itemJSON.has("damage") && itemJSON.get("damage").getAsShort() != Short.MAX_VALUE ? itemJSON.get("damage").getAsInt() : 0;
         int blockRuntimeId = itemJSON.has("blockRuntimeId") ? itemJSON.get("blockRuntimeId").getAsInt() : 0;
 
         if (!ItemRegistry.getInstance().hasItem(itemId)) {
