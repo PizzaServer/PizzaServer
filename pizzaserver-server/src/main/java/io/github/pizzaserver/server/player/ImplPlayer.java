@@ -25,6 +25,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
 import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.TemporaryInventory;
 import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
@@ -498,7 +499,12 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             if (!((BaseInventory) openInventory.get()).closeFor(this)) {
                 return false;
             } else {
-                this.tryDroppingCraftingGridItems();
+                // Drop items from open inventory if required.
+                this.handleClosingTemporaryInventory(this.getInventory().getCraftingGrid());
+                if (openInventory.get() instanceof TemporaryInventory openTempInventory) {
+                    this.handleClosingTemporaryInventory(openTempInventory);
+                }
+
                 this.openInventory = null;
                 return true;
             }
@@ -508,18 +514,18 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     /**
-     * Moves all items in the crafting grid to the player's inventory or to the ground.
-     * Normally this is handled by the client. but in the case scenario of malicious clients
-     * they could keep the items in their grid.
+     * Moves all items in the temporary inventory to the player's inventory or to the ground.
+     * Normally this is handled by the client. but in the case scenario of malicious clients,
+     * they could keep the items in their temporary inventory.
      */
-    private void tryDroppingCraftingGridItems() {
-        for (int slot = 0; slot < 4; slot++) {
-            Item item = this.getInventory().getCraftingGrid().getGridSlot(slot);
+    private void handleClosingTemporaryInventory(TemporaryInventory inventory) {
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            Item item = inventory.getSlot(slot);
 
             Optional<Item> excess = this.getInventory().addItem(item);
             if (excess.isPresent()) {
                 // the default behaviour is to try and drop the item. replicate it.
-                InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.getInventory().getCraftingGrid(), this, excess.get());
+                InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(inventory, this, excess.get());
                 if (!dropItemEvent.isCancelled()) {
                     Item droppedItem = dropItemEvent.getDrop();
 
@@ -527,10 +533,10 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                     itemEntity.setPickupDelay(40);
                     this.getWorld().addItemEntity(itemEntity, this.getLocation().toVector3f().add(0, 1.3f, 0), this.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
 
-                    this.getInventory().getCraftingGrid().setGridSlot(slot, null);
+                    inventory.setSlot(slot, null);
                 }
             } else {
-                this.getInventory().getCraftingGrid().setGridSlot(slot, null);
+                inventory.setSlot(slot, null);
             }
         }
     }

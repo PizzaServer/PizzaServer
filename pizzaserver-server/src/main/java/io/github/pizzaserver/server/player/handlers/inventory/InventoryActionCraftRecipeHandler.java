@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.player.handlers.inventory;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
+import io.github.pizzaserver.api.inventory.CraftingInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.recipe.type.Recipe;
@@ -25,13 +26,15 @@ public class InventoryActionCraftRecipeHandler extends InventoryActionHandler<Cr
             return false;
         }
 
+        CraftingInventory craftingInventory = this.getCraftingInventory(player);
+
         Recipe recipe = action.getRecipe().get();
         switch (recipe.getType()) {
             case SHAPELESS -> {
                 ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;
 
                 for (Item ingredient : shapelessRecipe.getIngredients()) {
-                    if (!player.getInventory().getCraftingGrid().contains(ingredient)) {
+                    if (!craftingInventory.contains(ingredient)) {
                         return false;
                     }
                 }
@@ -67,14 +70,15 @@ public class InventoryActionCraftRecipeHandler extends InventoryActionHandler<Cr
 
     @Override
     protected boolean runAction(Player player, CraftRecipeRequestActionDataWrapper action) {
-        Recipe recipe = action.getRecipe().get();
+        CraftingInventory craftingInventory = this.getCraftingInventory(player);
 
+        Recipe recipe = action.getRecipe().get();
         switch (recipe.getType()) {
             case SHAPELESS -> {
                 ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;
 
                 for (Item ingredient : shapelessRecipe.getIngredients()) {
-                    player.getInventory().getCraftingGrid().removeItem(ingredient);
+                    craftingInventory.removeItem(ingredient);
                 }
 
                 Item craftingOutput = shapelessRecipe.getOutput()[0];
@@ -100,6 +104,12 @@ public class InventoryActionCraftRecipeHandler extends InventoryActionHandler<Cr
             }
         }
         return true;
+    }
+
+    private CraftingInventory getCraftingInventory(Player player) {
+        return (CraftingInventory) player.getOpenInventory()
+                .filter(inventory -> inventory instanceof CraftingInventory)
+                .orElse(player.getInventory().getCraftingGrid());
     }
 
 }

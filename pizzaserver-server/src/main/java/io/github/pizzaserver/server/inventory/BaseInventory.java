@@ -107,6 +107,16 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
+    /**
+     * Some slots retrieved over the network have an offset and do not start from 0.
+     * This converts offsetted slots sent from the network to slots that are indexed starting from 0.
+     * @param networkSlot network slot
+     * @return non-offsetted slot
+     */
+    public int convertFromNetworkSlot(int networkSlot) {
+        return networkSlot;
+    }
+
     @Override
     public void setSlot(int slot, Item item) {
         this.setSlot(null, slot, item, false);

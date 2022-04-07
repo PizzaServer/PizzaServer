@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class ImplPlayerCraftingInventory extends BaseInventory implements PlayerCraftingInventory {
 
-    public static final int SLOT_OFFSET = 28;
+    private static final int SLOT_OFFSET = 28;
 
     private final Player player;
     private Item creativeOutput;
@@ -40,60 +40,6 @@ public class ImplPlayerCraftingInventory extends BaseInventory implements Player
     }
 
     @Override
-    public Item getResult() {
-        return this.getSlot(4);
-    }
-
-    @Override
-    public Item[] getGridSlots() {
-        return new Item[] {
-            this.getSlot(0),
-            this.getSlot(1),
-            this.getSlot(2),
-            this.getSlot(3)
-        };
-    }
-
-    @Override
-    public Item getGridSlot(int slot) {
-        if (slot < 0 || slot >= 4) {
-            throw new IllegalArgumentException("Invalid grid slot provided.");
-        }
-
-        return this.getSlot(slot);
-    }
-
-    @Override
-    public void setGridSlots(Item[] grid) {
-        if (grid.length > 4) {
-            throw new IllegalArgumentException("Invalid grid items length provided.");
-        }
-        Item[] slotsSet = new Item[5];
-        switch (grid.length) {
-            case 4:
-                slotsSet[3] = grid[3];
-            case 3:
-                slotsSet[2] = grid[2];
-            case 2:
-                slotsSet[1] = grid[1];
-            case 1:
-                slotsSet[0] = grid[0];
-                break;
-        }
-        slotsSet[4] = this.getResult();
-
-        this.setSlots(slotsSet);
-    }
-
-    @Override
-    public void setGridSlot(int slot, Item item) {
-        if (slot < 0 || slot >= 4) {
-            throw new IllegalArgumentException("Invalid grid slot provided.");
-        }
-        this.setSlot(slot, item);
-    }
-
-    @Override
     public void sendSlots(Player player) {
         for (int slot = 0; slot < 4; slot++) {
             this.sendSlot(player, slot);
@@ -118,6 +64,11 @@ public class ImplPlayerCraftingInventory extends BaseInventory implements Player
     @Override
     protected void sendContainerOpenPacket(Player player) {
         ((ImplPlayerInventory) this.getPlayer().getInventory()).sendContainerOpenPacket(player);
+    }
+
+    @Override
+    public int convertFromNetworkSlot(int networkSlot) {
+        return networkSlot - SLOT_OFFSET;
     }
 
 }

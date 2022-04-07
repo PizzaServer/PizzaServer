@@ -158,7 +158,7 @@ public class ImplChunk implements Chunk {
         return new HashSet<>(this.entities);
     }
 
-    public void addBlockEntity(BlockEntity blockEntity) {
+    public void addBlockEntity(BlockEntity<? extends Block> blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getBlock().getX() & 15, blockEntity.getBlock().getY(), blockEntity.getBlock().getZ() & 15);
         this.blockEntities.put(blockCoordinates, blockEntity);
 
@@ -168,7 +168,7 @@ public class ImplChunk implements Chunk {
         }
     }
 
-    public void removeBlockEntity(BlockEntity blockEntity) {
+    public void removeBlockEntity(BlockEntity<? extends Block> blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getBlock().getX() & 15, blockEntity.getBlock().getY(), blockEntity.getBlock().getZ() & 15);
         this.blockEntities.remove(blockCoordinates);
 
@@ -197,7 +197,7 @@ public class ImplChunk implements Chunk {
         if (y >= 320 || y < -64) {
             throw new IllegalArgumentException("Could not get block outside chunk");
         }
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int chunkBlockY = Math.abs(y) & 15;
         int chunkBlockZ = z & 15;
@@ -246,10 +246,10 @@ public class ImplChunk implements Chunk {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void setBlock(Block block, int x, int y, int z, int layer) {
-        if (y >= 256 || y < 0) {
+        if (y >= 256 || y < -64) {
             throw new IllegalArgumentException("Could not change block outside chunk");
         }
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int subChunkBlockY = y & 15;
         int chunkBlockZ = z & 15;
@@ -339,7 +339,7 @@ public class ImplChunk implements Chunk {
     }
 
     private void doBlockUpdate(BlockUpdateType type, int x, int y, int z) {
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int chunkBlockZ = z & 15;
 
@@ -362,7 +362,7 @@ public class ImplChunk implements Chunk {
      * @param z z coordinate
      */
     public void sendBlock(Player player, int x, int y, int z) {
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
 
         // Ensure that at least the foremost layer is sent to the client
         int layers;

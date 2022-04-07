@@ -27,7 +27,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
             boolean doesNotExceedMaxCount = action.getCountRequested() > 0
                     && destinationItemStack.getCount() + action.getCountRequested() <= sourceItemStack.getMaxStackSize();
 
-            boolean canPutItemTypeInSlot = Item.canBePlacedInSlot(sourceItemStack, action.getDestination().getSlotType(), action.getDestination().getSlot())
+            boolean canPutItemTypeInSlot = Item.canBePlacedInSlot(sourceItemStack, action.getDestination().getSlotType(), action.getDestination().getNetworkSlot())
                     && action.getDestination().getSlotType() != ContainerSlotType.CURSOR;
 
             return canMergeItemData && doesNotExceedMaxCount && canPutItemTypeInSlot;
@@ -58,12 +58,12 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
                 StackRequestActionType.PLACE,
                 source.getInventory(),
                 source.getSlotType(),
-                source.getSlot(),
+                source.getNetworkSlot(),
                 source.getItemStack(),
                 playerRequestedAmount,
                 destination.getInventory(),
                 destination.getSlotType(),
-                destination.getSlot(),
+                destination.getNetworkSlot(),
                 destination.getItemStack());
         player.getServer().getEventManager().call(inventoryMoveItemEvent);
         if (inventoryMoveItemEvent.isCancelled()) {

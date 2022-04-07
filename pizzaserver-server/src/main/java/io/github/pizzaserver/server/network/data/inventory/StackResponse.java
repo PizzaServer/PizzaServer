@@ -22,8 +22,8 @@ public class StackResponse {
         if (!this.changes.containsKey(slotContainer.getSlotType())) {
             this.changes.put(slotContainer.getSlotType(), new ArrayList<>());
         }
-        this.changes.get(slotContainer.getSlotType()).add(new ItemStackResponsePacket.ItemEntry((byte) slotContainer.getSlot(),
-                (byte) slotContainer.getSlot(),
+        this.changes.get(slotContainer.getSlotType()).add(new ItemStackResponsePacket.ItemEntry((byte) slotContainer.getNetworkSlot(),
+                (byte) slotContainer.getNetworkSlot(),
                 (byte) slotContainer.getItemStack().getCount(),
                 slotContainer.getItemStack().getNetworkId(),
                 slotContainer.getItemStack().getCustomName().orElse(""),

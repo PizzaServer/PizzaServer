@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import io.github.pizzaserver.api.block.Block;
@@ -11,35 +12,11 @@ import io.github.pizzaserver.api.utils.BlockLocation;
 
 public class ImplCraftingTableInventory extends ImplBlockInventory<BlockCraftingTable> implements CraftingTableInventory {
 
+    private static final int CRAFTING_SLOT_OFFSET = 32;
+
+
     public ImplCraftingTableInventory(BlockCraftingTable block) {
-        super(block, ContainerType.WORKBENCH, 4);
-    }
-
-    @Override
-    public Item getResult() {
-
-        return null;
-    }
-
-    @Override
-    public Item[] getGridSlots() {
-        return new Item[0];
-    }
-
-    @Override
-    public Item getGridSlot(int slot) {
-
-        return null;
-    }
-
-    @Override
-    public void setGridSlots(Item[] grid) {
-
-    }
-
-    @Override
-    public void setGridSlot(int slot, Item item) {
-
+        super(block, ContainerType.WORKBENCH, 9);
     }
 
     @Override
@@ -49,6 +26,23 @@ public class ImplCraftingTableInventory extends ImplBlockInventory<BlockCrafting
         containerOpenPacket.setType(ContainerType.WORKBENCH);
         containerOpenPacket.setBlockPosition(this.getBlock().getLocation().toVector3i());
         player.sendPacket(containerOpenPacket);
+    }
+
+    @Override
+    public void sendSlots(Player player) {
+        for (int slot = 0; slot < 9; slot++) {
+            this.sendSlot(player, slot);
+        }
+    }
+
+    @Override
+    public void sendSlot(Player player, int slot) {
+        sendInventorySlot(player, this.getSlot(slot), slot + CRAFTING_SLOT_OFFSET, ContainerId.UI);
+    }
+
+    @Override
+    public int convertFromNetworkSlot(int networkSlot) {
+        return networkSlot - CRAFTING_SLOT_OFFSET;
     }
 
 }

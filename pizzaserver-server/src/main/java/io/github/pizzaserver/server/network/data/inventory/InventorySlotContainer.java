@@ -12,24 +12,24 @@ public class InventorySlotContainer {
 
     private final ImplPlayer player;
     private final ContainerSlotType slotType;
-    private final int slot;
+    private final int networkSlot;
     private boolean modified;
 
 
     public InventorySlotContainer(ImplPlayer player,
                                   ContainerSlotType slotType,
-                                  int slot) {
+                                  int networkSlot) {
         this.player = player;
         this.slotType = slotType;
-        this.slot = slot;
+        this.networkSlot = networkSlot;
     }
 
     public ContainerSlotType getSlotType() {
         return this.slotType;
     }
 
-    public int getSlot() {
-        return this.slot;
+    public int getNetworkSlot() {
+        return this.networkSlot;
     }
 
     public BaseInventory getInventory() {
@@ -53,6 +53,9 @@ public class InventorySlotContainer {
         if (inventory == null) {
             return null;
         }
+
+        int slot = inventory.convertFromNetworkSlot(this.getNetworkSlot());
+
         switch (this.slotType) {
             case CURSOR:
             case OFFHAND:
@@ -67,7 +70,7 @@ public class InventorySlotContainer {
                 }
             case ARMOR:
                 if (this.getInventory() instanceof EntityInventory entityInventory) {
-                    return switch (this.getSlot()) {
+                    return switch (slot) {
                         case 0 -> entityInventory.getHelmet();
                         case 1 -> entityInventory.getChestplate();
                         case 2 -> entityInventory.getLeggings();
@@ -78,22 +81,20 @@ public class InventorySlotContainer {
                     return null;
                 }
             case CREATIVE_OUTPUT:
-                if (inventory instanceof ImplPlayerCraftingInventory craftingInventory) {
-                    return craftingInventory.getCreativeOutput();
+                if (inventory instanceof CraftingInventory) {
+                    return ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput();
                 } else {
                     return null;
                 }
             case CRAFTING_INPUT:
-                if (inventory instanceof PlayerCraftingInventory craftingInventory
-                        && this.slot >= ImplPlayerCraftingInventory.SLOT_OFFSET
-                        && this.slot <= ImplPlayerCraftingInventory.SLOT_OFFSET + 3) {
-                    return craftingInventory.getSlot(this.slot - ImplPlayerCraftingInventory.SLOT_OFFSET);
-                } else {
+                if (inventory instanceof PlayerCraftingInventory craftingInventory && slot >= 0 && slot <= craftingInventory.getSize()) {
+                    return craftingInventory.getSlot(slot);
+                } else if (!(inventory instanceof CraftingInventory)) {
                     return null;
                 }
             default:
-                if (this.slot >= 0 && this.slot < this.getInventory().getSize()) {
-                    return this.getInventory().getSlot(this.slot);
+                if (slot >= 0 && slot < this.getInventory().getSize()) {
+                    return this.getInventory().getSlot(slot);
                 } else {
                     return null;
                 }
@@ -104,6 +105,9 @@ public class InventorySlotContainer {
         if (!this.exists()) {
             throw new NullPointerException("Attempted to set non-existent item slot");
         }
+
+        int slot = this.getInventory().convertFromNetworkSlot(this.getNetworkSlot());
+
         switch (this.slotType) {
             case CURSOR:
             case OFFHAND:
@@ -119,36 +123,29 @@ public class InventorySlotContainer {
             case ARMOR:
                 if (this.getInventory() instanceof EntityInventory) {
                     ImplEntityInventory entityInventory = (ImplEntityInventory) this.getInventory();
-                    switch (this.getSlot()) {
-                        case 0:
-                            entityInventory.setHelmet(itemStack, true);
-                            break;
-                        case 1:
-                            entityInventory.setChestplate(itemStack, true);
-                            break;
-                        case 2:
-                            entityInventory.setLeggings(itemStack, true);
-                            break;
-                        case 3:
-                            entityInventory.setBoots(itemStack, true);
-                            break;
+                    switch (slot) {
+                        case 0 -> entityInventory.setHelmet(itemStack, true);
+                        case 1 -> entityInventory.setChestplate(itemStack, true);
+                        case 2 -> entityInventory.setLeggings(itemStack, true);
+                        case 3 -> entityInventory.setBoots(itemStack, true);
                     }
                 }
                 break;
             case CREATIVE_OUTPUT:
-                if (this.getInventory() instanceof ImplPlayerCraftingInventory craftingInventory) {
-                    craftingInventory.setCreativeOutput(itemStack);
-                }
-            case CRAFTING_INPUT:
-                if (this.getInventory() instanceof PlayerCraftingInventory
-                        && this.slot >= ImplPlayerCraftingInventory.SLOT_OFFSET
-                        && this.slot <= ImplPlayerCraftingInventory.SLOT_OFFSET + 3) {
-                    this.getInventory().setSlot(this.slot - ImplPlayerCraftingInventory.SLOT_OFFSET, itemStack);
+                if (this.getInventory() instanceof CraftingInventory) {
+                    ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(itemStack);
                 }
                 break;
+            case CRAFTING_INPUT:
+                if (this.getInventory() instanceof PlayerCraftingInventory && slot >= 0 && slot <= 3) {
+                    this.getInventory().setSlot(this.player, slot, itemStack, true);
+                    break;
+                } else if (!(this.getInventory() instanceof CraftingInventory)) {
+                    break;
+                }
             default:
-                if (this.slot >= 0 && this.slot < this.getInventory().getSize()) {
-                    this.getInventory().setSlot(this.player, this.slot, itemStack, true);
+                if (slot >= 0 && slot < this.getInventory().getSize()) {
+                    this.getInventory().setSlot(this.player, slot, itemStack, true);
                 }
                 break;
         }

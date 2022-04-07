@@ -16,8 +16,8 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<SwapStack
     public boolean isValid(Player player, SwapStackRequestActionDataWrapper action) {
         if (action.getSource().exists() && action.getDestination().exists()) {
             // Ensure that the source and destination items are allowed in their new slots
-            return Item.canBePlacedInSlot(action.getSource().getItemStack(), action.getDestination().getSlotType(), action.getDestination().getSlot())
-                    && Item.canBePlacedInSlot(action.getDestination().getItemStack(), action.getSource().getSlotType(), action.getDestination().getSlot());
+            return Item.canBePlacedInSlot(action.getSource().getItemStack(), action.getDestination().getSlotType(), action.getDestination().getNetworkSlot())
+                    && Item.canBePlacedInSlot(action.getDestination().getItemStack(), action.getSource().getSlotType(), action.getDestination().getNetworkSlot());
         } else {
             return false;
         }
@@ -33,12 +33,12 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<SwapStack
                 StackRequestActionType.SWAP,
                 source.getInventory(),
                 action.getSource().getSlotType(),
-                action.getSource().getSlot(),
+                action.getSource().getNetworkSlot(),
                 source.getItemStack(),
                 source.getItemStack().getCount(),
                 destination.getInventory(),
                 action.getDestination().getSlotType(),
-                action.getDestination().getSlot(),
+                action.getDestination().getNetworkSlot(),
                 destination.getItemStack());
         player.getServer().getEventManager().call(inventoryMoveItemEvent);
         if (inventoryMoveItemEvent.isCancelled()) {
