@@ -23,7 +23,7 @@ public abstract class BlockEntityContainerParser<T extends Block> extends BaseBl
 
         List<NbtMap> itemNBTs = nbt.getList("Items", NbtType.COMPOUND);
         for (NbtMap itemNBT : itemNBTs) {
-            int slot = itemNBT.getByte("slot");
+            int slot = itemNBT.getByte("Slot");
             containerEntity.getInventory().setSlot(slot, ItemUtils.deserializeDiskNBTItem(itemNBT));
         }
 
@@ -33,9 +33,11 @@ public abstract class BlockEntityContainerParser<T extends Block> extends BaseBl
     @Override
     public NbtMap toDiskNBT(BlockEntityContainer<T> blockEntity) {
         List<NbtMap> itemNBTs = new ArrayList<>();
-        for (Item item : blockEntity.getInventory().getSlots()) {
+        for (int slot = 0; slot < blockEntity.getInventory().getSlots().length; slot++) {
+            Item item = blockEntity.getInventory().getSlot(slot);
+
             if (!item.isEmpty()) {
-                itemNBTs.add(ItemUtils.serializeWithSlotForDisk(item));
+                itemNBTs.add(ItemUtils.serializeWithSlotForDisk(item, slot));
             }
         }
 

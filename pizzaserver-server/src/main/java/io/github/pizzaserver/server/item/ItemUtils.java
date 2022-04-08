@@ -32,12 +32,13 @@ public class ItemUtils {
                 .build();
     }
 
-    public static NbtMap serializeWithSlotForDisk(Item item) {
+    public static NbtMap serializeWithSlotForDisk(Item item, int slot) {
         return NbtMap.builder()
                 .putString("Name", item.getItemId())
                 .putShort("Damage", (short) item.getMeta())
                 .putByte("Count", (byte) item.getCount())
                 .putCompound("tag", item.getNBT())
+                .putByte("Slot", (byte) slot)
                 .build();
     }
 
