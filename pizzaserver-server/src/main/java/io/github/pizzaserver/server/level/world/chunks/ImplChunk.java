@@ -564,6 +564,12 @@ public class ImplChunk implements Chunk {
     public void save() throws IOException {
         synchronized (this.chunk) {
             if (this.chunkWasModified) {
+                synchronized (this.blockEntities) {
+                    for (BlockEntity<? extends Block> blockEntity : this.blockEntities.values()) {
+                        this.chunk.addBlockEntity(BlockEntityHandler.toDiskNBT(blockEntity));
+                    }
+                }
+
                 this.world.getLevel().getProvider().getDimension(this.chunk.getDimension())
                         .saveChunk(this.chunk);
             }

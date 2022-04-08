@@ -13,8 +13,11 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 
+import java.util.Optional;
+
 public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBlockEntity<T> implements BlockEntityContainer<T> {
 
+    protected String customName;
     protected BlockEntityInventory<? extends BlockEntity<T>> inventory;
 
 
@@ -81,5 +84,15 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
         player.getWorld().addBlockEvent(player, this.getLocation().toVector3i(), 1, 0);
     }
 
+    @Override
+    public Optional<String> getCustomName() {
+        return Optional.ofNullable(this.customName);
+    }
+
+    @Override
+    public void setCustomName(String name) {
+        this.customName = name;
+        this.update();
+    }
 
 }

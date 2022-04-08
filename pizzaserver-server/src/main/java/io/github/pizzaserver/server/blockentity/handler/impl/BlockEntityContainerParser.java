@@ -2,6 +2,7 @@ package io.github.pizzaserver.server.blockentity.handler.impl;
 
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.nbt.NbtType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
@@ -27,6 +28,8 @@ public abstract class BlockEntityContainerParser<T extends Block> extends BaseBl
             containerEntity.getInventory().setSlot(slot, ItemUtils.deserializeDiskNBTItem(itemNBT));
         }
 
+        containerEntity.setCustomName(nbt.getString("CustomName", null));
+
         return containerEntity;
     }
 
@@ -41,10 +44,23 @@ public abstract class BlockEntityContainerParser<T extends Block> extends BaseBl
             }
         }
 
-        return super.toDiskNBT(blockEntity)
-                .toBuilder()
-                .putList("Items", NbtType.COMPOUND, itemNBTs)
-                .build();
+        NbtMapBuilder diskNBTBuilder = super.toDiskNBT(blockEntity).toBuilder()
+                .putList("Items", NbtType.COMPOUND, itemNBTs);
+
+        blockEntity.getCustomName().ifPresent(name -> diskNBTBuilder.putString("CustomName", name));
+
+        return diskNBTBuilder.build();
+    }
+
+    @Override
+    public NbtMap toNetworkNBT(NbtMap diskNBT) {
+        if (diskNBT.containsKey("CustomName")) {
+            return diskNBT.toBuilder()
+                    .putString("CustomName", diskNBT.getString("CustomName"))
+                    .build();
+        } else {
+            return diskNBT;
+        }
     }
 
 }
