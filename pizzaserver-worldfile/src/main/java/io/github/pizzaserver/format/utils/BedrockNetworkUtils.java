@@ -1,8 +1,12 @@
 package io.github.pizzaserver.format.utils;
 
+import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.format.dimension.chunks.BedrockBiomeMap;
-import io.github.pizzaserver.format.dimension.chunks.subchunk.*;
+import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunk;
+import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunkBiomeMap;
+import io.github.pizzaserver.format.dimension.chunks.subchunk.BlockLayer;
+import io.github.pizzaserver.format.dimension.chunks.subchunk.BlockPaletteEntry;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.utils.Palette;
 import io.netty.buffer.ByteBuf;
 
@@ -11,7 +15,8 @@ import java.util.Set;
 
 public class BedrockNetworkUtils {
 
-    private BedrockNetworkUtils() {}
+    private BedrockNetworkUtils() {
+    }
 
     public static void serializeSubChunk(ByteBuf buffer, BedrockSubChunk subChunk, MinecraftSerializationHandler serializationHandler) {
         buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
@@ -22,9 +27,10 @@ public class BedrockNetworkUtils {
     }
 
     public static void serializeBlockLayer(ByteBuf buffer, BlockLayer blockLayer, MinecraftSerializationHandler serializationHandler) {
-        int bitsPerBlock = Math.max((int) Math.ceil(Math.log(blockLayer.getPalette().getEntries().size()) / Math.log(2)), 1);
+        int bitsPerBlock = NumberUtils.log2Ceil(blockLayer.getPalette().getEntries().size()) + 1;
         int blocksPerWord = 32 / bitsPerBlock;
-        int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+        // integral ceiling division
+        int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
 
         buffer.writeByte((bitsPerBlock << 1) | 1);
 
@@ -71,7 +77,7 @@ public class BedrockNetworkUtils {
                 throw new IOException("biome sub chunk has no biomes present");
             }
 
-            int bitsPerBlock = (int) Math.ceil(Math.log(subChunkBiomeMap.getPalette().getEntries().size()) / Math.log(2));
+            int bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().getEntries().size()) + 1;
             int blocksPerWord = 0;
             int wordsPerChunk = 0;
 
@@ -83,7 +89,8 @@ public class BedrockNetworkUtils {
 
             if (bitsPerBlock > 0) {
                 blocksPerWord = 32 / bitsPerBlock;
-                wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+                // integral ceiling division
+                wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
             }
 
             buffer.writeByte((bitsPerBlock << 1) | 1);
