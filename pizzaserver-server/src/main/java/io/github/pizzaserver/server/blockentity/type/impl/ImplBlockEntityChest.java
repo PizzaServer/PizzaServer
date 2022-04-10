@@ -11,13 +11,15 @@ import java.util.Set;
 
 public class ImplBlockEntityChest extends ImplBlockEntityContainer<BlockChest> implements BlockEntityChest {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.CHEST);
+
     public ImplBlockEntityChest(BlockLocation location) {
         super(location, ContainerType.CONTAINER);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.CHEST);
+        return BLOCK_IDS;
     }
 
 }

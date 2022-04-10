@@ -10,13 +10,15 @@ import java.util.Set;
 
 public class ImplBlockEntityFurnace extends BaseBlockEntity<BlockFurnace> implements BlockEntityFurnace {
 
+    public static final Set<String> BLOCK_IDS = Set.of(BlockID.FURNACE, BlockID.LIT_FURNACE);
+
     public ImplBlockEntityFurnace(BlockLocation location) {
         super(location);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Set.of(BlockID.FURNACE, BlockID.LIT_FURNACE);
+        return BLOCK_IDS;
     }
 
 }

@@ -47,7 +47,7 @@ public class BlockDeadBush extends BaseBlock {
     public Set<Item> getDrops(Entity entity) {
         if (entity.getInventory().getHeldItem() instanceof ToolItem toolItemComponent
                 && toolItemComponent.getToolType() == ToolType.SHEARS) {
-            return Collections.singleton(this.toStack());
+            return Collections.singleton(this.toItem());
         }
 
         return Collections.singleton(new ItemStick((int) Math.floor(Math.random() * 2) + 1));

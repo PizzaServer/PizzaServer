@@ -24,6 +24,7 @@ import io.github.pizzaserver.api.utils.ServerState;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a Minecraft Server.
@@ -50,6 +51,8 @@ public abstract class Server {
     public abstract Optional<Player> getPlayerByUsername(String username);
 
     public abstract Optional<Player> getPlayerByExactUsername(String username);
+
+    public abstract Optional<Player> getPlayerByUUID(UUID uuid);
 
     /**
      * Retrieve the amount of players currently online.

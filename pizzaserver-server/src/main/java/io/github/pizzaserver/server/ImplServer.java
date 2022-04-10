@@ -324,6 +324,11 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public Optional<Player> getPlayerByUUID(UUID uuid) {
+        return this.getPlayers().stream().filter(player -> player.getUUID().equals(uuid)).findAny();
+    }
+
+    @Override
     public int getPlayerCount() {
         return this.getPlayers().size();
     }

@@ -12,13 +12,15 @@ import java.util.Set;
 
 public class ImplBlockEntityBarrel extends ImplBlockEntityContainer<BlockBarrel> implements BlockEntityBarrel {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.BARREL);
+
     public ImplBlockEntityBarrel(BlockLocation location) {
         super(location, ContainerType.CONTAINER);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.BARREL);
+        return BLOCK_IDS;
     }
 
     @Override

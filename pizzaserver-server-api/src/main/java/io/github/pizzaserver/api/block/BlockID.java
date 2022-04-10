@@ -9,6 +9,8 @@ public class BlockID {
 
     public static final String ACACIA_BUTTON = "minecraft:acacia_button";
     public static final String ACACIA_PRESSURE_PLATE = "minecraft:acacia_pressure_plate";
+    public static final String ACACIA_STANDING_SIGN = "minecraft:acacia_standing_sign";
+    public static final String ACACIA_WALL_SIGN = "minecraft:acacia_wall_sign";
     public static final String AIR = "minecraft:air";
     public static final String ALLOW = "minecraft:allow";
     public static final String AMETHYST = "minecraft:amethyst_block";
@@ -23,6 +25,8 @@ public class BlockID {
     public static final String BELL = "minecraft:bell";
     public static final String BIRCH_BUTTON = "minecraft:birch_button";
     public static final String BIRCH_PRESSURE_PLATE = "minecraft:birch_pressure_plate";
+    public static final String BIRCH_STANDING_SIGN = "minecraft:birch_standing_sign";
+    public static final String BIRCH_WALL_SIGN = "minecraft:birch_wall_sign";
     public static final String BLACK_CANDLE = "minecraft:black_candle";
     public static final String BLACK_CANDLE_CAKE = "minecraft:black_candle_cake";
     public static final String BLACK_GLAZED_TERRACOTTA = "minecraft:black_glazed_terracotta";
@@ -74,6 +78,8 @@ public class BlockID {
     public static final String CRIMSON_PRESSURE_PLATE = "minecraft:crimson_pressure_plate";
     public static final String CRIMSON_SLAB = "minecraft:crimson_slab";
     public static final String CRIMSON_STEM = "minecraft:crimson_stem";
+    public static final String CRIMSON_STANDING_SIGN = "minecraft:crimson_standing_sign";
+    public static final String CRIMSON_WALL_SIGN = "minecraft:crimson_wall_sign";
     public static final String CRYING_OBSIDIAN = "minecraft:crying_obsidian";
     public static final String CUT_COPPER_SLAB = "minecraft:cut_copper_slab";
     public static final String CYAN_CANDLE = "minecraft:cyan_candle";
@@ -81,6 +87,8 @@ public class BlockID {
     public static final String CYAN_GLAZED_TERRACOTTA = "minecraft:cyan_glazed_terracotta";
     public static final String DARK_OAK_BUTTON = "minecraft:dark_oak_button";
     public static final String DARK_OAK_PRESSURE_PLATE = "minecraft:dark_oak_pressure_plate";
+    public static final String DARK_OAK_STANDING_SIGN = "minecraft:darkoak_standing_sign";
+    public static final String DARK_OAK_WALL_SIGN = "minecraft:darkoak_wall_sign";
     public static final String DEADBUSH = "minecraft:deadbush";
     public static final String DEEPSLATE_BRICK_SLAB = "minecraft:deepslate_brick_slab";
     public static final String DEEPSLATE_BRICK_DOUBLE_SLAB = "minecraft:deepslate_brick_double_slab";
@@ -101,7 +109,7 @@ public class BlockID {
     public static final String DIRT = "minecraft:dirt";
     public static final String DIRT_WITH_ROOTS = "minecraft:dirt_with_roots";
     public static final String DISPENSER = "minecraft:dispenser";
-    public static final String DOUBLE_CRIMSON_SLAB = "minecraft:DOUBLE_CRIMSON_SLAB";
+    public static final String DOUBLE_CRIMSON_SLAB = "minecraft:double_crimson_slab";
     public static final String DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
     public static final String DOUBLE_STONE_SLAB = "minecraft:double_stone_slab";
     public static final String DOUBLE_STONE_SLAB2 = "minecraft:double_stone_slab2";
@@ -134,6 +142,8 @@ public class BlockID {
     public static final String IRON_ORE = "minecraft:iron_ore";
     public static final String JUNGLE_BUTTON = "minecraft:jungle_button";
     public static final String JUNGLE_PRESSURE_PLATE = "minecraft:jungle_pressure_plate";
+    public static final String JUNGLE_STANDING_SIGN = "minecraft:jungle_standing_sign";
+    public static final String JUNGLE_WALL_SIGN = "minecraft:jungle_wall_sign";
     public static final String LAPIS_BLOCK = "minecraft:lapis_block";
     public static final String LAPIS_ORE = "minecraft:lapis_ore";
     public static final String LIGHT_BLOCK = "minecraft:light_block";
@@ -159,6 +169,8 @@ public class BlockID {
     public static final String NETHERRACK = "minecraft:netherrack";
     public static final String NETHER_REACTOR = "minecraft:netherreactor";
     public static final String OAK_BUTTON = "minecraft:wooden_button";
+    public static final String OAK_STANDING_SIGN = "minecraft:standing_sign";
+    public static final String OAK_WALL_SIGN = "minecraft:wall_sign";
     public static final String OBSIDIAN = "minecraft:obsidian";
     public static final String ORANGE_CANDLE = "minecraft:orange_candle";
     public static final String ORANGE_CANDLE_CAKE = "minecraft:orange_candle_cake";
@@ -189,7 +201,10 @@ public class BlockID {
     public static final String SNOW = "minecraft:snow";
     public static final String SPRUCE_BUTTON = "minecraft:spruce_button";
     public static final String SPRUCE_PRESSURE_PLATE = "minecraft:spruce_pressure_plate";
+    public static final String SPRUCE_STANDING_SIGN = "minecraft:spruce_standing_sign";
+    public static final String SPRUCE_WALL_SIGN = "minecraft:spruce_wall_sign";
     public static final String SOUL_CAMPFIRE = "minecraft:soul_campfire";
+    public static final String STANDING_SIGN = "minecraft:standing_sign";
     public static final String STONE_BUTTON = "minecraft:stone_button";
     public static final String STONE = "minecraft:stone";
     public static final String STONE_SLAB = "minecraft:stone_slab";
@@ -208,12 +223,15 @@ public class BlockID {
     public static final String STRIPPED_WARPED_HYPHAE = "minecraft:stripped_warped_hyphae";
     public static final String TALL_GRASS = "minecraft:tallgrass";
     public static final String TRAPPED_CHEST = "minecraft:trapped_chest";
+    public static final String WALL_SIGN = "minecraft:wall_sign";
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
     public static final String WARPED_HYPHAE = "minecraft:warped_hyphae";
     public static final String WARPED_SLAB = "minecraft:warped_slab";
     public static final String WARPED_STEM = "minecraft:warped_stem";
     public static final String WARPED_PRESSURE_PLATE = "minecraft:warped_pressure_plate";
+    public static final String WARPED_STANDING_SIGN = "minecraft:warped_standing_sign";
+    public static final String WARPED_WALL_SIGN = "minecraft:warped_wall_sign";
     public static final String WAXED_CUT_COPPER_SLAB = "minecraft:waxed_cut_copper_slab";
     public static final String WAXED_DOUBLE_CUT_COPPER_SLAB = "minecraft:waxed_double_cut_copper_slab";
     public static final String WAXED_WEATHERED_CUT_COPPER_SLAB = "minecraft:waxed_weathered_cut_copper_slab";

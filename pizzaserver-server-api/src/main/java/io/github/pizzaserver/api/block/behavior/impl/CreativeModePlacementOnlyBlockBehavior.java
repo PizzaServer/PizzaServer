@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.player.data.Gamemode;
 /**
  * Blocks with this behavior can only be placed in creative mode.
  */
-public class CreativeModePlacementOnlyBlockBehavior<T extends Block> extends DefaultBlockBehavior<T> {
+public class CreativeModePlacementOnlyBlockBehavior<T extends Block> extends BaseBlockBehavior<T> {
 
     @Override
     public boolean prepareForPlacement(Entity entity, T block, BlockFace face, Vector3f clickPosition) {

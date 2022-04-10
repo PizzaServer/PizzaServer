@@ -2,6 +2,7 @@ package io.github.pizzaserver.server.blockentity.type;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
@@ -51,17 +52,17 @@ public abstract class BaseBlockEntity<T extends Block> implements BlockEntity<T>
 
     /**
      * Called after the block associated with this entity is placed.
-     * @param player the player who placed the block
+     * @param entity the player who placed the block
      */
-    public void onPlace(Player player) {
+    public void onPlace(Entity entity) {
 
     }
 
     /**
      * Called right before the block associated with this entity is broken.
-     * @param player the player who broke the block
+     * @param entity the entity who broke the block
      */
-    public void onBreak(Player player) {
+    public void onBreak(Entity entity) {
 
     }
 

@@ -11,13 +11,15 @@ import java.util.Set;
 
 public class ImplBlockEntityCauldron extends BaseBlockEntity<BlockCauldron> implements BlockEntityCauldron {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.CAULDRON);
+
     public ImplBlockEntityCauldron(BlockLocation location) {
         super(location);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.CAULDRON);
+        return BLOCK_IDS;
     }
 
 }

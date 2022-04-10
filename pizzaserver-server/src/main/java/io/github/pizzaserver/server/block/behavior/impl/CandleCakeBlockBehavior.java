@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.block.behavior.impl;
 
 import com.nukkitx.math.vector.Vector3f;
-import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockCake;
 import io.github.pizzaserver.api.block.impl.BlockCandleCake;
@@ -11,7 +11,7 @@ import io.github.pizzaserver.api.item.impl.ItemFlintAndSteel;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.player.Player;
 
-public class CandleCakeBlockBehavior extends DefaultBlockBehavior<BlockCandleCake> {
+public class CandleCakeBlockBehavior extends BaseBlockBehavior<BlockCandleCake> {
 
     @Override
     public boolean onInteract(Player player, BlockCandleCake candleCake, BlockFace face, Vector3f clickPosition) {

@@ -1,20 +1,16 @@
 package io.github.pizzaserver.server.player.handlers;
 
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
 import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemStackRequest;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.ItemStackRequestPacket;
-import com.nukkitx.protocol.bedrock.packet.ItemStackResponsePacket;
-import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
-import io.github.pizzaserver.api.block.descriptors.Liquid;
+import io.github.pizzaserver.api.block.traits.LiquidTrait;
 import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
@@ -22,14 +18,12 @@ import io.github.pizzaserver.api.event.type.player.PlayerMoveEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSneakingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSprintingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSwimEvent;
-import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.protocol.ImplPacketHandlerPipeline;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +78,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         break;
                     case START_SWIMMING:
                         Block blockSwimmingIn = this.player.getWorld().getBlock(this.player.getLocation().toVector3i());
-                        if (!this.player.isSwimming() && blockSwimmingIn instanceof Liquid) {
+                        if (!this.player.isSwimming() && blockSwimmingIn instanceof LiquidTrait) {
                             PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, true);
                             this.player.getServer().getEventManager().call(swimEvent);
 
@@ -210,7 +204,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 this.player.getBlockBreakingManager().stopBreaking();
                             }
 
-                            boolean canBreakNewBlock = !(blockBreakingLocation.getBlock() instanceof Liquid)
+                            boolean canBreakNewBlock = !(blockBreakingLocation.getBlock() instanceof LiquidTrait)
                                     && !blockBreakingLocation.getBlock().isAir()
                                     && this.player.getAdventureSettings().canMine();
                             if (canBreakNewBlock) {

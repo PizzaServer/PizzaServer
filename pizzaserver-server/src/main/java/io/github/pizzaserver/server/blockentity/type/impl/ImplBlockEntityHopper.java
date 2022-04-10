@@ -11,13 +11,15 @@ import java.util.Set;
 
 public class ImplBlockEntityHopper extends ImplBlockEntityContainer<BlockHopper> implements BlockEntityHopper {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.HOPPER);
+
     public ImplBlockEntityHopper(BlockLocation location) {
         super(location, ContainerType.HOPPER);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.HOPPER);
+        return BLOCK_IDS;
     }
 
 }

@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.blockentity.type.*;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.blockentity.handler.impl.*;
+import io.github.pizzaserver.server.blockentity.type.impl.*;
 
 import java.util.*;
 
@@ -93,18 +94,19 @@ public class BlockEntityHandler {
     }
 
     static {
-        register(Collections.singleton(BlockID.BARREL), BlockEntityBarrel.ID, new BlockEntityBarrelParser());
-        register(Collections.singleton(BlockID.BELL), BlockEntityBell.ID, new BlockEntityBellParser());
-        register(Collections.singleton(BlockID.BED), BlockEntityBed.ID, new BlockEntityBedParser());
-        register(Set.of(BlockID.BLAST_FURNACE, BlockID.LIT_BLAST_FURNACE), BlockEntityBlastFurnace.ID, new BlockEntityBlastFurnaceParser());
-        register(Set.of(BlockID.CAMPFIRE, BlockID.SOUL_CAMPFIRE), BlockEntityCampfire.ID, new BlockEntityCampfireParser());
-        register(Collections.singleton(BlockID.CAULDRON), BlockEntityCauldron.ID, new BlockEntityCauldronParser());
-        register(Collections.singleton(BlockID.CHEST), BlockEntityChest.ID, new BlockEntityChestParser());
-        register(Collections.singleton(BlockID.DISPENSER), BlockEntityDispenser.ID, new BlockEntityDispenserParser());
-        register(Collections.singleton(BlockID.DROPPER), BlockEntityDropper.ID, new BlockEntityDropperParser());
-        register(Collections.singleton(BlockID.HOPPER), BlockEntityHopper.ID, new BlockEntityHopperParser());
-        register(Set.of(BlockID.FURNACE, BlockID.LIT_FURNACE), BlockEntityFurnace.ID, new BlockEntityFurnaceParser());
-        register(Collections.singleton(BlockID.MOB_SPAWNER), BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
+        register(ImplBlockEntityBarrel.BLOCK_IDS, BlockEntityBarrel.ID, new BlockEntityBarrelParser());
+        register(ImplBlockEntityBell.BLOCK_IDS, BlockEntityBell.ID, new BlockEntityBellParser());
+        register(ImplBlockEntityBed.BLOCK_IDS, BlockEntityBed.ID, new BlockEntityBedParser());
+        register(ImplBlockEntityBlastFurnace.BLOCK_IDS, BlockEntityBlastFurnace.ID, new BlockEntityBlastFurnaceParser());
+        register(ImplBlockEntityCampfire.BLOCK_IDS, BlockEntityCampfire.ID, new BlockEntityCampfireParser());
+        register(ImplBlockEntityCauldron.BLOCK_IDS, BlockEntityCauldron.ID, new BlockEntityCauldronParser());
+        register(ImplBlockEntityChest.BLOCK_IDS, BlockEntityChest.ID, new BlockEntityChestParser());
+        register(ImplBlockEntityDispenser.BLOCK_IDS, BlockEntityDispenser.ID, new BlockEntityDispenserParser());
+        register(ImplBlockEntityDropper.BLOCK_IDS, BlockEntityDropper.ID, new BlockEntityDropperParser());
+        register(ImplBlockEntityHopper.BLOCK_IDS, BlockEntityHopper.ID, new BlockEntityHopperParser());
+        register(ImplBlockEntityFurnace.BLOCK_IDS, BlockEntityFurnace.ID, new BlockEntityFurnaceParser());
+        register(ImplBlockEntityMobSpawner.BLOCK_IDS, BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
+        register(ImplBlockEntitySign.BLOCK_IDS, BlockEntitySign.ID, new BlockEntitySignParser());
     }
 
 }

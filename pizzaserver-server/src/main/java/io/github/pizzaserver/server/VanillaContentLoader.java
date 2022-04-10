@@ -15,6 +15,7 @@ import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.block.behavior.impl.*;
 import io.github.pizzaserver.api.item.behavior.impl.ItemArmorBehavior;
+import io.github.pizzaserver.server.item.behavior.impl.ItemBlockSignBehavior;
 import io.github.pizzaserver.server.item.behavior.impl.ItemBoatBehavior;
 import io.github.pizzaserver.server.item.behavior.impl.ItemFlintAndSteelBehavior;
 
@@ -130,6 +131,8 @@ public class VanillaContentLoader {
     }
 
     private static void loadBlocks() {
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.ACACIA), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.ACACIA), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.ACACIA), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.ACACIA), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockAir());
@@ -144,6 +147,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockBed());
         BlockRegistry.getInstance().register(new BlockBedrock());
         BlockRegistry.getInstance().register(new BlockBell(), new BellBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.BIRCH), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.BIRCH), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.BIRCH), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.BIRCH), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.BLACK), new CandleBlockBehavior());
@@ -191,6 +196,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCrackedNetherBrick());
         BlockRegistry.getInstance().register(new BlockCrackedPolishedBlackstoneBrick());
         BlockRegistry.getInstance().register(new BlockCraftingTable());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.CRIMSON), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.CRIMSON), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.CRIMSON), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.CRIMSON), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.CRIMSON), new StrippableWoodenLikeBlockBehavior());
@@ -204,6 +211,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.CYAN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.CYAN), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.CYAN), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.DARK_OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.DARK_OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.DARK_OAK), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.DARK_OAK), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockDeadBush());
@@ -253,6 +262,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockInvisibleBedrock());
         BlockRegistry.getInstance().register(new BlockIronBlock());
         BlockRegistry.getInstance().register(new BlockIronOre());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.JUNGLE), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.JUNGLE), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.JUNGLE), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.JUNGLE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLapisBlock());
@@ -280,6 +291,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockNetherrack());
         BlockRegistry.getInstance().register(new BlockNetherReactor());
         BlockRegistry.getInstance().register(new BlockObsidian());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.OAK), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.ORANGE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.ORANGE), new CandleCakeBlockBehavior());
@@ -308,6 +321,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockReserved6());
         BlockRegistry.getInstance().register(new BlockSand());
         BlockRegistry.getInstance().register(new BlockSnow());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.SPRUCE), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.SPRUCE), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.SPRUCE), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.SPRUCE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStone());
@@ -329,6 +344,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockSoulCampfire());
         BlockRegistry.getInstance().register(new BlockTallGrass());
         BlockRegistry.getInstance().register(new BlockTrappedChest(), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.WARPED), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.WARPED), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.WARPED), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.WARPED), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.WARPED), new StrippableWoodenLikeBlockBehavior());

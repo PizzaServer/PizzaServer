@@ -114,7 +114,7 @@ public class BlockCandle extends BaseBlock {
 
     @Override
     public Set<Item> getDrops(Entity entity) {
-        Item candleStack = this.toStack();
+        Item candleStack = this.toItem();
         candleStack.setCount(this.getCandleCount());
 
         return Collections.singleton(candleStack);

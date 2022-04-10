@@ -11,13 +11,15 @@ import java.util.Set;
 
 public class ImplBlockEntityDispenser extends ImplBlockEntityContainer<BlockDispenser> implements BlockEntityDispenser {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.DISPENSER);
+
     public ImplBlockEntityDispenser(BlockLocation location) {
         super(location, ContainerType.DISPENSER);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.DISPENSER);
+        return BLOCK_IDS;
     }
 
 }

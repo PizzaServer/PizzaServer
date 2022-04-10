@@ -10,13 +10,15 @@ import java.util.Set;
 
 public class ImplBlockEntityCampfire extends BaseBlockEntity<BlockCampfire> implements BlockEntityCampfire {
 
+    public static final Set<String> BLOCK_IDS = Set.of(BlockID.CAMPFIRE, BlockID.SOUL_CAMPFIRE);
+
     public ImplBlockEntityCampfire(BlockLocation location) {
         super(location);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Set.of(BlockID.CAMPFIRE, BlockID.SOUL_CAMPFIRE);
+        return BLOCK_IDS;
     }
 
     @Override

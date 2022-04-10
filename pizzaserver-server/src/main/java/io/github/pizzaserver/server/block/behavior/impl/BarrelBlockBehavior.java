@@ -1,13 +1,13 @@
 package io.github.pizzaserver.server.block.behavior.impl;
 
 import com.nukkitx.math.vector.Vector3f;
-import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockBarrel;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.utils.Direction;
 
-public class BarrelBlockBehavior extends DefaultBlockBehavior<BlockBarrel> {
+public class BarrelBlockBehavior extends BaseBlockBehavior<BlockBarrel> {
 
     @Override
     public boolean prepareForPlacement(Entity entity, BlockBarrel block, BlockFace face, Vector3f clickPosition) {

@@ -213,11 +213,6 @@ public abstract class BaseBlock implements Block {
     }
 
     @Override
-    public ItemBlock toStack() {
-        return new ItemBlock(this.getBlockId(), 1, this.getStackMeta());
-    }
-
-    @Override
     public int getStackMeta() {
         return 0;
     }
@@ -232,12 +227,22 @@ public abstract class BaseBlock implements Block {
 
     @Override
     public Set<Item> getDrops(Entity entity) {
-        return Collections.singleton(this.toStack());
+        return Collections.singleton(this.toItem());
     }
 
     @Override
     public boolean isAir() {
         return BlockID.AIR.equals(this.getBlockId());
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 64;
+    }
+
+    @Override
+    public ItemBlock toItem() {
+        return new ItemBlock(this);
     }
 
     /**

@@ -11,13 +11,15 @@ import java.util.Set;
 
 public class ImplBlockEntityBell extends BaseBlockEntity<BlockBell> implements BlockEntityBell {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.BELL);
+
     public ImplBlockEntityBell(BlockLocation location) {
         super(location);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.BELL);
+        return BLOCK_IDS;
     }
 
 

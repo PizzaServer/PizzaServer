@@ -11,13 +11,15 @@ import java.util.Set;
 
 public class ImplBlockEntityDropper extends ImplBlockEntityContainer<BlockDropper> implements BlockEntityDropper {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.DROPPER);
+
     public ImplBlockEntityDropper(BlockLocation location) {
         super(location, ContainerType.DROPPER);
     }
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.DROPPER);
+        return BLOCK_IDS;
     }
 
 }

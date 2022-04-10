@@ -12,7 +12,7 @@ import io.github.pizzaserver.api.player.Player;
 
 import java.util.Set;
 
-public class DefaultBlockBehavior<T extends Block> implements BlockBehavior<T> {
+public class BaseBlockBehavior<T extends Block> implements BlockBehavior<T> {
 
     @Override
     public boolean prepareForPlacement(Entity entity, T block, BlockFace face, Vector3f clickPosition) {

@@ -12,6 +12,9 @@ import java.util.Set;
 
 public class ImplBlockEntityBed extends BaseBlockEntity<BlockBed> implements BlockEntityBed {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.BED);
+
+
     protected DyeColor color = DyeColor.WHITE;
 
 
@@ -21,7 +24,7 @@ public class ImplBlockEntityBed extends BaseBlockEntity<BlockBed> implements Blo
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.BED);
+        return BLOCK_IDS;
     }
 
     @Override

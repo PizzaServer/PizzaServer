@@ -5,6 +5,7 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
+import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.inventory.BlockEntityInventory;
@@ -48,14 +49,14 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
     }
 
     @Override
-    public void onBreak(Player player) {
+    public void onBreak(Entity entity) {
         for (Player viewer : this.inventory.getViewers()) {
             viewer.closeOpenInventory();
         }
 
         for (Item item : this.getInventory().getSlots()) {
             if (!item.isEmpty()) {
-                player.getWorld().addItemEntity(item, this.blockLocation.toVector3f().add(0.5f, 0.5f, 0.5f), EntityItem.getRandomMotion());
+                entity.getWorld().addItemEntity(item, this.blockLocation.toVector3f().add(0.5f, 0.5f, 0.5f), EntityItem.getRandomMotion());
             }
         }
     }

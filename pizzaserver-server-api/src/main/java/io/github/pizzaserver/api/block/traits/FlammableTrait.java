@@ -1,9 +1,11 @@
-package io.github.pizzaserver.api.block.descriptors;
+package io.github.pizzaserver.api.block.traits;
+
+import io.github.pizzaserver.api.block.Block;
 
 /**
  * Blocks that implement this interface are flammable.
  */
-public interface Flammable {
+public interface FlammableTrait extends Block {
 
     /**
      * How likely the block will be destroyed by flames when on fire.

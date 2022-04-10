@@ -14,6 +14,8 @@ import java.util.Set;
 
 public class ImplBlockEntityMobSpawner extends BaseBlockEntity<BlockMobSpawner> implements BlockEntityMobSpawner {
 
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.MOB_SPAWNER);
+
     private String entityId;
 
     public ImplBlockEntityMobSpawner(BlockLocation location, EntityDefinition definition) {
@@ -23,7 +25,7 @@ public class ImplBlockEntityMobSpawner extends BaseBlockEntity<BlockMobSpawner> 
 
     @Override
     public Set<String> getBlockIds() {
-        return Collections.singleton(BlockID.MOB_SPAWNER);
+        return BLOCK_IDS;
     }
 
     @Override
