@@ -5,8 +5,6 @@ package io.github.pizzaserver.api.block;
  */
 public class BlockID {
 
-    public BlockID() {}
-
     public static final String ACACIA_BUTTON = "minecraft:acacia_button";
     public static final String ACACIA_PRESSURE_PLATE = "minecraft:acacia_pressure_plate";
     public static final String ACACIA_STANDING_SIGN = "minecraft:acacia_standing_sign";
@@ -120,6 +118,7 @@ public class BlockID {
     public static final String DROPPER = "minecraft:dropper";
     public static final String EMERALD_BLOCK = "minecraft:emerald_block";
     public static final String EMERALD_ORE = "minecraft:emerald_ore";
+    public static final String ENCHANTING_TABLE = "minecraft:enchanting_table";
     public static final String EXPOSED_CUT_COPPER_SLAB = "minecraft:exposed_cut_copper_slab";
     public static final String EXPOSED_DOUBLE_CUT_COPPER_SLAB = "minecraft:exposed_double_cut_copper_slab";
     public static final String FIRE = "minecraft:fire";

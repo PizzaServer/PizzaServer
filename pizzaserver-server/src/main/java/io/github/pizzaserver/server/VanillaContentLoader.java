@@ -242,6 +242,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.MOSSY_STONE_BRICK, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockEmeraldBlock());
         BlockRegistry.getInstance().register(new BlockEmeraldOre());
+        BlockRegistry.getInstance().register(new BlockEnchantingTable());
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.EXPOSED), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.EXPOSED, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockFire(), new FireBlockBehavior());
