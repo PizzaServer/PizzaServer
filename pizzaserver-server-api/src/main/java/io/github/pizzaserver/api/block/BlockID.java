@@ -119,6 +119,7 @@ public class BlockID {
     public static final String EMERALD_BLOCK = "minecraft:emerald_block";
     public static final String EMERALD_ORE = "minecraft:emerald_ore";
     public static final String ENCHANTING_TABLE = "minecraft:enchanting_table";
+    public static final String ENDER_CHEST = "minecraft:ender_chest";
     public static final String EXPOSED_CUT_COPPER_SLAB = "minecraft:exposed_cut_copper_slab";
     public static final String EXPOSED_DOUBLE_CUT_COPPER_SLAB = "minecraft:exposed_double_cut_copper_slab";
     public static final String FIRE = "minecraft:fire";

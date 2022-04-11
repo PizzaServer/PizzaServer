@@ -104,6 +104,7 @@ public class BlockEntityHandler {
         register(ImplBlockEntityDispenser.BLOCK_IDS, BlockEntityDispenser.ID, new BlockEntityDispenserParser());
         register(ImplBlockEntityDropper.BLOCK_IDS, BlockEntityDropper.ID, new BlockEntityDropperParser());
         register(ImplBlockEntityEnchantingTable.BLOCK_IDS, BlockEntityEnchantingTable.ID, new BlockEntityEnchantingTableParser());
+        register(ImplBlockEntityEnderChest.BLOCK_IDS, BlockEntityEnderChest.ID, new BlockEntityEnderChestParser());
         register(ImplBlockEntityHopper.BLOCK_IDS, BlockEntityHopper.ID, new BlockEntityHopperParser());
         register(ImplBlockEntityFurnace.BLOCK_IDS, BlockEntityFurnace.ID, new BlockEntityFurnaceParser());
         register(ImplBlockEntityMobSpawner.BLOCK_IDS, BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
