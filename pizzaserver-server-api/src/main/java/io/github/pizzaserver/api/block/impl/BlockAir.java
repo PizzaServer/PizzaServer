@@ -1,9 +1,10 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 
-public class BlockAir extends Block {
+public class BlockAir extends BaseBlock {
 
     @Override
     public String getBlockId() {
@@ -33,6 +34,11 @@ public class BlockAir extends Block {
     @Override
     public boolean isReplaceable() {
         return true;
+    }
+
+    @Override
+    public boolean canBeIgnited() {
+        return false;
     }
 
 }

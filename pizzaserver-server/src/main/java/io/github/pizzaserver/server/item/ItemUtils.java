@@ -18,9 +18,11 @@ public class ItemUtils {
      * @return serialized data
      */
     public static ItemData serializeForNetwork(Item item, MinecraftVersion version) {
+        int blockRuntimeId = item instanceof ItemBlock itemBlock ? version.getBlockRuntimeId(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) : 0;
         return ItemData.builder()
                 .id(version.getItemRuntimeId(item.getItemId()))
                 .netId(item.getNetworkId())
+                .blockRuntimeId(blockRuntimeId)
                 .count(item.getCount())
                 .damage(item.getMeta())
                 .canBreak(item.getBlocksCanBreak().toArray(String[]::new))
@@ -30,12 +32,13 @@ public class ItemUtils {
                 .build();
     }
 
-    public static NbtMap serializeWithSlotForDisk(Item item) {
+    public static NbtMap serializeWithSlotForDisk(Item item, int slot) {
         return NbtMap.builder()
                 .putString("Name", item.getItemId())
                 .putShort("Damage", (short) item.getMeta())
                 .putByte("Count", (byte) item.getCount())
                 .putCompound("tag", item.getNBT())
+                .putByte("Slot", (byte) slot)
                 .build();
     }
 

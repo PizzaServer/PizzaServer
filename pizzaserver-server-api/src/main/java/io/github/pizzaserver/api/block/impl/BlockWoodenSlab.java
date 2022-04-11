@@ -4,15 +4,15 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.SlabType;
 import io.github.pizzaserver.api.block.data.WoodType;
+import io.github.pizzaserver.api.block.traits.FlammableTrait;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BlockWoodenSlab extends BlockSlab {
+public class BlockWoodenSlab extends BlockSlab implements FlammableTrait {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -95,6 +95,7 @@ public class BlockWoodenSlab extends BlockSlab {
                     this.setBlockState(this.getWoodType().ordinal() * 2 + 2 + (wantsUpperSlab ? 1 : 0));
                     return;
                 }
+                this.woodType = WoodType.values()[(int) Math.floor((index - 2) / 2d)];
                 break;
             case CRIMSON:
             case WARPED:
@@ -182,11 +183,32 @@ public class BlockWoodenSlab extends BlockSlab {
     }
 
     @Override
-    public ItemBlock toStack() {
+    public int getBurnOdds() {
+        return 5;
+    }
+
+    @Override
+    public int getFlameOdds() {
+        return 20;
+    }
+
+    @Override
+    public int getStackMeta() {
         return switch (this.getWoodType()) {
-            case OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK -> new ItemBlock(this.getBlockId(), 1, this.getWoodType().ordinal());
-            case CRIMSON, WARPED -> super.toStack();
+            case OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK -> this.getWoodType().ordinal();
+            default -> 0;
         };
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        boolean canUpdateMeta = this.getWoodType() != WoodType.CRIMSON
+                && this.getWoodType() != WoodType.WARPED
+                && meta >= 0
+                && meta <= 5;
+        if (canUpdateMeta) {
+            this.setWoodType(WoodType.values()[meta]);
+        }
     }
 
 }

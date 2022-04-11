@@ -10,4 +10,17 @@ public class NumberUtils {
         return Math.abs(a - b) < 0.001d;
     }
 
+    /**
+     * Calculates the Base-2 logarithm of {@code bits}. If {@code bits} is zero, zero is returned.
+     *
+     * @param bits x
+     * @return {@code ceil(log2(x))}
+     */
+    public static int log2Ceil(int bits) {
+        if (bits == 0) {
+            return 0;
+        }
+        return 31 - Integer.numberOfLeadingZeros(bits);
+    }
+
 }

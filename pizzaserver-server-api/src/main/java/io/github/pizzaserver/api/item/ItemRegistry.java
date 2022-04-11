@@ -9,9 +9,9 @@ public interface ItemRegistry {
 
     /**
      * Register an item.
-     * @param item if implementing a custom item, you must implement CustomItem instead of Item
+     * @param item if implementing a custom item, you must implement CustomItem along with BaseItem
      */
-    void register(Item item);
+    void register(BaseItem item);
 
     /**
      * Register an item and tie it to a behavior.
@@ -20,9 +20,7 @@ public interface ItemRegistry {
      */
     <T extends Item> void register(T item, ItemBehavior<T> behavior);
 
-    boolean hasItemType(String itemId);
-
-    Set<CustomItem> getCustomItems();
+    boolean hasItem(String itemId);
 
     default Item getItem(String itemId) {
         return this.getItem(itemId, 1);

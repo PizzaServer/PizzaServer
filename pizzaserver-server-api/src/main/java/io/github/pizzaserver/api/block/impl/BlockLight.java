@@ -1,13 +1,13 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockLight extends Block {
+public class BlockLight extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -56,6 +56,23 @@ public class BlockLight extends Block {
     @Override
     public List<NbtMap> getNBTStates() {
         return BLOCK_STATES;
+    }
+
+    @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta <= 15) {
+            this.setLightLevel(meta);
+        }
+    }
+
+    @Override
+    public boolean canBeIgnited() {
+        return false;
     }
 
 }

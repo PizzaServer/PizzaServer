@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.event.type.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.item.Item;
 
 /**
@@ -71,7 +71,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     }
 
     public Item getMovedItem() {
-        return this.movedItem;
+        return this.movedItem.clone();
     }
 
     public int getMovedItemCount() {
@@ -91,7 +91,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     }
 
     public Item getTargetItem() {
-        return this.destinationCurrentItemStack;
+        return this.destinationCurrentItemStack.clone();
     }
 
 }

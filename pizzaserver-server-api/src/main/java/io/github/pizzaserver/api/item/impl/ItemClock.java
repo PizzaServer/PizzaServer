@@ -1,9 +1,10 @@
 package io.github.pizzaserver.api.item.impl;
 
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
 
-public class ItemClock extends Item {
+public class ItemClock extends BaseItem {
 
     public ItemClock() {
         this(1);

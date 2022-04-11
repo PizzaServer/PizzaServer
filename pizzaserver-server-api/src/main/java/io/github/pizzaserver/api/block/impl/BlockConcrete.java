@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BlockConcrete extends Block {
+public class BlockConcrete extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = Arrays.stream(DyeColor.values())
             .map(color -> NbtMap.builder()
@@ -69,6 +69,18 @@ public class BlockConcrete extends Block {
     @Override
     public List<NbtMap> getNBTStates() {
         return BLOCK_STATES;
+    }
+
+    @Override
+    public int getStackMeta() {
+        return this.getColor().ordinal();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta < DyeColor.values().length) {
+            this.setBlockState(meta);
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.StoneType;
 import io.github.pizzaserver.api.item.data.ToolTier;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BlockStone extends Block {
+public class BlockStone extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -41,6 +41,18 @@ public class BlockStone extends Block {
     @Override
     public String getBlockId() {
         return BlockID.STONE;
+    }
+
+    @Override
+    public int getStackMeta() {
+        return this.getBlockState();
+    }
+
+    @Override
+    public void updateFromStackMeta(int meta) {
+        if (meta >= 0 && meta < StoneType.values().length) {
+            this.setBlockState(meta);
+        }
     }
 
     @Override
@@ -79,11 +91,6 @@ public class BlockStone extends Block {
     @Override
     public ToolType getToolTypeRequired() {
         return ToolType.PICKAXE;
-    }
-
-    @Override
-    public ItemBlock toStack() {
-        return new ItemBlock(this, 1);
     }
 
 }

@@ -48,7 +48,7 @@ public interface Chunk extends Watchable {
      * @param z z coordinate
      * @return biome at the specified x and z coordinate
      */
-    byte getBiomeAt(int x, int z);
+    int getBiomeAt(int x, int y, int z);
 
     /**
      * Retrieve all of the {@link Entity}s that exist in this chunk.
@@ -113,11 +113,11 @@ public interface Chunk extends Watchable {
      */
     Block getBlock(int x, int y, int z, int layer);
 
-    default Optional<BlockEntity> getBlockEntity(Vector3i blockCoordinates) {
+    default Optional<BlockEntity<? extends Block>> getBlockEntity(Vector3i blockCoordinates) {
         return this.getBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
     }
 
-    Optional<BlockEntity> getBlockEntity(int x, int y, int z);
+    Optional<BlockEntity<? extends Block>> getBlockEntity(int x, int y, int z);
 
     /**
      * Set a block in this chunk.
@@ -307,6 +307,12 @@ public interface Chunk extends Watchable {
     }
 
     void addBlockEvent(int x, int y, int z, int type, int data);
+
+    default void addBlockEvent(Player player, Vector3i blockCoordinates, int type, int data) {
+        this.addBlockEvent(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ(), type, data);
+    }
+
+    void addBlockEvent(Player player, int x, int y, int z, int type, int data);
 
     /**
      * Check if this chunk can be closed.

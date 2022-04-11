@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.entity;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.EntityItem;
@@ -9,6 +10,7 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponentHan
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityItemDefinition;
 import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.utils.ServerState;
 
 import java.util.*;
 
@@ -20,7 +22,11 @@ public class ImplEntityRegistry implements EntityRegistry {
 
     @Override
     public void registerDefinition(EntityDefinition entityDefinition) {
-        this.definitions.put(entityDefinition.getId(), entityDefinition);
+        if (Server.getInstance().getState() != ServerState.REGISTERING) {
+            throw new IllegalStateException("The server is not in the REGISTERING state");
+        }
+
+        this.definitions.put(entityDefinition.getEntityId(), entityDefinition);
     }
 
     @Override
@@ -38,7 +44,7 @@ public class ImplEntityRegistry implements EntityRegistry {
     }
 
     @Override
-    public boolean hasEntityDefinition(String entityId) {
+    public boolean hasDefinition(String entityId) {
         return this.definitions.containsKey(entityId);
     }
 
@@ -73,7 +79,7 @@ public class ImplEntityRegistry implements EntityRegistry {
     public Entity getEntity(String entityId) {
         EntityDefinition entityDefinition = this.getDefinition(entityId);
         Entity entity;
-        switch (entityDefinition.getId()) {
+        switch (entityDefinition.getEntityId()) {
             case EntityHumanDefinition.ID:
                 entity = new ImplEntityHuman(entityDefinition);
                 break;
@@ -96,9 +102,8 @@ public class ImplEntityRegistry implements EntityRegistry {
         return entity;
     }
 
-    @Override
     public Set<EntityDefinition> getDefinitions() {
-        return Collections.unmodifiableSet(new HashSet<>(this.definitions.values()));
+        return Set.copyOf(this.definitions.values());
     }
 
 }

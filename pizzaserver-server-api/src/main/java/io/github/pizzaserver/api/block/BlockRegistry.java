@@ -2,7 +2,9 @@ package io.github.pizzaserver.api.block;
 
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.behavior.BlockBehavior;
-import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
+import io.github.pizzaserver.api.item.behavior.ItemBehavior;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 
 import java.util.Set;
 
@@ -12,10 +14,12 @@ import java.util.Set;
 public interface BlockRegistry {
 
     default void register(Block block) {
-        this.register(block, new DefaultBlockBehavior());
+        this.register(block, new BaseBlockBehavior<>());
     }
 
-    void register(Block block, BlockBehavior behavior);
+    <T extends Block> void register(T block, BlockBehavior<T> behavior);
+
+    <T extends Block> void register(T block, BlockBehavior<T> behavior, ItemBehavior<ItemBlock> itemBehavior);
 
     /**
      * Check if a block id was registered.
@@ -34,11 +38,11 @@ public interface BlockRegistry {
 
     Block getBlock(String blockId, int state);
 
-    default BlockBehavior getBlockBehavior(String blockId) {
+    default BlockBehavior<? extends Block> getBlockBehavior(String blockId) {
         return this.getBlockBehavior(this.getBlock(blockId));
     }
 
-    BlockBehavior getBlockBehavior(Block block);
+    <T extends Block> BlockBehavior<T> getBlockBehavior(T block);
 
     static BlockRegistry getInstance() {
         return Server.getInstance().getBlockRegistry();

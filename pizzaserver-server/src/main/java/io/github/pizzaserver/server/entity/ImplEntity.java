@@ -24,20 +24,20 @@ import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreatha
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityBurnsInDaylightComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.descriptors.ArmorItemComponent;
+import io.github.pizzaserver.api.item.descriptors.ArmorItem;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
+import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.ImplWorld;
@@ -264,6 +264,32 @@ public class ImplEntity implements Entity {
     }
 
     @Override
+    public Set<Block> getCollisionBlocks() {
+        BoundingBox entityBoundingBox = this.getBoundingBox().grow(0.5f);
+        int minBlockXCheck = (int) entityBoundingBox.getMinX();
+        int minBlockYCheck = (int) entityBoundingBox.getMinY();
+        int minBlockZCheck = (int) entityBoundingBox.getMinZ();
+        int maxBlockXCheck = (int) entityBoundingBox.getMaxX();
+        int maxBlockYCheck = (int) entityBoundingBox.getMaxY();
+        int maxBlockZCheck = (int) entityBoundingBox.getMaxZ();
+
+        Set<Block> collidingBlocks = new HashSet<>();
+
+        for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
+            for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
+                for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
+                    Block block = this.getWorld().getBlock(x, y, z);
+                    if (block.getBoundingBox().collidesWith(entityBoundingBox)) {
+                        collidingBlocks.add(block);
+                    }
+                }
+            }
+        }
+
+        return collidingBlocks;
+    }
+
+    @Override
     public Block getHeadBlock() {
         if (this.isSwimming()) {
             return this.getWorld().getBlock(this.getLocation().toVector3i());
@@ -284,7 +310,9 @@ public class ImplEntity implements Entity {
 
     @Override
     public Location getLocation() {
-        return new Location(this.world, Vector3f.from(this.getX(), this.getY(), this.getZ()));
+        return new Location(this.world,
+                Vector3f.from(this.getX(), this.getY(), this.getZ()),
+                Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
     }
 
     @Override
@@ -356,40 +384,37 @@ public class ImplEntity implements Entity {
      */
     public void setPosition(Location location) {
         if (location != null) {
-            this.setPosition(location.getWorld(), location.getX(), location.getY(), location.getZ());
+            this.setPosition(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw(), location.getHeadYaw());
         } else {
-            this.setPosition(null, 0, 0, 0);
+            this.setPosition(null, 0, 0, 0, 0, 0, 0);
         }
     }
 
-    public void setPosition(World world, float x, float y, float z) {
+    public void setPosition(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.headYaw = headYaw;
         this.recalculateBoundingBox();
     }
 
     @Override
-    public void teleport(float x, float y, float z) {
-        this.teleport(this.getWorld(), x, y, z);
-    }
-
-    @Override
-    public void teleport(Location location) {
-        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ());
-    }
-
-    @Override
-    public void teleport(World world, float x, float y, float z) {
+    public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
         World oldWorld = this.getWorld();
         this.moveUpdate = true;
 
         if (!world.equals(oldWorld)) {
+            this.setPitch(pitch);
+            this.setYaw(yaw);
+            this.setHeadYaw(headYaw);
+
             oldWorld.removeEntity(this);
             world.addEntity(this, Vector3f.from(x, y, z));
         } else {
-            this.setPosition(new Location(this.world, this.x, this.y, this.z));
+            this.setPosition(new Location(world, x, y, z, pitch, yaw, headYaw));
         }
     }
 
@@ -783,17 +808,17 @@ public class ImplEntity implements Entity {
     public int getArmourPoints() {
         int armourPoints = 0;
 
-        if (this.getInventory().getHelmet() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getHelmet()).getProtection();
+        if (this.getInventory().getHelmet() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getHelmet()).getProtection();
         }
-        if (this.getInventory().getChestplate() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getChestplate()).getProtection();
+        if (this.getInventory().getChestplate() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getChestplate()).getProtection();
         }
-        if (this.getInventory().getLeggings() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getLeggings()).getProtection();
+        if (this.getInventory().getLeggings() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getLeggings()).getProtection();
         }
-        if (this.getInventory().getBoots() instanceof ArmorItemComponent) {
-            armourPoints += ((ArmorItemComponent) this.getInventory().getBoots()).getProtection();
+        if (this.getInventory().getBoots() instanceof ArmorItem) {
+            armourPoints += ((ArmorItem) this.getInventory().getBoots()).getProtection();
         }
 
         return armourPoints;
@@ -928,11 +953,15 @@ public class ImplEntity implements Entity {
     }
 
     public void moveTo(float x, float y, float z) {
+        this.moveTo(x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+    }
+
+    public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
         this.moveUpdate = true;
         Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
 
         ImplChunk currentChunk = this.getChunk();
-        this.setPosition(this.getWorld(), x, y, z);
+        this.setPosition(this.getWorld(), x, y, z, pitch, yaw, headYaw);
 
         ImplChunk newChunk = this.getWorld().getChunk((int) Math.floor(this.x / 16), (int) Math.floor(this.z / 16));
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
@@ -979,6 +1008,7 @@ public class ImplEntity implements Entity {
             Block headBlock = this.getHeadBlock();
             EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
             boolean isSuffocating = headBlock.hasCollision()
+                    && headBlock.getBoundingBox().collidesWith(this.getBoundingBox())
                     && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
                         || breathableComponent.getNonBreathableBlocks().contains(headBlock));
             if (isSuffocating) {
@@ -992,7 +1022,7 @@ public class ImplEntity implements Entity {
                     && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
                                 && !breathableComponent.getBreathableBlocks().contains(headBlock))
                         || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
-            if (losingOxygen) {
+            if (losingOxygen && !(this instanceof Player player && player.isCreativeMode())) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
                     this.damage(drowningEvent);
@@ -1017,6 +1047,12 @@ public class ImplEntity implements Entity {
         if (this.deathAnimationTicks != -1 && --this.deathAnimationTicks <= 0) {
             this.endDeathAnimation();
             this.despawn();
+        }
+
+        for (Block block : this.getCollisionBlocks()) {
+            if (block.getBoundingBox().collidesWith(this.getBoundingBox())) {
+                block.getBehavior().onCollision(this, block);
+            }
         }
 
         Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
@@ -1045,17 +1081,17 @@ public class ImplEntity implements Entity {
 
     private float getKnockbackResistance() {
         float totalResistance = 0;
-        if (this.getInventory().getHelmet() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getHelmet()).getKnockbackResistance();
+        if (this.getInventory().getHelmet() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getHelmet()).getKnockbackResistance();
         }
-        if (this.getInventory().getChestplate() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getChestplate()).getKnockbackResistance();
+        if (this.getInventory().getChestplate() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getChestplate()).getKnockbackResistance();
         }
-        if (this.getInventory().getLeggings() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getLeggings()).getKnockbackResistance();
+        if (this.getInventory().getLeggings() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getLeggings()).getKnockbackResistance();
         }
-        if (this.getInventory().getBoots() instanceof ArmorItemComponent) {
-            totalResistance += ((ArmorItemComponent) this.getInventory().getBoots()).getKnockbackResistance();
+        if (this.getInventory().getBoots() instanceof ArmorItem) {
+            totalResistance += ((ArmorItem) this.getInventory().getBoots()).getKnockbackResistance();
         }
 
         return Math.max(0, Math.min(1, totalResistance));
@@ -1234,7 +1270,7 @@ public class ImplEntity implements Entity {
             AddEntityPacket addEntityPacket = new AddEntityPacket();
             addEntityPacket.setUniqueEntityId(this.getId());
             addEntityPacket.setRuntimeEntityId(this.getId());
-            addEntityPacket.setIdentifier(this.getEntityDefinition().getId());
+            addEntityPacket.setIdentifier(this.getEntityDefinition().getEntityId());
             addEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
             addEntityPacket.setMotion(this.getMotion());
             addEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));

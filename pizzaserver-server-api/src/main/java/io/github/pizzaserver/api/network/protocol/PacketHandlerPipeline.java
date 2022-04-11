@@ -1,11 +1,8 @@
 package io.github.pizzaserver.api.network.protocol;
 
-import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 
-import java.util.function.Consumer;
-
-public interface PacketHandlerPipeline extends Consumer<BedrockPacket> {
+public interface PacketHandlerPipeline {
 
     PacketHandlerPipeline addFirst(BedrockPacketHandler ...handlers);
 

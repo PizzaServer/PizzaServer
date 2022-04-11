@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PlayerSession {
 
     private final BedrockServerSession connection;
-    private final PacketHandlerPipeline packetHandlerPipeline = new ImplPacketHandlerPipeline();
+    private final ImplPacketHandlerPipeline packetHandlerPipeline = new ImplPacketHandlerPipeline();
     private MinecraftVersion version;
     private ImplPlayer player;
 
@@ -39,7 +39,7 @@ public class PlayerSession {
         this.player = player;
     }
 
-    public PacketHandlerPipeline getPacketHandlerPipeline() {
+    public ImplPacketHandlerPipeline getPacketHandlerPipeline() {
         return this.packetHandlerPipeline;
     }
 

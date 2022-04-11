@@ -2,15 +2,16 @@ package io.github.pizzaserver.api.item.impl;
 
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.Item;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ItemBlock extends Item {
+public class ItemBlock extends BaseItem {
 
-    private final Block block;
+    private Block block;
     private Set<String> blocksCanPlaceOn = Collections.emptySet();
 
 
@@ -27,16 +28,17 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block) {
-        this(block, 1);
+        this(block, 1, block.getStackMeta());
     }
 
     public ItemBlock(Block block, int count) {
-        this(block, count, 0);
+        this(block, count, block.getStackMeta());
     }
 
     public ItemBlock(Block block, int count, int meta) {
         super(block.getBlockId(), count, meta);
         this.block = block.clone();
+        this.block.updateFromStackMeta(meta);
     }
 
     @Override
@@ -46,7 +48,22 @@ public class ItemBlock extends Item {
 
     @Override
     public String getItemId() {
-        return this.block.getBlockId();
+        return this.block.getItemId();
+    }
+
+    @Override
+    public int getMeta() {
+        return this.getBlock().getStackMeta();
+    }
+
+    @Override
+    public void setMeta(int meta) {
+        this.getBlock().updateFromStackMeta(meta);
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return this.getBlock().getMaxStackSize();
     }
 
     public Block getBlock() {
@@ -60,5 +77,27 @@ public class ItemBlock extends Item {
     public void setBlocksCanPlaceOn(Set<String> blocksCanPlaceOn) {
         this.blocksCanPlaceOn = new HashSet<>(blocksCanPlaceOn);
     }
+
+    @Override
+    public ItemBlock clone() {
+        ItemBlock clone = (ItemBlock) super.clone();
+        clone.block = this.getBlock().clone();
+        return clone;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ItemBlock otherItem) {
+            return super.equals(obj)
+                    && otherItem.getBlock().getBlockState() == this.getBlock().getBlockState();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + (93 * this.getBlock().getBlockState());
+    }
+
 
 }

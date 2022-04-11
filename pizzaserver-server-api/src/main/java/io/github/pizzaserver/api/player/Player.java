@@ -1,13 +1,15 @@
 package io.github.pizzaserver.api.player;
 
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.entity.inventory.Inventory;
-import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.OpenableInventory;
+import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -52,7 +54,7 @@ public interface Player extends EntityHuman {
 
     boolean isAdventureMode();
 
-    boolean inSurvivalMode();
+    boolean isSurvivalMode();
 
     AdventureSettings getAdventureSettings();
 
@@ -74,7 +76,7 @@ public interface Player extends EntityHuman {
      * Get the current open inventory of the player if any exist.
      * @return the open inventory if the player has one open
      */
-    Optional<Inventory> getOpenInventory();
+    Optional<OpenableInventory> getOpenInventory();
 
     /**
      * Try to close our current open inventory.
@@ -89,7 +91,7 @@ public interface Player extends EntityHuman {
      * @param inventory The inventory to open
      * @return if the inventory was opened
      */
-    boolean openInventory(Inventory inventory);
+    boolean openInventory(OpenableInventory inventory);
 
     /**
      * Get the amount of food strength the player has.
@@ -142,12 +144,49 @@ public interface Player extends EntityHuman {
     /**
      * Teleport this entity to a position with a dimension transfer screen.
      * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param position position
+     * @param transferDimension dimension transfer screen to use
+     */
+    default void teleport(Vector3f position, Dimension transferDimension) {
+        this.teleport(position, Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()), transferDimension);
+    }
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param position position
+     * @param transferDimension dimension transfer screen to use
+     */
+    default void teleport(Vector3f position, Vector3f rotation, Dimension transferDimension) {
+        this.teleport(new Location(this.getWorld(), position, rotation), transferDimension);
+    }
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
      * @param x x coordinate
      * @param y y coordinate
      * @param z z coordinate
      * @param transferDimension dimension transfer screen to use
      */
-    void teleport(float x, float y, float z, Dimension transferDimension);
+    default void teleport(float x, float y, float z, Dimension transferDimension) {
+        this.teleport(x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw(), transferDimension);
+    }
+
+    /**
+     * Teleport this entity to a position with a dimension transfer screen.
+     * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @param pitch new pitch
+     * @param yaw new yaw
+     * @param headYaw new head yaw
+     * @param transferDimension dimension transfer screen to use
+     */
+    default void teleport(float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension) {
+        this.teleport(this.getWorld(), x, y, z, pitch, yaw, headYaw, transferDimension);
+    }
 
     /**
      * Teleport this entity to a position with a dimension transfer screen.
@@ -155,7 +194,11 @@ public interface Player extends EntityHuman {
      * @param location location to teleport them to
      * @param transferDimension dimension transfer screen to use
      */
-    void teleport(Location location, Dimension transferDimension);
+    default void teleport(Location location, Dimension transferDimension) {
+        this.teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(),
+                location.getPitch(), location.getYaw(), location.getHeadYaw(),
+                transferDimension);
+    }
 
     /**
      * Teleport this entity to a position with a dimension transfer screen.
@@ -164,9 +207,12 @@ public interface Player extends EntityHuman {
      * @param x the x coordinate
      * @param y the y coordinate
      * @param z the z coordinate
+     * @param pitch new pitch
+     * @param yaw new yaw
+     * @param headYaw new head yaw
      * @param transferDimension dimension transfer screen to use
      */
-    void teleport(World world, float x, float y, float z, Dimension transferDimension);
+    void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension);
 
     /**
      * Retrieve the location that this player should spawn at when it dies.

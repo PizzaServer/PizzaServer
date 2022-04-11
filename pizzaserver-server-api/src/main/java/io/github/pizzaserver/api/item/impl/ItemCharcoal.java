@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.item.impl;
 
-import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.data.ItemID;
-import io.github.pizzaserver.api.item.descriptors.FuelItemComponent;
+import io.github.pizzaserver.api.item.descriptors.FuelItem;
 
-public class ItemCharcoal extends Item implements FuelItemComponent {
+public class ItemCharcoal extends BaseItem implements FuelItem {
 
     public ItemCharcoal() {
         this(1);

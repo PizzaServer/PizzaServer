@@ -1,10 +1,13 @@
 package io.github.pizzaserver.server.block;
 
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.behavior.BlockBehavior;
 import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.item.behavior.impl.ItemBlockBehavior;
 
 import java.util.*;
@@ -13,13 +16,22 @@ public class ImplBlockRegistry implements BlockRegistry {
 
     // All registered block types
     private final Map<String, Block> blocks = new HashMap<>();
-    private final Map<Class<? extends Block>, BlockBehavior> behaviors = new HashMap<>();
+    private final Map<Class<? extends Block>, BlockBehavior<? extends Block>> behaviors = new HashMap<>();
 
     // All registered CUSTOM block types
     private final Set<Block> customTypes = new HashSet<>();
 
     @Override
-    public void register(Block block, BlockBehavior behavior) {
+    public <T extends Block> void register(T block, BlockBehavior<T> behavior) {
+        this.register(block, behavior, new ItemBlockBehavior());
+    }
+
+    @Override
+    public <T extends Block> void register(T block, BlockBehavior<T> behavior, ItemBehavior<ItemBlock> itemBehavior) {
+        if (Server.getInstance().getState() != ServerState.REGISTERING) {
+            throw new IllegalStateException("The server is not in the REGISTERING state");
+        }
+
         Block registeredBlock = block.clone();
         if (!registeredBlock.getBlockId().startsWith("minecraft:")) {
             this.customTypes.add(registeredBlock);
@@ -27,7 +39,7 @@ public class ImplBlockRegistry implements BlockRegistry {
 
         this.blocks.put(registeredBlock.getBlockId(), registeredBlock);
         this.behaviors.put(registeredBlock.getClass(), behavior);
-        ItemRegistry.getInstance().register(new ItemBlock(registeredBlock), new ItemBlockBehavior());
+        ItemRegistry.getInstance().register(new ItemBlock(registeredBlock), itemBehavior);
     }
 
     @Override
@@ -57,12 +69,13 @@ public class ImplBlockRegistry implements BlockRegistry {
     }
 
     @Override
-    public BlockBehavior getBlockBehavior(Block block) {
+    @SuppressWarnings("unchecked")
+    public <T extends Block> BlockBehavior<T> getBlockBehavior(T block) {
         if (!this.behaviors.containsKey(block.getClass())) {
             throw new NullPointerException("There is no block behavior class for the provided class. Was it registered?");
         }
 
-        return this.behaviors.get(block.getClass());
+        return (BlockBehavior<T>) this.behaviors.get(block.getClass());
     }
 
 }

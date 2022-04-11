@@ -3,30 +3,35 @@ package io.github.pizzaserver.server;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.ServerConfig;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.entity.inventory.BlockEntityInventory;
-import io.github.pizzaserver.api.entity.inventory.EntityInventory;
+import io.github.pizzaserver.api.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
+import io.github.pizzaserver.api.item.CreativeRegistry;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
+import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Config;
 import io.github.pizzaserver.api.utils.Logger;
+import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
-import io.github.pizzaserver.server.blockentity.ImplBlockEntityRegistry;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.entity.inventory.ImplBlockEntityInventory;
-import io.github.pizzaserver.server.entity.inventory.ImplEntityInventory;
-import io.github.pizzaserver.server.entity.inventory.InventoryUtils;
+import io.github.pizzaserver.server.inventory.ImplBlockEntityInventory;
+import io.github.pizzaserver.server.inventory.ImplEntityInventory;
+import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.event.ImplEventManager;
+import io.github.pizzaserver.server.item.ImplCreativeRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.level.ImplLevelManager;
 import io.github.pizzaserver.server.network.BedrockNetworkServer;
@@ -54,8 +59,8 @@ public class ImplServer extends Server {
 
     protected BlockRegistry blockRegistry = new ImplBlockRegistry();
     protected ItemRegistry itemRegistry = new ImplItemRegistry();
+    protected CreativeRegistry creativeRegistry = new ImplCreativeRegistry();
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
-    protected BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
 
     protected PluginManager pluginManager = new ImplPluginManager(this);
     protected ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
@@ -77,6 +82,7 @@ public class ImplServer extends Server {
     protected int currentTps;
     protected long currentTick;
 
+    protected ServerState state = ServerState.INACTIVE;
     protected final String rootDirectory;
     private volatile boolean running;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
@@ -87,11 +93,11 @@ public class ImplServer extends Server {
     protected ServerConfig config;
 
 
-    public ImplServer(String rootDirectory) {
+    public ImplServer(String rootDirectory) throws IOException {
         Server.setInstance(this);
 
         this.rootDirectory = rootDirectory;
-        this.setupFiles();
+        this.setup();
 
         this.logger = new ImplLogger("Server");
 
@@ -105,7 +111,6 @@ public class ImplServer extends Server {
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
-        // TODO: load plugins
     }
 
     /**
@@ -113,7 +118,27 @@ public class ImplServer extends Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() throws IOException {
+        this.state = ServerState.REGISTERING;
+        VanillaContentLoader.load();
+
+        // TODO: load plugins and call register method
+
         ServerProtocol.loadVersions();
+
+        // Load the earliest protocol's creative inventory.
+        int minimumServerProtocol = Server.getInstance().getConfig().getMinimumSupportedProtocol();
+        MinecraftVersion serverProtocolVersion = ServerProtocol
+                .getProtocol(minimumServerProtocol)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown protocol version found when attempting to load creative items: " + minimumServerProtocol));
+
+        for (Item item : serverProtocolVersion.getDefaultCreativeItems()) {
+            CreativeRegistry.getInstance().register(item);
+        }
+
+        this.state = ServerState.ENABLING_PLUGINS;
+        // TODO: call onEnable equiv method for plugins
+
+        this.state = ServerState.BOOT;
 
         this.getResourcePackManager().loadPacks();
 
@@ -127,9 +152,13 @@ public class ImplServer extends Server {
 
         this.runTickLoop();
         this.stop();
+
+        this.state = ServerState.INACTIVE;
     }
 
     private void runTickLoop() {
+        this.state = ServerState.RUNNING;
+
         int currentTps = 0;
         long nextTpsRecording = 0;
 
@@ -208,6 +237,8 @@ public class ImplServer extends Server {
      * The server will stop after the current tick finishes.
      */
     private void stop() {
+        this.state = ServerState.STOPPING;
+
         this.getLogger().info("Stopping server...");
 
         for (PlayerSession session : this.sessions) {
@@ -261,6 +292,11 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public ServerState getState() {
+        return this.state;
+    }
+
+    @Override
     public Set<Player> getPlayers() {
         synchronized (this.sessions) {
             return this.sessions.stream()
@@ -285,6 +321,11 @@ public class ImplServer extends Server {
     @Override
     public Optional<Player> getPlayerByExactUsername(String username) {
         return this.getPlayers().stream().filter(player -> player.getUsername().equalsIgnoreCase(username)).findAny();
+    }
+
+    @Override
+    public Optional<Player> getPlayerByUUID(UUID uuid) {
+        return this.getPlayers().stream().filter(player -> player.getUUID().equals(uuid)).findAny();
     }
 
     @Override
@@ -388,6 +429,12 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public <T extends BlockEntity<? extends Block>> T createBlockEntity(Class<T> blockEntityClazz, BlockLocation blockLocation) {
+
+        return null;
+    }
+
+    @Override
     public EntityInventory createInventory(Entity entity, ContainerType containerType) {
         return this.createInventory(entity, containerType, InventoryUtils.getSlotCount(containerType));
     }
@@ -398,12 +445,14 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType) {
-        return this.createInventory(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <T extends BlockEntity<? extends Block>> BlockEntityInventory<T> createInventory(T blockEntity, ContainerType containerType) {
+        return this.createInventory((BlockEntity) blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
     }
 
     @Override
-    public BlockEntityInventory createInventory(BlockEntity blockEntity, ContainerType containerType, int size) {
+    @SuppressWarnings("unchecked")
+    public <T extends BlockEntity<R>, R extends Block> BlockEntityInventory<T> createInventory(BlockEntity<R> blockEntity, ContainerType containerType, int size) {
         return new ImplBlockEntityInventory(blockEntity, containerType, size);
     }
 
@@ -418,19 +467,19 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public CreativeRegistry getCreativeRegistry() {
+        return this.creativeRegistry;
+    }
+
+    @Override
     public EntityRegistry getEntityRegistry() {
         return this.entityRegistry;
     }
 
-    @Override
-    public ImplBlockEntityRegistry getBlockEntityRegistry() {
-        return (ImplBlockEntityRegistry) this.blockEntityRegistry;
-    }
-
     /**
-     * Called to load and setup required files/classes.
+     * Called to setup pre-requisites for the server.
      */
-    private void setupFiles() {
+    private void setup() {
         try {
             new File(this.getRootDirectory() + "/plugins").mkdirs();
             new File(this.getRootDirectory() + "/levels").mkdirs();

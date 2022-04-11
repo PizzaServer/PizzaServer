@@ -30,4 +30,13 @@ public interface ItemBehavior<T extends Item> {
      */
     void onInteract(Player player, T item, Entity entity);
 
+    /**
+     * Called when the player breaks a block with this item.
+     *
+     * @param player the player
+     * @param item the item
+     * @param block the block broken
+     */
+    void onBreak(Player player, T item, Block block);
+
 }

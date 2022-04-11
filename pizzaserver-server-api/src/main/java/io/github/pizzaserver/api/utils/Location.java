@@ -5,6 +5,7 @@ import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
+import io.github.pizzaserver.commons.utils.NumberUtils;
 
 public class Location {
 
@@ -13,19 +14,36 @@ public class Location {
     private final float y;
     private final float z;
 
-    public Location(World world, Vector3i vector3i) {
-        this(world, Vector3f.from(vector3i.getX(), vector3i.getY(), vector3i.getZ()));
+    private final float pitch;
+    private final float yaw;
+    private final float headYaw;
+
+
+    public Location(World world, Vector3i position) {
+        this(world, position.toFloat());
     }
 
-    public Location(World world, Vector3f vector3) {
-        this(world, vector3.getX(), vector3.getY(), vector3.getZ());
+    public Location(World world, Vector3f position) {
+        this(world, position, Vector3f.ZERO);
     }
 
-    public Location(World world, float x, float y, float z) {
+    public Location(World world, Vector3i position, Vector3f rotation) {
+        this(world, position.toFloat(), rotation);
+    }
+
+    public Location(World world, Vector3f position, Vector3f rotation) {
+        this(world, position.getX(), position.getY(), position.getZ(), rotation.getX(), rotation.getY(), rotation.getZ());
+    }
+
+    public Location(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
+
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.headYaw = headYaw;
     }
 
     public float getX() {
@@ -38,6 +56,18 @@ public class Location {
 
     public float getZ() {
         return this.z;
+    }
+
+    public float getPitch() {
+        return this.pitch;
+    }
+
+    public float getYaw() {
+        return this.yaw;
+    }
+
+    public float getHeadYaw() {
+        return this.headYaw;
     }
 
     public Chunk getChunk() {
@@ -81,6 +111,31 @@ public class Location {
                 + ", x=" + this.getX()
                 + ", y=" + this.getY()
                 + ", z=" + this.getZ() + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Location otherLocation) {
+            return NumberUtils.isNearlyEqual(this.getX(), otherLocation.getX())
+                    && NumberUtils.isNearlyEqual(this.getY(), otherLocation.getY())
+                    && NumberUtils.isNearlyEqual(this.getZ(), otherLocation.getZ())
+                    && NumberUtils.isNearlyEqual(this.getPitch(), otherLocation.getPitch())
+                    && NumberUtils.isNearlyEqual(this.getYaw(), otherLocation.getYaw())
+                    && NumberUtils.isNearlyEqual(this.getHeadYaw(), otherLocation.getHeadYaw())
+                    && this.getWorld().equals(otherLocation.getWorld());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) ((91 * this.getX())
+                + (91 * this.getY())
+                + (91 * this.getZ())
+                + (91 * this.getWorld().hashCode())
+                + (91 * this.getPitch())
+                + (91 * this.getYaw())
+                + (91 * this.getHeadYaw()));
     }
 
 }

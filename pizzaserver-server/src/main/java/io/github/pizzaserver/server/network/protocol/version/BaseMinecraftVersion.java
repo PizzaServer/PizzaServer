@@ -11,9 +11,9 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
-import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.network.protocol.exception.ProtocolException;
 
 import java.io.IOException;
@@ -32,15 +32,17 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     protected final List<BlockPropertyData> customBlockProperties = new ArrayList<>();
     protected final BiMap<String, Integer> itemRuntimeIds = HashBiMap.create();
     protected final List<StartGamePacket.ItemEntry> itemEntries = new ArrayList<>();
+    protected final List<Item> creativeItems = new ArrayList<>();
     protected final List<ComponentItemData> itemComponents = new ArrayList<>();
 
 
     public BaseMinecraftVersion() throws IOException {
-        this.loadBiomeDefinitions();
         this.loadBlockStates();
         this.loadRuntimeItems();
+        this.loadBiomeDefinitions();
         this.loadEntitiesNBT();
         this.loadItemComponents();
+        this.loadDefaultCreativeItems();
     }
 
     protected abstract void loadBiomeDefinitions() throws IOException;
@@ -48,6 +50,8 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     protected abstract void loadBlockStates() throws IOException;
 
     protected abstract void loadRuntimeItems() throws IOException;
+
+    protected abstract void loadDefaultCreativeItems() throws IOException;
 
     protected abstract void loadEntitiesNBT();
 
@@ -60,7 +64,12 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     @Override
     public int getBlockRuntimeId(String name, NbtMap state) {
         BlockStateData key = new BlockStateData(name, state);
-        return this.blockStates.get(key);
+        try {
+            return this.blockStates.get(key);
+        } catch (NullPointerException exception) {
+            Server.getInstance().getLogger().debug("Unknown block runtime id requested: " + name + " " + state);
+            throw exception;
+        }
     }
 
     @Override
@@ -104,9 +113,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     @Override
     public NbtMap getNetworkBlockEntityNBT(NbtMap diskBlockEntityNBT) {
-        String blockEntityId = diskBlockEntityNBT.getString("id");
-        BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
-        return blockEntityType.serializeForNetwork(diskBlockEntityNBT);
+        return BlockEntityHandler.toNetworkNBT(diskBlockEntityNBT);
     }
 
     @Override
@@ -122,6 +129,11 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
     @Override
     public List<StartGamePacket.ItemEntry> getItemEntries() {
         return Collections.unmodifiableList(this.itemEntries);
+    }
+
+    @Override
+    public List<Item> getDefaultCreativeItems() {
+        return Collections.unmodifiableList(this.creativeItems);
     }
 
     @Override
@@ -160,8 +172,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof BlockStateData) {
-                BlockStateData otherStateData = (BlockStateData) obj;
+            if (obj instanceof BlockStateData otherStateData) {
                 return otherStateData.getBlockId().equals(this.getBlockId())
                         && otherStateData.getNBT().equals(this.getNBT());
             }

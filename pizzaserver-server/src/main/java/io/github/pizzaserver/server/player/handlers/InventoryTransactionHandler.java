@@ -3,10 +3,7 @@ package io.github.pizzaserver.server.player.handlers;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.inventory.*;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.PlaceStackRequestActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.SwapStackRequestActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.TakeStackRequestActionData;
+import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.*;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
@@ -21,19 +18,18 @@ import io.github.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 import io.github.pizzaserver.server.entity.ImplEntity;
-import io.github.pizzaserver.server.item.ItemUtils;
+import io.github.pizzaserver.server.inventory.ImplPlayerCraftingInventory;
+import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.InventoryTransactionAction;
 import io.github.pizzaserver.server.network.data.inventory.StackResponse;
-import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
-import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
-import io.github.pizzaserver.server.network.data.inventory.actions.TakeStackRequestActionDataWrapper;
+import io.github.pizzaserver.server.network.data.inventory.actions.*;
 import io.github.pizzaserver.server.player.ImplPlayer;
-import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionPlaceHandler;
-import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionSwapHandler;
-import io.github.pizzaserver.server.player.handlers.inventory.InventoryActionTakeHandler;
+import io.github.pizzaserver.server.player.handlers.inventory.*;
 
 import java.util.Optional;
 
@@ -87,24 +83,50 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                                 response.addChange(swapStackWrapper.getDestination());
                             }
                             break;
+                        case MINE_BLOCK:
+                            response.addChange(new InventorySlotContainer(this.player,
+                                    ContainerSlotType.HOTBAR,
+                                    ((MineBlockStackRequestActionData) action).getHotbarSlot()));
+                            break;
                         case DROP:
+                            DropStackRequestActionDataWrapper dropStackWrapper = new DropStackRequestActionDataWrapper(this.player, (DropStackRequestActionData) action);
+                            continueActions = InventoryActionDropHandler.INSTANCE.tryAction(this.player, dropStackWrapper);
+                            if (continueActions) {
+                                response.addChange(dropStackWrapper.getSource());
+                            }
+                            break;
                         case DESTROY:
+                            DestroyStackRequestActionDataWrapper destroyStackWrapper = new DestroyStackRequestActionDataWrapper(this.player, (DestroyStackRequestActionData) action);
+                            continueActions = InventoryActionDestroyHandler.INSTANCE.tryAction(this.player, destroyStackWrapper);
+                            if (continueActions) {
+                                response.addChange(destroyStackWrapper.getSource());
+                            }
+                            break;
+                        case CRAFT_CREATIVE:
+                            CraftCreativeRequestActionDataWrapper creativeStackWrapper = new CraftCreativeRequestActionDataWrapper(this.player, (CraftCreativeStackRequestActionData) action);
+                            continueActions = InventoryActionCraftCreativeHandler.INSTANCE.tryAction(this.player, creativeStackWrapper);
+                            if (continueActions) {
+                                response.addChange(creativeStackWrapper.getDestination());
+                            }
+                            break;
                         case CONSUME:
                         case LAB_TABLE_COMBINE:
                         case BEACON_PAYMENT:
-                        case MINE_BLOCK:
                         case CRAFT_RECIPE:
                         case CRAFT_RECIPE_AUTO:
-                        case CRAFT_CREATIVE:
                         case CRAFT_RECIPE_OPTIONAL:
                         case CRAFT_REPAIR_AND_DISENCHANT:
                         case CRAFT_LOOM:
                         case CRAFT_NON_IMPLEMENTED_DEPRECATED:
                         case CRAFT_RESULTS_DEPRECATED:
                             break;
+                        default:
+                            this.player.getServer().getLogger().debug("Missing inventory action handler: " + action.getType());
+                            break;
                     }
-                    itemStackResponsePacket.getEntries().add(response.serialize());
                 }
+
+                itemStackResponsePacket.getEntries().add(response.serialize());
             }
             this.player.sendPacket(itemStackResponsePacket);
 
@@ -115,6 +137,12 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                 }
                 this.player.getInventory().sendSlots(this.player);
             }
+
+            // Handle incomplete crafting transactions.
+            if (!((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput().isEmpty()) {
+                ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                this.player.getServer().getLogger().debug(String.format("%s's creative output slot was not emptied at the end of their item request.", this.player.getUsername()));
+            }
         }
         return true;
     }
@@ -123,32 +151,25 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
     public boolean handle(MobEquipmentPacket packet) {
         boolean isHotbarSlot = packet.getHotbarSlot() >= 0 && packet.getHotbarSlot() < 9;
         if (isHotbarSlot && packet.getContainerId() == ContainerId.INVENTORY) {
-            // If their item does not match up with the server side item resend the server's slot
-            if (!ItemUtils.deserializeNetworkItem(packet.getItem(), this.player.getVersion()).equals(this.player.getInventory().getSlot(packet.getHotbarSlot()))) {
-                this.player.getInventory().sendSlot(this.player, packet.getHotbarSlot());
-            }
-
             // Handle hotbar slot change
             if (packet.getHotbarSlot() != this.player.getInventory().getSelectedSlot()) {
                 PlayerHotbarSelectEvent playerHotbarSelectEvent = new PlayerHotbarSelectEvent(this.player, packet.getHotbarSlot());
                 this.player.getServer().getEventManager().call(playerHotbarSelectEvent);
-
-                if (!playerHotbarSelectEvent.isCancelled()) {
-                    // Server approves of hotbar slot change.
-
-                    // Check if we need to recalculate our break time for the block we may be breaking.
-                    boolean differentItemTypes = !this.player.getInventory().getHeldItem().equals(this.player.getInventory().getSlot(packet.getHotbarSlot()));
-                    boolean needToRecalculateBlockBreakTime = this.player.getBlockBreakingManager().isBreakingBlock()
-                            && differentItemTypes;
-
-                    this.player.getInventory().setSelectedSlot(packet.getHotbarSlot(), true);
-
-                    if (needToRecalculateBlockBreakTime) {
-                        this.player.getBlockBreakingManager().onChangedHeldItemWhileBreaking();
-                    }
-                } else {
+                if (playerHotbarSelectEvent.isCancelled()) {
                     // Reset their selected slot back to the old slot
                     this.player.getInventory().setSelectedSlot(this.player.getInventory().getSelectedSlot());
+                    return true;
+                }
+
+                // Server approves of hotbar slot change.
+                // Check if we need to recalculate our break time for the block we may be breaking.
+                boolean differentItemTypes = !this.player.getInventory().getHeldItem().equals(this.player.getInventory().getSlot(packet.getHotbarSlot()));
+                boolean needToRecalculateBlockBreakTime = this.player.getBlockBreakingManager().isBreakingBlock()
+                        && differentItemTypes;
+
+                this.player.getInventory().setSelectedSlot(packet.getHotbarSlot(), true);
+                if (needToRecalculateBlockBreakTime) {
+                    this.player.getBlockBreakingManager().onChangedHeldItemWhileBreaking();
                 }
             }
         }
@@ -255,7 +276,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
                             boolean callItemInteractAllowedByBlock = block.getBehavior().onInteract(this.player, block, blockFace, clickPosition);
                             boolean callItemInteractAllowedByBlockEntity = block.getWorld().getBlockEntity(blockCoordinates).isEmpty()
-                                    || block.getWorld().getBlockEntity(blockCoordinates).get().onInteract(this.player);
+                                    || ((BaseBlockEntity<? extends Block>) block.getWorld().getBlockEntity(blockCoordinates).get()).onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
                                 boolean successfulInteraction = heldItemStack.getBehavior().onInteract(this.player, heldItemStack, block, blockFace, clickPosition);
@@ -281,7 +302,9 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
 
         // This packet is spammed by the client and sending the inventory slot EVERY single time causes ugly visual effects
         // while towering up with blocks. This fixes it by only sending the item again if the counts do not match up.
-        if (itemData.getCount() != this.player.getInventory().getHeldItem().getCount()) {
+        // However, durable items bypass this check as the count will not change despite usage of the item.
+        if ((itemData.getCount() != this.player.getInventory().getHeldItem().getCount())
+                || (this.player.getInventory().getHeldItem() instanceof DurableItem)) {
             this.player.getInventory().sendSlot(this.player, this.player.getInventory().getSelectedSlot());
         }
     }

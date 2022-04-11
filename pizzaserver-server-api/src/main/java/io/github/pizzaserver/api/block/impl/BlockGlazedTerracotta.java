@@ -1,14 +1,14 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.utils.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockGlazedTerracotta extends Block {
+public class BlockGlazedTerracotta extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

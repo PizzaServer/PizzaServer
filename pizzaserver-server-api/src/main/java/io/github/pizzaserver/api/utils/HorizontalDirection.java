@@ -1,5 +1,7 @@
 package io.github.pizzaserver.api.utils;
 
+import io.github.pizzaserver.api.block.data.BlockFace;
+
 public enum HorizontalDirection {
     NORTH,
     SOUTH,
@@ -21,12 +23,69 @@ public enum HorizontalDirection {
         }
     }
 
-    public int getBlockStateIndex() {
+    public Direction toDirection() {
+        return switch (this) {
+            case NORTH -> Direction.NORTH;
+            case SOUTH -> Direction.SOUTH;
+            case WEST -> Direction.WEST;
+            case EAST -> Direction.EAST;
+        };
+    }
+
+    public BlockFace toFace() {
+        return switch (this) {
+            case NORTH -> BlockFace.NORTH;
+            case SOUTH -> BlockFace.SOUTH;
+            case WEST -> BlockFace.WEST;
+            case EAST -> BlockFace.EAST;
+        };
+    }
+
+    /**
+     * Some block states have an up and down direction. We need to take that offset into consideration.
+     * @return block state index of omni directional block
+     */
+    public int getOmniBlockStateIndex() {
         return this.ordinal() + 2;
     }
 
-    public static HorizontalDirection fromBlockStateIndex(int index) {
+    /**
+     * Get the block state for a block without an up/down state.
+     * @return block state
+     */
+    public int getBlockStateIndex() {
+        return switch (this) {
+            case SOUTH -> 0;
+            case WEST -> 1;
+            case NORTH -> 2;
+            case EAST -> 3;
+        };
+    }
+
+    /**
+     * Some block states have an up and down direction. We need to take that offset into consideration.
+     * @param index omni block state
+     * @return direction representative from the omni block state index
+     */
+    public static HorizontalDirection fromOmniBlockStateIndex(int index) {
         return HorizontalDirection.values()[index - 2];
+    }
+
+    /**
+     * Get the direction for a block without an up/down state.
+     * @param index block state
+     * @return direction representative from the block state index
+     */
+    public static HorizontalDirection fromBlockStateIndex(int index) {
+        if (index == 0) {
+            return SOUTH;
+        } else if (index == 1) {
+            return WEST;
+        } else if (index == 2) {
+            return NORTH;
+        } else {
+            return EAST;
+        }
     }
 
     public static HorizontalDirection fromYaw(float yaw) {

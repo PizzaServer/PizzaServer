@@ -1,13 +1,13 @@
 package io.github.pizzaserver.api.item.impl;
 
-import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.data.ItemID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
-import io.github.pizzaserver.api.item.descriptors.DurableItemComponent;
-import io.github.pizzaserver.api.item.descriptors.ToolItemComponent;
+import io.github.pizzaserver.api.item.descriptors.DurableItem;
+import io.github.pizzaserver.api.item.descriptors.ToolItem;
 
-public class ItemDiamondAxe extends Item implements DurableItemComponent, ToolItemComponent {
+public class ItemDiamondAxe extends BaseItem implements DurableItem, ToolItem {
 
     public ItemDiamondAxe() {
         this(1);

@@ -2,11 +2,12 @@ package io.github.pizzaserver.server.player;
 
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockAir;
 import io.github.pizzaserver.api.block.impl.BlockDirt;
 import io.github.pizzaserver.api.block.impl.BlockIronOre;
 import io.github.pizzaserver.api.block.impl.BlockStone;
-import io.github.pizzaserver.api.entity.inventory.PlayerInventory;
+import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.item.impl.ItemShears;
@@ -56,7 +57,7 @@ public class PlayerBlockBreakingManagerTests {
         when(mockPlayer.getServer()).thenReturn(mockServer);
 
 
-        blockBreakingManager.startBreaking(blockLocation);
+        blockBreakingManager.startBreaking(blockLocation, BlockFace.NORTH);
         assertFalse(blockBreakingManager.canBreakBlock(), "player was able to break a dirt block too quick");
         assertTrue(blockBreakingManager.canBreakBlock(), "player was not able to break a dirt block despite enough ticks passing.");
     }
@@ -94,7 +95,7 @@ public class PlayerBlockBreakingManagerTests {
         when(mockPlayer.getServer()).thenReturn(mockServer);
 
 
-        blockBreakingManager.startBreaking(blockLocation);
+        blockBreakingManager.startBreaking(blockLocation, BlockFace.NORTH);
 
         int resultTicksWithoutTool = blockBreakingManager.getBreakTicks();
         int resultTicksWithTool = blockBreakingManager.getBreakTicks();
@@ -130,7 +131,7 @@ public class PlayerBlockBreakingManagerTests {
         when(mockPlayer.getServer()).thenReturn(mockServer);
 
 
-        blockBreakingManager.startBreaking(blockLocation);
+        blockBreakingManager.startBreaking(blockLocation, BlockFace.NORTH);
         int originalTicksLeft = blockBreakingManager.getBreakTicks();
 
         blockBreakingManager.onChangedHeldItemWhileBreaking();
