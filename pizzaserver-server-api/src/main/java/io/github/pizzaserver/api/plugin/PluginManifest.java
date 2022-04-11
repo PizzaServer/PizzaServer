@@ -1,5 +1,7 @@
 package io.github.pizzaserver.api.plugin;
 
+import java.util.Arrays;
+
 public class PluginManifest {
 
     /**
@@ -43,6 +45,16 @@ public class PluginManifest {
             this.website = website;
             this.description = description;
         }
+
+        @Override
+        public String toString() {
+            return "Metadata{"
+                    + "authors=" + Arrays.toString(this.authors)
+                    + ", license=" + this.license
+                    + ", website=" + this.website
+                    + ", description=" + this.description
+                    + '}';
+        }
     }
 
     public static class PluginDependency {
@@ -61,5 +73,26 @@ public class PluginManifest {
             this.version = version;
             this.name = name;
         }
+
+        @Override
+        public String toString() {
+            return "PluginDependency{"
+                    + "optional=" + this.optional
+                    + ", version=" + this.version
+                    + ", name=" + this.name
+                    + '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "PluginManifest{"
+                + "name=" + this.name
+                + ", mainClass=" + this.mainClass
+                + ", version=" + this.version
+                + ", apiVersion=" + this.apiVersion
+                + ", dependencies=" + Arrays.toString(this.dependencies)
+                + ", metadata=" + this.metadata
+                + '}';
     }
 }
