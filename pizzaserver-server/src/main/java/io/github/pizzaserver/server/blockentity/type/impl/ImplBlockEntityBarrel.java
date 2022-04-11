@@ -24,14 +24,26 @@ public class ImplBlockEntityBarrel extends ImplBlockEntityContainer<BlockBarrel>
     }
 
     @Override
+    public void showOpenAnimation() {
+        for (Player player : this.getLocation().getChunk().getViewers()) {
+            this.showOpenAnimation(player);
+        }
+    }
+
+    @Override
     public void showOpenAnimation(Player player) {
         BlockBarrel barrel = (BlockBarrel) this.blockLocation.getBlock();
         if (!barrel.isOpen()) {
             barrel.setOpen(true);
             barrel.getWorld().setAndUpdateBlock(barrel, barrel.getLocation().toVector3i());
         }
+    }
 
-        super.showOpenAnimation(player);
+    @Override
+    public void showCloseAnimation() {
+        for (Player player : this.getLocation().getChunk().getViewers()) {
+            this.showCloseAnimation(player);
+        }
     }
 
     @Override
@@ -41,8 +53,6 @@ public class ImplBlockEntityBarrel extends ImplBlockEntityContainer<BlockBarrel>
             barrel.setOpen(false);
             barrel.getWorld().setAndUpdateBlock(barrel, barrel.getLocation().toVector3i());
         }
-
-        super.showCloseAnimation(player);
     }
 
 }

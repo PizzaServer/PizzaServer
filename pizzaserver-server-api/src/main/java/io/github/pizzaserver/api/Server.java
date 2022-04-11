@@ -149,10 +149,6 @@ public abstract class Server {
      */
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType, int size);
 
-    public abstract <T extends BlockEntity<? extends Block>> BlockEntityInventory<T> createInventory(T blockEntity, ContainerType containerType);
-
-    public abstract <T extends Block> BlockInventory<T> createInventory(T block, ContainerType containerType);
-
     public abstract BlockRegistry getBlockRegistry();
 
     public abstract ItemRegistry getItemRegistry();

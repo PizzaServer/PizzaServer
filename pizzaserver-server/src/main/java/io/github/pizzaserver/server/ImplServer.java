@@ -471,16 +471,6 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public <T extends BlockEntity<? extends Block>> BlockEntityInventory<T> createInventory(T blockEntity, ContainerType containerType) {
-        return new ImplBlockEntityInventory<>(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
-    }
-
-    @Override
-    public <T extends Block> BlockInventory<T> createInventory(T block, ContainerType containerType) {
-        return new ImplBlockInventory<>(block, containerType, InventoryUtils.getSlotCount(containerType));
-    }
-
-    @Override
     public BlockRegistry getBlockRegistry() {
         return this.blockRegistry;
     }

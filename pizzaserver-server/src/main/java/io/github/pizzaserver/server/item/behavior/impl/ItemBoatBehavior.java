@@ -4,7 +4,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
-import io.github.pizzaserver.api.block.traits.LiquidTrait;
+import io.github.pizzaserver.api.block.trait.LiquidTrait;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;

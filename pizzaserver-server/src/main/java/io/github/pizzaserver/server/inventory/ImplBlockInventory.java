@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.player.Player;
 
 import java.util.Optional;
 
-public class ImplBlockInventory<T extends Block> extends BaseInventory implements BlockInventory<T> {
+public abstract class ImplBlockInventory<T extends Block> extends BaseInventory implements BlockInventory<T> {
 
     protected final T block;
 

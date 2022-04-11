@@ -40,6 +40,11 @@ public class InventoryUtils {
         register(ContainerType.CONTAINER, 27, new ContainerSlotType[] { ContainerSlotType.CONTAINER, ContainerSlotType.BARREL });
         register(ContainerType.DISPENSER, 9, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
         register(ContainerType.DROPPER, 9, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
+        register(ContainerType.FURNACE, 3, new ContainerSlotType[] {
+                ContainerSlotType.FURNACE_FUEL,
+                ContainerSlotType.FURNACE_INGREDIENT,
+                ContainerSlotType.FURNACE_OUTPUT
+        });
         register(ContainerType.HOPPER, 5, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
         register(ContainerType.INVENTORY,  36, new ContainerSlotType[] {
                 ContainerSlotType.ARMOR,
