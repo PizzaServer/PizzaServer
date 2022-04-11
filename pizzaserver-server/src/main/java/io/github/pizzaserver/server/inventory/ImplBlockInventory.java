@@ -3,12 +3,10 @@ package io.github.pizzaserver.server.inventory;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.impl.BlockEntityContainer;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
 import io.github.pizzaserver.api.inventory.BlockInventory;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.utils.BlockLocation;
 
 import java.util.Optional;
 
@@ -35,7 +33,7 @@ public class ImplBlockInventory<T extends Block> extends BaseInventory implement
     @Override
     public boolean closeFor(Player player) {
         if (super.closeFor(player)) {
-            Optional<BlockEntity> possibleBlockEntity = this.getBlock().getWorld().getBlockEntity(this.getBlock().getLocation().toVector3i());
+            Optional<BlockEntity<? extends Block>> possibleBlockEntity = this.getBlock().getWorld().getBlockEntity(this.getBlock().getLocation().toVector3i());
 
             boolean sendCloseContainerEvent = possibleBlockEntity.filter(blockEntity -> blockEntity instanceof BlockEntityContainer).isPresent()
                     && this.getViewers().isEmpty();

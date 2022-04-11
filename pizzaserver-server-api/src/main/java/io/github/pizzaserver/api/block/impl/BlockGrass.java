@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
@@ -11,7 +11,7 @@ import io.github.pizzaserver.api.item.impl.ItemBlock;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockGrass extends Block {
+public class BlockGrass extends BaseBlock {
 
     @Override
     public String getBlockId() {

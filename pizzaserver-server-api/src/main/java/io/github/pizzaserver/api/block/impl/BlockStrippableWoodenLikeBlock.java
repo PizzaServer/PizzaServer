@@ -1,14 +1,14 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.data.PillarAxis;
 import io.github.pizzaserver.api.block.data.StrippedType;
 import io.github.pizzaserver.api.block.data.WoodType;
-import io.github.pizzaserver.api.block.descriptors.Flammable;
+import io.github.pizzaserver.api.block.traits.FlammableTrait;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
-public abstract class BlockStrippableWoodenLikeBlock extends Block implements Flammable {
+public abstract class BlockStrippableWoodenLikeBlock extends BaseBlock implements FlammableTrait {
 
     protected WoodType woodType;
     protected boolean stripped;

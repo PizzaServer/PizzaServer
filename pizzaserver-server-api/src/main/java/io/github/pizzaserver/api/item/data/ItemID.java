@@ -2,13 +2,15 @@ package io.github.pizzaserver.api.item.data;
 
 public class ItemID {
 
-    public ItemID() {}
+    private ItemID() {}
 
     public static final String ACACIA_BOAT = "minecraft:acacia_boat";
+    public static final String ACACIA_SIGN = "minecraft:acacia_sign";
     public static final String AMETHYST_SHARD = "minecraft:amethyst_shard";
     public static final String ARROW = "minecraft:arrow";
     public static final String BIRCH_BOAT = "minecraft:birch_boat";
     public static final String BLACK_DYE = "minecraft:black_dye";
+    public static final String BIRCH_SIGN = "minecraft:birch_sign";
     public static final String BLAZE_POWDER = "minecraft:blaze_powder";
     public static final String BLAZE_ROD = "minecraft:blaze_rod";
     public static final String BLUE_DYE = "minecraft:blue_dye";
@@ -29,7 +31,9 @@ public class ItemID {
     public static final String CONCRETE_POWDER = "minecraft:concrete_powder";
     public static final String COPPER_INGOT = "minecraft:copper_ingot";
     public static final String CYAN_DYE = "minecraft:cyan_dye";
+    public static final String CRIMSON_SIGN = "minecraft:crimson_sign";
     public static final String DARK_OAK_BOAT = "minecraft:dark_oak_boat";
+    public static final String DARK_OAK_SIGN = "minecraft:dark_oak_sign";
     public static final String DIAMOND = "minecraft:diamond";
     public static final String DIAMOND_AXE = "minecraft:diamond_axe";
     public static final String DIAMOND_BOOTS = "minecraft:diamond_boots";
@@ -70,6 +74,7 @@ public class ItemID {
     public static final String IRON_PICKAXE = "minecraft:iron_pickaxe";
     public static final String IRON_SWORD = "minecraft:iron_sword";
     public static final String JUNGLE_BOAT = "minecraft:jungle_boat";
+    public static final String JUNGLE_SIGN = "minecraft:jungle_sign";
     public static final String LAPIS_LAZULI = "minecraft:lapis_lazuli";
     public static final String LEATHER = "minecraft:leather";
     public static final String LEATHER_BOOTS = "minecraft:leather_boots";
@@ -94,6 +99,7 @@ public class ItemID {
     public static final String NETHERITE_SWORD = "minecraft:netherite_sword";
     public static final String OAK_BOAT = "minecraft:oak_boat";
     public static final String ORANGE_DYE = "minecraft:orange_dye";
+    public static final String OAK_SIGN = "minecraft:oak_sign";
     public static final String PAPER = "minecraft:paper";
     public static final String PINK_DYE = "minecraft:pink_dye";
     public static final String PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
@@ -111,11 +117,13 @@ public class ItemID {
     public static final String SHULKER_SHELL = "minecraft:shulker_shell";
     public static final String SLIMEBALL = "minecraft:slime_ball";
     public static final String SPRUCE_BOAT = "minecraft:spruce_boat";
+    public static final String SPRUCE_SIGN = "minecraft:spruce_sign";
     public static final String STICK = "minecraft:stick";
     public static final String STONE_PICKAXE = "minecraft:stone_pickaxe";
     public static final String STONE_SWORD = "minecraft:stone_sword";
     public static final String SUGAR = "minecraft:sugar";
     public static final String WHITE_DYE = "minecraft:white_dye";
+    public static final String WARPED_SIGN = "minecraft:warped_sign";
     public static final String WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
     public static final String WOODEN_SWORD = "minecraft:wooden_sword";
     public static final String YELLOW_DYE = "minecraft:yellow_dye";

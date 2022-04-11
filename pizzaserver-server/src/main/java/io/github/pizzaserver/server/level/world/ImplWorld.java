@@ -147,7 +147,7 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public Optional<BlockEntity> getBlockEntity(int x, int y, int z) {
+    public Optional<BlockEntity<? extends Block>> getBlockEntity(int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
         return this.getChunk(chunkX, chunkZ).getBlockEntity(x & 15, y, z & 15);
@@ -179,6 +179,13 @@ public class ImplWorld implements World {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
         this.getChunk(chunkX, chunkZ).addBlockEvent(x & 15, y, z & 15, type, data);
+    }
+
+    @Override
+    public void addBlockEvent(Player player, int x, int y, int z, int type, int data) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        this.getChunk(chunkX, chunkZ).addBlockEvent(player, x & 15, y, z & 15, type, data);
     }
 
     @Override

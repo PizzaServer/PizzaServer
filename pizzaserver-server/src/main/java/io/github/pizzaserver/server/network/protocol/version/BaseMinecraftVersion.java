@@ -11,11 +11,10 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.recipe.type.Recipe;
-import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.network.protocol.exception.ProtocolException;
 
 import java.io.IOException;
@@ -119,9 +118,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     @Override
     public NbtMap getNetworkBlockEntityNBT(NbtMap diskBlockEntityNBT) {
-        String blockEntityId = diskBlockEntityNBT.getString("id");
-        BlockEntityType<? extends Block> blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
-        return blockEntityType.serializeForNetwork(diskBlockEntityNBT);
+        return BlockEntityHandler.toNetworkNBT(diskBlockEntityNBT);
     }
 
     public NbtMap getBiomeDefinitions() {
@@ -179,8 +176,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof BlockStateData) {
-                BlockStateData otherStateData = (BlockStateData) obj;
+            if (obj instanceof BlockStateData otherStateData) {
                 return otherStateData.getBlockId().equals(this.getBlockId())
                         && otherStateData.getNBT().equals(this.getNBT());
             }

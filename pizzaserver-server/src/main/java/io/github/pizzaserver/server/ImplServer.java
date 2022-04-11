@@ -5,10 +5,11 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
+import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.inventory.BlockInventory;
 import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
@@ -29,9 +30,10 @@ import io.github.pizzaserver.api.utils.Config;
 import io.github.pizzaserver.api.utils.Logger;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
-import io.github.pizzaserver.server.blockentity.ImplBlockEntityRegistry;
+import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
+import io.github.pizzaserver.server.inventory.ImplBlockEntityInventory;
 import io.github.pizzaserver.server.inventory.ImplBlockInventory;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.inventory.InventoryUtils;
@@ -68,7 +70,6 @@ public class ImplServer extends Server {
     protected ItemRegistry itemRegistry = new ImplItemRegistry();
     protected CreativeRegistry creativeRegistry = new ImplCreativeRegistry();
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
-    protected BlockEntityRegistry blockEntityRegistry = new ImplBlockEntityRegistry();
     protected RecipeRegistry recipeRegistry = new ImplRecipeRegistry();
 
     protected PluginManager pluginManager = new ImplPluginManager(this);
@@ -343,6 +344,11 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public Optional<Player> getPlayerByUUID(UUID uuid) {
+        return this.getPlayers().stream().filter(player -> player.getUUID().equals(uuid)).findAny();
+    }
+
+    @Override
     public int getPlayerCount() {
         return this.getPlayers().size();
     }
@@ -443,6 +449,18 @@ public class ImplServer extends Server {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public <B extends Block, T extends BlockEntity<B>> T createBlockEntity(Class<T> blockEntityClazz, B block) {
+        Optional<BlockEntity<B>> blockEntity = BlockEntityHandler.create(block);
+
+        if (blockEntity.isEmpty()) {
+            throw new UnsupportedOperationException(block.getBlockId() + " is not properly configured for " + blockEntityClazz.getName());
+        }
+
+        return (T) blockEntity.get();
+    }
+
+    @Override
     public EntityInventory createInventory(Entity entity, ContainerType containerType) {
         return this.createInventory(entity, containerType, InventoryUtils.getSlotCount(containerType));
     }
@@ -453,7 +471,12 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public BlockInventory<? extends Block> createInventory(Block block, ContainerType containerType) {
+    public <T extends BlockEntity<? extends Block>> BlockEntityInventory<T> createInventory(T blockEntity, ContainerType containerType) {
+        return new ImplBlockEntityInventory<>(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
+    }
+
+    @Override
+    public <T extends Block> BlockInventory<T> createInventory(T block, ContainerType containerType) {
         return new ImplBlockInventory<>(block, containerType, InventoryUtils.getSlotCount(containerType));
     }
 
@@ -480,11 +503,6 @@ public class ImplServer extends Server {
     @Override
     public RecipeRegistry getRecipeRegistry() {
         return this.recipeRegistry;
-    }
-
-    @Override
-    public ImplBlockEntityRegistry getBlockEntityRegistry() {
-        return (ImplBlockEntityRegistry) this.blockEntityRegistry;
     }
 
     /**

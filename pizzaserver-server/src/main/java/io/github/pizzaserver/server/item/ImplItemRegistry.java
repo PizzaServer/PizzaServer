@@ -17,7 +17,7 @@ import java.util.Set;
 public class ImplItemRegistry implements ItemRegistry {
 
     private final Map<String, Item> items = new HashMap<>();
-    private final Map<Class<? extends Item>, ItemBehavior<? extends Item>> behaviors = new HashMap<>();
+    private final Map<String, ItemBehavior<? extends Item>> behaviors = new HashMap<>();
 
     private final Set<Item> customItems = new HashSet<>();
 
@@ -43,7 +43,7 @@ public class ImplItemRegistry implements ItemRegistry {
         }
 
         this.items.put(registeredItem.getItemId(), registeredItem);
-        this.behaviors.put(registeredItem.getClass(), behavior);
+        this.behaviors.put(registeredItem.getItemId(), behavior);
     }
 
     @Override
@@ -70,11 +70,11 @@ public class ImplItemRegistry implements ItemRegistry {
 
     @Override
     public ItemBehavior<? extends Item> getItemBehavior(Item item) {
-        if (!this.behaviors.containsKey(item.getClass())) {
+        if (!this.behaviors.containsKey(item.getItemId())) {
             throw new NullPointerException("There is no item behavior class for the provided class. Was it registered?");
         }
 
-        return this.behaviors.get(item.getClass());
+        return this.behaviors.get(item.getItemId());
     }
 
 }

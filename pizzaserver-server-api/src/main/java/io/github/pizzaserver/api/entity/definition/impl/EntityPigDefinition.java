@@ -1,0 +1,41 @@
+package io.github.pizzaserver.api.entity.definition.impl;
+
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.definition.BaseEntityDefinition;
+import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
+import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
+import io.github.pizzaserver.api.entity.definition.components.impl.EntityBreathableComponent;
+import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
+import io.github.pizzaserver.api.entity.definition.components.impl.EntityHealthComponent;
+
+public class EntityPigDefinition extends BaseEntityDefinition {
+
+    public static final String ID = "minecraft:pig";
+
+
+    public EntityPigDefinition() {
+        this.registerComponentGroup(new EntityComponentGroup("minecraft:default", new EntityComponent[] {
+                new EntityDimensionsComponent(0.9f, 0.9f),
+                new EntityHealthComponent(10f, 10f),
+                new EntityBreathableComponent(new EntityBreathableComponent.Properties()
+                        .setTotalSupplyTime(15)
+                        .setSuffocationInterval(10)
+                        .setGenerateBubblesInWater(true)) }));
+    }
+
+    @Override
+    public String getEntityId() {
+        return ID;
+    }
+
+    @Override
+    public String getName() {
+        return "Pig";
+    }
+
+    @Override
+    public void onCreation(Entity entity) {
+        entity.addComponentGroup("minecraft:default");
+    }
+
+}

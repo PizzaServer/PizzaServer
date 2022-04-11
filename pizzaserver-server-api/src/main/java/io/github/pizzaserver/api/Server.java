@@ -4,10 +4,10 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.BlockEntityRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
+import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.inventory.BlockInventory;
 import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
@@ -26,6 +26,7 @@ import io.github.pizzaserver.api.utils.ServerState;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a Minecraft Server.
@@ -52,6 +53,8 @@ public abstract class Server {
     public abstract Optional<Player> getPlayerByUsername(String username);
 
     public abstract Optional<Player> getPlayerByExactUsername(String username);
+
+    public abstract Optional<Player> getPlayerByUUID(UUID uuid);
 
     /**
      * Retrieve the amount of players currently online.
@@ -133,6 +136,8 @@ public abstract class Server {
 
     public abstract BossBar createBossBar();
 
+    public abstract <B extends Block, T extends BlockEntity<B>> T createBlockEntity(Class<T> blockEntityClazz, B block);
+
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType);
 
     /**
@@ -144,11 +149,11 @@ public abstract class Server {
      */
     public abstract EntityInventory createInventory(Entity entity, ContainerType containerType, int size);
 
+    public abstract <T extends BlockEntity<? extends Block>> BlockEntityInventory<T> createInventory(T blockEntity, ContainerType containerType);
+
     public abstract <T extends Block> BlockInventory<T> createInventory(T block, ContainerType containerType);
 
     public abstract BlockRegistry getBlockRegistry();
-
-    public abstract BlockEntityRegistry getBlockEntityRegistry();
 
     public abstract ItemRegistry getItemRegistry();
 

@@ -21,6 +21,7 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.inventory.BaseInventory;
 import io.github.pizzaserver.server.inventory.ImplPlayerCraftingInventory;
@@ -282,7 +283,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
                             boolean callItemInteractAllowedByBlock = block.getBehavior().onInteract(this.player, block, blockFace, clickPosition);
                             boolean callItemInteractAllowedByBlockEntity = block.getWorld().getBlockEntity(blockCoordinates).isEmpty()
-                                    || block.getWorld().getBlockEntity(blockCoordinates).get().onInteract(this.player);
+                                    || ((BaseBlockEntity<? extends Block>) block.getWorld().getBlockEntity(blockCoordinates).get()).onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
                                 boolean successfulInteraction = heldItemStack.getBehavior().onInteract(this.player, heldItemStack, block, blockFace, clickPosition);

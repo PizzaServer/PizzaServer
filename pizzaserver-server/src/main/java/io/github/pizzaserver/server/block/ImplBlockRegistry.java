@@ -5,6 +5,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.behavior.BlockBehavior;
 import io.github.pizzaserver.api.item.ItemRegistry;
+import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.item.behavior.impl.ItemBlockBehavior;
@@ -22,6 +23,11 @@ public class ImplBlockRegistry implements BlockRegistry {
 
     @Override
     public <T extends Block> void register(T block, BlockBehavior<T> behavior) {
+        this.register(block, behavior, new ItemBlockBehavior());
+    }
+
+    @Override
+    public <T extends Block> void register(T block, BlockBehavior<T> behavior, ItemBehavior<ItemBlock> itemBehavior) {
         if (Server.getInstance().getState() != ServerState.REGISTERING) {
             throw new IllegalStateException("The server is not in the REGISTERING state");
         }
@@ -33,7 +39,7 @@ public class ImplBlockRegistry implements BlockRegistry {
 
         this.blocks.put(registeredBlock.getBlockId(), registeredBlock);
         this.behaviors.put(registeredBlock.getClass(), behavior);
-        ItemRegistry.getInstance().register(new ItemBlock(registeredBlock), new ItemBlockBehavior());
+        ItemRegistry.getInstance().register(new ItemBlock(registeredBlock), itemBehavior);
     }
 
     @Override

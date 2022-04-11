@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.data.ItemID;
 import io.github.pizzaserver.api.item.data.ToolTier;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BlockConcretePowder extends Block {
+public class BlockConcretePowder extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = Arrays.stream(DyeColor.values())
             .map(color -> NbtMap.builder()

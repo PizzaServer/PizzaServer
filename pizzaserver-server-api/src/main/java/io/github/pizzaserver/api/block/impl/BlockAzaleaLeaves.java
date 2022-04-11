@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.descriptors.Flammable;
+import io.github.pizzaserver.api.block.traits.FlammableTrait;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class BlockAzaleaLeaves extends Block implements Flammable {
+public class BlockAzaleaLeaves extends BaseBlock implements FlammableTrait {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -86,7 +86,7 @@ public class BlockAzaleaLeaves extends Block implements Flammable {
     public Set<Item> getDrops(Entity entity) {
         if (entity.getInventory().getHeldItem() instanceof ToolItem toolItemComponent
                 && toolItemComponent.getToolType() == ToolType.SHEARS) {
-            return Collections.singleton(this.toStack());
+            return Collections.singleton(this.toItem());
         }
         return Collections.emptySet();
     }

@@ -17,6 +17,7 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
 import io.github.pizzaserver.api.recipe.type.Recipe;
+import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
@@ -203,16 +204,16 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     @Override
     protected void loadEntitiesNBT() {
         List<NbtMap> entities = new ArrayList<>();
-        int rId = 0;    // TODO: what is the purpose of this?
-        for (EntityDefinition definition : EntityRegistry.getInstance().getDefinitions()) {
+        for (EntityDefinition definition : ((ImplEntityRegistry) EntityRegistry.getInstance()).getDefinitions()) {
             entities.add(NbtMap.builder()
                     .putString("bid", "")
                     .putBoolean("hasspawnegg", definition.hasSpawnEgg())
-                    .putString("id", definition.getId())
-                    .putInt("rid",  rId++)
+                    .putString("id", definition.getEntityId())
+                    .putInt("rid",  definition.getId())
                     .putBoolean("summonable", definition.isSummonable())
                     .build());
         }
+
         this.availableEntities = NbtMap.builder()
                 .putList("idlist", NbtType.COMPOUND, entities)
                 .build();
