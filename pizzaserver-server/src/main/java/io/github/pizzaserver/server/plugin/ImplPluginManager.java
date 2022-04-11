@@ -100,6 +100,8 @@ public class ImplPluginManager implements PluginManager {
             }
             try (InputStream stream = jar.getInputStream(entry)) {
                 return PluginManifestParser.parse(this.pluginManifestGson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class));
+            } finally {
+                jar.close();
             }
         } catch (IOException e) {
             return null;
