@@ -2,14 +2,14 @@ package io.github.pizzaserver.server.block.behavior.impl;
 
 import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.*;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.player.Player;
 
-public class CakeBlockBehavior extends DefaultBlockBehavior<BlockCake> {
+public class CakeBlockBehavior extends BaseBlockBehavior<BlockCake> {
 
     @Override
     public boolean onInteract(Player player, BlockCake cake, BlockFace face, Vector3f clickPosition) {

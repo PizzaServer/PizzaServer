@@ -4,7 +4,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.block.impl.BlockButton;
@@ -12,7 +12,7 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.player.Player;
 
-public class ButtonBlockBehavior extends DefaultBlockBehavior<BlockButton> {
+public class ButtonBlockBehavior extends BaseBlockBehavior<BlockButton> {
 
     @Override
     public boolean prepareForPlacement(Entity entity, BlockButton button, BlockFace face, Vector3f clickPosition) {
@@ -44,7 +44,7 @@ public class ButtonBlockBehavior extends DefaultBlockBehavior<BlockButton> {
             case NEIGHBOUR:
                 Block parentBlock = button.getSide(BlockFace.resolve(button.getBlockState()).opposite());
                 if (!parentBlock.hasCollision()) {
-                    button.getWorld().addItemEntity(button.toStack(),
+                    button.getWorld().addItemEntity(button.toItem(),
                             button.getLocation().toVector3f(),
                             EntityItem.getRandomMotion());
                     button.getWorld().setAndUpdateBlock(BlockID.AIR, button.getLocation().toLocation().toVector3i());

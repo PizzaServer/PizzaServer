@@ -175,8 +175,6 @@ public interface Block extends Cloneable {
      */
     boolean isTransparent();
 
-    ItemBlock toStack();
-
     /**
      * Retrieve the meta assigned to this block when serializing as an item.
      * @return stack meta
@@ -199,6 +197,10 @@ public interface Block extends Cloneable {
     Set<Item> getDrops(Entity entity);
 
     boolean isAir();
+
+    int getMaxStackSize();
+
+    ItemBlock toItem();
 
     Block clone();
 

@@ -4,7 +4,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.descriptors.Flammable;
+import io.github.pizzaserver.api.block.traits.FlammableTrait;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.utils.BoundingBox;
 import io.github.pizzaserver.api.utils.DyeColor;
@@ -12,7 +12,7 @@ import io.github.pizzaserver.api.utils.DyeColor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockCarpet extends BaseBlock implements Flammable {
+public class BlockCarpet extends BaseBlock implements FlammableTrait {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

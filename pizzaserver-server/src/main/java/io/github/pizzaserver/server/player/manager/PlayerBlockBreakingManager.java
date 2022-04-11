@@ -12,6 +12,7 @@ import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.descriptors.ToolItem;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
+import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 
 import java.util.Optional;
 
@@ -71,7 +72,7 @@ public class PlayerBlockBreakingManager {
         Block block = this.blockMiningLocation.getBlock();
 
         block.getWorld().getBlockEntity(block.getLocation().toVector3i())
-                .ifPresent(blockEntity -> blockEntity.onBreak(this.player));
+                .ifPresent(blockEntity -> ((BaseBlockEntity<? extends Block>) blockEntity).onBreak(this.player));
         this.player.getWorld().setAndUpdateBlock(BlockID.AIR, block.getLocation().toVector3i());
 
         block.getBehavior().onBreak(this.player, block);

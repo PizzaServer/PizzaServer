@@ -91,7 +91,7 @@ public class BlockSand extends BaseBlock {
     }
 
     @Override
-    public ItemBlock toStack() {
+    public ItemBlock toItem() {
         return new ItemBlock(this.getBlockId(), 1,  this.getBlockState());
     }
 

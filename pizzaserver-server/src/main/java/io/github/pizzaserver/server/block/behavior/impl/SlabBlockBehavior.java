@@ -2,12 +2,12 @@ package io.github.pizzaserver.server.block.behavior.impl;
 
 import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockSlab;
 import io.github.pizzaserver.api.entity.Entity;
 
-public class SlabBlockBehavior extends DefaultBlockBehavior<BlockSlab> {
+public class SlabBlockBehavior extends BaseBlockBehavior<BlockSlab> {
 
     @Override
     public boolean prepareForPlacement(Entity entity, BlockSlab slab, BlockFace face, Vector3f clickPosition) {
@@ -15,7 +15,7 @@ public class SlabBlockBehavior extends DefaultBlockBehavior<BlockSlab> {
         slab.setUpperSlab(isUpperSlab);
 
         Block originBlock = slab.getWorld().getBlock(slab.getLocation().toVector3i().add(face.opposite().getOffset()));
-        boolean shouldTryCombiningSlabsBasedOnOriginSlab = originBlock.toStack().hasSameDataAs(slab.toStack())
+        boolean shouldTryCombiningSlabsBasedOnOriginSlab = originBlock.toItem().hasSameDataAs(slab.toItem())
                 && originBlock instanceof BlockSlab
                 && !slab.isDouble();
 
@@ -34,7 +34,7 @@ public class SlabBlockBehavior extends DefaultBlockBehavior<BlockSlab> {
 
 
         Block replacedBlock = slab.getWorld().getBlock(slab.getLocation().toVector3i());
-        boolean shouldTryCombiningSlabsBasedOnReplacedSlab = replacedBlock.toStack().hasSameDataAs(slab.toStack())
+        boolean shouldTryCombiningSlabsBasedOnReplacedSlab = replacedBlock.toItem().hasSameDataAs(slab.toItem())
                 && replacedBlock instanceof BlockSlab
                 && !slab.isDouble();
         if (shouldTryCombiningSlabsBasedOnReplacedSlab) {

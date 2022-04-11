@@ -3,18 +3,16 @@ package io.github.pizzaserver.server.item.behavior.impl;
 import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
-import io.github.pizzaserver.api.block.descriptors.Liquid;
+import io.github.pizzaserver.api.block.traits.LiquidTrait;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
 import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
+import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 
 import java.util.Optional;
-import java.util.Set;
 
 public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
 
@@ -39,7 +37,7 @@ public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
         }
 
         Block replacedBlock;
-        if (!(block instanceof Liquid) && block.isReplaceable()) {
+        if (!(block instanceof LiquidTrait) && block.isReplaceable()) {
             replacedBlock = block;
         } else {
             replacedBlock = block.getSide(blockFace);
@@ -68,8 +66,8 @@ public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
 
         block.getWorld().setAndUpdateBlock(placedBlock, placedBlock.getLocation().toVector3i());
         placedBlock.getBehavior().onPlace(player, placedBlock, blockFace);
-        Optional<BlockEntity> blockEntity = block.getWorld().getBlockEntity(block.getLocation().toVector3i());
-        blockEntity.ifPresent(entity -> entity.onPlace(player));
+        Optional<BlockEntity<? extends Block>> blockEntity = block.getWorld().getBlockEntity(block.getLocation().toVector3i());
+        blockEntity.ifPresent(entity -> ((BaseBlockEntity<? extends Block>) entity).onPlace(player));
         return true;
     }
 

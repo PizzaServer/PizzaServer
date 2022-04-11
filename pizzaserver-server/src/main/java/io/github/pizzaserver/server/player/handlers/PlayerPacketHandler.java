@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.AdventureSetting;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.DirtType;
 import io.github.pizzaserver.api.block.data.SandType;
@@ -12,6 +13,7 @@ import io.github.pizzaserver.api.block.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
+import io.github.pizzaserver.api.event.type.block.SignChangeEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
 import io.github.pizzaserver.api.item.impl.*;
@@ -21,6 +23,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.api.utils.DyeColor;
+import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
 public class PlayerPacketHandler implements BedrockPacketHandler {
@@ -102,6 +105,8 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(TextPacket packet) {
+        this.player.getInventory().addItem(new ItemBlock(new BlockMobSpawner(), 64));
+        this.player.setGamemode(Gamemode.CREATIVE);
         if (packet.getType() == TextPacket.Type.CHAT) {
             String message = packet.getMessage().strip();
             if (message.length() > 512) {
@@ -186,6 +191,37 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                         }
                     }
                     break;
+            }
+        }
+        return true;
+    }
+
+    // This packet is sent to the server by the client when editing a sign.
+    @Override
+    public boolean handle(BlockEntityDataPacket packet) {
+        boolean canReach = this.player.canReach(packet.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7);
+
+        if (this.player.isAlive() && canReach) {
+            Block block = this.player.getWorld().getBlock(packet.getBlockPosition());
+
+            if (block instanceof BlockSign blockSign) {
+                // Make sure the player is able to edit the sign.
+                if (blockSign.getBlockEntity().getEditor().filter(editor -> editor.equals(this.player)).isEmpty()) {
+                    this.player.getServer().getLogger().debug(this.player.getUsername() + " tried to write on a sign they are not the editor of.");
+                    return true;
+                }
+
+                String text = packet.getData().getString("Text", "");
+
+                SignChangeEvent signChangeEvent = new SignChangeEvent(blockSign, text);
+                this.player.getServer().getEventManager().call(signChangeEvent);
+
+                if (!signChangeEvent.isCancelled()) {
+                    blockSign.getBlockEntity().setText(signChangeEvent.getText());
+                } else {
+                    // resend the block entity data to revert the client-side sign text displayed.
+                    ((ImplChunk) blockSign.getLocation().getChunk()).sendBlock(this.player, block.getX(), block.getY(), block.getZ(), 0);
+                }
             }
         }
         return true;

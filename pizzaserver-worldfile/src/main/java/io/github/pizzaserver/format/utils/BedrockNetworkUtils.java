@@ -77,7 +77,7 @@ public class BedrockNetworkUtils {
                 throw new IOException("biome sub chunk has no biomes present");
             }
 
-            int bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().getEntries().size()) + 1;
+            int bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().getEntries().size());
             int blocksPerWord = 0;
             int wordsPerChunk = 0;
 

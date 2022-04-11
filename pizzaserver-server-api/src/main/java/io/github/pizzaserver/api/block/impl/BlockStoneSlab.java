@@ -100,7 +100,7 @@ public class BlockStoneSlab extends BlockSlab {
     }
 
     @Override
-    public ItemBlock toStack() {
+    public ItemBlock toItem() {
         return switch (this.getStoneType()) {
             case SMOOTH_STONE, SANDSTONE, WOOD, COBBLESTONE, BRICK, STONE_BRICK, QUARTZ, NETHER_BRICK
                     -> new ItemBlock(this.getBlockId(), 1, this.getStoneType().ordinal());
