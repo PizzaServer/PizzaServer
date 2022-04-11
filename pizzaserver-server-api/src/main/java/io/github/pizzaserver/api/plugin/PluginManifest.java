@@ -33,6 +33,30 @@ public class PluginManifest {
         this.metadata = metadata;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public String getMainClass() {
+        return this.mainClass;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public String getApiVersion() {
+        return this.apiVersion;
+    }
+
+    public PluginDependency[] getDependencies() {
+        return this.dependencies;
+    }
+
+    public Metadata getMetadata() {
+        return this.metadata;
+    }
+
     public static class Metadata {
         private final String[] authors;
         private final String license;
@@ -44,6 +68,22 @@ public class PluginManifest {
             this.license = license;
             this.website = website;
             this.description = description;
+        }
+
+        public String[] getAuthors() {
+            return this.authors;
+        }
+
+        public String getLicense() {
+            return this.license;
+        }
+
+        public String getWebsite() {
+            return this.website;
+        }
+
+        public String getDescription() {
+            return this.description;
         }
 
         @Override
@@ -72,6 +112,18 @@ public class PluginManifest {
             this.optional = optional;
             this.version = version;
             this.name = name;
+        }
+
+        public boolean isOptional() {
+            return this.optional;
+        }
+
+        public String getVersion() {
+            return this.version;
+        }
+
+        public String getName() {
+            return this.name;
         }
 
         @Override
