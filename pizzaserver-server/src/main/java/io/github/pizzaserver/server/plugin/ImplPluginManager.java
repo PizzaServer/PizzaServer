@@ -108,6 +108,12 @@ public class ImplPluginManager implements PluginManager {
         }
     }
 
+    public void enablePlugins() {
+        for (PluginData data : this.getPlugins().values()) {
+            this.enablePlugin(data.getPlugin());
+        }
+    }
+
     @Override
     public Map<String, PluginData> getPlugins() {
         return Collections.unmodifiableMap(this.byName);
@@ -159,12 +165,23 @@ public class ImplPluginManager implements PluginManager {
 
     @Override
     public void enablePlugin(Plugin plugin) {
+        PluginData data = this.getData(plugin);
 
+        if (!data.isEnabled()) {
+            data.setEnabled(true);
+            plugin.onEnable();
+            this.server.getLogger().info("Enabled plugin '" + data.getManifest().getName() + "' v" + data.getManifest().getVersion());
+        }
     }
 
     @Override
     public void disablePlugin(Plugin plugin) {
+        PluginData data = this.getData(plugin);
 
+        if (data.isEnabled()) {
+            data.setEnabled(false);
+            plugin.onDisable();
+            this.server.getLogger().info("Disabled plugin '" + data.getManifest().getName() + "' v" + data.getManifest().getVersion());
+        }
     }
-
 }

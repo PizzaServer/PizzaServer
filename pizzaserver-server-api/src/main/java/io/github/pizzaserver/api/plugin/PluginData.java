@@ -9,6 +9,7 @@ public class PluginData {
     private File file;
     private PluginManifest manifest;
     private Server server;
+    boolean enabled;
 
     private Plugin plugin;
 
@@ -33,5 +34,13 @@ public class PluginData {
 
     public Plugin getPlugin() {
         return this.plugin;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

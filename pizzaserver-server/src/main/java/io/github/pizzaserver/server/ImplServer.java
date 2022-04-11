@@ -126,7 +126,15 @@ public class ImplServer extends Server {
         this.state = ServerState.REGISTERING;
         VanillaContentLoader.load();
 
-        // TODO: load plugins and call register method
+        File pluginsDir = Paths.get(this.getRootDirectory(), "plugins").toFile();
+        if (!pluginsDir.exists()) {
+            pluginsDir.mkdirs();
+        }
+        try {
+            this.getPluginManager().loadPlugins(pluginsDir);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load plugins", e);
+        }
 
         ServerProtocol.loadVersions();
 
@@ -146,17 +154,8 @@ public class ImplServer extends Server {
         ServerProtocol.rebuildCaches();
 
         this.state = ServerState.ENABLING_PLUGINS;
-        // TODO: call onEnable equiv method for plugins
 
-        File pluginsDir = Paths.get(this.getRootDirectory(), "plugins").toFile();
-        if (!pluginsDir.exists()) {
-            pluginsDir.mkdirs();
-        }
-        try {
-            this.getPluginManager().loadPlugins(pluginsDir);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load plugins", e);
-        }
+        this.getPluginManager().enablePlugins();
 
         this.state = ServerState.BOOT;
 
