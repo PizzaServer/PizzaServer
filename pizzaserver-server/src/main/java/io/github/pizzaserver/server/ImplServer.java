@@ -9,8 +9,9 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
+import io.github.pizzaserver.api.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
@@ -27,9 +28,10 @@ import io.github.pizzaserver.server.block.ImplBlockRegistry;
 import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
+import io.github.pizzaserver.server.event.ImplEventManager;
+import io.github.pizzaserver.server.inventory.ImplBlockEntityInventory;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.inventory.InventoryUtils;
-import io.github.pizzaserver.server.event.ImplEventManager;
 import io.github.pizzaserver.server.item.ImplCreativeRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.level.ImplLevelManager;
@@ -50,6 +52,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -64,7 +67,7 @@ public class ImplServer extends Server {
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
     protected RecipeRegistry recipeRegistry = new ImplRecipeRegistry();
 
-    protected PluginManager pluginManager = new ImplPluginManager(this);
+    protected ImplPluginManager pluginManager = new ImplPluginManager(this);
     protected ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
     protected EventManager eventManager = new ImplEventManager(this);
     protected ImplLevelManager levelManager;
@@ -144,6 +147,16 @@ public class ImplServer extends Server {
 
         this.state = ServerState.ENABLING_PLUGINS;
         // TODO: call onEnable equiv method for plugins
+
+        File pluginsDir = Paths.get(this.getRootDirectory(), "plugins").toFile();
+        if (!pluginsDir.exists()) {
+            pluginsDir.mkdirs();
+        }
+        try {
+            this.getPluginManager().loadPlugins(pluginsDir);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load plugins", e);
+        }
 
         this.state = ServerState.BOOT;
 
@@ -361,7 +374,7 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public PluginManager getPluginManager() {
+    public ImplPluginManager getPluginManager() {
         return this.pluginManager;
     }
 
@@ -404,6 +417,7 @@ public class ImplServer extends Server {
 
     /**
      * Retrieve the {@link PlayerDataProvider} used to save and store player data.
+     *
      * @return {@link PlayerDataProvider}
      */
     public PlayerDataProvider getPlayerProvider() {
