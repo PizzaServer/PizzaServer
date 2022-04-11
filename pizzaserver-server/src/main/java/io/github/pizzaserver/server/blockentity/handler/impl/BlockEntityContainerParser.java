@@ -55,11 +55,11 @@ public abstract class BlockEntityContainerParser<T extends Block> extends BaseBl
     @Override
     public NbtMap toNetworkNBT(NbtMap diskNBT) {
         if (diskNBT.containsKey("CustomName")) {
-            return diskNBT.toBuilder()
+            return super.toNetworkNBT(diskNBT).toBuilder()
                     .putString("CustomName", diskNBT.getString("CustomName"))
                     .build();
         } else {
-            return diskNBT;
+            return super.toNetworkNBT(diskNBT);
         }
     }
 

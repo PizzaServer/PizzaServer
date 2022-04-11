@@ -1,7 +1,6 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.ActiveStatus;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityDispenser;

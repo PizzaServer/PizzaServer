@@ -14,7 +14,6 @@ public class ImplBlockEntityBed extends BaseBlockEntity<BlockBed> implements Blo
 
     public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.BED);
 
-
     protected DyeColor color = DyeColor.WHITE;
 
 

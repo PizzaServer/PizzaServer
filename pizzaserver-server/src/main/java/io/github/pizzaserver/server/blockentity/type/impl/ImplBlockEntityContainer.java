@@ -19,6 +19,7 @@ import java.util.Optional;
 public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBlockEntity<T> implements BlockEntityContainer<T> {
 
     protected String customName;
+
     protected BlockEntityInventory<? extends BlockEntity<T>> inventory;
 
 

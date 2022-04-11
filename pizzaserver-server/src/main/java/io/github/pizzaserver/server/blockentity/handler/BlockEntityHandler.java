@@ -2,7 +2,6 @@ package io.github.pizzaserver.server.blockentity.handler;
 
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.type.*;
 import io.github.pizzaserver.api.level.world.World;
