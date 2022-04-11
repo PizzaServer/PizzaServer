@@ -2,35 +2,64 @@ package io.github.pizzaserver.api.plugin;
 
 public class PluginManifest {
 
-    private String name;
-    private String mainClass;
-    private String version;
-    private String apiVersion;
-    private String[] authors;
+    /**
+     * Human-readable plugin name.
+     */
+    private final String name;
+    /**
+     * Main class path.
+     */
+    private final String mainClass;
+    /**
+     * Plugin version, preferably in format {@code major.minor.patch}, e.g. {@code 0.3.4}.
+     */
+    private final String version;
+    /**
+     * Required PizzaServer API version.
+     */
+    private final String apiVersion;
 
-    private String[] dependencies;
+    private final PluginDependency[] dependencies;
+    private final Metadata metadata;
 
-    public String getName() {
-        return this.name;
+    public PluginManifest(String name, String mainClass, String version, String apiVersion, PluginDependency[] dependencies, Metadata metadata) {
+        this.name = name;
+        this.mainClass = mainClass;
+        this.version = version;
+        this.apiVersion = apiVersion;
+        this.dependencies = dependencies;
+        this.metadata = metadata;
     }
 
-    public String getMainClass() {
-        return this.mainClass;
+    public static class Metadata {
+        private final String[] authors;
+        private final String license;
+        private final String website;
+        private final String description;
+
+        public Metadata(String[] authors, String license, String website, String description) {
+            this.authors = authors;
+            this.license = license;
+            this.website = website;
+            this.description = description;
+        }
     }
 
-    public String getVersion() {
-        return this.version;
-    }
+    public static class PluginDependency {
+        /**
+         * The dependent plugin does not fail to load if this dependency is missing while {@code optional == true}.
+         */
+        private final boolean optional;
+        /**
+         * Version requirement for the dependency. If this does not match, it will fail to load.
+         */
+        private final String version;
+        private final String name;
 
-    public String getApiVersion() {
-        return this.apiVersion;
-    }
-
-    public String[] getAuthors() {
-        return this.authors;
-    }
-
-    public String[] getDependencies() {
-        return this.dependencies;
+        public PluginDependency(boolean optional, String version, String name) {
+            this.optional = optional;
+            this.version = version;
+            this.name = name;
+        }
     }
 }

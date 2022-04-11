@@ -12,4 +12,8 @@ public class ImplPluginManager implements PluginManager {
         this.server = server;
     }
 
+    public void loadPlugins() {
+
+    }
+
 }
