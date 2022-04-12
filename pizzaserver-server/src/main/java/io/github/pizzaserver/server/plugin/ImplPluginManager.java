@@ -165,9 +165,9 @@ public class ImplPluginManager implements PluginManager {
 
                 plugin.onLoad();
             } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException("Error whilst initializing main class '" + manifest.getMainClass() + "'", e);
+                throw new RuntimeException("Error whilst initializing main class '" + manifest.getMainClass() + "'. The main class must implement the Plugin interface.", e);
             } catch (NoSuchMethodException e) {
-                throw new RuntimeException("Plugin does not have a constructor with arguments (Server)", e);
+                throw new RuntimeException("Plugin does not have a constructor with arguments (Server, PluginData)", e);
             } catch (InvocationTargetException e) {
                 throw new RuntimeException("Failed to call plugin constructor", e);
             }

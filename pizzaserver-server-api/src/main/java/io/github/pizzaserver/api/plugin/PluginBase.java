@@ -4,6 +4,7 @@ import io.github.pizzaserver.api.Server;
 
 /**
  * Minimal plugin class to comply with the plugin loading interface.
+ * To make a plugin, either {@code extend} this class or implement {@link Plugin}.
  * </p>
  * Note that at least the {@code data.getManifest().getName()} must not change from the original value, as it is used
  * as a key by the server.

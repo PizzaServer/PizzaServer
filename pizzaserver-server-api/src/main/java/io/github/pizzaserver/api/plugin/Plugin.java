@@ -22,8 +22,14 @@ public interface Plugin {
     default void onDisable() {
     }
 
+    /**
+     * Returns the plugin's {@link Server} reference provided to it at construction.
+     */
     Server getServer();
 
+    /**
+     * Returns the plugin's {@link PluginData} provided to it at construction.
+     */
     PluginData getData();
 
     default PluginManifest getManifest() {

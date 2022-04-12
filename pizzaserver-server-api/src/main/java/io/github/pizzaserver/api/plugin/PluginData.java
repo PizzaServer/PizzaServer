@@ -6,6 +6,7 @@ import java.io.File;
 
 /**
  * Data which the plugin keeps for the server.
+ * This includes the {@link PluginManifest} which is parsed from {@code plugin.json} or {@code pizza.json}.
  */
 public class PluginData {
 
