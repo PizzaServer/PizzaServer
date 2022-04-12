@@ -128,6 +128,8 @@ public class DependencyGraph {
     void accumulateDependencies(Map<String, Entry> map, HashSet<String> deps, Entry e) {
         for (String dependency : new ArrayList<>(e.dependencies)) {
             if (!deps.add(dependency)) {
+                // `deps` contains this dependency already. we can skip adding all of this dependency's transient dependencies.
+                // this could also mean we got a cyclic dependency here, but we check that later in finish().
                 continue;
             }
             Entry e2 = map.get(dependency);
