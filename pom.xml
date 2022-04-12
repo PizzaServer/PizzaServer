@@ -34,17 +34,17 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.github.pizzaserver.commons</groupId>
+                <groupId>io.github.pizzaserver</groupId>
                 <artifactId>PizzaServer-Commons</artifactId>
                 <version>${dependency.io.github.pizzaserver.commons}</version>
             </dependency>
             <dependency>
-                <groupId>io.github.pizzaserver.format</groupId>
+                <groupId>io.github.pizzaserver</groupId>
                 <artifactId>PizzaServer-Format</artifactId>
                 <version>${dependency.io.github.pizzaserver.format}</version>
             </dependency>
             <dependency>
-                <groupId>io.github.pizzaserver.api</groupId>
+                <groupId>io.github.pizzaserver</groupId>
                 <artifactId>PizzaServer-API</artifactId>
                 <version>${dependency.io.github.pizzaserver.api}</version>
             </dependency>
