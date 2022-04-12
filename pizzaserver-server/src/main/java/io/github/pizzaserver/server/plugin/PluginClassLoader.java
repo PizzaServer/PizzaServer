@@ -5,58 +5,54 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PluginClassLoader extends URLClassLoader {
 
-    PluginClassesCache pluginClassesCache;
+    PluginClassLoaderManager pluginClassesCache;
     String pluginName;
 
-    private final Map<String, Class<?>> pluginClasses = new HashMap<>();
-
-    public PluginClassLoader(String pluginName, PluginClassesCache pluginClassesCache, ClassLoader parent, File file) throws MalformedURLException {
+    public PluginClassLoader(String pluginName, PluginClassLoaderManager pluginClassesCache, ClassLoader parent, File file) throws MalformedURLException {
         super(new URL[]{file.toURI().toURL()}, parent);
         this.pluginClassesCache = pluginClassesCache;
         this.pluginClassesCache.registerClassLoader(pluginName, this);
     }
 
+    //This method is only used internally when the jvm loads classes in the plugin of this loader, contained in other plugins
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         return this.findClass(name, true);
     }
 
-    protected Class<?> findClass(String name, boolean lookupClassCache) throws ClassNotFoundException {
+    protected Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException {
         if (name.startsWith("io.github.pizzaserver.")) {
+            // short-circuit loading server classes, as this will just waste time looking for a server class in this plugin
             throw new ClassNotFoundException(name);
         }
-        Class<?> result = this.pluginClasses.get(name);
+        Class<?> result = super.findLoadedClass(name);
 
         if (result == null) {
-            if (lookupClassCache) {
-                result = this.pluginClassesCache.getCachedPluginClassByName(name);
-            }
-
-            if (result == null) {
+            try {
                 result = super.findClass(name);
-
-                if (result != null) {
-                    this.pluginClassesCache.addCachedPluginClass(name, result);
+            } catch (ClassNotFoundException ex) {
+                if (checkGlobal) {
+                    result = this.pluginClassesCache.getPluginClassByName(name);
+                } else {
+                    throw ex;
                 }
             }
-
-            this.pluginClasses.put(name, result);
         }
 
         return result;
     }
 
+    // This method can be used by other plugin class loaders to find classes contained in this plugin
+    public Class<?> findPluginClass(String name) throws ClassNotFoundException {
+        return this.findClass(name, false);
+    }
+
     @Override
     public void close() throws IOException {
-        for (String name : this.pluginClasses.keySet()) {
-            this.pluginClassesCache.removeCachedPluginClass(name);
-        }
-        this.pluginClassesCache.unregisterClassLoader(this.pluginName);
+        this.pluginClassesCache.removeClassLoader(this.pluginName);
 
         super.close();
     }

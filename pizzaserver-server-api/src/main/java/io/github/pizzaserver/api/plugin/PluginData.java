@@ -4,6 +4,9 @@ import io.github.pizzaserver.api.Server;
 
 import java.io.File;
 
+/**
+ * Data which the plugin keeps for the server.
+ */
 public class PluginData {
 
     private File file;
@@ -11,13 +14,10 @@ public class PluginData {
     private Server server;
     boolean enabled;
 
-    private Plugin plugin;
-
-    public PluginData(File file, PluginManifest manifest, Server server, Plugin plugin) {
+    public PluginData(File file, PluginManifest manifest, Server server) {
         this.file = file;
         this.manifest = manifest;
         this.server = server;
-        this.plugin = plugin;
     }
 
     public File getFile() {
@@ -32,15 +32,16 @@ public class PluginData {
         return this.server;
     }
 
-    public Plugin getPlugin() {
-        return this.plugin;
-    }
-
     public boolean isEnabled() {
         return this.enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.manifest.getName().hashCode() ^ this.manifest.getVersion().hashCode();
     }
 }

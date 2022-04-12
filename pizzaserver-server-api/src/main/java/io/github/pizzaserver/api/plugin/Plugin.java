@@ -5,6 +5,12 @@ import io.github.pizzaserver.api.Server;
 public interface Plugin {
 
     /**
+     * Callback called after this class is constructed.
+     */
+    default void onLoad() {
+    }
+
+    /**
      * Callback called after this plugin is enabled.
      */
     default void onEnable() {
@@ -18,8 +24,10 @@ public interface Plugin {
 
     Server getServer();
 
+    PluginData getData();
+
     default PluginManifest getManifest() {
-        return this.getServer().getPluginManager().getData(this).getManifest();
+        return this.getData().getManifest();
     }
 
 }

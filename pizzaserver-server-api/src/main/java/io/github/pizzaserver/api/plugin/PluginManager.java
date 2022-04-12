@@ -5,11 +5,11 @@ import java.util.Map;
 
 public interface PluginManager {
 
-    Map<String, PluginData> getPlugins();
+    Map<String, Plugin> getPlugins();
 
-    PluginData getData(Plugin plugin);
+    void loadPlugin(File file, PluginManifest manifest);
 
-    Plugin loadPlugin(File file, PluginManifest manifest);
+    void unloadPlugin(Plugin plugin);
 
     void enablePlugin(Plugin plugin);
 

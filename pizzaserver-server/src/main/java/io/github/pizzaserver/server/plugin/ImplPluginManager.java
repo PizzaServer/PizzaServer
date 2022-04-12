@@ -27,10 +27,9 @@ public class ImplPluginManager implements PluginManager {
 
     private final Server server;
 
-    private final Map<String, PluginData> byName = new HashMap<>();
-    private final Map<Plugin, PluginData> byInstance = new HashMap<>();
+    private final Map<String, Plugin> pluginMap = new HashMap<>();
 
-    private final PluginClassesCache pluginClassesCache = new PluginClassesCache();
+    private final PluginClassLoaderManager classLoaderManager = new PluginClassLoaderManager();
 
 
     public ImplPluginManager(Server server) {
@@ -76,14 +75,30 @@ public class ImplPluginManager implements PluginManager {
 
         List<String> toLoad = dependencyGraph.finish();
 
+        plugin:
         for (String name : toLoad) {
             Tuple<File, PluginManifest> tuple = pluginList.get(name);
+            File file = tuple.getFirst();
+            PluginManifest manifest = tuple.getSecond();
+
+            for (PluginManifest.PluginDependency dependency : manifest.getDependencies()) {
+                if (!dependency.isOptional()) {
+                    if (!this.getPlugins().containsKey(dependency.getName())) {
+                        //TODO add plugin dependency version check here, and error if the loaded version does not match
+                        this.server.getLogger().error("Failed to load plugin '" + manifest.getName() + "' v" + manifest.getVersion()
+                                + ": Required dependency " + dependency.getName() + ":" + dependency.getVersion() + " was not loaded");
+                        continue plugin;
+                    }
+                } else {
+                    //TODO maybe add plugin dependency version check here, and warn if the loaded version does not match
+                }
+            }
 
             try {
-                this.loadPlugin(tuple.getFirst(), tuple.getSecond());
-                this.server.getLogger().info("Loaded plugin '" + tuple.getSecond().getName() + "' v" + tuple.getSecond().getVersion());
+                this.loadPlugin(file, manifest);
+                this.server.getLogger().info("Loaded plugin '" + manifest.getName() + "' v" + manifest.getVersion());
             } catch (Exception e) {
-                this.server.getLogger().error("Failed to load plugin '" + tuple.getSecond().getName() + "' v" + tuple.getSecond().getVersion(), e);
+                this.server.getLogger().error("Failed to load plugin '" + manifest.getName() + "' v" + manifest.getVersion(), e);
             }
         }
     }
@@ -108,32 +123,27 @@ public class ImplPluginManager implements PluginManager {
     }
 
     public void enablePlugins() {
-        for (PluginData data : this.getPlugins().values()) {
-            this.enablePlugin(data.getPlugin());
+        for (Plugin plugin : this.getPlugins().values()) {
+            this.enablePlugin(plugin);
         }
     }
 
     public void disablePlugins() {
-        for (PluginData data : this.getPlugins().values()) {
-            this.disablePlugin(data.getPlugin());
+        for (Plugin plugin : this.getPlugins().values()) {
+            this.disablePlugin(plugin);
         }
     }
 
     @Override
-    public Map<String, PluginData> getPlugins() {
-        return Collections.unmodifiableMap(this.byName);
+    public Map<String, Plugin> getPlugins() {
+        return Collections.unmodifiableMap(this.pluginMap);
     }
 
     @Override
-    public PluginData getData(Plugin plugin) {
-        return this.byInstance.get(plugin);
-    }
-
-    @Override
-    public Plugin loadPlugin(File file, PluginManifest manifest) {
+    public void loadPlugin(File file, PluginManifest manifest) {
         PluginClassLoader classLoader;
         try {
-            classLoader = new PluginClassLoader(manifest.getName(), this.pluginClassesCache, this.getClass().getClassLoader(), file);
+            classLoader = new PluginClassLoader(manifest.getName(), this.classLoaderManager, this.getClass().getClassLoader(), file);
         } catch (MalformedURLException e) {
             throw new RuntimeException("Failed to load plugin", e);
         }
@@ -147,14 +157,13 @@ public class ImplPluginManager implements PluginManager {
             try {
                 Class<Plugin> pluginClass = (Class<Plugin>) mainClass.asSubclass(Plugin.class);
 
-                Plugin plugin = pluginClass.getConstructor(Server.class).newInstance(this.server);
+                PluginData data = new PluginData(file, manifest, this.server);
 
-                PluginData data = new PluginData(file, manifest, this.server, plugin);
+                Plugin plugin = pluginClass.getConstructor(Server.class, PluginData.class).newInstance(this.server, data);
 
-                this.byInstance.put(plugin, data);
-                this.byName.put(manifest.getName(), data);
+                this.pluginMap.put(manifest.getName(), plugin);
 
-                return plugin;
+                plugin.onLoad();
             } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException("Error whilst initializing main class '" + manifest.getMainClass() + "'", e);
             } catch (NoSuchMethodException e) {
@@ -162,15 +171,29 @@ public class ImplPluginManager implements PluginManager {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException("Failed to call plugin constructor", e);
             }
-
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Failed to find plugin main class '" + manifest.getMainClass() + "' in file '" + file.getName() + "'");
         }
     }
 
     @Override
+    public void unloadPlugin(Plugin plugin) {
+        String name = plugin.getData().getManifest().getName();
+        PluginClassLoader loader = this.classLoaderManager.removeClassLoader(name);
+        if (loader != null) {
+            try {
+                loader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.pluginMap.remove(name);
+    }
+
+    @Override
     public void enablePlugin(Plugin plugin) {
-        PluginData data = this.getData(plugin);
+        PluginData data = plugin.getData();
 
         if (!data.isEnabled()) {
             data.setEnabled(true);
@@ -181,10 +204,13 @@ public class ImplPluginManager implements PluginManager {
 
     @Override
     public void disablePlugin(Plugin plugin) {
-        PluginData data = this.getData(plugin);
+        PluginData data = plugin.getData();
 
         if (data.isEnabled()) {
             data.setEnabled(false);
+
+            //TODO remove plugin listeners, scheduled tasks, etc
+
             plugin.onDisable();
             this.server.getLogger().info("Disabled plugin '" + data.getManifest().getName() + "' v" + data.getManifest().getVersion());
         }
