@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * To allow for shorthand plugin manifest, we implement a custom JSON parser. Writing GSON deserializer type adapter is too complex imho. - DasEtwas
+ * To allow for shorthands plugin manifest, we implement a custom JSON parser. Writing GSON deserializer type adapters makes for too complex code imho. - DasEtwas
  */
 public class PluginManifestParser {
 
@@ -68,8 +68,14 @@ public class PluginManifestParser {
 
     public static PluginManifest.PluginDependency parseDependency(JsonElement dependency) {
         if (dependency.isJsonPrimitive() && dependency instanceof JsonPrimitive dependencyPrimitive && dependencyPrimitive.isString()) {
-            String dependencyS = dependencyPrimitive.getAsString();
+            /*
+             * examples:
+             * plugin dependency: "ExamplePlugin"
+             * or
+             * plugin dependency with version requirement: "ExamplePlugin:0.3.4"
+             */
 
+            String dependencyS = dependencyPrimitive.getAsString();
             String[] parts = dependencyS.split(":");
 
             return switch (parts.length) {
@@ -79,6 +85,20 @@ public class PluginManifestParser {
             };
 
         } else if (dependency instanceof JsonObject dependencyObj) {
+            /*
+             * examples:
+             * plugin dependency with version requirement:
+             *  {
+             *      "name": "ExamplePlugin",
+             *      "version": "0.3.4"
+             *  }
+             * optional plugin dependency with version requirement:
+             *  {
+             *      "name": "ExamplePlugin",
+             *      "version": "0.3.4",
+             *      "optional": true
+             *  }
+             */
             Object nameO = Objects.requireNonNull(dependencyObj.get("name"), "Plugin dependency requires a \"name\" key.");
             Preconditions.checkArgument(nameO instanceof JsonPrimitive primitive && primitive.isString(), "Plugin dependency requires a \"name\" key of type string.");
             String name = ((JsonPrimitive) nameO).getAsString();
