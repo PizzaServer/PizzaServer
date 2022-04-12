@@ -113,7 +113,7 @@ public class PluginManifestParser {
                 if (dependencyObj.get("optional") instanceof JsonPrimitive optionalPrimitive && optionalPrimitive.isBoolean()) {
                     optional = optionalPrimitive.getAsBoolean();
                 } else {
-                    throw new IllegalArgumentException("Plugin dependency for '" + name + "' has an \"optional\" value of invalid type. Required: boolean");
+                    throw new IllegalArgumentException("Plugin dependency for '" + name + "' has an \"optional\" value of invalid type. Expected: boolean");
                 }
             }
 
