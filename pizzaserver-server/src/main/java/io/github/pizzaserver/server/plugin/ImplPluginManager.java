@@ -46,7 +46,6 @@ public class ImplPluginManager implements PluginManager {
         for (File pluginFile : pluginsDirectory.listFiles((file, name) -> name.endsWith(".jar"))) {
             PluginManifest pluginManifest = null;
 
-
             try {
                 pluginManifest = this.getPluginManifest(pluginFile);
             } catch (Exception e) {
@@ -111,6 +110,12 @@ public class ImplPluginManager implements PluginManager {
     public void enablePlugins() {
         for (PluginData data : this.getPlugins().values()) {
             this.enablePlugin(data.getPlugin());
+        }
+    }
+
+    public void disablePlugins() {
+        for (PluginData data : this.getPlugins().values()) {
+            this.disablePlugin(data.getPlugin());
         }
     }
 

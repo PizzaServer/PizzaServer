@@ -275,7 +275,9 @@ public class ImplServer extends Server {
             this.getLogger().error("Failed to close LevelManager", exception);
         }
 
-        // We're done stop operations. Exit program.
+        this.getPluginManager().disablePlugins();
+
+        // We're done with stop operations. Exit program.
         this.shutdownLatch.countDown();
     }
 
