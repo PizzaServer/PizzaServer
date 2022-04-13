@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.pizzaserver</groupId>
-            <artifactId>PizzaServer-Format</artifactId>
+            <artifactId>PizzaServer-Commons</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

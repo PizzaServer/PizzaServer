@@ -13,6 +13,7 @@ import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
+import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.network.protocol.exception.ProtocolException;
 
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BaseMinecraftVersion implements MinecraftVersion {
+public abstract class BaseMinecraftVersion implements MinecraftVersion, MinecraftSerializationHandler {
 
     protected static final Gson GSON = new Gson();
 

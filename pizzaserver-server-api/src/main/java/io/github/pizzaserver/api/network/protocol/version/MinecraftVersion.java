@@ -6,7 +6,6 @@ import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.api.item.Item;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 /**
  * Represents a specific Minecraft version.
  */
-public interface MinecraftVersion extends MinecraftSerializationHandler {
+public interface MinecraftVersion {
 
     int getProtocol();
 

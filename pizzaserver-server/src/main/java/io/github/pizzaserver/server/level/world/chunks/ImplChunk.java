@@ -31,6 +31,7 @@ import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.data.BlockUpdateEntry;
 import io.github.pizzaserver.server.level.world.chunks.utils.ChunkUtils;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
@@ -413,7 +414,7 @@ public class ImplChunk implements Chunk {
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
+        updateBlockPacket.setRuntimeId(((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
         updateBlockPacket.setBlockPosition(Vector3i.from(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
@@ -494,7 +495,7 @@ public class ImplChunk implements Chunk {
                 subChunkCount = ChunkUtils.getSubChunkCount(this.chunk);
 
                 for (int i = -4; i < subChunkCount - 4; i++) {
-                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), player.getVersion());
+                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), (BaseMinecraftVersion) player.getVersion());
                 }
 
                 // Write biomes
@@ -508,7 +509,7 @@ public class ImplChunk implements Chunk {
                     try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
                         for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities().values()) {
                             try {
-                                NbtMap networkBlockEntityNBT = player.getVersion().getNetworkBlockEntityNBT(diskBlockEntityNBT);
+                                NbtMap networkBlockEntityNBT = ((BaseMinecraftVersion) player.getVersion()).getNetworkBlockEntityNBT(diskBlockEntityNBT);
                                 outputStream.writeTag(networkBlockEntityNBT);
                             } catch (NullPointerException exception) {
                                 throw new IOException("Failed to send chunk due to unhandled block entity found: " + diskBlockEntityNBT);
