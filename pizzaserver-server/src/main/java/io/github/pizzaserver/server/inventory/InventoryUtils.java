@@ -2,6 +2,8 @@ package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.descriptors.ArmorItem;
 
 import java.util.*;
 
@@ -29,6 +31,16 @@ public class InventoryUtils {
      */
     public static Set<ContainerSlotType> getSlotTypes(ContainerType containerType) {
         return containerSlotTypes.getOrDefault(containerType, Collections.emptySet());
+    }
+
+    public static boolean canBePlacedInSlot(Item item, ContainerSlotType containerSlotType, int slot) {
+        return switch (containerSlotType) {
+            case ARMOR -> item instanceof ArmorItem && slot == ((ArmorItem) item).getArmorSlot().ordinal();
+            case OFFHAND -> item.isAllowedInOffHand();
+            case FURNACE_FUEL -> item.getFuelTicks() != -1;
+            case FURNACE_OUTPUT -> false;
+            default -> true;
+        };
     }
 
     private static void register(ContainerType containerSlotType, int slots, ContainerSlotType[] slotTypes) {

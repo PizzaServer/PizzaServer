@@ -51,4 +51,9 @@ public class ItemWoodenSword extends BaseItem implements DurableItem, ToolItem {
         return 60;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 200;
+    }
+
 }

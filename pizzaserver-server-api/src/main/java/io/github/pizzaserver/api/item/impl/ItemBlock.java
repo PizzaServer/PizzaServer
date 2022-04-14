@@ -66,6 +66,11 @@ public class ItemBlock extends BaseItem {
         return this.getBlock().getMaxStackSize();
     }
 
+    @Override
+    public int getFuelTicks() {
+        return this.getBlock().getFuelTicks();
+    }
+
     public Block getBlock() {
         return this.block;
     }

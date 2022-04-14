@@ -24,11 +24,11 @@ public class FurnaceRecipe extends Recipe {
     }
 
     public Item getInput() {
-        return this.input;
+        return this.input.clone();
     }
 
     public Item getOutput() {
-        return this.output;
+        return this.output.clone();
     }
 
     @Override

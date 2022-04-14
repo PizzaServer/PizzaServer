@@ -23,11 +23,22 @@ public class ShapelessRecipe extends Recipe {
     }
 
     public Item[] getIngredients() {
-        return this.ingredients;
+        Item[] ingredients = new Item[this.ingredients.length];
+        for (int i = 0; i < ingredients.length; i++) {
+            ingredients[i] = Item.getAirIfNull(this.ingredients[i]).clone();
+        }
+
+
+        return ingredients;
     }
 
     public Item[] getOutput() {
-        return this.output;
+        Item[] output = new Item[this.output.length];
+        for (int i = 0; i < output.length; i++) {
+            output[i] = Item.getAirIfNull(this.output[i]).clone();
+        }
+
+        return output;
     }
 
     /**

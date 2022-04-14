@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.actions.PlaceStackRequestActionDataWrapper;
 
@@ -27,7 +28,7 @@ public class InventoryActionPlaceHandler extends InventoryActionHandler<PlaceSta
             boolean doesNotExceedMaxCount = action.getCountRequested() > 0
                     && destinationItemStack.getCount() + action.getCountRequested() <= sourceItemStack.getMaxStackSize();
 
-            boolean canPutItemTypeInSlot = Item.canBePlacedInSlot(sourceItemStack, action.getDestination().getSlotType(), action.getDestination().getNetworkSlot())
+            boolean canPutItemTypeInSlot = InventoryUtils.canBePlacedInSlot(sourceItemStack, action.getDestination().getSlotType(), action.getDestination().getNetworkSlot())
                     && action.getDestination().getSlotType() != ContainerSlotType.CURSOR;
 
             return canMergeItemData && doesNotExceedMaxCount && canPutItemTypeInSlot;

@@ -211,4 +211,9 @@ public class BlockWoodenSlab extends BlockSlab implements FlammableTrait {
         }
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 300;
+    }
+
 }

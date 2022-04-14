@@ -130,18 +130,31 @@ public abstract class BaseInventory implements Inventory {
      * @param keepNetworkId if the network id of the Item should be kept or if a new one should be generated
      */
     public void setSlot(Player player, int slot, Item item, boolean keepNetworkId) {
+        Item oldSlotItem = this.getSlot(slot);
+
         if (item == null || item.isEmpty()) {
             this.slots[slot] = null;
         } else {
             Item newItem = keepNetworkId ? Item.getAirIfNull(item).clone() : Item.getAirIfNull(item).newNetworkCopy();
             this.slots[slot] = newItem;
         }
+        this.onSlotChange(slot, oldSlotItem, this.getSlot(slot));
 
         for (Player viewer : this.getViewers()) {
             if (!viewer.equals(player)) {
                 this.sendSlot(viewer, slot);
             }
         }
+    }
+
+    /**
+     * Called after a slot is updated.
+     * @param slot the slot that was updated.
+     * @param oldItem the old item in the slot.
+     * @param newItem the new item in the slot.
+     */
+    protected void onSlotChange(int slot, Item oldItem, Item newItem) {
+
     }
 
     @Override

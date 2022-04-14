@@ -48,4 +48,9 @@ public class BlockBookshelf extends BaseBlock implements FlammableTrait {
         return 20;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 300;
+    }
+
 }

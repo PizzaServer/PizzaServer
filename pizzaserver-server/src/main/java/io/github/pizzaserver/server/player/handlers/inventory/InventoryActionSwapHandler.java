@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequ
 import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.actions.SwapStackRequestActionDataWrapper;
 
@@ -16,8 +17,8 @@ public class InventoryActionSwapHandler extends InventoryActionHandler<SwapStack
     public boolean isValid(Player player, SwapStackRequestActionDataWrapper action) {
         if (action.getSource().exists() && action.getDestination().exists()) {
             // Ensure that the source and destination items are allowed in their new slots
-            return Item.canBePlacedInSlot(action.getSource().getItemStack(), action.getDestination().getSlotType(), action.getDestination().getNetworkSlot())
-                    && Item.canBePlacedInSlot(action.getDestination().getItemStack(), action.getSource().getSlotType(), action.getDestination().getNetworkSlot());
+            return InventoryUtils.canBePlacedInSlot(action.getSource().getItemStack(), action.getDestination().getSlotType(), action.getDestination().getNetworkSlot())
+                    && InventoryUtils.canBePlacedInSlot(action.getDestination().getItemStack(), action.getSource().getSlotType(), action.getDestination().getNetworkSlot());
         } else {
             return false;
         }

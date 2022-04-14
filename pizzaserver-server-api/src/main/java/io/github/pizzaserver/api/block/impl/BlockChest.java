@@ -74,4 +74,9 @@ public class BlockChest extends BaseBlock {
         return ToolTier.WOOD;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 300;
+    }
+
 }

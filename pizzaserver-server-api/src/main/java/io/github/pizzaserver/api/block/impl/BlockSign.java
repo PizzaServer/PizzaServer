@@ -75,6 +75,11 @@ public abstract class BlockSign extends BlockBlockEntity<BlockEntitySign> implem
     }
 
     @Override
+    public int getFuelTicks() {
+        return 200;
+    }
+
+    @Override
     public WoodType getWoodType() {
         return this.woodType;
     }

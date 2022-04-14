@@ -19,4 +19,9 @@ public class ItemStick extends BaseItem {
         return "Stick";
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 100;
+    }
+
 }

@@ -104,4 +104,9 @@ public class BlockBarrel extends BaseBlock {
         return BLOCK_STATES;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 300;
+    }
+
 }

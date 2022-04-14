@@ -38,7 +38,7 @@ public class ShapedRecipeGrid {
         Check.inclusiveBounds(x, 0, this.getWidth() - 1, "x");
         Check.inclusiveBounds(y, 0, this.getHeight() - 1, "y");
 
-        return Item.getAirIfNull(this.grid[y][x]);
+        return Item.getAirIfNull(this.grid[y][x]).clone();
     }
 
     public Item[] getOutput() {

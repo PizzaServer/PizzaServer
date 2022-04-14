@@ -213,6 +213,11 @@ public abstract class BaseBlock implements Block {
     }
 
     @Override
+    public int getFuelTicks() {
+        return -1;
+    }
+
+    @Override
     public int getStackMeta() {
         return 0;
     }

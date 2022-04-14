@@ -2,9 +2,10 @@ package io.github.pizzaserver.api.item.impl;
 
 import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.data.ItemID;
-import io.github.pizzaserver.api.item.descriptors.FuelItem;
 
-public class ItemCoal extends BaseItem implements FuelItem {
+import java.util.Optional;
+
+public class ItemCoal extends BaseItem {
 
     public ItemCoal() {
         this(1);
