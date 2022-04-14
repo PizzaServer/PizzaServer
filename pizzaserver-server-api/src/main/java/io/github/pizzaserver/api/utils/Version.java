@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.utils;
 
-import com.google.common.base.Preconditions;
+import io.github.pizzaserver.commons.utils.Check;
 
 /**
  * Version number akin to semantic versioning.
@@ -65,13 +65,13 @@ public class Version {
     }
 
     public Version(int major, int minor, int patch) {
-        Preconditions.checkArgument(major >= 0, "Major version number must not be negative");
-        Preconditions.checkArgument(minor >= 0, "Minor version number must not be negative");
-        Preconditions.checkArgument(patch >= 0, "Patch version number must not be negative");
+        Check.checkArgument(major >= 0, "Major version number must not be negative");
+        Check.checkArgument(minor >= 0, "Minor version number must not be negative");
+        Check.checkArgument(patch >= 0, "Patch version number must not be negative");
 
-        Preconditions.checkArgument(major <= Short.MAX_VALUE, "Major version number overflows 16 bit signed value");
-        Preconditions.checkArgument(minor <= Short.MAX_VALUE, "Minor version number overflows 16 bit signed value");
-        Preconditions.checkArgument(patch <= Short.MAX_VALUE, "Patch version number overflows 16 bit signed value");
+        Check.checkArgument(major <= Short.MAX_VALUE, "Major version number overflows 16 bit signed value");
+        Check.checkArgument(minor <= Short.MAX_VALUE, "Minor version number overflows 16 bit signed value");
+        Check.checkArgument(patch <= Short.MAX_VALUE, "Patch version number overflows 16 bit signed value");
 
         this.major = (short) major;
         this.minor = (short) minor;
