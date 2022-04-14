@@ -57,6 +57,11 @@ public class InventoryUtils {
                 ContainerSlotType.FURNACE_INGREDIENT,
                 ContainerSlotType.FURNACE_OUTPUT
         });
+        register(ContainerType.BLAST_FURNACE, 3, new ContainerSlotType[] {
+                ContainerSlotType.FURNACE_FUEL,
+                ContainerSlotType.BLAST_FURNACE_INGREDIENT,
+                ContainerSlotType.FURNACE_OUTPUT
+        });
         register(ContainerType.HOPPER, 5, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
         register(ContainerType.INVENTORY,  36, new ContainerSlotType[] {
                 ContainerSlotType.ARMOR,

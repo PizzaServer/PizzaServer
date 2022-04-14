@@ -173,7 +173,7 @@ public class ImplBlockEntityFurnace extends ImplBlockEntityContainer<BlockFurnac
         }
     }
 
-    protected int getBurnRate() {
+    protected float getBurnRate() {
         return 1;
     }
 
