@@ -8,7 +8,10 @@ import io.github.pizzaserver.api.block.impl.BlockCraftingTable;
 import io.github.pizzaserver.api.inventory.CraftingTableInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.recipe.data.RecipeBlockType;
 import io.github.pizzaserver.api.utils.BlockLocation;
+
+import java.util.Set;
 
 public class ImplCraftingTableInventory extends ImplBlockInventory<BlockCraftingTable> implements CraftingTableInventory {
 
@@ -16,7 +19,7 @@ public class ImplCraftingTableInventory extends ImplBlockInventory<BlockCrafting
 
 
     public ImplCraftingTableInventory(BlockCraftingTable block) {
-        super(block, ContainerType.WORKBENCH, 9);
+        super(block, ContainerType.WORKBENCH);
     }
 
     @Override
@@ -37,12 +40,19 @@ public class ImplCraftingTableInventory extends ImplBlockInventory<BlockCrafting
 
     @Override
     public void sendSlot(Player player, int slot) {
-        sendInventorySlot(player, this.getSlot(slot), slot + CRAFTING_SLOT_OFFSET, ContainerId.UI);
+        if (this.getViewers().contains(player)) {
+            sendInventorySlot(player, this.getSlot(slot), slot + CRAFTING_SLOT_OFFSET, ContainerId.UI);
+        }
     }
 
     @Override
     public int convertFromNetworkSlot(int networkSlot) {
         return networkSlot - CRAFTING_SLOT_OFFSET;
+    }
+
+    @Override
+    public RecipeBlockType getRecipeBlockType() {
+        return RecipeBlockType.CRAFTING_TABLE;
     }
 
 }

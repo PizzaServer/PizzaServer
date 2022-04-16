@@ -286,6 +286,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.JUNGLE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLapisBlock());
         BlockRegistry.getInstance().register(new BlockLapisOre());
+        BlockRegistry.getInstance().register(new BlockLegacyStoneCutter(), new StoneCutterBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLight());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.LIGHT_BLUE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIGHT_BLUE), new CandleCakeBlockBehavior());
@@ -345,6 +346,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.SPRUCE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStone());
         BlockRegistry.getInstance().register(new BlockStoneButton(), new ButtonBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockStoneCutter(), new StoneCutterBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.RED_SANDSTONE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.END_STONE_BRICK), new SlabBlockBehavior());

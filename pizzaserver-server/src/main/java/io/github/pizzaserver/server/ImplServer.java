@@ -9,21 +9,15 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.inventory.BlockEntityInventory;
-import io.github.pizzaserver.api.inventory.BlockInventory;
 import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
 import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
 import io.github.pizzaserver.api.recipe.RecipeRegistry;
-import io.github.pizzaserver.api.recipe.data.ShapedRecipeBlockType;
-import io.github.pizzaserver.api.recipe.data.ShapedRecipeGrid;
 import io.github.pizzaserver.api.recipe.type.Recipe;
-import io.github.pizzaserver.api.recipe.type.ShapedRecipe;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Config;
@@ -33,8 +27,6 @@ import io.github.pizzaserver.server.block.ImplBlockRegistry;
 import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.inventory.ImplBlockEntityInventory;
-import io.github.pizzaserver.server.inventory.ImplBlockInventory;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.event.ImplEventManager;
@@ -147,13 +139,6 @@ public class ImplServer extends Server {
         for (Recipe recipe : serverProtocolVersion.getDefaultRecipes()) {
             RecipeRegistry.getInstance().register(recipe);
         }
-        ShapedRecipe shapedRecipe = new ShapedRecipe(ShapedRecipeBlockType.CRAFTING_TABLE, new ShapedRecipeGrid.Builder(1, 2)
-                .setSlot(0, 0, new ItemDiamondAxe())
-                .setSlot(0, 1, new ItemRawIron())
-                .addOutput(new ItemFlintAndSteel())
-                .addOutput(new ItemRawIron())
-                .addOutput(new ItemNetheriteChestplate())
-                .build());
 
         this.state = ServerState.ENABLING_PLUGINS;
         // TODO: call onEnable equiv method for plugins

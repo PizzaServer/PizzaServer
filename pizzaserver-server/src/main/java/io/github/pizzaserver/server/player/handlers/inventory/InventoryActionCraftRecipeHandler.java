@@ -28,6 +28,12 @@ public class InventoryActionCraftRecipeHandler extends InventoryActionHandler<Cr
         CraftingInventory craftingInventory = this.getCraftingInventory(player);
 
         Recipe recipe = action.getRecipe().get();
+
+        if (!craftingInventory.getRecipeBlockType().equals(recipe.getBlockType())) {
+            // We can only craft recipes if the crafting inventory block matches the recipe requirement.
+            return false;
+        }
+
         switch (recipe.getType()) {
             case SHAPELESS -> {
                 ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;

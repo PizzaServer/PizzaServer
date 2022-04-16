@@ -146,6 +146,7 @@ public class BlockID {
     public static final String JUNGLE_WALL_SIGN = "minecraft:jungle_wall_sign";
     public static final String LAPIS_BLOCK = "minecraft:lapis_block";
     public static final String LAPIS_ORE = "minecraft:lapis_ore";
+    public static final String LEGACY_STONE_CUTTER = "minecraft:stonecutter";
     public static final String LIGHT_BLOCK = "minecraft:light_block";
     public static final String LIGHT_BLUE_CANDLE = "minecraft:light_blue_candle";
     public static final String LIGHT_BLUE_CANDLE_CAKE = "minecraft:light_blue_candle_cake";
@@ -205,8 +206,9 @@ public class BlockID {
     public static final String SPRUCE_WALL_SIGN = "minecraft:spruce_wall_sign";
     public static final String SOUL_CAMPFIRE = "minecraft:soul_campfire";
     public static final String STANDING_SIGN = "minecraft:standing_sign";
-    public static final String STONE_BUTTON = "minecraft:stone_button";
     public static final String STONE = "minecraft:stone";
+    public static final String STONE_BUTTON = "minecraft:stone_button";
+    public static final String STONE_CUTTER = "minecraft:stonecutter_block";
     public static final String STONE_SLAB = "minecraft:stone_slab";
     public static final String STONE_SLAB2 = "minecraft:stone_slab2";
     public static final String STONE_SLAB3 = "minecraft:stone_slab3";

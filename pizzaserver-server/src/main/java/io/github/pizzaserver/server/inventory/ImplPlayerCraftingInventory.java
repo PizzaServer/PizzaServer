@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.inventory.PlayerCraftingInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.api.recipe.data.RecipeBlockType;
 
 import java.util.Collections;
 import java.util.Set;
@@ -69,6 +70,11 @@ public class ImplPlayerCraftingInventory extends BaseInventory implements Player
     @Override
     public int convertFromNetworkSlot(int networkSlot) {
         return networkSlot - SLOT_OFFSET;
+    }
+
+    @Override
+    public RecipeBlockType getRecipeBlockType() {
+        return RecipeBlockType.CRAFTING_TABLE;
     }
 
 }

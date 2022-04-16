@@ -6,10 +6,8 @@ import com.nukkitx.protocol.bedrock.data.inventory.CraftingData;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
-import io.github.pizzaserver.api.recipe.data.FurnaceRecipeBlockType;
-import io.github.pizzaserver.api.recipe.data.ShapedRecipeBlockType;
+import io.github.pizzaserver.api.recipe.data.RecipeBlockType;
 import io.github.pizzaserver.api.recipe.data.ShapedRecipeGrid;
-import io.github.pizzaserver.api.recipe.data.ShapelessRecipeBlockType;
 import io.github.pizzaserver.api.recipe.type.FurnaceRecipe;
 import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.api.recipe.type.ShapedRecipe;
@@ -43,7 +41,7 @@ public class RecipeUtils {
                         input,
                         output,
                         shapedRecipe.getUUID(),
-                        shapedRecipe.getBlockType().getRecipeBlockId(),
+                        shapedRecipe.getBlockType().getRecipeBlockTypeId(),
                         0,
                         shapedRecipe.getNetworkId());
             }
@@ -54,7 +52,7 @@ public class RecipeUtils {
                         Arrays.stream(shapelessRecipe.getIngredients()).map(item -> ItemUtils.serializeForNetwork(item, version)).toList(),
                         Arrays.stream(shapelessRecipe.getOutput()).map(item -> ItemUtils.serializeForNetwork(item, version)).toList(),
                         shapelessRecipe.getUUID(),
-                        shapelessRecipe.getBlockType().getRecipeBlockId(),
+                        shapelessRecipe.getBlockType().getRecipeBlockTypeId(),
                         0,
                         shapelessRecipe.getNetworkId());
             }
@@ -64,7 +62,7 @@ public class RecipeUtils {
                 return CraftingData.fromFurnaceData(version.getItemRuntimeId(furnaceRecipe.getInput().getItemId()),
                         furnaceRecipe.getInput().getMeta(),
                         ItemUtils.serializeForNetwork(furnaceRecipe.getOutput(), version),
-                        furnaceRecipe.getBlockType().getRecipeBlockId());
+                        furnaceRecipe.getBlockType().getRecipeBlockTypeId());
             }
             default -> {
                 throw new UnsupportedOperationException("Missing recipe handler for type: " + recipe.getType());
@@ -85,7 +83,7 @@ public class RecipeUtils {
     }
 
     private static ShapelessRecipe handleShapelessRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) {
-        ShapelessRecipeBlockType blockType = ShapelessRecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
+        RecipeBlockType blockType = RecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
 
         List<Item> input = new ArrayList<>();
         for (JsonElement itemElement : recipeJSON.get("input").getAsJsonArray()) {
@@ -115,7 +113,7 @@ public class RecipeUtils {
     }
 
     private static ShapedRecipe handleShapedRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) {
-        ShapedRecipeBlockType blockType = ShapedRecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
+        RecipeBlockType blockType = RecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
 
         Map<Character, Item> itemInputLookup = new HashMap<>();
         JsonObject inputJSONDictionary = recipeJSON.get("input").getAsJsonObject();
@@ -166,7 +164,7 @@ public class RecipeUtils {
     }
 
     private static FurnaceRecipe handleFurnaceRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) {
-        FurnaceRecipeBlockType blockType = FurnaceRecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
+        RecipeBlockType blockType = RecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
 
         Item inputItem = ItemUtils.fromJSON(recipeJSON.get("input").getAsJsonObject(), version);
         if (inputItem == null) {

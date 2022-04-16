@@ -15,8 +15,8 @@ public abstract class ImplBlockInventory<T extends Block> extends BaseInventory 
     protected final T block;
 
 
-    public ImplBlockInventory(T block, ContainerType containerType, int size) {
-        super(containerType, size);
+    public ImplBlockInventory(T block, ContainerType containerType) {
+        super(containerType, InventoryUtils.getSlotCount(containerType));
         this.block = block;
     }
 

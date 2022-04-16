@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.ArmorItem;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -73,6 +74,9 @@ public class InventoryUtils {
         register(ContainerType.WORKBENCH, 9, new ContainerSlotType[] {
                 ContainerSlotType.CREATIVE_OUTPUT,
                 ContainerSlotType.CRAFTING_INPUT
+        });
+        register(ContainerType.STONECUTTER, 1, new ContainerSlotType[] {
+                ContainerSlotType.STONECUTTER_INPUT
         });
     }
 

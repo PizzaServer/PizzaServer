@@ -1,20 +1,12 @@
 package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
-import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.impl.BlockFurnace;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityBlastFurnace;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityFurnace;
 import io.github.pizzaserver.api.inventory.FurnaceInventory;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.recipe.type.FurnaceRecipe;
-import io.github.pizzaserver.api.recipe.type.Recipe;
-import io.github.pizzaserver.api.recipe.type.RecipeType;
 import io.github.pizzaserver.server.blockentity.type.impl.ImplBlockEntityFurnace;
-import io.github.pizzaserver.server.recipe.ImplRecipeRegistry;
-
-import java.util.Optional;
-import java.util.Set;
 
 public class ImplFurnaceInventory extends ImplContainerInventory<BlockFurnace, BlockEntityFurnace> implements FurnaceInventory {
 

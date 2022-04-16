@@ -7,7 +7,7 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 public class ImplContainerInventory<B extends Block, E extends BlockEntity<B>> extends ImplBlockEntityInventory<B, E> {
 
     public ImplContainerInventory(E blockEntity, ContainerType containerType) {
-        super(blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
+        super(blockEntity, containerType);
     }
 
 }

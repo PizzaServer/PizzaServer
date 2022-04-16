@@ -14,8 +14,8 @@ public abstract class ImplBlockEntityInventory<B extends Block, T extends BlockE
     protected final T blockEntity;
 
 
-    public ImplBlockEntityInventory(T blockEntity, ContainerType containerType, int size) {
-        super(null, containerType, size);
+    public ImplBlockEntityInventory(T blockEntity, ContainerType containerType) {
+        super(null, containerType);
         this.blockEntity = blockEntity;
     }
 

@@ -2,7 +2,6 @@ package io.github.pizzaserver.server.blockentity.type.impl;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerSetDataPacket;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.impl.BlockFurnace;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityFurnace;
@@ -10,15 +9,13 @@ import io.github.pizzaserver.api.inventory.FurnaceInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.recipe.RecipeRegistry;
-import io.github.pizzaserver.api.recipe.data.FurnaceRecipeBlockType;
+import io.github.pizzaserver.api.recipe.data.RecipeBlockType;
 import io.github.pizzaserver.api.recipe.type.FurnaceRecipe;
-import io.github.pizzaserver.api.recipe.type.Recipe;
-import io.github.pizzaserver.api.recipe.type.RecipeType;
+import io.github.pizzaserver.api.recipe.data.RecipeType;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.inventory.ImplFurnaceInventory;
 import io.github.pizzaserver.server.recipe.ImplRecipeRegistry;
 
-import java.util.Optional;
 import java.util.Set;
 
 public class ImplBlockEntityFurnace extends ImplBlockEntityContainer<BlockFurnace> implements BlockEntityFurnace {
@@ -99,7 +96,7 @@ public class ImplBlockEntityFurnace extends ImplBlockEntityContainer<BlockFurnac
 
     public void onIngredientChange() {
         FurnaceRecipe recipe = (FurnaceRecipe) ((ImplRecipeRegistry) RecipeRegistry.getInstance()).getRecipes()
-                .stream().filter(r -> r.getType() == RecipeType.FURNACE && ((FurnaceRecipe) r).getBlockType() == this.getBlockRecipeType())
+                .stream().filter(r -> r.getType() == RecipeType.FURNACE && r.getBlockType() == this.getBlockRecipeType())
                 .filter(r -> ((FurnaceRecipe) r).getInput().hasSameDataAs(this.getInventory().getIngredient()))
                 .findAny().orElse(null);
 
@@ -177,8 +174,8 @@ public class ImplBlockEntityFurnace extends ImplBlockEntityContainer<BlockFurnac
         return 1;
     }
 
-    protected FurnaceRecipeBlockType getBlockRecipeType() {
-        return FurnaceRecipeBlockType.FURNACE;
+    protected RecipeBlockType getBlockRecipeType() {
+        return RecipeBlockType.FURNACE;
     }
 
 }
