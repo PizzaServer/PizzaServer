@@ -2,6 +2,8 @@ package io.github.pizzaserver.api.block.impl;
 
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.LitType;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityBlastFurnace;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityFurnace;
 
 public class BlockBlastFurnace extends BlockFurnace {
 
@@ -29,6 +31,11 @@ public class BlockBlastFurnace extends BlockFurnace {
         } else {
             return "Blast Furnace";
         }
+    }
+
+    @Override
+    public BlockEntityBlastFurnace getBlockEntity() {
+        return (BlockEntityBlastFurnace) super.getBlockEntity();
     }
 
 }

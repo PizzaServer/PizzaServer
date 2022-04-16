@@ -75,6 +75,11 @@ public class InventoryUtils {
                 ContainerSlotType.CREATIVE_OUTPUT,
                 ContainerSlotType.CRAFTING_INPUT
         });
+        register(ContainerType.SMOKER, 3, new ContainerSlotType[] {
+                ContainerSlotType.FURNACE_FUEL,
+                ContainerSlotType.SMOKER_INGREDIENT,
+                ContainerSlotType.FURNACE_OUTPUT
+        });
         register(ContainerType.STONECUTTER, 1, new ContainerSlotType[] {
                 ContainerSlotType.STONECUTTER_INPUT
         });

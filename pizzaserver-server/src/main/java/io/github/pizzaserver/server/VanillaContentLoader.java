@@ -301,6 +301,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockDeepslateRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockFurnace(LitType.LIT), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
+        BlockRegistry.getInstance().register(new BlockSmoker(LitType.LIT), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockLog(), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.ACACIA), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.MAGENTA), new CandleBlockBehavior());
@@ -339,6 +340,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockRedstoneOre(), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockReserved6());
         BlockRegistry.getInstance().register(new BlockSand());
+        BlockRegistry.getInstance().register(new BlockSmoker(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockSnow());
         BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.SPRUCE), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWallSign(WoodType.SPRUCE), new SignBlockBehavior(), new ItemBlockSignBehavior());

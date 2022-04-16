@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.block.impl.BlockFurnace;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityBlastFurnace;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityFurnace;
+import io.github.pizzaserver.api.blockentity.type.BlockEntitySmoker;
 import io.github.pizzaserver.api.inventory.FurnaceInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.server.blockentity.type.impl.ImplBlockEntityFurnace;
@@ -15,7 +16,11 @@ public class ImplFurnaceInventory extends ImplContainerInventory<BlockFurnace, B
     protected static final int RESULT = 2;
 
     public ImplFurnaceInventory(BlockEntityFurnace blockEntity) {
-        super(blockEntity, blockEntity instanceof BlockEntityBlastFurnace ? ContainerType.BLAST_FURNACE : ContainerType.FURNACE);
+        super(blockEntity, blockEntity instanceof BlockEntityBlastFurnace
+                ? ContainerType.BLAST_FURNACE
+                : blockEntity instanceof BlockEntitySmoker
+                    ? ContainerType.SMOKER
+                    : ContainerType.FURNACE);
     }
 
     @Override

@@ -161,6 +161,7 @@ public class BlockID {
     public static final String LIT_DEEPSLATE_REDSTONE_ORE = "minecraft:lit_deepslate_redstone_ore";
     public static final String LIT_FURNACE = "minecraft:lit_furnace";
     public static final String LIT_REDSTONE_ORE = "minecraft:lit_redstone_ore";
+    public static final String LIT_SMOKER = "minecraft:lit_smoker";
     public static final String LOG = "minecraft:log";
     public static final String LOG2 = "minecraft:log2";
     public static final String MAGENTA_CANDLE = "minecraft:magenta_candle";
@@ -199,6 +200,7 @@ public class BlockID {
     public static final String RED_GLAZED_TERRACOTTA = "minecraft:red_glazed_terracotta";
     public static final String RESERVED6 = "minecraft:reserved6";
     public static final String SAND = "minecraft:sand";
+    public static final String SMOKER = "minecraft:smoker";
     public static final String SNOW = "minecraft:snow";
     public static final String SPRUCE_BUTTON = "minecraft:spruce_button";
     public static final String SPRUCE_PRESSURE_PLATE = "minecraft:spruce_pressure_plate";

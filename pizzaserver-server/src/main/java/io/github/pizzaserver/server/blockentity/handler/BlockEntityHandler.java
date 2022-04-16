@@ -108,6 +108,7 @@ public class BlockEntityHandler {
         register(ImplBlockEntityFurnace.BLOCK_IDS, BlockEntityFurnace.ID, new BlockEntityFurnaceParser());
         register(ImplBlockEntityMobSpawner.BLOCK_IDS, BlockEntityMobSpawner.ID, new BlockEntityMobSpawnerParser());
         register(ImplBlockEntitySign.BLOCK_IDS, BlockEntitySign.ID, new BlockEntitySignParser());
+        register(ImplBlockEntitySmoker.BLOCK_IDS, BlockEntitySmoker.ID, new BlockEntitySmokerParser());
     }
 
 }
