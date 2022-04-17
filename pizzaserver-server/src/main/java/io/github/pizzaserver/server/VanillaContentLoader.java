@@ -363,7 +363,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockLog(WoodType.CRIMSON, StrippedType.STRIPPED), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.WARPED, StrippedType.STRIPPED), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.WARPED, StrippedType.STRIPPED), new StrippableWoodenLikeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockSoulCampfire());
+        BlockRegistry.getInstance().register(new BlockSoulCampfire(), new CampfireBlockBehavior());
         BlockRegistry.getInstance().register(new BlockTallGrass());
         BlockRegistry.getInstance().register(new BlockTrappedChest(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.WARPED), new SignBlockBehavior(), new ItemBlockSignBehavior());

@@ -16,12 +16,13 @@ import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 import io.github.pizzaserver.server.recipe.ImplRecipeRegistry;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 public class ImplBlockEntityCampfire extends BaseBlockEntity<BlockCampfire> implements BlockEntityCampfire {
 
-    public static final Set<String> BLOCK_IDS = Set.of(BlockID.CAMPFIRE, BlockID.SOUL_CAMPFIRE);
+    public static final Set<String> BLOCK_IDS = Collections.singleton(BlockID.CAMPFIRE);
     private static final int COOK_TICKS_REQUIRED = 600;
 
     protected Item[] slots = new Item[4];
@@ -34,11 +35,6 @@ public class ImplBlockEntityCampfire extends BaseBlockEntity<BlockCampfire> impl
     @Override
     public Set<String> getBlockIds() {
         return BLOCK_IDS;
-    }
-
-    @Override
-    public String getId() {
-        return BlockEntityCampfire.ID;
     }
 
     @Override

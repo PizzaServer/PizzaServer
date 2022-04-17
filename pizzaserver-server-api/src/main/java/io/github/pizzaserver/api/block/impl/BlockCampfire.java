@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.trait.HorizontalDirectionalTrait;
 import io.github.pizzaserver.api.block.trait.LitTrait;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityCampfire;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.utils.BoundingBox;
@@ -14,7 +15,7 @@ import io.github.pizzaserver.api.utils.HorizontalDirection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockCampfire extends BaseBlock implements HorizontalDirectionalTrait, LitTrait {
+public class BlockCampfire extends BlockBlockEntity<BlockEntityCampfire> implements HorizontalDirectionalTrait, LitTrait {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

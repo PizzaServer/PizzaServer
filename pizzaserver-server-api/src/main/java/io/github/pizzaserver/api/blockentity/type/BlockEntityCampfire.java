@@ -8,6 +8,12 @@ public interface BlockEntityCampfire extends BlockEntity<BlockCampfire> {
 
     String ID = "Campfire";
 
+    @Override
+    default String getId() {
+        return ID;
+    }
+
+
     /**
      * Retrieve an item from the campfire's inventory.
      * @param slot slot between 0 and 3 inclusive.
