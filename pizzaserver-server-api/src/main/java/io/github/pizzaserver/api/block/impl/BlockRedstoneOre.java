@@ -3,6 +3,7 @@ package io.github.pizzaserver.api.block.impl;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.LitType;
+import io.github.pizzaserver.api.block.trait.LitTrait;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
@@ -12,7 +13,7 @@ import io.github.pizzaserver.api.item.impl.ItemBlock;
 import java.util.Collections;
 import java.util.Set;
 
-public class BlockRedstoneOre extends BaseBlock {
+public class BlockRedstoneOre extends BaseBlock implements LitTrait {
 
     protected boolean lit;
 
@@ -25,10 +26,12 @@ public class BlockRedstoneOre extends BaseBlock {
         this.setLit(litType == LitType.LIT);
     }
 
+    @Override
     public void setLit(boolean lit) {
         this.lit = lit;
     }
 
+    @Override
     public boolean isLit() {
         return this.lit;
     }
