@@ -86,12 +86,6 @@ public class InventorySlotContainer {
                 } else {
                     return null;
                 }
-            case CRAFTING_INPUT:
-                if (inventory instanceof PlayerCraftingInventory craftingInventory && slot >= 0 && slot <= craftingInventory.getSize()) {
-                    return craftingInventory.getSlot(slot);
-                } else if (!(inventory instanceof CraftingInventory)) {
-                    return null;
-                }
             default:
                 if (slot >= 0 && slot < this.getInventory().getSize()) {
                     return this.getInventory().getSlot(slot);
@@ -136,13 +130,6 @@ public class InventorySlotContainer {
                     ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(itemStack);
                 }
                 break;
-            case CRAFTING_INPUT:
-                if (this.getInventory() instanceof PlayerCraftingInventory && slot >= 0 && slot <= 3) {
-                    this.getInventory().setSlot(this.player, slot, itemStack, true);
-                    break;
-                } else if (!(this.getInventory() instanceof CraftingInventory)) {
-                    break;
-                }
             default:
                 if (slot >= 0 && slot < this.getInventory().getSize()) {
                     this.getInventory().setSlot(this.player, slot, itemStack, true);
