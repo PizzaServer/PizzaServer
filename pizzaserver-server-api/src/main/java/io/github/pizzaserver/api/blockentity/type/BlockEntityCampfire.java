@@ -7,4 +7,9 @@ public interface BlockEntityCampfire extends BlockEntity<BlockCampfire> {
 
     String ID = "Campfire";
 
+    @Override
+    default String getId() {
+        return ID;
+    }
+
 }

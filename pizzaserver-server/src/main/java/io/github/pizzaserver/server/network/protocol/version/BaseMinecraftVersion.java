@@ -3,7 +3,9 @@ package io.github.pizzaserver.server.network.protocol.version;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
+import com.nukkitx.blockstateupdater.BlockStateUpdaters;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
@@ -64,18 +66,21 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion, Minecraf
 
     @Override
     public int getBlockRuntimeId(String name, NbtMap state) {
-        BlockStateData key = new BlockStateData(name, state);
-        try {
-            return this.blockStates.get(key);
-        } catch (NullPointerException exception) {
-            Server.getInstance().getLogger().debug("Unknown block runtime id requested: " + name + " " + state);
-            throw exception;
+        NbtMapBuilder blockStateBuilder = BlockStateUpdaters.updateBlockState(state, 0)
+                .toBuilder();
+        blockStateBuilder.remove("version");
+        BlockStateData key = new BlockStateData(name, blockStateBuilder.build());
+
+        if (!this.blockStates.containsKey(key)) {
+            throw new ProtocolException(this, "No such block state exists for block id: " + name + " " + state);
         }
+
+        return this.blockStates.get(key);
     }
 
     @Override
     public Block getBlockFromRuntimeId(int blockRuntimeId) {
-        if (!this.blockStates.inverse().containsKey(blockRuntimeId)) {
+        if (!this.blockStates.containsValue(blockRuntimeId)) {
             throw new ProtocolException(this, "No such block state exists for runtime id: " + blockRuntimeId);
         }
 

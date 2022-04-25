@@ -3,6 +3,7 @@ package io.github.pizzaserver.server.network.protocol.version;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.nukkitx.blockstateupdater.BlockStateUpdaters;
 import com.nukkitx.nbt.*;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
@@ -67,7 +68,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
             // Parse block states
             while (blockStatesFileStream.available() > 0) {
-                NbtMap blockState = (NbtMap) blockStatesNBTStream.readTag();
+                NbtMap blockState = BlockStateUpdaters.updateBlockState((NbtMap) blockStatesNBTStream.readTag(), 0);
                 String name = blockState.getString("name");
                 if (!sortedBlockRuntimeStates.containsKey(name)) {
                     sortedBlockRuntimeStates.put(name, new ArrayList<>());
