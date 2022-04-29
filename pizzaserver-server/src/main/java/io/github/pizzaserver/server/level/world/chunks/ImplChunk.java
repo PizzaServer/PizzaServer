@@ -118,7 +118,7 @@ public class ImplChunk implements Chunk {
 
         int subChunkY = (int) Math.floor(y / 16d);
         synchronized (this.chunk) {
-            return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, Math.abs(y) & 15, z & 15);
+            return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, y & 15, z & 15);
         }
     }
 
@@ -203,14 +203,18 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
-        if (y >= 320 || y < -64 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
-            throw new IllegalArgumentException("Could not get block outside chunk");
-        }
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
-        int chunkBlockY = Math.abs(y) & 15;
+        int chunkBlockY = y & 15;
         int chunkBlockZ = z & 15;
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
+
+        // Check if block is out of bounds.
+        if (y < -64 || y > 320) {
+            Block airBlock = new BlockAir();
+            airBlock.setLocation(this.getWorld(), blockCoordinates, layer);
+            return airBlock;
+        }
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
@@ -255,15 +259,16 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void setBlock(Block block, int x, int y, int z, int layer) {
-        if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
-            throw new IllegalArgumentException("Could not change block outside chunk");
+        if (y < -64 || y > 320) {
+            return;
         }
-        int subChunkIndex = y / 16;
+
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int subChunkBlockY = y & 15;
         int chunkBlockZ = z & 15;
+
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         block.setLocation(this.getWorld(), blockCoordinates, layer);
@@ -364,7 +369,7 @@ public class ImplChunk implements Chunk {
     }
 
     private void doBlockUpdate(BlockUpdateType type, int x, int y, int z) {
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int chunkBlockZ = z & 15;
 
@@ -387,7 +392,7 @@ public class ImplChunk implements Chunk {
      * @param z z coordinate
      */
     public void sendBlock(Player player, int x, int y, int z) {
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
 
         // Ensure that at least the foremost layer is sent to the client
         int layers;
