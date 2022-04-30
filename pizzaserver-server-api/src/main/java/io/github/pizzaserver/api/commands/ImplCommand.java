@@ -1,8 +1,6 @@
 package io.github.pizzaserver.api.commands;
 
-import com.nukkitx.protocol.bedrock.data.command.CommandData;
-import com.nukkitx.protocol.bedrock.data.command.CommandEnumData;
-import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
+import com.nukkitx.protocol.bedrock.data.command.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.player.Player;
 import org.checkerframework.checker.units.qual.A;
@@ -79,6 +77,54 @@ public abstract class ImplCommand {
 
     public void setPermission(int permission) {
         this.permission = permission;
+    }
+
+    public void registerParameter(int path, int position, String name, String[] values) {
+        registerParameter(path, position,  new CommandParamData(name, true, new CommandEnumData(name, values, true), CommandParam.STRING, null, new ArrayList<>()));
+    }
+    public void registerParameter(int path, int position, String name, String[] values, CommandParam paramType) {
+        registerParameter(path, position,  new CommandParamData(name, true, new CommandEnumData(name, values, true), paramType, null, new ArrayList<>()));
+    }
+    public void registerParameter(int path, int position, String name, String[] values, CommandParam paramType, boolean optional) {
+        registerParameter(path, position,  new CommandParamData(name, optional, new CommandEnumData(name, values, true), paramType, null, new ArrayList<>()));
+    }
+
+    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum) {
+        registerParameter(path, position,  new CommandParamData(name, true, commandEnum, CommandParam.STRING, null, new ArrayList<>()));
+    }
+    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType) {
+        registerParameter(path, position, new CommandParamData(name, true, commandEnum, paramType, null, new ArrayList<>()));
+    }
+    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional) {
+        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, null, new ArrayList<>()));
+    }
+    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, String postFix) {
+        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, postFix, new ArrayList<>()));
+    }
+    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, List<CommandParamOption> options) {
+        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, null, options));
+    }
+    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, String postFix, List<CommandParamOption> options) {
+        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, postFix, options));
+    }
+    public void registerParameter(int path, int position, CommandParamData commandParamData) {
+        if(path > overloads.length-1) {
+            CommandParamData[][] newOverloads = new CommandParamData[path+1][];
+            System.arraycopy(overloads, 0, newOverloads, 0, overloads.length);
+            for(int i = 0; i < newOverloads.length; i++) {
+                if(newOverloads[i] == null)
+                    newOverloads[i] = new CommandParamData[0];
+            }
+            overloads = newOverloads;
+        }
+
+        if(position > overloads[path].length-1) {
+            CommandParamData[] newPos = new CommandParamData[position+1];
+            System.arraycopy(overloads[path], 0, newPos, 0, overloads[path].length);
+            overloads[path] = newPos;
+        }
+
+        overloads[path][position] = commandParamData;
     }
 
     public CommandParamData[][] getOverloads() {

@@ -22,7 +22,7 @@ public class ExampleCommand extends ImplCommand {
         // Third are the options the parameter contains, the fourth is the type of parameter
         // The fifth is a postfix for your command (Such as /xp has l or e),
         // The last is a list of options to use which are enums in the CommandParamOption class
-        overloads[0][0] = new CommandParamData(
+/*        overloads[0][0] = new CommandParamData(
                 "name00", true, new CommandEnumData("CommandEnumDataName", new String[]{"values001", "values002"}, true),
                 CommandParam.TEXT, null, new ArrayList<>()
         );
@@ -32,14 +32,20 @@ public class ExampleCommand extends ImplCommand {
         );
 
         //The below is in the second group of parameters, param 1 will be values 101/102 while param 2 will be values 111/112
-        overloads[1][0] = new CommandParamData(
+        registerParameter(1, 0, new CommandParamData(
                 "name10", true, new CommandEnumData("CommandEnumDataName2", new String[]{"values101", "values102"}, true),
                 CommandParam.TEXT, null, new ArrayList<>()
-        );
-        overloads[1][1] = new CommandParamData(
+        ));
+        registerParameter(1, 1, new CommandParamData(
                 "name11", true, new CommandEnumData("CommandEnumDataName3", new String[]{"values111", "values112"}, true),
                 CommandParam.TEXT, null, new ArrayList<>()
-        );
+        ));*/
+
+        // Simplest way to register a command parameter
+        registerParameter(0, 0, "path0ID", new String[]{"path0Choice1", "path0Choice2"});
+        registerParameter(0, 1, "path0IDNextPos", new String[]{"pos01", "pos02"});
+        registerParameter(1, 0, "path2ID", new String[]{"path2Choice1", "path2Choice2"});
+        registerParameter(1, 1, "path2IDNextPos", new String[]{"pos21", "pos22"});
     }
 
     @Override
