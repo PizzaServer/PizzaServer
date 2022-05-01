@@ -54,7 +54,7 @@ public class DependencyGraph {
             for (String dependency : new ArrayList<>(e.dependencies)) {
                 Entry e2 = map.get(dependency);
                 if (e2 != null) {
-                    this.accumulateDependencies(map, e.dependencies, e2);
+                    this.accumulateDependencies(map, e.dependencies, e.optional, e2);
                 }
             }
         }
@@ -115,7 +115,9 @@ public class DependencyGraph {
         List<String> loaded = new ArrayList<>();
         for (String plugin : finishOutput) {
             for (String dependency : map.get(plugin).dependencies) {
-                Preconditions.checkState(loaded.contains(dependency), "Plugin '" + plugin + "' requires its dependency '" + dependency + "' to have been loaded first.");
+                if (!map.get(plugin).optional.contains(dependency)) {
+                    Preconditions.checkState(loaded.contains(dependency), "Plugin '" + plugin + "' requires its dependency '" + dependency + "' to have been loaded first.");
+                }
             }
             loaded.add(plugin);
         }
@@ -125,16 +127,17 @@ public class DependencyGraph {
         }
     }
 
-    void accumulateDependencies(Map<String, Entry> map, HashSet<String> deps, Entry e) {
+    void accumulateDependencies(Map<String, Entry> map, HashSet<String> deps, HashSet<String> optional, Entry e) {
         for (String dependency : new ArrayList<>(e.dependencies)) {
             if (!deps.add(dependency)) {
                 // `deps` contains this dependency already. we can skip adding all of this dependency's transient dependencies.
                 // this could also mean we got a cyclic dependency here, but we check that later in finish().
                 continue;
             }
+            optional.add(dependency);
             Entry e2 = map.get(dependency);
             if (e2 != null) {
-                this.accumulateDependencies(map, deps, e);
+                this.accumulateDependencies(map, deps, optional, e);
             }
         }
     }

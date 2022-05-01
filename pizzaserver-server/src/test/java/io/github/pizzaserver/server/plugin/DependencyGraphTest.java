@@ -79,4 +79,29 @@ public class DependencyGraphTest {
 
     }
 
+    @Test
+    public void complexOptional() {
+        DependencyGraph g1 = new DependencyGraph();
+        g1.queue("A", List.of("B", "C"));
+        g1.queue("B", List.of("B"));
+        g1.queue("C", List.of("F"), List.of("F"));
+        g1.queue("D", List.of("C"));
+        g1.queue("E", List.of("B"));
+        //g1.queue("F", List.of("B", "E"));
+
+        Assertions.assertEquals(List.of("B", "C", "A", "D", "E"), g1.finish());
+        g1.test(g1.finish());
+    }
+
+    @Test
+    public void optional() {
+        DependencyGraph g1 = new DependencyGraph();
+        g1.queue("A", List.of("B", "C"));
+        g1.queue("B", List.of());
+        g1.queue("C", List.of("D"), List.of("D"));
+
+        Assertions.assertEquals(List.of("B", "C", "A"), g1.finish());
+        g1.test(g1.finish());
+    }
+
 }
