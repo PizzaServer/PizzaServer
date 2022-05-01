@@ -3,6 +3,7 @@ package io.github.pizzaserver.format.provider.mcworld.utils;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.*;
 import com.nukkitx.nbt.util.stream.LittleEndianDataOutputStream;
+import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.format.data.LevelData;
 import io.github.pizzaserver.format.data.LevelGameRules;
 import io.github.pizzaserver.format.data.PlayerAbilities;
@@ -63,9 +64,9 @@ public class MCWorldFormatUtils {
     }
 
     public static BlockLayer readLayer(ByteBuf buffer) throws IOException {
-        int bitsPerBlock = buffer.readByte() >> 1;
-        int blocksPerWord = 32 / bitsPerBlock;
-        int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord); // there are 4096 blocks in a chunk stored in x words
+        float bitsPerBlock = buffer.readByte() >> 1;
+        int blocksPerWord = (int) Math.floor(32 / bitsPerBlock);
+        int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord; // there are 4096 blocks in a chunk stored in x words
 
         // We want to read the palette first so that we can translate what blocks are immediately.
         int chunkBlocksIndex = buffer.readerIndex();
@@ -86,7 +87,7 @@ public class MCWorldFormatUtils {
                     break;
                 }
 
-                int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
+                int paletteIndex = (word >> (pos % blocksPerWord) * (int) bitsPerBlock) & ((1 << (int) bitsPerBlock) - 1);
                 layer.setBlockEntryAt(pos >> 8, pos & 15, (pos >> 4) & 15, palette.getEntry(paletteIndex));
 
                 pos++;
@@ -102,11 +103,11 @@ public class MCWorldFormatUtils {
     public static void writeLayer(ByteBuf buffer, BlockLayer layer) throws IOException {
         layer.resize();
 
-        int bitsPerBlock = Math.max((int) Math.ceil(Math.log(layer.getPalette().getEntries().size()) / Math.log(2)), 1);
-        int blocksPerWord = 32 / bitsPerBlock;
-        int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+        float bitsPerBlock = NumberUtils.log2Ceil(layer.getPalette().size()) + 1;
+        int blocksPerWord = (int) Math.floor(32 / bitsPerBlock);
+        int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
 
-        buffer.writeByte((bitsPerBlock << 1) | 1);
+        buffer.writeByte(((int) bitsPerBlock << 1) | 1);
 
         int pos = 0;
         for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
@@ -116,7 +117,7 @@ public class MCWorldFormatUtils {
                     break;
                 }
 
-                word |= layer.getPalette().getPaletteIndex(layer.getBlockEntryAt(pos >> 8, pos & 15, (pos >> 4) & 15)) << (bitsPerBlock * block);
+                word |= layer.getPalette().getPaletteIndex(layer.getBlockEntryAt(pos >> 8, pos & 15, (pos >> 4) & 15)) << ((int) bitsPerBlock * block);
                 pos++;
             }
             buffer.writeIntLE(word);
@@ -230,7 +231,7 @@ public class MCWorldFormatUtils {
 
             int subChunkIndex = 0;
             while (buffer.readableBytes() > 0) {
-                int bitsPerBlock = buffer.readByte() >> 1;
+                float bitsPerBlock = buffer.readByte() >> 1;
 
                 // if the bits is -1, that means that we should just copy the last biome map.
                 if (bitsPerBlock == -1) {
@@ -247,8 +248,8 @@ public class MCWorldFormatUtils {
                 int paletteLength = 1;  // for biomes, we assume by default that there is at least 1 biome present
 
                 if (bitsPerBlock > 0) {
-                    int blocksPerWord = 32 / bitsPerBlock;
-                    int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+                    int blocksPerWord = (int) Math.floor(32 / bitsPerBlock);
+                    int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
 
                     biomeDataIndex = buffer.readerIndex();
 
@@ -270,8 +271,8 @@ public class MCWorldFormatUtils {
                     // Move our index back to the biome data before the palette
                     buffer.readerIndex(biomeDataIndex);
 
-                    int blocksPerWord = 32 / bitsPerBlock;
-                    int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+                    int blocksPerWord = (int) Math.floor(32 / bitsPerBlock);
+                    int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
 
                     int pos = 0;
                     for (int i = 0; i < wordsPerChunk; i++) {
@@ -282,11 +283,16 @@ public class MCWorldFormatUtils {
                             }
 
                             // Break apart the word into coordinates for each block's biome in the subchunk
-                            int paletteIndex = (word >> (pos % blocksPerWord) * bitsPerBlock) & ((1 << bitsPerBlock) - 1);
+                            int paletteIndex = (word >> (pos % blocksPerWord) * (int) bitsPerBlock) & ((1 << (int) bitsPerBlock) - 1);
                             subChunkBiomeMap.setBiomeAt(pos >> 8, pos & 15, (pos >> 4) & 15, palette.getEntry(paletteIndex));
 
                             pos++;
                         }
+                    }
+                } else {
+                    // Every palette entry is the first index.
+                    for (int pos = 0; pos < 4096; pos++) {
+                        subChunkBiomeMap.setBiomeAt(pos >> 8, pos & 15, (pos >> 4) & 15, palette.getEntry(0));
                     }
                 }
 
@@ -328,7 +334,7 @@ public class MCWorldFormatUtils {
                     throw new IOException("biome sub chunk has no biomes present");
                 }
 
-                int bitsPerBlock = (int) Math.ceil(Math.log(subChunkBiomeMap.getPalette().getEntries().size()) / Math.log(2));
+                float bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().size()) + 1;
                 int blocksPerWord = 0;
                 int wordsPerChunk = 0;
 
@@ -339,11 +345,11 @@ public class MCWorldFormatUtils {
 
 
                 if (bitsPerBlock > 0) {
-                    blocksPerWord = 32 / bitsPerBlock;
-                    wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+                    blocksPerWord = (int) Math.floor(32 / bitsPerBlock);
+                    wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
                 }
 
-                buffer.writeByte((bitsPerBlock << 1) | 1);
+                buffer.writeByte(((int) bitsPerBlock << 1) | 1);
 
                 int pos = 0;
                 for (int i = 0; i < wordsPerChunk; i++) {
@@ -353,7 +359,7 @@ public class MCWorldFormatUtils {
                             break;
                         }
 
-                        word |= subChunkBiomeMap.getPalette().getPaletteIndex(subChunkBiomeMap.getBiomeAt(pos >> 8, (pos >> 4) & 15, pos & 15)) << (bitsPerBlock * block);
+                        word |= subChunkBiomeMap.getPalette().getPaletteIndex(subChunkBiomeMap.getBiomeAt(pos >> 8, (pos >> 4) & 15, pos & 15)) << ((int) bitsPerBlock * block);
                         pos++;
                     }
                     buffer.writeIntLE(word);
