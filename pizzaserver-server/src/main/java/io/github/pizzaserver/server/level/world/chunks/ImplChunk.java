@@ -308,7 +308,7 @@ public class ImplChunk implements Chunk {
                 int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
                 if (y >= highestBlockY) {
                     int newHighestBlockY = y;
-                    while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
+                    while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir() && newHighestBlockY >= -64) {
                         newHighestBlockY--;
                     }
                     this.chunk.getHeightMap().setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
