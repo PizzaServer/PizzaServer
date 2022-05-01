@@ -12,10 +12,19 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * To allow for shorthands plugin manifest, we implement a custom JSON parser. Writing GSON deserializer type adapters makes for too complex code imho. - DasEtwas
+ * To allow for shorthands in the plugin manifest, we implement a custom JSON parser. Writing GSON deserializer type adapters makes for too complex code imho. - DasEtwas
  */
 public class PluginManifestParser {
 
+    /**
+     * Required fields include:
+     * <ul>
+     *     <li>name</li>
+     *     <li>mainClass</li>
+     *     <li>version</li>
+     *     <li>apiVersion</li>
+     * </ul>.
+     */
     public static PluginManifest parse(JsonObject manifest) {
         Object nameO = Objects.requireNonNull(manifest.get("name"), "Plugin manifest requires a \"name\" key.");
         Preconditions.checkArgument(nameO instanceof JsonPrimitive primitive && primitive.isString(), "Plugin manifest requires a \"name\" key of type string.");
@@ -68,6 +77,7 @@ public class PluginManifestParser {
 
     public static PluginManifest.PluginDependency parseDependency(JsonElement dependency) {
         if (dependency.isJsonPrimitive() && dependency instanceof JsonPrimitive dependencyPrimitive && dependencyPrimitive.isString()) {
+            // short form
             /*
              * examples:
              * plugin dependency: "ExamplePlugin"
@@ -85,6 +95,7 @@ public class PluginManifestParser {
             };
 
         } else if (dependency instanceof JsonObject dependencyObj) {
+            // object form
             /*
              * examples:
              * plugin dependency with version requirement:
@@ -123,7 +134,27 @@ public class PluginManifestParser {
         }
     }
 
+    /**
+     * All metadata fields are optional.
+     */
     public static PluginManifest.Metadata parseMetadata(JsonObject metadata) {
+        /*
+         * examples:
+         *  {
+         *      "author": "Example Author",
+         *      OR
+         *      "authors": ["Author 1", Author 2"],
+         *
+         *
+         *      "license": "MIT/Apache 2.0",
+         *
+         *
+         *      "website": "https://plugin.plugin/",
+         *
+         *
+         *      "description": "Test hello hello"
+         *  }
+         */
         List<String> authors = new ArrayList<>();
         if (metadata.get("authors") instanceof JsonArray authorsArr) {
             for (int i = 0; i < authorsArr.size(); i++) {

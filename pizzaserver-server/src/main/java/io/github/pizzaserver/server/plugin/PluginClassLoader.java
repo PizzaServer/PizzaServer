@@ -8,13 +8,13 @@ import java.net.URLClassLoader;
 
 public class PluginClassLoader extends URLClassLoader {
 
-    PluginClassLoaderManager pluginClassesCache;
+    PluginClassLoaderManager manager;
     String pluginName;
 
-    public PluginClassLoader(String pluginName, PluginClassLoaderManager pluginClassesCache, ClassLoader parent, File file) throws MalformedURLException {
+    public PluginClassLoader(String pluginName, PluginClassLoaderManager manager, ClassLoader parent, File file) throws MalformedURLException {
         super(new URL[]{file.toURI().toURL()}, parent);
-        this.pluginClassesCache = pluginClassesCache;
-        this.pluginClassesCache.registerClassLoader(pluginName, this);
+        this.manager = manager;
+        this.manager.registerClassLoader(pluginName, this);
     }
 
     //This method is only used internally when the jvm loads classes in the plugin of this loader, contained in other plugins
@@ -35,7 +35,7 @@ public class PluginClassLoader extends URLClassLoader {
                 result = super.findClass(name);
             } catch (ClassNotFoundException ex) {
                 if (checkGlobal) {
-                    result = this.pluginClassesCache.getPluginClassByName(name);
+                    result = this.manager.getPluginClassByName(name);
                 } else {
                     throw ex;
                 }
@@ -52,7 +52,7 @@ public class PluginClassLoader extends URLClassLoader {
 
     @Override
     public void close() throws IOException {
-        this.pluginClassesCache.removeClassLoader(this.pluginName);
+        this.manager.removeClassLoader(this.pluginName);
 
         super.close();
     }
