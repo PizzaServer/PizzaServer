@@ -31,12 +31,12 @@ public class EntityPhysicsComponent extends EntityComponent {
         return this.properties.hasGravity();
     }
 
-    public float getGravityForce() {
-        return this.properties.getGravityForce();
+    public float getGravity() {
+        return this.properties.getGravity();
     }
 
-    public float getDragForce() {
-        return this.properties.getDragForce();
+    public float getDrag() {
+        return this.properties.getDrag();
     }
 
     public boolean applyDragBeforeGravity() {
@@ -55,12 +55,12 @@ public class EntityPhysicsComponent extends EntityComponent {
     public static class Properties {
 
         private boolean collision;
-        private boolean gravity;
+        private boolean hasGravity;
         private boolean pushable;
         private boolean pistonPushable;
 
-        private float gravityForce;
-        private float dragForce;
+        private float gravity;
+        private float drag;
         private boolean applyDragBeforeGravity;
 
         /**
@@ -80,29 +80,39 @@ public class EntityPhysicsComponent extends EntityComponent {
         }
 
         public boolean hasGravity() {
+            return this.hasGravity;
+        }
+
+        /**
+         * Sets if gravity is applied to this entity.
+         */
+        public Properties setHasGravity(boolean hasGravity) {
+            this.hasGravity = hasGravity;
+            return this;
+        }
+
+        public float getGravity() {
             return this.gravity;
         }
 
-        public Properties setGravity(boolean gravity) {
+        /**
+         * Sets gravity in blocks per tick per tick (blocks/tick²).
+         */
+        public Properties setGravity(float gravity) {
             this.gravity = gravity;
             return this;
         }
 
-        public float getGravityForce() {
-            return this.gravityForce;
+        public float getDrag() {
+            return this.drag;
         }
 
-        public Properties setGravityForce(float gravityForce) {
-            this.gravityForce = gravityForce;
-            return this;
-        }
-
-        public float getDragForce() {
-            return this.dragForce;
-        }
-
-        public Properties setDragForce(float dragForce) {
-            this.dragForce = dragForce;
+        /**
+         * Sets entity drag. Valid values range from 0.0 (no drag) to 1.0 (max drag).
+         * A drag of 0.2 will cause the entity to lose 20% of its velocity each tick.
+         */
+        public Properties setDrag(float drag) {
+            this.drag = drag;
             return this;
         }
 

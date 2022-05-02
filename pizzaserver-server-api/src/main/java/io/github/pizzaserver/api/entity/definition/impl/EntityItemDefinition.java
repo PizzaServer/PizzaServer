@@ -18,10 +18,10 @@ public class EntityItemDefinition extends BaseEntityDefinition {
                 new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
                         .setPushable(false)
                         .setPistonPushable(true)
-                        .setGravity(true)
+                        .setHasGravity(true)
                         .setCollision(false)
-                        .setGravityForce(0.04f)
-                        .setDragForce(0.02f)
+                        .setGravity(0.04f)
+                        .setDrag(0.02f)
                         .setApplyDragBeforeGravity(true)) }));
     }
 
