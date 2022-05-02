@@ -330,19 +330,21 @@ public class MCWorldFormatUtils {
         try {
             BedrockSubChunkBiomeMap lastSubChunkBiomeMap = null;
             for (BedrockSubChunkBiomeMap subChunkBiomeMap : biomeMap.getSubChunks()) {
-                if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
-                    throw new IOException("biome sub chunk has no biomes present");
-                }
-
                 float bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().size()) + 1;
                 int blocksPerWord = 0;
                 int wordsPerChunk = 0;
 
-                if (subChunkBiomeMap.equals(lastSubChunkBiomeMap)) {
+                boolean shouldCopyPreviousBiomeSubChunk = subChunkBiomeMap.equals(lastSubChunkBiomeMap)
+                        || (lastSubChunkBiomeMap != null && subChunkBiomeMap.getPalette().size() == 0);
+                if (shouldCopyPreviousBiomeSubChunk) {
                     buffer.writeByte(-1);
                     continue;
                 }
 
+                // The first biome subchunk NEEDS to have at least 1 entry.
+                if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
+                    throw new IOException("biome sub chunk has no biomes present");
+                }
 
                 if (bitsPerBlock > 0) {
                     blocksPerWord = (int) Math.floor(32 / bitsPerBlock);

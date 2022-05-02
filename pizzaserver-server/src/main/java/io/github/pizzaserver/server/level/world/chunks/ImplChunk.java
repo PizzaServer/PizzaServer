@@ -32,6 +32,7 @@ import io.github.pizzaserver.server.level.world.chunks.data.BlockUpdateEntry;
 import io.github.pizzaserver.server.level.world.chunks.utils.ChunkUtils;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
+import io.github.pizzaserver.server.network.protocol.version.V503MinecraftVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
@@ -210,7 +211,7 @@ public class ImplChunk implements Chunk {
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         // Check if block is out of bounds.
-        if (y < -64 || y > 320) {
+        if (y < this.getWorld().getDimension().getMinHeight() || y > this.getWorld().getDimension().getMaxHeight()) {
             Block airBlock = new BlockAir();
             airBlock.setLocation(this.getWorld(), blockCoordinates, layer);
             return airBlock;
@@ -260,7 +261,7 @@ public class ImplChunk implements Chunk {
 
     @Override
     public void setBlock(Block block, int x, int y, int z, int layer) {
-        if (y < -64 || y > 320) {
+        if (y < this.getWorld().getDimension().getMinHeight() || y > this.getWorld().getDimension().getMaxHeight()) {
             return;
         }
 
@@ -504,7 +505,14 @@ public class ImplChunk implements Chunk {
                 }
 
                 // Write biomes
-                BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap());
+                int biomeSubChunksToWrite = this.getWorld().getDimension()
+                        .getHeight() / 16;
+                if (player.getVersion().getProtocol() < V503MinecraftVersion.PROTOCOL) {
+                    // For some reason 1.18.12 and below have an extra biome sub chunk that can be written.
+                    biomeSubChunksToWrite++;
+                }
+
+                BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap(), biomeSubChunksToWrite);
 
                 buffer.writeByte(0);    // border blocks
                 VarInts.writeUnsignedInt(buffer, 0);    // extra data

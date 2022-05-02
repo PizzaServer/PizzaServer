@@ -57,22 +57,29 @@ public class BedrockNetworkUtils {
         }
     }
 
-    public static void serialize3DBiomeMap(ByteBuf buffer, BedrockBiomeMap biomeMap) throws IOException {
+    public static void serialize3DBiomeMap(ByteBuf buffer, BedrockBiomeMap biomeMap, int maxBiomeSubChunkCount) throws IOException {
         BedrockSubChunkBiomeMap lastSubChunkBiomeMap = null;
-        for (BedrockSubChunkBiomeMap subChunkBiomeMap : biomeMap.getSubChunks()) {
-            if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
-                throw new IOException("biome sub chunk has no biomes present");
+        for (int biomeSubChunk = 0; biomeSubChunk < maxBiomeSubChunkCount; biomeSubChunk++) {
+            if (biomeMap.getSubChunks().size() <= biomeSubChunk) {
+                break;
             }
+
+            BedrockSubChunkBiomeMap subChunkBiomeMap = biomeMap.getSubChunk(biomeSubChunk);
 
             float bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().size()) + 1;
             int blocksPerWord = 0;
             int wordsPerChunk = 0;
 
-            if (subChunkBiomeMap.equals(lastSubChunkBiomeMap)) {
+            boolean shouldCopyPreviousBiomeSubChunk = subChunkBiomeMap.equals(lastSubChunkBiomeMap)
+                    || (lastSubChunkBiomeMap != null && subChunkBiomeMap.getPalette().size() == 0);
+            if (shouldCopyPreviousBiomeSubChunk) {
                 buffer.writeByte(-1);
                 continue;
             }
 
+            if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
+                throw new IOException("biome sub chunk has no biomes present");
+            }
 
             if (bitsPerBlock > 0) {
                 blocksPerWord = (int) Math.floor(32 / bitsPerBlock);

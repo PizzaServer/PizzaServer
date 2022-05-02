@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>com.nukkitx.protocol</groupId>
-            <artifactId>bedrock-v486</artifactId>
+            <artifactId>bedrock-v503</artifactId>
         </dependency>
         <dependency>
             <groupId>com.nukkitx</groupId>
