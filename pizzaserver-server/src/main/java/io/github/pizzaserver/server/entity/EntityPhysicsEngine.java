@@ -164,7 +164,8 @@ public class EntityPhysicsEngine {
             }
             this.setMotion(newVelocity);
         } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
-            this.setMotion(0, -this.entity.getComponent(EntityPhysicsComponent.class).getGravityForce(), 0);
+            // entity was previously not moving, so we need to put it in motion here
+            this.setMotion(0, -this.entity.getComponent(EntityPhysicsComponent.class).getGravity(), 0);
         }
     }
 
@@ -173,12 +174,12 @@ public class EntityPhysicsEngine {
         Vector3f newMotion = this.getMotion();
 
         if (newMotion.length() > 0) {
-            float friction = 1 - this.entity.getComponent(EntityPhysicsComponent.class).getDragForce();
+            float friction = 1 - this.entity.getComponent(EntityPhysicsComponent.class).getDrag();
             float newY;
             if (physicsComponent.applyDragBeforeGravity()) {
-                newY = (newMotion.getY() * friction) - physicsComponent.getGravityForce();
+                newY = (newMotion.getY() * friction) - physicsComponent.getGravity();
             } else {
-                newY = (newMotion.getY() - physicsComponent.getGravityForce()) * friction;
+                newY = (newMotion.getY() - physicsComponent.getGravity()) * friction;
             }
             newMotion = Vector3f.from(newMotion.getX(), newY, newMotion.getZ());
 

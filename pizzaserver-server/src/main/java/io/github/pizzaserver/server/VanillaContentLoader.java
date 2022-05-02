@@ -399,11 +399,11 @@ public class VanillaContentLoader {
                 new EntityDeathMessageComponentHandler());
         EntityRegistry.getInstance().registerComponent(EntityPhysicsComponent.class, new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
                 .setCollision(true)
-                .setGravity(true)
+                .setHasGravity(true)
                 .setPushable(true)
                 .setPistonPushable(true)
-                .setGravityForce(0.08f)
-                .setDragForce(0.02f)
+                .setGravity(0.08f)
+                .setDrag(0.02f)
                 .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
         EntityRegistry.getInstance().registerComponent(EntityBossComponent.class,
                 new EntityBossComponent(),
