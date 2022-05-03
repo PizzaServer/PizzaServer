@@ -172,7 +172,7 @@ public class ImplPluginManager implements PluginManager {
                 throw new RuntimeException("Failed to call plugin constructor", e);
             }
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Failed to find plugin main class '" + manifest.getMainClass() + "' in file '" + file.getName() + "'");
+            throw new RuntimeException("Failed to find plugin main class '" + manifest.getMainClass() + "' in file '" + file.getName() + "'", e);
         }
     }
 
