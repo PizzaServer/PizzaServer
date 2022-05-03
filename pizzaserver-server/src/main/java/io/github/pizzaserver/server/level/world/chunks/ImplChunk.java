@@ -82,10 +82,6 @@ public class ImplChunk implements Chunk {
 
         for (NbtMap blockEntityNBT : new HashSet<>(chunk.getBlockEntities().values())) {
             BlockEntity<? extends Block> blockEntity = BlockEntityHandler.fromDiskNBT(this.getWorld(), blockEntityNBT);
-            if (blockEntity == null) {
-                throw new NullPointerException("Could not find block entity for disk NBT " + blockEntityNBT);
-            }
-
             this.addBlockEntity(blockEntity);
         }
     }

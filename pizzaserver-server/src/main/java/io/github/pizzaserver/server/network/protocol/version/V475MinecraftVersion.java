@@ -70,12 +70,15 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             while (blockStatesFileStream.available() > 0) {
                 NbtMap blockState = BlockStateUpdaters.updateBlockState((NbtMap) blockStatesNBTStream.readTag(), 0);
                 String name = blockState.getString("name");
+
+                NbtMap updatedBlockState = this.getUpdatedBlockNBT(name, blockState.getCompound("states"));
                 if (!sortedBlockRuntimeStates.containsKey(name)) {
                     sortedBlockRuntimeStates.put(name, new ArrayList<>());
                 }
 
-                NbtMap states = blockState.getCompound("states");
-                sortedBlockRuntimeStates.get(name).add(states);
+                String updatedName = updatedBlockState.getString("name");
+                NbtMap states = updatedBlockState.getCompound("states");
+                sortedBlockRuntimeStates.get(updatedName).add(states);
             }
 
             // Add custom block states

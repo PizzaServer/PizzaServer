@@ -66,16 +66,27 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion, Minecraf
 
     @Override
     public int getBlockRuntimeId(String name, NbtMap state) {
-        NbtMapBuilder blockStateBuilder = BlockStateUpdaters.updateBlockState(state, 0)
-                .toBuilder();
-        blockStateBuilder.remove("version");
-        BlockStateData key = new BlockStateData(name, blockStateBuilder.build());
+        NbtMap updatedBlockNBT = this.getUpdatedBlockNBT(name, state);
+        BlockStateData key = new BlockStateData(updatedBlockNBT.getString("name"), updatedBlockNBT.getCompound("states"));
 
         if (!this.blockStates.containsKey(key)) {
             throw new ProtocolException(this, "No such block state exists for block id: " + name + " " + state);
         }
 
         return this.blockStates.get(key);
+    }
+
+    protected NbtMap getUpdatedBlockNBT(String id, NbtMap states) {
+        NbtMap blockStateWithWrapper = NbtMap.builder()
+                .putString("name", id)
+                .putCompound("states", states)
+                .build();
+        
+        NbtMapBuilder blockStateBuilder = BlockStateUpdaters.updateBlockState(blockStateWithWrapper, 0)
+                .toBuilder();
+        blockStateBuilder.remove("version");
+
+        return blockStateBuilder.build();
     }
 
     @Override
