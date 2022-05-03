@@ -4,11 +4,10 @@ import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.item.Item;
-import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemArmor;
 import io.github.pizzaserver.api.player.Player;
 
-public class ItemArmorBehavior extends DefaultItemBehavior<ItemArmor> {
+public class ItemArmorBehavior extends BaseItemBehavior<ItemArmor> {
 
     @Override
     public boolean onInteract(Player player, ItemArmor item, Block block, BlockFace blockFace, Vector3f clickPosition) {

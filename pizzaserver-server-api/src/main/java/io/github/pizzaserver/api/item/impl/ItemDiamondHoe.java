@@ -7,23 +7,19 @@ import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.item.descriptors.ToolItem;
 
-public class ItemNetheritePickaxe extends BaseItem implements DurableItem, ToolItem {
+public class ItemDiamondHoe extends BaseItem implements DurableItem, ToolItem {
 
-    public ItemNetheritePickaxe() {
+    public ItemDiamondHoe() {
         this(1);
     }
 
-    public ItemNetheritePickaxe(int count) {
-        this(count, 0);
-    }
-
-    public ItemNetheritePickaxe(int count, int meta) {
-        super(ItemID.NETHERITE_PICKAXE, count, meta);
+    public ItemDiamondHoe(int meta) {
+        super(ItemID.DIAMOND_HOE, 1, meta);
     }
 
     @Override
     public String getName() {
-        return "Netherite Pickaxe";
+        return "Diamond Hoe";
     }
 
     @Override
@@ -32,23 +28,18 @@ public class ItemNetheritePickaxe extends BaseItem implements DurableItem, ToolI
     }
 
     @Override
-    public int getDamage() {
-        return 6;
-    }
-
-    @Override
     public ToolType getToolType() {
-        return ToolType.PICKAXE;
+        return ToolType.HOE;
     }
 
     @Override
     public ToolTier getToolTier() {
-        return ToolTier.NETHERITE;
+        return ToolTier.DIAMOND;
     }
 
     @Override
     public int getMaxDurability() {
-        return 2032;
+        return 1562;
     }
 
 }

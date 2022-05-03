@@ -32,11 +32,6 @@ public class ItemGoldenSword extends BaseItem implements DurableItem, ToolItem {
     }
 
     @Override
-    public int getDamage() {
-        return 5;
-    }
-
-    @Override
     public ToolType getToolType() {
         return ToolType.SWORD;
     }

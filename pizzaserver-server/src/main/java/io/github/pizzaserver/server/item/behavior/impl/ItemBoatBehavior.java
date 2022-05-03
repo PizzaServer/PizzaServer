@@ -8,11 +8,11 @@ import io.github.pizzaserver.api.block.traits.LiquidTrait;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;
-import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
+import io.github.pizzaserver.api.item.behavior.impl.BaseItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBaseBoat;
 import io.github.pizzaserver.api.player.Player;
 
-public class ItemBoatBehavior extends DefaultItemBehavior<ItemBaseBoat> {
+public class ItemBoatBehavior extends BaseItemBehavior<ItemBaseBoat> {
 
     @Override
     public boolean onInteract(Player player, ItemBaseBoat item, Block block, BlockFace blockFace, Vector3f clickPosition) {

@@ -10,15 +10,11 @@ import io.github.pizzaserver.api.item.descriptors.ToolItem;
 public class ItemDiamondSword extends BaseItem implements DurableItem, ToolItem {
 
     public ItemDiamondSword() {
-        this(1);
+        this(0);
     }
 
-    public ItemDiamondSword(int count) {
-        this(count, 0);
-    }
-
-    public ItemDiamondSword(int count, int meta) {
-        super(ItemID.DIAMOND_SWORD, count, meta);
+    public ItemDiamondSword(int meta) {
+        super(ItemID.DIAMOND_SWORD, 1, meta);
     }
 
     @Override
@@ -29,11 +25,6 @@ public class ItemDiamondSword extends BaseItem implements DurableItem, ToolItem 
     @Override
     public int getMaxStackSize() {
         return 1;
-    }
-
-    @Override
-    public int getDamage() {
-        return 8;
     }
 
     @Override
