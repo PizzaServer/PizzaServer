@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 
 public class ItemUtils {
 
@@ -20,7 +21,7 @@ public class ItemUtils {
      * @return serialized data
      */
     public static ItemData serializeForNetwork(Item item, MinecraftVersion version) {
-        int blockRuntimeId = item instanceof ItemBlock itemBlock ? version.getBlockRuntimeId(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) : 0;
+        int blockRuntimeId = item instanceof ItemBlock itemBlock ? ((BaseMinecraftVersion) version).getBlockRuntimeId(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) : 0;
         return ItemData.builder()
                 .id(version.getItemRuntimeId(item.getItemId()))
                 .netId(item.getNetworkId())

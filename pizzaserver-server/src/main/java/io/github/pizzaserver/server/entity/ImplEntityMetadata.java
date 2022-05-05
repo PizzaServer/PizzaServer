@@ -32,9 +32,8 @@ public class ImplEntityMetadata implements EntityMetadata {
     @Override
     public EntityMetadata putFlag(EntityFlag flag, boolean enabled) {
         EntityFlags flags = this.dataMap.getOrCreateFlags();
-        flags.setFlag(flag, enabled);
+        this.updated |= flags.setFlag(flag, enabled);
         this.dataMap.putFlags(flags);
-        this.updated = true;
         return this;
     }
 

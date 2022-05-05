@@ -3,10 +3,7 @@ package io.github.pizzaserver.format.utils;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.format.dimension.chunks.BedrockBiomeMap;
-import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunk;
-import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunkBiomeMap;
-import io.github.pizzaserver.format.dimension.chunks.subchunk.BlockLayer;
-import io.github.pizzaserver.format.dimension.chunks.subchunk.BlockPaletteEntry;
+import io.github.pizzaserver.format.dimension.chunks.subchunk.*;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.utils.Palette;
 import io.netty.buffer.ByteBuf;
 
@@ -15,8 +12,7 @@ import java.util.Set;
 
 public class BedrockNetworkUtils {
 
-    private BedrockNetworkUtils() {
-    }
+    private BedrockNetworkUtils() {}
 
     public static void serializeSubChunk(ByteBuf buffer, BedrockSubChunk subChunk, MinecraftSerializationHandler serializationHandler) {
         buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
@@ -27,12 +23,12 @@ public class BedrockNetworkUtils {
     }
 
     public static void serializeBlockLayer(ByteBuf buffer, BlockLayer blockLayer, MinecraftSerializationHandler serializationHandler) {
-        int bitsPerBlock = NumberUtils.log2Ceil(blockLayer.getPalette().getEntries().size()) + 1;
-        int blocksPerWord = 32 / bitsPerBlock;
+        float bitsPerBlock = NumberUtils.log2Ceil(blockLayer.getPalette().getEntries().size()) + 1;
+        int blocksPerWord = (int) Math.floor(32 / bitsPerBlock);
         // integral ceiling division
         int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
 
-        buffer.writeByte((bitsPerBlock << 1) | 1);
+        buffer.writeByte(((int) bitsPerBlock << 1) | 1);
 
         int pos = 0;
         for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
@@ -42,7 +38,7 @@ public class BedrockNetworkUtils {
                     break;
                 }
 
-                word |= blockLayer.getPalette().getPaletteIndex(blockLayer.getBlockEntryAt(pos >> 8, pos & 15, (pos >> 4) & 15)) << (bitsPerBlock * block);
+                word |= blockLayer.getPalette().getPaletteIndex(blockLayer.getBlockEntryAt(pos >> 8, pos & 15, (pos >> 4) & 15)) << ((int) bitsPerBlock * block);
                 pos++;
             }
             buffer.writeIntLE(word);
@@ -61,39 +57,37 @@ public class BedrockNetworkUtils {
         }
     }
 
-    public static void serialize2DBiomeMap(ByteBuf buffer, BedrockSubChunkBiomeMap biomeMap) {
-        for (int i = 0; i < 256; i++) {
-            int z = i >> 4;
-            int x = i & 15;
-
-            buffer.writeByte(biomeMap.getBiomeAt(x, 0, z));
-        }
-    }
-
-    public static void serialize3DBiomeMap(ByteBuf buffer, BedrockBiomeMap biomeMap) throws IOException {
+    public static void serialize3DBiomeMap(ByteBuf buffer, BedrockBiomeMap biomeMap, int maxBiomeSubChunkCount) throws IOException {
         BedrockSubChunkBiomeMap lastSubChunkBiomeMap = null;
-        for (BedrockSubChunkBiomeMap subChunkBiomeMap : biomeMap.getSubChunks()) {
-            if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
-                throw new IOException("biome sub chunk has no biomes present");
+        for (int biomeSubChunk = 0; biomeSubChunk < maxBiomeSubChunkCount; biomeSubChunk++) {
+            if (biomeMap.getSubChunks().size() <= biomeSubChunk) {
+                break;
             }
 
-            int bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().getEntries().size());
+            BedrockSubChunkBiomeMap subChunkBiomeMap = biomeMap.getSubChunk(biomeSubChunk);
+
+            float bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().size()) + 1;
             int blocksPerWord = 0;
             int wordsPerChunk = 0;
 
-            if (subChunkBiomeMap.equals(lastSubChunkBiomeMap)) {
+            boolean shouldCopyPreviousBiomeSubChunk = subChunkBiomeMap.equals(lastSubChunkBiomeMap)
+                    || (lastSubChunkBiomeMap != null && subChunkBiomeMap.getPalette().size() == 0);
+            if (shouldCopyPreviousBiomeSubChunk) {
                 buffer.writeByte(-1);
                 continue;
             }
 
+            if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
+                throw new IOException("biome sub chunk has no biomes present");
+            }
 
             if (bitsPerBlock > 0) {
-                blocksPerWord = 32 / bitsPerBlock;
+                blocksPerWord = (int) Math.floor(32 / bitsPerBlock);
                 // integral ceiling division
                 wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
             }
 
-            buffer.writeByte((bitsPerBlock << 1) | 1);
+            buffer.writeByte(((int) bitsPerBlock << 1) | 1);
 
             int pos = 0;
             for (int i = 0; i < wordsPerChunk; i++) {
@@ -103,16 +97,13 @@ public class BedrockNetworkUtils {
                         break;
                     }
 
-                    word |= subChunkBiomeMap.getPalette().getPaletteIndex(subChunkBiomeMap.getBiomeAt(pos >> 8, pos & 15, (pos >> 4) & 15)) << (bitsPerBlock * block);
+                    word |= subChunkBiomeMap.getPalette().getPaletteIndex(subChunkBiomeMap.getBiomeAt(pos >> 8, pos & 15, (pos >> 4) & 15)) << ((int) bitsPerBlock * block);
                     pos++;
                 }
                 buffer.writeIntLE(word);
             }
 
-            if (bitsPerBlock > 0) {
-                VarInts.writeInt(buffer, subChunkBiomeMap.getPalette().getEntries().size());
-            }
-
+            VarInts.writeInt(buffer, subChunkBiomeMap.getPalette().getEntries().size());
             for (int i = 0; i < subChunkBiomeMap.getPalette().getEntries().size(); i++) {
                 VarInts.writeInt(buffer, subChunkBiomeMap.getPalette().getEntry(i));
             }

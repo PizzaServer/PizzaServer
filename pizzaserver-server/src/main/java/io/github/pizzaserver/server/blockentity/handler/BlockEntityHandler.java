@@ -1,6 +1,7 @@
 package io.github.pizzaserver.server.blockentity.handler;
 
 import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.type.*;
@@ -16,6 +17,8 @@ import java.util.*;
  */
 public class BlockEntityHandler {
 
+    private static final BlockEntityParser<BlockEntityUnknown<Block>> UNKNOWN_PARSER = new BlockEntityUnknownParser<>();
+
     private static final Map<String, BlockEntityParser<? extends BlockEntity<? extends Block>>> parsers = new HashMap<>();
     private static final Map<String, String> blockIdsToParsers = new HashMap<>();
 
@@ -25,7 +28,8 @@ public class BlockEntityHandler {
     public static BlockEntity<? extends Block> fromDiskNBT(World world, NbtMap nbt) {
         String id = nbt.getString("id");
         if (!parsers.containsKey(id)) {
-            return null;
+            Server.getInstance().getLogger().debug("Unknown block entity data found: " + nbt);
+            return UNKNOWN_PARSER.fromDiskNBT(world, nbt);
         }
 
         return parsers.get(id).fromDiskNBT(world, nbt);
@@ -34,7 +38,7 @@ public class BlockEntityHandler {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static NbtMap toDiskNBT(BlockEntity<? extends Block> blockEntity) {
         if (!parsers.containsKey(blockEntity.getId())) {
-            return null;
+            return UNKNOWN_PARSER.toDiskNBT((BlockEntityUnknown) blockEntity);
         }
 
         BlockEntityParser parser = parsers.get(blockEntity.getId());
@@ -45,7 +49,7 @@ public class BlockEntityHandler {
     public static NbtMap toNetworkNBT(BlockEntity<? extends Block> blockEntity) {
         String blockEntityId = blockEntity.getId();
         if (!parsers.containsKey(blockEntityId)) {
-            return null;
+            return UNKNOWN_PARSER.toNetworkNBT(UNKNOWN_PARSER.toDiskNBT((BlockEntityUnknown) blockEntity));
         }
 
         BlockEntityParser parser = parsers.get(blockEntityId);
@@ -56,7 +60,7 @@ public class BlockEntityHandler {
     public static NbtMap toNetworkNBT(NbtMap diskNBT) {
         String blockEntityId = diskNBT.getString("id");
         if (!parsers.containsKey(blockEntityId)) {
-            return null;
+            return UNKNOWN_PARSER.toNetworkNBT(diskNBT);
         }
 
         BlockEntityParser parser = parsers.get(blockEntityId);
@@ -66,7 +70,14 @@ public class BlockEntityHandler {
 
     public static BlockEntity<? extends Block> create(String blockEntityId, BlockLocation location) {
         if (!parsers.containsKey(blockEntityId)) {
-            return null;
+            NbtMap unknownData = NbtMap.builder()
+                    .putString("id", blockEntityId)
+                    .putInt("x", location.getX())
+                    .putInt("y", location.getY())
+                    .putInt("z", location.getZ())
+                    .build();
+
+            return UNKNOWN_PARSER.fromDiskNBT(location.getWorld(), unknownData);
         }
 
         return parsers.get(blockEntityId).create(location);

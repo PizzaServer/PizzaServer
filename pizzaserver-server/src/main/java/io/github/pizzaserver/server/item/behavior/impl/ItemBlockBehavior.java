@@ -6,7 +6,7 @@ import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.trait.LiquidTrait;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
-import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
+import io.github.pizzaserver.api.item.behavior.impl.BaseItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
@@ -14,7 +14,7 @@ import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 
 import java.util.Optional;
 
-public class ItemBlockBehavior extends DefaultItemBehavior<ItemBlock> {
+public class ItemBlockBehavior extends BaseItemBehavior<ItemBlock> {
 
     @Override
     public boolean onInteract(Player player, ItemBlock itemBlock, Block block, BlockFace blockFace, Vector3f clickPosition) {

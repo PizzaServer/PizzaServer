@@ -51,10 +51,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
 
             for (PlayerAuthInputData input : packet.getInputData()) {
                 switch (input) {
-                    case SNEAK_DOWN:
                     case START_SNEAKING:
-                    case SNEAKING:
-                    case PERSIST_SNEAK:
                         if (!this.player.isSneaking()) {
                             PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSneakingEvent);
@@ -144,6 +141,12 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     case JUMP_DOWN:
                     case JUMPING:
                     case START_JUMPING:
+                    case ASCEND:
+                    case DESCEND:
+                    case CHANGE_HEIGHT:
+                    case PERSIST_SNEAK:
+                    case SNEAK_DOWN:
+                    case SNEAKING:
                         // For now, we don't need to handle this.
                         // However, if we ever want to implement server-side knockback using the rewind system. This may be useful.
                         break;
@@ -186,11 +189,11 @@ public class AuthInputHandler implements BedrockPacketHandler {
     private void handleBlockActions(List<PlayerBlockActionData> actions) {
         for (PlayerBlockActionData action : actions) {
             switch (action.getAction()) {
-                case START_BREAK:
-                case BLOCK_CONTINUE_DESTROY:
+                case START_BREAK, BLOCK_CONTINUE_DESTROY -> {
                     if (this.player.isAlive()
                             && this.player.canReach(action.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7)) {
                         BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), action.getBlockPosition(), 0);
+                        Block targetBlock = blockBreakingLocation.getBlock();
 
                         boolean isAlreadyBreakingBlock = this.player.getBlockBreakingManager().getBlock().isPresent();
                         boolean breakingSameBlock = isAlreadyBreakingBlock
@@ -204,16 +207,16 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 this.player.getBlockBreakingManager().stopBreaking();
                             }
 
-                            boolean canBreakNewBlock = !(blockBreakingLocation.getBlock() instanceof LiquidTrait)
-                                    && !blockBreakingLocation.getBlock().isAir()
+                            boolean canBreakNewBlock = !(targetBlock instanceof LiquidTrait)
+                                    && !targetBlock.isAir()
                                     && this.player.getAdventureSettings().canMine();
                             if (canBreakNewBlock) {
                                 // Special case: Fire does not trigger BLOCK_PREDICT_DESTROY
-                                if (!this.playerMinedNormalBlockOrFireBlock(blockBreakingLocation.getBlock(), BlockFace.resolve(action.getFace()))) {
+                                if (!this.playerMinedNormalBlockOrFireBlock(targetBlock, BlockFace.resolve(action.getFace()))) {
                                     break;
                                 }
 
-                                BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, blockBreakingLocation.getBlock());
+                                BlockStartBreakEvent blockStartBreakEvent = new BlockStartBreakEvent(this.player, targetBlock);
                                 this.player.getServer().getEventManager().call(blockStartBreakEvent);
                                 if (!blockStartBreakEvent.isCancelled()) {
                                     this.player.getBlockBreakingManager().startBreaking(blockBreakingLocation, BlockFace.resolve(action.getFace()));
@@ -222,10 +225,9 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 }
                             }
                         }
-                        break;
                     }
-                    break;
-                case BLOCK_PREDICT_DESTROY:
+                }
+                case BLOCK_PREDICT_DESTROY -> {
                     Optional<Block> blockMining = this.player.getBlockBreakingManager().getBlock();
                     boolean isCorrectBlockCoordinates = blockMining.isPresent() && action.getBlockPosition().equals(blockMining.get().getLocation().toVector3i());
                     boolean canBreakBlock = isCorrectBlockCoordinates && this.player.getBlockBreakingManager().canBreakBlock();
@@ -252,18 +254,16 @@ public class AuthInputHandler implements BedrockPacketHandler {
                             this.player.getWorld().sendBlock(this.player, action.getBlockPosition());
                         }
                     }
-                    break;
-                case ABORT_BREAK:
+                }
+                case ABORT_BREAK -> {
                     if (this.player.getBlockBreakingManager().getBlock().isPresent()) {
                         BlockStopBreakEvent blockStopBreakEvent = new BlockStopBreakEvent(this.player, this.player.getBlockBreakingManager().getBlock().get());
                         this.player.getServer().getEventManager().call(blockStopBreakEvent);
 
                         this.player.getBlockBreakingManager().stopBreaking();
                     }
-                    break;
-                default:
-                    this.player.getServer().getLogger().debug("Unknown block input action retrieved: " + action.getAction());
-                    break;
+                }
+                default -> this.player.getServer().getLogger().debug("Unknown block input action retrieved: " + action.getAction());
             }
         }
     }
@@ -307,7 +307,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
         boolean updateRotation = Math.abs(this.player.getPitch() - rotation.getX()) > ROTATION_UPDATE_THRESHOLD
                 || Math.abs(this.player.getYaw() - rotation.getY()) > ROTATION_UPDATE_THRESHOLD
                 || Math.abs(this.player.getHeadYaw() - rotation.getZ()) > ROTATION_UPDATE_THRESHOLD;
-        boolean updatePosition = position.distance(this.player.getLocation().toVector3f()) > MOVEMENT_DISTANCE_THRESHOLD;
+        boolean updatePosition = position.distance(this.player.getLocation().toVector3f().add(0, this.player.getEyeHeight(), 0)) > MOVEMENT_DISTANCE_THRESHOLD;
 
         if (updateRotation || updatePosition) {
             Location newLocation = new Location(this.player.getWorld(), position, rotation);

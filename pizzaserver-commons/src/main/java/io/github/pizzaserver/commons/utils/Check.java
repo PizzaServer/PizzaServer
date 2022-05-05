@@ -73,4 +73,10 @@ public final class Check {
         return obj == null;
     }
 
+    public static void checkArgument(boolean mustBeTrue, String errorMessage) {
+        if (!mustBeTrue) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
 }

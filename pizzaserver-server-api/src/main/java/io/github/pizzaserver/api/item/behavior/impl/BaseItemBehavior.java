@@ -8,7 +8,7 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 import io.github.pizzaserver.api.player.Player;
 
-public class DefaultItemBehavior<T extends Item> implements ItemBehavior<T> {
+public class BaseItemBehavior<T extends Item> implements ItemBehavior<T> {
 
     @Override
     public boolean onInteract(Player player, T item, Block block, BlockFace blockFace, Vector3f clickPosition) {

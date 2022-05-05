@@ -32,11 +32,6 @@ public class ItemGoldenPickaxe extends BaseItem implements DurableItem, ToolItem
     }
 
     @Override
-    public int getDamage() {
-        return 2;
-    }
-
-    @Override
     public ToolType getToolType() {
         return ToolType.PICKAXE;
     }
@@ -48,7 +43,7 @@ public class ItemGoldenPickaxe extends BaseItem implements DurableItem, ToolItem
 
     @Override
     public int getMaxDurability() {
-        return 32;
+        return 33;
     }
 
 }

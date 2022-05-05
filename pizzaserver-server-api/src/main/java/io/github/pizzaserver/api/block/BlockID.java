@@ -137,7 +137,7 @@ public class BlockID {
     public static final String GREEN_GLAZED_TERRACOTTA = "minecraft:green_glazed_terracotta";
     public static final String HOPPER = "minecraft:hopper";
     public static final String ICE = "minecraft:ice";
-    public static final String INVISIBLE_BEDROCK = "minecraft:invisibleBedrock";
+    public static final String INVISIBLE_BEDROCK = "minecraft:invisible_bedrock";
     public static final String IRON_BLOCK = "minecraft:iron_block";
     public static final String IRON_ORE = "minecraft:iron_ore";
     public static final String JUNGLE_BUTTON = "minecraft:jungle_button";

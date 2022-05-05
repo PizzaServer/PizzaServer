@@ -3,7 +3,9 @@ package io.github.pizzaserver.server.network.protocol.version;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
+import com.nukkitx.blockstateupdater.BlockStateUpdaters;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
 import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
@@ -14,6 +16,7 @@ import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.recipe.type.Recipe;
+import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.network.protocol.exception.ProtocolException;
 
@@ -23,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BaseMinecraftVersion implements MinecraftVersion {
+public abstract class BaseMinecraftVersion implements MinecraftVersion, MinecraftSerializationHandler {
 
     protected static final Gson GSON = new Gson();
 
@@ -68,18 +71,32 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion {
 
     @Override
     public int getBlockRuntimeId(String name, NbtMap state) {
-        BlockStateData key = new BlockStateData(name, state);
-        try {
-            return this.blockStates.get(key);
-        } catch (NullPointerException exception) {
-            Server.getInstance().getLogger().debug("Unknown block runtime id requested: " + name + " " + state);
-            throw exception;
+        NbtMap updatedBlockNBT = this.getUpdatedBlockNBT(name, state);
+        BlockStateData key = new BlockStateData(updatedBlockNBT.getString("name"), updatedBlockNBT.getCompound("states"));
+
+        if (!this.blockStates.containsKey(key)) {
+            throw new ProtocolException(this, "No such block state exists for block id: " + name + " " + state);
         }
+
+        return this.blockStates.get(key);
+    }
+
+    protected NbtMap getUpdatedBlockNBT(String id, NbtMap states) {
+        NbtMap blockStateWithWrapper = NbtMap.builder()
+                .putString("name", id)
+                .putCompound("states", states)
+                .build();
+        
+        NbtMapBuilder blockStateBuilder = BlockStateUpdaters.updateBlockState(blockStateWithWrapper, 0)
+                .toBuilder();
+        blockStateBuilder.remove("version");
+
+        return blockStateBuilder.build();
     }
 
     @Override
     public Block getBlockFromRuntimeId(int blockRuntimeId) {
-        if (!this.blockStates.inverse().containsKey(blockRuntimeId)) {
+        if (!this.blockStates.containsValue(blockRuntimeId)) {
             throw new ProtocolException(this, "No such block state exists for runtime id: " + blockRuntimeId);
         }
 

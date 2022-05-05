@@ -25,6 +25,7 @@ import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.level.world.chunks.WorldChunkManager;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.IOException;
@@ -327,7 +328,7 @@ public class ImplWorld implements World {
                 packet.setRelativeVolumeDisabled(relativeVolumeDisabled);
                 packet.setBabySound(isBaby);
                 packet.setIdentifier(entityType);
-                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
+                packet.setExtraData(block != null ? ((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
 
                 player.sendPacket(packet);
             }

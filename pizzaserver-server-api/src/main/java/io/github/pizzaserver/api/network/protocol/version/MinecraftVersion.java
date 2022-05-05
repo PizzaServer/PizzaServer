@@ -2,12 +2,11 @@ package io.github.pizzaserver.api.network.protocol.version;
 
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.format.MinecraftSerializationHandler;
 
 /**
  * Represents a specific Minecraft version.
  */
-public interface MinecraftVersion extends MinecraftSerializationHandler {
+public interface MinecraftVersion {
 
     int getProtocol();
 

@@ -31,6 +31,8 @@ import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.data.BlockUpdateEntry;
 import io.github.pizzaserver.server.level.world.chunks.utils.ChunkUtils;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
+import io.github.pizzaserver.server.network.protocol.version.V503MinecraftVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
@@ -80,10 +82,6 @@ public class ImplChunk implements Chunk {
 
         for (NbtMap blockEntityNBT : new HashSet<>(chunk.getBlockEntities().values())) {
             BlockEntity<? extends Block> blockEntity = BlockEntityHandler.fromDiskNBT(this.getWorld(), blockEntityNBT);
-            if (blockEntity == null) {
-                throw new NullPointerException("Could not find block entity for disk NBT " + blockEntityNBT);
-            }
-
             this.addBlockEntity(blockEntity);
         }
     }
@@ -117,7 +115,7 @@ public class ImplChunk implements Chunk {
 
         int subChunkY = (int) Math.floor(y / 16d);
         synchronized (this.chunk) {
-            return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, Math.abs(y) & 15, z & 15);
+            return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, y & 15, z & 15);
         }
     }
 
@@ -202,14 +200,18 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
-        if (y >= 320 || y < -64) {
-            throw new IllegalArgumentException("Could not get block outside chunk");
-        }
         int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
-        int chunkBlockY = Math.abs(y) & 15;
+        int chunkBlockY = y & 15;
         int chunkBlockZ = z & 15;
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
+
+        // Check if block is out of bounds.
+        if (y < this.getWorld().getDimension().getMinHeight() || y > this.getWorld().getDimension().getMaxHeight()) {
+            Block airBlock = new BlockAir();
+            airBlock.setLocation(this.getWorld(), blockCoordinates, layer);
+            return airBlock;
+        }
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
@@ -254,15 +256,16 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void setBlock(Block block, int x, int y, int z, int layer) {
-        if (y >= 256 || y < -64) {
-            throw new IllegalArgumentException("Could not change block outside chunk");
+        if (y < this.getWorld().getDimension().getMinHeight() || y > this.getWorld().getDimension().getMaxHeight()) {
+            return;
         }
+
         int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int subChunkBlockY = y & 15;
         int chunkBlockZ = z & 15;
+
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         block.setLocation(this.getWorld(), blockCoordinates, layer);
@@ -302,7 +305,7 @@ public class ImplChunk implements Chunk {
                 int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
                 if (y >= highestBlockY) {
                     int newHighestBlockY = y;
-                    while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
+                    while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir() && newHighestBlockY >= -64) {
                         newHighestBlockY--;
                     }
                     this.chunk.getHeightMap().setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
@@ -413,7 +416,7 @@ public class ImplChunk implements Chunk {
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
+        updateBlockPacket.setRuntimeId(((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
         updateBlockPacket.setBlockPosition(Vector3i.from(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
@@ -494,11 +497,18 @@ public class ImplChunk implements Chunk {
                 subChunkCount = ChunkUtils.getSubChunkCount(this.chunk);
 
                 for (int i = -4; i < subChunkCount - 4; i++) {
-                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), player.getVersion());
+                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), (BaseMinecraftVersion) player.getVersion());
                 }
 
                 // Write biomes
-                BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap());
+                int biomeSubChunksToWrite = this.getWorld().getDimension()
+                        .getHeight() / 16;
+                if (player.getVersion().getProtocol() < V503MinecraftVersion.PROTOCOL) {
+                    // For some reason 1.18.12 and below have an extra biome sub chunk that can be written.
+                    biomeSubChunksToWrite++;
+                }
+
+                BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap(), biomeSubChunksToWrite);
 
                 buffer.writeByte(0);    // border blocks
                 VarInts.writeUnsignedInt(buffer, 0);    // extra data
@@ -508,7 +518,7 @@ public class ImplChunk implements Chunk {
                     try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
                         for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities().values()) {
                             try {
-                                NbtMap networkBlockEntityNBT = player.getVersion().getNetworkBlockEntityNBT(diskBlockEntityNBT);
+                                NbtMap networkBlockEntityNBT = ((BaseMinecraftVersion) player.getVersion()).getNetworkBlockEntityNBT(diskBlockEntityNBT);
                                 outputStream.writeTag(networkBlockEntityNBT);
                             } catch (NullPointerException exception) {
                                 throw new IOException("Failed to send chunk due to unhandled block entity found: " + diskBlockEntityNBT);

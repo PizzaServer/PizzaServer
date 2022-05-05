@@ -1,11 +1,44 @@
 package io.github.pizzaserver.api.level.world.data;
 
+import io.github.pizzaserver.commons.utils.Check;
+
 public enum Dimension {
+    OVERWORLD("overworld", -64, 319, 1),
+    NETHER("nether", 0, 127, 3),
+    END("end", 0, 255, 4);
 
-    OVERWORLD,
+    private final String id;
+    private final int minHeight;
+    private final int maxHeight;
+    private final int generator;
 
-    NETHER,
+    Dimension(String id, int minHeight, int maxHeight, int generator) {
+        Check.inclusiveUpperBound(minHeight, maxHeight, "minHeight");
 
-    END
+        this.id = id;
+        this.minHeight = minHeight;
+        this.maxHeight = maxHeight;
+        this.generator = generator;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public int getMinHeight() {
+        return this.minHeight;
+    }
+
+    public int getMaxHeight() {
+        return this.maxHeight;
+    }
+
+    public int getHeight() {
+        return this.getMaxHeight() - this.getMinHeight() + 1;
+    }
+
+    public int getGenerator() {
+        return this.generator;
+    }
 
 }
