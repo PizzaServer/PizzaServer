@@ -14,6 +14,7 @@ import io.github.pizzaserver.api.recipe.type.ShapedRecipe;
 import io.github.pizzaserver.api.recipe.type.ShapelessRecipe;
 import io.github.pizzaserver.server.item.ItemUtils;
 
+import java.io.IOException;
 import java.util.*;
 
 public class RecipeUtils {
@@ -70,7 +71,7 @@ public class RecipeUtils {
         }
     }
 
-    public static Recipe deserializeFromJSON(JsonObject recipeJSON, MinecraftVersion version) {
+    public static Recipe deserializeFromJSON(JsonObject recipeJSON, MinecraftVersion version) throws IOException {
         int recipeType = recipeJSON.get("type").getAsInt();
 
         return switch (recipeType) {
@@ -82,7 +83,7 @@ public class RecipeUtils {
         };
     }
 
-    private static ShapelessRecipe handleShapelessRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) {
+    private static ShapelessRecipe handleShapelessRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) throws IOException  {
         RecipeBlockType blockType = RecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
 
         List<Item> input = new ArrayList<>();
@@ -112,7 +113,7 @@ public class RecipeUtils {
         return new ShapelessRecipe(blockType, input.toArray(new Item[0]), output.toArray(new Item[0]));
     }
 
-    private static ShapedRecipe handleShapedRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) {
+    private static ShapedRecipe handleShapedRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) throws IOException {
         RecipeBlockType blockType = RecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
 
         Map<Character, Item> itemInputLookup = new HashMap<>();
@@ -163,7 +164,7 @@ public class RecipeUtils {
         return new ShapedRecipe(blockType, gridBuilder.build());
     }
 
-    private static FurnaceRecipe handleFurnaceRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) {
+    private static FurnaceRecipe handleFurnaceRecipeJSON(JsonObject recipeJSON, MinecraftVersion version) throws IOException {
         RecipeBlockType blockType = RecipeBlockType.fromRecipeBlock(recipeJSON.get("block").getAsString());
 
         Item inputItem = ItemUtils.fromJSON(recipeJSON.get("input").getAsJsonObject(), version);

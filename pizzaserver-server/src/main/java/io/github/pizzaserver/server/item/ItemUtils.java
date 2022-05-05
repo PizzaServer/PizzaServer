@@ -1,7 +1,9 @@
 package io.github.pizzaserver.server.item;
 
 import com.google.gson.JsonObject;
+import com.nukkitx.nbt.NBTInputStream;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.item.Item;
@@ -9,6 +11,10 @@ import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Base64;
 
 public class ItemUtils {
 
@@ -68,32 +74,47 @@ public class ItemUtils {
         return itemStack;
     }
 
-    public static Item fromJSON(JsonObject itemJSON, MinecraftVersion version) {
+    public static Item fromJSON(JsonObject itemJSON, MinecraftVersion version) throws IOException {
         String itemId = itemJSON.get("id").getAsString();
         int count = itemJSON.has("count") ? itemJSON.get("count").getAsInt() : 1;
         int meta = itemJSON.has("damage") && itemJSON.get("damage").getAsShort() != Short.MAX_VALUE ? itemJSON.get("damage").getAsInt() : 0;
-        int blockRuntimeId = itemJSON.has("blockRuntimeId") ? itemJSON.get("blockRuntimeId").getAsInt() : 0;
+        String blockStateNBT = itemJSON.has("block_state_b64") ? itemJSON.get("block_state_b64").getAsString() : null;
+        String tagNBT = itemJSON.has("nbt_b64") ? itemJSON.get("nbt_b64").getAsString() : null;
 
         if (!ItemRegistry.getInstance().hasItem(itemId)) {
             // TODO: throw exception after all blocks/items implemented.
             return null;
         }
 
-        if (blockRuntimeId != 0) {
-            Block block = version.getBlockFromRuntimeId(blockRuntimeId);
+        Item item;
+        if (blockStateNBT != null) {
+            NbtMap blockNBT = stringToNBT(blockStateNBT);
+            String blockId = blockNBT.getString("name");
+            NbtMap blockState = blockNBT.getCompound("states");
+
+            Block block = version.getBlockFromRuntimeId(version.getBlockRuntimeId(blockId, blockState));
             if (block == null) {
-                // TODO: throw exception after all blocks/items implemented.
+                // TODO: debug log this to as this is a missing block!
                 return null;
             }
 
-            if (itemJSON.has("damage")) {
-                return new ItemBlock(block, count, meta);
-            } else {
-                return new ItemBlock(block, count);
-            }
+            item = new ItemBlock(block, count);
+        } else {
+            item = ItemRegistry.getInstance().getItem(itemId, count, meta);
         }
 
-        return ItemRegistry.getInstance().getItem(itemId, count, meta);
+        if (tagNBT != null) {
+            item.setNBT(stringToNBT(tagNBT));
+        }
+
+        return item;
+    }
+
+    private static NbtMap stringToNBT(String str) throws IOException {
+        byte[] nbtData = Base64.getDecoder().decode(str);
+        try (NBTInputStream nbtInputStream = NbtUtils.createReaderLE(new ByteArrayInputStream(nbtData))) {
+            return  ((NbtMap) nbtInputStream.readTag());
+        }
     }
 
 }

@@ -17,6 +17,7 @@ import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
+import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
@@ -24,10 +25,7 @@ import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 import io.github.pizzaserver.server.recipe.RecipeUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.*;
 
 public class V475MinecraftVersion extends BaseMinecraftVersion {
@@ -60,13 +58,17 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         }
     }
 
+    protected Comparator<String> getBlockIdComparator() {
+        return Collections.reverseOrder(MinecraftNamespaceComparator::compare);
+    }
+
     @Override
     protected void loadBlockStates() throws IOException {
         try (InputStream blockStatesFileStream = this.getProtocolResourceStream("block_states.nbt");
              NBTInputStream blockStatesNBTStream = NbtUtils.createNetworkReader(blockStatesFileStream)) {
             // keySet returns in ascending rather than descending so we have to reverse it
             SortedMap<String, List<NbtMap>> sortedBlockRuntimeStates =
-                    new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
+                    new TreeMap<>(this.getBlockIdComparator());
 
             // Parse block states
             while (blockStatesFileStream.available() > 0) {
@@ -159,11 +161,12 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
-            SortedSet<Block> sortedCustomBlocks =
-                    new TreeSet<>(MinecraftNamespaceComparator::compareBlocks);
-            sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
-            for (Block customBlock : sortedCustomBlocks) {
-                this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+            SortedSet<String> sortedCustomBlocks =
+                    new TreeSet<>(this.getBlockIdComparator());
+            BlockRegistry.getInstance().getCustomBlocks().forEach(customBlock -> sortedCustomBlocks.add(customBlock.getBlockId()));
+
+            for (String customBlockId : sortedCustomBlocks) {
+                this.itemRuntimeIds.put(customBlockId, 255 - customBlockIdStart++);  // (255 - index) = item runtime id
             }
         }
     }

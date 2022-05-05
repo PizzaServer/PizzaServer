@@ -1,5 +1,6 @@
 package io.github.pizzaserver.api.network.protocol.version;
 
+import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import io.github.pizzaserver.api.block.Block;
 
@@ -39,4 +40,5 @@ public interface MinecraftVersion {
      */
     Block getBlockFromRuntimeId(int blockRuntimeId);
 
+    int getBlockRuntimeId(String blockId, NbtMap blockState);
 }
