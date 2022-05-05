@@ -24,11 +24,11 @@ public abstract class Recipe {
         this.networkId = NETWORK_ID++;
     }
 
+    public abstract RecipeType getType();
+
     public UUID getUUID() {
         return this.id;
     }
-
-    public abstract RecipeType getType();
 
     /**
      * Returns the block that should be used to create this recipe.

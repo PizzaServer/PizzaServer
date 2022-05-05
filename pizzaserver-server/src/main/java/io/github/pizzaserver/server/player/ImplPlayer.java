@@ -32,7 +32,6 @@ import io.github.pizzaserver.api.item.data.ItemID;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
-import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
 import io.github.pizzaserver.api.player.data.Device;
@@ -68,7 +67,6 @@ import io.github.pizzaserver.server.player.manager.PlayerChunkManager;
 import io.github.pizzaserver.server.player.manager.PlayerPopupManager;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
-import io.github.pizzaserver.server.recipe.ImplRecipeRegistry;
 import io.github.pizzaserver.server.recipe.RecipeUtils;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 
@@ -85,7 +83,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected boolean locallyInitialized;
     protected boolean autoSave = true;
 
-    protected final MinecraftVersion version;
+    protected final BaseMinecraftVersion version;
     protected final Device device;
     protected final String xuid;
     protected final UUID uuid;
@@ -114,7 +112,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.server = server;
         this.session = session;
 
-        this.version = session.getVersion();
+        this.version = (BaseMinecraftVersion) session.getVersion();
         this.device = loginData.getDevice();
         this.xuid = loginData.getXUID();
         this.uuid = loginData.getUUID();
@@ -234,8 +232,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setInventoriesServerAuthoritative(true);
             startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
             startGamePacket.getGamerules().add(new GameRuleData<>("showcoordinates", true));
-            startGamePacket.setItemEntries(((BaseMinecraftVersion) this.getVersion()).getItemEntries());
-            startGamePacket.getBlockProperties().addAll(((BaseMinecraftVersion) this.getVersion()).getCustomBlockProperties());
+            startGamePacket.setItemEntries(this.getVersion().getItemEntries());
+            startGamePacket.getBlockProperties().addAll(this.getVersion().getCustomBlockProperties());
             startGamePacket.setPlayerMovementSettings(movementSettings);
             startGamePacket.setCommandsEnabled(true);
             startGamePacket.setMultiplayerGame(true);
@@ -249,32 +247,23 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             // Send item components for custom items
             ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-            itemComponentPacket.getItems().addAll(((BaseMinecraftVersion) this.getVersion()).getItemComponents());
+            itemComponentPacket.getItems().addAll(this.getVersion().getItemComponents());
             this.sendPacket(itemComponentPacket);
 
             CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
-            creativeContentPacket.setContents(CreativeRegistry.getInstance()
-                    .getItems().stream()
-                    .map(item -> ItemUtils.serializeForNetwork(item, this.getVersion()))
-                    .toArray(ItemData[]::new));
+            creativeContentPacket.setContents(ImplPlayer.this.getVersion().getCreativeData().toArray(new ItemData[0]));
             this.sendPacket(creativeContentPacket);
 
             CraftingDataPacket craftingDataPacket = new CraftingDataPacket();
-            craftingDataPacket.getCraftingData().addAll(new ArrayList<>() {
-                {
-                    for (Recipe recipe : ((ImplRecipeRegistry) RecipeRegistry.getInstance()).getRecipes()) {
-                        this.add(RecipeUtils.serializeForNetwork(recipe, ImplPlayer.this.getVersion()));
-                    }
-                }
-            });
+            craftingDataPacket.getCraftingData().addAll(ImplPlayer.this.getVersion().getCraftingData());
             this.sendPacket(craftingDataPacket);
 
             BiomeDefinitionListPacket biomeDefinitionPacket = new BiomeDefinitionListPacket();
-            biomeDefinitionPacket.setDefinitions(((BaseMinecraftVersion) this.getVersion()).getBiomeDefinitions());
+            biomeDefinitionPacket.setDefinitions(this.getVersion().getBiomeDefinitions());
             this.sendPacket(biomeDefinitionPacket);
 
             AvailableEntityIdentifiersPacket availableEntityIdentifiersPacket = new AvailableEntityIdentifiersPacket();
-            availableEntityIdentifiersPacket.setIdentifiers(((BaseMinecraftVersion) this.getVersion()).getEntityIdentifiers());
+            availableEntityIdentifiersPacket.setIdentifiers(this.getVersion().getEntityIdentifiers());
             this.sendPacket(availableEntityIdentifiersPacket);
 
 
@@ -299,7 +288,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public MinecraftVersion getVersion() {
+    public BaseMinecraftVersion getVersion() {
         return this.version;
     }
 

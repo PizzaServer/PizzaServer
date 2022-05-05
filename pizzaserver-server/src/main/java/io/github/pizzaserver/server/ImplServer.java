@@ -140,6 +140,8 @@ public class ImplServer extends Server {
             RecipeRegistry.getInstance().register(recipe);
         }
 
+        ServerProtocol.rebuildCaches();
+
         this.state = ServerState.ENABLING_PLUGINS;
         // TODO: call onEnable equiv method for plugins
 

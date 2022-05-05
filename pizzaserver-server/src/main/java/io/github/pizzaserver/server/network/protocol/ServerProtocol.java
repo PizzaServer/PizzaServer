@@ -31,6 +31,15 @@ public class ServerProtocol {
     public static Optional<BaseMinecraftVersion> getProtocol(int protocol) {
         return Optional.ofNullable(VERSIONS.getOrDefault(protocol, null));
     }
+
+    /**
+     * Builds all caches that should be run after registration. (e.g. block property/item components/crafting/creative data)
+     */
+    public static void rebuildCaches() {
+        for (BaseMinecraftVersion version : VERSIONS.values()) {
+            version.rebuildCaches();
+        }
+    }
   
     private static void loadVersion(BaseMinecraftVersion version) {
         if (version.getProtocol() >= Server.getInstance().getConfig().getMinimumSupportedProtocol()) {

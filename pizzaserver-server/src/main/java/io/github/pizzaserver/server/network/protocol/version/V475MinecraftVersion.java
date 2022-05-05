@@ -7,7 +7,6 @@ import com.nukkitx.blockstateupdater.BlockStateUpdaters;
 import com.nukkitx.nbt.*;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
-import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.Block;
@@ -17,7 +16,6 @@ import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
@@ -75,7 +73,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                 NbtMap blockState = BlockStateUpdaters.updateBlockState((NbtMap) blockStatesNBTStream.readTag(), 0);
                 String name = blockState.getString("name");
 
-                NbtMap updatedBlockState = this.getUpdatedBlockNBT(name, blockState.getCompound("states"));
+                NbtMap updatedBlockState = getUpdatedBlockNBT(name, blockState.getCompound("states"));
                 if (!sortedBlockRuntimeStates.containsKey(name)) {
                     sortedBlockRuntimeStates.put(name, new ArrayList<>());
                 }
@@ -88,7 +86,6 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Add custom block states
             for (Block block : BlockRegistry.getInstance().getCustomBlocks()) {
                 sortedBlockRuntimeStates.put(block.getBlockId(), block.getNBTStates());
-                this.customBlockProperties.add(this.getBlockPropertyData(block));
             }
 
             // Block runtime ids are determined by the order of the sorted block runtime states.
@@ -102,6 +99,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         }
     }
 
+    @Override
     protected BlockPropertyData getBlockPropertyData(Block block) {
         NbtMapBuilder componentsNBT = NbtMap.builder()
                 .putCompound("minecraft:block_light_absorption", NbtMap.builder()
@@ -227,13 +225,6 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     }
 
     @Override
-    protected void loadItemComponents() {
-        this.itemComponents.clear();
-        for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
-            this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
-        }
-    }
-
     protected NbtMap getItemComponentNBT(Item item) {
         NbtMapBuilder container = NbtMap.builder();
         container.putInt("id", this.getItemRuntimeId(item.getItemId()))
