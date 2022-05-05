@@ -3,6 +3,8 @@ package io.github.pizzaserver.api.recipe;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.recipe.type.Recipe;
 
+import java.util.Set;
+
 public interface RecipeRegistry {
 
     void register(Recipe recipe);
@@ -13,7 +15,7 @@ public interface RecipeRegistry {
 
     boolean unregister(int recipeId);
 
-    void clear();
+    Set<Recipe> getRecipes();
 
     static RecipeRegistry getInstance() {
         return Server.getInstance().getRecipeRegistry();

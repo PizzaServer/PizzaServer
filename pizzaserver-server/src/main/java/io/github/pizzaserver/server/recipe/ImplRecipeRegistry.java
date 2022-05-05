@@ -7,6 +7,7 @@ import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.api.recipe.RecipeRegistry;
 import io.github.pizzaserver.api.utils.ServerState;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -17,25 +18,29 @@ public class ImplRecipeRegistry implements RecipeRegistry {
 
     @Override
     public void register(Recipe recipe) {
+        if (Server.getInstance().getState() != ServerState.REGISTERING) {
+            throw new IllegalStateException("The server is not in the REGISTERING state");
+        }
+
         this.recipes.put(recipe.getNetworkId(), recipe);
     }
 
     @Override
     public boolean unregister(int recipeId) {
-        return this.recipes.remove(recipeId) != null;
-    }
+        if (Server.getInstance().getState() != ServerState.REGISTERING) {
+            throw new IllegalStateException("The server is not in the REGISTERING state");
+        }
 
-    @Override
-    public void clear() {
-        this.recipes.clear();
+        return this.recipes.remove(recipeId) != null;
     }
 
     public Optional<Recipe> getByNetworkId(int networkId) {
         return Optional.ofNullable(this.recipes.getOrDefault(networkId, null));
     }
 
+    @Override
     public Set<Recipe> getRecipes() {
-        return this.recipes.values();
+        return Collections.unmodifiableSet(this.recipes.values());
     }
 
 }
