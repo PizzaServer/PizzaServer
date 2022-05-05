@@ -21,6 +21,12 @@ public interface Level {
 
     World getDimension(Dimension dimension);
 
+    boolean isDay();
+
+    int getTime();
+
+    void setTime(int time);
+
     Difficulty getDifficulty();
 
     void setDifficulty(Difficulty difficulty);

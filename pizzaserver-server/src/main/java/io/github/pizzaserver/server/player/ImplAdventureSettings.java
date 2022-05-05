@@ -14,7 +14,7 @@ public class ImplAdventureSettings implements AdventureSettings {
 
     protected final Player player;
 
-    protected final Set<AdventureSetting> flags = new HashSet<AdventureSetting>() {
+    protected final Set<AdventureSetting> flags = new HashSet<>() {
         {
             this.add(AdventureSetting.BUILD);
             this.add(AdventureSetting.MINE);

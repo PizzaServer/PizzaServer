@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.BoundingBox;
@@ -61,6 +62,10 @@ public interface Block extends Cloneable {
     void setLocation(World world, int x, int y, int z, int layer);
 
     World getWorld();
+
+    default Level getLevel() {
+        return this.getWorld().getLevel();
+    }
 
     int getLayer();
 

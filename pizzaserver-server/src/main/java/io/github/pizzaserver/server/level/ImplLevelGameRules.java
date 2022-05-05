@@ -9,6 +9,7 @@ public class ImplLevelGameRules implements LevelGameRules {
 
     private static final String DO_DAYLIGHT_CYCLE_ID = "doDaylightCycle";
     private static final String IMMEDIATE_RESPAWN_ID = "doImmediateRespawn";
+    private static final String SHOW_BORDER_EFFECT_ID = "showBorderEffect";
     private static final String SHOW_COORDINATES_ID = "showCoordinates";
     private static final String SHOW_ITEM_TAGS_ID = "showTags";
 
@@ -308,13 +309,17 @@ public class ImplLevelGameRules implements LevelGameRules {
 
     @Override
     public void setShowBorderEffectsEnabled(boolean enabled) {
-        this.level.getLevelData().getGameRules().setShowBorderEffectsEnabled(enabled);
+        if (this.isShowBorderEffectsEnabled() != enabled) {
+            this.level.getLevelData().getGameRules().setShowBorderEffectsEnabled(enabled);
+            this.onUpdate(new GameRuleData<>(SHOW_BORDER_EFFECT_ID, enabled));
+        }
     }
 
     public void sendTo(Player player) {
         GameRulesChangedPacket rulesChangedPacket = new GameRulesChangedPacket();
         rulesChangedPacket.getGameRules().add(new GameRuleData<>(DO_DAYLIGHT_CYCLE_ID, this.isDaylightCycleEnabled()));
         rulesChangedPacket.getGameRules().add(new GameRuleData<>(IMMEDIATE_RESPAWN_ID, this.isImmediateRespawnEnabled()));
+        rulesChangedPacket.getGameRules().add(new GameRuleData<>(SHOW_BORDER_EFFECT_ID, this.isShowBorderEffectsEnabled()));
         rulesChangedPacket.getGameRules().add(new GameRuleData<>(SHOW_COORDINATES_ID, this.isShowCoordinatesEnabled()));
         rulesChangedPacket.getGameRules().add(new GameRuleData<>(SHOW_ITEM_TAGS_ID, this.isShowTagsEnabled()));
         player.sendPacket(rulesChangedPacket);

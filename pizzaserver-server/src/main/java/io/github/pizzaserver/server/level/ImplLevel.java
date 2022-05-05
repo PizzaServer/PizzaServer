@@ -1,5 +1,6 @@
 package io.github.pizzaserver.server.level;
 
+import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.LevelGameRules;
@@ -29,6 +30,7 @@ public class ImplLevel implements Level, Closeable {
     private final Map<Dimension, ImplWorld> dimensions = new HashMap<>();
 
     private Difficulty difficulty;
+    private int time;
 
     public ImplLevel(ImplLevelManager levelManager, BedrockLevel provider) {
         this.levelManager = levelManager;
@@ -49,6 +51,10 @@ public class ImplLevel implements Level, Closeable {
     public void tick() {
         for (ImplWorld world : this.dimensions.values()) {
             world.tick();
+        }
+
+        if (this.getGameRules().isDaylightCycleEnabled()) {
+            this.time++;
         }
     }
 
@@ -75,6 +81,28 @@ public class ImplLevel implements Level, Closeable {
         }
 
         return players;
+    }
+
+    @Override
+    public boolean isDay() {
+        int time = this.getTime() % 24000;
+        return time < 12000;
+    }
+
+    @Override
+    public int getTime() {
+        return this.time;
+    }
+
+    @Override
+    public void setTime(int time) {
+        this.time = time >= 0 ? time : 24000 + time;
+
+        SetTimePacket setTimePacket = new SetTimePacket();
+        setTimePacket.setTime(time);
+        for (Player player : this.getPlayers()) {
+            player.sendPacket(setTimePacket);
+        }
     }
 
     public BedrockLevel getProvider() {

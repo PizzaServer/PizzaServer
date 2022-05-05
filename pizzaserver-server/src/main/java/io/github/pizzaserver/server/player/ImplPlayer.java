@@ -217,7 +217,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setLevelGameType(GameType.SURVIVAL);
             startGamePacket.setDifficulty(world.getLevel().getDifficulty().ordinal());
             startGamePacket.setDefaultSpawn(world.getSpawnCoordinates());
-            startGamePacket.setDayCycleStopTime(world.getTime());
+            startGamePacket.setDayCycleStopTime(world.getLevel().getTime());
             startGamePacket.setLevelName(this.getServer().getMotd());
             startGamePacket.setLevelId(Base64.getEncoder().encodeToString(startGamePacket.getLevelName().getBytes(StandardCharsets.UTF_8)));
             startGamePacket.setGeneratorId(1);
@@ -1056,7 +1056,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         ((ImplLevelGameRules) this.getLevel().getGameRules()).sendTo(this);
 
         SetTimePacket setTimePacket = new SetTimePacket();
-        setTimePacket.setTime(this.getWorld().getTime());
+        setTimePacket.setTime(this.getLevel().getTime());
         this.sendPacket(setTimePacket);
     }
 

@@ -346,12 +346,6 @@ public interface World extends ChunkManager {
 
     void tick();
 
-    boolean isDay();
-
-    int getTime();
-
-    void setTime(int time);
-
     default void playSound(SoundEvent sound, Vector3f vector3) {
         this.playSound(sound, vector3, false);
     }

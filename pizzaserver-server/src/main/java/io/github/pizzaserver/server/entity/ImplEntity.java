@@ -872,7 +872,7 @@ public class ImplEntity implements Entity {
                 this.getWorld().addItemEntity(itemStack, this.getLocation().toVector3f());
             }
 
-            if (deathEvent.getDeathMessage().isPresent()) {
+            if (deathEvent.getDeathMessage().isPresent() && this.getLevel().getGameRules().isShowDeathMessagesEnabled()) {
                 for (Player player : deathEvent.getRecipients()) {
                     player.sendMessage(deathEvent.getDeathMessage().get());
                 }
@@ -987,7 +987,7 @@ public class ImplEntity implements Entity {
 
         this.getMetaData().tryUpdate();
 
-        if (this.hasComponent(EntityBurnsInDaylightComponent.class) && this.getWorld().isDay()) {
+        if (this.hasComponent(EntityBurnsInDaylightComponent.class) && this.getLevel().isDay()) {
             Block highestBlockAboveEntity = this.getWorld().getHighestBlockAt((int) Math.floor(this.getX()), (int) Math.floor(this.getZ()));
             if (highestBlockAboveEntity.getY() <= this.getY()) {
                 this.setFireTicks(20);
@@ -998,7 +998,9 @@ public class ImplEntity implements Entity {
             this.setNoHitTicks(this.getNoHitTicks() - 1);
         } else {
             if (this.getFireTicks() > 0) {
-                if (this.getFireTicks() % 20 == 0) {
+                boolean doesGameRuleAllowFireDamage = !(this instanceof Player) || this.getLevel().getGameRules().isFireDamageEnabled();
+
+                if (this.getFireTicks() % 20 == 0 && doesGameRuleAllowFireDamage) {
                     EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
                     this.damage(fireTickDamageEvent);
                 }
@@ -1022,7 +1024,7 @@ public class ImplEntity implements Entity {
                     && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
                                 && !breathableComponent.getBreathableBlocks().contains(headBlock))
                         || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
-            if (losingOxygen && !(this instanceof Player player && player.isCreativeMode())) {
+            if (losingOxygen && !(this instanceof Player player && (player.isCreativeMode() || !this.getLevel().getGameRules().isDrowningDamageEnabled()))) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
                     this.damage(drowningEvent);

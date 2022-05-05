@@ -37,6 +37,7 @@ public class BlockID {
     public static final String BLUE_ICE = "minecraft:blue_ice";
     public static final String BLUE_GLAZED_TERRACOTTA = "minecraft:blue_glazed_terracotta";
     public static final String BOOKSHELF = "minecraft:bookshelf";
+    public static final String BORDER_BLOCK = "minecraft:border_block";
     public static final String BRICK = "minecraft:brick_block";
     public static final String BROWN_CANDLE = "minecraft:brown_candle";
     public static final String BROWN_CANDLE_CAKE = "minecraft:brown_candle_cake";

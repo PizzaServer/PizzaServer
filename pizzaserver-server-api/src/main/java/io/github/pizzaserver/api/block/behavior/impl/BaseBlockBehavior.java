@@ -56,7 +56,7 @@ public class BaseBlockBehavior<T extends Block> implements BlockBehavior<T> {
                     && itemToolComponent.getToolType() == block.getToolTypeRequired();
         }
 
-        if (block.canBeMinedWithHand() || correctTool) {
+        if (block.getLevel().getGameRules().isTileDropsEnabled() && (block.canBeMinedWithHand() || correctTool)) {
             for (Item loot : block.getDrops(entity)) {
                 block.getWorld().addItemEntity(loot,
                         block.getLocation().toVector3f().add(0.5f, 0.5f, 0.5f),

@@ -225,6 +225,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.BLUE), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.BLUE), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockBookshelf());
+        BlockRegistry.getInstance().register(new BlockBorder(), new BorderBlockBehavior());
         BlockRegistry.getInstance().register(new BlockBrick());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.BROWN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.BROWN), new CandleCakeBlockBehavior());

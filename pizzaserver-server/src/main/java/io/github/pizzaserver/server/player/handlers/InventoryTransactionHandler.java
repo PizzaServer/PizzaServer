@@ -318,41 +318,46 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
 
     private void handleUseEntityInventoryTransaction(InventoryTransactionPacket packet) {
         // Get the entity targeted
-        Optional<Entity> entity = this.player.getWorld().getEntity(packet.getRuntimeEntityId());
-        if (entity.isEmpty() || packet.getRuntimeEntityId() == this.player.getId()) {
+        Optional<Entity> targetedEntity = this.player.getWorld().getEntity(packet.getRuntimeEntityId());
+        if (targetedEntity.isEmpty() || packet.getRuntimeEntityId() == this.player.getId()) {
             return;
         }
-        if (entity.get().isHiddenFrom(this.player)) {
+        if (targetedEntity.get().isHiddenFrom(this.player)) {
             this.player.getServer().getLogger().warn(this.player.getUsername() + " tried to hit a entity that was hidden to them");
             return;
         }
 
-        if (this.player.canReach(entity.get().getLocation().toVector3f(), this.player.isCreativeMode() ? 9 : 6)) {
-            ImplEntity implEntity = (ImplEntity) entity.get();
+        if (this.player.canReach(targetedEntity.get().getLocation().toVector3f(), this.player.isCreativeMode() ? 9 : 6)) {
+            ImplEntity implTargetedEntity = (ImplEntity) targetedEntity.get();
             switch (packet.getActionType()) {
                 case InventoryTransactionAction.USE_ENTITY_INTERACT:
-                    PlayerEntityInteractEvent playerEntityInteractEvent = new PlayerEntityInteractEvent(this.player, entity.get());
+                    PlayerEntityInteractEvent playerEntityInteractEvent = new PlayerEntityInteractEvent(this.player, targetedEntity.get());
                     this.player.getServer().getEventManager().call(playerEntityInteractEvent);
 
                     if (!playerEntityInteractEvent.isCancelled()) {
                         Item heldItemStack = this.player.getInventory().getHeldItem();
-                        heldItemStack.getBehavior().onInteract(this.player, heldItemStack, entity.get());
+                        heldItemStack.getBehavior().onInteract(this.player, heldItemStack, targetedEntity.get());
                     }
                     break;
                 case InventoryTransactionAction.USE_ENTITY_ATTACK:
                     AdventureSettings adventureSettings = this.player.getAdventureSettings();
-                    if (((implEntity instanceof Player) && !adventureSettings.canAttackPlayers()) || !((implEntity instanceof Player) || adventureSettings.canAttackMobs())) {
+                    boolean canDamageEntity = ((implTargetedEntity instanceof Player)
+                                    && adventureSettings.canAttackPlayers()
+                                    && this.player.getLevel().getGameRules().isPVPEnabled())
+                            || (!(implTargetedEntity instanceof Player) && adventureSettings.canAttackMobs());
+
+                    if (!canDamageEntity) {
                         return;
                     }
 
                     float damage = this.player.getInventory().getHeldItem().getDamage();
-                    EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(entity.get(),
+                    EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(targetedEntity.get(),
                             this.player,
                             DamageCause.ATTACK,
                             damage,
                             ImplEntity.NO_HIT_TICKS,
                             Vector3f.from(0.6f, 0.4f, 0.6f));
-                    implEntity.damage(damageEvent);
+                    implTargetedEntity.damage(damageEvent);
                     break;
             }
         }

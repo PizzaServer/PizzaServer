@@ -6,7 +6,6 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
-import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
@@ -27,7 +26,6 @@ import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.level.world.chunks.WorldChunkManager;
-import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.Closeable;
@@ -41,7 +39,6 @@ public class ImplWorld implements World, Closeable {
     protected final WorldChunkManager chunkManager = new WorldChunkManager(this);
 
     protected Vector3i spawnCoordinates;
-    protected int time;
 
     protected final Set<Player> players = new HashSet<>();
     protected final Map<Long, Entity> entities = new HashMap<>();
@@ -293,29 +290,6 @@ public class ImplWorld implements World, Closeable {
     @Override
     public void tick() {
         this.chunkManager.tick();
-        this.time++;
-    }
-
-    @Override
-    public boolean isDay() {
-        int time = this.getTime() % 24000;
-        return time < 12000;
-    }
-
-    @Override
-    public int getTime() {
-        return this.time;
-    }
-
-    @Override
-    public void setTime(int time) {
-        this.time = time >= 0 ? time : 24000 + time;
-
-        SetTimePacket setTimePacket = new SetTimePacket();
-        setTimePacket.setTime(time);
-        for (Player player : this.getPlayers()) {
-            player.sendPacket(setTimePacket);
-        }
     }
 
     @Override
