@@ -50,6 +50,7 @@ import io.github.pizzaserver.server.entity.ImplEntityHuman;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.inventory.BaseInventory;
 import io.github.pizzaserver.server.inventory.ImplPlayerInventory;
+import io.github.pizzaserver.server.level.ImplLevelGameRules;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
@@ -226,7 +227,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setPremiumWorldTemplateId("");
             startGamePacket.setInventoriesServerAuthoritative(true);
             startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
-            startGamePacket.getGamerules().add(new GameRuleData<>("showcoordinates", true));
+            startGamePacket.getGamerules().add(new GameRuleData<>("naturalRegeneration", false));
             startGamePacket.setItemEntries(this.getVersion().getItemEntries());
             startGamePacket.getBlockProperties().addAll(this.getVersion().getCustomBlockProperties());
             startGamePacket.setPlayerMovementSettings(movementSettings);
@@ -745,6 +746,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         World oldWorld = this.getWorld();
         this.teleport(world, x, y, z, pitch, yaw, headYaw);
 
+        if (!oldWorld.getLevel().equals(world.getLevel())) {
+            // Update game rules on transfer to another level.
+            ((ImplLevelGameRules) world.getLevel().getGameRules()).sendTo(this);
+        }
+
         if (!oldWorld.getDimension().equals(transferDimension)) {
             this.setDimensionTransferScreen(transferDimension);
         }
@@ -1046,6 +1052,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                 .putFlag(EntityFlag.CAN_CLIMB, true);
         this.sendAttributes();
         this.getAdventureSettings().send();
+
+        ((ImplLevelGameRules) this.getLevel().getGameRules()).sendTo(this);
 
         SetTimePacket setTimePacket = new SetTimePacket();
         setTimePacket.setTime(this.getWorld().getTime());

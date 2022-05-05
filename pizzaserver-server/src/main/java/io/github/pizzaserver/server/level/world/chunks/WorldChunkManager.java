@@ -15,13 +15,14 @@ import io.github.pizzaserver.server.level.processing.requests.UnloadChunkRequest
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WorldChunkManager implements ChunkManager {
+public class WorldChunkManager implements ChunkManager, Closeable {
 
     private final ImplWorld world;
     private final Map<Tuple<Integer, Integer>, ImplChunk> chunks = new ConcurrentHashMap<>();
@@ -179,6 +180,12 @@ public class WorldChunkManager implements ChunkManager {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void save() throws IOException {
+        for (ImplChunk chunk : this.chunks.values()) {
+            chunk.save();
         }
     }
 

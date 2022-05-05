@@ -28,6 +28,9 @@ public class LevelGameRules {
     private boolean showItemTags;
     private int spawnRadius;
     private boolean tntExplodes;
+    private boolean freezeDamage;
+    private boolean respawnBlockExplosions;
+    private boolean showBorderEffects;
 
 
     public boolean isCommandBlockOutputEnabled() {
@@ -236,6 +239,30 @@ public class LevelGameRules {
 
     public void setTNTExplodesEnabled(boolean enabled) {
         this.tntExplodes = enabled;
+    }
+
+    public boolean isFreezeDamageEnabled() {
+        return this.freezeDamage;
+    }
+
+    public void setFreezeDamageEnabled(boolean enabled) {
+        this.freezeDamage = enabled;
+    }
+
+    public boolean isRespawnBlockExplosionsEnabled() {
+        return this.respawnBlockExplosions;
+    }
+
+    public void setRespawnBlockExplosionsEnabled(boolean enabled) {
+        this.respawnBlockExplosions = enabled;
+    }
+
+    public boolean isShowBorderEffectsEnabled() {
+        return this.showBorderEffects;
+    }
+
+    public void setShowBorderEffectsEnabled(boolean enabled) {
+        this.showBorderEffects = enabled;
     }
 
 }

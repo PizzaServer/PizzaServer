@@ -5,7 +5,7 @@ import io.github.pizzaserver.api.player.Player;
 
 import java.io.Closeable;
 
-public interface ChunkManager extends Closeable {
+public interface ChunkManager {
 
     boolean isChunkLoaded(int x, int z);
 

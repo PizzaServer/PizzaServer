@@ -508,6 +508,9 @@ public class MCWorldFormatUtils {
             gameRules.setShowItemTagsEnabled(compound.getBoolean("showtags"));
             gameRules.setSpawnRadius(compound.getInt("spawnradius"));
             gameRules.setTNTExplodesEnabled(compound.getBoolean("tntexplodes"));
+            gameRules.setFreezeDamageEnabled(compound.getBoolean("freezedamage"));
+            gameRules.setRespawnBlockExplosionsEnabled(compound.getBoolean("respawnblocksexplode"));
+            gameRules.setShowBorderEffectsEnabled(compound.getBoolean("showbordereffect"));
             levelData.setGameRules(gameRules);
         }
 

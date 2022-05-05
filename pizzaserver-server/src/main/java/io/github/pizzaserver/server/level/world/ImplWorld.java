@@ -30,10 +30,11 @@ import io.github.pizzaserver.server.level.world.chunks.WorldChunkManager;
 import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
-public class ImplWorld implements World {
+public class ImplWorld implements World, Closeable {
 
     protected final ImplLevel level;
     protected final Dimension dimension;
@@ -330,7 +331,7 @@ public class ImplWorld implements World {
                 packet.setRelativeVolumeDisabled(relativeVolumeDisabled);
                 packet.setBabySound(isBaby);
                 packet.setIdentifier(entityType);
-                packet.setExtraData(block != null ? ((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
+                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
 
                 player.sendPacket(packet);
             }
@@ -355,6 +356,11 @@ public class ImplWorld implements World {
     }
 
     @Override
+    public void save() throws IOException {
+        this.chunkManager.save();
+    }
+
+    @Override
     public void close() throws IOException {
         this.chunkManager.close();
     }
@@ -366,8 +372,7 @@ public class ImplWorld implements World {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ImplWorld) {
-            ImplWorld otherWorld = (ImplWorld) obj;
+        if (obj instanceof ImplWorld otherWorld) {
             return otherWorld.getDimension().equals(this.getDimension()) && otherWorld.getLevel().equals(this.getLevel());
         }
         return false;

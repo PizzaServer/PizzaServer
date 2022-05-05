@@ -17,6 +17,7 @@ import io.github.pizzaserver.api.level.world.chunks.ChunkManager;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.Player;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -364,5 +365,7 @@ public interface World extends ChunkManager {
     }
 
     void playSound(SoundEvent sound, Vector3f vector3, boolean relativeVolumeDisabled, boolean isBaby, String entityType, Block block);
+
+    void save() throws IOException;
 
 }
