@@ -26,7 +26,6 @@ import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
 import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.inventory.TemporaryInventory;
-import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
 import io.github.pizzaserver.api.level.world.World;
@@ -40,8 +39,6 @@ import io.github.pizzaserver.api.player.dialogue.NPCDialogue;
 import io.github.pizzaserver.api.player.dialogue.NPCDialogueResponse;
 import io.github.pizzaserver.api.player.form.Form;
 import io.github.pizzaserver.api.player.form.response.FormResponse;
-import io.github.pizzaserver.api.recipe.RecipeRegistry;
-import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
@@ -53,7 +50,6 @@ import io.github.pizzaserver.server.entity.ImplEntityHuman;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.inventory.BaseInventory;
 import io.github.pizzaserver.server.inventory.ImplPlayerInventory;
-import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
@@ -67,7 +63,6 @@ import io.github.pizzaserver.server.player.manager.PlayerChunkManager;
 import io.github.pizzaserver.server.player.manager.PlayerPopupManager;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
-import io.github.pizzaserver.server.recipe.RecipeUtils;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 
 import java.io.IOException;
@@ -81,7 +76,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected final ImplServer server;
     protected final PlayerSession session;
     protected boolean locallyInitialized;
-    protected boolean autoSave = true;
+    protected boolean autoSave;
 
     protected final BaseMinecraftVersion version;
     protected final Device device;
@@ -120,6 +115,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.languageCode = loginData.getLanguageCode();
         this.skin = loginData.getSkin();
         this.inventory = new ImplPlayerInventory(this);
+        this.autoSave = server.getConfig().isSavingEnabled();
 
         this.physicsEngine.setPositionUpdate(false);
 
@@ -205,7 +201,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                 return;
             }
 
-            // Send remaining packets to spawn player
             SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
             movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
             movementSettings.setRewindHistorySize(100);
@@ -244,6 +239,16 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setCurrentTick(this.getServer().getTick());
             startGamePacket.setServerEngine("");
             this.sendPacket(startGamePacket);
+
+            // Apply inventory data
+            for (int slot = 0; slot < data.getSlots().length; slot++) {
+                this.getInventory().setSlot(slot, data.getSlots()[slot]);
+            }
+            this.getInventory().setOffhandItem(data.getOffHand());
+            this.getInventory().setHelmet(data.getArmorSlots()[0]);
+            this.getInventory().setChestplate(data.getArmorSlots()[1]);
+            this.getInventory().setLeggings(data.getArmorSlots()[2]);
+            this.getInventory().setBoots(data.getArmorSlots()[3]);
 
             // Send item components for custom items
             ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
@@ -578,6 +583,14 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                     .setDimension(this.getLocation().getWorld().getDimension())
                     .setGamemode(this.getGamemode())
                     .setPosition(this.getLocation().toVector3f())
+                    .setOffHand(this.getInventory().getOffhandItem())
+                    .setSlots(this.getInventory().getSlots())
+                    .setArmourSlots(new Item[] {
+                            this.getInventory().getHelmet(),
+                            this.getInventory().getChestplate(),
+                            this.getInventory().getLeggings(),
+                            this.getInventory().getBoots()
+                    })
                     .setPitch(this.getPitch())
                     .setYaw(this.getYaw())
                     .build();

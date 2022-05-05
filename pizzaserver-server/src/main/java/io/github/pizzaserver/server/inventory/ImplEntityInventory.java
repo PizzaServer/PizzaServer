@@ -256,7 +256,7 @@ public class ImplEntityInventory extends BaseInventory implements EntityInventor
             mobEquipmentPacket.setContainerId(mainHand ? ContainerId.INVENTORY : ContainerId.OFFHAND);
             mobEquipmentPacket.setInventorySlot(slot);
             mobEquipmentPacket.setHotbarSlot(slot);
-            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(Item.getAirIfNull(item), player.getVersion()));
+            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(item, player.getVersion()));
             player.sendPacket(mobEquipmentPacket);
         }
     }

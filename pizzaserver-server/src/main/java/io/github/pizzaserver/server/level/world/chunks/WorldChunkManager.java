@@ -116,10 +116,12 @@ public class WorldChunkManager implements ChunkManager {
                     return;
                 }
 
-                try {
-                    chunk.save();
-                } catch (IOException exception) {
-                    Server.getInstance().getLogger().error("Failed to save chunK", exception);
+                if (Server.getInstance().getConfig().isSavingEnabled()) {
+                    try {
+                        chunk.save();
+                    } catch (IOException exception) {
+                        Server.getInstance().getLogger().error("Failed to save chunK", exception);
+                    }
                 }
 
                 this.chunks.remove(key);

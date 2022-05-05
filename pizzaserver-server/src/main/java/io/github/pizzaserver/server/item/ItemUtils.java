@@ -27,26 +27,30 @@ public class ItemUtils {
      * @return serialized data
      */
     public static ItemData serializeForNetwork(Item item, MinecraftVersion version) {
-        int blockRuntimeId = item instanceof ItemBlock itemBlock ? ((BaseMinecraftVersion) version).getBlockRuntimeId(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) : 0;
+        Item nonAirItem = Item.getAirIfNull(item);
+        int blockRuntimeId = nonAirItem instanceof ItemBlock itemBlock ? ((BaseMinecraftVersion) version).getBlockRuntimeId(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) : 0;
+
         return ItemData.builder()
-                .id(version.getItemRuntimeId(item.getItemId()))
-                .netId(item.getNetworkId())
+                .id(version.getItemRuntimeId(nonAirItem.getItemId()))
+                .netId(nonAirItem.getNetworkId())
                 .blockRuntimeId(blockRuntimeId)
-                .count(item.getCount())
-                .damage(item.getMeta())
-                .canBreak(item.getBlocksCanBreak().toArray(String[]::new))
-                .canPlace(item instanceof ItemBlock blockItem ? blockItem.getBlocksCanPlaceOn().toArray(String[]::new) : new String[0])
-                .tag(item.getNBT())
+                .count(nonAirItem.getCount())
+                .damage(nonAirItem.getMeta())
+                .canBreak(nonAirItem.getBlocksCanBreak().toArray(String[]::new))
+                .canPlace(nonAirItem instanceof ItemBlock blockItem ? blockItem.getBlocksCanPlaceOn().toArray(String[]::new) : new String[0])
+                .tag(nonAirItem.getNBT())
                 .usingNetId(true)
                 .build();
     }
 
     public static NbtMap serializeForDisk(Item item) {
+        Item nonAirItem = Item.getAirIfNull(item);
+
         return NbtMap.builder()
-                .putString("Name", item.getItemId())
-                .putShort("Damage", (short) item.getMeta())
-                .putByte("Count", (byte) item.getCount())
-                .putCompound("tag", item.getNBT())
+                .putString("Name", nonAirItem.getItemId())
+                .putShort("Damage", (short) nonAirItem.getMeta())
+                .putByte("Count", (byte) nonAirItem.getCount())
+                .putCompound("tag", nonAirItem.getNBT())
                 .build();
     }
 

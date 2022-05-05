@@ -17,6 +17,7 @@ world:
   # Direction to assign players who first join the server
   default-yaw: 0
   default-pitch: 0
+  saving: false
 
   # Chunk settings
   chunk:

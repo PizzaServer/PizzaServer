@@ -4,6 +4,7 @@ import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 import io.github.pizzaserver.api.block.Block;
@@ -22,6 +23,7 @@ import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.level.world.chunks.WorldChunkManager;
@@ -347,6 +349,8 @@ public class ImplWorld implements World {
                 .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toFloat())
                 .setYaw(this.getServer().getConfig().getDefaultYaw())
                 .setPitch(this.getServer().getConfig().getDefaultPitch())
+                .setArmourSlots(new Item[4])
+                .setSlots(new Item[InventoryUtils.getSlotCount(ContainerType.INVENTORY)])
                 .build();
     }
 

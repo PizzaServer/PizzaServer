@@ -4,31 +4,77 @@ import io.github.pizzaserver.api.utils.Config;
 
 public class ServerConfig {
 
-    private final Config config;
+    private final boolean forcePacks;
+    private final int maxPlayers;
+    private final String motd;
+    private final boolean onlineMode;
+    private final boolean encryptedEnabled;
+    private final int minimumSupportedProtocol;
+
+    private final String ip;
+    private final int port;
+    private final int compressionLevel;
+
+    private final String defaultWorldName;
+    private final float defaultYaw;
+    private final float defaultPitch;
+    private final boolean saving;
+
+    private final int chunkRadius;
+    private final int entityRenderDistance;
+    private final int playerChunkRangeTickRadius;
+    private final int chunkProcessingThreads;
+    private final int chunkProcessingCapPerThread;
+    private final int chunkExpirySeconds;
+
+    private final boolean debugMessages;
 
 
     public ServerConfig(Config config) {
-        this.config = config;
+        this.motd = config.getString("server.motd");
+        this.maxPlayers = config.getInteger("server.max-players");
+        this.forcePacks = config.getBoolean("server.force-packs");
+        this.onlineMode = config.getBoolean("server.online-mode");
+        this.encryptedEnabled = config.getBoolean("server.enable-encryption");
+        this.minimumSupportedProtocol = config.getInteger("server.minimum-supported-protocol");
+
+        this.ip = config.getString("network.ip");
+        this.port = config.getInteger("network.port");
+        this.compressionLevel = config.getInteger("network.compression-level");
+
+        this.defaultWorldName = config.getString("world.default-name");
+        this.defaultYaw = (float) config.getDouble("world.default-yaw");
+        this.defaultPitch = (float) config.getDouble("world.default-pitch");
+        this.saving = config.getBoolean("world.saving");
+
+        this.chunkRadius = config.getInteger("world.chunk.radius");
+        this.entityRenderDistance = config.getInteger("world.chunk.entity-render-radius");
+        this.playerChunkRangeTickRadius = config.getInteger("world.chunk.player-tick-radius");
+        this.chunkProcessingThreads = config.getInteger("world.chunk.threads");
+        this.chunkProcessingCapPerThread = config.getInteger("world.chunk.thread-processing-cap");
+        this.chunkExpirySeconds = config.getInteger("world.chunk.expiry-time");
+
+        this.debugMessages = config.getBoolean("debug.messages");
     }
 
     public String getIp() {
-        return this.config.getString("network.ip");
+        return this.ip;
     }
 
     public int getPort() {
-        return this.config.getInteger("network.port");
+        return this.port;
     }
 
     public int getMaximumPlayers() {
-        return this.config.getInteger("server.max-players");
+        return this.maxPlayers;
     }
 
     public String getMotd() {
-        return this.config.getString("server.motd");
+        return this.motd;
     }
 
     public boolean arePacksForced() {
-        return this.config.getBoolean("server.force-packs");
+        return this.forcePacks;
     }
 
     /**
@@ -36,27 +82,31 @@ public class ServerConfig {
      * @return if xbox chains should be verified
      */
     public boolean isOnlineMode() {
-        return this.config.getBoolean("server.online-mode");
+        return this.onlineMode;
     }
 
     public boolean isEncryptionEnabled() {
-        return this.config.getBoolean("server.enable-encryption");
+        return this.encryptedEnabled;
     }
 
     public int getMinimumSupportedProtocol() {
-        return this.config.getInteger("server.minimum-supported-protocol");
+        return this.minimumSupportedProtocol;
+    }
+
+    public boolean isSavingEnabled() {
+        return this.saving;
     }
 
     public int getMaxChunkThreads() {
-        return this.config.getInteger("world.chunk.threads");
+        return this.chunkProcessingThreads;
     }
 
     public int getChunkRadius() {
-        return this.config.getInteger("world.chunk.radius");
+        return this.chunkRadius;
     }
 
     public int getEntityChunkRenderDistance() {
-        return this.config.getInteger("world.chunk.entity-render-radius");
+        return this.entityRenderDistance;
     }
 
     /**
@@ -64,7 +114,7 @@ public class ServerConfig {
      * @return max chunk request processing count per tick
      */
     public int getMaxChunkProcessingCountPerTick() {
-        return this.config.getInteger("world.chunk.thread-processing-cap");
+        return this.chunkProcessingCapPerThread;
     }
 
     /**
@@ -73,7 +123,7 @@ public class ServerConfig {
      * @return amount of seconds
      */
     public int getChunkExpiryTime() {
-        return this.config.getInteger("world.chunk.expiry-time");
+        return this.chunkExpirySeconds;
     }
 
     /**
@@ -81,11 +131,11 @@ public class ServerConfig {
      * @return chunk radius
      */
     public int getChunkPlayerTickRadius() {
-        return this.config.getInteger("world.chunk.player-tick-radius");
+        return this.playerChunkRangeTickRadius;
     }
 
     public String getDefaultWorldName() {
-        return this.config.getString("world.default-name");
+        return this.defaultWorldName;
     }
 
     /**
@@ -93,7 +143,7 @@ public class ServerConfig {
      * @return default yaw
      */
     public float getDefaultYaw() {
-        return (float) this.config.getDouble("world.default-yaw");
+        return this.defaultYaw;
     }
 
     /**
@@ -101,15 +151,15 @@ public class ServerConfig {
      * @return default pitch
      */
     public float getDefaultPitch() {
-        return (float) this.config.getDouble("world.default-pitch");
+        return this.defaultPitch;
     }
 
     public int getNetworkCompressionLevel() {
-        return this.config.getInteger("network.compression-level");
+        return this.compressionLevel;
     }
 
     public boolean isDebugLoggingEnabled() {
-        return this.config.getBoolean("debug.messages");
+        return this.debugMessages;
     }
 
 }

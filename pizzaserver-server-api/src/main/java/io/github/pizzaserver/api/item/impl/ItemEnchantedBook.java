@@ -18,4 +18,9 @@ public class ItemEnchantedBook extends BaseItem {
         return "Enchanted Book";
     }
 
+    @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
+
 }
