@@ -22,10 +22,7 @@ import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.*;
 
 public class V475MinecraftVersion extends BaseMinecraftVersion {
@@ -58,13 +55,17 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         }
     }
 
+    protected Comparator<String> getBlockIdComparator() {
+        return Collections.reverseOrder(MinecraftNamespaceComparator::compare);
+    }
+
     @Override
     protected void loadBlockStates() throws IOException {
         try (InputStream blockStatesFileStream = this.getProtocolResourceStream("block_states.nbt");
              NBTInputStream blockStatesNBTStream = NbtUtils.createNetworkReader(blockStatesFileStream)) {
             // keySet returns in ascending rather than descending so we have to reverse it
             SortedMap<String, List<NbtMap>> sortedBlockRuntimeStates =
-                    new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
+                    new TreeMap<>(this.getBlockIdComparator());
 
             // Parse block states
             while (blockStatesFileStream.available() > 0) {
@@ -157,11 +158,12 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
-            SortedSet<Block> sortedCustomBlocks =
-                    new TreeSet<>(MinecraftNamespaceComparator::compareBlocks);
-            sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
-            for (Block customBlock : sortedCustomBlocks) {
-                this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+            SortedSet<String> sortedCustomBlocks =
+                    new TreeSet<>(this.getBlockIdComparator());
+            BlockRegistry.getInstance().getCustomBlocks().forEach(customBlock -> sortedCustomBlocks.add(customBlock.getBlockId()));
+
+            for (String customBlockId : sortedCustomBlocks) {
+                this.itemRuntimeIds.put(customBlockId, 255 - customBlockIdStart++);  // (255 - index) = item runtime id
             }
         }
     }
@@ -176,7 +178,6 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
                 String id = creativeJSONObj.get("id").getAsString();
                 int meta = creativeJSONObj.has("damage") ? creativeJSONObj.get("damage").getAsInt() : 0;
-                int blockRuntimeId = creativeJSONObj.has("blockRuntimeId") ? creativeJSONObj.get("blockRuntimeId").getAsInt() : 0;
 
                 if (!ItemRegistry.getInstance().hasItem(id)) {
                     // TODO: debug log this as this is a missing item!
@@ -184,8 +185,12 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                 }
 
                 Item item;
-                if (creativeJSONObj.has("blockRuntimeId")) {
-                    Block block = this.getBlockFromRuntimeId(blockRuntimeId);
+                if (creativeJSONObj.has("block_state_b64")) {
+                    NbtMap blockNBT = stringToNBT(creativeJSONObj.get("block_state_b64").getAsString());
+                    String blockId = blockNBT.getString("name");
+                    NbtMap blockState = blockNBT.getCompound("states");
+
+                    Block block = this.getBlockFromRuntimeId(this.getBlockRuntimeId(blockId, blockState));
                     if (block == null) {
                         // TODO: debug log this to as this is a missing block!
                         continue;
@@ -198,6 +203,10 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                     } else {
                         item = ItemRegistry.getInstance().getItem(id, 1, meta);
                     }
+                }
+
+                if (creativeJSONObj.has("nbt_b64")) {
+                    item.setNBT(stringToNBT(creativeJSONObj.get("nbt_b64").getAsString()));
                 }
 
                 this.creativeItems.add(item);
@@ -285,6 +294,13 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
         container.putCompound("components", components.build());
         return container.build();
+    }
+
+    protected static NbtMap stringToNBT(String str) throws IOException {
+        byte[] nbtData = Base64.getDecoder().decode(str);
+        try (NBTInputStream nbtInputStream = NbtUtils.createReaderLE(new ByteArrayInputStream(nbtData))) {
+            return  ((NbtMap) nbtInputStream.readTag());
+        }
     }
 
 }
