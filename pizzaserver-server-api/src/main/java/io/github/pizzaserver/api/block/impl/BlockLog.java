@@ -228,4 +228,9 @@ public class BlockLog extends BlockStrippableWoodenLikeBlock {
         }
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 300;
+    }
+
 }

@@ -9,25 +9,24 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.event.EventManager;
 import io.github.pizzaserver.api.item.CreativeRegistry;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
-import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.plugin.PluginManager;
+import io.github.pizzaserver.api.recipe.RecipeRegistry;
+import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.api.scheduler.Scheduler;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
-import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Config;
 import io.github.pizzaserver.api.utils.Logger;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
+import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.inventory.ImplBlockEntityInventory;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.event.ImplEventManager;
@@ -37,11 +36,13 @@ import io.github.pizzaserver.server.level.ImplLevelManager;
 import io.github.pizzaserver.server.network.BedrockNetworkServer;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.packs.ImplResourcePackManager;
 import io.github.pizzaserver.server.player.handlers.LoginHandshakePacketHandler;
 import io.github.pizzaserver.server.player.playerdata.provider.NBTPlayerDataProvider;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.pizzaserver.server.plugin.ImplPluginManager;
+import io.github.pizzaserver.server.recipe.ImplRecipeRegistry;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 import io.github.pizzaserver.server.utils.ImplLogger;
 
@@ -61,6 +62,7 @@ public class ImplServer extends Server {
     protected ItemRegistry itemRegistry = new ImplItemRegistry();
     protected CreativeRegistry creativeRegistry = new ImplCreativeRegistry();
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
+    protected RecipeRegistry recipeRegistry = new ImplRecipeRegistry();
 
     protected PluginManager pluginManager = new ImplPluginManager(this);
     protected ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
@@ -127,13 +129,18 @@ public class ImplServer extends Server {
 
         // Load the earliest protocol's creative inventory.
         int minimumServerProtocol = Server.getInstance().getConfig().getMinimumSupportedProtocol();
-        MinecraftVersion serverProtocolVersion = ServerProtocol
+        BaseMinecraftVersion serverProtocolVersion = ServerProtocol
                 .getProtocol(minimumServerProtocol)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown protocol version found when attempting to load creative items: " + minimumServerProtocol));
 
         for (Item item : serverProtocolVersion.getDefaultCreativeItems()) {
             CreativeRegistry.getInstance().register(item);
         }
+        for (Recipe recipe : serverProtocolVersion.getDefaultRecipes()) {
+            RecipeRegistry.getInstance().register(recipe);
+        }
+
+        ServerProtocol.rebuildCaches();
 
         this.state = ServerState.ENABLING_PLUGINS;
         // TODO: call onEnable equiv method for plugins
@@ -429,9 +436,15 @@ public class ImplServer extends Server {
     }
 
     @Override
-    public <T extends BlockEntity<? extends Block>> T createBlockEntity(Class<T> blockEntityClazz, BlockLocation blockLocation) {
+    @SuppressWarnings("unchecked")
+    public <B extends Block, T extends BlockEntity<B>> T createBlockEntity(Class<T> blockEntityClazz, B block) {
+        Optional<BlockEntity<B>> blockEntity = BlockEntityHandler.create(block);
 
-        return null;
+        if (blockEntity.isEmpty()) {
+            throw new UnsupportedOperationException(block.getBlockId() + " is not properly configured for " + blockEntityClazz.getName());
+        }
+
+        return (T) blockEntity.get();
     }
 
     @Override
@@ -442,18 +455,6 @@ public class ImplServer extends Server {
     @Override
     public EntityInventory createInventory(Entity entity, ContainerType containerType, int size) {
         return new ImplEntityInventory(entity, containerType, size);
-    }
-
-    @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <T extends BlockEntity<? extends Block>> BlockEntityInventory<T> createInventory(T blockEntity, ContainerType containerType) {
-        return this.createInventory((BlockEntity) blockEntity, containerType, InventoryUtils.getSlotCount(containerType));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends BlockEntity<R>, R extends Block> BlockEntityInventory<T> createInventory(BlockEntity<R> blockEntity, ContainerType containerType, int size) {
-        return new ImplBlockEntityInventory(blockEntity, containerType, size);
     }
 
     @Override
@@ -474,6 +475,11 @@ public class ImplServer extends Server {
     @Override
     public EntityRegistry getEntityRegistry() {
         return this.entityRegistry;
+    }
+
+    @Override
+    public RecipeRegistry getRecipeRegistry() {
+        return this.recipeRegistry;
     }
 
     /**

@@ -82,6 +82,12 @@ public interface Item extends Cloneable {
     boolean visuallySameAs(Item otherItem);
 
     /**
+     * Get the amount of ticks this item is worth as fuel.
+     * @return amount of ticks or -1 if this item is not fuel.
+     */
+    int getFuelTicks();
+
+    /**
      * Checks if this ItemStack is air or if there is no items in this stack.
      * @return if the ItemStack is air or if there is no items in this stack.
      */
@@ -114,14 +120,6 @@ public interface Item extends Cloneable {
      */
     static Item getAirIfNull(Item otherItem) {
         return otherItem == null ? new ItemBlock(BlockID.AIR, 0) : otherItem;
-    }
-
-    static boolean canBePlacedInSlot(Item item, ContainerSlotType containerSlotType, int slot) {
-        return switch (containerSlotType) {
-            case ARMOR -> item instanceof ArmorItem && slot == ((ArmorItem) item).getArmorSlot().ordinal();
-            case OFFHAND -> item.isAllowedInOffHand();
-            default -> true;
-        };
     }
 
 }

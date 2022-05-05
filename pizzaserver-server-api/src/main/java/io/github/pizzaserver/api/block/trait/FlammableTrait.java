@@ -1,4 +1,4 @@
-package io.github.pizzaserver.api.block.traits;
+package io.github.pizzaserver.api.block.trait;
 
 import io.github.pizzaserver.api.block.Block;
 

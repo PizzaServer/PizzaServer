@@ -170,6 +170,11 @@ public abstract class BaseItem implements Item {
     }
 
     @Override
+    public int getFuelTicks() {
+        return -1;
+    }
+
+    @Override
     public boolean isEmpty() {
         return this.isAir() || this.getCount() == 0;
     }

@@ -2,6 +2,9 @@ package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.item.descriptors.ArmorItem;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -31,6 +34,16 @@ public class InventoryUtils {
         return containerSlotTypes.getOrDefault(containerType, Collections.emptySet());
     }
 
+    public static boolean canBePlacedInSlot(Item item, ContainerSlotType containerSlotType, int slot) {
+        return switch (containerSlotType) {
+            case ARMOR -> item instanceof ArmorItem && slot == ((ArmorItem) item).getArmorSlot().ordinal();
+            case OFFHAND -> item.isAllowedInOffHand();
+            case FURNACE_FUEL -> item.getFuelTicks() != -1;
+            case FURNACE_OUTPUT -> false;
+            default -> true;
+        };
+    }
+
     private static void register(ContainerType containerSlotType, int slots, ContainerSlotType[] slotTypes) {
         containerSizes.put(containerSlotType, slots);
         containerSlotTypes.put(containerSlotType, new HashSet<>(Arrays.asList(slotTypes)));
@@ -40,6 +53,16 @@ public class InventoryUtils {
         register(ContainerType.CONTAINER, 27, new ContainerSlotType[] { ContainerSlotType.CONTAINER, ContainerSlotType.BARREL });
         register(ContainerType.DISPENSER, 9, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
         register(ContainerType.DROPPER, 9, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
+        register(ContainerType.FURNACE, 3, new ContainerSlotType[] {
+                ContainerSlotType.FURNACE_FUEL,
+                ContainerSlotType.FURNACE_INGREDIENT,
+                ContainerSlotType.FURNACE_OUTPUT
+        });
+        register(ContainerType.BLAST_FURNACE, 3, new ContainerSlotType[] {
+                ContainerSlotType.FURNACE_FUEL,
+                ContainerSlotType.BLAST_FURNACE_INGREDIENT,
+                ContainerSlotType.FURNACE_OUTPUT
+        });
         register(ContainerType.HOPPER, 5, new ContainerSlotType[] { ContainerSlotType.CONTAINER });
         register(ContainerType.INVENTORY,  36, new ContainerSlotType[] {
                 ContainerSlotType.ARMOR,
@@ -48,8 +71,17 @@ public class InventoryUtils {
                 ContainerSlotType.HOTBAR_AND_INVENTORY,
                 ContainerSlotType.CURSOR,
                 ContainerSlotType.OFFHAND });
-        register(ContainerType.WORKBENCH, 5, new ContainerSlotType[] {
-                ContainerSlotType.CREATIVE_OUTPUT
+        register(ContainerType.WORKBENCH, 9, new ContainerSlotType[] {
+                ContainerSlotType.CREATIVE_OUTPUT,
+                ContainerSlotType.CRAFTING_INPUT
+        });
+        register(ContainerType.SMOKER, 3, new ContainerSlotType[] {
+                ContainerSlotType.FURNACE_FUEL,
+                ContainerSlotType.SMOKER_INGREDIENT,
+                ContainerSlotType.FURNACE_OUTPUT
+        });
+        register(ContainerType.STONECUTTER, 1, new ContainerSlotType[] {
+                ContainerSlotType.STONECUTTER_INPUT
         });
     }
 

@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.event.type.inventory.InventoryCloseEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,6 +107,16 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
+    /**
+     * Some slots retrieved over the network have an offset and do not start from 0.
+     * This converts offsetted slots sent from the network to slots that are indexed starting from 0.
+     * @param networkSlot network slot
+     * @return non-offsetted slot
+     */
+    public int convertFromNetworkSlot(int networkSlot) {
+        return networkSlot;
+    }
+
     @Override
     public void setSlot(int slot, Item item) {
         this.setSlot(null, slot, item, false);
@@ -119,18 +130,31 @@ public abstract class BaseInventory implements Inventory {
      * @param keepNetworkId if the network id of the Item should be kept or if a new one should be generated
      */
     public void setSlot(Player player, int slot, Item item, boolean keepNetworkId) {
+        Item oldSlotItem = this.getSlot(slot);
+
         if (item == null || item.isEmpty()) {
             this.slots[slot] = null;
         } else {
             Item newItem = keepNetworkId ? Item.getAirIfNull(item).clone() : Item.getAirIfNull(item).newNetworkCopy();
             this.slots[slot] = newItem;
         }
+        this.onSlotChange(slot, oldSlotItem, this.getSlot(slot));
 
         for (Player viewer : this.getViewers()) {
             if (!viewer.equals(player)) {
                 this.sendSlot(viewer, slot);
             }
         }
+    }
+
+    /**
+     * Called after a slot is updated.
+     * @param slot the slot that was updated.
+     * @param oldItem the old item in the slot.
+     * @param newItem the new item in the slot.
+     */
+    protected void onSlotChange(int slot, Item oldItem, Item newItem) {
+
     }
 
     @Override
@@ -209,17 +233,26 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Set<Item> addItems(Collection<Item> items) {
-        return this.addItems(items.toArray(new Item[0]));
-    }
+    public Optional<Item> removeItem(Item item) {
+        Item remainingItem = Item.getAirIfNull(item).clone();
 
-    @Override
-    public Set<Item> addItems(Item... items) {
-        Set<Item> failedToAddItems = new HashSet<>();
-        for (Item Item : items) {
-            this.addItem(Item).ifPresent(failedToAddItems::add);
+        for (int slot = 0; slot < this.getSize(); slot++) {
+            if (remainingItem.getCount() <= 0) {
+                break;
+            }
+
+            Item slotStack = this.getSlot(slot);
+            if (slotStack.hasSameDataAs(remainingItem)) {
+                int removedAmount = Math.min(remainingItem.getCount(), slotStack.getCount());
+
+                slotStack.setCount(slotStack.getCount() - removedAmount);
+                this.setSlot(slot, slotStack);
+
+                remainingItem.setCount(remainingItem.getCount() - removedAmount);
+            }
         }
-        return failedToAddItems;
+
+        return Optional.ofNullable(remainingItem.isEmpty() ? null : remainingItem);
     }
 
     @Override
@@ -260,6 +293,53 @@ public abstract class BaseInventory implements Inventory {
         }
 
         return remainingItem.getCount();
+    }
+
+    protected abstract void sendContainerOpenPacket(Player player);
+
+    /**
+     * Close this inventory for a player.
+     * @param player the player to close this inventory for
+     * @return if the inventory was closed
+     */
+    public boolean closeFor(Player player) {
+        if (this.viewers.contains(player)) {
+            this.viewers.remove(player);
+
+            ContainerClosePacket containerClosePacket = new ContainerClosePacket();
+            containerClosePacket.setId((byte) this.getId());
+            player.sendPacket(containerClosePacket);
+
+            InventoryCloseEvent inventoryCloseEvent = new InventoryCloseEvent(player, this);
+            Server.getInstance().getEventManager().call(inventoryCloseEvent);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean shouldBeClosedFor(Player player) {
+        return this.getViewers().contains(player);
+    }
+
+    /**
+     * Tries to open the inventory.
+     * @param player the player to open this inventory to
+     * @return if the inventory was opened
+     */
+    public boolean openFor(Player player) {
+        if (this.canBeOpenedBy(player)) {
+            this.viewers.add(player);
+            this.sendContainerOpenPacket(player);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean canBeOpenedBy(Player player) {
+        return !this.viewers.contains(player);
     }
 
     /**

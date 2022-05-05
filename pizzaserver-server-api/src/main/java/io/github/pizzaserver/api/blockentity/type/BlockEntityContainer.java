@@ -9,15 +9,7 @@ import java.util.Optional;
 
 public interface BlockEntityContainer<T extends Block> extends BlockEntity<T> {
 
-    BlockEntityInventory<? extends BlockEntity<T>> getInventory();
-
-    void showOpenAnimation();
-
-    void showOpenAnimation(Player player);
-
-    void showCloseAnimation();
-
-    void showCloseAnimation(Player player);
+    BlockEntityInventory<T, ? extends BlockEntity<T>> getInventory();
 
     /**
      * Get the name displayed when this container is opened.

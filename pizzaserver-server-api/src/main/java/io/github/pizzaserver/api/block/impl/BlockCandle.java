@@ -5,6 +5,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.LitType;
+import io.github.pizzaserver.api.block.trait.LitTrait;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.utils.BoundingBox;
@@ -14,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class BlockCandle extends BaseBlock {
+public class BlockCandle extends BaseBlock implements LitTrait {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -40,10 +41,12 @@ public class BlockCandle extends BaseBlock {
         this.setLit(litType == LitType.LIT);
     }
 
+    @Override
     public boolean isLit() {
         return this.getBlockState() % 2 == 1;
     }
 
+    @Override
     public void setLit(boolean lit) {
         this.setBlockState((this.getCandleCount() - 1) * 2 + (lit ? 1 : 0));
     }

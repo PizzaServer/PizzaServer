@@ -43,6 +43,11 @@ public class BlockWoodenButton extends BlockButton {
         return true;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 100;
+    }
+
 
     private static String resolveButtonIdByWoodType(WoodType woodType) {
         return switch (woodType) {

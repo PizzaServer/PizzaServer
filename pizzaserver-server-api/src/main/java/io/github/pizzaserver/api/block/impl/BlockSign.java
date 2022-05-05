@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import io.github.pizzaserver.api.block.data.WoodType;
-import io.github.pizzaserver.api.block.traits.WoodVariantTrait;
+import io.github.pizzaserver.api.block.trait.WoodVariantTrait;
 import io.github.pizzaserver.api.blockentity.type.BlockEntitySign;
 import io.github.pizzaserver.api.item.data.ItemID;
 import io.github.pizzaserver.api.item.data.ToolTier;
@@ -72,6 +72,11 @@ public abstract class BlockSign extends BlockBlockEntity<BlockEntitySign> implem
     @Override
     public int getMaxStackSize() {
         return 16;
+    }
+
+    @Override
+    public int getFuelTicks() {
+        return 200;
     }
 
     @Override

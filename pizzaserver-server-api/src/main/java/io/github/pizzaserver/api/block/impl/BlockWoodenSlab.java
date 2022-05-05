@@ -4,7 +4,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.SlabType;
 import io.github.pizzaserver.api.block.data.WoodType;
-import io.github.pizzaserver.api.block.traits.FlammableTrait;
+import io.github.pizzaserver.api.block.trait.FlammableTrait;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
@@ -209,6 +209,11 @@ public class BlockWoodenSlab extends BlockSlab implements FlammableTrait {
         if (canUpdateMeta) {
             this.setWoodType(WoodType.values()[meta]);
         }
+    }
+
+    @Override
+    public int getFuelTicks() {
+        return 300;
     }
 
 }

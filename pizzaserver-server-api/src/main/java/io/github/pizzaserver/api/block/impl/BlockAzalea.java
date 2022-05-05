@@ -25,4 +25,9 @@ public class BlockAzalea extends BaseBlock {
         return true;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 100;
+    }
+
 }

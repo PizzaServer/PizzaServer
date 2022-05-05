@@ -7,7 +7,6 @@ import com.nukkitx.blockstateupdater.BlockStateUpdaters;
 import com.nukkitx.nbt.*;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
-import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.Block;
@@ -17,10 +16,12 @@ import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.recipe.type.Recipe;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
+import io.github.pizzaserver.server.recipe.RecipeUtils;
 
 import java.io.*;
 import java.util.*;
@@ -72,7 +73,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                 NbtMap blockState = BlockStateUpdaters.updateBlockState((NbtMap) blockStatesNBTStream.readTag(), 0);
                 String name = blockState.getString("name");
 
-                NbtMap updatedBlockState = this.getUpdatedBlockNBT(name, blockState.getCompound("states"));
+                NbtMap updatedBlockState = getUpdatedBlockNBT(name, blockState.getCompound("states"));
                 if (!sortedBlockRuntimeStates.containsKey(name)) {
                     sortedBlockRuntimeStates.put(name, new ArrayList<>());
                 }
@@ -85,7 +86,6 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Add custom block states
             for (Block block : BlockRegistry.getInstance().getCustomBlocks()) {
                 sortedBlockRuntimeStates.put(block.getBlockId(), block.getNBTStates());
-                this.customBlockProperties.add(this.getBlockPropertyData(block));
             }
 
             // Block runtime ids are determined by the order of the sorted block runtime states.
@@ -99,6 +99,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         }
     }
 
+    @Override
     protected BlockPropertyData getBlockPropertyData(Block block) {
         NbtMapBuilder componentsNBT = NbtMap.builder()
                 .putCompound("minecraft:block_light_absorption", NbtMap.builder()
@@ -175,42 +176,33 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
             for (JsonElement jsonCreativeItem : jsonCreativeItems) {
                 JsonObject creativeJSONObj = jsonCreativeItem.getAsJsonObject();
+                Item item = ItemUtils.fromJSON(creativeJSONObj, this);
 
-                String id = creativeJSONObj.get("id").getAsString();
-                int meta = creativeJSONObj.has("damage") ? creativeJSONObj.get("damage").getAsInt() : 0;
-
-                if (!ItemRegistry.getInstance().hasItem(id)) {
-                    // TODO: debug log this as this is a missing item!
+                if (item == null) {
+                    // TODO: throw exception after all blocks/items implemented.
                     continue;
-                }
-
-                Item item;
-                if (creativeJSONObj.has("block_state_b64")) {
-                    NbtMap blockNBT = stringToNBT(creativeJSONObj.get("block_state_b64").getAsString());
-                    String blockId = blockNBT.getString("name");
-                    NbtMap blockState = blockNBT.getCompound("states");
-
-                    Block block = this.getBlockFromRuntimeId(this.getBlockRuntimeId(blockId, blockState));
-                    if (block == null) {
-                        // TODO: debug log this to as this is a missing block!
-                        continue;
-                    }
-
-                    item = new ItemBlock(block, 1);
-                } else {
-                    if (creativeJSONObj.has("damage")) {
-                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
-                    } else {
-                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
-                    }
-                }
-
-                if (creativeJSONObj.has("nbt_b64")) {
-                    item.setNBT(stringToNBT(creativeJSONObj.get("nbt_b64").getAsString()));
                 }
 
                 this.creativeItems.add(item);
             }
+        }
+    }
+
+    @Override
+    protected void loadDefaultRecipes() throws IOException {
+        try (Reader creativeItemsReader = new InputStreamReader(this.getProtocolResourceStream("recipes.json"))) {
+            JsonArray jsonRecipes = GSON.fromJson(creativeItemsReader, JsonObject.class).getAsJsonArray("recipes");
+
+            for (JsonElement element : jsonRecipes) {
+                Recipe recipe = RecipeUtils.deserializeFromJSON(element.getAsJsonObject(), this);
+
+                if (recipe != null) {
+                    // TODO: this check is unneeded in the future once all items are implemented
+                    // as methods like deserializeFromJSON will throw an exception instead of returning null.
+                    this.defaultRecipes.add(recipe);
+                }
+            }
+
         }
     }
 
@@ -233,13 +225,6 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     }
 
     @Override
-    protected void loadItemComponents() {
-        this.itemComponents.clear();
-        for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
-            this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
-        }
-    }
-
     protected NbtMap getItemComponentNBT(Item item) {
         NbtMapBuilder container = NbtMap.builder();
         container.putInt("id", this.getItemRuntimeId(item.getItemId()))
@@ -294,13 +279,6 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
         container.putCompound("components", components.build());
         return container.build();
-    }
-
-    protected static NbtMap stringToNBT(String str) throws IOException {
-        byte[] nbtData = Base64.getDecoder().decode(str);
-        try (NBTInputStream nbtInputStream = NbtUtils.createReaderLE(new ByteArrayInputStream(nbtData))) {
-            return  ((NbtMap) nbtInputStream.readTag());
-        }
     }
 
 }

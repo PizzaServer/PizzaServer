@@ -29,7 +29,7 @@ public class InventoryActionDestroyHandler extends InventoryActionHandler<Destro
         InventoryCreativeDestructionEvent destroyItemEvent = new InventoryCreativeDestructionEvent(player,
                 sourceSlot.getInventory(),
                 action.getSource().getSlotType(),
-                action.getSource().getSlot(),
+                action.getSource().getNetworkSlot(),
                 droppingItem,
                 droppedItem);
         player.getServer().getEventManager().call(destroyItemEvent);

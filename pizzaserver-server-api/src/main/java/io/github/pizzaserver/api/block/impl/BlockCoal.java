@@ -37,4 +37,9 @@ public class BlockCoal extends BaseBlock {
         return ToolTier.WOOD;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 16000;
+    }
+
 }

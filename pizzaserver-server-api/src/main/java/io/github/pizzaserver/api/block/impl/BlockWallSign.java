@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.block.impl;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.WoodType;
-import io.github.pizzaserver.api.block.traits.HorizontalDirectionalTrait;
+import io.github.pizzaserver.api.block.trait.HorizontalDirectionalTrait;
 import io.github.pizzaserver.api.utils.Direction;
 import io.github.pizzaserver.api.utils.HorizontalDirection;
 

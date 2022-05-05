@@ -1,12 +1,10 @@
 package io.github.pizzaserver.server.player.handlers.inventory;
 
-import io.github.pizzaserver.api.entity.EntityItem;
-import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.actions.DropStackRequestActionDataWrapper;
+import io.github.pizzaserver.server.player.ImplPlayer;
 
 public class InventoryActionDropHandler extends InventoryActionHandler<DropStackRequestActionDataWrapper> {
 
@@ -29,19 +27,10 @@ public class InventoryActionDropHandler extends InventoryActionHandler<DropStack
         Item droppedItem = droppingItem.newNetworkCopy();
         droppedItem.setCount(amountDropped);
 
-        InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(sourceSlot.getInventory(), player, droppedItem);
-        player.getServer().getEventManager().call(dropItemEvent);
-        if (dropItemEvent.isCancelled()) {
-            return false;
+        if (((ImplPlayer) player).tryDroppingItem(sourceSlot.getInventory(), droppedItem)) {
+            droppingItem.setCount(droppingItem.getCount() - amountDropped);
+            action.getSource().setItemStack(droppingItem);
         }
-
-        droppingItem.setCount(droppingItem.getCount() - amountDropped);
-        action.getSource().setItemStack(droppingItem);
-
-        // Drop item
-        EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
-        itemEntity.setPickupDelay(40);
-        player.getWorld().addItemEntity(itemEntity, player.getLocation().toVector3f().add(0, 1.3f, 0), player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
         return true;
     }
 

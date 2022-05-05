@@ -146,6 +146,7 @@ public class BlockID {
     public static final String JUNGLE_WALL_SIGN = "minecraft:jungle_wall_sign";
     public static final String LAPIS_BLOCK = "minecraft:lapis_block";
     public static final String LAPIS_ORE = "minecraft:lapis_ore";
+    public static final String LEGACY_STONE_CUTTER = "minecraft:stonecutter";
     public static final String LIGHT_BLOCK = "minecraft:light_block";
     public static final String LIGHT_BLUE_CANDLE = "minecraft:light_blue_candle";
     public static final String LIGHT_BLUE_CANDLE_CAKE = "minecraft:light_blue_candle_cake";
@@ -160,6 +161,7 @@ public class BlockID {
     public static final String LIT_DEEPSLATE_REDSTONE_ORE = "minecraft:lit_deepslate_redstone_ore";
     public static final String LIT_FURNACE = "minecraft:lit_furnace";
     public static final String LIT_REDSTONE_ORE = "minecraft:lit_redstone_ore";
+    public static final String LIT_SMOKER = "minecraft:lit_smoker";
     public static final String LOG = "minecraft:log";
     public static final String LOG2 = "minecraft:log2";
     public static final String MAGENTA_CANDLE = "minecraft:magenta_candle";
@@ -198,6 +200,7 @@ public class BlockID {
     public static final String RED_GLAZED_TERRACOTTA = "minecraft:red_glazed_terracotta";
     public static final String RESERVED6 = "minecraft:reserved6";
     public static final String SAND = "minecraft:sand";
+    public static final String SMOKER = "minecraft:smoker";
     public static final String SNOW = "minecraft:snow";
     public static final String SPRUCE_BUTTON = "minecraft:spruce_button";
     public static final String SPRUCE_PRESSURE_PLATE = "minecraft:spruce_pressure_plate";
@@ -205,8 +208,9 @@ public class BlockID {
     public static final String SPRUCE_WALL_SIGN = "minecraft:spruce_wall_sign";
     public static final String SOUL_CAMPFIRE = "minecraft:soul_campfire";
     public static final String STANDING_SIGN = "minecraft:standing_sign";
-    public static final String STONE_BUTTON = "minecraft:stone_button";
     public static final String STONE = "minecraft:stone";
+    public static final String STONE_BUTTON = "minecraft:stone_button";
+    public static final String STONE_CUTTER = "minecraft:stonecutter_block";
     public static final String STONE_SLAB = "minecraft:stone_slab";
     public static final String STONE_SLAB2 = "minecraft:stone_slab2";
     public static final String STONE_SLAB3 = "minecraft:stone_slab3";

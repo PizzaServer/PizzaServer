@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.inventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 
-public interface PlayerInventory extends EntityInventory, OpenableInventory {
+public interface PlayerInventory extends EntityInventory {
 
     Player getEntity();
 

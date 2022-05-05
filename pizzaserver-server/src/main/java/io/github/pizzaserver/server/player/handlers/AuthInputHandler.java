@@ -10,7 +10,7 @@ import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
-import io.github.pizzaserver.api.block.traits.LiquidTrait;
+import io.github.pizzaserver.api.block.trait.LiquidTrait;
 import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;

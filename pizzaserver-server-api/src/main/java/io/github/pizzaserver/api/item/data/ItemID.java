@@ -1,24 +1,25 @@
 package io.github.pizzaserver.api.item.data;
 
-import io.github.pizzaserver.api.block.BlockID;
+public class ItemID {
 
-public class ItemID extends BlockID {
-
-    public ItemID() {}
+    private ItemID() {}
 
     public static final String ACACIA_BOAT = "minecraft:acacia_boat";
     public static final String ACACIA_SIGN = "minecraft:acacia_sign";
     public static final String AMETHYST_SHARD = "minecraft:amethyst_shard";
     public static final String ARROW = "minecraft:arrow";
     public static final String BIRCH_BOAT = "minecraft:birch_boat";
+    public static final String BLACK_DYE = "minecraft:black_dye";
     public static final String BIRCH_SIGN = "minecraft:birch_sign";
     public static final String BLAZE_POWDER = "minecraft:blaze_powder";
     public static final String BLAZE_ROD = "minecraft:blaze_rod";
+    public static final String BLUE_DYE = "minecraft:blue_dye";
     public static final String BOAT = "minecraft:boat";
     public static final String BONE = "minecraft:bone";
     public static final String BOOK = "minecraft:book";
     public static final String BOWL = "minecraft:bowl";
     public static final String BRICK = "minecraft:brick";
+    public static final String BROWN_DYE = "minecraft:brown_dye";
     public static final String CARROT_ON_A_STICK = "minecraft:carrot_on_a_stick";
     public static final String CHAINMAIL_BOOTS = "minecraft:chainmail_boots";
     public static final String CHAINMAIL_CHESTPLATE = "minecraft:chainmail_chestplate";
@@ -28,7 +29,9 @@ public class ItemID extends BlockID {
     public static final String CLAY_BALL = "minecraft:clay_ball";
     public static final String CLOCK = "minecraft:clock";
     public static final String COAL = "minecraft:coal";
+    public static final String CONCRETE_POWDER = "minecraft:concrete_powder";
     public static final String COPPER_INGOT = "minecraft:copper_ingot";
+    public static final String CYAN_DYE = "minecraft:cyan_dye";
     public static final String CRIMSON_SIGN = "minecraft:crimson_sign";
     public static final String COMPASS = "minecraft:compass";
     public static final String DARK_OAK_BOAT = "minecraft:dark_oak_boat";
@@ -70,6 +73,8 @@ public class ItemID extends BlockID {
     public static final String GOLDEN_PICKAXE = "minecraft:golden_pickaxe";
     public static final String GOLDEN_SHOVEL = "minecraft:golden_shovel";
     public static final String GOLDEN_SWORD = "minecraft:golden_sword";
+    public static final String GRAY_DYE = "minecraft:gray_dye";
+    public static final String GREEN_DYE = "minecraft:green_dye";
     public static final String GUNPOWDER = "minecraft:gunpowder";
     public static final String HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
     public static final String HONEYCOMB = "minecraft:honeycomb";
@@ -95,6 +100,10 @@ public class ItemID extends BlockID {
     public static final String LEATHER_HELMET = "minecraft:leather_helmet";
     public static final String LEATHER_HORSE_ARMOR = "minecraft:leather_horse_armor";
     public static final String LEATHER_LEGGINGS = "minecraft:leather_leggings";
+    public static final String LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
+    public static final String LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
+    public static final String LIME_DYE = "minecraft:lime_dye";
+    public static final String MAGENTA_DYE = "minecraft:magenta_dye";
     public static final String MAGMA_CREAM = "minecraft:magma_cream";
     public static final String MUSIC_DISC_11 = "minecraft:music_disc_11";
     public static final String MUSIC_DISC_13 = "minecraft:music_disc_13";
@@ -126,17 +135,21 @@ public class ItemID extends BlockID {
     public static final String NETHERITE_SHOVEL = "minecraft:netherite_shovel";
     public static final String NETHERITE_SWORD = "minecraft:netherite_sword";
     public static final String OAK_BOAT = "minecraft:oak_boat";
+    public static final String ORANGE_DYE = "minecraft:orange_dye";
     public static final String OAK_SIGN = "minecraft:oak_sign";
     public static final String PAPER = "minecraft:paper";
+    public static final String PINK_DYE = "minecraft:pink_dye";
     public static final String PHANTOM_MEMBRANE = "minecraft:phantom_membrane";
     public static final String PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
     public static final String PRISMARINE_SHARD = "minecraft:prismarine_shard";
+    public static final String PURPLE_DYE = "minecraft:purple_dye";
     public static final String QUARTZ = "minecraft:quartz";
     public static final String RABBIT_FOOT = "minecraft:rabbit_foot";
     public static final String RABBIT_HIDE = "minecraft:rabbit_hide";
     public static final String RAW_COPPER = "minecraft:raw_copper";
     public static final String RAW_GOLD = "minecraft:raw_gold";
     public static final String RAW_IRON = "minecraft:raw_iron";
+    public static final String RED_DYE = "minecraft:red_dye";
     public static final String SADDLE = "minecraft:saddle";
     public static final String SHEARS = "minecraft:shears";
     public static final String SHIELD = "minecraft:shield";
@@ -151,11 +164,13 @@ public class ItemID extends BlockID {
     public static final String STONE_SHOVEL = "minecraft:stone_shovel";
     public static final String STONE_SWORD = "minecraft:stone_sword";
     public static final String SUGAR = "minecraft:sugar";
+    public static final String WHITE_DYE = "minecraft:white_dye";
     public static final String WARPED_SIGN = "minecraft:warped_sign";
     public static final String WOODEN_AXE = "minecraft:wooden_axe";
     public static final String WOODEN_HOE = "minecraft:wooden_hoe";
     public static final String WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
     public static final String WOODEN_SHOVEL = "minecraft:wooden_shovel";
     public static final String WOODEN_SWORD = "minecraft:wooden_sword";
+    public static final String YELLOW_DYE = "minecraft:yellow_dye";
 
 }

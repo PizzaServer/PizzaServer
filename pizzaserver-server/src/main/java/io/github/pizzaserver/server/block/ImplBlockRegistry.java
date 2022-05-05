@@ -16,7 +16,7 @@ public class ImplBlockRegistry implements BlockRegistry {
 
     // All registered block types
     private final Map<String, Block> blocks = new HashMap<>();
-    private final Map<Class<? extends Block>, BlockBehavior<? extends Block>> behaviors = new HashMap<>();
+    private final Map<String, BlockBehavior<? extends Block>> behaviors = new HashMap<>();
 
     // All registered CUSTOM block types
     private final Set<Block> customTypes = new HashSet<>();
@@ -38,7 +38,7 @@ public class ImplBlockRegistry implements BlockRegistry {
         }
 
         this.blocks.put(registeredBlock.getBlockId(), registeredBlock);
-        this.behaviors.put(registeredBlock.getClass(), behavior);
+        this.behaviors.put(registeredBlock.getBlockId(), behavior);
         ItemRegistry.getInstance().register(new ItemBlock(registeredBlock), itemBehavior);
     }
 
@@ -71,11 +71,11 @@ public class ImplBlockRegistry implements BlockRegistry {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Block> BlockBehavior<T> getBlockBehavior(T block) {
-        if (!this.behaviors.containsKey(block.getClass())) {
-            throw new NullPointerException("There is no block behavior class for the provided class. Was it registered?");
+        if (!this.behaviors.containsKey(block.getBlockId())) {
+            throw new NullPointerException("There is no block behavior class for the provided block id. Was it registered?");
         }
 
-        return (BlockBehavior<T>) this.behaviors.get(block.getClass());
+        return (BlockBehavior<T>) this.behaviors.get(block.getBlockId());
     }
 
 }

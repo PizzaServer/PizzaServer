@@ -176,6 +176,12 @@ public interface Block extends Cloneable {
     boolean isTransparent();
 
     /**
+     * Retrieve the amount of ticks this block is worth as fuel.
+     * @return amount of ticks or -1 if it is not worth anything.
+     */
+    int getFuelTicks();
+
+    /**
      * Retrieve the meta assigned to this block when serializing as an item.
      * @return stack meta
      */

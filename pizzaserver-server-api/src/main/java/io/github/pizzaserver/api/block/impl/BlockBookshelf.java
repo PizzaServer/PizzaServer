@@ -2,7 +2,7 @@ package io.github.pizzaserver.api.block.impl;
 
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.traits.FlammableTrait;
+import io.github.pizzaserver.api.block.trait.FlammableTrait;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
@@ -46,6 +46,11 @@ public class BlockBookshelf extends BaseBlock implements FlammableTrait {
     @Override
     public int getFlameOdds() {
         return 20;
+    }
+
+    @Override
+    public int getFuelTicks() {
+        return 300;
     }
 
 }

@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.blockentity.trait.BlockEntityOpenableTrait;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
@@ -13,6 +14,7 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
+import io.github.pizzaserver.server.inventory.ImplContainerInventory;
 
 import java.util.Optional;
 
@@ -20,16 +22,16 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
 
     protected String customName;
 
-    protected BlockEntityInventory<? extends BlockEntity<T>> inventory;
+    protected BlockEntityInventory<T, ? extends BlockEntity<T>> inventory;
 
 
     public ImplBlockEntityContainer(BlockLocation location, ContainerType containerType) {
         super(location);
-        this.inventory = Server.getInstance().createInventory(this, containerType);
+        this.inventory = new ImplContainerInventory<>(this, containerType);
     }
 
     @Override
-    public BlockEntityInventory<? extends BlockEntity<T>> getInventory() {
+    public BlockEntityInventory<T, ? extends BlockEntity<T>> getInventory() {
         return this.inventory;
     }
 
@@ -42,7 +44,9 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
             if (!inventoryOpenEvent.isCancelled()) {
                 player.openInventory(this.inventory);
 
-                this.showOpenAnimation();
+                if (this instanceof BlockEntityOpenableTrait openableBlockEntity) {
+                    openableBlockEntity.showOpenAnimation();
+                }
                 return false;
             }
         }
@@ -60,30 +64,6 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
                 entity.getWorld().addItemEntity(item, this.blockLocation.toVector3f().add(0.5f, 0.5f, 0.5f), EntityItem.getRandomMotion());
             }
         }
-    }
-
-    @Override
-    public void showOpenAnimation() {
-        for (Player player : this.getLocation().getChunk().getViewers()) {
-            this.showOpenAnimation(player);
-        }
-    }
-
-    @Override
-    public void showOpenAnimation(Player player) {
-        player.getWorld().addBlockEvent(player, this.getLocation().toVector3i(), 1, 1);
-    }
-
-    @Override
-    public void showCloseAnimation() {
-        for (Player player : this.getLocation().getChunk().getViewers()) {
-            this.showCloseAnimation(player);
-        }
-    }
-
-    @Override
-    public void showCloseAnimation(Player player) {
-        player.getWorld().addBlockEvent(player, this.getLocation().toVector3i(), 1, 0);
     }
 
     @Override

@@ -3,7 +3,7 @@ package io.github.pizzaserver.server.item.behavior.impl;
 import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
-import io.github.pizzaserver.api.block.traits.LiquidTrait;
+import io.github.pizzaserver.api.block.trait.LiquidTrait;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.event.type.block.BlockPlaceEvent;
 import io.github.pizzaserver.api.item.behavior.impl.BaseItemBehavior;

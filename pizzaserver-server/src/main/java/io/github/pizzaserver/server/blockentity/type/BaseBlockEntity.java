@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
+import java.util.Collections;
 import java.util.Set;
 
 public abstract class BaseBlockEntity<T extends Block> implements BlockEntity<T> {
@@ -69,6 +70,14 @@ public abstract class BaseBlockEntity<T extends Block> implements BlockEntity<T>
     @Override
     public BlockLocation getLocation() {
         return this.blockLocation;
+    }
+
+    @Override
+    public Set<Player> getViewers() {
+        if (this.getLocation().getWorld().isChunkLoaded(this.getLocation().getChunkX(), this.getLocation().getChunkZ())) {
+            return this.getLocation().getChunk().getViewers();
+        }
+        return Collections.emptySet();
     }
 
 }

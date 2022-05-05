@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.data.PillarAxis;
 import io.github.pizzaserver.api.block.data.StrippedType;
 import io.github.pizzaserver.api.block.data.WoodType;
-import io.github.pizzaserver.api.block.traits.FlammableTrait;
+import io.github.pizzaserver.api.block.trait.FlammableTrait;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
