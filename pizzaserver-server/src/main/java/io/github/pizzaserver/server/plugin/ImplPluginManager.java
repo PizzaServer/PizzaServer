@@ -209,7 +209,10 @@ public class ImplPluginManager implements PluginManager {
         if (data.isEnabled()) {
             data.setEnabled(false);
 
-            //TODO remove plugin listeners, scheduled tasks, etc
+            //TODO disable all kinds of callbacks to the plugin, e.g. scheduled tasks, etc
+
+            // remove plugin's event listeners
+            this.server.getEventManager().removeListenersFor(plugin, true);
 
             plugin.onDisable();
             this.server.getLogger().info("Disabled plugin '" + data.getManifest().getName() + "' v" + data.getManifest().getVersion());
