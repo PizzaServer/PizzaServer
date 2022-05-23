@@ -118,7 +118,7 @@ public class BedrockNetworkUtils {
                 wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
             }
 
-            buffer.writeByte(bitsPerBlock << 1);
+            buffer.writeByte((bitsPerBlock << 1) | 1);
 
             int pos = 0;
             for (int i = 0; i < wordsPerChunk; i++) {

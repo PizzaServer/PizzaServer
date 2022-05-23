@@ -107,6 +107,7 @@ public class MCWorldFormatUtils {
         int blocksPerWord = 32 / bitsPerBlock;
         int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
 
+        // 1 bit is not set = we save block states
         buffer.writeByte(bitsPerBlock << 1);
 
         int pos = 0;
@@ -351,7 +352,7 @@ public class MCWorldFormatUtils {
                     wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
                 }
 
-                buffer.writeByte(bitsPerBlock << 1);
+                buffer.writeByte((bitsPerBlock << 1) | 1);
 
                 int pos = 0;
                 for (int i = 0; i < wordsPerChunk; i++) {
