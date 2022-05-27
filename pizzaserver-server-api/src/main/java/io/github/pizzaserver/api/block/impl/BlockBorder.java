@@ -115,5 +115,4 @@ public class BlockBorder extends BaseBlock {
         this.setBlockState(this.getBlockState() - (this.getBlockState() % 2) + (enabled ? 1 : 0));
     }
 
-
 }

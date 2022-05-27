@@ -163,7 +163,7 @@ public class EntityPhysicsEngine {
                 this.entity.moveTo(this.entity.getX() + deltaX, this.entity.getY() + deltaY, this.entity.getZ() + deltaZ);
             }
             this.setMotion(newVelocity);
-        } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
+        } else if (this.entity.hasGravity()) {
             // entity was previously not moving, so we need to put it in motion here
             this.setMotion(0, -this.entity.getComponent(EntityPhysicsComponent.class).getGravity(), 0);
         }
@@ -183,11 +183,9 @@ public class EntityPhysicsEngine {
             }
             newMotion = Vector3f.from(newMotion.getX(), newY, newMotion.getZ());
 
+            // Consider block friction
             if (this.entity.isOnGround()) {
-                // Consider block friction
-                if (Math.abs(this.getMotion().getX()) > 0 || Math.abs(this.getMotion().getZ()) > 0) {
-                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getFriction();
-                }
+                friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getFriction();
             }
             newMotion = newMotion.mul(friction, 1, friction);
 

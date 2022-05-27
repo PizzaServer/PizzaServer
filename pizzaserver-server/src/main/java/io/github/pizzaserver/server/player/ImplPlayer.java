@@ -121,9 +121,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.physicsEngine.setPositionUpdate(false);
 
         this.setDisplayName(this.getUsername());
-
-        // Players will die at any health lower than 0.5
-        this.getAttribute(AttributeType.HEALTH).setMinimumValue(0.5f);
     }
 
     /**
@@ -282,9 +279,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             spawnLocation.getWorld().addEntity(this, spawnLocation.toVector3f());
             this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemID.SHIELD));
-            this.getPacketHandlerPipeline().addLast(new PlayerPacketHandler(this));
             this.getPacketHandlerPipeline().addLast(new InventoryTransactionHandler(this));
             this.getPacketHandlerPipeline().addLast(new AuthInputHandler(this));
+            this.getPacketHandlerPipeline().addLast(new PlayerPacketHandler(this));
             this.session.setPlayer(this);
 
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
@@ -1019,7 +1016,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.getBlockBreakingManager().tick();
 
-        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
+        boolean canRegenerate = !NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth())
+                && this.getFoodLevel() >= 18
+                && this.ticks % 80 == 0
+                && this.getLevel().getGameRules().isNaturalRegenerationEnabled();
+        if (canRegenerate) {
             this.setHealth(this.getHealth() + 1);
         }
 

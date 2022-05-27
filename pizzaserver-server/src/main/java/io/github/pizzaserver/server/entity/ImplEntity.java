@@ -2,6 +2,7 @@ package io.github.pizzaserver.server.entity;
 
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
@@ -44,6 +45,7 @@ import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ImplEntity implements Entity {
 
@@ -58,6 +60,7 @@ public class ImplEntity implements Entity {
     protected volatile World world;
     protected boolean moveUpdate;
     protected EntityPhysicsEngine physicsEngine = new EntityPhysicsEngine(this);
+    protected Set<Vector3i> collidingBlocks = Collections.emptySet();
     protected long ticks;
 
     protected BlockLocation home = null;
@@ -65,6 +68,9 @@ public class ImplEntity implements Entity {
     protected boolean vulnerable = true;
     protected int deathAnimationTicks = -1;
     protected int noHitTicks;
+
+    boolean onGround;
+    protected float highestAirborneY;
 
     protected int fireTicks;
 
@@ -245,6 +251,10 @@ public class ImplEntity implements Entity {
 
     @Override
     public boolean isOnGround() {
+        return this.onGround;
+    }
+
+    private boolean calculateIsOnGround() {
         BoundingBox boundingBox = this.getBoundingBox().grow(0.5f);
         int minBlockXCheck = (int) boundingBox.getMinX();
         int minBlockZCheck = (int) boundingBox.getMinZ();
@@ -265,6 +275,12 @@ public class ImplEntity implements Entity {
 
     @Override
     public Set<Block> getCollisionBlocks() {
+        return this.collidingBlocks.stream()
+                .map(coordinates -> this.getWorld().getBlock(coordinates.getX(), coordinates.getY(), coordinates.getZ()))
+                .collect(Collectors.toSet());
+    }
+
+    protected void recalculateCollisionBlocks() {
         BoundingBox entityBoundingBox = this.getBoundingBox().grow(0.5f);
         int minBlockXCheck = (int) entityBoundingBox.getMinX();
         int minBlockYCheck = (int) entityBoundingBox.getMinY();
@@ -273,22 +289,21 @@ public class ImplEntity implements Entity {
         int maxBlockYCheck = (int) entityBoundingBox.getMaxY();
         int maxBlockZCheck = (int) entityBoundingBox.getMaxZ();
 
-        Set<Block> collidingBlocks = new HashSet<>();
+        Set<Vector3i> collidingBlocks = new HashSet<>();
 
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
                 for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
                     Block block = this.getWorld().getBlock(x, y, z);
                     if (block.getBoundingBox().collidesWith(entityBoundingBox)) {
-                        collidingBlocks.add(block);
+                        collidingBlocks.add(block.getLocation().toVector3i());
                     }
                 }
             }
         }
 
-        return collidingBlocks;
+        this.collidingBlocks = collidingBlocks;
     }
-
     @Override
     public Block getHeadBlock() {
         if (this.isSwimming()) {
@@ -528,8 +543,7 @@ public class ImplEntity implements Entity {
     @Override
     public void setHealth(float health) {
         Attribute attribute = this.getAttribute(AttributeType.HEALTH);
-        attribute.setMaximumValue(Math.max(attribute.getMaximumValue(), health));
-        attribute.setCurrentValue(Math.max(0, health));
+        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), Math.min(health, this.getMaxHealth())));
 
         if (this.getBossBar().isPresent()) {
             BossBar bossBar = this.getBossBar().get();
@@ -978,15 +992,27 @@ public class ImplEntity implements Entity {
 
     @Override
     public void tick() {
-        this.physicsEngine.tick();
+        // see if we should take fall damage given our new on ground status
+        boolean newOnGroundStatus = this.calculateIsOnGround();
+        boolean canTakeFallDamage = !(this instanceof Player) || this.getLevel().getGameRules().isFallDamageEnabled();
+        boolean shouldTakeFallDamage = (!this.onGround && newOnGroundStatus) && canTakeFallDamage;
 
-        if (this.moveUpdate) {
-            this.moveUpdate = false;
-            this.sendMovementPacket();
+        // apply physics
+        this.onGround = newOnGroundStatus;
+        this.physicsEngine.tick();
+        this.recalculateCollisionBlocks();
+
+        for (Block block : this.getCollisionBlocks()) {
+            if (block.getBoundingBox().collidesWith(this.getBoundingBox())) {
+                block.getBehavior().onCollision(this, block);
+            }
         }
+        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+        blockBelow.getBehavior().onStandingOn(this, blockBelow);
 
         this.getMetaData().tryUpdate();
 
+        // daylight burning
         if (this.hasComponent(EntityBurnsInDaylightComponent.class) && this.getLevel().isDay()) {
             Block highestBlockAboveEntity = this.getWorld().getHighestBlockAt((int) Math.floor(this.getX()), (int) Math.floor(this.getZ()));
             if (highestBlockAboveEntity.getY() <= this.getY()) {
@@ -994,55 +1020,34 @@ public class ImplEntity implements Entity {
             }
         }
 
+        // fall damage
+        if (shouldTakeFallDamage) {
+            // fall damage check
+            Block blockFellOn = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+            int damage = (int) Math.floor((this.highestAirborneY - this.getY() - 3) * (1 - blockFellOn.getFallDamageReduction()));
+            if (damage > 0) {
+                EntityDamageEvent fallDamageEvent = new EntityDamageEvent(this, DamageCause.FALL, damage, 0);
+                this.damage(fallDamageEvent);
+            }
+            this.highestAirborneY = this.getY();
+        } else if (!newOnGroundStatus) {
+            this.highestAirborneY = Math.max(this.highestAirborneY, this.getY());
+        }
+
+        // no hit ticks + (fire/drowning)
         if (this.getNoHitTicks() > 0) {
             this.setNoHitTicks(this.getNoHitTicks() - 1);
         } else {
-            if (this.getFireTicks() > 0) {
-                boolean doesGameRuleAllowFireDamage = !(this instanceof Player) || this.getLevel().getGameRules().isFireDamageEnabled();
-
-                if (this.getFireTicks() % 20 == 0 && doesGameRuleAllowFireDamage) {
-                    EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
-                    this.damage(fireTickDamageEvent);
-                }
-                this.setFireTicks(this.getFireTicks() - 1);
-            }
-
-            Block headBlock = this.getHeadBlock();
-            EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
-            boolean isSuffocating = headBlock.hasCollision()
-                    && headBlock.getBoundingBox().collidesWith(this.getBoundingBox())
-                    && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
-                        || breathableComponent.getNonBreathableBlocks().contains(headBlock));
-            if (isSuffocating) {
-                if (this.ticks % breathableComponent.getSuffocationInterval() == 0) {
-                    EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
-                    this.damage(suffocationEvent);
-                }
-            }
-
-            boolean losingOxygen = !headBlock.hasCollision()
-                    && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
-                                && !breathableComponent.getBreathableBlocks().contains(headBlock))
-                        || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
-            if (losingOxygen && !(this instanceof Player player && (player.isCreativeMode() || !this.getLevel().getGameRules().isDrowningDamageEnabled()))) {
-                if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
-                    EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
-                    this.damage(drowningEvent);
-                } else {
-                    this.setAirSupplyTicks(this.getAirSupplyTicks() - 1);
-                }
-            } else if (this.getAirSupplyTicks() < this.getMaxAirSupplyTicks()) {
-                int increment;
-                if (this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0) {
-                    increment = this.getMaxAirSupplyTicks();
-                } else {
-                    increment = (int) Math.ceil(this.getMaxAirSupplyTicks() / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
-                }
-                this.setAirSupplyTicks(this.getAirSupplyTicks() + increment);
-            }
-
+            this.checkFireTickDamage();
+            this.checkBreathingDamage();
         }
 
+        if (this.moveUpdate) {
+            this.moveUpdate = false;
+            this.sendMovementPacket();
+        }
+
+        // death handling
         if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {
             this.kill();
         }
@@ -1051,17 +1056,56 @@ public class ImplEntity implements Entity {
             this.despawn();
         }
 
-        for (Block block : this.getCollisionBlocks()) {
-            if (block.getBoundingBox().collidesWith(this.getBoundingBox())) {
-                block.getBehavior().onCollision(this, block);
+        this.updateBossBarVisibility();
+        this.ticks++;
+    }
+
+    protected void checkFireTickDamage() {
+        if (this.getFireTicks() > 0) {
+            boolean doesGameRuleAllowFireDamage = !(this instanceof Player) || this.getLevel().getGameRules().isFireDamageEnabled();
+
+            if (this.getFireTicks() % 20 == 0 && doesGameRuleAllowFireDamage) {
+                EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
+                this.damage(fireTickDamageEvent);
+            }
+            this.setFireTicks(this.getFireTicks() - 1);
+        }
+    }
+
+    protected void checkBreathingDamage() {
+        Block headBlock = this.getHeadBlock();
+        EntityBreathableComponent breathableComponent = this.getComponent(EntityBreathableComponent.class);
+        boolean isSuffocating = headBlock.hasCollision()
+                && headBlock.getBoundingBox().collidesWith(this.getBoundingBox())
+                && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
+                || breathableComponent.getNonBreathableBlocks().contains(headBlock));
+        if (isSuffocating) {
+            if (this.ticks % breathableComponent.getSuffocationInterval() == 0) {
+                EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
+                this.damage(suffocationEvent);
             }
         }
 
-        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
-        blockBelow.getBehavior().onStandingOn(this, blockBelow);
-
-        this.updateBossBarVisibility();
-        this.ticks++;
+        boolean losingOxygen = !headBlock.hasCollision()
+                && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
+                && !breathableComponent.getBreathableBlocks().contains(headBlock))
+                || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
+        if (losingOxygen && !(this instanceof Player player && (player.isCreativeMode() || !this.getLevel().getGameRules().isDrowningDamageEnabled()))) {
+            if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
+                EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
+                this.damage(drowningEvent);
+            } else {
+                this.setAirSupplyTicks(this.getAirSupplyTicks() - 1);
+            }
+        } else if (this.getAirSupplyTicks() < this.getMaxAirSupplyTicks()) {
+            int increment;
+            if (this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0) {
+                increment = this.getMaxAirSupplyTicks();
+            } else {
+                increment = (int) Math.ceil(this.getMaxAirSupplyTicks() / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
+            }
+            this.setAirSupplyTicks(this.getAirSupplyTicks() + increment);
+        }
     }
 
     protected void sendMovementPacket() {
@@ -1127,7 +1171,6 @@ public class ImplEntity implements Entity {
             case BLOCK_EXPLOSION:
             case CONTACT:
             case ENTITY_EXPLOSION:
-            case FALL:
             case PROJECTILE:
             case STALACTITE:
             case STALAGMITE:

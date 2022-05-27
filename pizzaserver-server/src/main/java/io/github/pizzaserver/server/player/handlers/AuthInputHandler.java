@@ -7,6 +7,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ItemStackRequest;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.ItemStackRequestPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
+import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
@@ -162,6 +163,14 @@ public class AuthInputHandler implements BedrockPacketHandler {
         return true;
     }
 
+    @Override
+    public boolean handle(RespawnPacket packet) {
+        if (!this.player.isAlive()) {
+            this.nextExpectedTick = -1;
+        }
+        return false;
+    }
+
     /**
      * Check if the tick sent in a player auth input packet is the next tick we are looking for.
      * @param tick the tick
@@ -310,11 +319,15 @@ public class AuthInputHandler implements BedrockPacketHandler {
         boolean updatePosition = position.distance(this.player.getLocation().toVector3f().add(0, this.player.getEyeHeight(), 0)) > MOVEMENT_DISTANCE_THRESHOLD;
 
         if (updateRotation || updatePosition) {
-            Location newLocation = new Location(this.player.getWorld(), position, rotation);
+            // Check if the player has an AI before updating their position.
+            if (updatePosition && !this.player.hasAI()) {
+                this.player.teleport(this.player.getLocation());
+                return;
+            }
 
+            Location newLocation = new Location(this.player.getWorld(), position, rotation);
             PlayerMoveEvent moveEvent = new PlayerMoveEvent(this.player, this.player.getLocation(), newLocation);
             this.player.getServer().getEventManager().call(moveEvent);
-
             if (moveEvent.isCancelled()) {
                 this.player.teleport(this.player.getLocation());
                 return;
