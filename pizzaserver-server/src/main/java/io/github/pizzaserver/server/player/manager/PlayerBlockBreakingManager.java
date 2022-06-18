@@ -78,7 +78,7 @@ public class PlayerBlockBreakingManager {
 
         block.getBehavior().onBreak(this.player, block);
         this.player.getInventory().getHeldItem().getBehavior().onBreak(this.player, this.player.getInventory().getHeldItem(), block);
-        this.player.setFoodExhaustionLevel(this.player.getFoodExhaustionLevel() + /*0.005f*/ 1f);
+        this.player.setFoodExhaustionLevel(this.player.getFoodExhaustionLevel() + 0.005f);
 
         this.resetMiningData();
 

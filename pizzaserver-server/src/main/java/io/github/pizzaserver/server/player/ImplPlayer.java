@@ -730,25 +730,25 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public float getFoodExhaustionLevel() {
-        return foodExhaustionLevel;
+        return this.foodExhaustionLevel;
     }
 
     @Override
     public void setFoodExhaustionLevel(float foodExhaustionLevel) {
         this.foodExhaustionLevel = foodExhaustionLevel;
-        while(this.foodExhaustionLevel >= 4) {
+        while (this.foodExhaustionLevel >= 4) {
             this.foodExhaustionLevel -= 4;
             float saturationLevel = this.getSaturationLevel();
-            if(saturationLevel > 0) {
-                this.setSaturationLevel(saturationLevel-1);
+            if (saturationLevel > 0) {
+                this.setSaturationLevel(saturationLevel - 1);
             } else {
-                this.setFoodLevel(Math.max(0, this.getFoodLevel()-1));
+                this.setFoodLevel(Math.max(0, this.getFoodLevel() - 1));
             }
         }
     }
 
     public Vector3f getExhaustionUnitsSwam() {
-        return exhaustionUnitsSwam;
+        return this.exhaustionUnitsSwam;
     }
 
     public void setExhaustionUnitsSwam(Vector3f exhaustionUnitsSwam) {
@@ -756,7 +756,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     public Vector3f getExhaustedUnitsSprinted() {
-        return exhaustedUnitsSprinted;
+        return this.exhaustedUnitsSprinted;
     }
 
     public void setExhaustedUnitsSprinted(Vector3f exhaustedUnitsSprinted) {
@@ -1097,19 +1097,19 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
 
         // Affect player saturation for swimming and sprinting
-        if(this.isSwimming()) {
+        if (this.isSwimming()) {
             Vector3f newLocation = Vector3f.from(x, y, z);
-            if(!this.getExhaustionUnitsSwam().floor().equals(newLocation.floor()) && this.getExhaustionUnitsSwam().distance(newLocation) > 1f) {
+            if (!this.getExhaustionUnitsSwam().floor().equals(newLocation.floor()) && this.getExhaustionUnitsSwam().distance(newLocation) > 1f) {
                 this.setExhaustionUnitsSwam(newLocation);
-                this.setFoodExhaustionLevel(this.getFoodExhaustionLevel()+0.01f);
+                this.setFoodExhaustionLevel(this.getFoodExhaustionLevel() + 0.01f);
             }
         }
 
-        if(this.isSprinting()) {
+        if (this.isSprinting()) {
             Vector3f newLocation = Vector3f.from(x, y, z);
-            if(!this.getExhaustedUnitsSprinted().floor().equals(newLocation.floor()) && this.getExhaustedUnitsSprinted().distance(newLocation) > 1f) {
+            if (!this.getExhaustedUnitsSprinted().floor().equals(newLocation.floor()) && this.getExhaustedUnitsSprinted().distance(newLocation) > 1f) {
                 this.setExhaustedUnitsSprinted(newLocation);
-                this.setFoodExhaustionLevel(this.getFoodExhaustionLevel()+0.1f);
+                this.setFoodExhaustionLevel(this.getFoodExhaustionLevel() + 0.1f);
             }
         }
     }

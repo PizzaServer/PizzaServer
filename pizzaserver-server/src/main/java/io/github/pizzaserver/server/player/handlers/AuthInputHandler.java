@@ -82,7 +82,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                             if (!swimEvent.isCancelled()) {
                                 this.player.setSwimming(true);
                             }
-                            player.setExhaustionUnitsSwam(this.player.getLocation().toVector3f());
+                            this.player.setExhaustionUnitsSwam(this.player.getLocation().toVector3f());
                         }
                         break;
                     case STOP_SWIMMING:
@@ -107,7 +107,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
 
                             if (!startSprintEvent.isCancelled()) {
                                 //TODO: Reconsider this before or after the event?
-                                if(this.player.getFoodLevel() < 6) {
+                                if (this.player.getFoodLevel() < 6) {
                                     this.player.setSprinting(false);
                                     break;
                                 }
@@ -152,7 +152,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         break;
                     case START_JUMPING:
                         float exhaustionLevel = this.player.getFoodExhaustionLevel();
-                        this.player.setFoodExhaustionLevel(this.player.isSprinting() ? exhaustionLevel-0.2f : exhaustionLevel-0.05f);
+                        this.player.setFoodExhaustionLevel(this.player.isSprinting() ? exhaustionLevel - 0.2f : exhaustionLevel - 0.05f);
                         break;
                     case ASCEND:
                     case DESCEND:

@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.entity.definition.components.impl;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 
 /**
- * Entity Component which manages hunger
+ * Entity Component which manages hunger.
  */
 public class EntityHungerComponent extends EntityComponent {
     //TODO: Add maxes for everything?
@@ -33,7 +33,7 @@ public class EntityHungerComponent extends EntityComponent {
     }
 
     public int getFoodLevel() {
-        return foodLevel;
+        return this.foodLevel;
     }
 
     public void setFoodLevel(int foodLevel) {
@@ -41,7 +41,7 @@ public class EntityHungerComponent extends EntityComponent {
     }
 
     public int getFoodSaturationLevel() {
-        return foodSaturationLevel;
+        return this.foodSaturationLevel;
     }
 
     public void setFoodSaturationLevel(int foodSaturationLevel) {
@@ -49,7 +49,7 @@ public class EntityHungerComponent extends EntityComponent {
     }
 
     public float getFoodTickTimer() {
-        return foodTickTimer;
+        return this.foodTickTimer;
     }
 
     public void setFoodTickTimer(float foodTickTimer) {
@@ -57,7 +57,7 @@ public class EntityHungerComponent extends EntityComponent {
     }
 
     public float getFoodExhaustionLevel() {
-        return foodExhaustionLevel;
+        return this.foodExhaustionLevel;
     }
 
     public void setFoodExhaustionLevel(float foodExhaustionLevel) {
