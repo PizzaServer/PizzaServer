@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.item.descriptors;
 
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.UseAnimationType;
+import io.github.pizzaserver.api.player.Player;
 
 import java.util.Optional;
 
@@ -20,11 +21,9 @@ public interface FoodItem extends Item {
      * Retrieve the amount of saturation to give to the player when eaten.
      * @return saturation points
      */
-    default int getSaturation() {
-        return 0;
-    }
+    float getSaturation();
 
-    // TODO: effects should be implemented here when they're implemented in general
+    default void onConsume(Player player) {}
 
     /**
      * Retrieve the item this item is converted into when eaten.
@@ -48,7 +47,9 @@ public interface FoodItem extends Item {
      *
      * @return animation to use upon using this item
      */
-    UseAnimationType getUseAnimationType();
+    default UseAnimationType getUseAnimationType() {
+        return UseAnimationType.FOOD;
+    }
 
     /**
      * Amount of ticks to show this animation for.
