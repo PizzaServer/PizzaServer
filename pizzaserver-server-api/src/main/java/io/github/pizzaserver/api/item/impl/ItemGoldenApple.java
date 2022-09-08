@@ -31,11 +31,6 @@ public class ItemGoldenApple extends BaseItem implements FoodItem {
     }
 
     @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
-
-    @Override
     public void onConsume(Player player) {
         // TODO: Regen 2 for 5 mins and Absorption 1 for 2 mins
     }

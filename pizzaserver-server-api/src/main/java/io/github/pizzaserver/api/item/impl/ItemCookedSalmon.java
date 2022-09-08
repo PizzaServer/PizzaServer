@@ -28,9 +28,4 @@ public class ItemCookedSalmon extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 9.6f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

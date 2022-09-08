@@ -30,9 +30,4 @@ public class ItemSweetBerries extends BaseItem implements FoodItem {
         // Java's, so it may be outdated
         return 0.4f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

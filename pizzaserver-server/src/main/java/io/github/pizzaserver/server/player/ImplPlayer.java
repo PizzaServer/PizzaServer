@@ -28,6 +28,7 @@ import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.inventory.TemporaryInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
+import io.github.pizzaserver.api.item.impl.ItemApple;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -117,7 +118,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected Vector3f exhaustedUnitsSprinted;
 
     protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
-
+    protected int useTicks = 0;
+    protected boolean interacting;
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
         super(server.getEntityRegistry().getDefinition(EntityHumanDefinition.ID));
@@ -1084,6 +1086,14 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.closeOpenInventory();
         }
 
+        if(interacting) {
+            //TODO: Call an event here?
+            this.getInventory().getHeldItem().getBehavior().onInteract(this, this.getInventory().getHeldItem(), null);
+            this.setUseTicks(this.getUseTicks() + 1);
+        }
+        if(Math.random()*50 < 1)
+        this.getInventory().addItem(new ItemApple(1));
+
         super.tick();
     }
 
@@ -1157,4 +1167,23 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
     }
 
+    @Override
+    public void setUseTicks(int useTicks) {
+        this.useTicks = useTicks;
+    }
+
+    @Override
+    public int getUseTicks() {
+        return useTicks;
+    }
+
+    @Override
+    public void setInteractingItem(boolean interacting) {
+        this.interacting = interacting;
+    }
+
+    @Override
+    public boolean getInteractingItem() {
+        return interacting;
+    }
 }

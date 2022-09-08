@@ -31,11 +31,6 @@ public class ItemPufferfish extends BaseItem implements FoodItem {
     }
 
     @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
-
-    @Override
     public void onConsume(Player player) {
         //TODO: Hunger 3 for 15 seconds, Nausea 1 for 15 seconds, Poison 2 for a minute
     }

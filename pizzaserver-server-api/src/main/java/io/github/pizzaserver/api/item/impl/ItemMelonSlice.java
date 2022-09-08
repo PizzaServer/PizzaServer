@@ -28,9 +28,4 @@ public class ItemMelonSlice extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 1.2f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

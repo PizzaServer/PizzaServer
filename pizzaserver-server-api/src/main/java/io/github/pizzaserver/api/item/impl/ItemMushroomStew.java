@@ -38,11 +38,6 @@ public class ItemMushroomStew extends BaseItem implements FoodItem {
     }
 
     @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
-
-    @Override
     public int getMaxStackSize() {
         return 1;
     }

@@ -34,9 +34,4 @@ public class ItemPoisonousPotato extends BaseItem implements FoodItem {
     public void onConsume(Player player) {
         //TODO: 60% chance to get Poison 1 for 5 seconds
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

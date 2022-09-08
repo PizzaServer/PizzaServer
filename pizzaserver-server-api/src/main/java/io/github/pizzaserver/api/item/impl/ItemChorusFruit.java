@@ -32,11 +32,6 @@ public class ItemChorusFruit extends BaseItem implements FoodItem {
 
     @Override
     public void onConsume(Player player) {
-        //TODO: Implement now or later...? Probably could now, up to PR reviewer peoples
-    }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
+        //TODO: Implement later
     }
 }

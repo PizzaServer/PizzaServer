@@ -28,9 +28,4 @@ public class ItemRawBeef extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 1.8f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

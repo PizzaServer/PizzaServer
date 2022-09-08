@@ -29,9 +29,4 @@ public class ItemPumpkinPie extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 4.8f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

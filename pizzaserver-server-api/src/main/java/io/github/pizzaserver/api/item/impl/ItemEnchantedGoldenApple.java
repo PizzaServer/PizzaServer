@@ -31,11 +31,6 @@ public class ItemEnchantedGoldenApple extends BaseItem implements FoodItem {
     }
 
     @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
-
-    @Override
     public boolean canAlwaysBeEaten() {
         return true;
     }

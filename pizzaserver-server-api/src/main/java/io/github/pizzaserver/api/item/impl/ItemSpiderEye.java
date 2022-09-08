@@ -31,11 +31,6 @@ public class ItemSpiderEye extends BaseItem implements FoodItem {
     }
 
     @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
-
-    @Override
     public void onConsume(Player player) {
         //TODO: Poison 1 for 5 seconds
     }

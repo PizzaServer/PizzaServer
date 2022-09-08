@@ -28,9 +28,4 @@ public class ItemCookedCod extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 6;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

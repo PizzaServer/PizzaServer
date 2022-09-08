@@ -343,4 +343,17 @@ public interface Player extends EntityHuman {
      */
     boolean save();
 
+    /**
+     * Set the players item use ticks (how long they've been "using" the item)
+     * @param useTicks How long the player has been using the item
+     */
+    void setUseTicks(int useTicks);
+    int getUseTicks();
+
+    /**
+     * Set the player to be interacting with an item (ITEM_USE_ON_START/STOP in PlayerPacketHandler)
+     * @param interacting If the player is interacting or not
+     */
+    void setInteractingItem(boolean interacting);
+    boolean getInteractingItem();
 }

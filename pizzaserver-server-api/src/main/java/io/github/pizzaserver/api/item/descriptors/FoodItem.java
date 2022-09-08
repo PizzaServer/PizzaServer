@@ -56,6 +56,15 @@ public interface FoodItem extends Item {
      *
      * @return how long to show the animation for
      */
-    int getUseDurationTicks();
+    default int getUseDurationTicks() {
+        return 32;
+    }
 
+    /**
+     * @return How fast the player should be walking as they eat the food
+     * TODO: Implement
+     */
+    default double getWalkSpeed() {return 1.d;}
+
+    // TODO: Animation while eating
 }

@@ -31,11 +31,6 @@ public class ItemRawChicken extends BaseItem implements FoodItem {
     }
 
     @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
-
-    @Override
     public void onConsume(Player player) {
         //TODO: 30% chance for Hunger 1 for 30 seconds
     }

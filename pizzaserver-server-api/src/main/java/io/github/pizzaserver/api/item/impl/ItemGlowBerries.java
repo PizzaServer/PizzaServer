@@ -28,9 +28,4 @@ public class ItemGlowBerries extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 0.4f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

@@ -33,6 +33,6 @@ public class ItemDriedKelp extends BaseItem implements FoodItem {
 
     @Override
     public int getUseDurationTicks() {
-        return 0;
+        return 16;
     }
 }

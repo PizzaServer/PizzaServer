@@ -28,9 +28,4 @@ public class ItemCookedPorkchop extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 12.8f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

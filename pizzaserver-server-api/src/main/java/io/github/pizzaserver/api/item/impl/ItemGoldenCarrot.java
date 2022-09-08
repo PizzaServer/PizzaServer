@@ -28,9 +28,4 @@ public class ItemGoldenCarrot extends BaseItem implements FoodItem {
     public float getSaturation() {
         return 14.4f;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

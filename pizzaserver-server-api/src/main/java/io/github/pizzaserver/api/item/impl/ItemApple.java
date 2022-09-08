@@ -32,9 +32,4 @@ public class ItemApple extends BaseItem implements FoodItem {
     public int getNutrition() {
         return 4;
     }
-
-    @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
 }

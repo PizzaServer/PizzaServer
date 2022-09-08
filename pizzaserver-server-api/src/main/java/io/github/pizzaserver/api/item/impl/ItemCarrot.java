@@ -32,11 +32,6 @@ public class ItemCarrot extends BaseItem implements FoodItem, PlantableItem {
     }
 
     @Override
-    public int getUseDurationTicks() {
-        return 0;
-    }
-
-    @Override
     public Block getPlacedBlock() {
         return null;
     }
