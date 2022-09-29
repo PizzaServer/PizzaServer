@@ -73,6 +73,7 @@ public class BlockID {
     public static final String CRIMSON_BUTTON = "minecraft:crimson_button";
     public static final String CRIMSON_HYPHAE = "minecraft:crimson_hyphae";
     public static final String CRIMSON_NYLIUM = "minecraft:crimson_nylium";
+    public static final String CRIMSON_PLANKS = "minecraft:crimson_planks";
     public static final String CRIMSON_PRESSURE_PLATE = "minecraft:crimson_pressure_plate";
     public static final String CRIMSON_SLAB = "minecraft:crimson_slab";
     public static final String CRIMSON_STEM = "minecraft:crimson_stem";
@@ -182,6 +183,7 @@ public class BlockID {
     public static final String PINK_CANDLE = "minecraft:pink_candle";
     public static final String PINK_CANDLE_CAKE = "minecraft:pink_candle_cake";
     public static final String PINK_GLAZED_TERRACOTTA = "minecraft:pink_glazed_terracotta";
+    public static final String PLANKS = "minecraft:planks";
     public static final String PODZOL = "minecraft:podzol";
     public static final String POLISHED_BLACKSTONE_BUTTON = "minecraft:polished_blackstone_button";
     public static final String POLISHED_BLACKSTONE_SLAB = "minecraft:polished_blackstone_slab";
@@ -231,9 +233,10 @@ public class BlockID {
     public static final String WATER = "minecraft:water";
     public static final String WARPED_BUTTON = "minecraft:warped_button";
     public static final String WARPED_HYPHAE = "minecraft:warped_hyphae";
+    public static final String WARPED_PLANKS = "minecraft:warped_planks";
+    public static final String WARPED_PRESSURE_PLATE = "minecraft:warped_pressure_plate";
     public static final String WARPED_SLAB = "minecraft:warped_slab";
     public static final String WARPED_STEM = "minecraft:warped_stem";
-    public static final String WARPED_PRESSURE_PLATE = "minecraft:warped_pressure_plate";
     public static final String WARPED_STANDING_SIGN = "minecraft:warped_standing_sign";
     public static final String WARPED_WALL_SIGN = "minecraft:warped_wall_sign";
     public static final String WAXED_CUT_COPPER_SLAB = "minecraft:waxed_cut_copper_slab";

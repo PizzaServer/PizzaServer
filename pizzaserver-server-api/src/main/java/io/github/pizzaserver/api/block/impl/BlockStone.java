@@ -4,6 +4,8 @@ import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.StoneType;
+import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
@@ -11,6 +13,7 @@ import io.github.pizzaserver.api.item.impl.ItemBlock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class BlockStone extends BaseBlock {
 
@@ -93,4 +96,8 @@ public class BlockStone extends BaseBlock {
         return ToolType.PICKAXE;
     }
 
+    @Override
+    public Set<Item> getDrops(Entity entity) {
+        return Set.of(new BlockCobblestone().toItem());
+    }
 }
