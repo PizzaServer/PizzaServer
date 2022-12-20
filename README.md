@@ -3,8 +3,8 @@ PizzaServer is a side project of mine that has the goal of being Minecraft Bedro
 Come join the [Discord Server here](https://discord.gg/R4N9mnNPsm)!
 
 ## Build
-- `mvn clean package`
-- Copy the jar file `/pizzaserver-server/target/PizzaServer-Server-1.0-SNAPSHOT.jar` to the directory of your choosing.
+- `gradle shadowJar`
+- Copy the jar file `/pizzaserver-server/build/PizzaServer-Server-all.jar` to the directory of your choosing.
 
 ## Modules
 

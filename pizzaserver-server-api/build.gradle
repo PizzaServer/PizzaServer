@@ -1,0 +1,26 @@
+plugins {
+    id 'checkstyle'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://repo.opencollab.dev/maven-releases/"
+    }
+    maven {
+        url "https://repo.opencollab.dev/maven-snapshots/"
+    }
+}
+
+dependencies {
+    compileOnly project(':PizzaServer-Commons')
+    compileOnly 'com.nukkitx.protocol:bedrock-v503:2.9.6-SNAPSHOT'
+    compileOnly 'org.yaml:snakeyaml:1.27'
+    compileOnly 'com.google.code.gson:gson:2.8.6'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+    testImplementation 'org.mockito:mockito-core:4.1.0'
+}
+
+description = 'PizzaServer-API'
