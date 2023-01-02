@@ -1,0 +1,19 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ feat/api ]
+  pull_request:
+    branches: [ feat/api ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout project sources
+      uses: actions/checkout@v2
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    - name: Run build with Gradle Wrapper
+      run: ./gradlew build
+
