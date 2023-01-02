@@ -264,6 +264,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.CRIMSON), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.CRIMSON), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCrimsonNylium());
+        BlockRegistry.getInstance().register(new BlockPlanks(WoodType.CRIMSON));
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.CRIMSON), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.CRIMSON, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.CRIMSON), new StrippableWoodenLikeBlockBehavior());
@@ -368,6 +369,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.PINK), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.PINK), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PINK), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockPlanks());
         BlockRegistry.getInstance().register(new BlockPodzol());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneButton(), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneSlab(), new SlabBlockBehavior());
@@ -420,6 +422,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.WARPED), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.WARPED, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.WARPED), new StrippableWoodenLikeBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockPlanks(WoodType.WARPED));
         BlockRegistry.getInstance().register(new BlockWater());
         BlockRegistry.getInstance().register(new BlockWaxedCutCopperSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWaxedCutCopperSlab(SlabType.DOUBLE), new SlabBlockBehavior());

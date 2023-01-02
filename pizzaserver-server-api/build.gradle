@@ -1,0 +1,21 @@
+repositories {
+    maven {
+        url "https://repo.opencollab.dev/maven-releases/"
+    }
+    maven {
+        url "https://repo.opencollab.dev/maven-snapshots/"
+    }
+}
+
+dependencies {
+    implementation project(path: ':PizzaServer-Commons', configuration: 'shadow')
+
+    implementation 'com.nukkitx.protocol:bedrock-v503:2.9.6-SNAPSHOT'
+    implementation 'com.nukkitx:math:1.1.1'
+
+    implementation 'org.yaml:snakeyaml:1.33'
+
+    implementation 'com.google.code.gson:gson:2.8.9'
+}
+
+description = 'PizzaServer-API'
