@@ -35,3 +35,34 @@ subprojects {
         testImplementation 'org.mockito:mockito-core:4.1.0'
     }
 }
+
+
+// -- Macros
+
+
+var treeClean = tasks.register('tree_clean') {
+    group 'Pizza'
+    description = 'Clears the build folder of all sub-projects.'
+    dependsOn allprojects.collect({ it.tasks.named('clean') })
+}
+
+
+var prepareAll = tasks.register('prepare_all', Copy) {
+    group 'Pizza'
+    description 'Executes the Jar task for every project.'
+    dependsOn treeClean
+
+    from allprojects.collect {
+         it.tasks.withType(Jar)
+    } into "$buildDir/pre"
+}
+
+var buildAll = tasks.register('build_all', Copy) {
+    group = 'Pizza'
+    description = 'Builds all the projects and places them into build/output/'
+    dependsOn prepareAll, shadowJar
+
+    from allprojects.collect {
+        return it.tasks.named("shadowJar")
+    } into "$buildDir/output"
+}
