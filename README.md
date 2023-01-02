@@ -3,8 +3,8 @@ PizzaServer is a side project of mine that has the goal of being Minecraft Bedro
 Come join the [Discord Server here](https://discord.gg/R4N9mnNPsm)!
 
 ## Build (Full Server)
-- Run `gradlew build_all`
-- Navigate to `buiild/output/`
+- Run `./gradlew build_all`
+- Navigate to `build/output/`
 - Copy the jar file `PizzaServer-Server-all.jar` to the root directory of your server.
 
 ## Modules
