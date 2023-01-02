@@ -1,11 +1,4 @@
-plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'checkstyle'
-    id 'java'
-}
-
 repositories {
-    mavenCentral()
     maven {
         url "https://repo.opencollab.dev/maven-releases/"
     }
@@ -17,7 +10,7 @@ repositories {
 dependencies {
     implementation project(':PizzaServer-Commons')
     implementation project(':PizzaServer-API')
-    implementation (project(':PizzaServer-Format')) {
+    implementation(project(':PizzaServer-Format')) {
         exclude group: 'org.checkerframework', module: 'checker-qual'
         exclude group: 'org.checkerframework', module: 'checker-compat-qual'
     }
