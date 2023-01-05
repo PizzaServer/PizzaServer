@@ -14,9 +14,7 @@ dependencies {
     implementation 'com.nukkitx:nbt:2.0.1'
 
     // Exclude guava cause CVE
-    implementation('net.daporkchop:leveldb-mcpe-jni:0.0.10-SNAPSHOT') {
-        exclude group: 'com.google.guava', module: 'guava'
-    }
+    implementation('net.daporkchop:leveldb-mcpe-jni:0.0.10-SNAPSHOT')
     implementation 'com.google.guava:guava:31.1-jre'
 
     implementation 'io.netty:netty-buffer:4.1.53.Final'
