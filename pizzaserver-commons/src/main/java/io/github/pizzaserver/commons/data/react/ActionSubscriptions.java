@@ -16,7 +16,7 @@ public class ActionSubscriptions<T> {
         this.subscribers.add(subscriber);
     }
 
-    public void remove(Consumer<T> subscriber) {
+    public void remove(Consumer<?> subscriber) {
         this.subscribers.remove(subscriber);
     }
 
