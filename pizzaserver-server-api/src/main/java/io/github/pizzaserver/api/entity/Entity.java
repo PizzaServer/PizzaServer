@@ -18,6 +18,7 @@ import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
+import io.github.pizzaserver.commons.data.DataStore;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ import java.util.Set;
 /**
  * Represents an entity on Minecraft.
  */
-public interface Entity extends Watchable {
+public interface Entity extends Watchable, DataStore {
 
     long getId();
 
