@@ -36,8 +36,8 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
 
     @Override
     public void save(UUID uuid, PlayerData data) throws IOException {
-        Check.nullParam(uuid, "uuid");
-        Check.nullParam(data, "data");
+        Check.notNull(uuid, "uuid");
+        Check.notNull(data, "data");
 
         // Make sure that we aren't concurrently reading/writing to the NBT file
         this.keyLock.lock(uuid);
@@ -57,7 +57,7 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
 
     @Override
     public Optional<PlayerData> load(UUID uuid) throws IOException {
-        Check.nullParam(uuid, "uuid");
+        Check.notNull(uuid, "uuid");
 
         // Make sure that we aren't concurrently reading/writing to the NBT file
         this.keyLock.lock(uuid);

@@ -23,8 +23,8 @@ public class BedrockHeightMap {
      * @return height
      */
     public int getHighestBlockAt(int x, int z) {
-        Check.inclusiveBounds(x, 0, 15, "x");
-        Check.inclusiveBounds(z, 0, 15, "z");
+        Check.withinBoundsInclusive(x, 0, 15, "x");
+        Check.withinBoundsInclusive(z, 0, 15, "z");
 
         return this.heightMap[getChunkPosIndex(x, z)];
     }
@@ -45,8 +45,8 @@ public class BedrockHeightMap {
      * @param newHeight new height
      */
     public void setHighestBlockAt(int x, int z, int newHeight) {
-        Check.inclusiveBounds(x, 0, 15, "x");
-        Check.inclusiveBounds(z, 0, 15, "z");
+        Check.withinBoundsInclusive(x, 0, 15, "x");
+        Check.withinBoundsInclusive(z, 0, 15, "z");
 
         this.heightMap[getChunkPosIndex(x, z)] = newHeight;
     }

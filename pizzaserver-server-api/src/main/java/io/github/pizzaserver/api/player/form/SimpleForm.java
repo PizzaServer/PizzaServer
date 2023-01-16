@@ -68,8 +68,8 @@ public class SimpleForm extends Form {
         }
 
         public SimpleForm build() {
-            return new SimpleForm(Check.nullParam(this.title, "title"),
-                    Check.nullParam(this.content, "content"),
+            return new SimpleForm(Check.notNull(this.title, "title"),
+                    Check.notNull(this.content, "content"),
                     this.buttons);
         }
 
