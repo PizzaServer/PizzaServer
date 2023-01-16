@@ -34,6 +34,7 @@ import io.github.pizzaserver.api.item.descriptors.ArmorItem;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
+import io.github.pizzaserver.commons.data.SingleDataStore;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
@@ -45,7 +46,7 @@ import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
 
-public class ImplEntity implements Entity {
+public class ImplEntity extends SingleDataStore implements Entity {
 
     public static long ID = 1;
 

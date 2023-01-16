@@ -1,15 +1,8 @@
 package io.github.pizzaserver.commons.data;
 
-import java.util.HashMap;
 import java.util.Optional;
 
-public class DataStore {
-
-    private final HashMap<DataKey<?>, ValueContainer<?>> dataRegistry;
-
-    public DataStore() {
-        this.dataRegistry = new HashMap<>();
-    }
+public interface DataStore {
 
     /**
      * Obtains an entry of data attached to the provided key.
@@ -17,10 +10,7 @@ public class DataStore {
      * @return the data, if present and not-null - wrapped in an optional.
      * @param <T> the type of the data.
      */
-    public <T> Optional<T> get(DataKey<T> key) {
-        Optional<ValueContainer<T>> container = this.getContainerFor(key);
-        return container.map(ValueContainer::getValue);
-    }
+    <T> Optional<T> get(DataKey<T> key);
 
     /**
      * Obtains an entry of data attached to the provided key, throwing
@@ -29,9 +19,7 @@ public class DataStore {
      * @return the data
      * @param <T> the type of the data.
      */
-    public <T> T expect(DataKey<T> key) {
-        return this.get(key).orElseThrow();
-    }
+    <T> T expect(DataKey<T> key);
 
     /**
      * Sets the data within the store. If the key was already set, its
@@ -40,18 +28,7 @@ public class DataStore {
      * @param value the value to set.
      * @param <T> the type of the value.
      */
-    public <T> void set(DataKey<T> key, T value) {
-        Optional<ValueContainer<T>> optCont = this.getContainerFor(key);
-
-        if(optCont.isPresent()) {
-            ValueContainer<T> container = optCont.get();
-            container.setValue(value);
-            return;
-        }
-
-        this.getDataRegistry().put(key, ValueContainer.wrap(value));
-    }
-
+    <T> void set(DataKey<T> key, T value);
 
     /**
      * Returns the raw container that the data is stored within.
@@ -59,23 +36,5 @@ public class DataStore {
      * @return the container if present - wrapped in an optional
      * @param <T> the type of the data stored within the container.
      */
-    @SuppressWarnings("unchecked")
-    protected <T> Optional<ValueContainer<T>> getContainerFor(DataKey<T> type) {
-        if(!this.getDataRegistry().containsKey(type)) return Optional.empty();
-
-        ValueContainer<?> list = this.getDataRegistry().get(type);
-        return Optional.of((ValueContainer<T>) list);
-    }
-
-
-    /** Sets all data to stale as they shouldn't be used. */
-    protected void stale() {
-        for(ValueContainer<?> container: this.getDataRegistry().values()) {
-            container.stale();
-        }
-    }
-
-    protected HashMap<DataKey<?>, ValueContainer<?>> getDataRegistry() {
-        return dataRegistry;
-    }
+    <T> Optional<ValueContainer<T>> getContainerFor(DataKey<T> type);
 }
