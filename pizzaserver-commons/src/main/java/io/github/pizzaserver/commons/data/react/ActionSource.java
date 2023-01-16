@@ -84,6 +84,10 @@ public class ActionSource {
         return list;
     }
 
+    protected void clearSubscribers() {
+        this.subscriptionLists.clear();
+    }
+
 
     protected HashMap<ActionType<?>, ActionSubscriptions<?>> getSubscriptionLists() {
         return this.subscriptionLists;
