@@ -24,5 +24,16 @@ public class ValueContainer<T> extends ActionSource {
         return value;
     }
 
+    /** Clears subscribers as this value should not be used*/
+    void stale() {
+        this.clearSubscribers();
+    }
+
+    public static <T> ValueContainer<T> wrap(T value) {
+        ValueContainer<T> valueContainer = new ValueContainer<>();
+        valueContainer.setValue(value);
+
+        return valueContainer;
+    }
 
 }
