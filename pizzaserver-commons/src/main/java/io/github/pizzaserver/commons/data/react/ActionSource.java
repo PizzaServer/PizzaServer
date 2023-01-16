@@ -20,6 +20,7 @@ public class ActionSource {
      * @param <T> the type that the payload should inherit from, defined by the key.
      */
     protected <T> void broadcast(ActionType<T> type, T payload) {
+        if(this.getSubscriptionLists().isEmpty()) return;
         this.getActionSubscribersFor(type)
                 .ifPresent(subscriptions -> subscriptions.emit(payload));
     }
