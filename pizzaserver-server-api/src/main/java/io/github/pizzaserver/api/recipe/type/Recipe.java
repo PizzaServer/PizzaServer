@@ -17,7 +17,7 @@ public abstract class Recipe {
 
 
     public Recipe(RecipeBlockType blockType) {
-        Check.nullParam(blockType, "blockType");
+        Check.notNull(blockType, "blockType");
 
         this.blockType = blockType;
         this.id = UUID.randomUUID();

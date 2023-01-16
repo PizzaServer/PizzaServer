@@ -31,10 +31,10 @@ public class PlayerData {
                        Item[] armorSlots,
                        float pitch,
                        float yaw) {
-        Check.nullParam(slots, "slots");
-        Check.nullParam(armorSlots, "armorSlots");
-        Check.inclusiveBounds(armorSlots.length, 4, 4, "armorSlots");
-        Check.inclusiveBounds(slots.length, InventoryUtils.getSlotCount(ContainerType.INVENTORY), InventoryUtils.getSlotCount(ContainerType.INVENTORY), "slots");
+        Check.notNull(slots, "slots");
+        Check.notNull(armorSlots, "armorSlots");
+        Check.withinBoundsInclusive(armorSlots.length, 4, 4, "armorSlots");
+        Check.withinBoundsInclusive(slots.length, InventoryUtils.getSlotCount(ContainerType.INVENTORY), InventoryUtils.getSlotCount(ContainerType.INVENTORY), "slots");
 
         this.levelName = levelName;
         this.dimension = dimension;
@@ -148,13 +148,13 @@ public class PlayerData {
 
         public PlayerData build() {
             return new PlayerData(
-                    Check.nullParam(this.levelName, "levelName"),
-                    Check.nullParam(this.dimension, "dimension"),
-                    Check.nullParam(this.gamemode, "gamemode"),
-                    Check.nullParam(this.position, "position"),
+                    Check.notNull(this.levelName, "levelName"),
+                    Check.notNull(this.dimension, "dimension"),
+                    Check.notNull(this.gamemode, "gamemode"),
+                    Check.notNull(this.position, "position"),
                     this.offHand,
-                    Check.nullParam(this.slots, "slots"),
-                    Check.nullParam(this.armorSlots, "armorSlots"),
+                    Check.notNull(this.slots, "slots"),
+                    Check.notNull(this.armorSlots, "armorSlots"),
                     this.pitch,
                     this.yaw
             );

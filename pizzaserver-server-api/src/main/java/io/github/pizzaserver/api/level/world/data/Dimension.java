@@ -13,11 +13,11 @@ public enum Dimension {
     private final int generator;
 
     Dimension(String id, int minHeight, int maxHeight, int generator) {
-        Check.inclusiveUpperBound(minHeight, maxHeight, "minHeight");
+
 
         this.id = id;
-        this.minHeight = minHeight;
-        this.maxHeight = maxHeight;
+        this.minHeight = Check.withinUpperBoundInclusive(minHeight, maxHeight, "minHeight");
+        this.maxHeight = Check.withinLowerBoundInclusive(maxHeight, minHeight, "maxHeight");
         this.generator = generator;
     }
 

@@ -76,7 +76,7 @@ public class CustomForm extends Form {
         }
 
         public CustomForm build() {
-            return new CustomForm(Check.nullParam(this.title, "title"), this.icon, this.elements);
+            return new CustomForm(Check.notNull(this.title, "title"), this.icon, this.elements);
         }
 
     }

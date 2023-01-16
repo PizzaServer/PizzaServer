@@ -109,9 +109,9 @@ public class ImplChunk implements Chunk {
 
     @Override
     public int getBiomeAt(int x, int y, int z) {
-        Check.inclusiveBounds(x, 0, 15, "x");
-        Check.inclusiveBounds(y, -64, 320, "y");
-        Check.inclusiveBounds(z, 0, 15, "z");
+        Check.withinBoundsInclusive(x, 0, 15, "x");
+        Check.withinBoundsInclusive(y, -64, 320, "y");
+        Check.withinBoundsInclusive(z, 0, 15, "z");
 
         int subChunkY = (int) Math.floor(y / 16d);
         synchronized (this.chunk) {
@@ -675,8 +675,8 @@ public class ImplChunk implements Chunk {
         }
 
         public ImplChunk build() {
-            Check.nullParam(this.world, "world");
-            Check.nullParam(this.chunk, "chunk");
+            Check.notNull(this.world, "world");
+            Check.notNull(this.chunk, "chunk");
             return new ImplChunk(this.world, this.x, this.z, this.chunk);
         }
 

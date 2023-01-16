@@ -35,8 +35,8 @@ public class ShapedRecipeGrid {
     }
 
     public Item getItem(int x, int y) {
-        Check.inclusiveBounds(x, 0, this.getWidth() - 1, "x");
-        Check.inclusiveBounds(y, 0, this.getHeight() - 1, "y");
+        Check.withinBoundsInclusive(x, 0, this.getWidth() - 1, "x");
+        Check.withinBoundsInclusive(y, 0, this.getHeight() - 1, "y");
 
         return Item.getAirIfNull(this.grid[y][x]).clone();
     }
@@ -53,15 +53,15 @@ public class ShapedRecipeGrid {
 
 
         public Builder(int width, int height) {
-            Check.inclusiveBounds(width, 1, 3, "width");
-            Check.inclusiveBounds(height, 1, 3, "height");
+            Check.withinBoundsInclusive(width, 1, 3, "width");
+            Check.withinBoundsInclusive(height, 1, 3, "height");
 
             this.grid = new Item[height][width];
         }
 
         public Builder setSlot(int x, int y, Item item) {
-            Check.inclusiveBounds(x, 0, this.grid[0].length - 1, "x");
-            Check.inclusiveBounds(y, 0, this.grid.length - 1, "y");
+            Check.withinBoundsInclusive(x, 0, this.grid[0].length - 1, "x");
+            Check.withinBoundsInclusive(y, 0, this.grid.length - 1, "y");
 
             this.grid[y][x] = item;
             return this;

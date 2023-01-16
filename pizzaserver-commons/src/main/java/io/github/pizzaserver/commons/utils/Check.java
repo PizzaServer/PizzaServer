@@ -30,11 +30,27 @@ public final class Check {
      *
      * @return the parameter "obj"
      */
-    public static <T> T nullParam(T obj, String name) {
+    public static <T> T notNull(T obj, String name) {
         if (isNull(obj)) {
             throw new IllegalArgumentException(String.format("'%s' cannot be null.", name));
         } else {
             return obj;
+        }
+    }
+
+
+    /**
+     * Ensures that a string value is not null or empty, otherwise it throws an error.
+     * @param str - the string that is potentially null.
+     * @param name - the name of the string to make errors clearer.
+     *
+     * @return the string passed
+     */
+    public static String notEmptyString(String str, String name) {
+        if (Check.isEmptyString(str)) {
+            throw new IllegalArgumentException(String.format("'%s' cannot be null.", name));
+        } else {
+            return str;
         }
     }
 
@@ -47,13 +63,13 @@ public final class Check {
      *
      * @return the parameter "val"
      */
-    public static int inclusiveBounds(int val, int lowerBound, int upperBound, String name) {
-        inclusiveLowerBound(val, lowerBound, name);
-        inclusiveUpperBound(val, upperBound, name);
+    public static int withinBoundsInclusive(int val, int lowerBound, int upperBound, String name) {
+        withinLowerBoundInclusive(val, lowerBound, name);
+        withinUpperBoundInclusive(val, upperBound, name);
         return val;
     }
 
-    public static int inclusiveLowerBound(int val, int bound, String name) {
+    public static int withinLowerBoundInclusive(int val, int bound, String name) {
         if (val < bound) {
             throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Lower = %s)", name, val, bound));
         } else {
@@ -61,7 +77,7 @@ public final class Check {
         }
     }
 
-    public static int inclusiveUpperBound(int val, int bound, String name) {
+    public static int withinUpperBoundInclusive(int val, int bound, String name) {
         if (val > bound) {
             throw new IllegalStateException(String.format("'%s' is out of bounds (val = %s | Upper = %s)", name, val, bound));
         } else {
@@ -73,7 +89,11 @@ public final class Check {
         return obj == null;
     }
 
-    public static void checkArgument(boolean mustBeTrue, String errorMessage) {
+    public static boolean isEmptyString(String str) {
+        return Check.isNull(str) || str.isEmpty();
+    }
+
+    public static void ensureTrue(boolean mustBeTrue, String errorMessage) {
         if (!mustBeTrue) {
             throw new IllegalArgumentException(errorMessage);
         }

@@ -66,10 +66,10 @@ public class ModalForm extends Form {
 
 
         public ModalForm build() {
-            return new ModalForm(Check.nullParam(this.title, "title"),
-                    Check.nullParam(this.content, "content"),
-                    Check.nullParam(this.trueButton, "true button text"),
-                    Check.nullParam(this.falseButton, "false button text"));
+            return new ModalForm(Check.notNull(this.title, "title"),
+                    Check.notNull(this.content, "content"),
+                    Check.notNull(this.trueButton, "true button text"),
+                    Check.notNull(this.falseButton, "false button text"));
         }
 
     }

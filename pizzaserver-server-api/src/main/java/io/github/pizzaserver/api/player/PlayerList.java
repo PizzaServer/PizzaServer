@@ -212,10 +212,10 @@ public interface PlayerList {
 
             public Entry build() {
                 return new Entry(
-                        Check.nullParam(this.uuid, "uuid"),
+                        Check.notNull(this.uuid, "uuid"),
                         this.entityRuntimeId,
-                        Check.nullParam(this.username, "username"),
-                        Check.nullParam(this.xuid, "xuid"),
+                        Check.notNull(this.username, "username"),
+                        Check.notNull(this.xuid, "xuid"),
                         this.platformChatId,
                         this.device,
                         this.skin,

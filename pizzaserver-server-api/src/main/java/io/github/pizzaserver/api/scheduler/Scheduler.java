@@ -273,8 +273,8 @@ public class Scheduler {
         protected boolean isAsynchronous;
 
         protected PendingEntryBuilder(Scheduler scheduler, SchedulerTask task) {
-            this.scheduler = Check.nullParam(scheduler, "scheduler");
-            this.task = Check.nullParam(task, "task");
+            this.scheduler = Check.notNull(scheduler, "scheduler");
+            this.task = Check.notNull(task, "task");
 
             this.interval = 0;
             this.delay = 0;
@@ -304,12 +304,12 @@ public class Scheduler {
         }
 
         public PendingEntryBuilder setInterval(int interval) {
-            this.interval = Check.inclusiveLowerBound(interval, 0, "interval");
+            this.interval = Check.withinLowerBoundInclusive(interval, 0, "interval");
             return this;
         }
 
         public PendingEntryBuilder setDelay(int delay) {
-            this.delay = Check.inclusiveLowerBound(delay, 0, "delay");
+            this.delay = Check.withinLowerBoundInclusive(delay, 0, "delay");
             return this;
         }
 
