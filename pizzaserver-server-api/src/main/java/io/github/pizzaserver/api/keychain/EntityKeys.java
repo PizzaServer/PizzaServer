@@ -1,11 +1,25 @@
 package io.github.pizzaserver.api.keychain;
 
 import com.nukkitx.math.vector.Vector3f;
+import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.commons.data.DataKey;
 
 /** A collection of built-in data keys, useful for accessing entity data. */
 public class EntityKeys {
+
+    //TODO: Add a method of filtering inputs for set (override set in entity impl of data store? -
+    // will need to hide the getContainer() stuff)
+
+    //TODO: EntityComponents -
+    // split into two/three chunks: EntityCompDefinition + EntityCompImpl/EntityCompAPI
+    // The definition should store the details of the component for the entity. This can be provided
+    // as an instance to the EntityCompImpl.
+    // Maybe EntityCompImpl<T extends EntityCompDefinition> ??
+
+    //TODO: Data integrity
+    // Potentially solved the risk of data being updated at unexpected points by hiding the getContainer
+    // for stores by default. Add the listeners/callback handlers back to ImplEntity.
 
     // -- Location
     public static final DataKey<Vector3f> POSITION = DataKey.of("entity_position", Vector3f.class);
@@ -36,5 +50,9 @@ public class EntityKeys {
     public static final DataKey<Float> SATURATION = DataKey.of("entity_saturation", Float.TYPE);
     public static final DataKey<Float> XP = DataKey.of("entity_xp", Float.TYPE);
     public static final DataKey<Float> XP_LEVELS = DataKey.of("entity_xp_levels", Float.TYPE);
+
+
+    // -- Misc
+    public static final DataKey<BossBar> BOSS_BAR = DataKey.of("boss_bar", BossBar.class);
 
 }

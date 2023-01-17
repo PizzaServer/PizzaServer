@@ -60,7 +60,7 @@ public class SingleDataStore implements DataStore {
      * @param <T> the type of the data stored within the container.
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<ValueContainer<T>> getContainerFor(DataKey<T> type) {
+    protected <T> Optional<ValueContainer<T>> getContainerFor(DataKey<T> type) {
         if(!this.getDataRegistry().containsKey(type)) return Optional.empty();
 
         ValueContainer<?> list = this.getDataRegistry().get(type);
