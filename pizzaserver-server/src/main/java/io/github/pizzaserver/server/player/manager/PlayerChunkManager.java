@@ -7,8 +7,6 @@ import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.Location;
-import io.github.pizzaserver.server.entity.ImplEntity;
-import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
@@ -101,7 +99,8 @@ public class PlayerChunkManager {
      */
     private void clearVisibleChunks() {
         for (Vector2i chunkCoordinate : this.currentVisibleChunkCoordinates) {
-            this.managedWorld.getChunk(chunkCoordinate.getX(), chunkCoordinate.getY(.despawnFrom(this.player);
+            ImplChunk chunk = (ImplChunk) this.managedWorld.getChunk(chunkCoordinate.getX(), chunkCoordinate.getY());
+            chunk.despawnFrom(this.player);
         }
         this.currentVisibleChunkCoordinates.clear();
     }
