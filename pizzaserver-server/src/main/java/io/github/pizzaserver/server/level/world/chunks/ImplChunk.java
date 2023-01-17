@@ -124,7 +124,8 @@ public class ImplChunk implements Chunk {
      * The entity is also spawned to any viewers of this chunk within render distance.
      * @param entity the entity to spawn
      */
-    public void addEntity(ImplEntity entity) {
+    @Override
+    public void addEntity(Entity entity) {
         if (!this.entities.contains(entity)) {
             for (Player player : this.getViewers()) {
                 if (entity.canBeSpawnedTo(player)) {
@@ -141,6 +142,7 @@ public class ImplChunk implements Chunk {
      * The entity is also despawned from any viewers of this chunk who are no longer within render distance.
      * @param entity the entity to spawn
      */
+    @Override
     public void removeEntity(Entity entity) {
         if (this.entities.remove(entity)) {
             for (Player player : this.getViewers()) {
