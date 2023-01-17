@@ -12,6 +12,9 @@ public class ValueContainer<T> extends ActionSource {
     /** Returns the value of the container once it has been set. */
     public static ActionType<Object> ACTION_VALUE_SET = ActionType.of("value_set_post", Object.class);
 
+    public static ActionType<Void> ACTION_SET_STALE = ActionType.of("container_set_stale", Void.TYPE);
+
+
     private T value;
 
     public void setValue(T value) {
@@ -26,6 +29,7 @@ public class ValueContainer<T> extends ActionSource {
 
     /** Clears subscribers as this value should not be used*/
     void stale() {
+        this.broadcast(ACTION_SET_STALE, null);
         this.clearSubscribers();
     }
 
