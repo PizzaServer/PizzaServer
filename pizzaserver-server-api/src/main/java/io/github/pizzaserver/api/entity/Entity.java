@@ -370,6 +370,8 @@ public interface Entity extends Watchable, DataStore {
 
     boolean hasSpawnedTo(Player player);
 
+    boolean canBeSpawnedTo(Player player);
+
     /**
      * Spawns an entity to a player.
      * @param player the player the entity is being spawned to

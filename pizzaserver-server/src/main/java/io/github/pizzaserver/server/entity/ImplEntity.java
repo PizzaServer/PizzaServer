@@ -32,6 +32,7 @@ import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.ArmorItem;
 import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.data.SingleDataStore;
@@ -41,7 +42,6 @@ import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
-import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
@@ -49,8 +49,8 @@ import java.util.*;
 public class ImplEntity extends SingleDataStore implements Entity {
 
     public static long ID = 1;
-
     public static final int NO_HIT_TICKS = 10;
+
 
     protected final long id;
     protected volatile float x;
@@ -1027,6 +1027,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
                     && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
                                 && !breathableComponent.getBreathableBlocks().contains(headBlock))
                         || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
+
             if (losingOxygen && !(this instanceof Player player && player.isCreativeMode())) {
                 if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
                     EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
@@ -1244,6 +1245,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         return chunkDistanceToViewer < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance();
     }
 
+    @Override
     public boolean canBeSpawnedTo(Player player) {
         return !this.equals(player)
                 && !this.hasSpawnedTo(player)
