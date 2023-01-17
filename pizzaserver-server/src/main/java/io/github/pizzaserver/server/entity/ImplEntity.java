@@ -878,6 +878,10 @@ public class ImplEntity extends SingleDataStore implements Entity {
                     player.sendMessage(deathEvent.getDeathMessage().get());
                 }
             }
+
+            // Removes all data listeners, effectively marking this entity
+            // as unused.
+            this.stale();
         }
     }
 
