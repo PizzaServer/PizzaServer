@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
 import io.github.pizzaserver.api.inventory.BlockInventory;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.Optional;
@@ -39,7 +40,7 @@ public abstract class ImplBlockInventory<T extends Block> extends BaseInventory 
                     && this.getViewers().isEmpty();
 
             if (sendCloseContainerEvent) {
-                player.getWorld().addBlockEvent(this.getBlock().getLocation().toVector3i(), 1, 0);
+                player.expect(EntityKeys.WORLD).addBlockEvent(this.getBlock().getLocation().toVector3i(), 1, 0);
             }
 
             return true;

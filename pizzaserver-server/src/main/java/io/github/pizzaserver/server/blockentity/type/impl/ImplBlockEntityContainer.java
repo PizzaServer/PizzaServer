@@ -11,6 +11,7 @@ import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
@@ -61,7 +62,7 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
 
         for (Item item : this.getInventory().getSlots()) {
             if (!item.isEmpty()) {
-                entity.getWorld().addItemEntity(item, this.blockLocation.toVector3f().add(0.5f, 0.5f, 0.5f), EntityItem.getRandomMotion());
+                entity.expect(EntityKeys.WORLD).addItemEntity(item, this.blockLocation.toVector3f().add(0.5f, 0.5f, 0.5f), EntityItem.getRandomMotion());
             }
         }
     }

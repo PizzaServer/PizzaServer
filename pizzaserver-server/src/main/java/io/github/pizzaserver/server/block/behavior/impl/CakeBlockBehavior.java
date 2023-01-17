@@ -6,7 +6,9 @@ import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.*;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.data.Difficulty;
+import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.player.Player;
 
 public class CakeBlockBehavior extends BaseBlockBehavior<BlockCake> {
@@ -34,11 +36,12 @@ public class CakeBlockBehavior extends BaseBlockBehavior<BlockCake> {
         }
 
         if (player.getLevel().getDifficulty() == Difficulty.PEACEFUL) {
+            World world = player.expect(EntityKeys.WORLD);
             if (cake.getBites() == 6) {
-                player.getWorld().setAndUpdateBlock(new BlockAir(), cake.getLocation().toVector3i());
+                world.setAndUpdateBlock(new BlockAir(), cake.getLocation().toVector3i());
             } else {
                 cake.setBites(cake.getBites() + 1);
-                player.getWorld().setAndUpdateBlock(cake, cake.getLocation().toVector3i());
+                world.setAndUpdateBlock(cake, cake.getLocation().toVector3i());
             }
             return false;
         }
