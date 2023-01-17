@@ -13,6 +13,7 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponentGro
 import io.github.pizzaserver.api.inventory.EntityInventory;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
@@ -99,12 +100,6 @@ public interface Entity extends Watchable, DataStore {
     Level getLevel();
 
     /**
-     * Retrieve the {@link World} this entity is in.
-     * @return {@link World}
-     */
-    World getWorld();
-
-    /**
      * Retrieve the {@link Chunk} the entity is in.
      * @return the {@link Chunk}
      */
@@ -132,11 +127,11 @@ public interface Entity extends Watchable, DataStore {
     }
 
     default void teleport(float x, float y, float z) {
-        this.teleport(this.getWorld(), x, y, z);
+        this.teleport(this.expect(EntityKeys.WORLD), x, y, z);
     }
 
     default void teleport(float x, float y, float z, float pitch, float yaw, float headYaw) {
-        this.teleport(this.getWorld(), x, y, z, pitch, yaw, headYaw);
+        this.teleport(this.expect(EntityKeys.WORLD), x, y, z, pitch, yaw, headYaw);
     }
 
     default void teleport(Location location) {
