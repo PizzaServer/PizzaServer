@@ -9,6 +9,7 @@ import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.inventory.PlayerInventory;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -157,7 +158,7 @@ public interface Player extends EntityHuman {
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(Vector3f position, Vector3f rotation, Dimension transferDimension) {
-        this.teleport(new Location(this.getWorld(), position, rotation), transferDimension);
+        this.teleport(new Location(this.get(EntityKeys.WORLD).orElse(null), position, rotation), transferDimension);
     }
 
     /**
@@ -184,7 +185,7 @@ public interface Player extends EntityHuman {
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension) {
-        this.teleport(this.getWorld(), x, y, z, pitch, yaw, headYaw, transferDimension);
+        this.teleport(this.get(EntityKeys.WORLD).orElse(null), x, y, z, pitch, yaw, headYaw, transferDimension);
     }
 
     /**

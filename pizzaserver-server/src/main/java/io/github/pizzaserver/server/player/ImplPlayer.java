@@ -28,6 +28,7 @@ import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.inventory.TemporaryInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -458,7 +459,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.setSwimming(false);
 
         Location respawnLocation = this.getSpawn();
-        if (respawnLocation.getWorld().getDimension() != this.getWorld().getDimension()) {
+        if (respawnLocation.getWorld().getDimension() != this.expect(EntityKeys.WORLD).getDimension()) {
             this.setDimensionTransferScreen(respawnLocation.getWorld().getDimension());
         }
 
@@ -541,7 +542,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
             itemEntity.setPickupDelay(40);
-            this.getWorld().addItemEntity(itemEntity, this.getLocation().toVector3f().add(0, 1.3f, 0), this.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
+            this.expect(EntityKeys.WORLD).addItemEntity(
+                    itemEntity,
+                    this.getLocation().toVector3f().add(0, 1.3f, 0),
+                    this.getDirectionVector().mul(0.25f, 0.6f, 0.25f)
+            );
 
             return true;
         }
@@ -742,7 +747,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension) {
-        World oldWorld = this.getWorld();
+        World oldWorld = this.expect(EntityKeys.WORLD);
         this.teleport(world, x, y, z, pitch, yaw, headYaw);
 
         if (!oldWorld.getDimension().equals(transferDimension)) {
@@ -752,12 +757,16 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public Location getSpawn() {
-        if (this.getHome().isPresent()) {
-            return new Location(this.getWorld(), this.getHome().get().toLocation().toVector3f().add(0, this.getEyeHeight(), 0));
-        } else {
-            World world = this.getServer().getLevelManager().getDefaultLevel().getDimension(Dimension.OVERWORLD);
-            return new Location(world, world.getSpawnCoordinates().add(0, this.getEyeHeight(), 0));
-        }
+        boolean usePlayerSpawn = this.getHome().isPresent();
+
+        World world = usePlayerSpawn
+                ? this.expect(EntityKeys.WORLD)
+                : this.getServer().getLevelManager().getDefaultLevel().getDimension(Dimension.OVERWORLD);
+        Vector3f position = usePlayerSpawn
+                ? this.getHome().get().toLocation().toVector3f()
+                : world.getSpawnCoordinates().toFloat();
+
+        return new Location(world, position.add(0.5, this.getEyeHeight(), 0.5));
     }
 
     /**
@@ -1027,7 +1036,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
-        Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z), Vector3f.from(this.pitch, this.yaw, this.headYaw));
+        Location oldLocation = new Location(
+                this.get(EntityKeys.WORLD).orElse(null),
+                this.expect(EntityKeys.POSITION),
+                Vector3f.from(this.pitch, this.yaw, this.headYaw)
+        );
         super.moveTo(x, y, z, pitch, yaw, headYaw);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
@@ -1048,7 +1061,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getAdventureSettings().send();
 
         SetTimePacket setTimePacket = new SetTimePacket();
-        setTimePacket.setTime(this.getWorld().getTime());
+        setTimePacket.setTime(this.expect(EntityKeys.WORLD).getTime());
         this.sendPacket(setTimePacket);
     }
 

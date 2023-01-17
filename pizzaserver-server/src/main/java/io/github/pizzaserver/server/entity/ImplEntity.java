@@ -2,6 +2,7 @@ package io.github.pizzaserver.server.entity;
 
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
@@ -31,6 +32,7 @@ import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.ArmorItem;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
@@ -53,10 +55,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
 
     protected final long id;
-    protected volatile float x;
-    protected volatile float y;
-    protected volatile float z;
-    protected volatile World world;
+
     protected boolean moveUpdate;
     protected EntityPhysicsEngine physicsEngine = new EntityPhysicsEngine(this);
     protected long ticks;
@@ -216,32 +215,32 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public float getX() {
-        return this.x;
+        return this.expect(EntityKeys.POSITION).getX();
     }
 
     @Override
     public float getY() {
-        return this.y;
+        return this.expect(EntityKeys.POSITION).getY();
     }
 
     @Override
     public float getZ() {
-        return this.z;
+        return this.expect(EntityKeys.POSITION).getZ();
     }
 
     @Override
     public int getFloorX() {
-        return (int) Math.floor(this.x);
+        return (int) Math.floor(this.getX());
     }
 
     @Override
     public int getFloorY() {
-        return (int) Math.floor(this.y);
+        return (int) Math.floor(this.getY());
     }
 
     @Override
     public int getFloorZ() {
-        return (int) Math.floor(this.z);
+        return (int) Math.floor(this.getZ());
     }
 
     @Override
@@ -253,9 +252,11 @@ public class ImplEntity extends SingleDataStore implements Entity {
         int maxBlockZCheck = (int) boundingBox.getMaxZ();
 
         BoundingBox intersectingBoundingBox = this.getBoundingBox().translate(0, -0.0002f, 0);
+        World world = this.expect(EntityKeys.WORLD);
+
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
-                Block blockBelow = this.getWorld().getBlock(x, this.getFloorY() - 1, z);
+                Block blockBelow = world.getBlock(x, this.getFloorY() - 1, z);
                 if (blockBelow.hasCollision() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
                     return true;
                 }
@@ -275,11 +276,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
         int maxBlockZCheck = (int) entityBoundingBox.getMaxZ();
 
         Set<Block> collidingBlocks = new HashSet<>();
+        World world = this.expect(EntityKeys.WORLD);
 
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
                 for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
-                    Block block = this.getWorld().getBlock(x, y, z);
+                    Block block = world.getBlock(x, y, z);
                     if (block.getBoundingBox().collidesWith(entityBoundingBox)) {
                         collidingBlocks.add(block);
                     }
@@ -292,11 +294,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public Block getHeadBlock() {
-        if (this.isSwimming()) {
-            return this.getWorld().getBlock(this.getLocation().toVector3i());
-        } else {
-            return this.getWorld().getBlock(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0).floor().toInt());
-        }
+        World world = this.expect(EntityKeys.WORLD);
+        Vector3i blockLocation = this.isSwimming()
+                ? this.getLocation().toVector3i()
+                : this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0).floor().toInt();
+
+        return world.getBlock(blockLocation);
     }
 
     @Override
@@ -311,8 +314,9 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public Location getLocation() {
-        return new Location(this.world,
-                Vector3f.from(this.getX(), this.getY(), this.getZ()),
+        return new Location(
+                this.get(EntityKeys.WORLD).orElse(null),
+                this.expect(EntityKeys.POSITION),
                 Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
     }
 
@@ -380,7 +384,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     /**
      * Set the internal position of the entity.
-     * Used internally to setup and to clean up the entity
+     * Used internally to set up and to clean up the entity
      * @param location entity location
      */
     public void setPosition(Location location) {
@@ -392,10 +396,8 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     public void setPosition(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
-        this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.set(EntityKeys.WORLD, world);
+        this.set(EntityKeys.POSITION, Vector3f.from(x, y, z));
         this.pitch = pitch;
         this.yaw = yaw;
         this.headYaw = headYaw;
@@ -404,7 +406,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
-        World oldWorld = this.getWorld();
+        World oldWorld = this.expect(EntityKeys.WORLD);
         this.moveUpdate = true;
 
         if (!world.equals(oldWorld)) {
@@ -593,11 +595,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public ImplChunk getChunk() {
         return (ImplChunk) this.getLocation().getChunk();
-    }
-
-    @Override
-    public ImplWorld getWorld() {
-        return (ImplWorld) this.getLocation().getWorld();
     }
 
     @Override
@@ -870,7 +867,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
             this.getServer().getEventManager().call(deathEvent);
 
             for (Item itemStack : deathEvent.getDrops()) {
-                this.getWorld().addItemEntity(itemStack, this.getLocation().toVector3f());
+                this.get(EntityKeys.WORLD).ifPresentOrElse(
+                        world -> world.addItemEntity(itemStack, this.getLocation().toVector3f()),
+                        () -> Server.getInstance()
+                                .getLogger()
+                                .warn(String.format("Attempted to add an item entity on behalf of an entity with a null world (ID: %s)", this.getId()))
+                );
             }
 
             if (deathEvent.getDeathMessage().isPresent()) {
@@ -962,19 +964,21 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
+        World world = this.expect(EntityKeys.WORLD);
         this.moveUpdate = true;
-        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+
+        Block blockBelow = world.getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
 
         ImplChunk currentChunk = this.getChunk();
-        this.setPosition(this.getWorld(), x, y, z, pitch, yaw, headYaw);
+        this.setPosition(world, x, y, z, pitch, yaw, headYaw);
 
-        ImplChunk newChunk = this.getWorld().getChunk((int) Math.floor(this.x / 16), (int) Math.floor(this.z / 16));
+        Chunk newChunk = world.getChunk((int) Math.floor(this.getX() / 16), (int) Math.floor(this.getZ() / 16));
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
             currentChunk.removeEntity(this);
             newChunk.addEntity(this);
         }
 
-        Block newBlockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+        Block newBlockBelow = world.getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
         if (!blockBelow.getLocation().equals(newBlockBelow.getLocation())) {
             newBlockBelow.getBehavior().onWalkedOn(this, newBlockBelow);
             blockBelow.getBehavior().onWalkedOff(this, blockBelow);
@@ -992,8 +996,10 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         this.getMetaData().tryUpdate();
 
-        if (this.hasComponent(EntityBurnsInDaylightComponent.class) && this.getWorld().isDay()) {
-            Block highestBlockAboveEntity = this.getWorld().getHighestBlockAt((int) Math.floor(this.getX()), (int) Math.floor(this.getZ()));
+        World world = this.expect(EntityKeys.WORLD);
+
+        if (this.hasComponent(EntityBurnsInDaylightComponent.class) && world.isDay()) {
+            Block highestBlockAboveEntity = world.getHighestBlockAt(this.getFloorX(), this.getFloorZ());
             if (highestBlockAboveEntity.getY() <= this.getY()) {
                 this.setFireTicks(20);
             }
@@ -1061,7 +1067,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
             }
         }
 
-        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+        Block blockBelow = world.getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
         blockBelow.getBehavior().onStandingOn(this, blockBelow);
 
         this.updateBossBarVisibility();
@@ -1241,8 +1247,14 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     public boolean withinEntityRenderDistanceTo(Player player) {
-        int chunkDistanceToViewer = (int) Math.round(Math.sqrt(Math.pow(player.getChunk().getX() - this.getChunk().getX(), 2) + Math.pow(player.getChunk().getZ() - this.getChunk().getZ(), 2)));
-        return chunkDistanceToViewer < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance();
+        int chunkDistanceToViewer = (int) Math.round(
+                Math.sqrt(
+                        Math.pow(player.getChunk().getX() - this.getChunk().getX(), 2) +
+                        Math.pow(player.getChunk().getZ() - this.getChunk().getZ(), 2)
+                )
+        );
+
+        return chunkDistanceToViewer < this.expect(EntityKeys.WORLD).getServer().getConfig().getEntityChunkRenderDistance();
     }
 
     @Override
@@ -1325,7 +1337,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public void despawn() {
-        this.getWorld().removeEntity(this);
+        this.get(EntityKeys.WORLD).ifPresentOrElse(
+                world -> world.removeEntity(this),
+                () -> Server.getInstance()
+                        .getLogger()
+                        .warn(String.format("Attempted to despawn entity without a null world (ID: %s)", this.getId()))
+        );
     }
 
     @Override
