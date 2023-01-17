@@ -42,6 +42,9 @@ public interface Chunk extends Watchable {
      */
     boolean canBeVisibleTo(Player player);
 
+
+    void despawnFrom(Player player);
+
     /**
      * Get the biome type at a specific x and z coordinate of the chunk.
      * @param x x coordinate
