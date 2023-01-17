@@ -22,7 +22,6 @@ import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Location;
-import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.protocol.ImplPacketHandlerPipeline;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
@@ -247,8 +246,8 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         if (!blockBreakEvent.isCancelled()) {
                             this.player.getBlockBreakingManager().breakBlock();
                         } else {
-                            ((ImplWorld) this.player.getBlockBreakingManager().getBlock().get().getWorld())
-                                    .sendBlock(this.player, this.player.getBlockBreakingManager().getBlock().get().getLocation().toVector3i());
+                            Block block = this.player.getBlockBreakingManager().getBlock().get();
+                            block.getWorld().sendBlock(this.player, block.getLocation().toVector3i());
                         }
                     } else {
                         this.player.getServer().getLogger().debug(String.format("%s tried to destroy a block but was not allowed.", this.player.getUsername()));

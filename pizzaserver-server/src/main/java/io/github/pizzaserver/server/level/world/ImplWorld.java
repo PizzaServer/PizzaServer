@@ -27,7 +27,6 @@ import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.level.world.chunks.WorldChunkManager;
-import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.IOException;
@@ -209,10 +208,12 @@ public class ImplWorld implements World {
         }
     }
 
+    @Override
     public void sendBlock(Player player, Vector3i blockCoordinates) {
         this.sendBlock(player, blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
     }
 
+    @Override
     public void sendBlock(Player player, int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
@@ -233,7 +234,7 @@ public class ImplWorld implements World {
 
         ImplEntity implEntity = (ImplEntity) entity;
         implEntity.setPosition(location);
-        ((ImplChunk) location.getChunk()).addEntity(implEntity);
+        location.getChunk().addEntity(implEntity);
         implEntity.onSpawned();
     }
 
@@ -330,7 +331,7 @@ public class ImplWorld implements World {
                 packet.setRelativeVolumeDisabled(relativeVolumeDisabled);
                 packet.setBabySound(isBaby);
                 packet.setIdentifier(entityType);
-                packet.setExtraData(block != null ? ((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
+                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
 
                 player.sendPacket(packet);
             }
