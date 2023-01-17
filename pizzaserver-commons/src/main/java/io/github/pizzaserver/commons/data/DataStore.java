@@ -29,12 +29,4 @@ public interface DataStore {
      * @param <T> the type of the value.
      */
     <T> void set(DataKey<T> key, T value);
-
-    /**
-     * Returns the raw container that the data is stored within.
-     * @param type the key pointing to the data container (same as the data)
-     * @return the container if present - wrapped in an optional
-     * @param <T> the type of the data stored within the container.
-     */
-    <T> Optional<ValueContainer<T>> getContainerFor(DataKey<T> type);
 }
