@@ -72,6 +72,7 @@ public class ImplChunk implements Chunk {
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
 
 
+    @SuppressWarnings("rawtypes")
     protected ImplChunk(ImplWorld world, int x, int z, BedrockChunk chunk) {
         this.world = world;
         this.x = x;
@@ -417,7 +418,7 @@ public class ImplChunk implements Chunk {
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
+        updateBlockPacket.setRuntimeId(((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
         updateBlockPacket.setBlockPosition(Vector3i.from(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
@@ -550,7 +551,7 @@ public class ImplChunk implements Chunk {
                 // Send the entities of this chunk to the player
                 if (player.isLocallyInitialized()) {
                     for (Entity entity : this.getEntities()) {
-                        if (entity.canBeSpawnedTo(player)) {
+                        if (((ImplEntity) entity).canBeSpawnedTo(player)) {
                             entity.spawnTo(player);
                         }
                     }
@@ -592,7 +593,6 @@ public class ImplChunk implements Chunk {
         return new HashSet<>(this.spawnedTo);
     }
 
-    @Override
     public void despawnFrom(Player player) {
         if (this.spawnedTo.remove(player)) {
             for (Entity entity : this.getEntities()) {
