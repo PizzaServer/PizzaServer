@@ -38,6 +38,17 @@ public class ActionSource {
     }
 
     /**
+     * Registers a new callback for a given action, observing any events emitted under
+     * the action in the future.
+     * @param action the action's key.
+     * @param callback the method that reactions to the action event.
+     */
+    public <T> void listenFor(ActionType<T> action, Runnable callback) {
+        this.getActionSubscribersOrCreateFor(action)
+                .add(callback);
+    }
+
+    /**
      * Unregisters a previously registered callback for a given action, stopping it from
      * consuming any events related to the action. If it wasn't previously registered, this
      * method silently fails.
@@ -45,6 +56,18 @@ public class ActionSource {
      * @param callback the method/consumer that was assigned to handle the given action.
      */
     public void stopListeningFor(ActionType<?> action, Consumer<?> callback) {
+        this.getActionSubscribersFor(action)
+                .ifPresent(subs -> subs.remove(callback));
+    }
+
+    /**
+     * Unregisters a previously registered callback for a given action, stopping it from
+     * observing any events related to the action. If it wasn't previously registered, this
+     * method silently fails.
+     * @param action the action's key.
+     * @param callback the method that was assigned to handle the given action.
+     */
+    public void stopListeningFor(ActionType<?> action, Runnable callback) {
         this.getActionSubscribersFor(action)
                 .ifPresent(subs -> subs.remove(callback));
     }

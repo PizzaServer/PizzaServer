@@ -67,6 +67,22 @@ public class SingleDataStore implements DataStore {
         return Optional.of((ValueContainer<T>) list);
     }
 
+    /**
+     * Returns the raw container that the data is stored within.
+     * @param type the key pointing to the data container (same as the data)
+     * @return the container, freshly created if not present.
+     * @param <T> the type of the data stored within the container.
+     */
+    protected <T> ValueContainer<T> getOrCreateContainerFor(DataKey<T> type, T fallbackValue) {
+        Optional<ValueContainer<T>> container = this.getContainerFor(type);
+        if(container.isPresent()) return container.get();
+
+        ValueContainer<T> freshContainer = ValueContainer.wrap(fallbackValue);
+        this.getDataRegistry().put(type, freshContainer);
+
+        return freshContainer;
+    }
+
 
     /** Sets all data to stale as they shouldn't be used. */
     protected void stale() {
