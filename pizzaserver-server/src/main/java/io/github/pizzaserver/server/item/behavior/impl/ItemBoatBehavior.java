@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;
 import io.github.pizzaserver.api.item.behavior.impl.BaseItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBaseBoat;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 
 public class ItemBoatBehavior extends BaseItemBehavior<ItemBaseBoat> {
@@ -28,7 +29,7 @@ public class ItemBoatBehavior extends BaseItemBehavior<ItemBaseBoat> {
             spawnLocation = block.getSide(blockFace).getLocation().toVector3f();
         }
 
-        player.getWorld().addEntity(boatEntity, spawnLocation);
+        player.expect(EntityKeys.WORLD).addEntity(boatEntity, spawnLocation);
         return true;
     }
 

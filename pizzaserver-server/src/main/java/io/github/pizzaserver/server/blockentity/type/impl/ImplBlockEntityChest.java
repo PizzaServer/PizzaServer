@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.impl.BlockChest;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityChest;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 
@@ -32,7 +33,7 @@ public class ImplBlockEntityChest extends ImplBlockEntityContainer<BlockChest> i
 
     @Override
     public void showOpenAnimation(Player player) {
-        player.getWorld().addBlockEvent(player, this.getLocation().toVector3i(), 1, 1);
+        player.expect(EntityKeys.WORLD).addBlockEvent(player, this.getLocation().toVector3i(), 1, 1);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class ImplBlockEntityChest extends ImplBlockEntityContainer<BlockChest> i
 
     @Override
     public void showCloseAnimation(Player player) {
-        player.getWorld().addBlockEvent(player, this.getLocation().toVector3i(), 1, 0);
+        player.expect(EntityKeys.WORLD).addBlockEvent(player, this.getLocation().toVector3i(), 1, 0);
     }
 
 }

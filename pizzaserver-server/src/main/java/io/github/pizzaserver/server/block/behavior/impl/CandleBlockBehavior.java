@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.block.impl.BlockCandle;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.impl.ItemFlintAndSteel;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 
 public class CandleBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockCandle> {
@@ -59,7 +60,7 @@ public class CandleBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockC
             }
 
             candle.setLit(true);
-            player.getWorld().setAndUpdateBlock(candle, candle.getLocation().toVector3i());
+            player.expect(EntityKeys.WORLD).setAndUpdateBlock(candle, candle.getLocation().toVector3i());
         }
         return true;
     }

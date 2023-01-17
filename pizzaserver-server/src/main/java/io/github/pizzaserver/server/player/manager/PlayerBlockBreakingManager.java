@@ -10,6 +10,7 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.descriptors.ToolItem;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
@@ -41,7 +42,7 @@ public class PlayerBlockBreakingManager {
                 LevelEventPacket breakParticlePacket = new LevelEventPacket();
                 breakParticlePacket.setType(LevelEventType.PARTICLE_CRACK_BLOCK);
                 breakParticlePacket.setPosition(this.blockMiningLocation.toVector3f());
-                breakParticlePacket.setData(((BaseMinecraftVersion) viewer.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()) | (this.blockFaceMiningAgainst.ordinal() << 24));
+                breakParticlePacket.setData(viewer.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) | (this.blockFaceMiningAgainst.ordinal() << 24));
                 viewer.sendPacket(breakParticlePacket);
             }
 
@@ -74,7 +75,7 @@ public class PlayerBlockBreakingManager {
 
         block.getWorld().getBlockEntity(block.getLocation().toVector3i())
                 .ifPresent(blockEntity -> ((BaseBlockEntity<? extends Block>) blockEntity).onBreak(this.player));
-        this.player.getWorld().setAndUpdateBlock(BlockID.AIR, block.getLocation().toVector3i());
+        this.player.expect(EntityKeys.WORLD).setAndUpdateBlock(BlockID.AIR, block.getLocation().toVector3i());
 
         block.getBehavior().onBreak(this.player, block);
         this.player.getInventory().getHeldItem().getBehavior().onBreak(this.player, this.player.getInventory().getHeldItem(), block);
@@ -83,7 +84,7 @@ public class PlayerBlockBreakingManager {
 
         if (!block.getBlockId().equals(BlockID.FIRE)) {
             for (Player viewer : block.getLocation().getChunk().getViewers()) {
-                int blockRuntimeId = ((BaseMinecraftVersion) viewer.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState());
+                int blockRuntimeId = viewer.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState());
 
                 LevelEventPacket breakParticlePacket = new LevelEventPacket();
                 breakParticlePacket.setType(LevelEventType.PARTICLE_DESTROY_BLOCK);

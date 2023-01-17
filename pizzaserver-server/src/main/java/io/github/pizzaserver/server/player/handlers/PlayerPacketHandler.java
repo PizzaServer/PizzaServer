@@ -5,24 +5,16 @@ import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.data.DirtType;
-import io.github.pizzaserver.api.block.data.SandType;
-import io.github.pizzaserver.api.block.data.WoodType;
 import io.github.pizzaserver.api.block.impl.*;
-import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.entity.EntityHuman;
-import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.event.type.block.SignChangeEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
-import io.github.pizzaserver.api.item.impl.*;
+import io.github.pizzaserver.api.keychain.EntityKeys;
+import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
-import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
@@ -73,11 +65,15 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                     this.player.respawn();
                 }
                 break;
+
             case DIMENSION_CHANGE_SUCCESS:
                 if (this.player.getDimensionTransferScreen().isPresent()) {
                     Dimension dimensionTransferScreen = this.player.getDimensionTransferScreen().get();
-                    if (!dimensionTransferScreen.equals(this.player.getWorld().getDimension())) {
-                        this.player.setDimensionTransferScreen(this.player.getWorld().getDimension());
+                    World world = this.player.expect(EntityKeys.WORLD);
+
+                    if (!dimensionTransferScreen.equals(world.getDimension())) {
+                        this.player.setDimensionTransferScreen(world.getDimension());
+
                     } else {
                         this.player.setDimensionTransferScreen(null);
 
@@ -200,7 +196,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         boolean canReach = this.player.canReach(packet.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7);
 
         if (this.player.isAlive() && canReach) {
-            Block block = this.player.getWorld().getBlock(packet.getBlockPosition());
+            Block block = this.player.expect(EntityKeys.WORLD).getBlock(packet.getBlockPosition());
 
             if (block instanceof BlockSign blockSign) {
                 // Make sure the player is able to edit the sign.

@@ -18,6 +18,8 @@ import io.github.pizzaserver.api.event.type.player.PlayerMoveEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSneakingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSprintingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSwimEvent;
+import io.github.pizzaserver.api.keychain.EntityKeys;
+import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.level.world.ImplWorld;
@@ -74,7 +76,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                         }
                         break;
                     case START_SWIMMING:
-                        Block blockSwimmingIn = this.player.getWorld().getBlock(this.player.getLocation().toVector3i());
+                        Block blockSwimmingIn = this.player.expect(EntityKeys.WORLD).getBlock(this.player.getLocation().toVector3i());
                         if (!this.player.isSwimming() && blockSwimmingIn instanceof LiquidTrait) {
                             PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, true);
                             this.player.getServer().getEventManager().call(swimEvent);
@@ -187,12 +189,14 @@ public class AuthInputHandler implements BedrockPacketHandler {
     }
 
     private void handleBlockActions(List<PlayerBlockActionData> actions) {
+        World world = this.player.expect(EntityKeys.WORLD);
+
         for (PlayerBlockActionData action : actions) {
             switch (action.getAction()) {
                 case START_BREAK, BLOCK_CONTINUE_DESTROY -> {
                     if (this.player.isAlive()
                             && this.player.canReach(action.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7)) {
-                        BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), action.getBlockPosition(), 0);
+                        BlockLocation blockBreakingLocation = new BlockLocation(world, action.getBlockPosition(), 0);
                         Block targetBlock = blockBreakingLocation.getBlock();
 
                         boolean isAlreadyBreakingBlock = this.player.getBlockBreakingManager().getBlock().isPresent();
@@ -221,7 +225,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 if (!blockStartBreakEvent.isCancelled()) {
                                     this.player.getBlockBreakingManager().startBreaking(blockBreakingLocation, BlockFace.resolve(action.getFace()));
                                 } else {
-                                    this.player.getWorld().sendBlock(this.player, blockBreakingLocation.toVector3i());
+                                    world.sendBlock(this.player, blockBreakingLocation.toVector3i());
                                 }
                             }
                         }
@@ -237,7 +241,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     }
 
                     if (canBreakBlock) {
-                        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player, this.player.getWorld().getBlock(action.getBlockPosition()));
+                        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player, world.getBlock(action.getBlockPosition()));
                         this.player.getServer().getEventManager().call(blockBreakEvent);
 
                         if (!blockBreakEvent.isCancelled()) {
@@ -251,7 +255,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
 
                         // Prevent malicious clients from requesting far away blocks to load unloaded chunks
                         if (action.getBlockPosition().distance(this.player.getLocation().toVector3i()) < this.player.getChunkRadius() * 16) {
-                            this.player.getWorld().sendBlock(this.player, action.getBlockPosition());
+                            world.sendBlock(this.player, action.getBlockPosition());
                         }
                     }
                 }
@@ -277,6 +281,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
      */
     private boolean playerMinedNormalBlockOrFireBlock(Block block, BlockFace face) {
         Block possibleFireBlock = block.getSide(face);
+        World world = this.player.expect(EntityKeys.WORLD);
 
         boolean isBlockFire = possibleFireBlock.getBlockId().equals(BlockID.FIRE);
         if (isBlockFire) {
@@ -284,7 +289,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
             BlockStartBreakEvent startBreakEvent = new BlockStartBreakEvent(this.player, possibleFireBlock);
             this.player.getServer().getEventManager().call(startBreakEvent);
             if (startBreakEvent.isCancelled()) {
-                this.player.getWorld().sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
+                world.sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
                 return false;
             }
 
@@ -295,7 +300,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                 this.player.getBlockBreakingManager().breakBlock();
                 return true;
             } else {
-                this.player.getWorld().sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
+                world.sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
                 return false;
             }
         }
@@ -310,7 +315,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
         boolean updatePosition = position.distance(this.player.getLocation().toVector3f().add(0, this.player.getEyeHeight(), 0)) > MOVEMENT_DISTANCE_THRESHOLD;
 
         if (updateRotation || updatePosition) {
-            Location newLocation = new Location(this.player.getWorld(), position, rotation);
+            Location newLocation = new Location(this.player.expect(EntityKeys.WORLD), position, rotation);
 
             PlayerMoveEvent moveEvent = new PlayerMoveEvent(this.player, this.player.getLocation(), newLocation);
             this.player.getServer().getEventManager().call(moveEvent);
