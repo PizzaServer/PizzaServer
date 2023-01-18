@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDimensionsComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 
 public class EntityItemDefinition extends BaseEntityDefinition {
 
@@ -48,7 +49,7 @@ public class EntityItemDefinition extends BaseEntityDefinition {
     @Override
     public void onCreation(Entity entity) {
         entity.addComponentGroup("minecraft:default");
-        entity.setVulnerable(false);
+        entity.set(EntityKeys.IS_VULNERABLE, false);
     }
 
 }

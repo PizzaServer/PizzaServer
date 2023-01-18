@@ -38,9 +38,9 @@ import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
+import io.github.pizzaserver.commons.data.Preprocessors;
 import io.github.pizzaserver.commons.data.SingleDataStore;
 import io.github.pizzaserver.commons.data.ValueContainer;
-import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
@@ -66,7 +66,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     protected BlockLocation home = null;
 
-    protected boolean vulnerable = true;
     protected int deathAnimationTicks = -1;
     protected int noHitTicks;
 
@@ -107,15 +106,16 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
-        Function<Vector3f, Vector3f> nonNull = in -> Check.notNull(in, "Entity Data (Position)");
-        Function<Float, Float> nullToZero = in -> Check.isNull(in) ? 0f : in;
+        Function<Float, Float> nullToZero = Preprocessors.ifNullThen(0f);
 
-        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(nonNull).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+
+        this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThen(true));
 
         // Apply default components to the entity
         Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
@@ -461,16 +461,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public void setDisplayName(String name) {
         this.getMetaData().putString(EntityData.NAMETAG, name);
-    }
-
-    @Override
-    public boolean isVulnerable() {
-        return this.vulnerable;
-    }
-
-    @Override
-    public void setVulnerable(boolean vulnerable) {
-        this.vulnerable = vulnerable;
     }
 
     @Override
@@ -1043,9 +1033,10 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         }
 
-        if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {
+        if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.expect(EntityKeys.IS_VULNERABLE)) {
             this.kill();
         }
+
         if (this.deathAnimationTicks != -1 && --this.deathAnimationTicks <= 0) {
             this.endDeathAnimation();
             this.despawn();
@@ -1107,7 +1098,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
      * @return if the damage went through
      */
     public boolean damage(EntityDamageEvent event) {
-        if (!this.isVulnerable()
+        if (!this.expect(EntityKeys.IS_VULNERABLE)
                 || !this.isAlive()
                 || (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getAttacker().equals(this))) {
             return false;
