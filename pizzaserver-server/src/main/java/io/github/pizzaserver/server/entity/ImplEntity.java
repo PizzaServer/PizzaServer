@@ -40,6 +40,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.data.SingleDataStore;
 import io.github.pizzaserver.commons.data.ValueContainer;
+import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
@@ -49,6 +50,7 @@ import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class ImplEntity extends SingleDataStore implements Entity {
 
@@ -105,13 +107,15 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
+        Function<Vector3f, Vector3f> nonNull = in -> Check.notNull(in, "Entity Data (Position)");
+        Function<Float, Float> nullToZero = in -> Check.isNull(in) ? 0f : in;
 
-        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(nonNull).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
 
         // Apply default components to the entity
         Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
