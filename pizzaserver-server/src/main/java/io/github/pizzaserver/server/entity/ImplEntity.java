@@ -102,6 +102,17 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.id = ID++;
         this.entityDefinition = entityDefinition;
 
+
+        // Anything that previously triggered a movement update should trigger this.
+        Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
+
+        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+
         // Apply default components to the entity
         Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
             EntityComponentHandler handler = Server.getInstance().getEntityRegistry().getComponentHandler(clazz);
