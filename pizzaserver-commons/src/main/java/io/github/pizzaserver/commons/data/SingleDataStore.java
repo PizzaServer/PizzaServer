@@ -11,6 +11,7 @@ public class SingleDataStore implements DataStore {
         this.dataRegistry = new HashMap<>();
     }
 
+
     /**
      * Obtains an entry of data attached to the provided key.
      * @param key a type-driven key.
