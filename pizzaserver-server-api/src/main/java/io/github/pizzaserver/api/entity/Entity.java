@@ -199,18 +199,6 @@ public interface Entity extends Watchable, DataStore {
 
     void setDisplayName(String name);
 
-    /**
-     * Checks if the entity is can be hurt.
-     * @return if the entity can be hurt.
-     */
-    boolean isVulnerable();
-
-    /**
-     * Change the vulnerability status fo the entity.
-     * @param vulnerable if the entity is vulnerable and can be hurt/die.
-     */
-    void setVulnerable(boolean vulnerable);
-
     Set<Attribute> getAttributes();
 
     Attribute getAttribute(AttributeType type);
