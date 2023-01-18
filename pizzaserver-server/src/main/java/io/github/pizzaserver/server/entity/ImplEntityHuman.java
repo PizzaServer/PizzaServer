@@ -5,6 +5,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.player.Player;
@@ -117,7 +118,7 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
         MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
         movePlayerPacket.setRuntimeEntityId(this.getId());
         movePlayerPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
-        movePlayerPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+        movePlayerPacket.setRotation(EntityHelper.getBasicRotationFor(this));
         movePlayerPacket.setMode(MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(this.isOnGround());
 
@@ -140,7 +141,7 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
             addPlayerPacket.setUniqueEntityId(this.getId());
             addPlayerPacket.setPosition(Vector3f.from(this.getX(), this.getY(), this.getZ()));
             addPlayerPacket.setMotion(this.getMotion());
-            addPlayerPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+            addPlayerPacket.setRotation(EntityHelper.getBasicRotationFor(this));
             addPlayerPacket.getMetadata().putAll(this.getMetaData().serialize());
             addPlayerPacket.setDeviceId("");
             addPlayerPacket.setPlatformChatId("");

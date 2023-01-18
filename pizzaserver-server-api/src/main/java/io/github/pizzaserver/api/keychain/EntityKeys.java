@@ -33,8 +33,8 @@ public class EntityKeys {
 
     // -- Location
     public static final DataKey<Vector3f> POSITION = DataKey.of("query.position", Vector3f.class);
-    public static final DataKey<Float> ROTATION_BODY_PITCH = DataKey.of("query.body_x_rotation", Float.TYPE);
-    public static final DataKey<Float> ROTATION_BODY_YAW = DataKey.of("query.body_y_rotation", Float.TYPE);
+    public static final DataKey<Float> ROTATION_PITCH = DataKey.of("query.body_x_rotation", Float.TYPE);
+    public static final DataKey<Float> ROTATION_YAW = DataKey.of("query.body_y_rotation", Float.TYPE);
     public static final DataKey<Float> ROTATION_HEAD_PITCH = DataKey.of("query.head_x_rotation", Float.TYPE);
     public static final DataKey<Float> ROTATION_HEAD_YAW = DataKey.of("query.head_y_rotation", Float.TYPE);
     public static final DataKey<Float> ROTATION_HEAD_ROLL = DataKey.of("query.head_roll_angle", Float.TYPE);

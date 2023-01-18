@@ -11,6 +11,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.trait.LiquidTrait;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
@@ -308,9 +309,11 @@ public class AuthInputHandler implements BedrockPacketHandler {
     }
 
     private void handleMovement(Vector3f position, Vector3f rotation) {
-        boolean updateRotation = Math.abs(this.player.getPitch() - rotation.getX()) > ROTATION_UPDATE_THRESHOLD
-                || Math.abs(this.player.getYaw() - rotation.getY()) > ROTATION_UPDATE_THRESHOLD
-                || Math.abs(this.player.getHeadYaw() - rotation.getZ()) > ROTATION_UPDATE_THRESHOLD;
+        // pitch, yaw, head yaw
+        Vector3f playerRotation = EntityHelper.getBasicRotationFor(this.player);
+        boolean updateRotation = Math.abs(playerRotation.getX() - rotation.getX()) > ROTATION_UPDATE_THRESHOLD
+                || Math.abs(playerRotation.getY() - rotation.getY()) > ROTATION_UPDATE_THRESHOLD
+                || Math.abs(playerRotation.getZ() - rotation.getZ()) > ROTATION_UPDATE_THRESHOLD;
         boolean updatePosition = position.distance(this.player.getLocation().toVector3f().add(0, this.player.getEyeHeight(), 0)) > MOVEMENT_DISTANCE_THRESHOLD;
 
         if (updateRotation || updatePosition) {

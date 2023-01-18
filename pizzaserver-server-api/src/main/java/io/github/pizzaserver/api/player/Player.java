@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.BedrockPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.inventory.Inventory;
@@ -148,7 +149,7 @@ public interface Player extends EntityHuman {
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(Vector3f position, Dimension transferDimension) {
-        this.teleport(position, Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()), transferDimension);
+        this.teleport(position, EntityHelper.getBasicRotationFor(this), transferDimension);
     }
 
     /**
@@ -170,7 +171,13 @@ public interface Player extends EntityHuman {
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(float x, float y, float z, Dimension transferDimension) {
-        this.teleport(x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw(), transferDimension);
+        this.teleport(
+                x, y, z,
+                this.get(EntityKeys.ROTATION_PITCH).orElse(0f),
+                this.get(EntityKeys.ROTATION_YAW).orElse(0f),
+                this.get(EntityKeys.ROTATION_HEAD_YAW).orElse(0f),
+                transferDimension
+        );
     }
 
     /**
