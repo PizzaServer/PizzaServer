@@ -11,6 +11,7 @@ import io.github.pizzaserver.api.block.impl.BlockStandingSign;
 import io.github.pizzaserver.api.block.impl.BlockWallSign;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 
 public class SignBlockBehavior extends BaseBlockBehavior<BlockSign> {
@@ -22,7 +23,7 @@ public class SignBlockBehavior extends BaseBlockBehavior<BlockSign> {
             wallSign.setDirection(face.toDirection().toHorizontal());
         } else {
             BlockStandingSign standingSign = (BlockStandingSign) block;
-            standingSign.setDirection(StandingSignDirection.fromYaw(entity.getYaw()));
+            standingSign.setDirection(StandingSignDirection.fromYaw(entity.get(EntityKeys.ROTATION_YAW).orElse(0f)));
         }
 
         return super.prepareForPlacement(entity, block, face, clickPosition);

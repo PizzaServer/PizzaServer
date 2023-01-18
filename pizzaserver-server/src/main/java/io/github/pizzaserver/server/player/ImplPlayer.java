@@ -13,6 +13,7 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -178,9 +179,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.getServer().getEntityRegistry().getDefinition(EntityHumanDefinition.ID).onCreation(this);
 
             // Apply player data
-            this.setPitch(data.getPitch());
-            this.setYaw(data.getYaw());
-            this.setHeadYaw(data.getYaw());
+            this.set(EntityKeys.ROTATION_PITCH, data.getPitch());
+            this.set(EntityKeys.ROTATION_YAW, data.getYaw());
+            this.set(EntityKeys.ROTATION_HEAD_YAW, data.getYaw());
             this.setGamemode(data.getGamemode());
 
             // Get their spawn location
@@ -596,12 +597,14 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                             this.getInventory().getLeggings(),
                             this.getInventory().getBoots()
                     })
-                    .setPitch(this.getPitch())
-                    .setYaw(this.getYaw())
+                    .setPitch(this.get(EntityKeys.ROTATION_PITCH).orElse(0f))
+                    .setYaw(this.get(EntityKeys.ROTATION_PITCH).orElse(0f))
                     .build();
+
             try {
                 this.getServer().getPlayerProvider().save(this.getUUID(), playerData);
                 return true;
+
             } catch (IOException exception) {
                 this.getServer().getLogger().error("Failed to save player " + this.getUUID(), exception);
             }
@@ -1039,7 +1042,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         Location oldLocation = new Location(
                 this.get(EntityKeys.WORLD).orElse(null),
                 this.expect(EntityKeys.POSITION),
-                Vector3f.from(this.pitch, this.yaw, this.headYaw)
+                EntityHelper.getBasicRotationFor(this)
         );
         super.moveTo(x, y, z, pitch, yaw, headYaw);
 

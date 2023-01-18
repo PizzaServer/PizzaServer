@@ -106,11 +106,11 @@ public interface Entity extends Watchable, DataStore {
     Chunk getChunk();
 
     default void teleport(Vector3i position) {
-        this.teleport(position, Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+        this.teleport(position, EntityHelper.getBasicRotationFor(this));
     }
 
     default void teleport(Vector3f position) {
-        this.teleport(position.toFloat(), Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+        this.teleport(position.toFloat(), EntityHelper.getBasicRotationFor(this));
     }
 
     default void teleport(Vector3i position, Vector3f rotation) {
@@ -145,7 +145,12 @@ public interface Entity extends Watchable, DataStore {
     }
 
     default void teleport(World world, float x, float y, float z) {
-        this.teleport(world, x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+        this.teleport(
+                world, x, y, z,
+                this.get(EntityKeys.ROTATION_PITCH).orElse(0f),
+                this.get(EntityKeys.ROTATION_YAW).orElse(0f),
+                this.get(EntityKeys.ROTATION_HEAD_YAW).orElse(0f)
+        );
     }
 
     void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw);
@@ -222,18 +227,6 @@ public interface Entity extends Watchable, DataStore {
      * @param movementSpeed new movement speed
      */
     void setMovementSpeed(float movementSpeed);
-
-    float getPitch();
-
-    void setPitch(float pitch);
-
-    float getYaw();
-
-    void setYaw(float yaw);
-
-    float getHeadYaw();
-
-    void setHeadYaw(float headYaw);
 
     HorizontalDirection getHorizontalDirection();
 

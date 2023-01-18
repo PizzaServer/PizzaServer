@@ -11,6 +11,7 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.data.DamageCause;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
@@ -38,6 +39,7 @@ import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.data.SingleDataStore;
+import io.github.pizzaserver.commons.data.ValueContainer;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
@@ -72,9 +74,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     protected ImplBossBar bossBar = null;
 
-    protected float pitch;
-    protected float yaw;
-    protected float headYaw;
 
     protected BoundingBox boundingBox = new BoundingBox(Vector3f.ZERO, Vector3f.ZERO);
     protected float eyeHeight;
@@ -317,7 +316,8 @@ public class ImplEntity extends SingleDataStore implements Entity {
         return new Location(
                 this.get(EntityKeys.WORLD).orElse(null),
                 this.expect(EntityKeys.POSITION),
-                Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+                EntityHelper.getBasicRotationFor(this)
+        );
     }
 
     @Override
@@ -398,9 +398,9 @@ public class ImplEntity extends SingleDataStore implements Entity {
     public void setPosition(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
         this.set(EntityKeys.WORLD, world);
         this.set(EntityKeys.POSITION, Vector3f.from(x, y, z));
-        this.pitch = pitch;
-        this.yaw = yaw;
-        this.headYaw = headYaw;
+        this.set(EntityKeys.ROTATION_PITCH, pitch);
+        this.set(EntityKeys.ROTATION_YAW, yaw);
+        this.set(EntityKeys.ROTATION_HEAD_YAW, headYaw);
         this.recalculateBoundingBox();
     }
 
@@ -410,9 +410,9 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.moveUpdate = true;
 
         if (!world.equals(oldWorld)) {
-            this.setPitch(pitch);
-            this.setYaw(yaw);
-            this.setHeadYaw(headYaw);
+            this.set(EntityKeys.ROTATION_PITCH, pitch);
+            this.set(EntityKeys.ROTATION_YAW, yaw);
+            this.set(EntityKeys.ROTATION_HEAD_YAW, headYaw);
 
             oldWorld.removeEntity(this);
             world.addEntity(this, Vector3f.from(x, y, z));
@@ -481,41 +481,8 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public float getPitch() {
-        return this.pitch;
-    }
-
-    @Override
-    public void setPitch(float pitch) {
-        this.moveUpdate = true;
-        this.pitch = pitch;
-    }
-
-    @Override
-    public float getYaw() {
-        return this.yaw;
-    }
-
-    @Override
-    public void setYaw(float yaw) {
-        this.moveUpdate = true;
-        this.yaw = yaw;
-    }
-
-    @Override
-    public float getHeadYaw() {
-        return this.headYaw;
-    }
-
-    @Override
-    public void setHeadYaw(float headYaw) {
-        this.moveUpdate = true;
-        this.headYaw = headYaw;
-    }
-
-    @Override
     public HorizontalDirection getHorizontalDirection() {
-        return HorizontalDirection.fromYaw(this.getYaw());
+        return HorizontalDirection.fromYaw(this.get(EntityKeys.ROTATION_YAW).orElse(0f));
     }
 
     @Override
@@ -584,10 +551,13 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public Vector3f getDirectionVector() {
-        double cosPitch = Math.cos(Math.toRadians(this.getPitch()));
-        double x = Math.sin(Math.toRadians(this.getYaw())) * -cosPitch;
-        double y = -Math.sin(Math.toRadians(this.getPitch()));
-        double z = Math.cos(Math.toRadians(this.getYaw())) * cosPitch;
+        float pitch = this.get(EntityKeys.ROTATION_PITCH).orElse(0f);
+        float yaw = this.get(EntityKeys.ROTATION_PITCH).orElse(0f);
+
+        double cosPitch = Math.cos(Math.toRadians(pitch));
+        double x = Math.sin(Math.toRadians(yaw)) * -cosPitch;
+        double y = -Math.sin(Math.toRadians(pitch));
+        double z = Math.cos(Math.toRadians(yaw)) * cosPitch;
 
         return Vector3f.from((float) x, (float) y, (float) z).normalize();
     }
@@ -960,7 +930,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     public void moveTo(float x, float y, float z) {
-        this.moveTo(x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+        this.moveTo(
+                x, y, z,
+                this.get(EntityKeys.ROTATION_PITCH).orElse(0f),
+                this.get(EntityKeys.ROTATION_YAW).orElse(0f),
+                this.get(EntityKeys.ROTATION_HEAD_YAW).orElse(0f)
+        );
     }
 
     public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
@@ -1078,7 +1053,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(this.getId());
         moveEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
-        moveEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.headYaw));
+        moveEntityPacket.setRotation(EntityHelper.getBasicRotationFor(this));
         moveEntityPacket.setTeleported(true);
 
         SetEntityMotionPacket setEntityVelocityPacket = new SetEntityMotionPacket();
@@ -1292,7 +1267,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
             addEntityPacket.setIdentifier(this.getEntityDefinition().getEntityId());
             addEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
             addEntityPacket.setMotion(this.getMotion());
-            addEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+            addEntityPacket.setRotation(EntityHelper.getBasicRotationFor(this));
             addEntityPacket.getMetadata().putAll(this.getMetaData().serialize());
             player.sendPacket(addEntityPacket);
             this.sendEquipmentPacket(player);
