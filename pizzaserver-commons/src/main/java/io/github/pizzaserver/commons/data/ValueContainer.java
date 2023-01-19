@@ -7,7 +7,7 @@ import io.github.pizzaserver.commons.utils.Check;
 
 import java.util.function.Function;
 
-public class ValueContainer<T> extends ActionSource {
+public class ValueContainer<T> extends ActionSource implements ValueInterface<T> {
 
     /** Returns the previous value of the container. */
     public static final ActionType<Object> ACTION_VALUE_PRE_SET = ActionType.of("value_set_pre", Object.class);
@@ -21,10 +21,17 @@ public class ValueContainer<T> extends ActionSource {
     private T value;
     private Function<T, T> preprocessor = data -> data;
 
+    @Override
     public void setValue(T value) {
         this.broadcast(ACTION_VALUE_PRE_SET, this.value);
         this.value = preprocessor.apply(value);
         this.broadcast(ACTION_VALUE_SET, this.value);
+    }
+
+
+    @Override
+    public T getValue() {
+        return this.value;
     }
 
     public ValueContainer<T> setPreprocessor(Function<T, T> preprocessor) {
@@ -32,9 +39,7 @@ public class ValueContainer<T> extends ActionSource {
         return this;
     }
 
-    public T getValue() {
-        return this.value;
-    }
+
 
     /** Clears subscribers as this value should not be used*/
     void stale() {
