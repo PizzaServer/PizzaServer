@@ -5,14 +5,14 @@ import io.github.pizzaserver.api.keychain.EntityKeys;
 public class AttributeType {
 
     public static final AttributeTemplate HEALTH = AttributeTemplate.builder(EntityKeys.HEALTH)
-            .min(0f)
+            .min(EntityKeys.KILL_THRESHOLD)
             .max(EntityKeys.MAX_HEALTH)
             .defaults(EntityKeys.MAX_HEALTH)
             .build();
 
     public static final AttributeTemplate ABSORPTION = AttributeTemplate.builder(EntityKeys.ABSORPTION)
             .min(0f)
-            .max(0f)
+            .max(EntityKeys.MAX_ABSORPTION)
             .defaults(0f)
             .build();
 
