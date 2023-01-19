@@ -14,7 +14,7 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.data.DamageCause;
-import io.github.pizzaserver.api.entity.data.attributes.Attribute;
+import io.github.pizzaserver.api.entity.data.attributes.AttributeView;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
@@ -70,8 +70,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     protected int noHitTicks;
 
     protected int fireTicks;
-
-    protected final EntityAttributes attributes = new EntityAttributes();
 
     protected ImplBossBar bossBar = null;
 
@@ -464,23 +462,13 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public Set<Attribute> getAttributes() {
-        return this.attributes.getAttributes();
-    }
-
-    @Override
-    public Attribute getAttribute(AttributeType type) {
-        return this.attributes.getAttribute(type);
-    }
-
-    @Override
     public float getMovementSpeed() {
         return this.getAttribute(AttributeType.MOVEMENT_SPEED).getCurrentValue();
     }
 
     @Override
     public void setMovementSpeed(float movementSpeed) {
-        Attribute attribute = this.getAttribute(AttributeType.MOVEMENT_SPEED);
+        AttributeView attribute = this.getAttribute(AttributeType.MOVEMENT_SPEED);
         attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), movementSpeed));
         attribute.setDefaultValue(Math.max(attribute.getMinimumValue(), movementSpeed));
     }
@@ -502,7 +490,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public void setHealth(float health) {
-        Attribute attribute = this.getAttribute(AttributeType.HEALTH);
+        AttributeView attribute = this.getAttribute(AttributeType.HEALTH);
         attribute.setMaximumValue(Math.max(attribute.getMaximumValue(), health));
         attribute.setCurrentValue(Math.max(0, health));
 
@@ -520,7 +508,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public void setMaxHealth(float maxHealth) {
-        Attribute attribute = this.getAttribute(AttributeType.HEALTH);
+        AttributeView attribute = this.getAttribute(AttributeType.HEALTH);
 
         float newMaxHealth = Math.max(attribute.getMinimumValue(), maxHealth);
         attribute.setMaximumValue(newMaxHealth);
@@ -534,7 +522,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public void setAbsorption(float absorption) {
-        Attribute attribute = this.getAttribute(AttributeType.ABSORPTION);
+        AttributeView attribute = this.getAttribute(AttributeType.ABSORPTION);
 
         float newAbsorption = Math.max(attribute.getMinimumValue(), Math.min(absorption, this.getMaxAbsorption()));
         attribute.setCurrentValue(newAbsorption);
@@ -547,7 +535,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public void setMaxAbsorption(float maxAbsorption) {
-        Attribute attribute = this.getAttribute(AttributeType.ABSORPTION);
+        AttributeView attribute = this.getAttribute(AttributeType.ABSORPTION);
 
         float newMaxAbsorption = Math.max(attribute.getMinimumValue(), maxAbsorption);
         attribute.setMaximumValue(newMaxAbsorption);
@@ -1033,7 +1021,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         }
 
-        if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.expect(EntityKeys.IS_VULNERABLE)) {
+        if (this.getHealth() <= 0f && this.expect(EntityKeys.IS_VULNERABLE)) {
             this.kill();
         }
 

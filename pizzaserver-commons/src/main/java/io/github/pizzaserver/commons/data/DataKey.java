@@ -21,6 +21,10 @@ public class DataKey<T> {
         return type;
     }
 
+    public DataKey<T> suffix(String extension) {
+        return new DataKey<>(this.key+"_"+extension, this.type);
+    }
+
 
     @Override
     public boolean equals(Object o) {

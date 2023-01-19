@@ -56,6 +56,8 @@ public class EntityKeys {
 
     // -- Living
     public static final DataKey<Float> HEALTH = DataKey.of("minecraft:health", Float.TYPE); // *Attrib
+    public static final DataKey<Float> MAX_HEALTH = HEALTH.suffix("max");
+
     public static final DataKey<Float> ABSORPTION = DataKey.of("minecraft:absorption", Float.TYPE); // *Attrib
     public static final DataKey<Boolean> IS_VULNERABLE = DataKey.of("minecraft:is_vulnerable", Boolean.TYPE);
 
