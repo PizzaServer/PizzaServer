@@ -17,7 +17,7 @@ import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.entity.data.attributes.Attribute;
+import io.github.pizzaserver.api.entity.data.attributes.AttributeView;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
@@ -636,7 +636,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
     }
 
-    private void sendAttribute(Attribute attribute) {
+    private void sendAttribute(AttributeView attribute) {
         this.sendAttributes(Collections.singleton(attribute));
     }
 
@@ -644,11 +644,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.sendAttributes(this.attributes.getAttributes());
     }
 
-    private void sendAttributes(Set<Attribute> attributes) {
+    private void sendAttributes(Set<AttributeView> attributes) {
         if (this.hasSpawned()) {
             UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
             updateAttributesPacket.setRuntimeEntityId(this.getId());
-            updateAttributesPacket.setAttributes(attributes.stream().map(Attribute::serialize).collect(Collectors.toList()));
+            updateAttributesPacket.setAttributes(attributes.stream().map(AttributeView::serialize).collect(Collectors.toList()));
             this.sendPacket(updateAttributesPacket);
         }
     }
@@ -685,52 +685,52 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public float getFoodLevel() {
-        Attribute attribute = this.getAttribute(AttributeType.FOOD);
+        AttributeView attribute = this.getAttribute(AttributeType.FOOD);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setFoodLevel(float foodLevel) {
-        Attribute attribute = this.getAttribute(AttributeType.FOOD);
+        AttributeView attribute = this.getAttribute(AttributeType.FOOD);
         attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), foodLevel));
         this.sendAttribute(attribute);
     }
 
     @Override
     public float getSaturationLevel() {
-        Attribute attribute = this.getAttribute(AttributeType.SATURATION);
+        AttributeView attribute = this.getAttribute(AttributeType.SATURATION);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setSaturationLevel(float saturationLevel) {
-        Attribute attribute = this.getAttribute(AttributeType.SATURATION);
+        AttributeView attribute = this.getAttribute(AttributeType.SATURATION);
         attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), saturationLevel));
         this.sendAttribute(attribute);
     }
 
     @Override
     public float getExperience() {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE);
+        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE);
         return attribute.getCurrentValue();
     }
 
     @Override
     public void setExperience(float experience) {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE);
+        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE);
         attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experience));
         this.sendAttribute(attribute);
     }
 
     @Override
     public int getExperienceLevel() {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
         return (int) attribute.getCurrentValue();
     }
 
     @Override
     public void setExperienceLevel(int experienceLevel) {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
+        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
         attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experienceLevel));
         this.sendAttribute(attribute);
     }

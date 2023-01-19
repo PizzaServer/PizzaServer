@@ -5,8 +5,6 @@ import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.entity.data.attributes.Attribute;
-import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
@@ -198,10 +196,6 @@ public interface Entity extends Watchable, DataStore {
     Optional<String> getDisplayName();
 
     void setDisplayName(String name);
-
-    Set<Attribute> getAttributes();
-
-    Attribute getAttribute(AttributeType type);
 
     /**
      * Retrieve the entity's current movement speed per tick.
