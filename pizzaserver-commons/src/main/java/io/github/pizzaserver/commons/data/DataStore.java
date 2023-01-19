@@ -29,4 +29,6 @@ public interface DataStore {
      * @param <T> the type of the value.
      */
     <T> void set(DataKey<T> key, T value);
+
+    <T> Optional<ValueProxy<T>> getProxy(DataKey<T> proxy);
 }

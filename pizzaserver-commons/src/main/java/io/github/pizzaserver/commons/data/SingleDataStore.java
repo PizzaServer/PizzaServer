@@ -53,6 +53,12 @@ public class SingleDataStore implements DataStore {
         this.getDataRegistry().put(key, ValueContainer.wrap(value));
     }
 
+    @Override
+    public <T> Optional<ValueProxy<T>> getProxy(DataKey<T> proxy) {
+        Optional<ValueContainer<T>> container = this.getContainerFor(proxy);
+        return container.map(ValueProxy::new);
+    }
+
 
     /**
      * Returns the raw container that the data is stored within.
