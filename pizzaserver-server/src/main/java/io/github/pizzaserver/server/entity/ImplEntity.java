@@ -1021,7 +1021,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         }
 
-        if (this.getHealth() <= 0f && this.expect(EntityKeys.IS_VULNERABLE)) {
+        if (this.getHealth() <= this.get(EntityKeys.KILL_THRESHOLD).orElse(0f) && this.expect(EntityKeys.IS_VULNERABLE)) {
             this.kill();
         }
 

@@ -45,6 +45,8 @@ import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
+import io.github.pizzaserver.commons.data.DataKey;
+import io.github.pizzaserver.commons.data.Preprocessors;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -103,6 +105,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
 
+    protected Map<DataKey<Float>, AttributeView> bakedAttributeViews = Collections.unmodifiableMap(new HashMap<>());
+
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
         super(server.getEntityRegistry().getDefinition(EntityHumanDefinition.ID));
@@ -124,7 +128,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.setDisplayName(this.getUsername());
 
         // Players will die at any health lower than 0.5
-        this.getAttribute(AttributeType.HEALTH).setMinimumValue(0.5f);
+        // No need to check if it needs killing after the value is updated.
+        this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0.5f)
+                .setPreprocessor(Preprocessors.ifNullThen(0.5f));
     }
 
     /**
@@ -636,15 +642,25 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
     }
 
+
+    // Protocol Docs suggest attributes are just used for players so that's why
+    // they're here. No need to expose them to the API tbf.
+    public Map<DataKey<Float>, AttributeView> getAttributeReferences() {
+        if(this.bakedAttributeViews == null)
+            this.bakedAttributeViews = EntityHelper.generateAttributes(this, EntityHelper.PLAYER_ATTRIBUTES);
+
+        return this.bakedAttributeViews;
+    }
+
     private void sendAttribute(AttributeView attribute) {
         this.sendAttributes(Collections.singleton(attribute));
     }
 
     private void sendAttributes() {
-        this.sendAttributes(this.attributes.getAttributes());
+        this.sendAttributes(this.getAttributeReferences().values());
     }
 
-    private void sendAttributes(Set<AttributeView> attributes) {
+    private void sendAttributes(Collection<AttributeView> attributes) {
         if (this.hasSpawned()) {
             UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
             updateAttributesPacket.setRuntimeEntityId(this.getId());
@@ -656,31 +672,31 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     @Override
     public void setHealth(float health) {
         super.setHealth(health);
-        this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
+        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.HEALTH));
     }
 
     @Override
     public void setMaxHealth(float maxHealth) {
         super.setMaxHealth(maxHealth);
-        this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
+        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.MAX_HEALTH));
     }
 
     @Override
     public void setAbsorption(float absorption) {
         super.setAbsorption(absorption);
-        this.sendAttribute(this.getAttribute(AttributeType.ABSORPTION));
+        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.ABSORPTION));
     }
 
     @Override
     public void setMaxAbsorption(float maxAbsorption) {
         super.setMaxAbsorption(maxAbsorption);
-        this.sendAttribute(this.getAttribute(AttributeType.ABSORPTION));
+        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.MAX_ABSORPTION));
     }
 
     @Override
     public void setMovementSpeed(float movementSpeed) {
         super.setMovementSpeed(movementSpeed);
-        this.sendAttribute(this.getAttribute(AttributeType.MOVEMENT_SPEED));
+        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.MOVEMENT_SPEED));
     }
 
     @Override
