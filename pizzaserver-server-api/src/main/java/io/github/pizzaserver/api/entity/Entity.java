@@ -197,38 +197,9 @@ public interface Entity extends Watchable, DataStore {
 
     void setDisplayName(String name);
 
-    /**
-     * Retrieve the entity's current movement speed per tick.
-     * This is used to determine how far this entity's input can move per tick
-     * @return movement speed of an entity
-     */
-    float getMovementSpeed();
-
-    /**
-     * Change the entity's movement speed input per tick.
-     * @param movementSpeed new movement speed
-     */
-    void setMovementSpeed(float movementSpeed);
-
     HorizontalDirection getHorizontalDirection();
 
     boolean isAlive();
-
-    float getHealth();
-
-    void setHealth(float health);
-
-    float getMaxHealth();
-
-    void setMaxHealth(float maxHealth);
-
-    float getAbsorption();
-
-    void setAbsorption(float absorption);
-
-    float getMaxAbsorption();
-
-    void setMaxAbsorption(float maxAbsorption);
 
     Vector3f getDirectionVector();
 
