@@ -68,8 +68,8 @@ public class EntityKeys {
     // -- Humanoid
     public static final DataKey<Float> FOOD = DataKey.of("minecraft:player.hunger", Float.TYPE); // *Attrib
     public static final DataKey<Float> SATURATION = DataKey.of("minecraft:player.saturation", Float.TYPE); // *Attrib
-    public static final DataKey<Float> XP = DataKey.of("minecraft:player.experience", Float.TYPE); // *Attrib
-    public static final DataKey<Float> XP_LEVELS = DataKey.of("minecraft:player.level", Float.TYPE); // *Attrib
+    public static final DataKey<Float> PLAYER_XP = DataKey.of("minecraft:player.experience", Float.TYPE); // *Attrib
+    public static final DataKey<Float> PLAYER_XP_LEVELS = DataKey.of("minecraft:player.level", Float.TYPE); // *Attrib
 
 
     // -- Misc

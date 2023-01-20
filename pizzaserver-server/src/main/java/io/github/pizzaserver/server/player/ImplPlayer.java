@@ -105,8 +105,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
 
-    protected Map<DataKey<Float>, AttributeView> bakedAttributeViews = Collections.unmodifiableMap(new HashMap<>());
-
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
         super(server.getEntityRegistry().getDefinition(EntityHumanDefinition.ID));
@@ -470,7 +468,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.setDimensionTransferScreen(respawnLocation.getWorld().getDimension());
         }
 
-        this.setHealth(this.getMaxHealth());
+        this.set(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH));
         this.setFoodLevel(20);
 
         PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, respawnLocation);
@@ -643,21 +641,12 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
 
-    // Protocol Docs suggest attributes are just used for players so that's why
-    // they're here. No need to expose them to the API tbf.
-    public Map<DataKey<Float>, AttributeView> getAttributeReferences() {
-        if(this.bakedAttributeViews == null)
-            this.bakedAttributeViews = EntityHelper.generateAttributes(this, EntityHelper.PLAYER_ATTRIBUTES);
-
-        return this.bakedAttributeViews;
-    }
-
     private void sendAttribute(AttributeView attribute) {
         this.sendAttributes(Collections.singleton(attribute));
     }
 
     private void sendAttributes() {
-        this.sendAttributes(this.getAttributeReferences().values());
+        this.sendAttributes(this.generateAttributeReferences().values());
     }
 
     private void sendAttributes(Collection<AttributeView> attributes) {
@@ -672,31 +661,31 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     @Override
     public void setHealth(float health) {
         super.setHealth(health);
-        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.HEALTH));
+        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH));
     }
 
     @Override
     public void setMaxHealth(float maxHealth) {
         super.setMaxHealth(maxHealth);
-        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.MAX_HEALTH));
+        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MAX_HEALTH));
     }
 
     @Override
     public void setAbsorption(float absorption) {
         super.setAbsorption(absorption);
-        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.ABSORPTION));
+        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION));
     }
 
     @Override
     public void setMaxAbsorption(float maxAbsorption) {
         super.setMaxAbsorption(maxAbsorption);
-        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.MAX_ABSORPTION));
+        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MAX_ABSORPTION));
     }
 
     @Override
     public void setMovementSpeed(float movementSpeed) {
         super.setMovementSpeed(movementSpeed);
-        this.sendAttribute(this.getAttributeReferences().get(EntityKeys.MOVEMENT_SPEED));
+        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MOVEMENT_SPEED));
     }
 
     @Override
@@ -1041,8 +1030,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.getBlockBreakingManager().tick();
 
-        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
-            this.setHealth(this.getHealth() + 1);
+        if (!NumberUtils.isNearlyEqual(this.expect(EntityKeys.HEALTH), this.expect(EntityKeys.MAX_HEALTH)) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
+            this.setHealth(this.expect(EntityKeys.HEALTH) + 1);
         }
 
         boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();

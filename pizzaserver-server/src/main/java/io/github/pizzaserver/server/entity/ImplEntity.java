@@ -38,9 +38,7 @@ import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
-import io.github.pizzaserver.commons.data.Preprocessors;
-import io.github.pizzaserver.commons.data.SingleDataStore;
-import io.github.pizzaserver.commons.data.ValueContainer;
+import io.github.pizzaserver.commons.data.*;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
@@ -96,11 +94,15 @@ public class ImplEntity extends SingleDataStore implements Entity {
     protected final Set<Player> hiddenFrom = new HashSet<>();
 
 
+    // Attributes are hidden from the API - all of them should be passed through the entity data store.
+    // AttributeViews are only used to package attribs to and from packets.
+    protected Map<DataKey<Float>, AttributeView> bakedAttributeViews = Collections.unmodifiableMap(new HashMap<>());
+
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     public ImplEntity(EntityDefinition entityDefinition) {
         this.id = ID++;
         this.entityDefinition = entityDefinition;
-
 
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
@@ -120,6 +122,30 @@ public class ImplEntity extends SingleDataStore implements Entity {
             EntityComponentHandler handler = Server.getInstance().getEntityRegistry().getComponentHandler(clazz);
             handler.onRegistered(this, Server.getInstance().getEntityRegistry().getDefaultComponent(clazz));
         });
+
+        //TODO: Take from some entity definition. If health is not defined, have it set super low
+        // to make it one-hit.
+        this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.nonNull("Kill threshold must not be null and must be above or equal to zero."),
+                        Preprocessors.ensureAboveValue(0f)
+                ));
+        this.getOrCreateContainerFor(EntityKeys.MAX_HEALTH, 1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.nonNull("Max Health must not be null and must be above or equal to zero."),
+                        Preprocessors.ensureAboveValue(this.getProxy(EntityKeys.KILL_THRESHOLD).orElseThrow())
+                ));
+        this.getOrCreateContainerFor(EntityKeys.HEALTH, this.expect(EntityKeys.HEALTH))
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThen(this.expect(EntityKeys.MAX_HEALTH)),
+                        Preprocessors.ensureBelowValue(this.getProxy(EntityKeys.MAX_HEALTH).orElseThrow()),
+                        Preprocessors.ensureAboveValue(0f)
+                ));
+
+        this.listenFor(DataStore.ACTION_CREATE_CONTAINER, key -> {
+                if(AttributeType.ALL_ATTRIBUTE_KEY_DEPENDENCIES.contains(key))
+                    this.generateAttributeReferences();
+        });
     }
 
     @Override
@@ -130,6 +156,13 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public EntityDefinition getEntityDefinition() {
         return this.entityDefinition;
+    }
+
+    public final Map<DataKey<Float>, AttributeView> generateAttributeReferences() {
+        if(this.bakedAttributeViews == null)
+            this.bakedAttributeViews = EntityHelper.generateAttributes(this, AttributeType.ALL_ATTRIBUTES);
+
+        return this.bakedAttributeViews;
     }
 
     @Override
@@ -461,10 +494,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.getMetaData().putString(EntityData.NAMETAG, name);
     }
 
-    @Override
-    public float getMovementSpeed() {
-        return this.getAttribute(AttributeType.MOVEMENT_SPEED).getCurrentValue();
-    }
 
     @Override
     public void setMovementSpeed(float movementSpeed) {
@@ -480,12 +509,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public boolean isAlive() {
-        return this.getHealth() > this.getAttribute(AttributeType.HEALTH).getMinimumValue();
-    }
-
-    @Override
-    public float getHealth() {
-        return this.getAttribute(AttributeType.HEALTH).getCurrentValue();
+        return this.expect(EntityKeys.HEALTH) > this.get(EntityKeys.KILL_THRESHOLD).orElse(0f);
     }
 
     @Override
@@ -502,11 +526,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public float getMaxHealth() {
-        return this.getAttribute(AttributeType.HEALTH).getMaximumValue();
-    }
-
-    @Override
     public void setMaxHealth(float maxHealth) {
         AttributeView attribute = this.getAttribute(AttributeType.HEALTH);
 
@@ -516,21 +535,11 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public float getAbsorption() {
-        return this.getAttribute(AttributeType.ABSORPTION).getCurrentValue();
-    }
-
-    @Override
     public void setAbsorption(float absorption) {
         AttributeView attribute = this.getAttribute(AttributeType.ABSORPTION);
 
         float newAbsorption = Math.max(attribute.getMinimumValue(), Math.min(absorption, this.getMaxAbsorption()));
         attribute.setCurrentValue(newAbsorption);
-    }
-
-    @Override
-    public float getMaxAbsorption() {
-        return this.getAttribute(AttributeType.ABSORPTION).getMaximumValue();
     }
 
     @Override
@@ -797,7 +806,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public void hurt(float damage) {
-        this.setHealth(this.getHealth() - damage);
+        this.set(EntityKeys.HEALTH, this.expect(EntityKeys.HEALTH) - damage);
         if (damage > 0 && this.isAlive()) {
             EntityEventPacket entityEventPacket = new EntityEventPacket();
             entityEventPacket.setRuntimeEntityId(this.getId());
@@ -1021,7 +1030,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         }
 
-        if (this.getHealth() <= this.get(EntityKeys.KILL_THRESHOLD).orElse(0f) && this.expect(EntityKeys.IS_VULNERABLE)) {
+        if (this.expect(EntityKeys.IS_VULNERABLE) && !this.isAlive()) {
             this.kill();
         }
 
