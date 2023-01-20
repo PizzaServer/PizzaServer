@@ -1,8 +1,13 @@
 package io.github.pizzaserver.commons.data;
 
+import io.github.pizzaserver.commons.data.react.ActionType;
+
 import java.util.Optional;
 
 public interface DataStore {
+
+    @SuppressWarnings("rawtypes")
+    ActionType<DataKey> ACTION_CREATE_CONTAINER = ActionType.of("container_create", DataKey.class);
 
     /**
      * Obtains an entry of data attached to the provided key.
@@ -29,6 +34,14 @@ public interface DataStore {
      * @param <T> the type of the value.
      */
     <T> void set(DataKey<T> key, T value);
+
+    /**
+     * Determines whether a key is defined. If the value is null or there
+     * is no ValueContainer associated with the key, it returns null.
+     * @param key the type-driven key to check.#
+     * @return true if the value is non-null and present
+     */
+    <T> boolean has(DataKey<T> key);
 
     <T> Optional<ValueProxy<T>> getProxy(DataKey<T> proxy);
 }

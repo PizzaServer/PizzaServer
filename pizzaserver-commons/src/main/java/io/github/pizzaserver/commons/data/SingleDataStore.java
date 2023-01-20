@@ -1,9 +1,12 @@
 package io.github.pizzaserver.commons.data;
 
+import io.github.pizzaserver.commons.data.react.ActionSource;
+import io.github.pizzaserver.commons.utils.Check;
+
 import java.util.HashMap;
 import java.util.Optional;
 
-public class SingleDataStore implements DataStore {
+public class SingleDataStore extends ActionSource implements DataStore {
 
     private final HashMap<DataKey<?>, ValueContainer<?>> dataRegistry;
 
@@ -51,6 +54,17 @@ public class SingleDataStore implements DataStore {
         }
 
         this.getDataRegistry().put(key, ValueContainer.wrap(value));
+        this.broadcast(ACTION_CREATE_CONTAINER, key);
+    }
+
+    @Override
+    public <T> boolean has(DataKey<T> key) {
+        if(key == null) return false;
+
+        boolean hasContainer = this.dataRegistry.containsKey(key);
+        boolean notNull = !Check.isNull(this.dataRegistry.get(key).getValue());
+
+        return hasContainer && notNull;
     }
 
     @Override
@@ -86,6 +100,8 @@ public class SingleDataStore implements DataStore {
 
         ValueContainer<T> freshContainer = ValueContainer.wrap(fallbackValue);
         this.getDataRegistry().put(type, freshContainer);
+
+        this.broadcast(ACTION_CREATE_CONTAINER, type);
 
         return freshContainer;
     }
