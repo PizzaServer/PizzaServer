@@ -129,19 +129,38 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         // No need to check if it needs killing after the value is updated.
         this.getContainerFor(EntityKeys.KILL_THRESHOLD).orElseThrow()
                 .setPreprocessor(Preprocessors.ifNullThenConstant(0.5f))
-                .setValue(0.5f);
+                .setValue(0.5f)
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        // min health is linked to health, thus it uses the current var of HEALTH.
+                        // Same applies with max health and so on with other attributes...
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
+                );
 
         this.getContainerFor(EntityKeys.MAX_HEALTH).orElseThrow()
                 .setValue(20f)
-                .listenFor(ValueContainer.ACTION_VALUE_SET, newHealth ->
-                        // max health is linked to health, thus it uses the current var of HEALTH
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
                 );
 
         this.getContainerFor(EntityKeys.HEALTH).orElseThrow()
                 .setValue(20f)
-                .listenFor(ValueContainer.ACTION_VALUE_SET, newHealth ->
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
+                );
+
+        this.getContainerFor(EntityKeys.ABSORPTION).orElseThrow()
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION))
+                );
+
+        this.getContainerFor(EntityKeys.MAX_ABSORPTION).orElseThrow()
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION))
+                );
+
+        this.getContainerFor(EntityKeys.MOVEMENT_SPEED).orElseThrow()
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MOVEMENT_SPEED))
                 );
     }
 
@@ -670,24 +689,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             updateAttributesPacket.setAttributes(attributes.stream().map(AttributeView::serialize).collect(Collectors.toList()));
             this.sendPacket(updateAttributesPacket);
         }
-    }
-
-    @Override
-    public void setAbsorption(float absorption) {
-        super.setAbsorption(absorption);
-        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION));
-    }
-
-    @Override
-    public void setMaxAbsorption(float maxAbsorption) {
-        super.setMaxAbsorption(maxAbsorption);
-        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MAX_ABSORPTION));
-    }
-
-    @Override
-    public void setMovementSpeed(float movementSpeed) {
-        super.setMovementSpeed(movementSpeed);
-        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MOVEMENT_SPEED));
     }
 
     @Override
