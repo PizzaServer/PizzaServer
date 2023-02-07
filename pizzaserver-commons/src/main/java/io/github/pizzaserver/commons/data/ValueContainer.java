@@ -22,10 +22,11 @@ public class ValueContainer<T> extends ActionSource implements ValueInterface<T>
     private Function<T, T> preprocessor = data -> data;
 
     @Override
-    public void setValue(T value) {
+    public ValueContainer<T> setValue(T value) {
         this.broadcast(ACTION_VALUE_PRE_SET, this.value);
         this.value = preprocessor.apply(value);
         this.broadcast(ACTION_VALUE_SET, this.value);
+        return this;
     }
 
 

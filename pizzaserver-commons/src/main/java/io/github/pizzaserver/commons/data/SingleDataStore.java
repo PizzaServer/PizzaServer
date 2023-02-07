@@ -26,16 +26,6 @@ public class SingleDataStore extends ActionSource implements DataStore {
         return container.map(ValueContainer::getValue);
     }
 
-    /**
-     * Obtains an entry of data attached to the provided key, throwing
-     * an error if it is null or not present in the store.
-     * @param key a type-driven key.
-     * @return the data
-     * @param <T> the type of the data.
-     */
-    public <T> T expect(DataKey<T> key) {
-        return this.get(key).orElseThrow();
-    }
 
     /**
      * Sets the data within the store. If the key was already set, its
@@ -109,12 +99,11 @@ public class SingleDataStore extends ActionSource implements DataStore {
 
     /** Sets all data to stale as they shouldn't be used. */
     protected void stale() {
-        for(ValueContainer<?> container: this.getDataRegistry().values()) {
+        for(ValueContainer<?> container: this.getDataRegistry().values())
             container.stale();
-        }
     }
 
     protected HashMap<DataKey<?>, ValueContainer<?>> getDataRegistry() {
-        return dataRegistry;
+        return this.dataRegistry;
     }
 }
