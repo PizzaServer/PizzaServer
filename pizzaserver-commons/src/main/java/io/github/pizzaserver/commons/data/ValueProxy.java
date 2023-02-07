@@ -12,8 +12,9 @@ public final class ValueProxy<T> implements ValueInterface<T> {
 
 
     @Override
-    public void setValue(T value) {
+    public ValueProxy<T> setValue(T value) {
         this.source.setValue(value);
+        return this;
     }
 
     @Override

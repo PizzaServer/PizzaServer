@@ -45,8 +45,8 @@ import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
-import io.github.pizzaserver.commons.data.DataKey;
 import io.github.pizzaserver.commons.data.Preprocessors;
+import io.github.pizzaserver.commons.data.ValueContainer;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -127,8 +127,22 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         // Players will die at any health lower than 0.5
         // No need to check if it needs killing after the value is updated.
-        this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0.5f)
-                .setPreprocessor(Preprocessors.ifNullThen(0.5f));
+        this.getContainerFor(EntityKeys.KILL_THRESHOLD).orElseThrow()
+                .setPreprocessor(Preprocessors.ifNullThenConstant(0.5f))
+                .setValue(0.5f);
+
+        this.getContainerFor(EntityKeys.MAX_HEALTH).orElseThrow()
+                .setValue(20f)
+                .listenFor(ValueContainer.ACTION_VALUE_SET, newHealth ->
+                        // max health is linked to health, thus it uses the current var of HEALTH
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
+                );
+
+        this.getContainerFor(EntityKeys.HEALTH).orElseThrow()
+                .setValue(20f)
+                .listenFor(ValueContainer.ACTION_VALUE_SET, newHealth ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
+                );
     }
 
     /**
@@ -659,18 +673,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public void setHealth(float health) {
-        super.setHealth(health);
-        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH));
-    }
-
-    @Override
-    public void setMaxHealth(float maxHealth) {
-        super.setMaxHealth(maxHealth);
-        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MAX_HEALTH));
-    }
-
-    @Override
     public void setAbsorption(float absorption) {
         super.setAbsorption(absorption);
         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION));
@@ -1031,7 +1033,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getBlockBreakingManager().tick();
 
         if (!NumberUtils.isNearlyEqual(this.expect(EntityKeys.HEALTH), this.expect(EntityKeys.MAX_HEALTH)) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
-            this.setHealth(this.expect(EntityKeys.HEALTH) + 1);
+            this.set(EntityKeys.HEALTH, this.expect(EntityKeys.HEALTH) + 1);
         }
 
         boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();

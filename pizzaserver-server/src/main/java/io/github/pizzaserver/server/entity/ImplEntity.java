@@ -106,7 +106,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
-        Function<Float, Float> nullToZero = Preprocessors.ifNullThen(0f);
+        Function<Float, Float> nullToZero = Preprocessors.ifNullThenConstant(0f);
 
         this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
@@ -115,7 +115,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
 
-        this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThen(true));
+        this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThenConstant(true));
 
         // Apply default components to the entity
         Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
@@ -128,19 +128,31 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Kill threshold must not be null and must be above or equal to zero."),
-                        Preprocessors.ensureAboveValue(0f)
-                ));
+                        Preprocessors.ensureAboveConstant(0f)
+                )); // No need for a listenFor as kill conditions are checked during tick()
+
         this.getOrCreateContainerFor(EntityKeys.MAX_HEALTH, 1f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Max Health must not be null and must be above or equal to zero."),
-                        Preprocessors.ensureAboveValue(this.getProxy(EntityKeys.KILL_THRESHOLD).orElseThrow())
-                ));
-        this.getOrCreateContainerFor(EntityKeys.HEALTH, this.expect(EntityKeys.HEALTH))
+                        Preprocessors.ensureAboveDefined(this.expectProxy(EntityKeys.KILL_THRESHOLD))
+                ))
+                .listenFor(ValueContainer.ACTION_VALUE_SET, newMaxHealth -> {
+                    float health = this.expect(EntityKeys.HEALTH);
+                    this.set(EntityKeys.HEALTH, Math.min(health, (float) newMaxHealth));
+                });
+        this.getOrCreateContainerFor(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH))
                 .setPreprocessor(Preprocessors.inOrder(
-                        Preprocessors.ifNullThen(this.expect(EntityKeys.MAX_HEALTH)),
-                        Preprocessors.ensureBelowValue(this.getProxy(EntityKeys.MAX_HEALTH).orElseThrow()),
-                        Preprocessors.ensureAboveValue(0f)
-                ));
+                        Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_HEALTH)),
+                        Preprocessors.ensureBelowDefined(this.expectProxy(EntityKeys.MAX_HEALTH)),
+                        Preprocessors.ensureAboveConstant(0f)
+                ))
+                .listenFor(ValueContainer.ACTION_VALUE_SET, () -> {
+                    if (this.getBossBar().isPresent()) {
+                        BossBar bossBar = this.getBossBar().get();
+                        bossBar.setPercentage(this.expect(EntityKeys.HEALTH) / this.expect(EntityKeys.MAX_HEALTH));
+                        this.setBossBar(bossBar);
+                    }
+                });
 
         this.listenFor(DataStore.ACTION_CREATE_CONTAINER, key -> {
                 if(AttributeType.ALL_ATTRIBUTE_KEY_DEPENDENCIES.contains(key))
@@ -513,28 +525,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public void setHealth(float health) {
-        AttributeView attribute = this.getAttribute(AttributeType.HEALTH);
-        attribute.setMaximumValue(Math.max(attribute.getMaximumValue(), health));
-        attribute.setCurrentValue(Math.max(0, health));
-
-        if (this.getBossBar().isPresent()) {
-            BossBar bossBar = this.getBossBar().get();
-            bossBar.setPercentage(this.getHealth() / this.getMaxHealth());
-            this.setBossBar(bossBar);
-        }
-    }
-
-    @Override
-    public void setMaxHealth(float maxHealth) {
-        AttributeView attribute = this.getAttribute(AttributeType.HEALTH);
-
-        float newMaxHealth = Math.max(attribute.getMinimumValue(), maxHealth);
-        attribute.setMaximumValue(newMaxHealth);
-        attribute.setCurrentValue(Math.min(this.getHealth(), this.getMaxHealth()));
-    }
-
-    @Override
     public void setAbsorption(float absorption) {
         AttributeView attribute = this.getAttribute(AttributeType.ABSORPTION);
 
@@ -824,7 +814,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public void kill() {
         if (this.hasSpawned() && this.deathAnimationTicks == -1) {
-            this.setHealth(0);
+            this.set(EntityKeys.HEALTH, 0f);
             this.setAI(false);
 
             this.deathAnimationTicks = 20;

@@ -5,6 +5,7 @@ import io.github.pizzaserver.commons.utils.Check;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+
 public class Preprocessors {
 
     public static <T> Function<T, T> nonNull(String name) {
@@ -46,11 +47,11 @@ public class Preprocessors {
                 : data;
     }
 
-    public static <T extends Number> Function<T, T> ensureAboveValue(ValueInterface<T> minimum) {
+    public static <T extends Number> Function<T, T> ensureAboveDefined(ValueProxy<T> minimum) {
         return Preprocessors.ensureAboveValue(minimum::getValue);
     }
 
-    public static <T extends Number> Function<T, T> ensureBelowValue(ValueInterface<T> maximum) {
+    public static <T extends Number> Function<T, T> ensureBelowDefined(ValueProxy<T> maximum) {
         return Preprocessors.ensureBelowValue(maximum::getValue);
     }
 

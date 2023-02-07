@@ -24,7 +24,9 @@ public interface DataStore {
      * @return the data
      * @param <T> the type of the data.
      */
-    <T> T expect(DataKey<T> key);
+    default <T> T expect(DataKey<T> key) {
+        return this.get(key).orElseThrow();
+    }
 
     /**
      * Sets the data within the store. If the key was already set, its
@@ -44,4 +46,8 @@ public interface DataStore {
     <T> boolean has(DataKey<T> key);
 
     <T> Optional<ValueProxy<T>> getProxy(DataKey<T> proxy);
+
+    default <T> ValueProxy<T> expectProxy(DataKey<T> proxy) {
+        return this.getProxy(proxy).orElseThrow();
+    }
 }
