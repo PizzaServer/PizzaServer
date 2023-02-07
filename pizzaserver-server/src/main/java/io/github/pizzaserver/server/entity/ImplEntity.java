@@ -106,15 +106,13 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
-        Function<Float, Float> nullToZero = Preprocessors.ifNullThenConstant(0f);
-        Function<Float, Float> aboveOrEqualToZero = val -> val < 0f ? 0f : val;
 
         this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
 
         this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThenConstant(true));
 
@@ -127,7 +125,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Kill threshold must not be null and must be above or equal to zero."),
-                        Preprocessors.ensureAboveConstant(0f)
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 )); // No need for a listenFor as kill conditions are checked during tick()
 
         this.getOrCreateContainerFor(EntityKeys.MAX_HEALTH, 1f)
@@ -146,7 +144,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_HEALTH)),
                         Preprocessors.ensureBelowDefined(this.expectProxy(EntityKeys.MAX_HEALTH)),
-                        Preprocessors.ensureAboveConstant(0f)
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(ValueContainer.ACTION_VALUE_SET, () -> {
                     if (this.getBossBar().isPresent()) {
@@ -159,7 +157,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.getOrCreateContainerFor(EntityKeys.MAX_ABSORPTION, 0f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Max Absorption must not be null and must be above or equal to zero."),
-                        val -> val < 0f ? 0f : val
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(ValueContainer.ACTION_VALUE_SET, newMaxAbsorption -> {
                     float absorption = this.expect(EntityKeys.ABSORPTION);
@@ -172,13 +170,13 @@ public class ImplEntity extends SingleDataStore implements Entity {
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_ABSORPTION)),
                         Preprocessors.ensureBelowDefined(this.expectProxy(EntityKeys.MAX_ABSORPTION)),
-                        Preprocessors.ensureAboveConstant(0f)
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
 
         this.getOrCreateContainerFor(EntityKeys.MOVEMENT_SPEED, 0.1f)
                 .setPreprocessor(Preprocessors.inOrder(
-                        nullToZero,
-                        Preprocessors.ensureAboveConstant(0f)
+                        Preprocessors.TRANSFORM_NULL_TO_ZERO,
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
 
 
