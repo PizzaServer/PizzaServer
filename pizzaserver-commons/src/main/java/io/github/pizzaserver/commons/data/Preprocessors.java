@@ -12,20 +12,20 @@ public class Preprocessors {
         return data -> Check.notNull(data, name);
     }
 
-    public static <T> Function<T, T> ifNullThenConstant(T alternative) {
-        return data -> Check.isNull(data) ? alternative : data;
-    }
-
     public static <T> Function<T, T> ifNullThenValue(Supplier<T> alternative) {
         return data -> Check.isNull(data) ? alternative.get() : data;
     }
 
-
-    public static <T extends Number> Function<T, T> ensureAboveConstant(T minimum) {
-        return data -> minimum.floatValue() > data.floatValue()
-                ? minimum
-                : data;
+    public static <T> Function<T, T> ifNullThenConstant(T alternative) {
+        return Preprocessors.ifNullThenValue(() -> alternative);
     }
+
+    public static <T> Function<T, T> ifNullThenDefined(ValueProxy<T> alternative) {
+        return Preprocessors.ifNullThenValue(alternative::getValue);
+    }
+
+
+
 
     public static <T extends Number> Function<T, T> ensureAboveValue(Supplier<T> minimum) {
         T min = minimum.get();
@@ -34,11 +34,16 @@ public class Preprocessors {
                 : data;
     }
 
-    public static <T extends Number> Function<T, T> ensureBelowConstant(T maximum) {
-        return data -> data.floatValue() > maximum.floatValue()
-                ? maximum
-                : data;
+    public static <T extends Number> Function<T, T> ensureAboveConstant(T minimum) {
+        return Preprocessors.ensureAboveValue(() -> minimum);
     }
+
+    public static <T extends Number> Function<T, T> ensureAboveDefined(ValueProxy<T> minimum) {
+        return Preprocessors.ensureAboveValue(minimum::getValue);
+    }
+
+
+
 
     public static <T extends Number> Function<T, T> ensureBelowValue(Supplier<T> maximum) {
         T max = maximum.get();
@@ -47,8 +52,8 @@ public class Preprocessors {
                 : data;
     }
 
-    public static <T extends Number> Function<T, T> ensureAboveDefined(ValueProxy<T> minimum) {
-        return Preprocessors.ensureAboveValue(minimum::getValue);
+    public static <T extends Number> Function<T, T> ensureBelowConstant(T maximum) {
+        return Preprocessors.ensureBelowValue(() -> maximum);
     }
 
     public static <T extends Number> Function<T, T> ensureBelowDefined(ValueProxy<T> maximum) {

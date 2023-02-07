@@ -107,6 +107,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
         Function<Float, Float> nullToZero = Preprocessors.ifNullThenConstant(0f);
+        Function<Float, Float> aboveOrEqualToZero = val -> val < 0f ? 0f : val;
 
         this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(nullToZero).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
@@ -123,8 +124,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
             handler.onRegistered(this, Server.getInstance().getEntityRegistry().getDefaultComponent(clazz));
         });
 
-        //TODO: Take from some entity definition. If health is not defined, have it set super low
-        // to make it one-hit.
         this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Kill threshold must not be null and must be above or equal to zero."),
@@ -138,8 +137,11 @@ public class ImplEntity extends SingleDataStore implements Entity {
                 ))
                 .listenFor(ValueContainer.ACTION_VALUE_SET, newMaxHealth -> {
                     float health = this.expect(EntityKeys.HEALTH);
-                    this.set(EntityKeys.HEALTH, Math.min(health, (float) newMaxHealth));
+                    float maxHealth = (float) newMaxHealth;
+                    if (health > maxHealth)
+                        this.set(EntityKeys.HEALTH, maxHealth);
                 });
+
         this.getOrCreateContainerFor(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH))
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_HEALTH)),
@@ -154,11 +156,38 @@ public class ImplEntity extends SingleDataStore implements Entity {
                     }
                 });
 
+        this.getOrCreateContainerFor(EntityKeys.MAX_ABSORPTION, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.nonNull("Max Absorption must not be null and must be above or equal to zero."),
+                        val -> val < 0f ? 0f : val
+                ))
+                .listenFor(ValueContainer.ACTION_VALUE_SET, newMaxAbsorption -> {
+                    float absorption = this.expect(EntityKeys.ABSORPTION);
+                    float maxAbsorption = (float) newMaxAbsorption;
+                    if (absorption > maxAbsorption)
+                        this.set(EntityKeys.ABSORPTION, maxAbsorption);
+                });
+
+        this.getOrCreateContainerFor(EntityKeys.ABSORPTION, this.expect(EntityKeys.MAX_ABSORPTION))
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_ABSORPTION)),
+                        Preprocessors.ensureBelowDefined(this.expectProxy(EntityKeys.MAX_ABSORPTION)),
+                        Preprocessors.ensureAboveConstant(0f)
+                ));
+
+        this.getOrCreateContainerFor(EntityKeys.MOVEMENT_SPEED, 0.1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        nullToZero,
+                        Preprocessors.ensureAboveConstant(0f)
+                ));
+
+
         this.listenFor(DataStore.ACTION_CREATE_CONTAINER, key -> {
                 if(AttributeType.ALL_ATTRIBUTE_KEY_DEPENDENCIES.contains(key))
                     this.generateAttributeReferences();
         });
     }
+
 
     @Override
     public long getId() {
@@ -506,14 +535,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.getMetaData().putString(EntityData.NAMETAG, name);
     }
 
-
-    @Override
-    public void setMovementSpeed(float movementSpeed) {
-        AttributeView attribute = this.getAttribute(AttributeType.MOVEMENT_SPEED);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), movementSpeed));
-        attribute.setDefaultValue(Math.max(attribute.getMinimumValue(), movementSpeed));
-    }
-
     @Override
     public HorizontalDirection getHorizontalDirection() {
         return HorizontalDirection.fromYaw(this.get(EntityKeys.ROTATION_YAW).orElse(0f));
@@ -522,23 +543,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public boolean isAlive() {
         return this.expect(EntityKeys.HEALTH) > this.get(EntityKeys.KILL_THRESHOLD).orElse(0f);
-    }
-
-    @Override
-    public void setAbsorption(float absorption) {
-        AttributeView attribute = this.getAttribute(AttributeType.ABSORPTION);
-
-        float newAbsorption = Math.max(attribute.getMinimumValue(), Math.min(absorption, this.getMaxAbsorption()));
-        attribute.setCurrentValue(newAbsorption);
-    }
-
-    @Override
-    public void setMaxAbsorption(float maxAbsorption) {
-        AttributeView attribute = this.getAttribute(AttributeType.ABSORPTION);
-
-        float newMaxAbsorption = Math.max(attribute.getMinimumValue(), maxAbsorption);
-        attribute.setMaximumValue(newMaxAbsorption);
-        attribute.setCurrentValue(Math.min(this.getAbsorption(), this.getMaxAbsorption()));
     }
 
     @Override
