@@ -163,16 +163,47 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MOVEMENT_SPEED))
                 );
 
+        this.getOrCreateContainerFor(EntityKeys.FOOD, 20f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenConstant(20f),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant(20f)
+                ))
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.FOOD))
+                );
+
+        this.getOrCreateContainerFor(EntityKeys.SATURATION, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.SATURATION))
+                );
+
+
         this.getOrCreateContainerFor(EntityKeys.PLAYER_XP_LEVELS, 0)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
-                        Preprocessors.INT_ABOVE_ZERO,
-                        Preprocessors.ensureAboveConstant(AttributeType.PLAYER_XP_LEVEL_LIMIT)
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant(AttributeType.PLAYER_XP_LEVEL_LIMIT)
                 ))
                 .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP_LEVELS))
                 );
+
+        this.getOrCreateContainerFor(EntityKeys.PLAYER_XP, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant(1f)
+                ))
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP))
+                );
     }
+
 
     /**
      * Initialize the player to be ready to spawn in.
@@ -512,7 +543,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
 
         this.set(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH));
-        this.setFoodLevel(20);
+        this.set(EntityKeys.FOOD, 20f);
 
         PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, respawnLocation);
         this.getServer().getEventManager().call(respawnEvent);
@@ -699,45 +730,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             updateAttributesPacket.setAttributes(attributes.stream().map(AttributeView::serialize).collect(Collectors.toList()));
             this.sendPacket(updateAttributesPacket);
         }
-    }
-
-    @Override
-    public float getFoodLevel() {
-        AttributeView attribute = this.getAttribute(AttributeType.FOOD);
-        return attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setFoodLevel(float foodLevel) {
-        AttributeView attribute = this.getAttribute(AttributeType.FOOD);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), foodLevel));
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getSaturationLevel() {
-        AttributeView attribute = this.getAttribute(AttributeType.SATURATION);
-        return attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setSaturationLevel(float saturationLevel) {
-        AttributeView attribute = this.getAttribute(AttributeType.SATURATION);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), saturationLevel));
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getExperience() {
-        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE);
-        return attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setExperience(float experience) {
-        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experience));
-        this.sendAttribute(attribute);
     }
 
     @Override
@@ -1030,7 +1022,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.getBlockBreakingManager().tick();
 
-        if (!NumberUtils.isNearlyEqual(this.expect(EntityKeys.HEALTH), this.expect(EntityKeys.MAX_HEALTH)) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
+        if (!NumberUtils.isNearlyEqual(this.expect(EntityKeys.HEALTH), this.expect(EntityKeys.MAX_HEALTH)) && this.expect(EntityKeys.FOOD) >= 18 && this.ticks % 80 == 0) {
             this.set(EntityKeys.HEALTH, this.expect(EntityKeys.HEALTH) + 1);
         }
 
