@@ -48,7 +48,6 @@ import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class ImplEntity extends SingleDataStore implements Entity {
 
@@ -96,7 +95,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     // Attributes are hidden from the API - all of them should be passed through the entity data store.
     // AttributeViews are only used to package attribs to and from packets.
-    protected Map<DataKey<Float>, AttributeView> bakedAttributeViews = Collections.unmodifiableMap(new HashMap<>());
+    protected Map<DataKey<? extends Number>, AttributeView<? extends Number>> bakedAttributeViews = Collections.unmodifiableMap(new HashMap<>());
 
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -108,11 +107,11 @@ public class ImplEntity extends SingleDataStore implements Entity {
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
 
         this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
 
         this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThenConstant(true));
 
@@ -175,7 +174,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         this.getOrCreateContainerFor(EntityKeys.MOVEMENT_SPEED, 0.1f)
                 .setPreprocessor(Preprocessors.inOrder(
-                        Preprocessors.TRANSFORM_NULL_TO_ZERO,
+                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
 
@@ -197,7 +196,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         return this.entityDefinition;
     }
 
-    public final Map<DataKey<Float>, AttributeView> generateAttributeReferences() {
+    public final Map<DataKey<? extends Number>, AttributeView<? extends Number>> generateAttributeReferences() {
         if(this.bakedAttributeViews == null)
             this.bakedAttributeViews = EntityHelper.generateAttributes(this, AttributeType.ALL_ATTRIBUTES);
 

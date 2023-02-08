@@ -6,16 +6,16 @@ import io.github.pizzaserver.commons.data.ValueInterface;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 
-public class AttributeView {
+public class AttributeView<T extends Number> {
 
-    private final DataKey<Float> type;
-    private final ValueInterface<Float> minimumValue;
-    private final ValueInterface<Float> maximumValue;
-    private final ValueInterface<Float> defaultValue;
-    private final ValueInterface<Float> currentValue;
+    private final DataKey<T> type;
+    private final ValueInterface<T> minimumValue;
+    private final ValueInterface<T> maximumValue;
+    private final ValueInterface<T> defaultValue;
+    private final ValueInterface<T> currentValue;
 
 
-    AttributeView(DataKey<Float> attributeType, ValueInterface<Float> minimumValue, ValueInterface<Float> maximumValue, ValueInterface<Float> defaultValue, ValueInterface<Float> currentValue) {
+    AttributeView(DataKey<T> attributeType, ValueInterface<T> minimumValue, ValueInterface<T> maximumValue, ValueInterface<T> defaultValue, ValueInterface<T> currentValue) {
         this.type = Check.notNull(attributeType, "Attribute Type");
 
         this.minimumValue = Check.notNull(minimumValue, "Attribute: Min Value");
@@ -24,64 +24,64 @@ public class AttributeView {
         this.currentValue = Check.notNull(currentValue, "Attribute: Current Value");
     }
 
-    public DataKey<Float> getID() {
+    public DataKey<T> getID() {
         return this.type;
     }
 
-    public float getMinimumValue() {
+    public T getMinimumValue() {
         return this.minimumValue.getValue();
     }
 
-    public void setMinimumValue(float minimumValue) {
+    public void setMinimumValue(T minimumValue) {
         this.minimumValue.setValue(minimumValue);
     }
 
-    public float getMaximumValue() {
+    public T getMaximumValue() {
         return this.maximumValue.getValue();
     }
 
-    public void setMaximumValue(float maximumValue) {
+    public void setMaximumValue(T maximumValue) {
         this.maximumValue.setValue(maximumValue);
-        this.setDefaultValue(Math.max(this.getMinimumValue(), Math.min(this.getDefaultValue(), maximumValue)));
-        this.setCurrentValue(Math.max(this.getMinimumValue(), Math.min(this.getCurrentValue(), maximumValue)));
+        this.setDefaultValue(NumberUtils.approximateMax(this.getMinimumValue(), NumberUtils.approximateMin(this.getDefaultValue(), maximumValue)));
+        this.setCurrentValue(NumberUtils.approximateMax(this.getMinimumValue(), NumberUtils.approximateMin(this.getCurrentValue(), maximumValue)));
     }
 
-    public float getDefaultValue() {
+    public T getDefaultValue() {
         return this.defaultValue.getValue();
     }
 
-    public void setDefaultValue(float defaultValue) {
-        this.defaultValue.setValue(Math.max(this.getMinimumValue(), Math.min(defaultValue, this.getMaximumValue())));
+    public void setDefaultValue(T defaultValue) {
+        this.defaultValue.setValue(NumberUtils.approximateMax(this.getMinimumValue(), NumberUtils.approximateMin(defaultValue, this.getMaximumValue())));
     }
 
-    public float getCurrentValue() {
+    public T getCurrentValue() {
         return this.currentValue.getValue();
     }
 
-    public void setCurrentValue(float currentValue) {
-        this.currentValue.setValue(Math.max(this.getMinimumValue(), Math.min(currentValue, this.getMaximumValue())));
+    public void setCurrentValue(T currentValue) {
+        this.currentValue.setValue(NumberUtils.approximateMax(this.getMinimumValue(), NumberUtils.approximateMin(currentValue, this.getMaximumValue())));
     }
 
     public AttributeData serialize() {
         return new AttributeData(this.getID().getKey(),
-                this.getMinimumValue(),
-                this.getMaximumValue(),
-                this.getCurrentValue(),
-                this.getDefaultValue());
+                (float) this.getMinimumValue(),
+                (float) this.getMaximumValue(),
+                (float) this.getCurrentValue(),
+                (float) this.getDefaultValue());
     }
 
     @Override
     public int hashCode() {
         return ((int) (37 * this.type.hashCode()
-                + (37 * this.getCurrentValue())
-                + (37 * this.getDefaultValue())
-                + (37 * this.getMaximumValue())
-                + (37 * this.getMinimumValue())));
+                + (37 * (int) this.getCurrentValue())
+                + (37 * (int) this.getDefaultValue())
+                + (37 * (int) this.getMaximumValue())
+                + (37 * (int) this.getMinimumValue())));
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof AttributeView otherAttribute) {
+        if (obj instanceof AttributeView<?> otherAttribute) {
             return otherAttribute.getID().equals(this.getID())
                     && NumberUtils.isNearlyEqual(otherAttribute.getCurrentValue(), this.getCurrentValue())
                     && NumberUtils.isNearlyEqual(otherAttribute.getDefaultValue(), this.getDefaultValue())
