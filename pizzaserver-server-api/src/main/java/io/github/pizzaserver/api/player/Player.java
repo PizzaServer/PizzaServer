@@ -95,54 +95,6 @@ public interface Player extends EntityHuman {
     boolean openInventory(Inventory inventory);
 
     /**
-     * Get the amount of food strength the player has.
-     * @return value between 0 and 20
-     */
-    float getFoodLevel();
-
-    /**
-     * Set the amount of food strength the player has.
-     * @param foodLevel value between 0 and 20
-     */
-    void setFoodLevel(float foodLevel);
-
-    /**
-     * Get the saturation amount of the player.
-     * @return saturation of the player
-     */
-    float getSaturationLevel();
-
-    /**
-     * Send the saturation amount of the player.
-     * @param saturationLevel saturation of the player
-     */
-    void setSaturationLevel(float saturationLevel);
-
-    /**
-     * Get the percentage a player has filled their experience bar.
-     * @return value between 0 and 1
-     */
-    float getExperience();
-
-    /**
-     * Set the percentage a player has filled their experience bar.
-     * @param experience value between 0 and1
-     */
-    void setExperience(float experience);
-
-    /**
-     * Get the experience level of the player.
-     * @return experience level
-     */
-    int getExperienceLevel();
-
-    /**
-     * Set the experience level of the player.
-     * @param experienceLevel experience level
-     */
-    void setExperienceLevel(int experienceLevel);
-
-    /**
      * Teleport this entity to a position with a dimension transfer screen.
      * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
      * @param position position
