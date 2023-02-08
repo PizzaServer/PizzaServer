@@ -19,8 +19,8 @@ public final class EntityHelper {
         );
     }
 
-    public static Map<DataKey<Float>, AttributeView> generateAttributes(Entity entity, AttributeTemplate... templates) {
-        return Arrays.stream(templates)
+    public static Map<DataKey<? extends Number>, AttributeView<? extends Number>> generateAttributes(Entity entity, Set<AttributeTemplate<? extends Number>> templates) {
+        return templates.stream()
                 .map(t -> t.using(entity))
                 .filter(Optional::isPresent)
                 .collect(Collectors.toUnmodifiableMap(
