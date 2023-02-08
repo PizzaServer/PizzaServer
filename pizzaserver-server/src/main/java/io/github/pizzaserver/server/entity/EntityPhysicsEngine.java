@@ -91,7 +91,8 @@ public class EntityPhysicsEngine {
                         if (xDiff != 0 && zDiff != 0) {
                             float xUnit = xDiff * (1 / Math.abs(xDiff));
                             float zUnit = zDiff * (1 / Math.abs(zDiff));
-                            entity.setMotion(entity.getMotion().add(entity.getMovementSpeed() * xUnit, 0, entity.getMovementSpeed() * zUnit));
+                            float moveSpeed = entity.expect(EntityKeys.MOVEMENT_SPEED);
+                            entity.setMotion(entity.getMotion().add(moveSpeed * xUnit, 0, moveSpeed * zUnit));
                         }
                     }
                 }
