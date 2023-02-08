@@ -162,6 +162,16 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                 .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MOVEMENT_SPEED))
                 );
+
+        this.getOrCreateContainerFor(EntityKeys.PLAYER_XP_LEVELS, 0)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_ABOVE_ZERO,
+                        Preprocessors.ensureAboveConstant(AttributeType.PLAYER_XP_LEVEL_LIMIT)
+                ))
+                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP_LEVELS))
+                );
     }
 
     /**
@@ -674,7 +684,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
 
-    private void sendAttribute(AttributeView attribute) {
+    private void sendAttribute(AttributeView<? extends Number> attribute) {
         this.sendAttributes(Collections.singleton(attribute));
     }
 
@@ -682,7 +692,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.sendAttributes(this.generateAttributeReferences().values());
     }
 
-    private void sendAttributes(Collection<AttributeView> attributes) {
+    private void sendAttributes(Collection<AttributeView<? extends Number>> attributes) {
         if (this.hasSpawned()) {
             UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
             updateAttributesPacket.setRuntimeEntityId(this.getId());
@@ -727,19 +737,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     public void setExperience(float experience) {
         AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE);
         attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experience));
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public int getExperienceLevel() {
-        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
-        return (int) attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setExperienceLevel(int experienceLevel) {
-        AttributeView attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experienceLevel));
         this.sendAttribute(attribute);
     }
 

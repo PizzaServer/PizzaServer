@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 public class AttributeType {
 
+    public static final int PLAYER_XP_LEVEL_LIMIT = 24791;
+
     public static final Set<DataKey<? extends Number>> ALL_ATTRIBUTE_KEY_DEPENDENCIES;
     public static final Set<AttributeTemplate<? extends Number>> ALL_ATTRIBUTES;
     public static final Set<AttributeTemplate<? extends Number>> BASIC_REQUIRED_ATTRIBUTES;
@@ -39,15 +41,15 @@ public class AttributeType {
             .defaults(0f)
             .build();
 
-    public static final AttributeTemplate<Integer> PLAYER_EXPERIENCE = AttributeTemplate.builder(EntityKeys.PLAYER_XP)
-            .min(0)
-            .max(1)
-            .defaults(0)
+    public static final AttributeTemplate<Float> PLAYER_EXPERIENCE = AttributeTemplate.builder(EntityKeys.PLAYER_XP)
+            .min(0f)
+            .max(1f)
+            .defaults(0f)
             .build();
 
     public static final AttributeTemplate<Integer> PLAYER_EXPERIENCE_LEVEL = AttributeTemplate.builder(EntityKeys.PLAYER_XP_LEVELS)
             .min(0)
-            .max(24791)
+            .max(PLAYER_XP_LEVEL_LIMIT)
             .defaults(0)
             .build();
 
