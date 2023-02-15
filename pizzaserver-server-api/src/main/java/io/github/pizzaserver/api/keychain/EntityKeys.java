@@ -11,16 +11,12 @@ import io.github.pizzaserver.commons.data.DataKey;
  */
 public class EntityKeys {
 
-    //TODO: Add a method of filtering inputs for set (override set in entity impl of data store? -
-    // will need to hide the getContainer() stuff)
-
     //TODO: EntityComponents -
     // split into two/three chunks: EntityCompDefinition + EntityCompImpl/EntityCompAPI
     // The definition should store the details of the component for the entity. This can be provided
     // as an instance to the EntityCompImpl.
     // Maybe EntityCompImpl<T extends EntityCompDefinition> ??
 
-    //TODO: !!!!!!!!!!! rename key ids to minecraft:blahblah
     //TODO: Add a way to map attributes & flags to properties. See EntityFlag -
     // Some properties would be derivable from existing data (Flag->ON_FIRE) from (EntityKeys->FIRE_TICKS_REMAINING)
     // Not every flag should be writable. Stuff like Flag->IS_IN_UI is read-only.
