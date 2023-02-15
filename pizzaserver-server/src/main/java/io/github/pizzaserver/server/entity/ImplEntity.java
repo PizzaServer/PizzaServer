@@ -106,7 +106,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
 
-        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_SET_STALE, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
