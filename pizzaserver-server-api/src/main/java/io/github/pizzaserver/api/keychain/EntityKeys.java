@@ -3,7 +3,7 @@ package io.github.pizzaserver.api.keychain;
 import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.level.world.World;
-import io.github.pizzaserver.commons.data.DataKey;
+import io.github.pizzaserver.commons.data.key.DataKey;
 
 /**
  * A collection of built-in data keys, useful for accessing entity data.

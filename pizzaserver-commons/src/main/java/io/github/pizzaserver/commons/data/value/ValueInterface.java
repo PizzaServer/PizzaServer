@@ -1,4 +1,4 @@
-package io.github.pizzaserver.commons.data;
+package io.github.pizzaserver.commons.data.value;
 
 public interface ValueInterface<T> {
 

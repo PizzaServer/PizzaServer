@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.entity.data.attributes;
 
 import com.nukkitx.protocol.bedrock.data.AttributeData;
-import io.github.pizzaserver.commons.data.DataKey;
-import io.github.pizzaserver.commons.data.ValueInterface;
+import io.github.pizzaserver.commons.data.key.DataKey;
+import io.github.pizzaserver.commons.data.value.ValueInterface;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 
@@ -72,11 +72,11 @@ public class AttributeView<T extends Number> {
 
     @Override
     public int hashCode() {
-        return ((int) (37 * this.type.hashCode()
+        return 37 * this.type.hashCode()
                 + (37 * (int) this.getCurrentValue())
                 + (37 * (int) this.getDefaultValue())
                 + (37 * (int) this.getMaximumValue())
-                + (37 * (int) this.getMinimumValue())));
+                + (37 * (int) this.getMinimumValue());
     }
 
     @Override

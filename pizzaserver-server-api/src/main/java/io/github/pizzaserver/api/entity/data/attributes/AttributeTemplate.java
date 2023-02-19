@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api.entity.data.attributes;
 
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.commons.data.DataKey;
-import io.github.pizzaserver.commons.data.ValueContainer;
-import io.github.pizzaserver.commons.data.ValueInterface;
+import io.github.pizzaserver.commons.data.key.DataKey;
+import io.github.pizzaserver.commons.data.value.ValueContainer;
+import io.github.pizzaserver.commons.data.value.ValueInterface;
 import io.github.pizzaserver.commons.utils.Check;
 
 import java.util.*;

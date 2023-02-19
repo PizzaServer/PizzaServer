@@ -1,4 +1,4 @@
-package io.github.pizzaserver.commons.data;
+package io.github.pizzaserver.commons.data.value;
 
 
 import io.github.pizzaserver.commons.data.react.ActionSource;
@@ -43,7 +43,7 @@ public class ValueContainer<T> extends ActionSource implements ValueInterface<T>
 
 
     /** Clears subscribers as this value should not be used*/
-    void stale() {
+    public void stale() {
         this.broadcast(ACTION_SET_STALE, null);
         this.clearSubscribers();
     }

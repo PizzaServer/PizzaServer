@@ -17,7 +17,7 @@ import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
-import io.github.pizzaserver.commons.data.DataStore;
+import io.github.pizzaserver.commons.data.store.DataStore;
 
 import java.util.List;
 import java.util.Optional;

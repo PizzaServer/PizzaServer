@@ -1,4 +1,4 @@
-package io.github.pizzaserver.commons.data;
+package io.github.pizzaserver.commons.data.key;
 
 import io.github.pizzaserver.commons.utils.Check;
 

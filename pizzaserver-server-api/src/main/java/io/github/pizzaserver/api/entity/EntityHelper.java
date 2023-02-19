@@ -4,7 +4,7 @@ import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeTemplate;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeView;
 import io.github.pizzaserver.api.keychain.EntityKeys;
-import io.github.pizzaserver.commons.data.DataKey;
+import io.github.pizzaserver.commons.data.key.DataKey;
 
 import java.util.*;
 import java.util.stream.Collectors;

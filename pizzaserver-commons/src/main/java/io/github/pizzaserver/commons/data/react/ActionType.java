@@ -1,6 +1,6 @@
 package io.github.pizzaserver.commons.data.react;
 
-import io.github.pizzaserver.commons.data.DataKey;
+import io.github.pizzaserver.commons.data.key.DataKey;
 
 public class ActionType<T> extends DataKey<T> {
 
