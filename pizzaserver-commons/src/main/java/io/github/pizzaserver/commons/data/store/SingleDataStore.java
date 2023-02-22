@@ -1,7 +1,8 @@
 package io.github.pizzaserver.commons.data.store;
 
+import io.github.pizzaserver.commons.data.DataAction;
 import io.github.pizzaserver.commons.data.key.DataKey;
-import io.github.pizzaserver.commons.data.react.ActionSource;
+import io.github.pizzaserver.commons.data.react.ActionRootSource;
 import io.github.pizzaserver.commons.data.value.ValueContainer;
 import io.github.pizzaserver.commons.data.value.ValueProxy;
 import io.github.pizzaserver.commons.utils.Check;
@@ -9,7 +10,7 @@ import io.github.pizzaserver.commons.utils.Check;
 import java.util.HashMap;
 import java.util.Optional;
 
-public class SingleDataStore extends ActionSource implements DataStore {
+public class SingleDataStore extends ActionRootSource implements DataStore {
 
     private final HashMap<DataKey<?>, ValueContainer<?>> dataRegistry;
 
@@ -47,7 +48,7 @@ public class SingleDataStore extends ActionSource implements DataStore {
         }
 
         this.getDataRegistry().put(key, ValueContainer.wrap(value));
-        this.broadcast(ACTION_CREATE_CONTAINER, key);
+        this.broadcast(DataAction.CONTAINER_CREATE, key);
     }
 
     @Override
@@ -94,7 +95,7 @@ public class SingleDataStore extends ActionSource implements DataStore {
         ValueContainer<T> freshContainer = ValueContainer.wrap(fallbackValue);
         this.getDataRegistry().put(type, freshContainer);
 
-        this.broadcast(ACTION_CREATE_CONTAINER, type);
+        this.broadcast(DataAction.CONTAINER_CREATE, type);
 
         return freshContainer;
     }

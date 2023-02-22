@@ -1,31 +1,22 @@
 package io.github.pizzaserver.commons.data.value;
 
 
-import io.github.pizzaserver.commons.data.react.ActionSource;
-import io.github.pizzaserver.commons.data.react.ActionType;
+import io.github.pizzaserver.commons.data.DataAction;
+import io.github.pizzaserver.commons.data.react.ActionRootSource;
 import io.github.pizzaserver.commons.utils.Check;
 
 import java.util.function.Function;
 
-public class ValueContainer<T> extends ActionSource implements ValueInterface<T> {
-
-    /** Returns the previous value of the container. */
-    public static final ActionType<Object> ACTION_VALUE_PRE_SET = ActionType.of("value_set_pre", Object.class);
-
-    /** Returns the value of the container once it has been set. */
-    public static final ActionType<Object> ACTION_VALUE_SET = ActionType.of("value_set_post", Object.class);
-
-    public static final ActionType<Void> ACTION_SET_STALE = ActionType.of("container_set_stale", Void.TYPE);
-
+public class ValueContainer<T> extends ActionRootSource implements ValueInterface<T> {
 
     private T value;
     private Function<T, T> preprocessor = data -> data;
 
     @Override
     public ValueContainer<T> setValue(T value) {
-        this.broadcast(ACTION_VALUE_PRE_SET, this.value);
+        this.broadcast(DataAction.VALUE_PRE_SET, this.value);
         this.value = preprocessor.apply(value);
-        this.broadcast(ACTION_VALUE_SET, this.value);
+        this.broadcast(DataAction.VALUE_SET, this.value);
         return this;
     }
 
@@ -44,7 +35,7 @@ public class ValueContainer<T> extends ActionSource implements ValueInterface<T>
 
     /** Clears subscribers as this value should not be used*/
     public void stale() {
-        this.broadcast(ACTION_SET_STALE, null);
+        this.broadcast(DataAction.CONTAINER_STALE, null);
         this.clearSubscribers();
     }
 

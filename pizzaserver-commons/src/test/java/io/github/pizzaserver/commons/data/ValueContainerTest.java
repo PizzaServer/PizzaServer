@@ -19,7 +19,7 @@ public class ValueContainerTest {
 
         ValueContainer<Integer> valContainer = ValueContainer.wrap(starting_value);
 
-        valContainer.listenFor(ValueContainer.ACTION_VALUE_PRE_SET, val -> {
+        valContainer.listenFor(DataAction.VALUE_PRE_SET, val -> {
             if(val instanceof Integer value) {
                 if(value != starting_value)
                     fail(String.format("Value should be equal to %s - was instead %s", starting_value, value));
@@ -29,7 +29,7 @@ public class ValueContainerTest {
             actionMissed[0] = false;
         });
 
-        valContainer.listenFor(ValueContainer.ACTION_VALUE_SET, val -> {
+        valContainer.listenFor(DataAction.VALUE_SET, val -> {
             if(val instanceof Integer value) {
                 if(value != ending_value)
                     fail(String.format("Value should be equal to %s - was instead %s", ending_value, value));
@@ -54,9 +54,9 @@ public class ValueContainerTest {
 
         AtomicBoolean wasStaleSetEventFired = new AtomicBoolean(false);
 
-        valContainer.listenFor(ValueContainer.ACTION_VALUE_PRE_SET, failCondition);
-        valContainer.listenFor(ValueContainer.ACTION_VALUE_SET, failCondition);
-        valContainer.listenFor(ValueContainer.ACTION_SET_STALE, ignored -> wasStaleSetEventFired.set(true));
+        valContainer.listenFor(DataAction.VALUE_PRE_SET, failCondition);
+        valContainer.listenFor(DataAction.VALUE_SET, failCondition);
+        valContainer.listenFor(DataAction.CONTAINER_STALE, ignored -> wasStaleSetEventFired.set(true));
 
         valContainer.stale();
         valContainer.setValue(2077);

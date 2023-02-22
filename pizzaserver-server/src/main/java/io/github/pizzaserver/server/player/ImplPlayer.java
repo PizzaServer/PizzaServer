@@ -45,8 +45,8 @@ import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
+import io.github.pizzaserver.commons.data.DataAction;
 import io.github.pizzaserver.commons.data.value.Preprocessors;
-import io.github.pizzaserver.commons.data.value.ValueContainer;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -130,7 +130,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getContainerFor(EntityKeys.KILL_THRESHOLD).orElseThrow()
                 .setPreprocessor(Preprocessors.ifNullThenConstant(0.5f))
                 .setValue(0.5f)
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         // min health is linked to health, thus it uses the current var of HEALTH.
                         // Same applies with max health and so on with other attributes...
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
@@ -138,28 +138,28 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.getContainerFor(EntityKeys.MAX_HEALTH).orElseThrow()
                 .setValue(20f)
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
                 );
 
         this.getContainerFor(EntityKeys.HEALTH).orElseThrow()
                 .setValue(20f)
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
                 );
 
         this.getContainerFor(EntityKeys.ABSORPTION).orElseThrow()
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION))
                 );
 
         this.getContainerFor(EntityKeys.MAX_ABSORPTION).orElseThrow()
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION))
                 );
 
         this.getContainerFor(EntityKeys.MOVEMENT_SPEED).orElseThrow()
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MOVEMENT_SPEED))
                 );
 
@@ -169,7 +169,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
                         Preprocessors.ensureBelowConstant(20f)
                 ))
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.FOOD))
                 );
 
@@ -178,7 +178,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.SATURATION))
                 );
 
@@ -189,7 +189,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         Preprocessors.INT_EQUAL_OR_ABOVE_ZERO,
                         Preprocessors.ensureBelowConstant(AttributeType.PLAYER_XP_LEVEL_LIMIT)
                 ))
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP_LEVELS))
                 );
 
@@ -199,7 +199,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
                         Preprocessors.ensureBelowConstant(1f)
                 ))
-                .listenFor(ValueContainer.ACTION_VALUE_SET, v ->
+                .listenFor(DataAction.VALUE_SET, v ->
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP))
                 );
     }

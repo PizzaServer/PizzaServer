@@ -1,15 +1,11 @@
 package io.github.pizzaserver.commons.data.store;
 
 import io.github.pizzaserver.commons.data.key.DataKey;
-import io.github.pizzaserver.commons.data.react.ActionType;
 import io.github.pizzaserver.commons.data.value.ValueProxy;
 
 import java.util.Optional;
 
 public interface DataStore {
-
-    @SuppressWarnings("rawtypes")
-    ActionType<DataKey> ACTION_CREATE_CONTAINER = ActionType.of("container_create", DataKey.class);
 
     /**
      * Obtains an entry of data attached to the provided key.

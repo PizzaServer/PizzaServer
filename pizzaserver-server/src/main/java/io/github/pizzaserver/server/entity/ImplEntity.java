@@ -38,11 +38,11 @@ import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
+import io.github.pizzaserver.commons.data.DataAction;
 import io.github.pizzaserver.commons.data.key.DataKey;
 import io.github.pizzaserver.commons.data.store.DataStore;
 import io.github.pizzaserver.commons.data.store.SingleDataStore;
 import io.github.pizzaserver.commons.data.value.Preprocessors;
-import io.github.pizzaserver.commons.data.value.ValueContainer;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
@@ -110,12 +110,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
 
-        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
-        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(ValueContainer.ACTION_VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
 
         this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThenConstant(true));
 
@@ -136,7 +136,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.nonNull("Max Health must not be null and must be above or equal to zero."),
                         Preprocessors.ensureAboveDefined(this.expectProxy(EntityKeys.KILL_THRESHOLD))
                 ))
-                .listenFor(ValueContainer.ACTION_VALUE_SET, newMaxHealth -> {
+                .listenFor(DataAction.VALUE_SET, newMaxHealth -> {
                     float health = this.expect(EntityKeys.HEALTH);
                     float maxHealth = (float) newMaxHealth;
                     if (health > maxHealth)
@@ -149,7 +149,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.ensureBelowDefined(this.expectProxy(EntityKeys.MAX_HEALTH)),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
-                .listenFor(ValueContainer.ACTION_VALUE_SET, () -> {
+                .listenFor(DataAction.VALUE_SET, () -> {
                     if (this.getBossBar().isPresent()) {
                         BossBar bossBar = this.getBossBar().get();
                         bossBar.setPercentage(this.expect(EntityKeys.HEALTH) / this.expect(EntityKeys.MAX_HEALTH));
@@ -162,7 +162,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.nonNull("Max Absorption must not be null and must be above or equal to zero."),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
-                .listenFor(ValueContainer.ACTION_VALUE_SET, newMaxAbsorption -> {
+                .listenFor(DataAction.VALUE_SET, newMaxAbsorption -> {
                     float absorption = this.expect(EntityKeys.ABSORPTION);
                     float maxAbsorption = (float) newMaxAbsorption;
                     if (absorption > maxAbsorption)
