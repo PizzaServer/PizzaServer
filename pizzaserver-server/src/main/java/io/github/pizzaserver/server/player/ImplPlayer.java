@@ -1016,7 +1016,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         if (this.metaDataUpdate) {
             SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
             setEntityDataPacket.setRuntimeEntityId(this.getId());
-            setEntityDataPacket.getMetadata().putAll(this.getMetaData().serialize());
+
+            this.getMetadataHelper().streamProperties().forEach(data ->
+                    setEntityDataPacket.getMetadata().put(data.left(), data.right())
+            );
+
             this.sendPacket(setEntityDataPacket);
         }
 
@@ -1054,7 +1058,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getChunkManager().onSpawned();
 
         this.getInventory().sendSlots(this);
-        this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true)
+        this.getMetadataHelper()
+                .putFlag(EntityFlag.HAS_GRAVITY, true)
                 .putFlag(EntityFlag.BREATHING, true)
                 .putFlag(EntityFlag.CAN_CLIMB, true);
         this.sendAttributes();

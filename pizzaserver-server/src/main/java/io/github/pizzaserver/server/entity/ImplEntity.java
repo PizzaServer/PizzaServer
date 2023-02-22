@@ -27,7 +27,6 @@ import io.github.pizzaserver.api.entity.definition.components.impl.EntityBurnsIn
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
 import io.github.pizzaserver.api.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
@@ -40,7 +39,6 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.data.DataAction;
 import io.github.pizzaserver.commons.data.key.DataKey;
-import io.github.pizzaserver.commons.data.store.DataStore;
 import io.github.pizzaserver.commons.data.store.SingleDataStore;
 import io.github.pizzaserver.commons.data.value.Preprocessors;
 import io.github.pizzaserver.commons.utils.NumberUtils;
@@ -86,7 +84,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     protected EntityInventory inventory = new ImplEntityInventory(this, ContainerType.INVENTORY, 0);
     protected List<Item> loot = new ArrayList<>();
-    protected EntityMetadata metaData = new ImplEntityMetadata(this);
+    protected EntityMetadataHelper metaData = new EntityMetadataHelper(this);
     protected boolean metaDataUpdate;
 
     protected EntityDamageEvent lastDamageEvent = null;
@@ -183,7 +181,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
                 ));
 
 
-        this.listenFor(DataStore.ACTION_CREATE_CONTAINER, key -> {
+        this.listenFor(DataAction.CONTAINER_CREATE, key -> {
                 if(AttributeType.ALL_ATTRIBUTE_KEY_DEPENDENCIES.contains(key))
                     this.generateAttributeReferences();
         });
@@ -574,9 +572,8 @@ public class ImplEntity extends SingleDataStore implements Entity {
         return (ImplServer) Server.getInstance();
     }
 
-    @Override
-    public ImplEntityMetadata getMetaData() {
-        return (ImplEntityMetadata) this.metaData;
+    public EntityMetadataHelper getMetadataHelper() {
+        return this.metaData;
     }
 
     @Override
@@ -680,7 +677,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         boolean onFirePreviously = this.getFireTicks() > 0;
         this.fireTicks = ticks;
 
-        EntityMetadata metaData = this.getMetaData();
+        EntityMetadataHelper metaData = this.getMetadataHelper();
         if (this.fireTicks > 0 && !onFirePreviously) {
             metaData.putFlag(EntityFlag.ON_FIRE, true);
         } else if (this.fireTicks <= 0 && onFirePreviously) {
@@ -966,7 +963,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
             this.sendMovementPacket();
         }
 
-        this.getMetaData().tryUpdate();
+        this.getMetadataHelper().tryUpdate();
 
         World world = this.expect(EntityKeys.WORLD);
 
@@ -1266,7 +1263,10 @@ public class ImplEntity extends SingleDataStore implements Entity {
             addEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
             addEntityPacket.setMotion(this.getMotion());
             addEntityPacket.setRotation(EntityHelper.getBasicRotationFor(this));
-            addEntityPacket.getMetadata().putAll(this.getMetaData().serialize());
+            this.getMetadataHelper().streamProperties().forEach(data ->
+                    addEntityPacket.getMetadata().put(data.left(), data.right())
+            );
+
             player.sendPacket(addEntityPacket);
             this.sendEquipmentPacket(player);
 

@@ -58,7 +58,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                             PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSneakingEvent);
                             if (startSneakingEvent.isCancelled()) {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             } else {
                                 this.player.setSneaking(startSneakingEvent.isSneaking());
                             }
@@ -69,7 +69,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                             PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player, false);
                             this.player.getServer().getEventManager().call(stopSneakingEvent);
                             if (stopSneakingEvent.isCancelled()) {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             } else {
                                 this.player.setSneaking(stopSneakingEvent.isSneaking());
                             }
@@ -106,7 +106,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                             if (!startSprintEvent.isCancelled()) {
                                 this.player.setSprinting(true);
                             } else {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             }
                         }
                         break;
@@ -118,7 +118,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                             if (!stopSprintEvent.isCancelled()) {
                                 this.player.setSprinting(false);
                             } else {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             }
                         }
                         break;

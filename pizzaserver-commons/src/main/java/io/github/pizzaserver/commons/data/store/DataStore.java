@@ -38,7 +38,7 @@ public interface DataStore {
     /**
      * Determines whether a key is defined. If the value is null or there
      * is no ValueContainer associated with the key, it returns null.
-     * @param key the type-driven key to check.#
+     * @param key the type-driven key to check.
      * @return true if the value is non-null and present
      */
     <T> boolean has(DataKey<T> key);

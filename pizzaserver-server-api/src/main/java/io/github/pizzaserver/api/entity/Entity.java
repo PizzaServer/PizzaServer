@@ -9,7 +9,6 @@ import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.pizzaserver.api.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.Level;
@@ -202,8 +201,6 @@ public interface Entity extends Watchable, DataStore {
     boolean isAlive();
 
     Vector3f getDirectionVector();
-
-    EntityMetadata getMetaData();
 
     boolean hasGravity();
 
