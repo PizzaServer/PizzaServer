@@ -120,13 +120,20 @@ public class ImplEntity extends SingleDataStore implements Entity {
         });
     }
 
-    // Overridable hook into the constructor
-    // Add properties here while so that attribute views can be generated after
-    // all properties is added.
+    /**
+     * An overridable hook for server/plugin defined entities
+     * that defines attributes prior to the creation of attribute views.
+     * Every entity should at least call ImplEntity#this.defineDefaultProperties();
+     */
     protected void defineProperties() {
         this.defineDefaultProperties();
+        this.defineLivingProperties();
     }
 
+    /**
+     * Creates the true default properties for an entity - defined by the
+     * attributes found in the UpdateAttributes packet.
+     */
     protected final void defineDefaultProperties() {
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
@@ -147,24 +154,20 @@ public class ImplEntity extends SingleDataStore implements Entity {
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Kill threshold must not be null and must be above or equal to zero."),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
-                )); // No need for a listenFor as kill conditions are checked during tick()
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.MAX_HEALTH).nudge());
 
         this.getOrCreateContainerFor(EntityKeys.MAX_HEALTH, 1f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Max Health must not be null and must be above or equal to zero."),
-                        Preprocessors.ensureAboveDefined(this.expectProxy(EntityKeys.KILL_THRESHOLD))
+                        Preprocessors.ensureAboveDefined(this.expectContainerFor(EntityKeys.KILL_THRESHOLD))
                 ))
-                .listenFor(DataAction.VALUE_SET, newMaxHealth -> {
-                    float health = this.expect(EntityKeys.HEALTH);
-                    float maxHealth = (float) newMaxHealth;
-                    if (health > maxHealth)
-                        this.set(EntityKeys.HEALTH, maxHealth);
-                });
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.HEALTH).nudge());
 
         this.getOrCreateContainerFor(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH))
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_HEALTH)),
-                        Preprocessors.ensureBelowDefined(this.expectProxy(EntityKeys.MAX_HEALTH)),
+                        Preprocessors.ensureBelowDefined(this.expectContainerFor(EntityKeys.MAX_HEALTH)),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, () -> {
@@ -180,17 +183,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.nonNull("Max Absorption must not be null and must be above or equal to zero."),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
-                .listenFor(DataAction.VALUE_SET, newMaxAbsorption -> {
-                    float absorption = this.expect(EntityKeys.ABSORPTION);
-                    float maxAbsorption = (float) newMaxAbsorption;
-                    if (absorption > maxAbsorption)
-                        this.set(EntityKeys.ABSORPTION, maxAbsorption);
-                });
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.ABSORPTION).nudge());
 
         this.getOrCreateContainerFor(EntityKeys.ABSORPTION, this.expect(EntityKeys.MAX_ABSORPTION))
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_ABSORPTION)),
-                        Preprocessors.ensureBelowDefined(this.expectProxy(EntityKeys.MAX_ABSORPTION)),
+                        Preprocessors.ensureBelowDefined(this.expectContainerFor(EntityKeys.MAX_ABSORPTION)),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
 
@@ -199,15 +197,34 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
+    }
 
-
+    protected void defineLivingProperties() {
         // - Entity Data
 
-        this.getOrCreateContainerFor(EntityKeys., 0.1f)
+        // TODO: Verify this is still actually correct with the game.
+        // TODO: Combine with breathing component.
+        this.getOrCreateContainerFor(EntityKeys.BREATHING, true)
+                .setPreprocessor(ignored -> {
+                    // Read only property - sets + nudges trigger recalculation.
+                    int max = this.expect(EntityKeys.MAX_BREATHING_TICKS);
+                    int current = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
+                    return current >= max;
+                });
+        this.getOrCreateContainerFor(EntityKeys.MAX_BREATHING_TICKS, 15)
                 .setPreprocessor(Preprocessors.inOrder(
-                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
-                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
-                ));
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant((int) Short.MAX_VALUE)
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BREATHING).nudge());
+        this.getOrCreateContainerFor(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS))
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_BREATHING_TICKS)),
+                        Preprocessors.ensureBelowDefined(this.expectContainerFor(EntityKeys.MAX_BREATHING_TICKS)),
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BREATHING).nudge());
     }
 
 

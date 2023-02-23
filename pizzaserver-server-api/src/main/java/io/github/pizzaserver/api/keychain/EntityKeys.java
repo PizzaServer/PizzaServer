@@ -47,8 +47,8 @@ public class EntityKeys {
 
 
     // -- Time
-    public static final DataKey<Short> BREATHING_TICKS_REMAINING = DataKey.of("minecraft:breathing_ticks", Short.TYPE);
-    public static final DataKey<Short> MAX_BREATHING_TICKS = BREATHING_TICKS_REMAINING.suffix("max");
+    public static final DataKey<Integer> BREATHING_TICKS_REMAINING = DataKey.of("minecraft:breathing_ticks", Integer.TYPE);
+    public static final DataKey<Integer> MAX_BREATHING_TICKS = BREATHING_TICKS_REMAINING.suffix("max");
     public static final DataKey<Integer> FIRE_TICKS_REMAINING = DataKey.of("minecraft:on_fire_time", Integer.TYPE);
     public static final DataKey<Integer> INVULNERABILITY_TICKS = DataKey.of("minecraft:invulnerable_ticks", Integer.TYPE);
 
