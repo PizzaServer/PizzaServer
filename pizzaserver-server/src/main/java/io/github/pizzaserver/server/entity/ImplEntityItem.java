@@ -111,7 +111,11 @@ public class ImplEntityItem extends ImplEntity implements EntityItem {
             addItemEntityPacket.setUniqueEntityId(this.getId());
             addItemEntityPacket.setRuntimeEntityId(this.getId());
             addItemEntityPacket.setItemInHand(ItemUtils.serializeForNetwork(this.getItem(), player.getVersion()));
-            addItemEntityPacket.getMetadata().putAll(this.getMetaData().serialize());
+
+            this.getMetadataHelper().streamProperties().forEach(data ->
+                    addItemEntityPacket.getMetadata().put(data.left(), data.right())
+            );
+
             addItemEntityPacket.setPosition(this.getLocation().toVector3f());
             addItemEntityPacket.setMotion(this.getMotion());
 

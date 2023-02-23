@@ -142,7 +142,11 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
             addPlayerPacket.setPosition(Vector3f.from(this.getX(), this.getY(), this.getZ()));
             addPlayerPacket.setMotion(this.getMotion());
             addPlayerPacket.setRotation(EntityHelper.getBasicRotationFor(this));
-            addPlayerPacket.getMetadata().putAll(this.getMetaData().serialize());
+
+            this.getMetadataHelper().streamProperties().forEach(data ->
+                    addPlayerPacket.getMetadata().put(data.left(), data.right())
+            );
+
             addPlayerPacket.setDeviceId("");
             addPlayerPacket.setPlatformChatId("");
             addPlayerPacket.setHand(ItemUtils.serializeForNetwork(this.getInventory().getHeldItem(), player.getVersion()));
