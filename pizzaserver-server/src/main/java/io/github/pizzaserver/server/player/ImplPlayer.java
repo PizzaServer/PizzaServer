@@ -126,7 +126,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.physicsEngine.setPositionUpdate(false);
 
-        this.setDisplayName(this.getUsername());
+        this.set(EntityKeys.DISPLAY_NAME, this.getUsername());
     }
 
     @Override
@@ -520,8 +520,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.fireTicks = 0;
         this.noHitTicks = 0;
         this.lastDamageEvent = null;
-        this.setAI(true);
-        this.setSwimming(false);
+        this.set(EntityKeys.AI_ENABLED, true);
+        this.set(EntityKeys.SWIMMING, false);
         this.set(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS));
 
         Location respawnLocation = this.getSpawn();
@@ -1048,8 +1048,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getChunkManager().onSpawned();
 
         this.getInventory().sendSlots(this);
-        this.getMetadataHelper()
-                .putFlag(EntityFlag.HAS_GRAVITY, true)
+        this.set(EntityKeys.GRAVITY_ENABLED, true);
                 .putFlag(EntityFlag.BREATHING, true)
                 .putFlag(EntityFlag.CAN_CLIMB, true);
         this.sendAttributes();

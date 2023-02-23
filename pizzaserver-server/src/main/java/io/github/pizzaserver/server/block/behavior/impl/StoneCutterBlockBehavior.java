@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockLegacyStoneCutter;
 import io.github.pizzaserver.api.block.impl.BlockStoneCutter;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.inventory.ImplStoneCutterInventory;
 
@@ -22,9 +23,8 @@ public class StoneCutterBlockBehavior extends BaseBlockBehavior<BlockLegacyStone
 
     @Override
     public boolean onInteract(Player player, BlockLegacyStoneCutter block, BlockFace face, Vector3f clickPosition) {
-        if (player.isSneaking()) {
+        if (player.expect(EntityKeys.SNEAKING))
             return super.onInteract(player, block, face, clickPosition);
-        }
 
         player.openInventory(new ImplStoneCutterInventory(block));
         return false;

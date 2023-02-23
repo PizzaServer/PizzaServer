@@ -15,9 +15,8 @@ public class CakeBlockBehavior extends BaseBlockBehavior<BlockCake> {
 
     @Override
     public boolean onInteract(Player player, BlockCake cake, BlockFace face, Vector3f clickPosition) {
-        if (player.isSneaking()) {
+        if (player.expect(EntityKeys.SNEAKING))
             return true;
-        }
 
         // Handle case where the player wants to place a candle on the block.
         if (player.getInventory().getHeldItem() instanceof ItemBlock

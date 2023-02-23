@@ -192,23 +192,11 @@ public interface Entity extends Watchable, DataStore {
      */
     String getName();
 
-    Optional<String> getDisplayName();
-
-    void setDisplayName(String name);
-
     HorizontalDirection getHorizontalDirection();
 
     boolean isAlive();
 
     Vector3f getDirectionVector();
-
-    boolean hasGravity();
-
-    void setGravity(boolean enabled);
-
-    boolean hasCollision();
-
-    void setCollision(boolean enabled);
 
     boolean isPushable();
 
@@ -218,25 +206,9 @@ public interface Entity extends Watchable, DataStore {
 
     void setPistonPushable(boolean enabled);
 
-    boolean hasAI();
-
-    void setAI(boolean hasAI);
-
     float getScale();
 
     void setScale(float scale);
-
-    boolean isSneaking();
-
-    void setSneaking(boolean sneaking);
-
-    boolean isSwimming();
-
-    void setSwimming(boolean swimming);
-
-    boolean isSprinting();
-
-    void setSprinting(boolean sprinting);
 
     int getFireTicks();
 

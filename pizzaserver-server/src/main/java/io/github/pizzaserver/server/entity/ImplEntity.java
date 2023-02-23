@@ -50,6 +50,7 @@ import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class ImplEntity extends SingleDataStore implements Entity {
 
@@ -127,7 +128,9 @@ public class ImplEntity extends SingleDataStore implements Entity {
      */
     protected void defineProperties() {
         this.defineDefaultProperties();
+        this.defineIndependentFlags();
         this.defineLivingProperties();
+        this.defineOptionalProperties();
     }
 
     /**
@@ -225,6 +228,26 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BREATHING).nudge());
+    }
+
+
+    protected void defineOptionalProperties() {
+        this.getOrCreateContainerFor(EntityKeys.DISPLAY_NAME, null);
+    }
+
+    protected void defineIndependentFlags() {
+        Function<Boolean, Boolean> trueIfNull = Preprocessors.ifNullThenConstant(true);
+        Function<Boolean, Boolean> falseIfNull = Preprocessors.ifNullThenConstant(false);
+
+        this.getOrCreateContainerFor(EntityKeys.AI_ENABLED, true).setPreprocessor(trueIfNull);
+        this.getOrCreateContainerFor(EntityKeys.COLLISION_ENABLED, true).setPreprocessor(trueIfNull);
+        this.getOrCreateContainerFor(EntityKeys.GRAVITY_ENABLED, true).setPreprocessor(trueIfNull);
+
+
+        // -- Movement
+        this.getOrCreateContainerFor(EntityKeys.SPRINTING, false).setPreprocessor(falseIfNull);
+        this.getOrCreateContainerFor(EntityKeys.SNEAKING, false).setPreprocessor(falseIfNull);
+        this.getOrCreateContainerFor(EntityKeys.SWIMMING, false).setPreprocessor(falseIfNull);
     }
 
 
@@ -420,7 +443,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public Block getHeadBlock() {
         World world = this.expect(EntityKeys.WORLD);
-        Vector3i blockLocation = this.isSwimming()
+        Vector3i blockLocation = this.get(EntityKeys.SWIMMING).orElse(false)
                 ? this.getLocation().toVector3i()
                 : this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0).floor().toInt();
 
@@ -483,7 +506,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     @Override
     public String getName() {
-        return this.getDisplayName().orElse(this.getEntityDefinition().getName());
+        return this.get(EntityKeys.DISPLAY_NAME).orElse(this.getEntityDefinition().getName());
     }
 
     @Override
@@ -565,16 +588,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public Optional<String> getDisplayName() {
-        return Optional.ofNullable(this.getMetaData().getString(EntityData.NAMETAG));
-    }
-
-    @Override
-    public void setDisplayName(String name) {
-        this.getMetaData().putString(EntityData.NAMETAG, name);
-    }
-
-    @Override
     public HorizontalDirection getHorizontalDirection() {
         return HorizontalDirection.fromYaw(this.get(EntityKeys.ROTATION_YAW).orElse(0f));
     }
@@ -617,26 +630,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public boolean hasGravity() {
-        return this.getMetaData().hasFlag(EntityFlag.HAS_GRAVITY);
-    }
-
-    @Override
-    public void setGravity(boolean enabled) {
-        this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, enabled);
-    }
-
-    @Override
-    public boolean hasCollision() {
-        return this.getMetaData().hasFlag(EntityFlag.HAS_COLLISION);
-    }
-
-    @Override
-    public void setCollision(boolean canCollide) {
-        this.getMetaData().putFlag(EntityFlag.HAS_COLLISION, canCollide);
-    }
-
-    @Override
     public boolean isPushable() {
         return this.pushable;
     }
@@ -657,16 +650,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public boolean hasAI() {
-        return !this.getMetaData().hasFlag(EntityFlag.NO_AI);
-    }
-
-    @Override
-    public void setAI(boolean hasAI) {
-        this.getMetaData().putFlag(EntityFlag.NO_AI, !hasAI);
-    }
-
-    @Override
     public float getScale() {
         return this.getMetaData().getFloat(EntityData.SCALE);
     }
@@ -675,36 +658,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     public void setScale(float scale) {
         this.getMetaData().putFloat(EntityData.SCALE, scale);
         this.recalculateBoundingBox();
-    }
-
-    @Override
-    public boolean isSneaking() {
-        return this.getMetaData().hasFlag(EntityFlag.SNEAKING);
-    }
-
-    @Override
-    public void setSneaking(boolean sneaking) {
-        this.getMetaData().putFlag(EntityFlag.SNEAKING, sneaking);
-    }
-
-    @Override
-    public boolean isSwimming() {
-        return this.getMetaData().hasFlag(EntityFlag.SWIMMING);
-    }
-
-    @Override
-    public void setSwimming(boolean swimming) {
-        this.getMetaData().putFlag(EntityFlag.SWIMMING, swimming);
-    }
-
-    @Override
-    public boolean isSprinting() {
-        return this.getMetaData().hasFlag(EntityFlag.SPRINTING);
-    }
-
-    @Override
-    public void setSprinting(boolean sprinting) {
-        this.getMetaData().putFlag(EntityFlag.SPRINTING, sprinting);
     }
 
     @Override
@@ -829,7 +782,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
     public void kill() {
         if (this.hasSpawned() && this.deathAnimationTicks == -1) {
             this.set(EntityKeys.HEALTH, 0f);
-            this.setAI(false);
+            this.set(EntityKeys.AI_ENABLED, false);
 
             this.deathAnimationTicks = 20;
             this.startDeathAnimation();

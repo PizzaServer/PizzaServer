@@ -56,13 +56,15 @@ public class EntityPhysicsEngine {
     }
 
     public void tick() {
-        if (!this.entity.hasAI()) {
+        if (!this.entity.get(EntityKeys.AI_ENABLED).orElse(true)) {
             this.setMotion(0, 0, 0);
             return;
         }
-        if (this.entity.hasCollision()) {
+
+        if (this.entity.get(EntityKeys.COLLISION_ENABLED).orElse(true)) {
             this.handleCollisionWithEntities();
         }
+
         this.handleVelocity();
     }
 
@@ -171,7 +173,7 @@ public class EntityPhysicsEngine {
                 this.entity.moveTo(this.entity.getX() + deltaX, this.entity.getY() + deltaY, this.entity.getZ() + deltaZ);
             }
             this.setMotion(newVelocity);
-        } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
+        } else if (this.entity.get(EntityKeys.GRAVITY_ENABLED).orElse(true) && !this.entity.isOnGround()) {
             // entity was previously not moving, so we need to put it in motion here
             this.setMotion(0, -this.entity.getComponent(EntityPhysicsComponent.class).getGravity(), 0);
         }

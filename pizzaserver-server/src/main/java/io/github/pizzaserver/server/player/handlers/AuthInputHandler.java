@@ -54,69 +54,67 @@ public class AuthInputHandler implements BedrockPacketHandler {
             for (PlayerAuthInputData input : packet.getInputData()) {
                 switch (input) {
                     case START_SNEAKING:
-                        if (!this.player.isSneaking()) {
+                        if (!this.player.expect(EntityKeys.SNEAKING)) {
                             PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSneakingEvent);
                             if (startSneakingEvent.isCancelled()) {
                                 this.player.getMetadataHelper().update();
                             } else {
-                                this.player.setSneaking(startSneakingEvent.isSneaking());
+                                this.player.set(EntityKeys.SNEAKING, startSneakingEvent.isSneaking());
                             }
                         }
                         break;
                     case STOP_SNEAKING:
-                        if (this.player.isSneaking()) {
+                        if (this.player.expect(EntityKeys.SNEAKING)) {
                             PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player, false);
                             this.player.getServer().getEventManager().call(stopSneakingEvent);
                             if (stopSneakingEvent.isCancelled()) {
                                 this.player.getMetadataHelper().update();
                             } else {
-                                this.player.setSneaking(stopSneakingEvent.isSneaking());
+                                this.player.set(EntityKeys.SNEAKING, stopSneakingEvent.isSneaking());
                             }
                         }
                         break;
                     case START_SWIMMING:
                         Block blockSwimmingIn = this.player.expect(EntityKeys.WORLD).getBlock(this.player.getLocation().toVector3i());
-                        if (!this.player.isSwimming() && blockSwimmingIn instanceof LiquidTrait) {
+                        if (!this.player.get(EntityKeys.SWIMMING).orElse(false) && blockSwimmingIn instanceof LiquidTrait) {
                             PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, true);
                             this.player.getServer().getEventManager().call(swimEvent);
 
-                            if (!swimEvent.isCancelled()) {
-                                this.player.setSwimming(true);
-                            }
+                            if (!swimEvent.isCancelled())
+                                this.player.set(EntityKeys.SWIMMING, true);
                         }
                         break;
                     case STOP_SWIMMING:
-                        if (this.player.isSwimming()) {
+                        if (this.player.get(EntityKeys.SWIMMING).orElse(false)) {
                             PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, false);
                             this.player.getServer().getEventManager().call(swimEvent);
 
-                            if (!swimEvent.isCancelled()) {
-                                this.player.setSwimming(false);
-                            }
+                            if (!swimEvent.isCancelled())
+                                this.player.set(EntityKeys.SWIMMING, false);
                         }
                         break;
                     case START_SPRINTING:
                     case SPRINTING:
                     case SPRINT_DOWN:
-                        if (!this.player.isSprinting()) {
+                        if (!this.player.get(EntityKeys.SPRINTING).orElse(false)) {
                             PlayerToggleSprintingEvent startSprintEvent = new PlayerToggleSprintingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSprintEvent);
 
                             if (!startSprintEvent.isCancelled()) {
-                                this.player.setSprinting(true);
+                                this.player.set(EntityKeys.SPRINTING, true);
                             } else {
                                 this.player.getMetadataHelper().update();
                             }
                         }
                         break;
                     case STOP_SPRINTING:
-                        if (this.player.isSprinting()) {
+                        if (this.player.get(EntityKeys.SPRINTING).orElse(false)) {
                             PlayerToggleSprintingEvent stopSprintEvent = new PlayerToggleSprintingEvent(this.player, false);
                             this.player.getServer().getEventManager().call(stopSprintEvent);
 
                             if (!stopSprintEvent.isCancelled()) {
-                                this.player.setSprinting(false);
+                                this.player.set(EntityKeys.SPRINTING, false);
                             } else {
                                 this.player.getMetadataHelper().update();
                             }

@@ -38,7 +38,7 @@ public abstract class ImplBlockEntityContainer<T extends Block> extends BaseBloc
 
     @Override
     public boolean onInteract(Player player) {
-        if (this.inventory.canBeOpenedBy(player) && !player.isSneaking()) {
+        if (this.inventory.canBeOpenedBy(player) && !player.expect(EntityKeys.SNEAKING)) {
             InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(player, this.inventory);
             Server.getInstance().getEventManager().call(inventoryOpenEvent);
 
