@@ -85,6 +85,16 @@ public class SingleDataStore extends ActionRootSource implements DataStore {
     /**
      * Returns the raw container that the data is stored within.
      * @param type the key pointing to the data container (same as the data)
+     * @return the container.
+     * @param <T> the type of the data stored within the container.
+     */
+    protected <T> ValueContainer<T> expectContainerFor(DataKey<T> type) {
+        return this.getContainerFor(type).orElseThrow();
+    }
+
+    /**
+     * Returns the raw container that the data is stored within.
+     * @param type the key pointing to the data container (same as the data)
      * @return the container, freshly created if not present.
      * @param <T> the type of the data stored within the container.
      */

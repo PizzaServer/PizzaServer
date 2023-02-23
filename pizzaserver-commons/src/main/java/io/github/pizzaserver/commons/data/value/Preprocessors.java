@@ -25,7 +25,7 @@ public class Preprocessors {
         return Preprocessors.ifNullThenValue(() -> alternative);
     }
 
-    public static <T> Function<T, T> ifNullThenDefined(ValueProxy<T> alternative) {
+    public static <T> Function<T, T> ifNullThenDefined(ValueInterface<T> alternative) {
         return Preprocessors.ifNullThenValue(alternative::getValue);
     }
 
@@ -43,7 +43,7 @@ public class Preprocessors {
         return Preprocessors.ensureAboveValue(() -> minimum);
     }
 
-    public static <T extends Number> Function<T, T> ensureAboveDefined(ValueProxy<T> minimum) {
+    public static <T extends Number> Function<T, T> ensureAboveDefined(ValueInterface<T> minimum) {
         return Preprocessors.ensureAboveValue(minimum::getValue);
     }
 
@@ -61,7 +61,7 @@ public class Preprocessors {
         return Preprocessors.ensureBelowValue(() -> maximum);
     }
 
-    public static <T extends Number> Function<T, T> ensureBelowDefined(ValueProxy<T> maximum) {
+    public static <T extends Number> Function<T, T> ensureBelowDefined(ValueInterface<T> maximum) {
         return Preprocessors.ensureBelowValue(maximum::getValue);
     }
 

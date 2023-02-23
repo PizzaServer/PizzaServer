@@ -26,6 +26,11 @@ public final class ValueProxy<T> implements ValueInterface<T>, ActionSource {
         return this.source.getValue();
     }
 
+    @Override
+    public void nudge() {
+        this.source.nudge();
+    }
+
 
 
     @Override

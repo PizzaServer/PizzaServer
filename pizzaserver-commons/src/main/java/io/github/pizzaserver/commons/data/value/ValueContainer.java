@@ -31,6 +31,10 @@ public class ValueContainer<T> extends ActionRootSource implements ValueInterfac
         return this;
     }
 
+    /** Forces a container to trigger preprocessors + listeners without setting a new value. */
+    public void nudge() {
+        this.setValue(this.value);
+    }
 
 
     /** Clears subscribers as this value should not be used*/

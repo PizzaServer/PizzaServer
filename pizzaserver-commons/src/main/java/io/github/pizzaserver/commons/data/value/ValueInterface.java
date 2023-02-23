@@ -7,4 +7,6 @@ public interface ValueInterface<T> {
 
     T getValue();
 
+    void nudge();
+
 }
