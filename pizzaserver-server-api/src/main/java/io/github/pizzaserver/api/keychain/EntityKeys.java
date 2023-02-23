@@ -30,6 +30,12 @@ public class EntityKeys {
     // If a key maps to something that is really only handled by the server and won't be shared with the client,
     // the prefix of "internal" is adopted --> internal:property_here
 
+    // -- Shape
+    public static final DataKey<Float> BOUNDING_BOX_WIDTH = DataKey.of("internal:bounding_box_xz", Float.TYPE);
+    public static final DataKey<Float> BOUNDING_BOX_HEIGHT = DataKey.of("internal:bounding_box_y", Float.TYPE);
+    public static final DataKey<Float> SCALE = DataKey.of("internal:scale", Float.TYPE);
+
+
     // -- Location
     public static final DataKey<Vector3f> POSITION = DataKey.of("minecraft:position", Vector3f.class);
     public static final DataKey<Float> ROTATION_PITCH = DataKey.of("minecraft:body_x_rotation", Float.TYPE);
@@ -41,13 +47,23 @@ public class EntityKeys {
 
 
     // -- Time
-    public static final DataKey<Integer> BREATHING_TICKS_REMAINING = DataKey.of("minecraft:breathing_ticks", Integer.TYPE); // has a flag?
+    public static final DataKey<Short> BREATHING_TICKS_REMAINING = DataKey.of("minecraft:breathing_ticks", Short.TYPE);
+    public static final DataKey<Short> MAX_BREATHING_TICKS = BREATHING_TICKS_REMAINING.suffix("max");
     public static final DataKey<Integer> FIRE_TICKS_REMAINING = DataKey.of("minecraft:on_fire_time", Integer.TYPE);
     public static final DataKey<Integer> INVULNERABILITY_TICKS = DataKey.of("minecraft:invulnerable_ticks", Integer.TYPE);
 
 
     // -- Locomotion
     public static final DataKey<Float> MOVEMENT_SPEED = DataKey.of("minecraft:movement", Float.TYPE); // *Attrib
+    public static final DataKey<Boolean> SNEAKING = DataKey.of("internal:flag_sneaking", Boolean.TYPE);
+    public static final DataKey<Boolean> SWIMMING = DataKey.of("internal:flag_swimming", Boolean.TYPE);
+    public static final DataKey<Boolean> SPRINTING = DataKey.of("internal:flag_sneaking", Boolean.TYPE);
+
+    public static final DataKey<Boolean> GRAVITY_ENABLED = DataKey.of("internal:flag_gravity", Boolean.TYPE);
+    public static final DataKey<Boolean> COLLISION_ENABLED = DataKey.of("internal:flag_collider", Boolean.TYPE);
+    public static final DataKey<Boolean> CLIMBING_ENABLED = DataKey.of("internal:flag_climbing", Boolean.TYPE);
+
+    public static final DataKey<Boolean> AI_ENABLED = DataKey.of("internal:flag_ai", Boolean.TYPE);
 
 
     // -- Living
@@ -59,6 +75,8 @@ public class EntityKeys {
     public static final DataKey<Float> MAX_ABSORPTION = HEALTH.suffix("min");
 
     public static final DataKey<Boolean> IS_VULNERABLE = DataKey.of("minecraft:is_vulnerable", Boolean.TYPE);
+    public static final DataKey<Boolean> BURNING = DataKey.of("internal:flag_is_on_fire", Boolean.TYPE);
+    public static final DataKey<Boolean> BREATHING = DataKey.of("internal:flag_is_breathing", Boolean.TYPE);
 
 
     // -- Humanoid
@@ -70,5 +88,6 @@ public class EntityKeys {
 
     // -- Misc
     public static final DataKey<BossBar> BOSS_BAR = DataKey.of("internal:boss_bar", BossBar.class);
+    public static final DataKey<String> DISPLAY_NAME = DataKey.of("internal:display_name", String.class);
 
 }

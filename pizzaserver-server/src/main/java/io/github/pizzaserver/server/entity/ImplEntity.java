@@ -199,6 +199,15 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
+
+
+        // - Entity Data
+
+        this.getOrCreateContainerFor(EntityKeys., 0.1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ));
     }
 
 

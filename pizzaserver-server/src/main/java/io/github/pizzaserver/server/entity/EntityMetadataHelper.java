@@ -58,16 +58,24 @@ public class EntityMetadataHelper {
     }
 
     public void registerFlagInterest(EntityFlag flag, DataKey<Boolean> flagMapping) {
-        this.registerFlagInterest(flag, flagMapping, true);
+        this.registerFlagInterest(flag, false, flagMapping, true);
     }
 
     public void registerFlagInterest(EntityFlag flag, DataKey<Boolean> flagMapping, boolean triggerUpdates) {
+        this.registerFlagInterest(flag, false, flagMapping, triggerUpdates);
+    }
+
+    public void registerFlagInterest(EntityFlag flag, boolean flipValue, DataKey<Boolean> flagMapping ) {
+        this.registerFlagInterest(flag, flipValue, flagMapping, true);
+    }
+
+    public void registerFlagInterest(EntityFlag flag, boolean flipValue, DataKey<Boolean> flagMapping, boolean triggerUpdates) {
         ValueProxy<Boolean> proxy = this.entity.getProxy(flagMapping)
                 .orElseThrow(() -> new IllegalArgumentException("Provided Data Key must have an assigned value!"));
 
         proxy.listenFor(DataAction.VALUE_SET, value -> {
             boolean includeFlag = (boolean) value;
-            this.flagCache.setFlag(flag, includeFlag);
+            this.flagCache.setFlag(flag, flipValue != includeFlag);
 
             if(triggerUpdates)
                 this.requiresUpdate = true;
