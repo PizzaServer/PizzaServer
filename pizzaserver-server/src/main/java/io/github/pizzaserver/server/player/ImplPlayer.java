@@ -46,6 +46,7 @@ import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.commons.data.DataAction;
+import io.github.pizzaserver.commons.data.key.DataKey;
 import io.github.pizzaserver.commons.data.value.Preprocessors;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
@@ -76,6 +77,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ImplPlayer extends ImplEntityHuman implements Player {
+
+    public static final float MAX_FOOD_LEVEL = 20f;
 
     protected final ImplServer server;
     protected final PlayerSession session;
@@ -128,64 +131,48 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     protected void defineProperties() {
-        super.defineProperties(); // Define defaults
+        super.defineProperties(); // Define humanoid's properties
 
         // Players will die at any health lower than 0.5
         // No need to check if it needs killing after the value is updated.
-        this.getContainerFor(EntityKeys.KILL_THRESHOLD).orElseThrow()
+        this.expectContainerFor(EntityKeys.KILL_THRESHOLD)
                 .setPreprocessor(Preprocessors.ifNullThenConstant(0.5f))
                 .setValue(0.5f)
-                .listenFor(DataAction.VALUE_SET, v ->
-                        // min health is linked to health, thus it uses the current var of HEALTH.
-                        // Same applies with max health and so on with other attributes...
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
-                );
+                // min health is linked to health, thus it uses the current var of HEALTH.
+                // Same applies with max health and so on with other attributes...
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.HEALTH));
 
-        this.getContainerFor(EntityKeys.MAX_HEALTH).orElseThrow()
+        this.expectContainerFor(EntityKeys.MAX_HEALTH)
                 .setValue(20f)
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
-                );
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.HEALTH));
 
-        this.getContainerFor(EntityKeys.HEALTH).orElseThrow()
+        this.expectContainerFor(EntityKeys.HEALTH)
                 .setValue(20f)
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.HEALTH))
-                );
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.HEALTH));
 
-        this.getContainerFor(EntityKeys.ABSORPTION).orElseThrow()
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION))
-                );
+        this.expectContainerFor(EntityKeys.ABSORPTION)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.ABSORPTION));
 
-        this.getContainerFor(EntityKeys.MAX_ABSORPTION).orElseThrow()
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.ABSORPTION))
-                );
+        this.expectContainerFor(EntityKeys.MAX_ABSORPTION)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.ABSORPTION));
 
-        this.getContainerFor(EntityKeys.MOVEMENT_SPEED).orElseThrow()
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.MOVEMENT_SPEED))
-                );
+        this.expectContainerFor(EntityKeys.MOVEMENT_SPEED)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.MOVEMENT_SPEED));
 
-        this.getOrCreateContainerFor(EntityKeys.FOOD, 20f)
+        this.getOrCreateContainerFor(EntityKeys.FOOD, MAX_FOOD_LEVEL)
                 .setPreprocessor(Preprocessors.inOrder(
-                        Preprocessors.ifNullThenConstant(20f),
+                        Preprocessors.ifNullThenConstant(MAX_FOOD_LEVEL),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
-                        Preprocessors.ensureBelowConstant(20f)
+                        Preprocessors.ensureBelowConstant(MAX_FOOD_LEVEL)
                 ))
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.FOOD))
-                );
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.FOOD));
 
         this.getOrCreateContainerFor(EntityKeys.SATURATION, 0f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.SATURATION))
-                );
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.SATURATION));
 
 
         this.getOrCreateContainerFor(EntityKeys.PLAYER_XP_LEVELS, 0)
@@ -194,9 +181,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         Preprocessors.INT_EQUAL_OR_ABOVE_ZERO,
                         Preprocessors.ensureBelowConstant(AttributeType.PLAYER_XP_LEVEL_LIMIT)
                 ))
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP_LEVELS))
-                );
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.PLAYER_XP_LEVELS));
 
         this.getOrCreateContainerFor(EntityKeys.PLAYER_XP, 0f)
                 .setPreprocessor(Preprocessors.inOrder(
@@ -204,9 +189,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
                         Preprocessors.ensureBelowConstant(1f)
                 ))
-                .listenFor(DataAction.VALUE_SET, v ->
-                        this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP))
-                );
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.PLAYER_XP));
     }
 
     /**
@@ -718,6 +701,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
     }
 
+    private void sendAttribute(DataKey<?> attributeSourceKey) {
+        this.sendAttribute(this.generateAttributeReferences().get(attributeSourceKey));
+    }
 
     private void sendAttribute(AttributeView<? extends Number> attribute) {
         this.sendAttributes(Collections.singleton(attribute));
