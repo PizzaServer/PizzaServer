@@ -11,10 +11,7 @@ import io.github.pizzaserver.commons.data.key.DataKey;
 import io.github.pizzaserver.commons.data.value.ValueProxy;
 import it.unimi.dsi.fastutil.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class EntityMetadataHelper {

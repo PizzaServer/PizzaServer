@@ -124,6 +124,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.physicsEngine.setPositionUpdate(false);
 
         this.setDisplayName(this.getUsername());
+    }
+
+    @Override
+    protected void defineProperties() {
+        super.defineProperties(); // Define defaults
 
         // Players will die at any health lower than 0.5
         // No need to check if it needs killing after the value is updated.
@@ -203,7 +208,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                         this.sendAttribute(this.generateAttributeReferences().get(EntityKeys.PLAYER_XP))
                 );
     }
-
 
     /**
      * Initialize the player to be ready to spawn in.

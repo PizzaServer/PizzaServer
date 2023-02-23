@@ -105,8 +105,33 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.id = ID++;
         this.entityDefinition = entityDefinition;
 
+        this.defineProperties();
+
+        // Generate AttributeViews for the currently created properties.
+        this.listenFor(DataAction.CONTAINER_CREATE, key -> {
+            if(AttributeType.ALL_ATTRIBUTE_KEY_DEPENDENCIES.contains(key))
+                this.generateAttributeReferences();
+        });
+
+        // Apply default components to the entity
+        Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
+            EntityComponentHandler handler = Server.getInstance().getEntityRegistry().getComponentHandler(clazz);
+            handler.onRegistered(this, Server.getInstance().getEntityRegistry().getDefaultComponent(clazz));
+        });
+    }
+
+    // Overridable hook into the constructor
+    // Add properties here while so that attribute views can be generated after
+    // all properties is added.
+    protected void defineProperties() {
+        this.defineDefaultProperties();
+    }
+
+    protected final void defineDefaultProperties() {
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
+
+        // -- Attributes
 
         this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
         this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
@@ -117,11 +142,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThenConstant(true));
 
-        // Apply default components to the entity
-        Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
-            EntityComponentHandler handler = Server.getInstance().getEntityRegistry().getComponentHandler(clazz);
-            handler.onRegistered(this, Server.getInstance().getEntityRegistry().getDefaultComponent(clazz));
-        });
 
         this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0f)
                 .setPreprocessor(Preprocessors.inOrder(
@@ -179,12 +199,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
-
-
-        this.listenFor(DataAction.CONTAINER_CREATE, key -> {
-                if(AttributeType.ALL_ATTRIBUTE_KEY_DEPENDENCIES.contains(key))
-                    this.generateAttributeReferences();
-        });
     }
 
 
