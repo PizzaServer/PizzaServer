@@ -521,8 +521,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.noHitTicks = 0;
         this.lastDamageEvent = null;
         this.setAI(true);
-        this.setAirSupplyTicks(this.getMaxAirSupplyTicks());
         this.setSwimming(false);
+        this.set(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS));
 
         Location respawnLocation = this.getSpawn();
         if (respawnLocation.getWorld().getDimension() != this.expect(EntityKeys.WORLD).getDimension()) {

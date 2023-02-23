@@ -242,14 +242,6 @@ public interface Entity extends Watchable, DataStore {
 
     void setFireTicks(int ticks);
 
-    int getAirSupplyTicks();
-
-    void setAirSupplyTicks(int ticks);
-
-    int getMaxAirSupplyTicks();
-
-    void setMaxAirSupplyTicks(int ticks);
-
     List<Item> getLoot();
 
     void setLoot(List<Item> loot);

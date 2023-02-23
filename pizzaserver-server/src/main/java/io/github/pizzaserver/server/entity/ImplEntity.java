@@ -726,34 +726,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public int getAirSupplyTicks() {
-        return this.getMetaData().getShort(EntityData.AIR_SUPPLY);
-    }
-
-    @Override
-    public void setAirSupplyTicks(int ticks) {
-        int newAirSupplyTicks = Math.max(0, Math.min(ticks, this.getMaxAirSupplyTicks()));
-        if (newAirSupplyTicks != this.getAirSupplyTicks()) {
-            this.getMetaData().putShort(EntityData.AIR_SUPPLY, (short) newAirSupplyTicks);
-        }
-    }
-
-    @Override
-    public int getMaxAirSupplyTicks() {
-        return this.getMetaData().getShort(EntityData.MAX_AIR_SUPPLY);
-    }
-
-    @Override
-    public void setMaxAirSupplyTicks(int ticks) {
-        int newMaxAirSupplyTicks = Math.max(0, ticks);
-        if (newMaxAirSupplyTicks != this.getMaxAirSupplyTicks()) {
-            this.getMetaData().putShort(EntityData.MAX_AIR_SUPPLY, (short) newMaxAirSupplyTicks);
-
-            this.setAirSupplyTicks(Math.min(this.getAirSupplyTicks(), this.getMaxAirSupplyTicks()));
-        }
-    }
-
-    @Override
     public List<Item> getLoot() {
         return this.loot;
     }
@@ -1038,26 +1010,35 @@ public class ImplEntity extends SingleDataStore implements Entity {
                 }
             }
 
-            boolean losingOxygen = !headBlock.hasCollision()
-                    && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
-                                && !breathableComponent.getBreathableBlocks().contains(headBlock))
-                        || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
+            boolean blockIsBreathable = headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock);
+            boolean blockIsNonBreathable = breathableComponent.getNonBreathableBlocks().contains(headBlock) && !breathableComponent.getBreathableBlocks().contains(headBlock);
+            boolean blockIsDefinitelyNotBreathable = blockIsNonBreathable || !blockIsBreathable;
 
-            if (losingOxygen && !(this instanceof Player player && player.isCreativeMode())) {
-                if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
-                    EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
-                    this.damage(drowningEvent);
-                } else {
-                    this.setAirSupplyTicks(this.getAirSupplyTicks() - 1);
+            boolean losingOxygen = !headBlock.hasCollision() && blockIsDefinitelyNotBreathable;
+
+            if(this.has(EntityKeys.BREATHING) && this.has(EntityKeys.BREATHING_TICKS_REMAINING)) {
+                int airSupplyTicks = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
+                int maxAirSupply = this.expect(EntityKeys.MAX_BREATHING_TICKS);
+
+                // This should be moved.
+                boolean isPlayerInCreativeMode = this instanceof Player player && player.isCreativeMode();
+
+                if (losingOxygen && !isPlayerInCreativeMode) {
+                    if (airSupplyTicks <= 0 && this.getServer().getTick() % 20 == 0) {
+                        EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
+                        this.damage(drowningEvent);
+
+                    } else {
+                        this.set(EntityKeys.BREATHING_TICKS_REMAINING, airSupplyTicks - 1);
+                    }
+
+                } else if (airSupplyTicks < maxAirSupply) {
+                    int increment = this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0
+                            ? maxAirSupply
+                            : (int) Math.ceil(maxAirSupply / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
+
+                    this.set(EntityKeys.BREATHING_TICKS_REMAINING, airSupplyTicks + increment);
                 }
-            } else if (this.getAirSupplyTicks() < this.getMaxAirSupplyTicks()) {
-                int increment;
-                if (this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0) {
-                    increment = this.getMaxAirSupplyTicks();
-                } else {
-                    increment = (int) Math.ceil(this.getMaxAirSupplyTicks() / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
-                }
-                this.setAirSupplyTicks(this.getAirSupplyTicks() + increment);
             }
 
         }
