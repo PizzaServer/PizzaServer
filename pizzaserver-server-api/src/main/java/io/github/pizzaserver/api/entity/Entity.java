@@ -198,10 +198,6 @@ public interface Entity extends Watchable, DataStore {
 
     void setPistonPushable(boolean enabled);
 
-    int getFireTicks();
-
-    void setFireTicks(int ticks);
-
     List<Item> getLoot();
 
     void setLoot(List<Item> loot);

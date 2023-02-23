@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.block.impl.BlockFire;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 
 public class FireBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockFire> {
 
@@ -20,7 +21,7 @@ public class FireBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockFir
 
     @Override
     public void onCollision(Entity entity, BlockFire fire) {
-        entity.setFireTicks(160);
+        entity.set(EntityKeys.FIRE_TICKS_REMAINING, 160);
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
@@ -67,8 +66,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
     protected int deathAnimationTicks = -1;
     protected int noHitTicks;
-
-    protected int fireTicks;
 
     protected ImplBossBar bossBar = null;
 
@@ -158,14 +155,12 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.MAX_HEALTH).nudge());
-
         this.getOrCreateContainerFor(EntityKeys.MAX_HEALTH, 1f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.nonNull("Max Health must not be null and must be above or equal to zero."),
                         Preprocessors.ensureAboveDefined(this.expectContainerFor(EntityKeys.KILL_THRESHOLD))
                 ))
                 .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.HEALTH).nudge());
-
         this.getOrCreateContainerFor(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH))
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_HEALTH)),
@@ -186,7 +181,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.ABSORPTION).nudge());
-
         this.getOrCreateContainerFor(EntityKeys.ABSORPTION, this.expect(EntityKeys.MAX_ABSORPTION))
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_ABSORPTION)),
@@ -206,20 +200,31 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
-
         this.getOrCreateContainerFor(EntityKeys.BOUNDING_BOX_HEIGHT, 1f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenConstant(1f),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
-
         this.getOrCreateContainerFor(EntityKeys.SCALE, 1f)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.ifNullThenConstant(1f),
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
+
+        this.getOrCreateContainerFor(EntityKeys.FIRE_TICKS_REMAINING, 0)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BURNING).nudge());
+        this.getOrCreateContainerFor(EntityKeys.BURNING, false)
+                .setPreprocessor(ignored -> {
+                    // Read only property - sets + nudges trigger recalculation.
+                    return this.expect(EntityKeys.FIRE_TICKS_REMAINING) > 0f;
+                }).nudge();
+
     }
 
     protected void defineLivingProperties() {
@@ -227,13 +232,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
 
         // TODO: Verify this is still actually correct with the game.
         // TODO: Combine with breathing component.
-        this.getOrCreateContainerFor(EntityKeys.BREATHING, true)
-                .setPreprocessor(ignored -> {
-                    // Read only property - sets + nudges trigger recalculation.
-                    int max = this.expect(EntityKeys.MAX_BREATHING_TICKS);
-                    int current = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
-                    return current >= max;
-                });
         this.getOrCreateContainerFor(EntityKeys.MAX_BREATHING_TICKS, 15)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
@@ -248,6 +246,13 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BREATHING).nudge());
+        this.getOrCreateContainerFor(EntityKeys.BREATHING, true)
+                .setPreprocessor(ignored -> {
+                    // Read only property - sets + nudges trigger recalculation.
+                    int max = this.expect(EntityKeys.MAX_BREATHING_TICKS);
+                    int current = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
+                    return current >= max;
+                }).nudge();
     }
 
 
@@ -652,24 +657,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     @Override
-    public int getFireTicks() {
-        return this.fireTicks;
-    }
-
-    @Override
-    public void setFireTicks(int ticks) {
-        boolean onFirePreviously = this.getFireTicks() > 0;
-        this.fireTicks = ticks;
-
-        EntityMetadataHelper metaData = this.getMetadataHelper();
-        if (this.fireTicks > 0 && !onFirePreviously) {
-            metaData.putFlag(EntityFlag.ON_FIRE, true);
-        } else if (this.fireTicks <= 0 && onFirePreviously) {
-            metaData.putFlag(EntityFlag.ON_FIRE, false);
-        }
-    }
-
-    @Override
     public List<Item> getLoot() {
         return this.loot;
     }
@@ -926,19 +913,23 @@ public class ImplEntity extends SingleDataStore implements Entity {
         if (this.hasComponent(EntityBurnsInDaylightComponent.class) && world.isDay()) {
             Block highestBlockAboveEntity = world.getHighestBlockAt(this.getFloorX(), this.getFloorZ());
             if (highestBlockAboveEntity.getY() <= this.getY()) {
-                this.setFireTicks(20);
+                this.set(EntityKeys.FIRE_TICKS_REMAINING, 20);
             }
         }
 
         if (this.getNoHitTicks() > 0) {
             this.setNoHitTicks(this.getNoHitTicks() - 1);
+
         } else {
-            if (this.getFireTicks() > 0) {
-                if (this.getFireTicks() % 20 == 0) {
+            int currentFireTicks = this.expect(EntityKeys.FIRE_TICKS_REMAINING);
+
+            if (this.expect(EntityKeys.BURNING)) {
+                if (currentFireTicks % 20 == 0) {
                     EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
                     this.damage(fireTickDamageEvent);
                 }
-                this.setFireTicks(this.getFireTicks() - 1);
+
+                this.set(EntityKeys.FIRE_TICKS_REMAINING, currentFireTicks - 1);
             }
 
             Block headBlock = this.getHeadBlock();
@@ -947,6 +938,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
                     && headBlock.getBoundingBox().collidesWith(this.getBoundingBox())
                     && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
                         || breathableComponent.getNonBreathableBlocks().contains(headBlock));
+
             if (isSuffocating) {
                 if (this.ticks % breathableComponent.getSuffocationInterval() == 0) {
                     EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);

@@ -517,9 +517,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     public void respawn() {
         this.deathAnimationTicks = -1;
-        this.fireTicks = 0;
         this.noHitTicks = 0;
         this.lastDamageEvent = null;
+        this.set(EntityKeys.FIRE_TICKS_REMAINING, 0);
         this.set(EntityKeys.AI_ENABLED, true);
         this.set(EntityKeys.SWIMMING, false);
         this.set(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS));
