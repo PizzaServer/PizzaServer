@@ -242,7 +242,7 @@ public class ImplEntity extends SingleDataStore implements Entity {
         this.getOrCreateContainerFor(EntityKeys.AI_ENABLED, true).setPreprocessor(trueIfNull);
         this.getOrCreateContainerFor(EntityKeys.COLLISION_ENABLED, true).setPreprocessor(trueIfNull);
         this.getOrCreateContainerFor(EntityKeys.GRAVITY_ENABLED, true).setPreprocessor(trueIfNull);
-
+        this.getOrCreateContainerFor(EntityKeys.CLIMBING_ENABLED, true).setPreprocessor(trueIfNull);
 
         // -- Movement
         this.getOrCreateContainerFor(EntityKeys.SPRINTING, false).setPreprocessor(falseIfNull);

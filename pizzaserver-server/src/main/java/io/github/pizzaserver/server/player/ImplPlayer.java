@@ -1049,8 +1049,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.getInventory().sendSlots(this);
         this.set(EntityKeys.GRAVITY_ENABLED, true);
-                .putFlag(EntityFlag.BREATHING, true)
-                .putFlag(EntityFlag.CAN_CLIMB, true);
+        this.set(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS));
+        this.set(EntityKeys.CLIMBING_ENABLED, true);
+
         this.sendAttributes();
         this.getAdventureSettings().send();
 
