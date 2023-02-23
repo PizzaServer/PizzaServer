@@ -3,7 +3,6 @@ package io.github.pizzaserver.server.entity;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
@@ -200,6 +199,27 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
                         Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
                 ));
+
+        this.getOrCreateContainerFor(EntityKeys.BOUNDING_BOX_WIDTH, 1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenConstant(1f),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
+
+        this.getOrCreateContainerFor(EntityKeys.BOUNDING_BOX_HEIGHT, 1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenConstant(1f),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
+
+        this.getOrCreateContainerFor(EntityKeys.SCALE, 1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenConstant(1f),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
     }
 
     protected void defineLivingProperties() {
@@ -475,12 +495,16 @@ public class ImplEntity extends SingleDataStore implements Entity {
     }
 
     protected void recalculateBoundingBox() {
-        float minX = this.getX() - ((this.getWidth() / 2) * this.getScale());
-        float maxX = this.getX() + ((this.getWidth() / 2) * this.getScale());
+        float width = this.expect(EntityKeys.BOUNDING_BOX_WIDTH);
+        float height = this.expect(EntityKeys.BOUNDING_BOX_HEIGHT);
+        float scale = this.expect(EntityKeys.SCALE);
+
+        float minX = this.getX() - ((width / 2) * scale);
+        float maxX = this.getX() + ((width / 2) * scale);
         float minY = this.getY();
-        float maxY = this.getY() + (this.getHeight() * this.getScale());
-        float minZ = this.getZ() - ((this.getWidth() / 2) * this.getScale());
-        float maxZ = this.getZ() + ((this.getWidth() / 2) * this.getScale());
+        float maxY = this.getY() + (height * scale);
+        float minZ = this.getZ() - ((width / 2) * scale);
+        float maxZ = this.getZ() + ((width / 2) * scale);
         this.boundingBox = new BoundingBox(Vector3f.from(minX, minY, minZ), Vector3f.from(maxX, maxY, maxZ));
     }
 
@@ -507,28 +531,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public String getName() {
         return this.get(EntityKeys.DISPLAY_NAME).orElse(this.getEntityDefinition().getName());
-    }
-
-    @Override
-    public float getHeight() {
-        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_HEIGHT);
-    }
-
-    @Override
-    public void setHeight(float height) {
-        this.getMetaData().putFloat(EntityData.BOUNDING_BOX_HEIGHT, height);
-        this.recalculateBoundingBox();
-    }
-
-    @Override
-    public float getWidth() {
-        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_WIDTH);
-    }
-
-    @Override
-    public void setWidth(float width) {
-        this.getMetaData().putFloat(EntityData.BOUNDING_BOX_WIDTH, width);
-        this.recalculateBoundingBox();
     }
 
     /**
@@ -647,17 +649,6 @@ public class ImplEntity extends SingleDataStore implements Entity {
     @Override
     public void setPistonPushable(boolean enabled) {
         this.pistonPushable = enabled;
-    }
-
-    @Override
-    public float getScale() {
-        return this.getMetaData().getFloat(EntityData.SCALE);
-    }
-
-    @Override
-    public void setScale(float scale) {
-        this.getMetaData().putFloat(EntityData.SCALE, scale);
-        this.recalculateBoundingBox();
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
 import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
 import io.github.pizzaserver.api.player.data.Device;
@@ -70,7 +71,7 @@ public class ImplEntityHuman extends ImplEntity implements EntityHuman {
 
     @Override
     public String getUsername() {
-        return this.getDisplayName().orElse("");
+        return this.get(EntityKeys.DISPLAY_NAME).orElse("");
     }
 
     @Override

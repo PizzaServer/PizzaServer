@@ -169,14 +169,6 @@ public interface Entity extends Watchable, DataStore {
 
     BoundingBox getBoundingBox();
 
-    float getHeight();
-
-    void setHeight(float height);
-
-    float getWidth();
-
-    void setWidth(float width);
-
     float getEyeHeight();
 
     void setEyeHeight(float eyeHeight);
@@ -205,10 +197,6 @@ public interface Entity extends Watchable, DataStore {
     boolean isPistonPushable();
 
     void setPistonPushable(boolean enabled);
-
-    float getScale();
-
-    void setScale(float scale);
 
     int getFireTicks();
 
