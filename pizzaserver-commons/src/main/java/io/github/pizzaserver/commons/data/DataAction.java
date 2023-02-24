@@ -5,7 +5,12 @@ import io.github.pizzaserver.commons.data.react.ActionType;
 
 public class DataAction {
 
-    /** Returns the previous value of the container. */
+    /**
+     * Returns the previous value of the container. This is not called on functional
+     * containers (such as containers for certain flags, i.e. BREATHING & BURNING), thus
+     * it is <b>not</b> reliably fired. Use VALUE_SET instead if the contents of the action
+     * does not matter.
+     */
     public static final ActionType<Object> VALUE_PRE_SET = ActionType.of("value_set_pre", Object.class);
 
     /** Returns the value of the container once it has been set. */

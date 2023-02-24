@@ -7,10 +7,9 @@ import java.util.function.Supplier;
 
 
 public class Preprocessors {
-
-   public static final Function<Float, Float> TRANSFORM_NULL_TO_FLOAT_ZERO = Preprocessors.ifNullThenConstant(0f);
+    public static final Function<Float, Float> TRANSFORM_NULL_TO_FLOAT_ZERO = Preprocessors.ifNullThenConstant(0f);
     public static final Function<Integer, Integer> TRANSFORM_NULL_TO_INT_ZERO = Preprocessors.ifNullThenConstant(0);
-   public static final Function<Float, Float> FLOAT_EQUAL_OR_ABOVE_ZERO = Preprocessors.ensureAboveConstant(0f);
+    public static final Function<Float, Float> FLOAT_EQUAL_OR_ABOVE_ZERO = Preprocessors.ensureAboveConstant(0f);
     public static final Function<Integer, Integer> INT_EQUAL_OR_ABOVE_ZERO = Preprocessors.ensureAboveConstant(0);
 
     public static <T> Function<T, T> nonNull(String name) {

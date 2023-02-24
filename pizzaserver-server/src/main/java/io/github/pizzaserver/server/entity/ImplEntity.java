@@ -38,9 +38,12 @@ import io.github.pizzaserver.api.utils.*;
 import io.github.pizzaserver.commons.data.DataAction;
 import io.github.pizzaserver.commons.data.key.DataKey;
 import io.github.pizzaserver.commons.data.store.SingleDataStore;
+import io.github.pizzaserver.commons.data.value.FunctionalContainer;
 import io.github.pizzaserver.commons.data.value.Preprocessors;
+import io.github.pizzaserver.commons.data.value.ValueContainer;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.block.behavior.impl.FireBlockBehavior;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.item.ItemUtils;
@@ -136,6 +139,10 @@ public class ImplEntity extends SingleDataStore implements Entity {
     protected final void defineDefaultProperties() {
         // Anything that previously triggered a movement update should trigger this.
         Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
+        Function<Float, Float> PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE = Preprocessors.inOrder(
+                Preprocessors.ifNullThenConstant(1f),
+                Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+        );
 
         // -- Attributes
 
@@ -195,35 +202,34 @@ public class ImplEntity extends SingleDataStore implements Entity {
                 ));
 
         this.getOrCreateContainerFor(EntityKeys.BOUNDING_BOX_WIDTH, 1f)
-                .setPreprocessor(Preprocessors.inOrder(
-                        Preprocessors.ifNullThenConstant(1f),
-                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
-                ))
+                .setPreprocessor(PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE)
                 .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
         this.getOrCreateContainerFor(EntityKeys.BOUNDING_BOX_HEIGHT, 1f)
-                .setPreprocessor(Preprocessors.inOrder(
-                        Preprocessors.ifNullThenConstant(1f),
-                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
-                ))
+                .setPreprocessor(PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE)
                 .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
         this.getOrCreateContainerFor(EntityKeys.SCALE, 1f)
-                .setPreprocessor(Preprocessors.inOrder(
-                        Preprocessors.ifNullThenConstant(1f),
-                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
-                ))
+                .setPreprocessor(PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE)
                 .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
 
         this.getOrCreateContainerFor(EntityKeys.FIRE_TICKS_REMAINING, 0)
                 .setPreprocessor(Preprocessors.inOrder(
                         Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
                         Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
-                ))
-                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BURNING).nudge());
-        this.getOrCreateContainerFor(EntityKeys.BURNING, false)
-                .setPreprocessor(ignored -> {
-                    // Read only property - sets + nudges trigger recalculation.
-                    return this.expect(EntityKeys.FIRE_TICKS_REMAINING) > 0f;
-                }).nudge();
+                ));
+
+        this.getOrCreateRedirectOverrideFor(EntityKeys.BURNING)
+                .onGet(() -> this.expect(EntityKeys.FIRE_TICKS_REMAINING) > 0)
+                .onSet(shouldBurn -> {
+                    int currentFireTick = this.expect(EntityKeys.FIRE_TICKS_REMAINING);
+
+                    if(currentFireTick > 0 && !shouldBurn) {
+                        this.set(EntityKeys.FIRE_TICKS_REMAINING, 0);
+                        return;
+                    }
+
+                    if(currentFireTick <= 0 && shouldBurn)
+                        this.set(EntityKeys.FIRE_TICKS_REMAINING, FireBlockBehavior.FIRE_TICKS_APPLIED); // As if they walked in a fire block
+                });
 
         this.getOrCreateContainerFor(EntityKeys.VARIANT, 0)
                 .setPreprocessor(Preprocessors.inOrder(
@@ -251,13 +257,26 @@ public class ImplEntity extends SingleDataStore implements Entity {
                         Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
                 ))
                 .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BREATHING).nudge());
-        this.getOrCreateContainerFor(EntityKeys.BREATHING, true)
-                .setPreprocessor(ignored -> {
-                    // Read only property - sets + nudges trigger recalculation.
+
+        this.getOrCreateRedirectOverrideFor(EntityKeys.BREATHING)
+                .onGet(() -> {
                     int max = this.expect(EntityKeys.MAX_BREATHING_TICKS);
                     int current = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
                     return current >= max;
-                }).nudge();
+                })
+                .onSet(shouldBeBreathing -> {
+                    int currentBreathingTicks = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
+                    int maxBreathingTicks = this.expect(EntityKeys.MAX_BREATHING_TICKS);
+
+                    if(currentBreathingTicks >= maxBreathingTicks && !shouldBeBreathing) {
+                        this.set(EntityKeys.BREATHING_TICKS_REMAINING, maxBreathingTicks - 1);
+                        return;
+                    }
+
+                    if(currentBreathingTicks < maxBreathingTicks && shouldBeBreathing)
+                        this.set(EntityKeys.BREATHING_TICKS_REMAINING, maxBreathingTicks);
+                });
+
     }
 
 
@@ -296,6 +315,27 @@ public class ImplEntity extends SingleDataStore implements Entity {
             this.bakedAttributeViews = EntityHelper.generateAttributes(this, AttributeType.ALL_ATTRIBUTES);
 
         return this.bakedAttributeViews;
+    }
+
+    protected <T> FunctionalContainer<T> getOrCreateRedirectOverrideFor(DataKey<T> key) {
+        Optional<ValueContainer<T>> optCont = this.getContainerFor(key);
+        if(optCont.isPresent()){
+            ValueContainer<T> container = optCont.get();
+
+            if(container instanceof FunctionalContainer<T>)
+                return (FunctionalContainer<T>) container;
+
+            this.getServer()
+                    .getLogger()
+                    .warn("Override of an existing container for key '%s' (Entity: %s) - this should be avoided!".formatted(
+                            key.getKey(),
+                            this.getEntityDefinition().getEntityId()
+                    ));
+        }
+
+        FunctionalContainer<T> override = new FunctionalContainer<>();
+        this.getRawDataRegistry().put(key, override);
+        return override;
     }
 
     @Override

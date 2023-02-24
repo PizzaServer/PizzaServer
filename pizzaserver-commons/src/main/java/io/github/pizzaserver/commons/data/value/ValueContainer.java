@@ -12,12 +12,20 @@ public class ValueContainer<T> extends ActionRootSource implements ValueInterfac
     private T value;
     private Function<T, T> preprocessor = data -> data;
 
+    // Use ValueContainer#wrap()
+    protected ValueContainer() { }
+
+
     @Override
     public ValueContainer<T> setValue(T value) {
         this.broadcast(DataAction.VALUE_PRE_SET, this.value);
-        this.value = preprocessor.apply(value);
+        this.internallyAssignValue(preprocessor.apply(value));
         this.broadcast(DataAction.VALUE_SET, this.value);
         return this;
+    }
+
+    protected void internallyAssignValue(T value) {
+        this.value = value;
     }
 
 

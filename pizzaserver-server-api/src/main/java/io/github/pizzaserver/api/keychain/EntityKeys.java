@@ -23,6 +23,9 @@ public class EntityKeys {
     // Some stuff can just be written an mirrored, however.
     //TODO: See EntityData as well for more values.
 
+    //TODO: Map all entity metadata + flags in a way where it can be sent or recieved. This means 'read-only' properties
+    // will now need to be writable, even if they don't store their own data.
+
     // While the identifier names aren't critical, they tend to follow a convention that aligns them with
     // entity attributes/data --> minecraft:property_here
     // see PizzaServer-API :: AttributeType.java

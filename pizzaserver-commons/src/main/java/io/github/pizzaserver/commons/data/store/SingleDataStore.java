@@ -68,10 +68,20 @@ public class SingleDataStore extends ActionRootSource implements DataStore {
      */
     @SuppressWarnings("unchecked")
     protected <T> Optional<ValueContainer<T>> getContainerFor(DataKey<T> type) {
-        if(!this.getDataRegistry().containsKey(type)) return Optional.empty();
+        if(!this.hasContainerFor(type))
+            return Optional.empty();
 
-        ValueContainer<?> list = this.getDataRegistry().get(type);
+        ValueContainer<?> list = this.getRawDataRegistry().get(type);
         return Optional.of((ValueContainer<T>) list);
+    }
+
+    /**
+     * @param type the key to locate the container for
+     * @return true if a container already exists for the given key.
+     * @param <T> the type paired with the key & container.
+     */
+    protected <T> boolean hasContainerFor(DataKey<T> type) {
+        return this.getRawDataRegistry().containsKey(type);
     }
 
     /**
@@ -95,7 +105,7 @@ public class SingleDataStore extends ActionRootSource implements DataStore {
         if(container.isPresent()) return container.get();
 
         ValueContainer<T> freshContainer = ValueContainer.wrap(fallbackValue);
-        this.getDataRegistry().put(type, freshContainer);
+        this.getRawDataRegistry().put(type, freshContainer);
 
         this.broadcast(DataAction.CONTAINER_CREATE, type);
 
@@ -105,11 +115,11 @@ public class SingleDataStore extends ActionRootSource implements DataStore {
 
     /** Sets all data to stale as they shouldn't be used. */
     protected void stale() {
-        for(ValueContainer<?> container: this.getDataRegistry().values())
+        for(ValueContainer<?> container: this.getRawDataRegistry().values())
             container.stale();
     }
 
-    protected HashMap<DataKey<?>, ValueContainer<?>> getDataRegistry() {
+    protected HashMap<DataKey<?>, ValueContainer<?>> getRawDataRegistry() {
         return this.dataRegistry;
     }
 }

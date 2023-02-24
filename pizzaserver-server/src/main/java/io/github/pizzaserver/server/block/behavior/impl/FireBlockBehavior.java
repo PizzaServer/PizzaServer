@@ -12,6 +12,8 @@ import io.github.pizzaserver.api.keychain.EntityKeys;
 
 public class FireBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockFire> {
 
+    public static final int FIRE_TICKS_APPLIED = 160;
+
     @Override
     public boolean prepareForPlacement(Entity entity, BlockFire fire, BlockFace face, Vector3f clickPosition) {
         Block originBlock = fire.getSide(face.opposite());
@@ -21,7 +23,7 @@ public class FireBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockFir
 
     @Override
     public void onCollision(Entity entity, BlockFire fire) {
-        entity.set(EntityKeys.FIRE_TICKS_REMAINING, 160);
+        entity.set(EntityKeys.FIRE_TICKS_REMAINING, FIRE_TICKS_APPLIED);
     }
 
     @Override
