@@ -107,26 +107,32 @@ public class ImplCommandRegistry implements CommandRegistry {
 
     public void startConsoleCommandReader() throws IOException {
         this.consoleSender = new Thread(() -> {
-            BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             while(server.getState() != ServerState.STOPPING) {
+                String readLine = null;
                 try {
-                    String readLine = br.readLine().trim();
-                    if(readLine.equals(""))
-                        continue;
-                    String[] list = readLine.split(" ");
-                    ImplServer.getInstance().getLogger().warn("Read line: " + list[0]);
-                    ImplCommand realCommand = ImplServer.getInstance().getCommandRegistry().getCommand(list[0]);
-                    if(realCommand == null) {
-                        ImplServer.getInstance().getLogger().error("That command doesn't exist!");
-                        continue;
-                    }
+                    readLine = reader.readLine().trim();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                if(readLine.equals(""))
+                    continue;
+                String[] list = readLine.split(" ");
+                ImplServer.getInstance().getLogger().warn("Read line: " + list[0]);
+                ImplCommand realCommand = ImplServer.getInstance().getCommandRegistry().getCommand(list[0]);
+                if(realCommand == null) {
+                    ImplServer.getInstance().getLogger().error("That command doesn't exist!");
+                    continue;
+                }
+                try {
                     if(realCommand.isAsync()) {
                         new Thread(() -> realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0])).start();
                     } else {
                         realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0]);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    ImplServer.getInstance().getLogger().error("Something went wrong executing that command!");
+                    e.printStackTrace();
                 }
             }
         });
