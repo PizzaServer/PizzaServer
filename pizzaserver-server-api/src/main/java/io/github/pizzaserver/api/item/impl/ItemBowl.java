@@ -19,4 +19,9 @@ public class ItemBowl extends BaseItem {
         return "Bowl";
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 200;
+    }
+
 }

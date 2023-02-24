@@ -15,23 +15,24 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityItem;
+import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.data.attributes.Attribute;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
+import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerLoginEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerRespawnEvent;
-import io.github.pizzaserver.api.inventory.OpenableInventory;
-import io.github.pizzaserver.api.item.CreativeRegistry;
+import io.github.pizzaserver.api.inventory.Inventory;
+import io.github.pizzaserver.api.inventory.TemporaryInventory;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
-import io.github.pizzaserver.api.item.impl.ItemStick;
-import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
-import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
 import io.github.pizzaserver.api.player.data.Device;
@@ -49,13 +50,13 @@ import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.entity.ImplEntityHuman;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
-import io.github.pizzaserver.server.inventory.ImplOpenableInventory;
+import io.github.pizzaserver.server.inventory.BaseInventory;
 import io.github.pizzaserver.server.inventory.ImplPlayerInventory;
-import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.player.handlers.AuthInputHandler;
 import io.github.pizzaserver.server.player.handlers.InventoryTransactionHandler;
 import io.github.pizzaserver.server.player.handlers.PlayerPacketHandler;
@@ -77,9 +78,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected final ImplServer server;
     protected final PlayerSession session;
     protected boolean locallyInitialized;
-    protected boolean autoSave = true;
+    protected boolean autoSave;
 
-    protected final MinecraftVersion version;
+    protected final BaseMinecraftVersion version;
     protected final Device device;
     protected final String xuid;
     protected final UUID uuid;
@@ -95,7 +96,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected final PlayerChunkManager chunkManager = new PlayerChunkManager(this);
     protected Dimension dimensionTransferScreen = null;
 
-    protected OpenableInventory openInventory = null;
+    protected Inventory openInventory = null;
 
     protected Gamemode gamemode;
     protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings(this);
@@ -108,7 +109,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.server = server;
         this.session = session;
 
-        this.version = session.getVersion();
+        this.version = (BaseMinecraftVersion) session.getVersion();
         this.device = loginData.getDevice();
         this.xuid = loginData.getXUID();
         this.uuid = loginData.getUUID();
@@ -116,6 +117,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.languageCode = loginData.getLanguageCode();
         this.skin = loginData.getSkin();
         this.inventory = new ImplPlayerInventory(this);
+        this.autoSave = server.getConfig().isSavingEnabled();
 
         this.physicsEngine.setPositionUpdate(false);
 
@@ -201,7 +203,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                 return;
             }
 
-            // Send remaining packets to spawn player
             SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
             movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
             movementSettings.setRewindHistorySize(100);
@@ -241,17 +242,28 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setServerEngine("");
             this.sendPacket(startGamePacket);
 
+            // Apply inventory data
+            for (int slot = 0; slot < data.getSlots().length; slot++) {
+                this.getInventory().setSlot(slot, data.getSlots()[slot]);
+            }
+            this.getInventory().setOffhandItem(data.getOffHand());
+            this.getInventory().setHelmet(data.getArmorSlots()[0]);
+            this.getInventory().setChestplate(data.getArmorSlots()[1]);
+            this.getInventory().setLeggings(data.getArmorSlots()[2]);
+            this.getInventory().setBoots(data.getArmorSlots()[3]);
+
             // Send item components for custom items
             ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
             itemComponentPacket.getItems().addAll(this.getVersion().getItemComponents());
             this.sendPacket(itemComponentPacket);
 
             CreativeContentPacket creativeContentPacket = new CreativeContentPacket();
-            creativeContentPacket.setContents(CreativeRegistry.getInstance()
-                    .getItems().stream()
-                    .map(item -> ItemUtils.serializeForNetwork(item, this.getVersion()))
-                    .toArray(ItemData[]::new));
+            creativeContentPacket.setContents(ImplPlayer.this.getVersion().getCreativeData().toArray(new ItemData[0]));
             this.sendPacket(creativeContentPacket);
+
+            CraftingDataPacket craftingDataPacket = new CraftingDataPacket();
+            craftingDataPacket.getCraftingData().addAll(ImplPlayer.this.getVersion().getCraftingData());
+            this.sendPacket(craftingDataPacket);
 
             BiomeDefinitionListPacket biomeDefinitionPacket = new BiomeDefinitionListPacket();
             biomeDefinitionPacket.setDefinitions(this.getVersion().getBiomeDefinitions());
@@ -285,7 +297,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public MinecraftVersion getVersion() {
+    public BaseMinecraftVersion getVersion() {
         return this.version;
     }
 
@@ -387,8 +399,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public boolean canReach(BlockEntity blockEntity) {
-        return this.canReach(blockEntity.getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
+    public boolean canReach(BlockEntity<? extends Block> blockEntity) {
+        return this.canReach(blockEntity.getBlock().getLocation().toVector3f(), this.isCreativeMode() ? 13 : 7);
     }
 
     @Override
@@ -474,27 +486,78 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
-    public Optional<OpenableInventory> getOpenInventory() {
+    public Optional<Inventory> getOpenInventory() {
         return Optional.ofNullable(this.openInventory);
     }
 
     @Override
     public boolean closeOpenInventory() {
-        Optional<OpenableInventory> openInventory = this.getOpenInventory();
-        if (openInventory.isPresent() && !((ImplOpenableInventory) openInventory.get()).closeFor(this)) {
-            return false;
+        Optional<Inventory> openInventory = this.getOpenInventory();
+        if (openInventory.isPresent()) {
+            if (!((BaseInventory) openInventory.get()).closeFor(this)) {
+                return false;
+            } else {
+                // Drop items from open inventory if required.
+                this.handleClosingTemporaryInventory(this.getInventory().getCraftingGrid());
+                if (openInventory.get() instanceof TemporaryInventory openTempInventory) {
+                    this.handleClosingTemporaryInventory(openTempInventory);
+                }
+
+                this.openInventory = null;
+                return true;
+            }
         } else {
-            this.openInventory = null;
             return true;
         }
     }
 
+    /**
+     * Moves all items in the temporary inventory to the player's inventory or to the ground.
+     * Normally this is handled by the client. but in the case scenario of malicious clients,
+     * they could keep the items in their temporary inventory.
+     */
+    private void handleClosingTemporaryInventory(TemporaryInventory inventory) {
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            Item item = inventory.getSlot(slot);
+
+            Optional<Item> excess = this.getInventory().addItem(item);
+            if (excess.isPresent()) {
+                // The default behaviour is to drop the item if we cannot add it to our inventory.
+                if (this.tryDroppingItem(inventory, excess.get())) {
+                    inventory.setSlot(slot, null);
+                }
+            } else {
+                inventory.setSlot(slot, null);
+            }
+        }
+    }
+
+    /**
+     * Attempts to drop an item from the player's inventory. (calls the InventoryDropItemEvent)
+     * @param inventory the inventory of the item being dropped
+     * @param item the item being dropped
+     * @return if the item was dropped.
+     */
+    public boolean tryDroppingItem(Inventory inventory, Item item) {
+        InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(inventory, this, item);
+        if (!dropItemEvent.isCancelled()) {
+            Item droppedItem = dropItemEvent.getDrop();
+
+            EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
+            itemEntity.setPickupDelay(40);
+            this.getWorld().addItemEntity(itemEntity, this.getLocation().toVector3f().add(0, 1.3f, 0), this.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
-    public boolean openInventory(OpenableInventory inventory) {
+    public boolean openInventory(Inventory inventory) {
         this.closeOpenInventory();
-        if (((ImplOpenableInventory) inventory).openFor(this)) {
+        if (((BaseInventory) inventory).openFor(this)) {
             this.openInventory = inventory;
-            this.getInventory().getCraftingGrid().setGridSlot(0, new ItemStick());
             return true;
         } else {
             return false;
@@ -524,6 +587,14 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                     .setDimension(this.getLocation().getWorld().getDimension())
                     .setGamemode(this.getGamemode())
                     .setPosition(this.getLocation().toVector3f())
+                    .setOffHand(this.getInventory().getOffhandItem())
+                    .setSlots(this.getInventory().getSlots())
+                    .setArmourSlots(new Item[] {
+                            this.getInventory().getHelmet(),
+                            this.getInventory().getChestplate(),
+                            this.getInventory().getLeggings(),
+                            this.getInventory().getBoots()
+                    })
                     .setPitch(this.getPitch())
                     .setYaw(this.getYaw())
                     .build();
@@ -950,7 +1021,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.setHealth(this.getHealth() + 1);
         }
 
-        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((ImplOpenableInventory) inventory).shouldBeClosedFor(this)).isPresent();
+        boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();
         if (shouldCloseOpenInventory) {
             this.closeOpenInventory();
         }

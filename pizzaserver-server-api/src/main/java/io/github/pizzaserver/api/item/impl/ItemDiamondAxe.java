@@ -13,12 +13,8 @@ public class ItemDiamondAxe extends BaseItem implements DurableItem, ToolItem {
         this(1);
     }
 
-    public ItemDiamondAxe(int count) {
-        this(count, 0);
-    }
-
-    public ItemDiamondAxe(int count, int meta) {
-        super(ItemID.DIAMOND_AXE, count, meta);
+    public ItemDiamondAxe(int meta) {
+        super(ItemID.DIAMOND_AXE, 1, meta);
     }
 
     @Override
@@ -29,11 +25,6 @@ public class ItemDiamondAxe extends BaseItem implements DurableItem, ToolItem {
     @Override
     public int getMaxStackSize() {
         return 1;
-    }
-
-    @Override
-    public int getDamage() {
-        return 7;
     }
 
     @Override

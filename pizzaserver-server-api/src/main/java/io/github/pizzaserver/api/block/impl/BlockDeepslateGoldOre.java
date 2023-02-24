@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 
-public class BlockDeepslateGoldOre extends Block {
+public class BlockDeepslateGoldOre extends BaseBlock {
 
     @Override
     public String getBlockId() {

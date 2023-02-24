@@ -48,7 +48,7 @@ public class ItemStonePickaxe extends BaseItem implements DurableItem, ToolItem 
 
     @Override
     public int getMaxDurability() {
-        return 130;
+        return 132;
     }
 
 }

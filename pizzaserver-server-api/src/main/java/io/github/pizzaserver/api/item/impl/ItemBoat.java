@@ -18,4 +18,9 @@ public class ItemBoat extends ItemBaseBoat {
         return "Boat";
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 1200;
+    }
+
 }

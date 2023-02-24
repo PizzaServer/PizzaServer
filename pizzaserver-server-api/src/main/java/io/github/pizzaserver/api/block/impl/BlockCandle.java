@@ -2,9 +2,10 @@ package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.LitType;
+import io.github.pizzaserver.api.block.trait.LitTrait;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.utils.BoundingBox;
@@ -14,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class BlockCandle extends Block {
+public class BlockCandle extends BaseBlock implements LitTrait {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -40,10 +41,12 @@ public class BlockCandle extends Block {
         this.setLit(litType == LitType.LIT);
     }
 
+    @Override
     public boolean isLit() {
         return this.getBlockState() % 2 == 1;
     }
 
+    @Override
     public void setLit(boolean lit) {
         this.setBlockState((this.getCandleCount() - 1) * 2 + (lit ? 1 : 0));
     }
@@ -114,7 +117,7 @@ public class BlockCandle extends Block {
 
     @Override
     public Set<Item> getDrops(Entity entity) {
-        Item candleStack = this.toStack();
+        Item candleStack = this.toItem();
         candleStack.setCount(this.getCandleCount());
 
         return Collections.singleton(candleStack);

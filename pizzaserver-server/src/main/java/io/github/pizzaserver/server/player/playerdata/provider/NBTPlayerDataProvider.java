@@ -1,15 +1,14 @@
 package io.github.pizzaserver.server.player.playerdata.provider;
 
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.nbt.NBTInputStream;
-import com.nukkitx.nbt.NBTOutputStream;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtUtils;
+import com.nukkitx.nbt.*;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.KeyLock;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.File;
@@ -17,8 +16,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Stores {@link PlayerData} in NBT .dat files
@@ -88,6 +89,13 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
                 .putFloat("positionX", data.getPosition().getX())
                 .putFloat("positionY", data.getPosition().getY())
                 .putFloat("positionZ", data.getPosition().getZ())
+                .putCompound("offHand", ItemUtils.serializeForDisk(data.getOffHand()))
+                .putList("slots", NbtType.COMPOUND, Arrays.stream(data.getSlots())
+                        .map(ItemUtils::serializeForDisk)
+                        .collect(Collectors.toList()))
+                .putList("armorSlots", NbtType.COMPOUND, Arrays.stream(data.getArmorSlots())
+                        .map(ItemUtils::serializeForDisk)
+                        .collect(Collectors.toList()))
                 .putFloat("pitch", data.getPitch())
                 .putFloat("yaw", data.getYaw())
                 .build();
@@ -99,6 +107,13 @@ public class NBTPlayerDataProvider implements PlayerDataProvider {
                 .setDimension(Dimension.values()[data.getInt("dimension")])
                 .setGamemode(Gamemode.values()[data.getInt("gamemode")])
                 .setPosition(Vector3f.from(data.getFloat("positionX"), data.getFloat("positionY"), data.getFloat("positionZ")))
+                .setOffHand(ItemUtils.deserializeDiskNBTItem(data.getCompound("offHand")))
+                .setSlots(data.getList("slots", NbtType.COMPOUND).stream()
+                        .map(ItemUtils::deserializeDiskNBTItem)
+                        .toArray(Item[]::new))
+                .setArmourSlots(data.getList("armorSlots", NbtType.COMPOUND).stream()
+                        .map(ItemUtils::deserializeDiskNBTItem)
+                        .toArray(Item[]::new))
                 .setPitch(data.getFloat("pitch"))
                 .setYaw(data.getFloat("yaw"))
                 .build();

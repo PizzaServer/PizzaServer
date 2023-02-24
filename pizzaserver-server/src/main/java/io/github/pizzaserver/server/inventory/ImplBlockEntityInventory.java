@@ -2,29 +2,31 @@ package io.github.pizzaserver.server.inventory;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
+import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.impl.BlockEntityContainer;
+import io.github.pizzaserver.api.blockentity.trait.BlockEntityOpenableTrait;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
 import io.github.pizzaserver.api.inventory.BlockEntityInventory;
 import io.github.pizzaserver.api.player.Player;
 
-public class ImplBlockEntityInventory extends ImplOpenableInventory implements BlockEntityInventory {
+public abstract class ImplBlockEntityInventory<B extends Block, T extends BlockEntity<B>> extends ImplBlockInventory<B> implements BlockEntityInventory<B, T> {
 
-    protected final BlockEntity blockEntity;
+    protected final T blockEntity;
 
 
-    public ImplBlockEntityInventory(BlockEntity blockEntity, ContainerType containerType, int size) {
-        super(containerType, size);
-        this.blockEntity = blockEntity;
-    }
-
-    public ImplBlockEntityInventory(BlockEntity blockEntity, ContainerType containerType, int size, int id) {
-        super(containerType, size, id);
+    public ImplBlockEntityInventory(T blockEntity, ContainerType containerType) {
+        super(null, containerType);
         this.blockEntity = blockEntity;
     }
 
     @Override
-    public BlockEntity getBlockEntity() {
+    public T getBlockEntity() {
         return this.blockEntity;
+    }
+
+    @Override
+    public B getBlock() {
+        return this.getBlockEntity().getBlock();
     }
 
     @Override
@@ -38,8 +40,8 @@ public class ImplBlockEntityInventory extends ImplOpenableInventory implements B
     @Override
     public boolean closeFor(Player player) {
         if (super.closeFor(player)) {
-            if (this.getBlockEntity() instanceof BlockEntityContainer && this.getViewers().isEmpty()) {
-                player.getWorld().addBlockEvent(this.getBlockEntity().getLocation().toVector3i(), 1, 0);
+            if (this.getBlockEntity() instanceof BlockEntityOpenableTrait openableBlockEntity && this.getViewers().isEmpty()) {
+                openableBlockEntity.showCloseAnimation();
             }
             return true;
         }

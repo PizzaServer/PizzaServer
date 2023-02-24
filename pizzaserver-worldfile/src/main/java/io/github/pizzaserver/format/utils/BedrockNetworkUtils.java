@@ -1,10 +1,15 @@
 package io.github.pizzaserver.format.utils;
 
+import com.nukkitx.nbt.NBTOutputStream;
+import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtUtils;
+import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.format.dimension.chunks.BedrockBiomeMap;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.*;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.utils.Palette;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
 import java.util.Set;
@@ -13,20 +18,25 @@ public class BedrockNetworkUtils {
 
     private BedrockNetworkUtils() {}
 
-    public static void serializeSubChunk(ByteBuf buffer, BedrockSubChunk subChunk, MinecraftSerializationHandler serializationHandler) {
-        buffer.writeByte(8);    // Convert to version 8 regardless of v1 or v8
+    public static void serializeSubChunk(ByteBuf buffer, BedrockSubChunk subChunk, boolean persistentBlockstates, MinecraftSerializationHandler serializationHandler) {
+        buffer.writeByte(8);    // Convert to version 8 regardless of v1, v8 or v9
         buffer.writeByte(subChunk.getLayers().size());
         for (BlockLayer layer : subChunk.getLayers()) {
-            serializeBlockLayer(buffer, layer, serializationHandler);
+            try {
+                serializeBlockLayer(buffer, layer, persistentBlockstates, serializationHandler);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to serialize BlockLayer", e);
+            }
         }
     }
 
-    public static void serializeBlockLayer(ByteBuf buffer, BlockLayer blockLayer, MinecraftSerializationHandler serializationHandler) {
-        int bitsPerBlock = Math.max((int) Math.ceil(Math.log(blockLayer.getPalette().getEntries().size()) / Math.log(2)), 1);
+    public static void serializeBlockLayer(ByteBuf buffer, BlockLayer blockLayer, boolean persistentBlockstates, MinecraftSerializationHandler serializationHandler) throws IOException {
+        int bitsPerBlock = NumberUtils.log2Ceil(blockLayer.getPalette().getEntries().size()) + 1;
         int blocksPerWord = 32 / bitsPerBlock;
-        int wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+        // integral ceiling division
+        int wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
 
-        buffer.writeByte((bitsPerBlock << 1) | 1);
+        buffer.writeByte((bitsPerBlock << 1) | (persistentBlockstates ? 0 : 1));
 
         int pos = 0;
         for (int chunk = 0; chunk < wordsPerChunk; chunk++) {
@@ -42,10 +52,14 @@ public class BedrockNetworkUtils {
             buffer.writeIntLE(word);
         }
 
-        serializeBlockPalette(buffer, blockLayer.getPalette(), serializationHandler);
+        if (persistentBlockstates) {
+            serializePersistentBlockPalette(buffer, blockLayer.getPalette(), serializationHandler);
+        } else {
+            serializeRuntimeBlockPalette(buffer, blockLayer.getPalette(), serializationHandler);
+        }
     }
 
-    public static void serializeBlockPalette(ByteBuf buffer, Palette<BlockPaletteEntry> palette, MinecraftSerializationHandler serializationHandler) {
+    public static void serializeRuntimeBlockPalette(ByteBuf buffer, Palette<BlockPaletteEntry> palette, MinecraftSerializationHandler serializationHandler) {
         Set<BlockPaletteEntry> entries = palette.getEntries();
         VarInts.writeInt(buffer, entries.size());
 
@@ -55,35 +69,53 @@ public class BedrockNetworkUtils {
         }
     }
 
-    public static void serialize2DBiomeMap(ByteBuf buffer, BedrockSubChunkBiomeMap biomeMap) {
-        for (int i = 0; i < 256; i++) {
-            int z = i >> 4;
-            int x = i & 15;
+    public static void serializePersistentBlockPalette(ByteBuf buffer, Palette<BlockPaletteEntry> palette, MinecraftSerializationHandler serializationHandler) throws IOException {
+        Set<BlockPaletteEntry> entries = palette.getEntries();
+        VarInts.writeInt(buffer, entries.size());
 
-            buffer.writeByte(biomeMap.getBiomeAt(x, 0, z));
+        try (NBTOutputStream outputStream = NbtUtils.createWriterLE(new ByteBufOutputStream(buffer))) {
+            for (BlockPaletteEntry data : entries) {
+                NbtMap compound = NbtMap.builder()
+                        .putString("name", data.getId())
+                        .putInt("version", data.getVersion())
+                        .putCompound("states", data.getState())
+                        .build();
+
+                outputStream.writeTag(compound);
+            }
+        } catch (IOException exception) {
+            throw new IOException("Failed to serialize persistent network chunk", exception);
         }
     }
 
-    public static void serialize3DBiomeMap(ByteBuf buffer, BedrockBiomeMap biomeMap) throws IOException {
+    public static void serialize3DBiomeMap(ByteBuf buffer, BedrockBiomeMap biomeMap, int maxBiomeSubChunkCount) throws IOException {
         BedrockSubChunkBiomeMap lastSubChunkBiomeMap = null;
-        for (BedrockSubChunkBiomeMap subChunkBiomeMap : biomeMap.getSubChunks()) {
-            if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
-                throw new IOException("biome sub chunk has no biomes present");
+        for (int biomeSubChunk = 0; biomeSubChunk < maxBiomeSubChunkCount; biomeSubChunk++) {
+            if (biomeMap.getSubChunks().size() <= biomeSubChunk) {
+                break;
             }
 
-            int bitsPerBlock = (int) Math.ceil(Math.log(subChunkBiomeMap.getPalette().getEntries().size()) / Math.log(2));
+            BedrockSubChunkBiomeMap subChunkBiomeMap = biomeMap.getSubChunk(biomeSubChunk);
+
+            int bitsPerBlock = NumberUtils.log2Ceil(subChunkBiomeMap.getPalette().size()) + 1;
             int blocksPerWord = 0;
             int wordsPerChunk = 0;
 
-            if (subChunkBiomeMap.equals(lastSubChunkBiomeMap)) {
+            boolean shouldCopyPreviousBiomeSubChunk = subChunkBiomeMap.equals(lastSubChunkBiomeMap)
+                    || (lastSubChunkBiomeMap != null && subChunkBiomeMap.getPalette().size() == 0);
+            if (shouldCopyPreviousBiomeSubChunk) {
                 buffer.writeByte(-1);
                 continue;
             }
 
+            if (subChunkBiomeMap.getPalette().getEntries().size() == 0) {
+                throw new IOException("biome sub chunk has no biomes present");
+            }
 
             if (bitsPerBlock > 0) {
                 blocksPerWord = 32 / bitsPerBlock;
-                wordsPerChunk = (int) Math.ceil(4096d / blocksPerWord);
+                // integral ceiling division
+                wordsPerChunk = (4096 + blocksPerWord - 1) / blocksPerWord;
             }
 
             buffer.writeByte((bitsPerBlock << 1) | 1);
@@ -102,10 +134,7 @@ public class BedrockNetworkUtils {
                 buffer.writeIntLE(word);
             }
 
-            if (bitsPerBlock > 0) {
-                VarInts.writeInt(buffer, subChunkBiomeMap.getPalette().getEntries().size());
-            }
-
+            VarInts.writeInt(buffer, subChunkBiomeMap.getPalette().getEntries().size());
             for (int i = 0; i < subChunkBiomeMap.getPalette().getEntries().size(); i++) {
                 VarInts.writeInt(buffer, subChunkBiomeMap.getPalette().getEntry(i));
             }

@@ -21,7 +21,9 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
+import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.inventory.BaseInventory;
 import io.github.pizzaserver.server.inventory.ImplPlayerCraftingInventory;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.InventoryTransactionAction;
@@ -108,10 +110,13 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                                 response.addChange(creativeStackWrapper.getDestination());
                             }
                             break;
+                        case CRAFT_RECIPE:
+                            CraftRecipeRequestActionDataWrapper craftWrapper = new CraftRecipeRequestActionDataWrapper(this.player, (CraftRecipeStackRequestActionData) action);
+                            continueActions = InventoryActionCraftRecipeHandler.INSTANCE.tryAction(this.player, craftWrapper);
+                            break;
                         case CONSUME:
                         case LAB_TABLE_COMBINE:
                         case BEACON_PAYMENT:
-                        case CRAFT_RECIPE:
                         case CRAFT_RECIPE_AUTO:
                         case CRAFT_RECIPE_OPTIONAL:
                         case CRAFT_REPAIR_AND_DISENCHANT:
@@ -139,7 +144,17 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
 
             // Handle incomplete crafting transactions.
             if (!((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput().isEmpty()) {
-                ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                Item item = ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput();
+                Optional<Item> excess = this.player.getInventory().addItem(item);
+
+                if (excess.isPresent()) {
+                    // Try to drop the item if we can.
+                    if (this.player.tryDroppingItem(this.player.getInventory(), excess.get())) {
+                        ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                    }
+                } else {
+                    ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(null);
+                }
                 this.player.getServer().getLogger().debug(String.format("%s's creative output slot was not emptied at the end of their item request.", this.player.getUsername()));
             }
         }
@@ -228,17 +243,10 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                     Item droppedStack = itemStack.clone();
                     droppedStack.setCount(amountDropped);
 
-                    InventoryDropItemEvent dropItemEvent = new InventoryDropItemEvent(this.player.getInventory(), this.player, droppedStack);
-                    this.player.getServer().getEventManager().call(dropItemEvent);
-                    if (!dropItemEvent.isCancelled()) {
-                        // update server inventory to reflect dropped count
+                    if (this.player.tryDroppingItem(this.player.getInventory(), droppedStack)) {
+                        // update inventory to reflect dropped count
                         itemStack.setCount(itemStack.getCount() - amountDropped);
                         this.player.getInventory().setSlot(this.player, nextAction.getSlot(), itemStack, true);
-
-                        // Drop item
-                        EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedStack);
-                        itemEntity.setPickupDelay(40);
-                        this.player.getWorld().addItemEntity(itemEntity, this.player.getLocation().toVector3f().add(0, 1.3f, 0), this.player.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
                     } else {
                         // Revert clientside slot change
                         this.player.getInventory().sendSlot(this.player, nextAction.getSlot());
@@ -275,7 +283,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
                             // the block can cancel the item interaction for cases such as crafting tables being right-clicked with a block
                             boolean callItemInteractAllowedByBlock = block.getBehavior().onInteract(this.player, block, blockFace, clickPosition);
                             boolean callItemInteractAllowedByBlockEntity = block.getWorld().getBlockEntity(blockCoordinates).isEmpty()
-                                    || block.getWorld().getBlockEntity(blockCoordinates).get().onInteract(this.player);
+                                    || ((BaseBlockEntity<? extends Block>) block.getWorld().getBlockEntity(blockCoordinates).get()).onInteract(this.player);
                             if (callItemInteractAllowedByBlock && callItemInteractAllowedByBlockEntity) {
                                 // an unsuccessful interaction will resend the blocks/slot used
                                 boolean successfulInteraction = heldItemStack.getBehavior().onInteract(this.player, heldItemStack, block, blockFace, clickPosition);

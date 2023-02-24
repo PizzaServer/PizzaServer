@@ -3,28 +3,27 @@ package io.github.pizzaserver.server.network.protocol.version;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.nukkitx.blockstateupdater.BlockStateUpdaters;
 import com.nukkitx.nbt.*;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
-import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
-import io.github.pizzaserver.api.block.impl.BlockStoneSlab;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.descriptors.*;
-import io.github.pizzaserver.api.item.impl.ItemBlock;
+import io.github.pizzaserver.api.recipe.type.Recipe;
+import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
+import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
+import io.github.pizzaserver.server.recipe.RecipeUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.*;
 
 public class V475MinecraftVersion extends BaseMinecraftVersion {
@@ -57,30 +56,36 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         }
     }
 
+    protected Comparator<String> getBlockIdComparator() {
+        return Collections.reverseOrder(MinecraftNamespaceComparator::compare);
+    }
+
     @Override
     protected void loadBlockStates() throws IOException {
         try (InputStream blockStatesFileStream = this.getProtocolResourceStream("block_states.nbt");
              NBTInputStream blockStatesNBTStream = NbtUtils.createNetworkReader(blockStatesFileStream)) {
             // keySet returns in ascending rather than descending so we have to reverse it
             SortedMap<String, List<NbtMap>> sortedBlockRuntimeStates =
-                    new TreeMap<>(Collections.reverseOrder(MinecraftNamespaceComparator::compare));
+                    new TreeMap<>(this.getBlockIdComparator());
 
             // Parse block states
             while (blockStatesFileStream.available() > 0) {
-                NbtMap blockState = (NbtMap) blockStatesNBTStream.readTag();
+                NbtMap blockState = BlockStateUpdaters.updateBlockState((NbtMap) blockStatesNBTStream.readTag(), 0);
                 String name = blockState.getString("name");
+
+                NbtMap updatedBlockState = getUpdatedBlockNBT(name, blockState.getCompound("states"));
                 if (!sortedBlockRuntimeStates.containsKey(name)) {
                     sortedBlockRuntimeStates.put(name, new ArrayList<>());
                 }
 
-                NbtMap states = blockState.getCompound("states");
-                sortedBlockRuntimeStates.get(name).add(states);
+                String updatedName = updatedBlockState.getString("name");
+                NbtMap states = updatedBlockState.getCompound("states");
+                sortedBlockRuntimeStates.get(updatedName).add(states);
             }
 
             // Add custom block states
             for (Block block : BlockRegistry.getInstance().getCustomBlocks()) {
                 sortedBlockRuntimeStates.put(block.getBlockId(), block.getNBTStates());
-                this.customBlockProperties.add(this.getBlockPropertyData(block));
             }
 
             // Block runtime ids are determined by the order of the sorted block runtime states.
@@ -94,6 +99,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
         }
     }
 
+    @Override
     protected BlockPropertyData getBlockPropertyData(Block block) {
         NbtMapBuilder componentsNBT = NbtMap.builder()
                 .putCompound("minecraft:block_light_absorption", NbtMap.builder()
@@ -153,11 +159,12 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             // Block item runtime ids are decided by the order they are sent via the StartGamePacket in the block properties
             // Block properties are sent sorted by their namespace according to Minecraft's namespace sorting.
             // So we will sort it the same way here
-            SortedSet<Block> sortedCustomBlocks =
-                    new TreeSet<>(MinecraftNamespaceComparator::compareBlocks);
-            sortedCustomBlocks.addAll(BlockRegistry.getInstance().getCustomBlocks());
-            for (Block customBlock : sortedCustomBlocks) {
-                this.itemRuntimeIds.put(customBlock.getBlockId(), 255 - customBlockIdStart++);  // (255 - index) = item runtime id
+            SortedSet<String> sortedCustomBlocks =
+                    new TreeSet<>(this.getBlockIdComparator());
+            BlockRegistry.getInstance().getCustomBlocks().forEach(customBlock -> sortedCustomBlocks.add(customBlock.getBlockId()));
+
+            for (String customBlockId : sortedCustomBlocks) {
+                this.itemRuntimeIds.put(customBlockId, 255 - customBlockIdStart++);  // (255 - index) = item runtime id
             }
         }
     }
@@ -169,31 +176,11 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
 
             for (JsonElement jsonCreativeItem : jsonCreativeItems) {
                 JsonObject creativeJSONObj = jsonCreativeItem.getAsJsonObject();
+                Item item = ItemUtils.fromJSON(creativeJSONObj, this);
 
-                String id = creativeJSONObj.get("id").getAsString();
-                int meta = creativeJSONObj.has("damage") ? creativeJSONObj.get("damage").getAsInt() : 0;
-                int blockRuntimeId = creativeJSONObj.has("blockRuntimeId") ? creativeJSONObj.get("blockRuntimeId").getAsInt() : 0;
-
-                if (!ItemRegistry.getInstance().hasItem(id)) {
-                    // TODO: debug log this as this is a missing item!
+                if (item == null) {
+                    // TODO: throw exception after all blocks/items implemented.
                     continue;
-                }
-
-                Item item;
-                if (creativeJSONObj.has("blockRuntimeId")) {
-                    Block block = this.getBlockFromRuntimeId(blockRuntimeId);
-                    if (block == null) {
-                        // TODO: debug log this to as this is a missing block!
-                        continue;
-                    }
-
-                    item = new ItemBlock(block, 1);
-                } else {
-                    if (creativeJSONObj.has("damage")) {
-                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
-                    } else {
-                        item = ItemRegistry.getInstance().getItem(id, 1, meta);
-                    }
                 }
 
                 this.creativeItems.add(item);
@@ -202,31 +189,42 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     }
 
     @Override
+    protected void loadDefaultRecipes() throws IOException {
+        try (Reader creativeItemsReader = new InputStreamReader(this.getProtocolResourceStream("recipes.json"))) {
+            JsonArray jsonRecipes = GSON.fromJson(creativeItemsReader, JsonObject.class).getAsJsonArray("recipes");
+
+            for (JsonElement element : jsonRecipes) {
+                Recipe recipe = RecipeUtils.deserializeFromJSON(element.getAsJsonObject(), this);
+
+                if (recipe != null) {
+                    // TODO: this check is unneeded in the future once all items are implemented
+                    // as methods like deserializeFromJSON will throw an exception instead of returning null.
+                    this.defaultRecipes.add(recipe);
+                }
+            }
+
+        }
+    }
+
+    @Override
     protected void loadEntitiesNBT() {
         List<NbtMap> entities = new ArrayList<>();
-        int rId = 0;    // TODO: what is the purpose of this?
-        for (EntityDefinition definition : EntityRegistry.getInstance().getDefinitions()) {
+        for (EntityDefinition definition : ((ImplEntityRegistry) EntityRegistry.getInstance()).getDefinitions()) {
             entities.add(NbtMap.builder()
                     .putString("bid", "")
                     .putBoolean("hasspawnegg", definition.hasSpawnEgg())
-                    .putString("id", definition.getId())
-                    .putInt("rid",  rId++)
+                    .putString("id", definition.getEntityId())
+                    .putInt("rid",  definition.getId())
                     .putBoolean("summonable", definition.isSummonable())
                     .build());
         }
+
         this.availableEntities = NbtMap.builder()
                 .putList("idlist", NbtType.COMPOUND, entities)
                 .build();
     }
 
     @Override
-    protected void loadItemComponents() {
-        this.itemComponents.clear();
-        for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
-            this.itemComponents.add(new ComponentItemData(customItem.getItemId(), this.getItemComponentNBT(customItem)));
-        }
-    }
-
     protected NbtMap getItemComponentNBT(Item item) {
         NbtMapBuilder container = NbtMap.builder();
         container.putInt("id", this.getItemRuntimeId(item.getItemId()))

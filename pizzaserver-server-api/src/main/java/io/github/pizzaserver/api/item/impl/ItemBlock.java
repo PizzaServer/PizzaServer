@@ -61,6 +61,16 @@ public class ItemBlock extends BaseItem {
         this.getBlock().updateFromStackMeta(meta);
     }
 
+    @Override
+    public int getMaxStackSize() {
+        return this.getBlock().getMaxStackSize();
+    }
+
+    @Override
+    public int getFuelTicks() {
+        return this.getBlock().getFuelTicks();
+    }
+
     public Block getBlock() {
         return this.block;
     }

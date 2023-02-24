@@ -1,5 +1,7 @@
 package io.github.pizzaserver.api.utils;
 
+import io.github.pizzaserver.api.block.data.BlockFace;
+
 public enum HorizontalDirection {
     NORTH,
     SOUTH,
@@ -19,6 +21,24 @@ public enum HorizontalDirection {
             default:
                 return SOUTH;
         }
+    }
+
+    public Direction toDirection() {
+        return switch (this) {
+            case NORTH -> Direction.NORTH;
+            case SOUTH -> Direction.SOUTH;
+            case WEST -> Direction.WEST;
+            case EAST -> Direction.EAST;
+        };
+    }
+
+    public BlockFace toFace() {
+        return switch (this) {
+            case NORTH -> BlockFace.NORTH;
+            case SOUTH -> BlockFace.SOUTH;
+            case WEST -> BlockFace.WEST;
+            case EAST -> BlockFace.EAST;
+        };
     }
 
     /**

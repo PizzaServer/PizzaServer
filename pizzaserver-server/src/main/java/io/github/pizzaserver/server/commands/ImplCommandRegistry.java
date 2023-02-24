@@ -4,8 +4,13 @@ import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.commands.ImplCommand;
+import io.github.pizzaserver.api.utils.ServerState;
+import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.commands.defaults.ExampleCommand;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class ImplCommandRegistry implements CommandRegistry {
@@ -14,9 +19,15 @@ public class ImplCommandRegistry implements CommandRegistry {
     private final Map<String, ImplCommand> aliases = new HashMap<>();
 
     private static Server server;
+    private Thread consoleSender;
 
     public ImplCommandRegistry(Server server) {
         ImplCommandRegistry.server = server;
+        try {
+            this.startConsoleCommandReader();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void registerDefaults() {
@@ -30,11 +41,13 @@ public class ImplCommandRegistry implements CommandRegistry {
 
     @Override
     public void register(ImplCommand command, String label) {
-        if (label == null) label = command.getName();
+        if (label == null)
+            label = command.getName();
         label = label.trim().toLowerCase(Locale.ROOT);
 
         if (!commands.containsKey(label)) {
             commands.put(label, command);
+            server.getLogger().info("Registered new command: " + label);
         } else {
             //TODO: Show the plugin name of the command that has been overwritten
             server.getLogger().warn("A command with the name `" + label + "` already exists from " + commands.get(label) + " when trying to register " + command + "!");
@@ -90,5 +103,29 @@ public class ImplCommandRegistry implements CommandRegistry {
             availableCommandsPacket.getCommands().add(implCommand.asCommandData());
         }
         return availableCommandsPacket;
+    }
+
+    public void startConsoleCommandReader() throws IOException {
+        this.consoleSender = new Thread(() -> {
+            BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+            while(server.getState() != ServerState.STOPPING) {
+                try {
+                    String readLine = br.readLine().trim();
+                    if(readLine.equals(""))
+                        continue;
+                    String[] list = readLine.split(" ");
+                    ImplServer.getInstance().getLogger().warn("Read line: " + list[0]);
+                    ImplCommand realCommand = ImplServer.getInstance().getCommandRegistry().getCommand(list[0]);
+                    if(realCommand == null) {
+                        ImplServer.getInstance().getLogger().error("That command doesn't exist!");
+                        continue;
+                    }
+                    realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0]);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        this.consoleSender.start();
     }
 }

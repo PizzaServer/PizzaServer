@@ -4,6 +4,7 @@ import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 import io.github.pizzaserver.api.block.Block;
@@ -22,9 +23,11 @@ import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
+import io.github.pizzaserver.server.inventory.InventoryUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.level.world.chunks.WorldChunkManager;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 
 import java.io.IOException;
@@ -147,7 +150,7 @@ public class ImplWorld implements World {
     }
 
     @Override
-    public Optional<BlockEntity> getBlockEntity(int x, int y, int z) {
+    public Optional<BlockEntity<? extends Block>> getBlockEntity(int x, int y, int z) {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
         return this.getChunk(chunkX, chunkZ).getBlockEntity(x & 15, y, z & 15);
@@ -179,6 +182,13 @@ public class ImplWorld implements World {
         int chunkX = getChunkCoordinate(x);
         int chunkZ = getChunkCoordinate(z);
         this.getChunk(chunkX, chunkZ).addBlockEvent(x & 15, y, z & 15, type, data);
+    }
+
+    @Override
+    public void addBlockEvent(Player player, int x, int y, int z, int type, int data) {
+        int chunkX = getChunkCoordinate(x);
+        int chunkZ = getChunkCoordinate(z);
+        this.getChunk(chunkX, chunkZ).addBlockEvent(player, x & 15, y, z & 15, type, data);
     }
 
     @Override
@@ -320,7 +330,7 @@ public class ImplWorld implements World {
                 packet.setRelativeVolumeDisabled(relativeVolumeDisabled);
                 packet.setBabySound(isBaby);
                 packet.setIdentifier(entityType);
-                packet.setExtraData(block != null ? player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
+                packet.setExtraData(block != null ? ((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()) : -1);
 
                 player.sendPacket(packet);
             }
@@ -339,6 +349,8 @@ public class ImplWorld implements World {
                 .setPosition(this.getSpawnCoordinates().add(0, 2, 0).toFloat())
                 .setYaw(this.getServer().getConfig().getDefaultYaw())
                 .setPitch(this.getServer().getConfig().getDefaultPitch())
+                .setArmourSlots(new Item[4])
+                .setSlots(new Item[InventoryUtils.getSlotCount(ContainerType.INVENTORY)])
                 .build();
     }
 

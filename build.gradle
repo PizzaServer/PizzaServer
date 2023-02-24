@@ -1,0 +1,68 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.2"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+group 'io.github.pizzaserver'
+
+jar {
+    jar.enabled(false)
+    shadowJar.enabled(false)
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+
+    // common deps + repos
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+        testImplementation 'org.mockito:mockito-core:4.1.0'
+    }
+}
+
+
+// -- Macros
+
+
+var treeClean = tasks.register('tree_clean') {
+    group 'Pizza'
+    description = 'Clears the build folder of all sub-projects.'
+    dependsOn allprojects.collect({ it.tasks.named('clean') })
+}
+
+
+var prepareAll = tasks.register('prepare_all', Copy) {
+    group 'Pizza'
+    description 'Executes the Jar task for every project.'
+    dependsOn treeClean
+
+    from allprojects.collect {
+         it.tasks.withType(Jar)
+    } into "$buildDir/pre"
+}
+
+var buildAll = tasks.register('build_all', Copy) {
+    group = 'Pizza'
+    description = 'Builds all the projects and places them into build/output/'
+    dependsOn prepareAll, shadowJar
+
+    from allprojects.collect {
+        return it.tasks.named("shadowJar")
+    } into "$buildDir/output"
+}

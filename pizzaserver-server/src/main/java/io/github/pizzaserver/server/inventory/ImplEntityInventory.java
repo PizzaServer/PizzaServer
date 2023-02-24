@@ -15,7 +15,7 @@ import io.github.pizzaserver.server.item.ItemUtils;
 
 import java.util.Optional;
 
-public class ImplEntityInventory extends ImplOpenableInventory implements EntityInventory {
+public class ImplEntityInventory extends BaseInventory implements EntityInventory {
 
     protected final Entity entity;
 
@@ -256,7 +256,7 @@ public class ImplEntityInventory extends ImplOpenableInventory implements Entity
             mobEquipmentPacket.setContainerId(mainHand ? ContainerId.INVENTORY : ContainerId.OFFHAND);
             mobEquipmentPacket.setInventorySlot(slot);
             mobEquipmentPacket.setHotbarSlot(slot);
-            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(Item.getAirIfNull(item), player.getVersion()));
+            mobEquipmentPacket.setItem(ItemUtils.serializeForNetwork(item, player.getVersion()));
             player.sendPacket(mobEquipmentPacket);
         }
     }

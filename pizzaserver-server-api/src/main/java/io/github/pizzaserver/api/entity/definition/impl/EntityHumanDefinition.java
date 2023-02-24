@@ -19,12 +19,12 @@ public class EntityHumanDefinition extends BaseEntityDefinition {
                 new EntityDimensionsComponent(0.6f, 1.8f, 1.62f, 1.62f),
                 new EntityHealthComponent(20f, 20f),
                 new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
-                        .setGravity(true)
+                        .setHasGravity(true)
                         .setCollision(true)
                         .setPistonPushable(true)
                         .setPushable(false)
-                        .setGravityForce(0.08f)
-                        .setDragForce(0.02f)),
+                        .setGravity(0.08f)
+                        .setDrag(0.02f)),
                 new EntityBreathableComponent(new EntityBreathableComponent.Properties()
                         .setTotalSupplyTime(20)
                         .setSuffocationInterval(10)
@@ -33,7 +33,7 @@ public class EntityHumanDefinition extends BaseEntityDefinition {
     }
 
     @Override
-    public String getId() {
+    public String getEntityId() {
         return ID;
     }
 

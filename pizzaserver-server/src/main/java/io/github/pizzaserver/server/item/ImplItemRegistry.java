@@ -5,7 +5,7 @@ import io.github.pizzaserver.api.item.BaseItem;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.behavior.ItemBehavior;
-import io.github.pizzaserver.api.item.behavior.impl.DefaultItemBehavior;
+import io.github.pizzaserver.api.item.behavior.impl.BaseItemBehavior;
 import io.github.pizzaserver.api.item.descriptors.CustomItem;
 import io.github.pizzaserver.api.utils.ServerState;
 
@@ -17,14 +17,14 @@ import java.util.Set;
 public class ImplItemRegistry implements ItemRegistry {
 
     private final Map<String, Item> items = new HashMap<>();
-    private final Map<Class<? extends Item>, ItemBehavior<? extends Item>> behaviors = new HashMap<>();
+    private final Map<String, ItemBehavior<? extends Item>> behaviors = new HashMap<>();
 
     private final Set<Item> customItems = new HashSet<>();
 
 
     @Override
     public void register(BaseItem item) {
-        this.register(item, new DefaultItemBehavior<>());
+        this.register(item, new BaseItemBehavior<>());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ImplItemRegistry implements ItemRegistry {
         }
 
         this.items.put(registeredItem.getItemId(), registeredItem);
-        this.behaviors.put(registeredItem.getClass(), behavior);
+        this.behaviors.put(registeredItem.getItemId(), behavior);
     }
 
     @Override
@@ -70,11 +70,11 @@ public class ImplItemRegistry implements ItemRegistry {
 
     @Override
     public ItemBehavior<? extends Item> getItemBehavior(Item item) {
-        if (!this.behaviors.containsKey(item.getClass())) {
+        if (!this.behaviors.containsKey(item.getItemId())) {
             throw new NullPointerException("There is no item behavior class for the provided class. Was it registered?");
         }
 
-        return this.behaviors.get(item.getClass());
+        return this.behaviors.get(item.getItemId());
     }
 
 }

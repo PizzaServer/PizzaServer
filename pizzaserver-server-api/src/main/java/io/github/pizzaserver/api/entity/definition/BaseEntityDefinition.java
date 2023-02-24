@@ -11,9 +11,22 @@ import java.util.Map;
 
 public abstract class BaseEntityDefinition implements EntityDefinition {
 
+    private static int ID = 1;
+
     private final Map<String, EntityComponentGroup> componentGroups = new HashMap<>();
     private final Map<String, EntityComponentEvent> events = new HashMap<>();
 
+    private final int runtimeId;
+
+
+    public BaseEntityDefinition() {
+        this.runtimeId = ID++;
+    }
+
+    @Override
+    public int getId() {
+        return this.runtimeId;
+    }
 
     @Override
     public boolean isSummonable() {
@@ -60,7 +73,7 @@ public abstract class BaseEntityDefinition implements EntityDefinition {
 
     @Override
     public Entity create() {
-        return EntityRegistry.getInstance().getEntity(this.getId());
+        return EntityRegistry.getInstance().getEntity(this.getEntityId());
     }
 
     @Override

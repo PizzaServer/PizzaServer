@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.utils.HorizontalDirection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockChest extends Block {
+public class BlockChest extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -72,6 +72,11 @@ public class BlockChest extends Block {
     @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
+    }
+
+    @Override
+    public int getFuelTicks() {
+        return 300;
     }
 
 }

@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
@@ -13,7 +13,7 @@ import io.github.pizzaserver.api.item.impl.ItemIronIngot;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BlockNetherReactor extends Block {
+public class BlockNetherReactor extends BaseBlock {
 
     private static final Set<Item> DROPS = new HashSet<>() {
         {

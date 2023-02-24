@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 
-public class BlockAzalea extends Block {
+public class BlockAzalea extends BaseBlock {
 
     @Override
     public String getBlockId() {
@@ -23,6 +23,11 @@ public class BlockAzalea extends Block {
     @Override
     public boolean canBeMinedWithHand() {
         return true;
+    }
+
+    @Override
+    public int getFuelTicks() {
+        return 100;
     }
 
 }

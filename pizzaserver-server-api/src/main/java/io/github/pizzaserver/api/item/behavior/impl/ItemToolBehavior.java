@@ -4,7 +4,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.item.descriptors.DurableItem;
 import io.github.pizzaserver.api.player.Player;
 
-public class ItemToolBehavior extends DefaultItemBehavior<DurableItem> {
+public class ItemToolBehavior extends BaseItemBehavior<DurableItem> {
 
     @Override
     public void onBreak(Player player, DurableItem item, Block block) {

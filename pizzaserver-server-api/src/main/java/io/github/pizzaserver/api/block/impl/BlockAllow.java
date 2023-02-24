@@ -1,10 +1,11 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.PushResponse;
 
-public class BlockAllow extends Block {
+public class BlockAllow extends BaseBlock {
 
     @Override
     public String getBlockId() {

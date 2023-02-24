@@ -69,4 +69,9 @@ public class BlockWoodenPressurePlate extends BlockPressurePlate {
         return ToolTier.WOOD;
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 300;
+    }
+
 }

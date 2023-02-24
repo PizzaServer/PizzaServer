@@ -48,7 +48,7 @@ public class ItemNetheritePickaxe extends BaseItem implements DurableItem, ToolI
 
     @Override
     public int getMaxDurability() {
-        return 2031;
+        return 2032;
     }
 
 }

@@ -4,6 +4,7 @@ import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
 import io.github.pizzaserver.server.network.protocol.version.V475MinecraftVersion;
 import io.github.pizzaserver.server.network.protocol.version.V486MinecraftVersion;
+import io.github.pizzaserver.server.network.protocol.version.V503MinecraftVersion;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,8 +13,8 @@ import java.util.Optional;
 
 public class ServerProtocol {
 
-    public static final String LATEST_GAME_VERSION = V486MinecraftVersion.VERSION;
-    public static final int LATEST_PROTOCOL_VERSION = V486MinecraftVersion.PROTOCOL;
+    public static final String LATEST_GAME_VERSION = V503MinecraftVersion.VERSION;
+    public static final int LATEST_PROTOCOL_VERSION = V503MinecraftVersion.PROTOCOL;
     public static final int LATEST_BLOCK_STATES_VERSION = 17825806;
 
     private static final Map<Integer, BaseMinecraftVersion> VERSIONS = new HashMap<>();
@@ -24,10 +25,20 @@ public class ServerProtocol {
     public static void loadVersions() throws IOException {
         loadVersion(new V475MinecraftVersion());
         loadVersion(new V486MinecraftVersion());
+        loadVersion(new V503MinecraftVersion());
     }
   
     public static Optional<BaseMinecraftVersion> getProtocol(int protocol) {
         return Optional.ofNullable(VERSIONS.getOrDefault(protocol, null));
+    }
+
+    /**
+     * Builds all caches that should be run after registration. (e.g. block property/item components/crafting/creative data)
+     */
+    public static void rebuildCaches() {
+        for (BaseMinecraftVersion version : VERSIONS.values()) {
+            version.rebuildCaches();
+        }
     }
   
     private static void loadVersion(BaseMinecraftVersion version) {

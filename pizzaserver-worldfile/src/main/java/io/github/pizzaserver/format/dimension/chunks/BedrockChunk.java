@@ -1,5 +1,6 @@
 package io.github.pizzaserver.format.dimension.chunks;
 
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunk;
 import io.github.pizzaserver.format.provider.BedrockProvider;
@@ -21,8 +22,8 @@ public class BedrockChunk {
     private BedrockBiomeMap biomeMap = new BedrockBiomeMap();
     private BedrockHeightMap heightMap = new BedrockHeightMap();
 
-    private Set<NbtMap> entities = new HashSet<>();
-    private Set<NbtMap> blockEntities = new HashSet<>();
+    private final Set<NbtMap> entities = new HashSet<>();
+    private final Map<Vector3i, NbtMap> blockEntities = new HashMap<>();
 
     private final Map<Integer, BedrockSubChunk> subChunks = new HashMap<>();
     private final BedrockProvider chunkProvider;
@@ -59,10 +60,6 @@ public class BedrockChunk {
         return Collections.unmodifiableSet(this.entities);
     }
 
-    public void setEntities(Set<NbtMap> entities) {
-        this.entities = entities;
-    }
-
     public boolean addEntity(NbtMap entityNBT) {
         return this.entities.add(entityNBT);
     }
@@ -71,20 +68,34 @@ public class BedrockChunk {
         return this.entities.remove(entityNBT);
     }
 
-    public Set<NbtMap> getBlockEntities() {
-        return Collections.unmodifiableSet(this.blockEntities);
+    public Map<Vector3i, NbtMap> getBlockEntities() {
+        return Collections.unmodifiableMap(this.blockEntities);
     }
 
-    public void setBlockEntities(Set<NbtMap> blockEntities) {
-        this.blockEntities = blockEntities;
+    public Optional<NbtMap> getBlockEntity(int x, int y, int z) {
+        return Optional.ofNullable(this.blockEntities.getOrDefault(Vector3i.from(x, y, z), null));
     }
 
-    public boolean addBlockEntity(NbtMap blockEntityNBT) {
-        return this.blockEntities.add(blockEntityNBT);
+    public void addBlockEntity(NbtMap blockEntityNBT) {
+        int x = blockEntityNBT.getInt("x");
+        int y = blockEntityNBT.getInt("y");
+        int z = blockEntityNBT.getInt("z");
+
+        this.addBlockEntity(x, y, z, blockEntityNBT);
     }
 
-    public boolean removeBlockEntity(NbtMap blockEntityNBT) {
-        return this.blockEntities.remove(blockEntityNBT);
+    public void addBlockEntity(int x, int y, int z, NbtMap blockEntityNBT) {
+        this.removeBlockEntity(x, y, z);
+
+        this.blockEntities.put(Vector3i.from(x, y, z), blockEntityNBT.toBuilder()
+                .putInt("x", x)
+                .putInt("y", y)
+                .putInt("z", z)
+                .build());
+    }
+
+    public boolean removeBlockEntity(int x, int y, int z) {
+        return this.blockEntities.remove(Vector3i.from(x, y, z)) != null;
     }
 
     /**

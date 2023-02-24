@@ -75,7 +75,7 @@ public class BedrockSubChunkBiomeMap implements Cloneable {
     }
 
     private static int getChunkPosIndex(int x, int y, int z) {
-        return x << 8 | x << 4 | y;
+        return (x << 8) | (z << 4) | y;
     }
 
 }

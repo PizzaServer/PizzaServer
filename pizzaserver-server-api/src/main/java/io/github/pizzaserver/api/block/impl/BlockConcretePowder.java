@@ -1,8 +1,9 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.item.data.ItemID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
@@ -12,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BlockConcretePowder extends Block {
+public class BlockConcretePowder extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = Arrays.stream(DyeColor.values())
             .map(color -> NbtMap.builder()
@@ -40,6 +41,11 @@ public class BlockConcretePowder extends Block {
     @Override
     public String getBlockId() {
         return BlockID.CONCRETE_POWDER;
+    }
+
+    @Override
+    public String getItemId() {
+        return ItemID.CONCRETE_POWDER;
     }
 
     @Override

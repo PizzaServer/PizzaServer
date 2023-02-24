@@ -8,18 +8,17 @@ import io.github.pizzaserver.api.block.impl.*;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.definition.components.handlers.*;
 import io.github.pizzaserver.api.entity.definition.components.impl.*;
-import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
-import io.github.pizzaserver.api.entity.definition.impl.EntityItemDefinition;
+import io.github.pizzaserver.api.entity.definition.impl.*;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.behavior.impl.ItemToolBehavior;
+import io.github.pizzaserver.api.item.data.MusicDiscType;
 import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.block.behavior.impl.*;
-import io.github.pizzaserver.server.blockentity.types.impl.*;
 import io.github.pizzaserver.api.item.behavior.impl.ItemArmorBehavior;
+import io.github.pizzaserver.server.item.behavior.impl.ItemBlockSignBehavior;
 import io.github.pizzaserver.server.item.behavior.impl.ItemBoatBehavior;
+import io.github.pizzaserver.server.item.behavior.impl.ItemFireChargeBehavior;
 import io.github.pizzaserver.server.item.behavior.impl.ItemFlintAndSteelBehavior;
 
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ public class VanillaContentLoader {
     public static void load() {
         loadItems();
         loadBlocks();
-        loadBlockEntities();
         loadEntityComponents();
         loadEntities();
     }
@@ -39,13 +37,17 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemAmethystShard());
         ItemRegistry.getInstance().register(new ItemArrow());
         ItemRegistry.getInstance().register(new ItemBirchBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.BLACK));
         ItemRegistry.getInstance().register(new ItemBlazePowder());
         ItemRegistry.getInstance().register(new ItemBlazeRod());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.BLUE));
         ItemRegistry.getInstance().register(new ItemBoat(), new ItemBoatBehavior());   // Why does Microsoft have minecraft:boat and minecraft:oak_boat?...
         ItemRegistry.getInstance().register(new ItemBone());
         ItemRegistry.getInstance().register(new ItemBook());
         ItemRegistry.getInstance().register(new ItemBowl());
         ItemRegistry.getInstance().register(new ItemBrick());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.BROWN));
+        ItemRegistry.getInstance().register(new ItemCarrotOnAStick());
         ItemRegistry.getInstance().register(new ItemChainmailBoots(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemChainmailChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemChainmailHelmet(), new ItemArmorBehavior());
@@ -55,43 +57,62 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemClock());
         ItemRegistry.getInstance().register(new ItemCoal());
         ItemRegistry.getInstance().register(new ItemCopperIngot());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.CYAN));
+        ItemRegistry.getInstance().register(new ItemCompass());
         ItemRegistry.getInstance().register(new ItemDarkOakBoat(), new ItemBoatBehavior());
         ItemRegistry.getInstance().register(new ItemDiamond());
         ItemRegistry.getInstance().register(new ItemDiamondAxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemDiamondBoots(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemDiamondChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemDiamondHelmet(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemDiamondHoe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemDiamondHorseArmor());
         ItemRegistry.getInstance().register(new ItemDiamondLeggings(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemDiamondPickaxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemDiamondSword(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemDragonBreath());
         ItemRegistry.getInstance().register(new ItemEmerald());
+        ItemRegistry.getInstance().register(new ItemEnchantedBook());
+        ItemRegistry.getInstance().register(new ItemEnderEye());
         ItemRegistry.getInstance().register(new ItemFeather());
         ItemRegistry.getInstance().register(new ItemFermentedSpiderEye());
+        ItemRegistry.getInstance().register(new ItemFireCharge(), new ItemFireChargeBehavior());
         ItemRegistry.getInstance().register(new ItemFlint());
         ItemRegistry.getInstance().register(new ItemFlintAndSteel(), new ItemFlintAndSteelBehavior());
         ItemRegistry.getInstance().register(new ItemGhastTear());
+        ItemRegistry.getInstance().register(new ItemGlassBottle());
         ItemRegistry.getInstance().register(new ItemGlisteringMelonSlice());
         ItemRegistry.getInstance().register(new ItemGlowInkSac());
         ItemRegistry.getInstance().register(new ItemGlowstoneDust());
         ItemRegistry.getInstance().register(new ItemGoldIngot());
         ItemRegistry.getInstance().register(new ItemGoldNugget());
+        ItemRegistry.getInstance().register(new ItemGoldenAxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemGoldenBoots(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemGoldenChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemGoldenHelmet(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemGoldenHoe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemGoldenHorseArmor());
         ItemRegistry.getInstance().register(new ItemGoldenLeggings(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemGoldenPickaxe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemGoldenShovel(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemGoldenSword(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.GRAY));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.GREEN));
         ItemRegistry.getInstance().register(new ItemGunpowder());
         ItemRegistry.getInstance().register(new ItemHeartOfTheSea());
+        ItemRegistry.getInstance().register(new ItemHoneyComb());
         ItemRegistry.getInstance().register(new ItemInkSac());
+        ItemRegistry.getInstance().register(new ItemIronAxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemIronBoots(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemIronChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemIronHelmet(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemIronHoe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemIronHorseArmor());
         ItemRegistry.getInstance().register(new ItemIronIngot());
         ItemRegistry.getInstance().register(new ItemIronLeggings(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemIronNugget());
         ItemRegistry.getInstance().register(new ItemIronPickaxe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemIronShovel(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemIronSword(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemJungleBoat(), new ItemBoatBehavior());
         ItemRegistry.getInstance().register(new ItemLapisLazuli());
@@ -99,42 +120,81 @@ public class VanillaContentLoader {
         ItemRegistry.getInstance().register(new ItemLeatherBoots(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemLeatherChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemLeatherHelmet(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemLeatherHorseArmor());
         ItemRegistry.getInstance().register(new ItemLeatherLeggings(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.LIGHT_BLUE));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.LIGHT_GRAY));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.LIME));
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.MAGENTA));
         ItemRegistry.getInstance().register(new ItemMagmaCream());
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.ELEVEN));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.THIRTEEN));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.BLOCKS));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.CAT));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.CHIRP));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.FAR));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.MALL));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.MELLOHI));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.OTHERSIDE));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.PIGSTEP));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.STAL));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.STRAD));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.WAIT));
+        ItemRegistry.getInstance().register(new ItemMusicDisc(MusicDiscType.WARD));
+        ItemRegistry.getInstance().register(new ItemNameTag());
         ItemRegistry.getInstance().register(new ItemNautilusShell());
         ItemRegistry.getInstance().register(new ItemNetherBrick());
         ItemRegistry.getInstance().register(new ItemNetherStar());
+        ItemRegistry.getInstance().register(new ItemNetheriteAxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemNetheriteBoots(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemNetheriteChestplate(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemNetheriteHelmet(), new ItemArmorBehavior());
+        ItemRegistry.getInstance().register(new ItemNetheriteHoe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemNetheriteIngot());
         ItemRegistry.getInstance().register(new ItemNetheriteLeggings(), new ItemArmorBehavior());
         ItemRegistry.getInstance().register(new ItemNetheritePickaxe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemNetheriteScrap());
+        ItemRegistry.getInstance().register(new ItemNetheriteShovel(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemNetheriteSword(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemOakBoat(), new ItemBoatBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.ORANGE));
         ItemRegistry.getInstance().register(new ItemPaper());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.PINK));
+        ItemRegistry.getInstance().register(new ItemPhantomMembrane());
         ItemRegistry.getInstance().register(new ItemPrismarineCrystals());
         ItemRegistry.getInstance().register(new ItemPrismarineShard());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.PURPLE));
         ItemRegistry.getInstance().register(new ItemQuartz());
         ItemRegistry.getInstance().register(new ItemRabbitFoot());
         ItemRegistry.getInstance().register(new ItemRabbitHide());
         ItemRegistry.getInstance().register(new ItemRawCopper());
         ItemRegistry.getInstance().register(new ItemRawGold());
         ItemRegistry.getInstance().register(new ItemRawIron());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.RED));
+        ItemRegistry.getInstance().register(new ItemSaddle());
         ItemRegistry.getInstance().register(new ItemShears());
         ItemRegistry.getInstance().register(new ItemShulkerShell());
         ItemRegistry.getInstance().register(new ItemSlimeball());
         ItemRegistry.getInstance().register(new ItemSpruceBoat(), new ItemBoatBehavior());
         ItemRegistry.getInstance().register(new ItemStick());
+        ItemRegistry.getInstance().register(new ItemStoneAxe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemStoneHoe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemStonePickaxe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemStoneShovel(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemStoneSword(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemSugar());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.WHITE));
+        ItemRegistry.getInstance().register(new ItemWoodenAxe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemWoodenHoe(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemWoodenPickaxe(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemWoodenShovel(), new ItemToolBehavior());
         ItemRegistry.getInstance().register(new ItemWoodenSword(), new ItemToolBehavior());
+        ItemRegistry.getInstance().register(new ItemDye(DyeColor.YELLOW));
     }
 
     private static void loadBlocks() {
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.ACACIA), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.ACACIA), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.ACACIA), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.ACACIA), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockAir());
@@ -144,10 +204,13 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockAzalea(), new RequiresSolidBottomBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockAzaleaLeaves());
         BlockRegistry.getInstance().register(new BlockAzaleaLeavesFlowered());
+        BlockRegistry.getInstance().register(new BlockBarrel(), new BarrelBlockBehavior());
         BlockRegistry.getInstance().register(new BlockBarrier());
         BlockRegistry.getInstance().register(new BlockBed());
         BlockRegistry.getInstance().register(new BlockBedrock());
-        BlockRegistry.getInstance().register(new BlockBell());
+        BlockRegistry.getInstance().register(new BlockBell(), new BellBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.BIRCH), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.BIRCH), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.BIRCH), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.BIRCH), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.BLACK), new CandleBlockBehavior());
@@ -169,7 +232,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockBuddingAmethyst());
         BlockRegistry.getInstance().register(new BlockCake(), new CakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCalcite());
-        BlockRegistry.getInstance().register(new BlockCampfire());
+        BlockRegistry.getInstance().register(new BlockCampfire(), new CampfireBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCandle(), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCandleCake(), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCarpet(), new RequiresSolidBottomBlockBehavior<>());
@@ -194,11 +257,14 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockCrackedDeepslateTile());
         BlockRegistry.getInstance().register(new BlockCrackedNetherBrick());
         BlockRegistry.getInstance().register(new BlockCrackedPolishedBlackstoneBrick());
-        BlockRegistry.getInstance().register(new BlockCraftingTable());
+        BlockRegistry.getInstance().register(new BlockCraftingTable(), new CraftingTableBehavior());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.CRIMSON), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.CRIMSON), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.CRIMSON), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.CRIMSON), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.CRIMSON), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCrimsonNylium());
+        BlockRegistry.getInstance().register(new BlockPlanks(WoodType.CRIMSON));
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.CRIMSON), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.CRIMSON, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.CRIMSON), new StrippableWoodenLikeBlockBehavior());
@@ -208,6 +274,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.CYAN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.CYAN), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.CYAN), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.DARK_OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.DARK_OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.DARK_OAK), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.DARK_OAK), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockDeadBush());
@@ -229,12 +297,16 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockDiamondOre());
         BlockRegistry.getInstance().register(new BlockDirt());
         BlockRegistry.getInstance().register(new BlockDirt(DirtType.ROOTED));
+        BlockRegistry.getInstance().register(new BlockDispenser(), new DispenserBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockDropper(), new DropperBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.RED_SANDSTONE, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.END_STONE_BRICK, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.MOSSY_STONE_BRICK, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockEmeraldBlock());
         BlockRegistry.getInstance().register(new BlockEmeraldOre());
+        BlockRegistry.getInstance().register(new BlockEnchantingTable());
+        BlockRegistry.getInstance().register(new BlockEnderChest(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.EXPOSED), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockCutCopperSlab(CopperType.EXPOSED, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockFire(), new FireBlockBehavior());
@@ -250,14 +322,18 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.GREEN), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.GREEN), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.GREEN), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockHopper(), new HopperBlockBehavior());
         BlockRegistry.getInstance().register(new BlockIce(), new IceBlockBehavior());
         BlockRegistry.getInstance().register(new BlockInvisibleBedrock());
         BlockRegistry.getInstance().register(new BlockIronBlock());
         BlockRegistry.getInstance().register(new BlockIronOre());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.JUNGLE), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.JUNGLE), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.JUNGLE), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.JUNGLE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLapisBlock());
         BlockRegistry.getInstance().register(new BlockLapisOre());
+        BlockRegistry.getInstance().register(new BlockLegacyStoneCutter(), new StoneCutterBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLight());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.LIGHT_BLUE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.LIGHT_BLUE), new CandleCakeBlockBehavior());
@@ -272,6 +348,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockDeepslateRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockFurnace(LitType.LIT), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockRedstoneOre(LitType.LIT), new RedstoneOreBehavior());
+        BlockRegistry.getInstance().register(new BlockSmoker(LitType.LIT), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockLog(), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.ACACIA), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.MAGENTA), new CandleBlockBehavior());
@@ -281,6 +358,8 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockNetherrack());
         BlockRegistry.getInstance().register(new BlockNetherReactor());
         BlockRegistry.getInstance().register(new BlockObsidian());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.OAK), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.OAK), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.ORANGE), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.ORANGE), new CandleCakeBlockBehavior());
@@ -290,6 +369,7 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockColoredCandle(DyeColor.PINK), new CandleBlockBehavior());
         BlockRegistry.getInstance().register(new BlockColoredCandleCake(DyeColor.PINK), new CandleCakeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.PINK), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockPlanks());
         BlockRegistry.getInstance().register(new BlockPodzol());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneButton(), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockPolishedBlackstoneSlab(), new SlabBlockBehavior());
@@ -308,11 +388,15 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockRedstoneOre(), new RedstoneOreBehavior());
         BlockRegistry.getInstance().register(new BlockReserved6());
         BlockRegistry.getInstance().register(new BlockSand());
+        BlockRegistry.getInstance().register(new BlockSmoker(), new OmniHorizontalDirectionBlockBehavior<>());
         BlockRegistry.getInstance().register(new BlockSnow());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.SPRUCE), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.SPRUCE), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.SPRUCE), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.SPRUCE), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStone());
         BlockRegistry.getInstance().register(new BlockStoneButton(), new ButtonBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockStoneCutter(), new StoneCutterBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.RED_SANDSTONE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockStoneSlab(StoneSlabType.END_STONE_BRICK), new SlabBlockBehavior());
@@ -327,14 +411,18 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockLog(WoodType.CRIMSON, StrippedType.STRIPPED), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.WARPED, StrippedType.STRIPPED), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.WARPED, StrippedType.STRIPPED), new StrippableWoodenLikeBlockBehavior());
-        BlockRegistry.getInstance().register(new BlockSoulCampfire());
+        BlockRegistry.getInstance().register(new BlockSoulCampfire(), new CampfireBlockBehavior());
         BlockRegistry.getInstance().register(new BlockTallGrass());
+        BlockRegistry.getInstance().register(new BlockTrappedChest(), new OmniHorizontalDirectionBlockBehavior<>());
+        BlockRegistry.getInstance().register(new BlockStandingSign(WoodType.WARPED), new SignBlockBehavior(), new ItemBlockSignBehavior());
+        BlockRegistry.getInstance().register(new BlockWallSign(WoodType.WARPED), new SignBlockBehavior(), new ItemBlockSignBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenButton(WoodType.WARPED), new ButtonBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenPressurePlate(WoodType.WARPED), new PressurePlateBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWood(WoodType.WARPED), new StrippableWoodenLikeBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.WARPED), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWoodenSlab(WoodType.WARPED, SlabType.DOUBLE), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockLog(WoodType.WARPED), new StrippableWoodenLikeBlockBehavior());
+        BlockRegistry.getInstance().register(new BlockPlanks(WoodType.WARPED));
         BlockRegistry.getInstance().register(new BlockWater());
         BlockRegistry.getInstance().register(new BlockWaxedCutCopperSlab(), new SlabBlockBehavior());
         BlockRegistry.getInstance().register(new BlockWaxedCutCopperSlab(SlabType.DOUBLE), new SlabBlockBehavior());
@@ -359,18 +447,6 @@ public class VanillaContentLoader {
         BlockRegistry.getInstance().register(new BlockGlazedTerracotta(DyeColor.YELLOW), new OmniHorizontalDirectionBlockBehavior<>());
     }
 
-    private static void loadBlockEntities() {
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBed());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBell());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeBlastFurnace());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCampfire());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeFurnace());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeCauldron());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeChest());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeFurnace());
-        ImplServer.getInstance().getBlockEntityRegistry().register(new BlockEntityTypeMobSpawner());
-    }
-
     private static void loadEntityComponents() {
         EntityRegistry.getInstance().registerComponent(EntityScaleComponent.class,
                 new EntityScaleComponent(1),
@@ -392,11 +468,11 @@ public class VanillaContentLoader {
                 new EntityDeathMessageComponentHandler());
         EntityRegistry.getInstance().registerComponent(EntityPhysicsComponent.class, new EntityPhysicsComponent(new EntityPhysicsComponent.Properties()
                 .setCollision(true)
-                .setGravity(true)
+                .setHasGravity(true)
                 .setPushable(true)
                 .setPistonPushable(true)
-                .setGravityForce(0.08f)
-                .setDragForce(0.02f)
+                .setGravity(0.08f)
+                .setDrag(0.02f)
                 .setApplyDragBeforeGravity(false)), new EntityPhysicsComponentHandler());
         EntityRegistry.getInstance().registerComponent(EntityBossComponent.class,
                 new EntityBossComponent(),
@@ -418,6 +494,7 @@ public class VanillaContentLoader {
         EntityRegistry.getInstance().registerDefinition(new EntityCowDefinition());
         EntityRegistry.getInstance().registerDefinition(new EntityHumanDefinition());
         EntityRegistry.getInstance().registerDefinition(new EntityItemDefinition());
+        EntityRegistry.getInstance().registerDefinition(new EntityPigDefinition());
     }
 
 }

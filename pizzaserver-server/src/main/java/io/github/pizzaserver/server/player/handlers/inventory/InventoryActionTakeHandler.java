@@ -65,12 +65,12 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
                 StackRequestActionType.TAKE,
                 source.getInventory(),
                 action.getSource().getSlotType(),
-                action.getSource().getSlot(),
+                action.getSource().getNetworkSlot(),
                 source.getItemStack(),
                 pickedUpStackCount,
                 destination.getInventory(),
                 action.getDestination().getSlotType(),
-                action.getDestination().getSlot(),
+                action.getDestination().getNetworkSlot(),
                 destination.getItemStack());
         player.getServer().getEventManager().call(inventoryMoveItemEvent);
         if (inventoryMoveItemEvent.isCancelled()) {

@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.block.behavior.impl;
 
 import com.nukkitx.math.vector.Vector3f;
-import io.github.pizzaserver.api.block.behavior.impl.DefaultBlockBehavior;
+import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.PillarAxis;
 import io.github.pizzaserver.api.block.impl.BlockStrippableWoodenLikeBlock;
@@ -10,7 +10,7 @@ import io.github.pizzaserver.api.item.data.ToolType;
 import io.github.pizzaserver.api.item.descriptors.ToolItem;
 import io.github.pizzaserver.api.player.Player;
 
-public class StrippableWoodenLikeBlockBehavior extends DefaultBlockBehavior<BlockStrippableWoodenLikeBlock> {
+public class StrippableWoodenLikeBlockBehavior extends BaseBlockBehavior<BlockStrippableWoodenLikeBlock> {
 
     @Override
     public boolean prepareForPlacement(Entity entity, BlockStrippableWoodenLikeBlock block, BlockFace face, Vector3f clickPosition) {

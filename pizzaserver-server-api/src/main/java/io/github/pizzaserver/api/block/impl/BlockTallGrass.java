@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.TallGrassType;
 import io.github.pizzaserver.api.entity.Entity;
@@ -9,7 +9,7 @@ import io.github.pizzaserver.api.item.Item;
 
 import java.util.*;
 
-public class BlockTallGrass extends Block {
+public class BlockTallGrass extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

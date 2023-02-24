@@ -2,6 +2,7 @@ package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.NbtMap;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BlockPressurePlate extends Block {
+public abstract class BlockPressurePlate extends BaseBlock {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {

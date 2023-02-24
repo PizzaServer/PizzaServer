@@ -1,11 +1,11 @@
 package io.github.pizzaserver.api.block.impl;
 
-import io.github.pizzaserver.api.block.Block;
+import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
-public class BlockCoal extends Block {
+public class BlockCoal extends BaseBlock {
 
     @Override
     public String getBlockId() {
@@ -35,6 +35,11 @@ public class BlockCoal extends Block {
     @Override
     public ToolTier getToolTierRequired() {
         return ToolTier.WOOD;
+    }
+
+    @Override
+    public int getFuelTicks() {
+        return 16000;
     }
 
 }

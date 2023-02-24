@@ -19,4 +19,9 @@ public class ItemBlazeRod extends BaseItem {
         return "Blaze Rod";
     }
 
+    @Override
+    public int getFuelTicks() {
+        return 2400;
+    }
+
 }

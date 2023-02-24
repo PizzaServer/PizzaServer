@@ -1,17 +1,17 @@
 package io.github.pizzaserver.api.block.impl;
 
 import com.nukkitx.nbt.NbtMap;
-import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.LitType;
-import io.github.pizzaserver.api.blockentity.impl.BlockEntityFurnace;
+import io.github.pizzaserver.api.block.trait.LitTrait;
+import io.github.pizzaserver.api.blockentity.type.BlockEntityFurnace;
 import io.github.pizzaserver.api.item.data.ToolTier;
 import io.github.pizzaserver.api.item.data.ToolType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockFurnace extends BlockBlockEntity<BlockEntityFurnace> {
+public class BlockFurnace extends BlockBlockEntity<BlockEntityFurnace> implements LitTrait {
 
     private static final List<NbtMap> BLOCK_STATES = new ArrayList<>() {
         {
@@ -34,10 +34,12 @@ public class BlockFurnace extends BlockBlockEntity<BlockEntityFurnace> {
         this.setLit(litType == LitType.LIT);
     }
 
+    @Override
     public boolean isLit() {
         return this.lit;
     }
 
+    @Override
     public void setLit(boolean lit) {
         this.lit = lit;
     }

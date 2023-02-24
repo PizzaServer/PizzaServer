@@ -14,7 +14,6 @@ import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.block.impl.BlockAir;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
-import io.github.pizzaserver.api.blockentity.types.BlockEntityType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
@@ -25,12 +24,15 @@ import io.github.pizzaserver.format.dimension.chunks.subchunk.BlockLayer;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.BlockPaletteEntry;
 import io.github.pizzaserver.format.utils.BedrockNetworkUtils;
 import io.github.pizzaserver.format.utils.VarInts;
-import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
+import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
 import io.github.pizzaserver.server.entity.ImplEntity;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.data.BlockUpdateEntry;
 import io.github.pizzaserver.server.level.world.chunks.utils.ChunkUtils;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
+import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
+import io.github.pizzaserver.server.network.protocol.version.V503MinecraftVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
@@ -51,6 +53,7 @@ public class ImplChunk implements Chunk {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final BedrockChunk chunk;
+    private volatile boolean chunkWasModified;
 
     private final ImplWorld world;
     private final int x;
@@ -63,12 +66,13 @@ public class ImplChunk implements Chunk {
 
     // Entities in this chunk
     private final Set<Entity> entities = new HashSet<>();
-    private final Map<Vector3i, BlockEntity> blockEntities = new HashMap<>();
+    private final Map<Vector3i, BaseBlockEntity<? extends Block>> blockEntities = new HashMap<>();
 
     // The players who can see this chunk
     private final Set<Player> spawnedTo = ConcurrentHashMap.newKeySet();
 
 
+    @SuppressWarnings("rawtypes")
     protected ImplChunk(ImplWorld world, int x, int z, BedrockChunk chunk) {
         this.world = world;
         this.x = x;
@@ -76,11 +80,9 @@ public class ImplChunk implements Chunk {
         this.chunk = chunk;
         this.resetExpiryTime();
 
-        for (NbtMap blockEntityNBT : chunk.getBlockEntities()) {
-            String blockEntityId = blockEntityNBT.getString("id");
-            BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(blockEntityId);
-
-            this.addBlockEntity(blockEntityType.deserializeDisk(this.getWorld(), blockEntityNBT));
+        for (NbtMap blockEntityNBT : new HashSet<>(chunk.getBlockEntities().values())) {
+            BlockEntity<? extends Block> blockEntity = BlockEntityHandler.fromDiskNBT(this.getWorld(), blockEntityNBT);
+            this.addBlockEntity(blockEntity);
         }
     }
 
@@ -113,7 +115,7 @@ public class ImplChunk implements Chunk {
 
         int subChunkY = (int) Math.floor(y / 16d);
         synchronized (this.chunk) {
-            return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, Math.abs(y) & 15, z & 15);
+            return this.chunk.getBiomeMap().getSubChunk(subChunkY).getBiomeAt(x & 15, y & 15, z & 15);
         }
     }
 
@@ -156,14 +158,30 @@ public class ImplChunk implements Chunk {
         return new HashSet<>(this.entities);
     }
 
-    public void addBlockEntity(BlockEntity blockEntity) {
+    public void addBlockEntity(BlockEntity<? extends Block> blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
-        this.blockEntities.put(blockCoordinates, blockEntity);
+
+        synchronized (this.chunk) {
+            this.chunk.addBlockEntity(BlockEntityHandler.toDiskNBT(blockEntity));
+            this.chunkWasModified = true;
+
+            synchronized (this.blockEntities) {
+                this.blockEntities.put(blockCoordinates, (BaseBlockEntity<? extends Block>) blockEntity);
+            }
+        }
     }
 
-    public void removeBlockEntity(BlockEntity blockEntity) {
+    public void removeBlockEntity(BlockEntity<? extends Block> blockEntity) {
         Vector3i blockCoordinates = Vector3i.from(blockEntity.getLocation().getX() & 15, blockEntity.getLocation().getY(), blockEntity.getLocation().getZ() & 15);
-        this.blockEntities.remove(blockCoordinates);
+
+        synchronized (this.chunk) {
+            this.chunk.removeBlockEntity(blockCoordinates.getX(), blockCoordinates.getY(), blockCoordinates.getZ());
+            this.chunkWasModified = true;
+
+            synchronized (this.blockEntities) {
+                this.blockEntities.remove(blockCoordinates);
+            }
+        }
     }
 
     @Override
@@ -182,14 +200,18 @@ public class ImplChunk implements Chunk {
 
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
-        if (y >= 320 || y < -64 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
-            throw new IllegalArgumentException("Could not get block outside chunk");
-        }
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
-        int chunkBlockY = Math.abs(y) & 15;
+        int chunkBlockY = y & 15;
         int chunkBlockZ = z & 15;
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
+
+        // Check if block is out of bounds.
+        if (y < this.getWorld().getDimension().getMinHeight() || y > this.getWorld().getDimension().getMaxHeight()) {
+            Block airBlock = new BlockAir();
+            airBlock.setLocation(this.getWorld(), blockCoordinates, layer);
+            return airBlock;
+        }
 
         Lock readLock = this.lock.readLock();
         readLock.lock();
@@ -226,21 +248,24 @@ public class ImplChunk implements Chunk {
     }
 
     @Override
-    public Optional<BlockEntity> getBlockEntity(int x, int y, int z) {
+    public Optional<BlockEntity<? extends Block>> getBlockEntity(int x, int y, int z) {
         Vector3i blockCoordinate = Vector3i.from(x & 15, y, z & 15);
-        return Optional.ofNullable(this.blockEntities.getOrDefault(blockCoordinate, null));
+        synchronized (this.blockEntities) {
+            return Optional.ofNullable(this.blockEntities.getOrDefault(blockCoordinate, null));
+        }
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void setBlock(Block block, int x, int y, int z, int layer) {
-        if (y >= 256 || y < 0 || Math.abs(x) >= 16 || Math.abs(z) >= 16) {
-            throw new IllegalArgumentException("Could not change block outside chunk");
+        if (y < this.getWorld().getDimension().getMinHeight() || y > this.getWorld().getDimension().getMaxHeight()) {
+            return;
         }
-        int subChunkIndex = y / 16;
+
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int subChunkBlockY = y & 15;
         int chunkBlockZ = z & 15;
+
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + chunkBlockX, y, this.getZ() * 16 + chunkBlockZ);
 
         block.setLocation(this.getWorld(), blockCoordinates, layer);
@@ -248,15 +273,24 @@ public class ImplChunk implements Chunk {
         Lock writeLock = this.lock.writeLock();
         writeLock.lock();
 
-        // Remove old block entity at this position if present
-        this.getBlockEntity(x, y, z).ifPresent(this::removeBlockEntity);
+        // Remove old block entity at this position
+        // only if the new block does not support this block entity type
+        boolean tryAddingNewBlockEntity = true;
+        Optional<BlockEntity<? extends Block>> oldBlockEntity = this.getBlockEntity(x, y, z);
+        if (oldBlockEntity.isPresent()) {
+            boolean oldBlockEntityCanStillBeUsed = ((BaseBlockEntity<? extends Block>) oldBlockEntity.get())
+                    .getBlockIds().contains(block.getBlockId());
+
+            if (oldBlockEntityCanStillBeUsed) {
+                tryAddingNewBlockEntity = false;
+            } else {
+                this.removeBlockEntity(oldBlockEntity.get());
+            }
+        }
 
         // Add block entity if one exists for this block
-        BlockEntityType blockEntityType = ImplServer.getInstance().getBlockEntityRegistry().getBlockEntityType(block)
-                .orElse(null);
-        if (blockEntityType != null) {
-            BlockEntity blockEntity = blockEntityType.create(block);
-            this.addBlockEntity(blockEntity);
+        if (tryAddingNewBlockEntity) {
+            BlockEntityHandler.create(block).ifPresent(this::addBlockEntity);
         }
 
         try {
@@ -271,11 +305,13 @@ public class ImplChunk implements Chunk {
                 int highestBlockY = Math.max(0, this.chunk.getHeightMap().getHighestBlockAt(chunkBlockX, chunkBlockZ) - 1);
                 if (y >= highestBlockY) {
                     int newHighestBlockY = y;
-                    while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir()) {
+                    while (this.getBlock(chunkBlockX, newHighestBlockY, chunkBlockZ).isAir() && newHighestBlockY >= -64) {
                         newHighestBlockY--;
                     }
                     this.chunk.getHeightMap().setHighestBlockAt(chunkBlockX, chunkBlockZ, newHighestBlockY + 1);
                 }
+
+                this.chunkWasModified = true;
             }
 
             // Send update block packet
@@ -313,19 +349,24 @@ public class ImplChunk implements Chunk {
 
     @Override
     public void addBlockEvent(int x, int y, int z, int type, int data) {
+        for (Player viewer : this.getViewers()) {
+            this.addBlockEvent(viewer, x, y, z, type, data);
+        }
+    }
+
+    @Override
+    public void addBlockEvent(Player player, int x, int y, int z, int type, int data) {
         Vector3i blockCoordinates = Vector3i.from(this.getX() * 16 + (x & 15), y, this.getZ() * 16 + (z & 15));
         BlockEventPacket blockEventPacket = new BlockEventPacket();
         blockEventPacket.setBlockPosition(blockCoordinates);
         blockEventPacket.setEventType(type);
         blockEventPacket.setEventData(data);
 
-        for (Player viewer : this.getViewers()) {
-            viewer.sendPacket(blockEventPacket);
-        }
+        player.sendPacket(blockEventPacket);
     }
 
     private void doBlockUpdate(BlockUpdateType type, int x, int y, int z) {
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
         int chunkBlockX = x & 15;
         int chunkBlockZ = z & 15;
 
@@ -348,7 +389,7 @@ public class ImplChunk implements Chunk {
      * @param z z coordinate
      */
     public void sendBlock(Player player, int x, int y, int z) {
-        int subChunkIndex = y / 16;
+        int subChunkIndex = (int) Math.floor(y / 16d);
 
         // Ensure that at least the foremost layer is sent to the client
         int layers;
@@ -375,7 +416,7 @@ public class ImplChunk implements Chunk {
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(player.getVersion().getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
+        updateBlockPacket.setRuntimeId(((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
         updateBlockPacket.setBlockPosition(Vector3i.from(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
@@ -385,10 +426,10 @@ public class ImplChunk implements Chunk {
                 this.sendBlockEntityData(player, blockEntity));
     }
 
-    protected void sendBlockEntityData(Player player, BlockEntity blockEntity) {
+    protected void sendBlockEntityData(Player player, BlockEntity<? extends Block> blockEntity) {
         BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
         blockEntityDataPacket.setBlockPosition(blockEntity.getLocation().toVector3i());
-        blockEntityDataPacket.setData(blockEntity.getNetworkData());
+        blockEntityDataPacket.setData(BlockEntityHandler.toNetworkNBT(blockEntity));
         player.sendPacket(blockEntityDataPacket);
     }
 
@@ -410,11 +451,13 @@ public class ImplChunk implements Chunk {
                 entity.tick();
             }
 
-            for (BlockEntity blockEntity : this.blockEntities.values()) {
-                blockEntity.tick();
-                if (blockEntity.requestedUpdate()) {
-                    for (Player player : this.getViewers()) {
-                        this.sendBlockEntityData(player, blockEntity);
+            synchronized (this.blockEntities) {
+                for (BaseBlockEntity<? extends Block> blockEntity : this.blockEntities.values()) {
+                    blockEntity.tick();
+                    if (blockEntity.requestedUpdate()) {
+                        for (Player player : this.getViewers()) {
+                            this.sendBlockEntityData(player, blockEntity);
+                        }
                     }
                 }
             }
@@ -454,11 +497,18 @@ public class ImplChunk implements Chunk {
                 subChunkCount = ChunkUtils.getSubChunkCount(this.chunk);
 
                 for (int i = -4; i < subChunkCount - 4; i++) {
-                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), player.getVersion());
+                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), false, (BaseMinecraftVersion) player.getVersion());
                 }
 
                 // Write biomes
-                BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap());
+                int biomeSubChunksToWrite = this.getWorld().getDimension()
+                        .getHeight() / 16;
+                if (player.getVersion().getProtocol() < V503MinecraftVersion.PROTOCOL) {
+                    // For some reason 1.18.12 and below have an extra biome sub chunk that can be written.
+                    biomeSubChunksToWrite++;
+                }
+
+                BedrockNetworkUtils.serialize3DBiomeMap(buffer, this.chunk.getBiomeMap(), biomeSubChunksToWrite);
 
                 buffer.writeByte(0);    // border blocks
                 VarInts.writeUnsignedInt(buffer, 0);    // extra data
@@ -466,9 +516,9 @@ public class ImplChunk implements Chunk {
                 // Write block entities if any exist
                 if (!this.chunk.getBlockEntities().isEmpty()) {
                     try (NBTOutputStream outputStream = NbtUtils.createNetworkWriter(new ByteBufOutputStream(buffer))) {
-                        for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities()) {
+                        for (NbtMap diskBlockEntityNBT : this.chunk.getBlockEntities().values()) {
                             try {
-                                NbtMap networkBlockEntityNBT = player.getVersion().getNetworkBlockEntityNBT(diskBlockEntityNBT);
+                                NbtMap networkBlockEntityNBT = ((BaseMinecraftVersion) player.getVersion()).getNetworkBlockEntityNBT(diskBlockEntityNBT);
                                 outputStream.writeTag(networkBlockEntityNBT);
                             } catch (NullPointerException exception) {
                                 throw new IOException("Failed to send chunk due to unhandled block entity found: " + diskBlockEntityNBT);
@@ -518,6 +568,21 @@ public class ImplChunk implements Chunk {
             return this.chunk.getSubChunk(subChunkY);
         } catch (IOException exception) {
             throw new RuntimeException("Failed to fetch sub chunk.");
+        }
+    }
+
+    public void save() throws IOException {
+        synchronized (this.chunk) {
+            if (this.chunkWasModified) {
+                synchronized (this.blockEntities) {
+                    for (BlockEntity<? extends Block> blockEntity : this.blockEntities.values()) {
+                        this.chunk.addBlockEntity(BlockEntityHandler.toDiskNBT(blockEntity));
+                    }
+                }
+
+                this.world.getLevel().getProvider().getDimension(this.chunk.getDimension())
+                        .saveChunk(this.chunk);
+            }
         }
     }
 
