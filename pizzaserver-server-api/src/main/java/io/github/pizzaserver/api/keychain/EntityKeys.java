@@ -30,10 +30,11 @@ public class EntityKeys {
     // If a key maps to something that is really only handled by the server and won't be shared with the client,
     // the prefix of "internal" is adopted --> internal:property_here
 
-    // -- Shape
+    // -- Shape / Appearance
     public static final DataKey<Float> BOUNDING_BOX_WIDTH = DataKey.of("internal:bounding_box_xz", Float.TYPE);
     public static final DataKey<Float> BOUNDING_BOX_HEIGHT = DataKey.of("internal:bounding_box_y", Float.TYPE);
     public static final DataKey<Float> SCALE = DataKey.of("internal:scale", Float.TYPE);
+    public static final DataKey<Integer> VARIANT = DataKey.of("internal:variant", Integer.TYPE);
 
 
     // -- Location

@@ -1,7 +1,6 @@
 package io.github.pizzaserver.server.item.behavior.impl;
 
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.trait.LiquidTrait;
@@ -21,13 +20,10 @@ public class ItemBoatBehavior extends BaseItemBehavior<ItemBaseBoat> {
         player.getInventory().setHeldItem(item);
 
         Entity boatEntity = EntityRegistry.getInstance().getEntity(EntityBoatDefinition.ID);
-        boatEntity.getMetaData().putInt(EntityData.VARIANT, item.getWoodType().ordinal());
-        Vector3f spawnLocation;
-        if (player.getHeadBlock() instanceof LiquidTrait) {
-            spawnLocation = player.getLocation().toVector3f().add(0, player.getEyeHeight(), 0);
-        } else {
-            spawnLocation = block.getSide(blockFace).getLocation().toVector3f();
-        }
+        boatEntity.set(EntityKeys.VARIANT, item.getWoodType().ordinal());
+        Vector3f spawnLocation = player.getHeadBlock() instanceof LiquidTrait
+                ? player.getLocation().toVector3f().add(0, player.getEyeHeight(), 0)
+                : block.getSide(blockFace).getLocation().toVector3f();
 
         player.expect(EntityKeys.WORLD).addEntity(boatEntity, spawnLocation);
         return true;

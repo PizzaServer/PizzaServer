@@ -225,6 +225,11 @@ public class ImplEntity extends SingleDataStore implements Entity {
                     return this.expect(EntityKeys.FIRE_TICKS_REMAINING) > 0f;
                 }).nudge();
 
+        this.getOrCreateContainerFor(EntityKeys.VARIANT, 0)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
+                ));
     }
 
     protected void defineLivingProperties() {

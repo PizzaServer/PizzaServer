@@ -18,9 +18,9 @@ See `com.nukkitx.protocol.bedrock.data.entity.EntityData` @ NukkitX/Cloudburst P
 | FLAGS                                 | N/A (ignore)              | Special Case Handler                                              |
 | FLAGS2                                | N/A (ignore)              | Special Case Handler                                              |
 | HEALTH                                | N/A (not paired)          | Testing suggests the value is only ever equal to 1 - LEGACY?      |
-| VARIANT                               |                           |                                                                   |
+| VARIANT                               | VARIANT                   |                                                                   |
 | COLOR                                 |                           |                                                                   |
-| NAMETAG                               |                           |                                                                   |
+| NAMETAG                               | DISPLAY_NAME              |                                                                   |
 | OWNER_EID                             |                           |                                                                   |
 | TARGET_EID                            |                           |                                                                   |
 | AIR_SUPPLY                            | BREATHING_TICKS_REMAINING |                                                                   |
@@ -54,7 +54,7 @@ See `com.nukkitx.protocol.bedrock.data.entity.EntityData` @ NukkitX/Cloudburst P
 | FISH_ANGLE                            |                           |                                                                   |
 | POTION_AUX_VALUE                      |                           |                                                                   |
 | LEASH_HOLDER_EID                      |                           |                                                                   |
-| SCALE                                 |                           |                                                                   |
+| SCALE                                 | SCALE                     |                                                                   |
 | HAS_NPC_COMPONENT                     |                           |                                                                   |
 | SKIN_ID                               |                           |                                                                   |
 | NPC_SKIN_ID                           |                           |                                                                   |
@@ -71,8 +71,8 @@ See `com.nukkitx.protocol.bedrock.data.entity.EntityData` @ NukkitX/Cloudburst P
 | WITHER_TARGET_2                       |                           |                                                                   |
 | WITHER_TARGET_3                       |                           |                                                                   |
 | WITHER_AERIAL_ATTACK                  |                           |                                                                   |
-| BOUNDING_BOX_WIDTH                    |                           |                                                                   |
-| BOUNDING_BOX_HEIGHT                   |                           |                                                                   |
+| BOUNDING_BOX_WIDTH                    | BOUNDING_BOX_WIDTH        |                                                                   |
+| BOUNDING_BOX_HEIGHT                   | BOUNDING_BOX_HEIGHT       |                                                                   |
 | FUSE_LENGTH                           |                           |                                                                   |
 | RIDER_SEAT_POSITION                   |                           |                                                                   |
 | RIDER_ROTATION_LOCKED                 |                           |                                                                   |
@@ -132,7 +132,7 @@ See `com.nukkitx.protocol.bedrock.data.entity.EntityData` @ NukkitX/Cloudburst P
 | HIGH_TIER_CURED_TRADE_DISCOUNT        |                           |                                                                   |
 | NEARBY_CURED_TRADE_DISCOUNT           |                           |                                                                   |
 | NEARBY_CURED_DISCOUNT_TIME_STAMP      |                           |                                                                   |
-| HITBOX                                |                           |                                                                   |
+| HITBOX                                |                           | Possibly linked to Bounding Box properties?                       |
 | IS_BUOYANT                            |                           |                                                                   |
 | BUOYANCY_DATA                         |                           |                                                                   |
 | FREEZING_EFFECT_STRENGTH              |                           |                                                                   |
@@ -146,118 +146,120 @@ See `com.nukkitx.protocol.bedrock.data.entity.EntityData` @ NukkitX/Cloudburst P
 | PLAYER_LAST_DEATH_POS                 |                           |                                                                   |
 | PLAYER_LAST_DEATH_DIMENSION           |                           |                                                                   |
 | PLAYER_HAS_DIED                       |                           |                                                                   |
-| ------------------------------------- | -----------------         | ----------------------------------------------------------------- |
+| ------------------------------------- | ------------------------- | ----------------------------------------------------------------- |
+
+
 ## Entity Flags
 
 See `com.nukkitx.protocol.bedrock.data.entity.EntityFlag` @ NukkitX/Cloudburst Protocol
 
 
-| EntityFlag Entry              | EntityKeys Impl |
-|-------------------------------|-----------------|
-| ON_FIRE                       |                 |
-| SNEAKING                      |                 |
-| RIDING                        |                 |
-| SPRINTING                     |                 |
-| USING_ITEM                    |                 |
-| INVISIBLE                     |                 |
-| TEMPTED                       |                 |
-| IN_LOVE                       |                 |
-| SADDLED                       |                 |
-| POWERED                       |                 |
-| IGNITED                       |                 |
-| BABY                          |                 |
-| CONVERTING                    |                 |
-| CRITICAL                      |                 |
-| CAN_SHOW_NAME                 |                 |
-| ALWAYS_SHOW_NAME              |                 |
-| NO_AI                         |                 |
-| SILENT                        |                 |
-| WALL_CLIMBING                 |                 |
-| CAN_CLIMB                     |                 |
-| CAN_SWIM                      |                 |
-| CAN_FLY                       |                 |
-| CAN_WALK                      |                 |
-| RESTING                       |                 |
-| SITTING                       |                 |
-| ANGRY                         |                 |
-| INTERESTED                    |                 |
-| CHARGED                       |                 |
-| TAMED                         |                 |
-| ORPHANED                      |                 |
-| LEASHED                       |                 |
-| SHEARED                       |                 |
-| GLIDING                       |                 |
-| ELDER                         |                 |
-| MOVING                        |                 |
-| BREATHING                     | BREATHING       |
-| CHESTED                       |                 |
-| STACKABLE                     |                 |
-| SHOW_BOTTOM                   |                 |
-| STANDING                      |                 |
-| SHAKING                       |                 |
-| IDLING                        |                 |
-| CASTING                       |                 |
-| CHARGING                      |                 |
-| WASD_CONTROLLED               |                 |
-| CAN_POWER_JUMP                |                 |
-| LINGERING                     |                 |
-| HAS_COLLISION                 |                 |
-| HAS_GRAVITY                   |                 |
-| FIRE_IMMUNE                   |                 |
-| DANCING                       |                 |
-| ENCHANTED                     |                 |
-| RETURN_TRIDENT                |                 |
-| CONTAINER_IS_PRIVATE          |                 |
-| IS_TRANSFORMING               |                 |
-| DAMAGE_NEARBY_MOBS            |                 |
-| SWIMMING                      |                 |
-| BRIBED                        |                 |
-| IS_PREGNANT                   |                 |
-| LAYING_EGG                    |                 |
-| RIDER_CAN_PICK                |                 |
-| TRANSITION_SITTING            |                 |
-| EATING                        |                 |
-| LAYING_DOWN                   |                 |
-| SNEEZING                      |                 |
-| TRUSTING                      |                 |
-| ROLLING                       |                 |
-| SCARED                        |                 |
-| IN_SCAFFOLDING                |                 |
-| OVER_SCAFFOLDING              |                 |
-| FALL_THROUGH_SCAFFOLDING      |                 |
-| BLOCKING                      |                 |
-| TRANSITION_BLOCKING           |                 |
-| BLOCKED_USING_SHIELD          |                 |
-| BLOCKED_USING_DAMAGED_SHIELD  |                 |
-| SLEEPING                      |                 |
-| WANTS_TO_WAKE                 |                 |
-| TRADE_INTEREST                |                 |
-| DOOR_BREAKER                  |                 |
-| BREAKING_OBSTRUCTION          |                 |
-| DOOR_OPENER                   |                 |
-| IS_ILLAGER_CAPTAIN            |                 |
-| STUNNED                       |                 |
-| ROARING                       |                 |
-| DELAYED_ATTACK                |                 |
-| IS_AVOIDING_MOBS              |                 |
-| IS_AVOIDING_BLOCK             |                 |
-| FACING_TARGET_TO_RANGE_ATTACK |                 |
-| HIDDEN_WHEN_INVISIBLE         |                 |
-| IS_IN_UI                      |                 |
-| STALKING                      |                 |
-| EMOTING                       |                 |
-| CELEBRATING                   |                 |
-| ADMIRING                      |                 |
-| CELEBRATING_SPECIAL           |                 |
-| OUT_OF_CONTROL                |                 |
-| RAM_ATTACK                    |                 |
-| PLAYING_DEAD                  |                 |
-| IN_ASCENDABLE_BLOCK           |                 |
-| OVER_DESCENDABLE_BLOCK        |                 |
-| CROAKING                      |                 |
-| EAT_MOB                       |                 |
-| JUMP_GOAL_JUMP                |                 |
-| EMERGING                      |                 |
-| SNIFFING                      |                 |
-| DIGGING                       |                 |
-| SONIC_BOOM                    |                 |
+| EntityFlag Entry              | EntityKeys Impl   | Comments                                                           |
+|-------------------------------|-------------------|--------------------------------------------------------------------|
+| ON_FIRE                       | BURNING           |                                                                    |
+| SNEAKING                      | SNEAKING          |                                                                    |
+| RIDING                        |                   |                                                                    |
+| SPRINTING                     | SPRINTING         |                                                                    |
+| USING_ITEM                    |                   |                                                                    |
+| INVISIBLE                     |                   |                                                                    |
+| TEMPTED                       |                   |                                                                    |
+| IN_LOVE                       |                   |                                                                    |
+| SADDLED                       |                   |                                                                    |
+| POWERED                       |                   |                                                                    |
+| IGNITED                       |                   |                                                                    |
+| BABY                          |                   |                                                                    |
+| CONVERTING                    |                   |                                                                    |
+| CRITICAL                      |                   |                                                                    |
+| CAN_SHOW_NAME                 |                   |                                                                    |
+| ALWAYS_SHOW_NAME              |                   |                                                                    |
+| NO_AI                         | AI_ENABLED        | Flipped.                                                           |
+| SILENT                        |                   |                                                                    |
+| WALL_CLIMBING                 |                   |                                                                    |
+| CAN_CLIMB                     | CLIMBING_ENABLED  |                                                                    |
+| CAN_SWIM                      |                   |                                                                    |
+| CAN_FLY                       |                   |                                                                    |
+| CAN_WALK                      |                   |                                                                    |
+| RESTING                       |                   |                                                                    |
+| SITTING                       |                   |                                                                    |
+| ANGRY                         |                   |                                                                    |
+| INTERESTED                    |                   |                                                                    |
+| CHARGED                       |                   |                                                                    |
+| TAMED                         |                   |                                                                    |
+| ORPHANED                      |                   |                                                                    |
+| LEASHED                       |                   |                                                                    |
+| SHEARED                       |                   |                                                                    |
+| GLIDING                       |                   |                                                                    |
+| ELDER                         |                   |                                                                    |
+| MOVING                        |                   |                                                                    |
+| BREATHING                     | BREATHING         |                                                                    |
+| CHESTED                       |                   |                                                                    |
+| STACKABLE                     |                   |                                                                    |
+| SHOW_BOTTOM                   |                   |                                                                    |
+| STANDING                      |                   |                                                                    |
+| SHAKING                       |                   |                                                                    |
+| IDLING                        |                   |                                                                    |
+| CASTING                       |                   |                                                                    |
+| CHARGING                      |                   |                                                                    |
+| WASD_CONTROLLED               |                   |                                                                    |
+| CAN_POWER_JUMP                |                   |                                                                    |
+| LINGERING                     |                   |                                                                    |
+| HAS_COLLISION                 | COLLISION_ENABLED |                                                                    |
+| HAS_GRAVITY                   | GRAVITY_ENABLED   |                                                                    |
+| FIRE_IMMUNE                   |                   |                                                                    |
+| DANCING                       |                   |                                                                    |
+| ENCHANTED                     |                   |                                                                    |
+| RETURN_TRIDENT                |                   |                                                                    |
+| CONTAINER_IS_PRIVATE          |                   |                                                                    |
+| IS_TRANSFORMING               |                   |                                                                    |
+| DAMAGE_NEARBY_MOBS            |                   |                                                                    |
+| SWIMMING                      | SWIMMING          |                                                                    |
+| BRIBED                        |                   |                                                                    |
+| IS_PREGNANT                   |                   |                                                                    |
+| LAYING_EGG                    |                   |                                                                    |
+| RIDER_CAN_PICK                |                   |                                                                    |
+| TRANSITION_SITTING            |                   |                                                                    |
+| EATING                        |                   |                                                                    |
+| LAYING_DOWN                   |                   |                                                                    |
+| SNEEZING                      |                   |                                                                    |
+| TRUSTING                      |                   |                                                                    |
+| ROLLING                       |                   |                                                                    |
+| SCARED                        |                   |                                                                    |
+| IN_SCAFFOLDING                |                   |                                                                    |
+| OVER_SCAFFOLDING              |                   |                                                                    |
+| FALL_THROUGH_SCAFFOLDING      |                   |                                                                    |
+| BLOCKING                      |                   |                                                                    |
+| TRANSITION_BLOCKING           |                   |                                                                    |
+| BLOCKED_USING_SHIELD          |                   |                                                                    |
+| BLOCKED_USING_DAMAGED_SHIELD  |                   |                                                                    |
+| SLEEPING                      |                   |                                                                    |
+| WANTS_TO_WAKE                 |                   |                                                                    |
+| TRADE_INTEREST                |                   |                                                                    |
+| DOOR_BREAKER                  |                   |                                                                    |
+| BREAKING_OBSTRUCTION          |                   |                                                                    |
+| DOOR_OPENER                   |                   |                                                                    |
+| IS_ILLAGER_CAPTAIN            |                   |                                                                    |
+| STUNNED                       |                   |                                                                    |
+| ROARING                       |                   |                                                                    |
+| DELAYED_ATTACK                |                   |                                                                    |
+| IS_AVOIDING_MOBS              |                   |                                                                    |
+| IS_AVOIDING_BLOCK             |                   |                                                                    |
+| FACING_TARGET_TO_RANGE_ATTACK |                   |                                                                    |
+| HIDDEN_WHEN_INVISIBLE         |                   |                                                                    |
+| IS_IN_UI                      |                   |                                                                    |
+| STALKING                      |                   |                                                                    |
+| EMOTING                       |                   |                                                                    |
+| CELEBRATING                   |                   |                                                                    |
+| ADMIRING                      |                   |                                                                    |
+| CELEBRATING_SPECIAL           |                   |                                                                    |
+| OUT_OF_CONTROL                |                   |                                                                    |
+| RAM_ATTACK                    |                   |                                                                    |
+| PLAYING_DEAD                  |                   |                                                                    |
+| IN_ASCENDABLE_BLOCK           |                   |                                                                    |
+| OVER_DESCENDABLE_BLOCK        |                   |                                                                    |
+| CROAKING                      |                   |                                                                    |
+| EAT_MOB                       |                   |                                                                    |
+| JUMP_GOAL_JUMP                |                   |                                                                    |
+| EMERGING                      |                   |                                                                    |
+| SNIFFING                      |                   |                                                                    |
+| DIGGING                       |                   |                                                                    |
+| SONIC_BOOM                    |                   |                                                                    |
