@@ -120,7 +120,11 @@ public class ImplCommandRegistry implements CommandRegistry {
                         ImplServer.getInstance().getLogger().error("That command doesn't exist!");
                         continue;
                     }
-                    realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0]);
+                    if(realCommand.isAsync()) {
+                        new Thread(() -> realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0])).start();
+                    } else {
+                        realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0]);
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

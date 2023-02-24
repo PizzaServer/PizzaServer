@@ -249,7 +249,13 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
             return true;
         }
         try {
-            command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
+            if(command.isAsync()) {
+                new Thread(() -> {
+                    command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
+                }).start();
+            } else {
+                command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
+            }
         } catch (Exception e) {
             player.sendMessage("§cSomething went wrong while executing that command");
             e.printStackTrace();

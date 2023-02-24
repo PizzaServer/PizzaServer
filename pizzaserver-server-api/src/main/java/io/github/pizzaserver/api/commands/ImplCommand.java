@@ -15,6 +15,7 @@ public abstract class ImplCommand {
     private String[] aliases;
     private ArrayList<CommandData.Flag> flags = new ArrayList<>();
     private int permission = 0;
+    private boolean async = false;
 
     /**
      * This multidimensional array is where parameters are made for commands
@@ -155,6 +156,13 @@ public abstract class ImplCommand {
         return newAliases.toArray(new String[0]);
     }
 
-    //TODO: Implement a CommandSender object, have player and console use it
     public abstract void execute(Player player, String[] args, String label);
+
+    public boolean isAsync() {
+        return async;
+    }
+
+    public void setAsync(boolean async) {
+        this.async = async;
+    }
 }
