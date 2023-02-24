@@ -39,16 +39,8 @@ public class SingleDataStore extends ActionRootSource implements DataStore {
      * @param <T> the type of the value.
      */
     public <T> void set(DataKey<T> key, T value) {
-        Optional<ValueContainer<T>> optCont = this.getContainerFor(key);
-
-        if(optCont.isPresent()) {
-            ValueContainer<T> container = optCont.get();
-            container.setValue(value);
-            return;
-        }
-
-        this.getDataRegistry().put(key, ValueContainer.wrap(value));
-        this.broadcast(DataAction.CONTAINER_CREATE, key);
+        ValueContainer<T> cont = this.getOrCreateContainerFor(key, null);
+        cont.setValue(value);
     }
 
     @Override
