@@ -109,9 +109,9 @@ public class ImplChunk implements Chunk {
 
     @Override
     public int getBiomeAt(int x, int y, int z) {
-        Check.inclusiveBounds(x, 0, 15, "x");
-        Check.inclusiveBounds(y, -64, 320, "y");
-        Check.inclusiveBounds(z, 0, 15, "z");
+        Check.withinBoundsInclusive(x, 0, 15, "x");
+        Check.withinBoundsInclusive(y, -64, 320, "y");
+        Check.withinBoundsInclusive(z, 0, 15, "z");
 
         int subChunkY = (int) Math.floor(y / 16d);
         synchronized (this.chunk) {
@@ -124,7 +124,8 @@ public class ImplChunk implements Chunk {
      * The entity is also spawned to any viewers of this chunk within render distance.
      * @param entity the entity to spawn
      */
-    public void addEntity(ImplEntity entity) {
+    @Override
+    public void addEntity(Entity entity) {
         if (!this.entities.contains(entity)) {
             for (Player player : this.getViewers()) {
                 if (entity.canBeSpawnedTo(player)) {
@@ -141,6 +142,7 @@ public class ImplChunk implements Chunk {
      * The entity is also despawned from any viewers of this chunk who are no longer within render distance.
      * @param entity the entity to spawn
      */
+    @Override
     public void removeEntity(Entity entity) {
         if (this.entities.remove(entity)) {
             for (Player player : this.getViewers()) {
@@ -675,8 +677,8 @@ public class ImplChunk implements Chunk {
         }
 
         public ImplChunk build() {
-            Check.nullParam(this.world, "world");
-            Check.nullParam(this.chunk, "chunk");
+            Check.notNull(this.world, "world");
+            Check.notNull(this.chunk, "chunk");
             return new ImplChunk(this.world, this.x, this.z, this.chunk);
         }
 

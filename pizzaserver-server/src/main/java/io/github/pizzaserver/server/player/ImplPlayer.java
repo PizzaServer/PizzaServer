@@ -13,10 +13,11 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.entity.data.attributes.Attribute;
+import io.github.pizzaserver.api.entity.data.attributes.AttributeView;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.impl.EntityCowDefinition;
 import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
@@ -28,6 +29,7 @@ import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.inventory.TemporaryInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -43,6 +45,9 @@ import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
+import io.github.pizzaserver.commons.data.DataAction;
+import io.github.pizzaserver.commons.data.key.DataKey;
+import io.github.pizzaserver.commons.data.value.Preprocessors;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.entity.ImplEntity;
@@ -72,6 +77,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ImplPlayer extends ImplEntityHuman implements Player {
+
+    public static final float MAX_FOOD_LEVEL = 20f;
 
     protected final ImplServer server;
     protected final PlayerSession session;
@@ -119,10 +126,70 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         this.physicsEngine.setPositionUpdate(false);
 
-        this.setDisplayName(this.getUsername());
+        this.set(EntityKeys.DISPLAY_NAME, this.getUsername());
+    }
+
+    @Override
+    protected void defineProperties() {
+        super.defineProperties(); // Define humanoid's properties
 
         // Players will die at any health lower than 0.5
-        this.getAttribute(AttributeType.HEALTH).setMinimumValue(0.5f);
+        // No need to check if it needs killing after the value is updated.
+        this.expectContainerFor(EntityKeys.KILL_THRESHOLD)
+                .setPreprocessor(Preprocessors.ifNullThenConstant(0.5f))
+                .setValue(0.5f)
+                // min health is linked to health, thus it uses the current var of HEALTH.
+                // Same applies with max health and so on with other attributes...
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.HEALTH));
+
+        this.expectContainerFor(EntityKeys.MAX_HEALTH)
+                .setValue(20f)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.HEALTH));
+
+        this.expectContainerFor(EntityKeys.HEALTH)
+                .setValue(20f)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.HEALTH));
+
+        this.expectContainerFor(EntityKeys.ABSORPTION)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.ABSORPTION));
+
+        this.expectContainerFor(EntityKeys.MAX_ABSORPTION)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.ABSORPTION));
+
+        this.expectContainerFor(EntityKeys.MOVEMENT_SPEED)
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.MOVEMENT_SPEED));
+
+        this.getOrCreateContainerFor(EntityKeys.FOOD, MAX_FOOD_LEVEL)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenConstant(MAX_FOOD_LEVEL),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant(MAX_FOOD_LEVEL)
+                ))
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.FOOD));
+
+        this.getOrCreateContainerFor(EntityKeys.SATURATION, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.SATURATION));
+
+
+        this.getOrCreateContainerFor(EntityKeys.PLAYER_XP_LEVELS, 0)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant(AttributeType.PLAYER_XP_LEVEL_LIMIT)
+                ))
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.PLAYER_XP_LEVELS));
+
+        this.getOrCreateContainerFor(EntityKeys.PLAYER_XP, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant(1f)
+                ))
+                .listenFor(DataAction.VALUE_SET, v -> this.sendAttribute(EntityKeys.PLAYER_XP));
     }
 
     /**
@@ -177,9 +244,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.getServer().getEntityRegistry().getDefinition(EntityHumanDefinition.ID).onCreation(this);
 
             // Apply player data
-            this.setPitch(data.getPitch());
-            this.setYaw(data.getYaw());
-            this.setHeadYaw(data.getYaw());
+            this.set(EntityKeys.ROTATION_PITCH, data.getPitch());
+            this.set(EntityKeys.ROTATION_YAW, data.getYaw());
+            this.set(EntityKeys.ROTATION_HEAD_YAW, data.getYaw());
             this.setGamemode(data.getGamemode());
 
             // Get their spawn location
@@ -450,20 +517,20 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     public void respawn() {
         this.deathAnimationTicks = -1;
-        this.fireTicks = 0;
         this.noHitTicks = 0;
         this.lastDamageEvent = null;
-        this.setAI(true);
-        this.setAirSupplyTicks(this.getMaxAirSupplyTicks());
-        this.setSwimming(false);
+        this.set(EntityKeys.FIRE_TICKS_REMAINING, 0);
+        this.set(EntityKeys.AI_ENABLED, true);
+        this.set(EntityKeys.SWIMMING, false);
+        this.set(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS));
 
         Location respawnLocation = this.getSpawn();
-        if (respawnLocation.getWorld().getDimension() != this.getWorld().getDimension()) {
+        if (respawnLocation.getWorld().getDimension() != this.expect(EntityKeys.WORLD).getDimension()) {
             this.setDimensionTransferScreen(respawnLocation.getWorld().getDimension());
         }
 
-        this.setHealth(this.getMaxHealth());
-        this.setFoodLevel(20);
+        this.set(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH));
+        this.set(EntityKeys.FOOD, 20f);
 
         PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, respawnLocation);
         this.getServer().getEventManager().call(respawnEvent);
@@ -541,7 +608,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
             EntityItem itemEntity = EntityRegistry.getInstance().getItemEntity(droppedItem);
             itemEntity.setPickupDelay(40);
-            this.getWorld().addItemEntity(itemEntity, this.getLocation().toVector3f().add(0, 1.3f, 0), this.getDirectionVector().mul(0.25f, 0.6f, 0.25f));
+            this.expect(EntityKeys.WORLD).addItemEntity(
+                    itemEntity,
+                    this.getLocation().toVector3f().add(0, 1.3f, 0),
+                    this.getDirectionVector().mul(0.25f, 0.6f, 0.25f)
+            );
 
             return true;
         }
@@ -591,12 +662,14 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                             this.getInventory().getLeggings(),
                             this.getInventory().getBoots()
                     })
-                    .setPitch(this.getPitch())
-                    .setYaw(this.getYaw())
+                    .setPitch(this.get(EntityKeys.ROTATION_PITCH).orElse(0f))
+                    .setYaw(this.get(EntityKeys.ROTATION_PITCH).orElse(0f))
                     .build();
+
             try {
                 this.getServer().getPlayerProvider().save(this.getUUID(), playerData);
                 return true;
+
             } catch (IOException exception) {
                 this.getServer().getLogger().error("Failed to save player " + this.getUUID(), exception);
             }
@@ -628,103 +701,25 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
     }
 
-    private void sendAttribute(Attribute attribute) {
+    private void sendAttribute(DataKey<?> attributeSourceKey) {
+        this.sendAttribute(this.generateAttributeReferences().get(attributeSourceKey));
+    }
+
+    private void sendAttribute(AttributeView<? extends Number> attribute) {
         this.sendAttributes(Collections.singleton(attribute));
     }
 
     private void sendAttributes() {
-        this.sendAttributes(this.attributes.getAttributes());
+        this.sendAttributes(this.generateAttributeReferences().values());
     }
 
-    private void sendAttributes(Set<Attribute> attributes) {
+    private void sendAttributes(Collection<AttributeView<? extends Number>> attributes) {
         if (this.hasSpawned()) {
             UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
             updateAttributesPacket.setRuntimeEntityId(this.getId());
-            updateAttributesPacket.setAttributes(attributes.stream().map(Attribute::serialize).collect(Collectors.toList()));
+            updateAttributesPacket.setAttributes(attributes.stream().map(AttributeView::serialize).collect(Collectors.toList()));
             this.sendPacket(updateAttributesPacket);
         }
-    }
-
-    @Override
-    public void setHealth(float health) {
-        super.setHealth(health);
-        this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
-    }
-
-    @Override
-    public void setMaxHealth(float maxHealth) {
-        super.setMaxHealth(maxHealth);
-        this.sendAttribute(this.getAttribute(AttributeType.HEALTH));
-    }
-
-    @Override
-    public void setAbsorption(float absorption) {
-        super.setAbsorption(absorption);
-        this.sendAttribute(this.getAttribute(AttributeType.ABSORPTION));
-    }
-
-    @Override
-    public void setMaxAbsorption(float maxAbsorption) {
-        super.setMaxAbsorption(maxAbsorption);
-        this.sendAttribute(this.getAttribute(AttributeType.ABSORPTION));
-    }
-
-    @Override
-    public void setMovementSpeed(float movementSpeed) {
-        super.setMovementSpeed(movementSpeed);
-        this.sendAttribute(this.getAttribute(AttributeType.MOVEMENT_SPEED));
-    }
-
-    @Override
-    public float getFoodLevel() {
-        Attribute attribute = this.getAttribute(AttributeType.FOOD);
-        return attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setFoodLevel(float foodLevel) {
-        Attribute attribute = this.getAttribute(AttributeType.FOOD);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), foodLevel));
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getSaturationLevel() {
-        Attribute attribute = this.getAttribute(AttributeType.SATURATION);
-        return attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setSaturationLevel(float saturationLevel) {
-        Attribute attribute = this.getAttribute(AttributeType.SATURATION);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), saturationLevel));
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public float getExperience() {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE);
-        return attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setExperience(float experience) {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experience));
-        this.sendAttribute(attribute);
-    }
-
-    @Override
-    public int getExperienceLevel() {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
-        return (int) attribute.getCurrentValue();
-    }
-
-    @Override
-    public void setExperienceLevel(int experienceLevel) {
-        Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE_LEVEL);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), experienceLevel));
-        this.sendAttribute(attribute);
     }
 
     @Override
@@ -742,7 +737,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension) {
-        World oldWorld = this.getWorld();
+        World oldWorld = this.expect(EntityKeys.WORLD);
         this.teleport(world, x, y, z, pitch, yaw, headYaw);
 
         if (!oldWorld.getDimension().equals(transferDimension)) {
@@ -752,12 +747,16 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public Location getSpawn() {
-        if (this.getHome().isPresent()) {
-            return new Location(this.getWorld(), this.getHome().get().toLocation().toVector3f().add(0, this.getEyeHeight(), 0));
-        } else {
-            World world = this.getServer().getLevelManager().getDefaultLevel().getDimension(Dimension.OVERWORLD);
-            return new Location(world, world.getSpawnCoordinates().add(0, this.getEyeHeight(), 0));
-        }
+        boolean usePlayerSpawn = this.getHome().isPresent();
+
+        World world = usePlayerSpawn
+                ? this.expect(EntityKeys.WORLD)
+                : this.getServer().getLevelManager().getDefaultLevel().getDimension(Dimension.OVERWORLD);
+        Vector3f position = usePlayerSpawn
+                ? this.getHome().get().toLocation().toVector3f()
+                : world.getSpawnCoordinates().toFloat();
+
+        return new Location(world, position.add(0.5, this.getEyeHeight(), 0.5));
     }
 
     /**
@@ -1007,14 +1006,18 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         if (this.metaDataUpdate) {
             SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
             setEntityDataPacket.setRuntimeEntityId(this.getId());
-            setEntityDataPacket.getMetadata().putAll(this.getMetaData().serialize());
+
+            this.getMetadataHelper().streamProperties().forEach(data ->
+                    setEntityDataPacket.getMetadata().put(data.left(), data.right())
+            );
+
             this.sendPacket(setEntityDataPacket);
         }
 
         this.getBlockBreakingManager().tick();
 
-        if (!NumberUtils.isNearlyEqual(this.getHealth(), this.getMaxHealth()) && this.getFoodLevel() >= 18 && this.ticks % 80 == 0) {
-            this.setHealth(this.getHealth() + 1);
+        if (!NumberUtils.isNearlyEqual(this.expect(EntityKeys.HEALTH), this.expect(EntityKeys.MAX_HEALTH)) && this.expect(EntityKeys.FOOD) >= 18 && this.ticks % 80 == 0) {
+            this.set(EntityKeys.HEALTH, this.expect(EntityKeys.HEALTH) + 1);
         }
 
         boolean shouldCloseOpenInventory = this.getOpenInventory().filter(inventory -> ((BaseInventory) inventory).shouldBeClosedFor(this)).isPresent();
@@ -1027,7 +1030,11 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
-        Location oldLocation = new Location(this.world, Vector3f.from(this.x, this.y, this.z), Vector3f.from(this.pitch, this.yaw, this.headYaw));
+        Location oldLocation = new Location(
+                this.get(EntityKeys.WORLD).orElse(null),
+                this.expect(EntityKeys.POSITION),
+                EntityHelper.getBasicRotationFor(this)
+        );
         super.moveTo(x, y, z, pitch, yaw, headYaw);
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
@@ -1041,14 +1048,15 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         this.getChunkManager().onSpawned();
 
         this.getInventory().sendSlots(this);
-        this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, true)
-                .putFlag(EntityFlag.BREATHING, true)
-                .putFlag(EntityFlag.CAN_CLIMB, true);
+        this.set(EntityKeys.GRAVITY_ENABLED, true);
+        this.set(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS));
+        this.set(EntityKeys.CLIMBING_ENABLED, true);
+
         this.sendAttributes();
         this.getAdventureSettings().send();
 
         SetTimePacket setTimePacket = new SetTimePacket();
-        setTimePacket.setTime(this.getWorld().getTime());
+        setTimePacket.setTime(this.expect(EntityKeys.WORLD).getTime());
         this.sendPacket(setTimePacket);
     }
 

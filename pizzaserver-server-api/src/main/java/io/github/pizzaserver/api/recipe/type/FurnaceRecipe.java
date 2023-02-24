@@ -12,7 +12,7 @@ public class FurnaceRecipe extends Recipe {
 
     public FurnaceRecipe(RecipeBlockType blockType, Item input, Item output) {
         super(blockType);
-        Check.nullParam(input, "input");
+        Check.notNull(input, "input");
 
         this.input = input;
         this.output = output;

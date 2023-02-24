@@ -2,17 +2,17 @@ package io.github.pizzaserver.server.entity;
 
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.entity.data.DamageCause;
-import io.github.pizzaserver.api.entity.data.attributes.Attribute;
+import io.github.pizzaserver.api.entity.data.attributes.AttributeView;
 import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
@@ -25,56 +25,53 @@ import io.github.pizzaserver.api.entity.definition.components.impl.EntityBurnsIn
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDamageSensorComponent;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityDeathMessageComponent;
 import io.github.pizzaserver.api.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageEvent;
 import io.github.pizzaserver.api.event.type.entity.EntityDeathEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.ArmorItem;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
+import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
+import io.github.pizzaserver.commons.data.DataAction;
+import io.github.pizzaserver.commons.data.key.DataKey;
+import io.github.pizzaserver.commons.data.store.SingleDataStore;
+import io.github.pizzaserver.commons.data.value.FunctionalContainer;
+import io.github.pizzaserver.commons.data.value.Preprocessors;
+import io.github.pizzaserver.commons.data.value.ValueContainer;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
+import io.github.pizzaserver.server.block.behavior.impl.FireBlockBehavior;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
-import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 
 import java.util.*;
+import java.util.function.Function;
 
-public class ImplEntity implements Entity {
+public class ImplEntity extends SingleDataStore implements Entity {
 
     public static long ID = 1;
-
     public static final int NO_HIT_TICKS = 10;
 
+
     protected final long id;
-    protected volatile float x;
-    protected volatile float y;
-    protected volatile float z;
-    protected volatile World world;
+
     protected boolean moveUpdate;
     protected EntityPhysicsEngine physicsEngine = new EntityPhysicsEngine(this);
     protected long ticks;
 
     protected BlockLocation home = null;
 
-    protected boolean vulnerable = true;
     protected int deathAnimationTicks = -1;
     protected int noHitTicks;
 
-    protected int fireTicks;
-
-    protected final EntityAttributes attributes = new EntityAttributes();
-
     protected ImplBossBar bossBar = null;
 
-    protected float pitch;
-    protected float yaw;
-    protected float headYaw;
 
     protected BoundingBox boundingBox = new BoundingBox(Vector3f.ZERO, Vector3f.ZERO);
     protected float eyeHeight;
@@ -87,7 +84,7 @@ public class ImplEntity implements Entity {
 
     protected EntityInventory inventory = new ImplEntityInventory(this, ContainerType.INVENTORY, 0);
     protected List<Item> loot = new ArrayList<>();
-    protected EntityMetadata metaData = new ImplEntityMetadata(this);
+    protected EntityMetadataHelper metaData = new EntityMetadataHelper(this);
     protected boolean metaDataUpdate;
 
     protected EntityDamageEvent lastDamageEvent = null;
@@ -98,10 +95,23 @@ public class ImplEntity implements Entity {
     protected final Set<Player> hiddenFrom = new HashSet<>();
 
 
+    // Attributes are hidden from the API - all of them should be passed through the entity data store.
+    // AttributeViews are only used to package attribs to and from packets.
+    protected Map<DataKey<? extends Number>, AttributeView<? extends Number>> bakedAttributeViews = Collections.unmodifiableMap(new HashMap<>());
+
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     public ImplEntity(EntityDefinition entityDefinition) {
         this.id = ID++;
         this.entityDefinition = entityDefinition;
+
+        this.defineProperties();
+
+        // Generate AttributeViews for the currently created properties.
+        this.listenFor(DataAction.CONTAINER_CREATE, key -> {
+            if(AttributeType.ALL_ATTRIBUTE_KEY_DEPENDENCIES.contains(key))
+                this.generateAttributeReferences();
+        });
 
         // Apply default components to the entity
         Server.getInstance().getEntityRegistry().getComponentClasses().forEach(clazz -> {
@@ -109,6 +119,186 @@ public class ImplEntity implements Entity {
             handler.onRegistered(this, Server.getInstance().getEntityRegistry().getDefaultComponent(clazz));
         });
     }
+
+    /**
+     * An overridable hook for server/plugin defined entities
+     * that defines attributes prior to the creation of attribute views.
+     * Every entity should at least call ImplEntity#this.defineDefaultProperties();
+     */
+    protected void defineProperties() {
+        this.defineDefaultProperties();
+        this.defineIndependentFlags();
+        this.defineLivingProperties();
+        this.defineOptionalProperties();
+    }
+
+    /**
+     * Creates the true default properties for an entity - defined by the
+     * attributes found in the UpdateAttributes packet.
+     */
+    protected final void defineDefaultProperties() {
+        // Anything that previously triggered a movement update should trigger this.
+        Runnable movementUpdateTrigger = () -> this.moveUpdate = true;
+        Function<Float, Float> PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE = Preprocessors.inOrder(
+                Preprocessors.ifNullThenConstant(1f),
+                Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+        );
+
+        // -- Attributes
+
+        this.getOrCreateContainerFor(EntityKeys.POSITION, Vector3f.ZERO).setPreprocessor(Preprocessors.nonNull("Entity Position")).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_PITCH, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_YAW, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+        this.getOrCreateContainerFor(EntityKeys.ROTATION_HEAD_ROLL, 0f).setPreprocessor(Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO).listenFor(DataAction.VALUE_PRE_SET, movementUpdateTrigger);
+
+        this.getOrCreateContainerFor(EntityKeys.IS_VULNERABLE, true).setPreprocessor(Preprocessors.ifNullThenConstant(true));
+
+
+        this.getOrCreateContainerFor(EntityKeys.KILL_THRESHOLD, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.nonNull("Kill threshold must not be null and must be above or equal to zero."),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.MAX_HEALTH).nudge());
+        this.getOrCreateContainerFor(EntityKeys.MAX_HEALTH, 1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.nonNull("Max Health must not be null and must be above or equal to zero."),
+                        Preprocessors.ensureAboveDefined(this.expectContainerFor(EntityKeys.KILL_THRESHOLD))
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.HEALTH).nudge());
+        this.getOrCreateContainerFor(EntityKeys.HEALTH, this.expect(EntityKeys.MAX_HEALTH))
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_HEALTH)),
+                        Preprocessors.ensureBelowDefined(this.expectContainerFor(EntityKeys.MAX_HEALTH)),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> {
+                    if (this.getBossBar().isPresent()) {
+                        BossBar bossBar = this.getBossBar().get();
+                        bossBar.setPercentage(this.expect(EntityKeys.HEALTH) / this.expect(EntityKeys.MAX_HEALTH));
+                        this.setBossBar(bossBar);
+                    }
+                });
+
+        this.getOrCreateContainerFor(EntityKeys.MAX_ABSORPTION, 0f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.nonNull("Max Absorption must not be null and must be above or equal to zero."),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.ABSORPTION).nudge());
+        this.getOrCreateContainerFor(EntityKeys.ABSORPTION, this.expect(EntityKeys.MAX_ABSORPTION))
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_ABSORPTION)),
+                        Preprocessors.ensureBelowDefined(this.expectContainerFor(EntityKeys.MAX_ABSORPTION)),
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ));
+
+        this.getOrCreateContainerFor(EntityKeys.MOVEMENT_SPEED, 0.1f)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_FLOAT_ZERO,
+                        Preprocessors.FLOAT_EQUAL_OR_ABOVE_ZERO
+                ));
+
+        this.getOrCreateContainerFor(EntityKeys.BOUNDING_BOX_WIDTH, 1f)
+                .setPreprocessor(PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE)
+                .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
+        this.getOrCreateContainerFor(EntityKeys.BOUNDING_BOX_HEIGHT, 1f)
+                .setPreprocessor(PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE)
+                .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
+        this.getOrCreateContainerFor(EntityKeys.SCALE, 1f)
+                .setPreprocessor(PP_NULL_OR_BELOW_ZERO_FLOAT_TO_ONE)
+                .listenFor(DataAction.VALUE_SET, this::recalculateBoundingBox);
+
+        this.getOrCreateContainerFor(EntityKeys.FIRE_TICKS_REMAINING, 0)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
+                ));
+
+        this.getOrCreateRedirectOverrideFor(EntityKeys.BURNING)
+                .onGet(() -> this.expect(EntityKeys.FIRE_TICKS_REMAINING) > 0)
+                .onSet(shouldBurn -> {
+                    int currentFireTick = this.expect(EntityKeys.FIRE_TICKS_REMAINING);
+
+                    if(currentFireTick > 0 && !shouldBurn) {
+                        this.set(EntityKeys.FIRE_TICKS_REMAINING, 0);
+                        return;
+                    }
+
+                    if(currentFireTick <= 0 && shouldBurn)
+                        this.set(EntityKeys.FIRE_TICKS_REMAINING, FireBlockBehavior.FIRE_TICKS_APPLIED); // As if they walked in a fire block
+                });
+
+        this.getOrCreateContainerFor(EntityKeys.VARIANT, 0)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
+                ));
+    }
+
+    protected void defineLivingProperties() {
+        // - Entity Data
+
+        // TODO: Verify this is still actually correct with the game.
+        // TODO: Combine with breathing component.
+        this.getOrCreateContainerFor(EntityKeys.MAX_BREATHING_TICKS, 15)
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.TRANSFORM_NULL_TO_INT_ZERO,
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO,
+                        Preprocessors.ensureBelowConstant((int) Short.MAX_VALUE)
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BREATHING).nudge());
+        this.getOrCreateContainerFor(EntityKeys.BREATHING_TICKS_REMAINING, this.expect(EntityKeys.MAX_BREATHING_TICKS))
+                .setPreprocessor(Preprocessors.inOrder(
+                        Preprocessors.ifNullThenValue(() -> this.expect(EntityKeys.MAX_BREATHING_TICKS)),
+                        Preprocessors.ensureBelowDefined(this.expectContainerFor(EntityKeys.MAX_BREATHING_TICKS)),
+                        Preprocessors.INT_EQUAL_OR_ABOVE_ZERO
+                ))
+                .listenFor(DataAction.VALUE_SET, () -> this.expectContainerFor(EntityKeys.BREATHING).nudge());
+
+        this.getOrCreateRedirectOverrideFor(EntityKeys.BREATHING)
+                .onGet(() -> {
+                    int max = this.expect(EntityKeys.MAX_BREATHING_TICKS);
+                    int current = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
+                    return current >= max;
+                })
+                .onSet(shouldBeBreathing -> {
+                    int currentBreathingTicks = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
+                    int maxBreathingTicks = this.expect(EntityKeys.MAX_BREATHING_TICKS);
+
+                    if(currentBreathingTicks >= maxBreathingTicks && !shouldBeBreathing) {
+                        this.set(EntityKeys.BREATHING_TICKS_REMAINING, maxBreathingTicks - 1);
+                        return;
+                    }
+
+                    if(currentBreathingTicks < maxBreathingTicks && shouldBeBreathing)
+                        this.set(EntityKeys.BREATHING_TICKS_REMAINING, maxBreathingTicks);
+                });
+
+    }
+
+
+    protected void defineOptionalProperties() {
+        this.getOrCreateContainerFor(EntityKeys.DISPLAY_NAME, null);
+    }
+
+    protected void defineIndependentFlags() {
+        Function<Boolean, Boolean> trueIfNull = Preprocessors.ifNullThenConstant(true);
+        Function<Boolean, Boolean> falseIfNull = Preprocessors.ifNullThenConstant(false);
+
+        this.getOrCreateContainerFor(EntityKeys.AI_ENABLED, true).setPreprocessor(trueIfNull);
+        this.getOrCreateContainerFor(EntityKeys.COLLISION_ENABLED, true).setPreprocessor(trueIfNull);
+        this.getOrCreateContainerFor(EntityKeys.GRAVITY_ENABLED, true).setPreprocessor(trueIfNull);
+        this.getOrCreateContainerFor(EntityKeys.CLIMBING_ENABLED, true).setPreprocessor(trueIfNull);
+
+        // -- Movement
+        this.getOrCreateContainerFor(EntityKeys.SPRINTING, false).setPreprocessor(falseIfNull);
+        this.getOrCreateContainerFor(EntityKeys.SNEAKING, false).setPreprocessor(falseIfNull);
+        this.getOrCreateContainerFor(EntityKeys.SWIMMING, false).setPreprocessor(falseIfNull);
+    }
+
 
     @Override
     public long getId() {
@@ -118,6 +308,34 @@ public class ImplEntity implements Entity {
     @Override
     public EntityDefinition getEntityDefinition() {
         return this.entityDefinition;
+    }
+
+    public final Map<DataKey<? extends Number>, AttributeView<? extends Number>> generateAttributeReferences() {
+        if(this.bakedAttributeViews == null)
+            this.bakedAttributeViews = EntityHelper.generateAttributes(this, AttributeType.ALL_ATTRIBUTES);
+
+        return this.bakedAttributeViews;
+    }
+
+    protected <T> FunctionalContainer<T> getOrCreateRedirectOverrideFor(DataKey<T> key) {
+        Optional<ValueContainer<T>> optCont = this.getContainerFor(key);
+        if(optCont.isPresent()){
+            ValueContainer<T> container = optCont.get();
+
+            if(container instanceof FunctionalContainer<T>)
+                return (FunctionalContainer<T>) container;
+
+            this.getServer()
+                    .getLogger()
+                    .warn("Override of an existing container for key '%s' (Entity: %s) - this should be avoided!".formatted(
+                            key.getKey(),
+                            this.getEntityDefinition().getEntityId()
+                    ));
+        }
+
+        FunctionalContainer<T> override = new FunctionalContainer<>();
+        this.getRawDataRegistry().put(key, override);
+        return override;
     }
 
     @Override
@@ -215,32 +433,32 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getX() {
-        return this.x;
+        return this.expect(EntityKeys.POSITION).getX();
     }
 
     @Override
     public float getY() {
-        return this.y;
+        return this.expect(EntityKeys.POSITION).getY();
     }
 
     @Override
     public float getZ() {
-        return this.z;
+        return this.expect(EntityKeys.POSITION).getZ();
     }
 
     @Override
     public int getFloorX() {
-        return (int) Math.floor(this.x);
+        return (int) Math.floor(this.getX());
     }
 
     @Override
     public int getFloorY() {
-        return (int) Math.floor(this.y);
+        return (int) Math.floor(this.getY());
     }
 
     @Override
     public int getFloorZ() {
-        return (int) Math.floor(this.z);
+        return (int) Math.floor(this.getZ());
     }
 
     @Override
@@ -252,9 +470,11 @@ public class ImplEntity implements Entity {
         int maxBlockZCheck = (int) boundingBox.getMaxZ();
 
         BoundingBox intersectingBoundingBox = this.getBoundingBox().translate(0, -0.0002f, 0);
+        World world = this.expect(EntityKeys.WORLD);
+
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
-                Block blockBelow = this.getWorld().getBlock(x, this.getFloorY() - 1, z);
+                Block blockBelow = world.getBlock(x, this.getFloorY() - 1, z);
                 if (blockBelow.hasCollision() && blockBelow.getBoundingBox().collidesWith(intersectingBoundingBox)) {
                     return true;
                 }
@@ -274,11 +494,12 @@ public class ImplEntity implements Entity {
         int maxBlockZCheck = (int) entityBoundingBox.getMaxZ();
 
         Set<Block> collidingBlocks = new HashSet<>();
+        World world = this.expect(EntityKeys.WORLD);
 
         for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
             for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
                 for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
-                    Block block = this.getWorld().getBlock(x, y, z);
+                    Block block = world.getBlock(x, y, z);
                     if (block.getBoundingBox().collidesWith(entityBoundingBox)) {
                         collidingBlocks.add(block);
                     }
@@ -291,11 +512,12 @@ public class ImplEntity implements Entity {
 
     @Override
     public Block getHeadBlock() {
-        if (this.isSwimming()) {
-            return this.getWorld().getBlock(this.getLocation().toVector3i());
-        } else {
-            return this.getWorld().getBlock(this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0).floor().toInt());
-        }
+        World world = this.expect(EntityKeys.WORLD);
+        Vector3i blockLocation = this.get(EntityKeys.SWIMMING).orElse(false)
+                ? this.getLocation().toVector3i()
+                : this.getLocation().toVector3f().add(0, this.getEyeHeight(), 0).floor().toInt();
+
+        return world.getBlock(blockLocation);
     }
 
     @Override
@@ -310,9 +532,11 @@ public class ImplEntity implements Entity {
 
     @Override
     public Location getLocation() {
-        return new Location(this.world,
-                Vector3f.from(this.getX(), this.getY(), this.getZ()),
-                Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+        return new Location(
+                this.get(EntityKeys.WORLD).orElse(null),
+                this.expect(EntityKeys.POSITION),
+                EntityHelper.getBasicRotationFor(this)
+        );
     }
 
     @Override
@@ -321,12 +545,16 @@ public class ImplEntity implements Entity {
     }
 
     protected void recalculateBoundingBox() {
-        float minX = this.getX() - ((this.getWidth() / 2) * this.getScale());
-        float maxX = this.getX() + ((this.getWidth() / 2) * this.getScale());
+        float width = this.expect(EntityKeys.BOUNDING_BOX_WIDTH);
+        float height = this.expect(EntityKeys.BOUNDING_BOX_HEIGHT);
+        float scale = this.expect(EntityKeys.SCALE);
+
+        float minX = this.getX() - ((width / 2) * scale);
+        float maxX = this.getX() + ((width / 2) * scale);
         float minY = this.getY();
-        float maxY = this.getY() + (this.getHeight() * this.getScale());
-        float minZ = this.getZ() - ((this.getWidth() / 2) * this.getScale());
-        float maxZ = this.getZ() + ((this.getWidth() / 2) * this.getScale());
+        float maxY = this.getY() + (height * scale);
+        float minZ = this.getZ() - ((width / 2) * scale);
+        float maxZ = this.getZ() + ((width / 2) * scale);
         this.boundingBox = new BoundingBox(Vector3f.from(minX, minY, minZ), Vector3f.from(maxX, maxY, maxZ));
     }
 
@@ -352,34 +580,12 @@ public class ImplEntity implements Entity {
 
     @Override
     public String getName() {
-        return this.getDisplayName().orElse(this.getEntityDefinition().getName());
-    }
-
-    @Override
-    public float getHeight() {
-        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_HEIGHT);
-    }
-
-    @Override
-    public void setHeight(float height) {
-        this.getMetaData().putFloat(EntityData.BOUNDING_BOX_HEIGHT, height);
-        this.recalculateBoundingBox();
-    }
-
-    @Override
-    public float getWidth() {
-        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_WIDTH);
-    }
-
-    @Override
-    public void setWidth(float width) {
-        this.getMetaData().putFloat(EntityData.BOUNDING_BOX_WIDTH, width);
-        this.recalculateBoundingBox();
+        return this.get(EntityKeys.DISPLAY_NAME).orElse(this.getEntityDefinition().getName());
     }
 
     /**
      * Set the internal position of the entity.
-     * Used internally to setup and to clean up the entity
+     * Used internally to set up and to clean up the entity
      * @param location entity location
      */
     public void setPosition(Location location) {
@@ -391,25 +597,23 @@ public class ImplEntity implements Entity {
     }
 
     public void setPosition(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
-        this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.pitch = pitch;
-        this.yaw = yaw;
-        this.headYaw = headYaw;
+        this.set(EntityKeys.WORLD, world);
+        this.set(EntityKeys.POSITION, Vector3f.from(x, y, z));
+        this.set(EntityKeys.ROTATION_PITCH, pitch);
+        this.set(EntityKeys.ROTATION_YAW, yaw);
+        this.set(EntityKeys.ROTATION_HEAD_YAW, headYaw);
         this.recalculateBoundingBox();
     }
 
     @Override
     public void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw) {
-        World oldWorld = this.getWorld();
+        World oldWorld = this.expect(EntityKeys.WORLD);
         this.moveUpdate = true;
 
         if (!world.equals(oldWorld)) {
-            this.setPitch(pitch);
-            this.setYaw(yaw);
-            this.setHeadYaw(headYaw);
+            this.set(EntityKeys.ROTATION_PITCH, pitch);
+            this.set(EntityKeys.ROTATION_YAW, yaw);
+            this.set(EntityKeys.ROTATION_HEAD_YAW, headYaw);
 
             oldWorld.removeEntity(this);
             world.addEntity(this, Vector3f.from(x, y, z));
@@ -436,155 +640,24 @@ public class ImplEntity implements Entity {
     }
 
     @Override
-    public Optional<String> getDisplayName() {
-        return Optional.ofNullable(this.getMetaData().getString(EntityData.NAMETAG));
-    }
-
-    @Override
-    public void setDisplayName(String name) {
-        this.getMetaData().putString(EntityData.NAMETAG, name);
-    }
-
-    @Override
-    public boolean isVulnerable() {
-        return this.vulnerable;
-    }
-
-    @Override
-    public void setVulnerable(boolean vulnerable) {
-        this.vulnerable = vulnerable;
-    }
-
-    @Override
-    public Set<Attribute> getAttributes() {
-        return this.attributes.getAttributes();
-    }
-
-    @Override
-    public Attribute getAttribute(AttributeType type) {
-        return this.attributes.getAttribute(type);
-    }
-
-    @Override
-    public float getMovementSpeed() {
-        return this.getAttribute(AttributeType.MOVEMENT_SPEED).getCurrentValue();
-    }
-
-    @Override
-    public void setMovementSpeed(float movementSpeed) {
-        Attribute attribute = this.getAttribute(AttributeType.MOVEMENT_SPEED);
-        attribute.setCurrentValue(Math.max(attribute.getMinimumValue(), movementSpeed));
-        attribute.setDefaultValue(Math.max(attribute.getMinimumValue(), movementSpeed));
-    }
-
-    @Override
-    public float getPitch() {
-        return this.pitch;
-    }
-
-    @Override
-    public void setPitch(float pitch) {
-        this.moveUpdate = true;
-        this.pitch = pitch;
-    }
-
-    @Override
-    public float getYaw() {
-        return this.yaw;
-    }
-
-    @Override
-    public void setYaw(float yaw) {
-        this.moveUpdate = true;
-        this.yaw = yaw;
-    }
-
-    @Override
-    public float getHeadYaw() {
-        return this.headYaw;
-    }
-
-    @Override
-    public void setHeadYaw(float headYaw) {
-        this.moveUpdate = true;
-        this.headYaw = headYaw;
-    }
-
-    @Override
     public HorizontalDirection getHorizontalDirection() {
-        return HorizontalDirection.fromYaw(this.getYaw());
+        return HorizontalDirection.fromYaw(this.get(EntityKeys.ROTATION_YAW).orElse(0f));
     }
 
     @Override
     public boolean isAlive() {
-        return this.getHealth() > this.getAttribute(AttributeType.HEALTH).getMinimumValue();
-    }
-
-    @Override
-    public float getHealth() {
-        return this.getAttribute(AttributeType.HEALTH).getCurrentValue();
-    }
-
-    @Override
-    public void setHealth(float health) {
-        Attribute attribute = this.getAttribute(AttributeType.HEALTH);
-        attribute.setMaximumValue(Math.max(attribute.getMaximumValue(), health));
-        attribute.setCurrentValue(Math.max(0, health));
-
-        if (this.getBossBar().isPresent()) {
-            BossBar bossBar = this.getBossBar().get();
-            bossBar.setPercentage(this.getHealth() / this.getMaxHealth());
-            this.setBossBar(bossBar);
-        }
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return this.getAttribute(AttributeType.HEALTH).getMaximumValue();
-    }
-
-    @Override
-    public void setMaxHealth(float maxHealth) {
-        Attribute attribute = this.getAttribute(AttributeType.HEALTH);
-
-        float newMaxHealth = Math.max(attribute.getMinimumValue(), maxHealth);
-        attribute.setMaximumValue(newMaxHealth);
-        attribute.setCurrentValue(Math.min(this.getHealth(), this.getMaxHealth()));
-    }
-
-    @Override
-    public float getAbsorption() {
-        return this.getAttribute(AttributeType.ABSORPTION).getCurrentValue();
-    }
-
-    @Override
-    public void setAbsorption(float absorption) {
-        Attribute attribute = this.getAttribute(AttributeType.ABSORPTION);
-
-        float newAbsorption = Math.max(attribute.getMinimumValue(), Math.min(absorption, this.getMaxAbsorption()));
-        attribute.setCurrentValue(newAbsorption);
-    }
-
-    @Override
-    public float getMaxAbsorption() {
-        return this.getAttribute(AttributeType.ABSORPTION).getMaximumValue();
-    }
-
-    @Override
-    public void setMaxAbsorption(float maxAbsorption) {
-        Attribute attribute = this.getAttribute(AttributeType.ABSORPTION);
-
-        float newMaxAbsorption = Math.max(attribute.getMinimumValue(), maxAbsorption);
-        attribute.setMaximumValue(newMaxAbsorption);
-        attribute.setCurrentValue(Math.min(this.getAbsorption(), this.getMaxAbsorption()));
+        return this.expect(EntityKeys.HEALTH) > this.get(EntityKeys.KILL_THRESHOLD).orElse(0f);
     }
 
     @Override
     public Vector3f getDirectionVector() {
-        double cosPitch = Math.cos(Math.toRadians(this.getPitch()));
-        double x = Math.sin(Math.toRadians(this.getYaw())) * -cosPitch;
-        double y = -Math.sin(Math.toRadians(this.getPitch()));
-        double z = Math.cos(Math.toRadians(this.getYaw())) * cosPitch;
+        float pitch = this.get(EntityKeys.ROTATION_PITCH).orElse(0f);
+        float yaw = this.get(EntityKeys.ROTATION_PITCH).orElse(0f);
+
+        double cosPitch = Math.cos(Math.toRadians(pitch));
+        double x = Math.sin(Math.toRadians(yaw)) * -cosPitch;
+        double y = -Math.sin(Math.toRadians(pitch));
+        double z = Math.cos(Math.toRadians(yaw)) * cosPitch;
 
         return Vector3f.from((float) x, (float) y, (float) z).normalize();
     }
@@ -592,11 +665,6 @@ public class ImplEntity implements Entity {
     @Override
     public ImplChunk getChunk() {
         return (ImplChunk) this.getLocation().getChunk();
-    }
-
-    @Override
-    public ImplWorld getWorld() {
-        return (ImplWorld) this.getLocation().getWorld();
     }
 
     @Override
@@ -609,29 +677,8 @@ public class ImplEntity implements Entity {
         return (ImplServer) Server.getInstance();
     }
 
-    @Override
-    public ImplEntityMetadata getMetaData() {
-        return (ImplEntityMetadata) this.metaData;
-    }
-
-    @Override
-    public boolean hasGravity() {
-        return this.getMetaData().hasFlag(EntityFlag.HAS_GRAVITY);
-    }
-
-    @Override
-    public void setGravity(boolean enabled) {
-        this.getMetaData().putFlag(EntityFlag.HAS_GRAVITY, enabled);
-    }
-
-    @Override
-    public boolean hasCollision() {
-        return this.getMetaData().hasFlag(EntityFlag.HAS_COLLISION);
-    }
-
-    @Override
-    public void setCollision(boolean canCollide) {
-        this.getMetaData().putFlag(EntityFlag.HAS_COLLISION, canCollide);
+    public EntityMetadataHelper getMetadataHelper() {
+        return this.metaData;
     }
 
     @Override
@@ -652,103 +699,6 @@ public class ImplEntity implements Entity {
     @Override
     public void setPistonPushable(boolean enabled) {
         this.pistonPushable = enabled;
-    }
-
-    @Override
-    public boolean hasAI() {
-        return !this.getMetaData().hasFlag(EntityFlag.NO_AI);
-    }
-
-    @Override
-    public void setAI(boolean hasAI) {
-        this.getMetaData().putFlag(EntityFlag.NO_AI, !hasAI);
-    }
-
-    @Override
-    public float getScale() {
-        return this.getMetaData().getFloat(EntityData.SCALE);
-    }
-
-    @Override
-    public void setScale(float scale) {
-        this.getMetaData().putFloat(EntityData.SCALE, scale);
-        this.recalculateBoundingBox();
-    }
-
-    @Override
-    public boolean isSneaking() {
-        return this.getMetaData().hasFlag(EntityFlag.SNEAKING);
-    }
-
-    @Override
-    public void setSneaking(boolean sneaking) {
-        this.getMetaData().putFlag(EntityFlag.SNEAKING, sneaking);
-    }
-
-    @Override
-    public boolean isSwimming() {
-        return this.getMetaData().hasFlag(EntityFlag.SWIMMING);
-    }
-
-    @Override
-    public void setSwimming(boolean swimming) {
-        this.getMetaData().putFlag(EntityFlag.SWIMMING, swimming);
-    }
-
-    @Override
-    public boolean isSprinting() {
-        return this.getMetaData().hasFlag(EntityFlag.SPRINTING);
-    }
-
-    @Override
-    public void setSprinting(boolean sprinting) {
-        this.getMetaData().putFlag(EntityFlag.SPRINTING, sprinting);
-    }
-
-    @Override
-    public int getFireTicks() {
-        return this.fireTicks;
-    }
-
-    @Override
-    public void setFireTicks(int ticks) {
-        boolean onFirePreviously = this.getFireTicks() > 0;
-        this.fireTicks = ticks;
-
-        EntityMetadata metaData = this.getMetaData();
-        if (this.fireTicks > 0 && !onFirePreviously) {
-            metaData.putFlag(EntityFlag.ON_FIRE, true);
-        } else if (this.fireTicks <= 0 && onFirePreviously) {
-            metaData.putFlag(EntityFlag.ON_FIRE, false);
-        }
-    }
-
-    @Override
-    public int getAirSupplyTicks() {
-        return this.getMetaData().getShort(EntityData.AIR_SUPPLY);
-    }
-
-    @Override
-    public void setAirSupplyTicks(int ticks) {
-        int newAirSupplyTicks = Math.max(0, Math.min(ticks, this.getMaxAirSupplyTicks()));
-        if (newAirSupplyTicks != this.getAirSupplyTicks()) {
-            this.getMetaData().putShort(EntityData.AIR_SUPPLY, (short) newAirSupplyTicks);
-        }
-    }
-
-    @Override
-    public int getMaxAirSupplyTicks() {
-        return this.getMetaData().getShort(EntityData.MAX_AIR_SUPPLY);
-    }
-
-    @Override
-    public void setMaxAirSupplyTicks(int ticks) {
-        int newMaxAirSupplyTicks = Math.max(0, ticks);
-        if (newMaxAirSupplyTicks != this.getMaxAirSupplyTicks()) {
-            this.getMetaData().putShort(EntityData.MAX_AIR_SUPPLY, (short) newMaxAirSupplyTicks);
-
-            this.setAirSupplyTicks(Math.min(this.getAirSupplyTicks(), this.getMaxAirSupplyTicks()));
-        }
     }
 
     @Override
@@ -836,7 +786,7 @@ public class ImplEntity implements Entity {
 
     @Override
     public void hurt(float damage) {
-        this.setHealth(this.getHealth() - damage);
+        this.set(EntityKeys.HEALTH, this.expect(EntityKeys.HEALTH) - damage);
         if (damage > 0 && this.isAlive()) {
             EntityEventPacket entityEventPacket = new EntityEventPacket();
             entityEventPacket.setRuntimeEntityId(this.getId());
@@ -854,8 +804,8 @@ public class ImplEntity implements Entity {
     @Override
     public void kill() {
         if (this.hasSpawned() && this.deathAnimationTicks == -1) {
-            this.setHealth(0);
-            this.setAI(false);
+            this.set(EntityKeys.HEALTH, 0f);
+            this.set(EntityKeys.AI_ENABLED, false);
 
             this.deathAnimationTicks = 20;
             this.startDeathAnimation();
@@ -869,7 +819,12 @@ public class ImplEntity implements Entity {
             this.getServer().getEventManager().call(deathEvent);
 
             for (Item itemStack : deathEvent.getDrops()) {
-                this.getWorld().addItemEntity(itemStack, this.getLocation().toVector3f());
+                this.get(EntityKeys.WORLD).ifPresentOrElse(
+                        world -> world.addItemEntity(itemStack, this.getLocation().toVector3f()),
+                        () -> Server.getInstance()
+                                .getLogger()
+                                .warn(String.format("Attempted to add an item entity on behalf of an entity with a null world (ID: %s)", this.getId()))
+                );
             }
 
             if (deathEvent.getDeathMessage().isPresent()) {
@@ -877,6 +832,10 @@ public class ImplEntity implements Entity {
                     player.sendMessage(deathEvent.getDeathMessage().get());
                 }
             }
+
+            // Removes all data listeners, effectively marking this entity
+            // as unused.
+            this.stale();
         }
     }
 
@@ -953,23 +912,30 @@ public class ImplEntity implements Entity {
     }
 
     public void moveTo(float x, float y, float z) {
-        this.moveTo(x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+        this.moveTo(
+                x, y, z,
+                this.get(EntityKeys.ROTATION_PITCH).orElse(0f),
+                this.get(EntityKeys.ROTATION_YAW).orElse(0f),
+                this.get(EntityKeys.ROTATION_HEAD_YAW).orElse(0f)
+        );
     }
 
     public void moveTo(float x, float y, float z, float pitch, float yaw, float headYaw) {
+        World world = this.expect(EntityKeys.WORLD);
         this.moveUpdate = true;
-        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+
+        Block blockBelow = world.getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
 
         ImplChunk currentChunk = this.getChunk();
-        this.setPosition(this.getWorld(), x, y, z, pitch, yaw, headYaw);
+        this.setPosition(world, x, y, z, pitch, yaw, headYaw);
 
-        ImplChunk newChunk = this.getWorld().getChunk((int) Math.floor(this.x / 16), (int) Math.floor(this.z / 16));
+        Chunk newChunk = world.getChunk((int) Math.floor(this.getX() / 16), (int) Math.floor(this.getZ() / 16));
         if (!currentChunk.equals(newChunk)) {   // spawn entity in new chunk and remove from old chunk
             currentChunk.removeEntity(this);
             newChunk.addEntity(this);
         }
 
-        Block newBlockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+        Block newBlockBelow = world.getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
         if (!blockBelow.getLocation().equals(newBlockBelow.getLocation())) {
             newBlockBelow.getBehavior().onWalkedOn(this, newBlockBelow);
             blockBelow.getBehavior().onWalkedOff(this, blockBelow);
@@ -985,24 +951,30 @@ public class ImplEntity implements Entity {
             this.sendMovementPacket();
         }
 
-        this.getMetaData().tryUpdate();
+        this.getMetadataHelper().tryUpdate();
 
-        if (this.hasComponent(EntityBurnsInDaylightComponent.class) && this.getWorld().isDay()) {
-            Block highestBlockAboveEntity = this.getWorld().getHighestBlockAt((int) Math.floor(this.getX()), (int) Math.floor(this.getZ()));
+        World world = this.expect(EntityKeys.WORLD);
+
+        if (this.hasComponent(EntityBurnsInDaylightComponent.class) && world.isDay()) {
+            Block highestBlockAboveEntity = world.getHighestBlockAt(this.getFloorX(), this.getFloorZ());
             if (highestBlockAboveEntity.getY() <= this.getY()) {
-                this.setFireTicks(20);
+                this.set(EntityKeys.FIRE_TICKS_REMAINING, 20);
             }
         }
 
         if (this.getNoHitTicks() > 0) {
             this.setNoHitTicks(this.getNoHitTicks() - 1);
+
         } else {
-            if (this.getFireTicks() > 0) {
-                if (this.getFireTicks() % 20 == 0) {
+            int currentFireTicks = this.expect(EntityKeys.FIRE_TICKS_REMAINING);
+
+            if (this.expect(EntityKeys.BURNING)) {
+                if (currentFireTicks % 20 == 0) {
                     EntityDamageEvent fireTickDamageEvent = new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1f, NO_HIT_TICKS);
                     this.damage(fireTickDamageEvent);
                 }
-                this.setFireTicks(this.getFireTicks() - 1);
+
+                this.set(EntityKeys.FIRE_TICKS_REMAINING, currentFireTicks - 1);
             }
 
             Block headBlock = this.getHeadBlock();
@@ -1011,6 +983,7 @@ public class ImplEntity implements Entity {
                     && headBlock.getBoundingBox().collidesWith(this.getBoundingBox())
                     && (!(breathableComponent.canBreathSolids() || breathableComponent.getBreathableBlocks().contains(headBlock))
                         || breathableComponent.getNonBreathableBlocks().contains(headBlock));
+
             if (isSuffocating) {
                 if (this.ticks % breathableComponent.getSuffocationInterval() == 0) {
                     EntityDamageEvent suffocationEvent = new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1f, 0);
@@ -1018,32 +991,43 @@ public class ImplEntity implements Entity {
                 }
             }
 
-            boolean losingOxygen = !headBlock.hasCollision()
-                    && ((breathableComponent.getNonBreathableBlocks().contains(headBlock)
-                                && !breathableComponent.getBreathableBlocks().contains(headBlock))
-                        || !(headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock)));
-            if (losingOxygen && !(this instanceof Player player && player.isCreativeMode())) {
-                if (this.getAirSupplyTicks() <= 0 && this.getServer().getTick() % 20 == 0) {
-                    EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
-                    this.damage(drowningEvent);
-                } else {
-                    this.setAirSupplyTicks(this.getAirSupplyTicks() - 1);
+            boolean blockIsBreathable = headBlock.hasOxygen() || breathableComponent.getBreathableBlocks().contains(headBlock);
+            boolean blockIsNonBreathable = breathableComponent.getNonBreathableBlocks().contains(headBlock) && !breathableComponent.getBreathableBlocks().contains(headBlock);
+            boolean blockIsDefinitelyNotBreathable = blockIsNonBreathable || !blockIsBreathable;
+
+            boolean losingOxygen = !headBlock.hasCollision() && blockIsDefinitelyNotBreathable;
+
+            if(this.has(EntityKeys.BREATHING) && this.has(EntityKeys.BREATHING_TICKS_REMAINING)) {
+                int airSupplyTicks = this.expect(EntityKeys.BREATHING_TICKS_REMAINING);
+                int maxAirSupply = this.expect(EntityKeys.MAX_BREATHING_TICKS);
+
+                // This should be moved.
+                boolean isPlayerInCreativeMode = this instanceof Player player && player.isCreativeMode();
+
+                if (losingOxygen && !isPlayerInCreativeMode) {
+                    if (airSupplyTicks <= 0 && this.getServer().getTick() % 20 == 0) {
+                        EntityDamageEvent drowningEvent = new EntityDamageEvent(this, DamageCause.DROWNING, 1f, 0);
+                        this.damage(drowningEvent);
+
+                    } else {
+                        this.set(EntityKeys.BREATHING_TICKS_REMAINING, airSupplyTicks - 1);
+                    }
+
+                } else if (airSupplyTicks < maxAirSupply) {
+                    int increment = this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0
+                            ? maxAirSupply
+                            : (int) Math.ceil(maxAirSupply / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
+
+                    this.set(EntityKeys.BREATHING_TICKS_REMAINING, airSupplyTicks + increment);
                 }
-            } else if (this.getAirSupplyTicks() < this.getMaxAirSupplyTicks()) {
-                int increment;
-                if (this.getComponent(EntityBreathableComponent.class).getInhaleTime() <= 0) {
-                    increment = this.getMaxAirSupplyTicks();
-                } else {
-                    increment = (int) Math.ceil(this.getMaxAirSupplyTicks() / this.getComponent(EntityBreathableComponent.class).getInhaleTime() / 20);
-                }
-                this.setAirSupplyTicks(this.getAirSupplyTicks() + increment);
             }
 
         }
 
-        if (this.getHealth() <= this.getAttribute(AttributeType.HEALTH).getMinimumValue() && this.isVulnerable()) {
+        if (this.expect(EntityKeys.IS_VULNERABLE) && !this.isAlive()) {
             this.kill();
         }
+
         if (this.deathAnimationTicks != -1 && --this.deathAnimationTicks <= 0) {
             this.endDeathAnimation();
             this.despawn();
@@ -1055,7 +1039,7 @@ public class ImplEntity implements Entity {
             }
         }
 
-        Block blockBelow = this.getWorld().getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
+        Block blockBelow = world.getBlock(this.getFloorX(), this.getFloorY() - 1, this.getFloorZ());
         blockBelow.getBehavior().onStandingOn(this, blockBelow);
 
         this.updateBossBarVisibility();
@@ -1066,7 +1050,7 @@ public class ImplEntity implements Entity {
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(this.getId());
         moveEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
-        moveEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.headYaw));
+        moveEntityPacket.setRotation(EntityHelper.getBasicRotationFor(this));
         moveEntityPacket.setTeleported(true);
 
         SetEntityMotionPacket setEntityVelocityPacket = new SetEntityMotionPacket();
@@ -1105,7 +1089,7 @@ public class ImplEntity implements Entity {
      * @return if the damage went through
      */
     public boolean damage(EntityDamageEvent event) {
-        if (!this.isVulnerable()
+        if (!this.expect(EntityKeys.IS_VULNERABLE)
                 || !this.isAlive()
                 || (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getAttacker().equals(this))) {
             return false;
@@ -1235,10 +1219,17 @@ public class ImplEntity implements Entity {
     }
 
     public boolean withinEntityRenderDistanceTo(Player player) {
-        int chunkDistanceToViewer = (int) Math.round(Math.sqrt(Math.pow(player.getChunk().getX() - this.getChunk().getX(), 2) + Math.pow(player.getChunk().getZ() - this.getChunk().getZ(), 2)));
-        return chunkDistanceToViewer < this.getWorld().getServer().getConfig().getEntityChunkRenderDistance();
+        int chunkDistanceToViewer = (int) Math.round(
+                Math.sqrt(
+                        Math.pow(player.getChunk().getX() - this.getChunk().getX(), 2) +
+                        Math.pow(player.getChunk().getZ() - this.getChunk().getZ(), 2)
+                )
+        );
+
+        return chunkDistanceToViewer < this.expect(EntityKeys.WORLD).getServer().getConfig().getEntityChunkRenderDistance();
     }
 
+    @Override
     public boolean canBeSpawnedTo(Player player) {
         return !this.equals(player)
                 && !this.hasSpawnedTo(player)
@@ -1273,8 +1264,11 @@ public class ImplEntity implements Entity {
             addEntityPacket.setIdentifier(this.getEntityDefinition().getEntityId());
             addEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
             addEntityPacket.setMotion(this.getMotion());
-            addEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
-            addEntityPacket.getMetadata().putAll(this.getMetaData().serialize());
+            addEntityPacket.setRotation(EntityHelper.getBasicRotationFor(this));
+            this.getMetadataHelper().streamProperties().forEach(data ->
+                    addEntityPacket.getMetadata().put(data.left(), data.right())
+            );
+
             player.sendPacket(addEntityPacket);
             this.sendEquipmentPacket(player);
 
@@ -1318,7 +1312,12 @@ public class ImplEntity implements Entity {
 
     @Override
     public void despawn() {
-        this.getWorld().removeEntity(this);
+        this.get(EntityKeys.WORLD).ifPresentOrElse(
+                world -> world.removeEntity(this),
+                () -> Server.getInstance()
+                        .getLogger()
+                        .warn(String.format("Attempted to despawn entity without a null world (ID: %s)", this.getId()))
+        );
     }
 
     @Override

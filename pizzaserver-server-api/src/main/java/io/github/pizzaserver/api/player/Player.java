@@ -5,10 +5,12 @@ import com.nukkitx.protocol.bedrock.BedrockPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.inventory.PlayerInventory;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -93,61 +95,13 @@ public interface Player extends EntityHuman {
     boolean openInventory(Inventory inventory);
 
     /**
-     * Get the amount of food strength the player has.
-     * @return value between 0 and 20
-     */
-    float getFoodLevel();
-
-    /**
-     * Set the amount of food strength the player has.
-     * @param foodLevel value between 0 and 20
-     */
-    void setFoodLevel(float foodLevel);
-
-    /**
-     * Get the saturation amount of the player.
-     * @return saturation of the player
-     */
-    float getSaturationLevel();
-
-    /**
-     * Send the saturation amount of the player.
-     * @param saturationLevel saturation of the player
-     */
-    void setSaturationLevel(float saturationLevel);
-
-    /**
-     * Get the percentage a player has filled their experience bar.
-     * @return value between 0 and 1
-     */
-    float getExperience();
-
-    /**
-     * Set the percentage a player has filled their experience bar.
-     * @param experience value between 0 and1
-     */
-    void setExperience(float experience);
-
-    /**
-     * Get the experience level of the player.
-     * @return experience level
-     */
-    int getExperienceLevel();
-
-    /**
-     * Set the experience level of the player.
-     * @param experienceLevel experience level
-     */
-    void setExperienceLevel(int experienceLevel);
-
-    /**
      * Teleport this entity to a position with a dimension transfer screen.
      * If this player is in a dimension of the desired transferDimension, it will not show the dimension transfer screen.
      * @param position position
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(Vector3f position, Dimension transferDimension) {
-        this.teleport(position, Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()), transferDimension);
+        this.teleport(position, EntityHelper.getBasicRotationFor(this), transferDimension);
     }
 
     /**
@@ -157,7 +111,7 @@ public interface Player extends EntityHuman {
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(Vector3f position, Vector3f rotation, Dimension transferDimension) {
-        this.teleport(new Location(this.getWorld(), position, rotation), transferDimension);
+        this.teleport(new Location(this.get(EntityKeys.WORLD).orElse(null), position, rotation), transferDimension);
     }
 
     /**
@@ -169,7 +123,13 @@ public interface Player extends EntityHuman {
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(float x, float y, float z, Dimension transferDimension) {
-        this.teleport(x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw(), transferDimension);
+        this.teleport(
+                x, y, z,
+                this.get(EntityKeys.ROTATION_PITCH).orElse(0f),
+                this.get(EntityKeys.ROTATION_YAW).orElse(0f),
+                this.get(EntityKeys.ROTATION_HEAD_YAW).orElse(0f),
+                transferDimension
+        );
     }
 
     /**
@@ -184,7 +144,7 @@ public interface Player extends EntityHuman {
      * @param transferDimension dimension transfer screen to use
      */
     default void teleport(float x, float y, float z, float pitch, float yaw, float headYaw, Dimension transferDimension) {
-        this.teleport(this.getWorld(), x, y, z, pitch, yaw, headYaw, transferDimension);
+        this.teleport(this.get(EntityKeys.WORLD).orElse(null), x, y, z, pitch, yaw, headYaw, transferDimension);
     }
 
     /**

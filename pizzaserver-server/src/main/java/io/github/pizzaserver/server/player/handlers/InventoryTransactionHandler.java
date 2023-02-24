@@ -9,16 +9,15 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.entity.Entity;
-import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.data.DamageCause;
 import io.github.pizzaserver.api.event.type.entity.EntityDamageByEntityEvent;
-import io.github.pizzaserver.api.event.type.inventory.InventoryDropItemEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerEntityInteractEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerHotbarSelectEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerInteractEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.DurableItem;
+import io.github.pizzaserver.api.keychain.EntityKeys;
+import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.blockentity.type.BaseBlockEntity;
@@ -267,8 +266,10 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
             return;
         }
 
+        World world = this.player.expect(EntityKeys.WORLD);
+
         if (this.player.canReach(blockCoordinates, this.player.isCreativeMode() ? 13 : 7)) {
-            Block block = this.player.getWorld().getBlock(blockCoordinates);
+            Block block = world.getBlock(blockCoordinates);
 
             boolean isCurrentSelectedSlot = hotbarSlot == this.player.getInventory().getSelectedSlot();
             if (isCurrentSelectedSlot) {
@@ -304,8 +305,8 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
 
         // By getting to this point, it means that the action failed/was not valid.
         // Resend the data stored server-side.
-        this.player.getWorld().sendBlock(this.player, blockCoordinates);
-        this.player.getWorld().sendBlock(this.player, blockCoordinates.add(blockFace.getOffset()));
+        world.sendBlock(this.player, blockCoordinates);
+        world.sendBlock(this.player, blockCoordinates.add(blockFace.getOffset()));
 
         // This packet is spammed by the client and sending the inventory slot EVERY single time causes ugly visual effects
         // while towering up with blocks. This fixes it by only sending the item again if the counts do not match up.
@@ -318,7 +319,7 @@ public class InventoryTransactionHandler implements BedrockPacketHandler {
 
     private void handleUseEntityInventoryTransaction(InventoryTransactionPacket packet) {
         // Get the entity targeted
-        Optional<Entity> entity = this.player.getWorld().getEntity(packet.getRuntimeEntityId());
+        Optional<Entity> entity = this.player.expect(EntityKeys.WORLD).getEntity(packet.getRuntimeEntityId());
         if (entity.isEmpty() || packet.getRuntimeEntityId() == this.player.getId()) {
             return;
         }

@@ -1,9 +1,12 @@
 package io.github.pizzaserver.server.entity;
 
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;
+import io.github.pizzaserver.api.keychain.EntityKeys;
+import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.BoundingBox;
 
@@ -53,13 +56,15 @@ public class EntityPhysicsEngine {
     }
 
     public void tick() {
-        if (!this.entity.hasAI()) {
+        if (!this.entity.get(EntityKeys.AI_ENABLED).orElse(true)) {
             this.setMotion(0, 0, 0);
             return;
         }
-        if (this.entity.hasCollision()) {
+
+        if (this.entity.get(EntityKeys.COLLISION_ENABLED).orElse(true)) {
             this.handleCollisionWithEntities();
         }
+
         this.handleVelocity();
     }
 
@@ -73,9 +78,11 @@ public class EntityPhysicsEngine {
         int maxChunkX = (int) Math.ceil(entityBoundingBox.getMaxX() / 16f);
         int maxChunkZ = (int) Math.ceil(entityBoundingBox.getMaxZ() / 16f);
 
+        World world = this.entity.expect(EntityKeys.WORLD);
+
         for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                Chunk chunk = this.entity.getWorld().getChunk(chunkX, chunkZ);
+                Chunk chunk = world.getChunk(chunkX, chunkZ);
                 for (Entity entity : chunk.getEntities()) {
                     boolean canPushEntity = !entity.equals(this.entity)
                             && entity.getBoundingBox().collidesWith(this.entity.getBoundingBox())
@@ -86,7 +93,8 @@ public class EntityPhysicsEngine {
                         if (xDiff != 0 && zDiff != 0) {
                             float xUnit = xDiff * (1 / Math.abs(xDiff));
                             float zUnit = zDiff * (1 / Math.abs(zDiff));
-                            entity.setMotion(entity.getMotion().add(entity.getMovementSpeed() * xUnit, 0, entity.getMovementSpeed() * zUnit));
+                            float moveSpeed = entity.expect(EntityKeys.MOVEMENT_SPEED);
+                            entity.setMotion(entity.getMotion().add(moveSpeed * xUnit, 0, moveSpeed * zUnit));
                         }
                     }
                 }
@@ -126,11 +134,13 @@ public class EntityPhysicsEngine {
                 int minBlockZCheck = (int) Math.floor(intersectingBlockBoundingBox.getMinZ());
                 int maxBlockZCheck = (int) Math.ceil(intersectingBlockBoundingBox.getMaxZ());
 
+                World world = this.entity.expect(EntityKeys.WORLD);
+
                 Set<Block> collidingBlocks = new HashSet<>();
                 for (int y = minBlockYCheck; y <= maxBlockYCheck; y++) {
                     for (int x = minBlockXCheck; x <= maxBlockXCheck; x++) {
                         for (int z = minBlockZCheck; z <= maxBlockZCheck; z++) {
-                            Block block = this.entity.getWorld().getBlock(x, y, z);
+                            Block block = world.getBlock(x, y, z);
                             if (block.hasCollision() && block.getBoundingBox().collidesWith(targetNewLocationBoundingBox)) {
                                 collidingBlocks.add(block);
                             }
@@ -163,7 +173,7 @@ public class EntityPhysicsEngine {
                 this.entity.moveTo(this.entity.getX() + deltaX, this.entity.getY() + deltaY, this.entity.getZ() + deltaZ);
             }
             this.setMotion(newVelocity);
-        } else if (this.entity.hasGravity() && !this.entity.isOnGround()) {
+        } else if (this.entity.get(EntityKeys.GRAVITY_ENABLED).orElse(true) && !this.entity.isOnGround()) {
             // entity was previously not moving, so we need to put it in motion here
             this.setMotion(0, -this.entity.getComponent(EntityPhysicsComponent.class).getGravity(), 0);
         }
@@ -186,7 +196,10 @@ public class EntityPhysicsEngine {
             if (this.entity.isOnGround()) {
                 // Consider block friction
                 if (Math.abs(this.getMotion().getX()) > 0 || Math.abs(this.getMotion().getZ()) > 0) {
-                    friction *= this.entity.getWorld().getBlock(this.entity.getLocation().toVector3i().sub(0, 1, 0)).getFriction();
+                    Vector3i blockLoc = this.entity.getLocation().toVector3i().sub(0, 1, 0);
+                    friction *= this.entity.expect(EntityKeys.WORLD)
+                            .getBlock(blockLoc)
+                            .getFriction();
                 }
             }
             newMotion = newMotion.mul(friction, 1, friction);

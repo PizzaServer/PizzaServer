@@ -39,26 +39,26 @@ public class ImplBlockEntityCampfire extends BaseBlockEntity<BlockCampfire> impl
 
     @Override
     public Item getItem(int slot) {
-        Check.inclusiveBounds(slot, 0, 3, "slot");
+        Check.withinBoundsInclusive(slot, 0, 3, "slot");
         return Item.getAirIfNull(this.slots[slot]).clone();
     }
 
     @Override
     public void setItem(int slot, Item item) {
-        Check.inclusiveBounds(slot, 0, 3, "slot");
+        Check.withinBoundsInclusive(slot, 0, 3, "slot");
         this.slots[slot] = Item.getAirIfNull(item).clone();
         this.update();
     }
 
     @Override
     public int getCookTickProgressForSlot(int slot) {
-        Check.inclusiveBounds(slot, 0, 3, "slot");
+        Check.withinBoundsInclusive(slot, 0, 3, "slot");
         return this.cookTimes[slot];
     }
 
     @Override
     public void setCookTickProgressForSlot(int slot, int cookTimeTicks) {
-        Check.inclusiveBounds(slot, 0, 3, "slot");
+        Check.withinBoundsInclusive(slot, 0, 3, "slot");
         this.cookTimes[slot] = cookTimeTicks;
     }
 

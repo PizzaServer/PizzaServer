@@ -7,6 +7,7 @@ import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.blockentity.trait.BlockEntityOpenableTrait;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityContainer;
 import io.github.pizzaserver.api.inventory.BlockEntityInventory;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 
 public abstract class ImplBlockEntityInventory<B extends Block, T extends BlockEntity<B>> extends ImplBlockInventory<B> implements BlockEntityInventory<B, T> {
@@ -31,7 +32,7 @@ public abstract class ImplBlockEntityInventory<B extends Block, T extends BlockE
 
     @Override
     public boolean canBeOpenedBy(Player player) {
-        return super.canBeOpenedBy(player) && player.getWorld()
+        return super.canBeOpenedBy(player) && player.expect(EntityKeys.WORLD)
                 .getBlockEntity(this.getBlockEntity().getLocation().toVector3i())
                 .filter(otherBlockEntity -> otherBlockEntity.equals(this.getBlockEntity()))
                 .isPresent();

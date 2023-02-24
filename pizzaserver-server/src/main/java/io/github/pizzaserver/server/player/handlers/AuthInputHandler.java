@@ -11,6 +11,7 @@ import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.trait.LiquidTrait;
+import io.github.pizzaserver.api.entity.EntityHelper;
 import io.github.pizzaserver.api.event.type.block.BlockBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStartBreakEvent;
 import io.github.pizzaserver.api.event.type.block.BlockStopBreakEvent;
@@ -18,9 +19,10 @@ import io.github.pizzaserver.api.event.type.player.PlayerMoveEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSneakingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSprintingEvent;
 import io.github.pizzaserver.api.event.type.player.PlayerToggleSwimEvent;
+import io.github.pizzaserver.api.keychain.EntityKeys;
+import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.api.utils.Location;
-import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.protocol.ImplPacketHandlerPipeline;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
@@ -52,71 +54,69 @@ public class AuthInputHandler implements BedrockPacketHandler {
             for (PlayerAuthInputData input : packet.getInputData()) {
                 switch (input) {
                     case START_SNEAKING:
-                        if (!this.player.isSneaking()) {
+                        if (!this.player.expect(EntityKeys.SNEAKING)) {
                             PlayerToggleSneakingEvent startSneakingEvent = new PlayerToggleSneakingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSneakingEvent);
                             if (startSneakingEvent.isCancelled()) {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             } else {
-                                this.player.setSneaking(startSneakingEvent.isSneaking());
+                                this.player.set(EntityKeys.SNEAKING, startSneakingEvent.isSneaking());
                             }
                         }
                         break;
                     case STOP_SNEAKING:
-                        if (this.player.isSneaking()) {
+                        if (this.player.expect(EntityKeys.SNEAKING)) {
                             PlayerToggleSneakingEvent stopSneakingEvent = new PlayerToggleSneakingEvent(this.player, false);
                             this.player.getServer().getEventManager().call(stopSneakingEvent);
                             if (stopSneakingEvent.isCancelled()) {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             } else {
-                                this.player.setSneaking(stopSneakingEvent.isSneaking());
+                                this.player.set(EntityKeys.SNEAKING, stopSneakingEvent.isSneaking());
                             }
                         }
                         break;
                     case START_SWIMMING:
-                        Block blockSwimmingIn = this.player.getWorld().getBlock(this.player.getLocation().toVector3i());
-                        if (!this.player.isSwimming() && blockSwimmingIn instanceof LiquidTrait) {
+                        Block blockSwimmingIn = this.player.expect(EntityKeys.WORLD).getBlock(this.player.getLocation().toVector3i());
+                        if (!this.player.get(EntityKeys.SWIMMING).orElse(false) && blockSwimmingIn instanceof LiquidTrait) {
                             PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, true);
                             this.player.getServer().getEventManager().call(swimEvent);
 
-                            if (!swimEvent.isCancelled()) {
-                                this.player.setSwimming(true);
-                            }
+                            if (!swimEvent.isCancelled())
+                                this.player.set(EntityKeys.SWIMMING, true);
                         }
                         break;
                     case STOP_SWIMMING:
-                        if (this.player.isSwimming()) {
+                        if (this.player.get(EntityKeys.SWIMMING).orElse(false)) {
                             PlayerToggleSwimEvent swimEvent = new PlayerToggleSwimEvent(this.player, false);
                             this.player.getServer().getEventManager().call(swimEvent);
 
-                            if (!swimEvent.isCancelled()) {
-                                this.player.setSwimming(false);
-                            }
+                            if (!swimEvent.isCancelled())
+                                this.player.set(EntityKeys.SWIMMING, false);
                         }
                         break;
                     case START_SPRINTING:
                     case SPRINTING:
                     case SPRINT_DOWN:
-                        if (!this.player.isSprinting()) {
+                        if (!this.player.get(EntityKeys.SPRINTING).orElse(false)) {
                             PlayerToggleSprintingEvent startSprintEvent = new PlayerToggleSprintingEvent(this.player, true);
                             this.player.getServer().getEventManager().call(startSprintEvent);
 
                             if (!startSprintEvent.isCancelled()) {
-                                this.player.setSprinting(true);
+                                this.player.set(EntityKeys.SPRINTING, true);
                             } else {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             }
                         }
                         break;
                     case STOP_SPRINTING:
-                        if (this.player.isSprinting()) {
+                        if (this.player.get(EntityKeys.SPRINTING).orElse(false)) {
                             PlayerToggleSprintingEvent stopSprintEvent = new PlayerToggleSprintingEvent(this.player, false);
                             this.player.getServer().getEventManager().call(stopSprintEvent);
 
                             if (!stopSprintEvent.isCancelled()) {
-                                this.player.setSprinting(false);
+                                this.player.set(EntityKeys.SPRINTING, false);
                             } else {
-                                this.player.getMetaData().update();
+                                this.player.getMetadataHelper().update();
                             }
                         }
                         break;
@@ -187,12 +187,14 @@ public class AuthInputHandler implements BedrockPacketHandler {
     }
 
     private void handleBlockActions(List<PlayerBlockActionData> actions) {
+        World world = this.player.expect(EntityKeys.WORLD);
+
         for (PlayerBlockActionData action : actions) {
             switch (action.getAction()) {
                 case START_BREAK, BLOCK_CONTINUE_DESTROY -> {
                     if (this.player.isAlive()
                             && this.player.canReach(action.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7)) {
-                        BlockLocation blockBreakingLocation = new BlockLocation(this.player.getWorld(), action.getBlockPosition(), 0);
+                        BlockLocation blockBreakingLocation = new BlockLocation(world, action.getBlockPosition(), 0);
                         Block targetBlock = blockBreakingLocation.getBlock();
 
                         boolean isAlreadyBreakingBlock = this.player.getBlockBreakingManager().getBlock().isPresent();
@@ -221,7 +223,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                                 if (!blockStartBreakEvent.isCancelled()) {
                                     this.player.getBlockBreakingManager().startBreaking(blockBreakingLocation, BlockFace.resolve(action.getFace()));
                                 } else {
-                                    this.player.getWorld().sendBlock(this.player, blockBreakingLocation.toVector3i());
+                                    world.sendBlock(this.player, blockBreakingLocation.toVector3i());
                                 }
                             }
                         }
@@ -237,21 +239,21 @@ public class AuthInputHandler implements BedrockPacketHandler {
                     }
 
                     if (canBreakBlock) {
-                        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player, this.player.getWorld().getBlock(action.getBlockPosition()));
+                        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(this.player, world.getBlock(action.getBlockPosition()));
                         this.player.getServer().getEventManager().call(blockBreakEvent);
 
                         if (!blockBreakEvent.isCancelled()) {
                             this.player.getBlockBreakingManager().breakBlock();
                         } else {
-                            ((ImplWorld) this.player.getBlockBreakingManager().getBlock().get().getWorld())
-                                    .sendBlock(this.player, this.player.getBlockBreakingManager().getBlock().get().getLocation().toVector3i());
+                            Block block = this.player.getBlockBreakingManager().getBlock().get();
+                            block.getWorld().sendBlock(this.player, block.getLocation().toVector3i());
                         }
                     } else {
                         this.player.getServer().getLogger().debug(String.format("%s tried to destroy a block but was not allowed.", this.player.getUsername()));
 
                         // Prevent malicious clients from requesting far away blocks to load unloaded chunks
                         if (action.getBlockPosition().distance(this.player.getLocation().toVector3i()) < this.player.getChunkRadius() * 16) {
-                            this.player.getWorld().sendBlock(this.player, action.getBlockPosition());
+                            world.sendBlock(this.player, action.getBlockPosition());
                         }
                     }
                 }
@@ -277,6 +279,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
      */
     private boolean playerMinedNormalBlockOrFireBlock(Block block, BlockFace face) {
         Block possibleFireBlock = block.getSide(face);
+        World world = this.player.expect(EntityKeys.WORLD);
 
         boolean isBlockFire = possibleFireBlock.getBlockId().equals(BlockID.FIRE);
         if (isBlockFire) {
@@ -284,7 +287,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
             BlockStartBreakEvent startBreakEvent = new BlockStartBreakEvent(this.player, possibleFireBlock);
             this.player.getServer().getEventManager().call(startBreakEvent);
             if (startBreakEvent.isCancelled()) {
-                this.player.getWorld().sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
+                world.sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
                 return false;
             }
 
@@ -295,7 +298,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
                 this.player.getBlockBreakingManager().breakBlock();
                 return true;
             } else {
-                this.player.getWorld().sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
+                world.sendBlock(this.player, possibleFireBlock.getLocation().toVector3i());
                 return false;
             }
         }
@@ -304,13 +307,15 @@ public class AuthInputHandler implements BedrockPacketHandler {
     }
 
     private void handleMovement(Vector3f position, Vector3f rotation) {
-        boolean updateRotation = Math.abs(this.player.getPitch() - rotation.getX()) > ROTATION_UPDATE_THRESHOLD
-                || Math.abs(this.player.getYaw() - rotation.getY()) > ROTATION_UPDATE_THRESHOLD
-                || Math.abs(this.player.getHeadYaw() - rotation.getZ()) > ROTATION_UPDATE_THRESHOLD;
+        // pitch, yaw, head yaw
+        Vector3f playerRotation = EntityHelper.getBasicRotationFor(this.player);
+        boolean updateRotation = Math.abs(playerRotation.getX() - rotation.getX()) > ROTATION_UPDATE_THRESHOLD
+                || Math.abs(playerRotation.getY() - rotation.getY()) > ROTATION_UPDATE_THRESHOLD
+                || Math.abs(playerRotation.getZ() - rotation.getZ()) > ROTATION_UPDATE_THRESHOLD;
         boolean updatePosition = position.distance(this.player.getLocation().toVector3f().add(0, this.player.getEyeHeight(), 0)) > MOVEMENT_DISTANCE_THRESHOLD;
 
         if (updateRotation || updatePosition) {
-            Location newLocation = new Location(this.player.getWorld(), position, rotation);
+            Location newLocation = new Location(this.player.expect(EntityKeys.WORLD), position, rotation);
 
             PlayerMoveEvent moveEvent = new PlayerMoveEvent(this.player, this.player.getLocation(), newLocation);
             this.player.getServer().getEventManager().call(moveEvent);

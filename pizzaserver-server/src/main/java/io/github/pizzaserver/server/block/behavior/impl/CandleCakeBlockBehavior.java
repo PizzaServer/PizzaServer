@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.block.impl.BlockCandleCake;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.impl.ItemFlintAndSteel;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.data.Difficulty;
 import io.github.pizzaserver.api.player.Player;
 
@@ -15,7 +16,7 @@ public class CandleCakeBlockBehavior extends BaseBlockBehavior<BlockCandleCake> 
 
     @Override
     public boolean onInteract(Player player, BlockCandleCake candleCake, BlockFace face, Vector3f clickPosition) {
-        if (player.isSneaking()) {
+        if (player.expect(EntityKeys.SNEAKING)) {
             return true;
         }
 

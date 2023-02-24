@@ -324,6 +324,10 @@ public interface World extends ChunkManager {
      */
     void addItemEntity(EntityItem itemEntity, Vector3f position, Vector3f velocity);
 
+    void sendBlock(Player player, Vector3i blockCoordinates);
+
+    void sendBlock(Player player, int x, int y, int z);
+
     /**
      * Add a {@link Entity} to this world and spawn it.
      * @param entity The {@link Entity} to spawn

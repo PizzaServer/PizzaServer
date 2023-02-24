@@ -5,19 +5,18 @@ import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.boss.BossBar;
-import io.github.pizzaserver.api.entity.data.attributes.Attribute;
-import io.github.pizzaserver.api.entity.data.attributes.AttributeType;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponent;
 import io.github.pizzaserver.api.entity.definition.components.EntityComponentGroup;
 import io.github.pizzaserver.api.inventory.EntityInventory;
-import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.item.Item;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
+import io.github.pizzaserver.commons.data.store.DataStore;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +25,7 @@ import java.util.Set;
 /**
  * Represents an entity on Minecraft.
  */
-public interface Entity extends Watchable {
+public interface Entity extends Watchable, DataStore {
 
     long getId();
 
@@ -98,23 +97,17 @@ public interface Entity extends Watchable {
     Level getLevel();
 
     /**
-     * Retrieve the {@link World} this entity is in.
-     * @return {@link World}
-     */
-    World getWorld();
-
-    /**
      * Retrieve the {@link Chunk} the entity is in.
      * @return the {@link Chunk}
      */
     Chunk getChunk();
 
     default void teleport(Vector3i position) {
-        this.teleport(position, Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+        this.teleport(position, EntityHelper.getBasicRotationFor(this));
     }
 
     default void teleport(Vector3f position) {
-        this.teleport(position.toFloat(), Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+        this.teleport(position.toFloat(), EntityHelper.getBasicRotationFor(this));
     }
 
     default void teleport(Vector3i position, Vector3f rotation) {
@@ -131,11 +124,11 @@ public interface Entity extends Watchable {
     }
 
     default void teleport(float x, float y, float z) {
-        this.teleport(this.getWorld(), x, y, z);
+        this.teleport(this.expect(EntityKeys.WORLD), x, y, z);
     }
 
     default void teleport(float x, float y, float z, float pitch, float yaw, float headYaw) {
-        this.teleport(this.getWorld(), x, y, z, pitch, yaw, headYaw);
+        this.teleport(this.expect(EntityKeys.WORLD), x, y, z, pitch, yaw, headYaw);
     }
 
     default void teleport(Location location) {
@@ -149,7 +142,12 @@ public interface Entity extends Watchable {
     }
 
     default void teleport(World world, float x, float y, float z) {
-        this.teleport(world, x, y, z, this.getPitch(), this.getYaw(), this.getHeadYaw());
+        this.teleport(
+                world, x, y, z,
+                this.get(EntityKeys.ROTATION_PITCH).orElse(0f),
+                this.get(EntityKeys.ROTATION_YAW).orElse(0f),
+                this.get(EntityKeys.ROTATION_HEAD_YAW).orElse(0f)
+        );
     }
 
     void teleport(World world, float x, float y, float z, float pitch, float yaw, float headYaw);
@@ -171,14 +169,6 @@ public interface Entity extends Watchable {
 
     BoundingBox getBoundingBox();
 
-    float getHeight();
-
-    void setHeight(float height);
-
-    float getWidth();
-
-    void setWidth(float width);
-
     float getEyeHeight();
 
     void setEyeHeight(float eyeHeight);
@@ -194,82 +184,11 @@ public interface Entity extends Watchable {
      */
     String getName();
 
-    Optional<String> getDisplayName();
-
-    void setDisplayName(String name);
-
-    /**
-     * Checks if the entity is can be hurt.
-     * @return if the entity can be hurt.
-     */
-    boolean isVulnerable();
-
-    /**
-     * Change the vulnerability status fo the entity.
-     * @param vulnerable if the entity is vulnerable and can be hurt/die.
-     */
-    void setVulnerable(boolean vulnerable);
-
-    Set<Attribute> getAttributes();
-
-    Attribute getAttribute(AttributeType type);
-
-    /**
-     * Retrieve the entity's current movement speed per tick.
-     * This is used to determine how far this entity's input can move per tick
-     * @return movement speed of an entity
-     */
-    float getMovementSpeed();
-
-    /**
-     * Change the entity's movement speed input per tick.
-     * @param movementSpeed new movement speed
-     */
-    void setMovementSpeed(float movementSpeed);
-
-    float getPitch();
-
-    void setPitch(float pitch);
-
-    float getYaw();
-
-    void setYaw(float yaw);
-
-    float getHeadYaw();
-
-    void setHeadYaw(float headYaw);
-
     HorizontalDirection getHorizontalDirection();
 
     boolean isAlive();
 
-    float getHealth();
-
-    void setHealth(float health);
-
-    float getMaxHealth();
-
-    void setMaxHealth(float maxHealth);
-
-    float getAbsorption();
-
-    void setAbsorption(float absorption);
-
-    float getMaxAbsorption();
-
-    void setMaxAbsorption(float maxAbsorption);
-
     Vector3f getDirectionVector();
-
-    EntityMetadata getMetaData();
-
-    boolean hasGravity();
-
-    void setGravity(boolean enabled);
-
-    boolean hasCollision();
-
-    void setCollision(boolean enabled);
 
     boolean isPushable();
 
@@ -278,38 +197,6 @@ public interface Entity extends Watchable {
     boolean isPistonPushable();
 
     void setPistonPushable(boolean enabled);
-
-    boolean hasAI();
-
-    void setAI(boolean hasAI);
-
-    float getScale();
-
-    void setScale(float scale);
-
-    boolean isSneaking();
-
-    void setSneaking(boolean sneaking);
-
-    boolean isSwimming();
-
-    void setSwimming(boolean swimming);
-
-    boolean isSprinting();
-
-    void setSprinting(boolean sprinting);
-
-    int getFireTicks();
-
-    void setFireTicks(int ticks);
-
-    int getAirSupplyTicks();
-
-    void setAirSupplyTicks(int ticks);
-
-    int getMaxAirSupplyTicks();
-
-    void setMaxAirSupplyTicks(int ticks);
 
     List<Item> getLoot();
 
@@ -368,6 +255,8 @@ public interface Entity extends Watchable {
     boolean hasSpawned();
 
     boolean hasSpawnedTo(Player player);
+
+    boolean canBeSpawnedTo(Player player);
 
     /**
      * Spawns an entity to a player.

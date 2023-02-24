@@ -8,6 +8,7 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.descriptors.ToolItem;
+import io.github.pizzaserver.api.keychain.EntityKeys;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.Set;
@@ -34,14 +35,13 @@ public class BaseBlockBehavior<T extends Block> implements BlockBehavior<T> {
             Set<Entity> nearByEntities = block.getLocation().getWorld().getEntitiesNear(block.getLocation().toVector3f(), 16);
             for (Entity nearbyEntity : nearByEntities) {
                 boolean entityCollidesWithBlock = block.getBoundingBox().collidesWith(nearbyEntity.getBoundingBox())
-                        && nearbyEntity.hasCollision()
+                        && nearbyEntity.get(EntityKeys.COLLISION_ENABLED).orElse(false)
                         && !(nearbyEntity instanceof EntityItem)
                         && ((entity instanceof Player && nearbyEntity.getViewers().contains((Player) entity))
                         || nearbyEntity.equals(entity));
 
-                if (entityCollidesWithBlock) {
+                if (entityCollidesWithBlock)
                     return true;
-                }
             }
         }
 

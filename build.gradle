@@ -34,6 +34,17 @@ subprojects {
         testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
         testImplementation 'org.mockito:mockito-core:4.1.0'
     }
+
+    java {
+        withSourcesJar()
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events 'passed', 'skipped', 'failed'
+        }
+    }
 }
 
 
@@ -57,10 +68,19 @@ var prepareAll = tasks.register('prepare_all', Copy) {
     } into "$buildDir/pre"
 }
 
+var testAll = tasks.register('test_all') {
+    group 'Pizza'
+    description 'Executes tests on every project.'
+
+    dependsOn allprojects.collect {
+        return it.tasks.named("test")
+    }
+}
+
 var buildAll = tasks.register('build_all', Copy) {
     group = 'Pizza'
     description = 'Builds all the projects and places them into build/output/'
-    dependsOn prepareAll, shadowJar
+    dependsOn prepareAll, shadowJar, testAll
 
     from allprojects.collect {
         return it.tasks.named("shadowJar")
