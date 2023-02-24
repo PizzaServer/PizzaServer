@@ -30,6 +30,7 @@ import io.github.pizzaserver.server.player.ImplPlayer;
 import io.netty.util.internal.EmptyArrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
 public class PlayerPacketHandler implements BedrockPacketHandler {
@@ -239,55 +240,21 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(CommandRequestPacket packet) {
-        ArrayList<String> commandArgs = parseArguments(packet.getCommand());
-        String label = commandArgs.remove(0).toLowerCase(Locale.ROOT).substring(1);
-        String[] args = commandArgs.toArray(EmptyArrays.EMPTY_STRINGS);
+        String[] entries = packet.getCommand().split(" ");
+        entries[0] = entries[0].substring(1).toLowerCase().trim(); // Get the command name
 
-        ImplCommand command = player.getServer().getCommandRegistry().getCommand(label);
+        ImplCommand command = player.getServer().getCommandRegistry().getCommand(entries[0]);
         if(command == null) {
             player.sendMessage("§cThat command doesn't exist!");
             return true;
         }
         try {
-            command.execute(player, args, label);
+            command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
         } catch (Exception e) {
             player.sendMessage("§cSomething went wrong while executing that command");
             e.printStackTrace();
         }
         return true;
     }
-
-    private ArrayList<String> parseArguments(String cmdLine) {
-        StringBuilder sb = new StringBuilder(cmdLine);
-        ArrayList<String> args = new ArrayList<>();
-        boolean notQuoted = true;
-        int start = 0;
-
-        for (int i = 0; i < sb.length(); i++) {
-            if (sb.charAt(i) == '\\') {
-                sb.deleteCharAt(i);
-                continue;
-            }
-
-            if (sb.charAt(i) == ' ' && notQuoted) {
-                String arg = sb.substring(start, i);
-                if (!arg.isEmpty()) {
-                    args.add(arg);
-                }
-                start = i + 1;
-            } else if (sb.charAt(i) == '"') {
-                sb.deleteCharAt(i);
-                --i;
-                notQuoted = !notQuoted;
-            }
-        }
-
-        String arg = sb.substring(start);
-        if (!arg.isEmpty()) {
-            args.add(arg);
-        }
-        return args;
-    }
-
 
 }
