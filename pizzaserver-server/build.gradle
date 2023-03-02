@@ -8,14 +8,19 @@ repositories {
 }
 
 dependencies {
-    implementation project(path: ':PizzaServer-API')
-    implementation(project(path: ':PizzaServer-API', configuration: 'shadow'))
-        implementation(project(path: ':PizzaServer-Format', configuration: 'shadow')) {
+    implementation project(':PizzaServer-API')
+    implementation project(':PizzaServer-Commons')
+    implementation(project(':PizzaServer-Format')) {
         exclude group: 'org.checkerframework', module: 'checker-qual'
         exclude group: 'org.checkerframework', module: 'checker-compat-qual'
     }
+
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.guava:guava:31.1-jre'
+
     implementation 'com.nukkitx.protocol:bedrock-v503:2.9.6-SNAPSHOT'
     implementation 'com.nukkitx:block-state-updater:1.18.10-SNAPSHOT'
+
     implementation 'commons-io:commons-io:2.7'
     implementation 'com.nimbusds:nimbus-jose-jwt:9.9.3'
     implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
