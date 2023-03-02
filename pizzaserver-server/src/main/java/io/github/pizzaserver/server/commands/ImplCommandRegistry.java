@@ -2,21 +2,18 @@ package io.github.pizzaserver.server.commands;
 
 import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
 import io.github.pizzaserver.api.Server;
+import io.github.pizzaserver.api.commands.Command;
 import io.github.pizzaserver.api.commands.CommandRegistry;
-import io.github.pizzaserver.api.commands.ImplCommand;
 import io.github.pizzaserver.api.utils.ServerState;
-import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.commands.defaults.AsyncTestingCommand;
 import io.github.pizzaserver.server.commands.defaults.ExampleCommand;
 import io.github.pizzaserver.server.commands.defaults.StopCommand;
-import io.github.pizzaserver.api.commands.Command;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +27,12 @@ public class ImplCommandRegistry implements CommandRegistry {
     private ThreadPoolExecutor asyncCommands = new ThreadPoolExecutor(0, 4, 1, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2));
     private volatile LinkedList<String> consoleCommandsQueue = new LinkedList<>();
 
+    /**
+     * Called once the server has booted (AND when its logger != null)
+     * @param server Server implementation that's being used (only requires a logger from it for now)
+     */
     public ImplCommandRegistry(Server server) {
+        // TODO Much later on: tab autocompletion and the "> " to ask for input in a command for convenience
         ImplCommandRegistry.server = server;
         try {
             this.startConsoleCommandReader();
@@ -88,11 +90,7 @@ public class ImplCommandRegistry implements CommandRegistry {
 
     @Override
     public void removeCommand(String name) {
-        if(!commands.containsKey(name)) {
-            throw new NullPointerException("That command doesn't exist");
-        } else {
-            commands.remove(name);
-        }
+        commands.remove(name);
     }
 
     @Override
@@ -110,8 +108,8 @@ public class ImplCommandRegistry implements CommandRegistry {
     @Override
     public AvailableCommandsPacket getAvailableCommands() {
         AvailableCommandsPacket availableCommandsPacket = new AvailableCommandsPacket();
-        for(Command implCommand : commands.values()) {
-            availableCommandsPacket.getCommands().add(implCommand.asCommandData());
+        for(Command command : commands.values()) {
+            availableCommandsPacket.getCommands().add(command.asCommandData());
         }
         return availableCommandsPacket;
     }
@@ -121,38 +119,34 @@ public class ImplCommandRegistry implements CommandRegistry {
     public void startConsoleCommandReader() throws IOException {
         this.consoleSender = new Thread(() -> {
             while(server.getState() != ServerState.STOPPING) {
-                String readLine = null;
+                String readLine;
                 try {
                     // Might have taken me three hours to find this (why does no one mention it, though the name explains it)
-                    if(!reader.ready()) {
+                    if(!reader.ready())
                         continue;
-                    }
+                    readLine = reader.readLine().trim();
                 } catch (Exception e) {
                     e.printStackTrace();
+                    continue;
                 }
-                try {
-                    readLine = reader.readLine().trim();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(readLine == null || readLine.equals(""))
+                if(readLine.equals(""))
                     continue;
                 String[] list = readLine.split(" ");
-                server.getLogger().warn("Read line: " + list[0]);
                 Command realCommand = this.getCommand(list[0]);
                 if(realCommand == null) {
-                    server.getLogger().error("That command doesn't exist!");
+                    server.getLogger().error("The command \"" + list[0] + "\" doesn't exist!");
                     continue;
                 }
-                try {
-                    if(realCommand.isAsync()) {
-                        this.runAsyncCommand(() -> realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0]));
-                    } else {
-                        consoleCommandsQueue.push(readLine);
-                    }
-                } catch (Exception e) {
-                    server.getLogger().error("Something went wrong executing that command!");
-                    e.printStackTrace();
+                if(realCommand.isAsync()) {
+                    this.runAsyncCommand(() -> {
+                        try {
+                            realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0]);
+                        } catch (Exception e) {
+                            server.getLogger().error("Error while executing " + realCommand.getName() + ": ", e);
+                        }
+                    });
+                } else {
+                    consoleCommandsQueue.push(readLine);
                 }
             }
         });
@@ -167,7 +161,10 @@ public class ImplCommandRegistry implements CommandRegistry {
     @Override
     public void processConsoleCommands() {
         while(!consoleCommandsQueue.isEmpty()) {
-            String[] commandLine = consoleCommandsQueue.poll().split(" ");
+            String result = consoleCommandsQueue.poll();
+            if(result == null)
+                continue;
+            String[] commandLine = result.split(" ");
             if(commandLine[0].equals(""))
                 continue;
             Command command = this.getCommand(commandLine[0]);
@@ -178,7 +175,7 @@ public class ImplCommandRegistry implements CommandRegistry {
             try {
                 command.execute(null, Arrays.copyOfRange(commandLine, 1, commandLine.length), commandLine[0]);
             } catch (Exception e) {
-                server.getLogger().error("Something went wrong with that command!");
+                server.getLogger().error("Error while executing " + command.getName() + ": ", e);
             }
         }
     }
@@ -187,10 +184,9 @@ public class ImplCommandRegistry implements CommandRegistry {
     public void shutdown() {
         asyncCommands.shutdown();
         try {
-            reader.close();
-            consoleSender.interrupt();
-        } catch (Exception e) {
-            e.printStackTrace();
+            consoleSender.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

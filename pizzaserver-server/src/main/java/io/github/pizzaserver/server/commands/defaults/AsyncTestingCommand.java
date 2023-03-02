@@ -12,7 +12,7 @@ public class AsyncTestingCommand extends ImplCommand {
     }
 
     @Override
-    public void execute(Player player, String[] strings, String s) {
+    public void execute(Player player, String[] args, String s) {
         ImplServer.getInstance().getLogger().warn("Hellooo!");
     }
 }

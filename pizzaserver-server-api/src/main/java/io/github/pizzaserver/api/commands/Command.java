@@ -1,12 +1,10 @@
 package io.github.pizzaserver.api.commands;
 
-import com.nukkitx.protocol.bedrock.data.command.*;
+import com.nukkitx.protocol.bedrock.data.command.CommandData;
+import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
 import io.github.pizzaserver.api.player.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 public interface Command {
 

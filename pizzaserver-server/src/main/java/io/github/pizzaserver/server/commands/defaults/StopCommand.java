@@ -5,8 +5,6 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.ImplServer;
 
-import java.util.Scanner;
-
 public class StopCommand extends ImplCommand {
     public StopCommand() {
         super("stop", "Stops the server (safely)", new String[]{});
