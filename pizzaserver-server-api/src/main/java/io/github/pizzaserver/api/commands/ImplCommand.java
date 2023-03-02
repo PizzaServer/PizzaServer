@@ -8,7 +8,7 @@ import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
-public abstract class ImplCommand {
+public abstract class ImplCommand implements Command {
 
     private String name;
     private String description;

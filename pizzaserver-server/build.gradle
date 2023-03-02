@@ -8,8 +8,9 @@ repositories {
 }
 
 dependencies {
-    implementation project(path: ':PizzaServer-API', configuration: 'shadow')
-    implementation(project(path: ':PizzaServer-Format', configuration: 'shadow')) {
+    implementation project(path: ':PizzaServer-API')
+    implementation(project(path: ':PizzaServer-API', configuration: 'shadow'))
+        implementation(project(path: ':PizzaServer-Format', configuration: 'shadow')) {
         exclude group: 'org.checkerframework', module: 'checker-qual'
         exclude group: 'org.checkerframework', module: 'checker-compat-qual'
     }

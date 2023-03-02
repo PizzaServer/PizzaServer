@@ -64,7 +64,7 @@ public class ImplServer extends Server {
     protected ItemRegistry itemRegistry = new ImplItemRegistry();
     protected CreativeRegistry creativeRegistry = new ImplCreativeRegistry();
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
-    protected CommandRegistry commandRegistry = new ImplCommandRegistry(this);
+    protected CommandRegistry commandRegistry /*= new ImplCommandRegistry(this)*/;
     protected RecipeRegistry recipeRegistry = new ImplRecipeRegistry();
     protected PluginManager pluginManager = new ImplPluginManager(this);
     protected ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
@@ -86,9 +86,9 @@ public class ImplServer extends Server {
     protected int currentTps;
     protected long currentTick;
 
-    protected ServerState state = ServerState.INACTIVE;
+    public ServerState state = ServerState.INACTIVE;
     protected final String rootDirectory;
-    private volatile boolean running;
+    public volatile boolean running;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
     protected int maximumPlayersAllowed;
@@ -115,6 +115,7 @@ public class ImplServer extends Server {
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
+        this.commandRegistry = new ImplCommandRegistry(this);
         ImplCommandRegistry.registerDefaults();
         // TODO: load plugins
     }
@@ -235,6 +236,8 @@ public class ImplServer extends Server {
             return;
         }
 
+        commandRegistry.processConsoleCommands();
+
         for (Scheduler scheduler : this.syncedSchedulers) {
             try {
                 scheduler.serverTick();
@@ -251,6 +254,8 @@ public class ImplServer extends Server {
         this.state = ServerState.STOPPING;
 
         this.getLogger().info("Stopping server...");
+
+        this.commandRegistry.shutdown();
 
         for (PlayerSession session : this.sessions) {
             if (session.getPlayer() != null) {
@@ -269,7 +274,6 @@ public class ImplServer extends Server {
 
         // We're done stop operations. Exit program.
         this.shutdownLatch.countDown();
-        this.running = false;
     }
 
     public String getIp() {

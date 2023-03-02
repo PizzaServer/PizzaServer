@@ -7,17 +7,21 @@ import java.util.Map;
 
 public interface CommandRegistry {
 
-    void register(ImplCommand command);
+    void register(Command command);
 
-    void register(ImplCommand command, String label);
+    void register(Command command, String label);
 
-    void registerAll(List<ImplCommand> commands);
+    void registerAll(List<Command> commands);
 
     void removeCommand(String name);
 
-    ImplCommand getCommand(String name);
+    Command getCommand(String name);
 
-    Map<String, ImplCommand> getCommands();
+    Map<String, Command> getCommands();
 
     AvailableCommandsPacket getAvailableCommands();
+    void runAsyncCommand(Runnable runnable);
+    void processConsoleCommands();
+
+    void shutdown();
 }

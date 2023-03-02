@@ -53,6 +53,6 @@ public class ExampleCommand extends ImplCommand {
     public void execute(Player player, String[] args, String label) {
         //player.sendMessage("Hello! Args: " + Arrays.toString(args));
         ImplServer.getInstance().getLogger().warn("Information: " + Arrays.toString(args));
-        ImplServer.getInstance().stop();
+        //ImplServer.getInstance().stop();
     }
 }

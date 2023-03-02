@@ -6,6 +6,7 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
+import io.github.pizzaserver.api.commands.Command;
 import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.commands.ImplCommand;
 import io.github.pizzaserver.api.block.data.DirtType;
@@ -25,6 +26,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.api.utils.DyeColor;
+import io.github.pizzaserver.server.commands.ImplCommandRegistry;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.player.ImplPlayer;
 import io.netty.util.internal.EmptyArrays;
@@ -243,16 +245,15 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
         String[] entries = packet.getCommand().split(" ");
         entries[0] = entries[0].substring(1).toLowerCase().trim(); // Get the command name
 
-        ImplCommand command = player.getServer().getCommandRegistry().getCommand(entries[0]);
+        Command command = player.getServer().getCommandRegistry().getCommand(entries[0]);
         if(command == null) {
             player.sendMessage("§cThat command doesn't exist!");
             return true;
         }
         try {
             if(command.isAsync()) {
-                new Thread(() -> {
-                    command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
-                }).start();
+                Server.getInstance().getCommandRegistry().runAsyncCommand(() ->
+                        command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]));
             } else {
                 command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
             }
