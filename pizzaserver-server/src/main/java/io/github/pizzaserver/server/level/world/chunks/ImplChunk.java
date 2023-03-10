@@ -497,7 +497,7 @@ public class ImplChunk implements Chunk {
                 subChunkCount = ChunkUtils.getSubChunkCount(this.chunk);
 
                 for (int i = -4; i < subChunkCount - 4; i++) {
-                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), (BaseMinecraftVersion) player.getVersion());
+                    BedrockNetworkUtils.serializeSubChunk(buffer, this.chunk.getSubChunk(i), false, (BaseMinecraftVersion) player.getVersion());
                 }
 
                 // Write biomes
