@@ -24,7 +24,8 @@ public class ImplCommandRegistry implements CommandRegistry {
 
     private static Server server;
     private Thread consoleSender;
-    private ThreadPoolExecutor asyncCommands = new ThreadPoolExecutor(0, 4, 1, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2));
+    private final ImplServerSender sender = new ImplServerSender();
+    private final ThreadPoolExecutor asyncCommands = new ThreadPoolExecutor(0, 4, 1, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2));
     private volatile LinkedList<String> consoleCommandsQueue = new LinkedList<>();
 
     /**
@@ -32,7 +33,10 @@ public class ImplCommandRegistry implements CommandRegistry {
      * @param server Server implementation that's being used (only requires a logger from it for now)
      */
     public ImplCommandRegistry(Server server) {
-        // TODO Much later on: tab autocompletion and the "> " to ask for input in a command for convenience
+        // TODO: Much later on: tab autocompletion and the "> " to ask for input in a command for convenience
+        //       We'll also need to make it so that when someone starts typing a command (stop), it remembers its progress
+        //       As an example: Line 1: s(another command prints to console) Line 2: top
+        //       The above won't call stop which will be problematic for spamming errors
         ImplCommandRegistry.server = server;
         try {
             this.startConsoleCommandReader();
@@ -140,7 +144,7 @@ public class ImplCommandRegistry implements CommandRegistry {
                 if(realCommand.isAsync()) {
                     this.runAsyncCommand(() -> {
                         try {
-                            realCommand.execute(null, Arrays.copyOfRange(list, 1, list.length), list[0]);
+                            realCommand.execute(this.sender, Arrays.copyOfRange(list, 1, list.length), list[0]);
                         } catch (Exception e) {
                             server.getLogger().error("Error while executing " + realCommand.getName() + ": ", e);
                         }
@@ -173,7 +177,7 @@ public class ImplCommandRegistry implements CommandRegistry {
                 continue;
             }
             try {
-                command.execute(null, Arrays.copyOfRange(commandLine, 1, commandLine.length), commandLine[0]);
+                command.execute(this.sender, Arrays.copyOfRange(commandLine, 1, commandLine.length), commandLine[0]);
             } catch (Exception e) {
                 server.getLogger().error("Error while executing " + command.getName() + ": ", e);
             }

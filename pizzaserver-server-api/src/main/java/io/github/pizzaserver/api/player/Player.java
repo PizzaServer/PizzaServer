@@ -4,6 +4,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.commands.CommandSender;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityHuman;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -29,7 +30,7 @@ import java.util.function.Consumer;
 /**
  * Represents a player on the Minecraft server.
  */
-public interface Player extends EntityHuman {
+public interface Player extends EntityHuman, CommandSender {
 
     /**
      * Retrieve the Minecraft version this player is on.

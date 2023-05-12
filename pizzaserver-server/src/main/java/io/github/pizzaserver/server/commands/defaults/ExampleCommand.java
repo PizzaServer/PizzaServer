@@ -1,9 +1,8 @@
 package io.github.pizzaserver.server.commands.defaults;
 
 import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
+import io.github.pizzaserver.api.commands.CommandSender;
 import io.github.pizzaserver.api.commands.ImplCommand;
-import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.server.ImplServer;
 
 import java.util.Arrays;
 
@@ -50,7 +49,7 @@ public class ExampleCommand extends ImplCommand {
     }
 
     @Override
-    public void execute(Player player, String[] args, String label) {
-        ImplServer.getInstance().getLogger().warn("Information: " + Arrays.toString(args));
+    public void execute(CommandSender sender, String[] args, String label) {
+        sender.sendMessage("Information: " + Arrays.toString(args));
     }
 }

@@ -1,7 +1,6 @@
 package io.github.pizzaserver.api.commands;
 
 import com.nukkitx.protocol.bedrock.data.command.*;
-import io.github.pizzaserver.api.player.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -170,8 +169,6 @@ public abstract class ImplCommand implements Command {
         newAliases.add(name);
         return newAliases.toArray(new String[0]);
     }
-
-    public abstract void execute(Player player, String[] args, String label);
 
     public boolean isAsync() {
         return async;

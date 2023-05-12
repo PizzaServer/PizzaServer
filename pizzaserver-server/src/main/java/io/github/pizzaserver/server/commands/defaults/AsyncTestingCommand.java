@@ -1,8 +1,7 @@
 package io.github.pizzaserver.server.commands.defaults;
 
+import io.github.pizzaserver.api.commands.CommandSender;
 import io.github.pizzaserver.api.commands.ImplCommand;
-import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.server.ImplServer;
 
 public class AsyncTestingCommand extends ImplCommand {
 
@@ -12,7 +11,7 @@ public class AsyncTestingCommand extends ImplCommand {
     }
 
     @Override
-    public void execute(Player player, String[] args, String s) {
-        ImplServer.getInstance().getLogger().warn("Hellooo!");
+    public void execute(CommandSender sender, String[] args, String s) {
+        sender.sendMessage("Hellooo!");
     }
 }
