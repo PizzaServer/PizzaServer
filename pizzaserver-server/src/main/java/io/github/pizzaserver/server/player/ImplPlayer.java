@@ -44,6 +44,7 @@ import io.github.pizzaserver.api.player.form.response.FormResponse;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
+import io.github.pizzaserver.api.utils.TextFormat;
 import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
@@ -291,8 +292,7 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
             this.sendPacket(playStatusPacket);
 
-            AvailableCommandsPacket availableCommandsPacket = Server.getInstance().getCommandRegistry().getAvailableCommands();
-            this.sendPacket(availableCommandsPacket);
+            this.sendPacket(server.getCommandRegistry().getAvailableCommands());
         }).schedule();
     }
 
@@ -810,6 +810,16 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                 .setType(TextPacket.Type.RAW)
                 .setMessage(message)
                 .build());
+    }
+
+    @Override
+    public void sendError(String message) {
+        this.sendMessage(TextFormat.RED + message);
+    }
+
+    @Override
+    public void sendError(String message, Exception exception) {
+        this.sendMessage(TextFormat.RED + message + ": " + exception.getMessage());
     }
 
     @Override

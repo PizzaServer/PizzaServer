@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.commands.defaults;
 
 import io.github.pizzaserver.api.commands.CommandSender;
-import io.github.pizzaserver.api.commands.ImplCommand;
+import io.github.pizzaserver.server.commands.ImplCommand;
 
 public class AsyncTestingCommand extends ImplCommand {
 

@@ -21,7 +21,6 @@ public interface CommandRegistry {
 
     AvailableCommandsPacket getAvailableCommands();
     void runAsyncCommand(Runnable runnable);
-    void processConsoleCommands();
 
     void shutdown();
 }

@@ -1,6 +1,7 @@
-package io.github.pizzaserver.api.commands;
+package io.github.pizzaserver.server.commands;
 
 import com.nukkitx.protocol.bedrock.data.command.*;
+import io.github.pizzaserver.api.commands.Command;
 
 import java.util.ArrayList;
 import java.util.Arrays;

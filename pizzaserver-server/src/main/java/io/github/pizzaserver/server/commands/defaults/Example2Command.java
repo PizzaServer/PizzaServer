@@ -6,12 +6,12 @@ import io.github.pizzaserver.server.commands.ImplCommand;
 
 import java.util.Arrays;
 
-public class ExampleCommand extends ImplCommand {
+public class Example2Command extends ImplCommand {
 
-    public ExampleCommand() {
-        super("example"); // Name for the command
-        setDescription("This is the description for a command");
-        setAliases(new String[]{"alias1"}); // A string array of aliases to be used
+    public Example2Command() {
+        super("example2"); // Name for the command
+        setDescription("This is for testing console autocompletion");
+        setAliases(new String[]{"alias122"}); // A string array of aliases to be used
 
         // The declaration below is saying to have 2 different "paths" to choose, and each of those "paths" have 2 more
         // options to choose from
@@ -50,6 +50,6 @@ public class ExampleCommand extends ImplCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args, String label) {
-        sender.sendMessage("Information: " + Arrays.toString(args));
+        sender.sendMessage("Information222: " + Arrays.toString(args));
     }
 }

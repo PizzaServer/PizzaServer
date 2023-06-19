@@ -4,7 +4,8 @@ public enum Gamemode {
 
     SURVIVAL("Survival"),
     CREATIVE("Creative"),
-    ADVENTURE("Adventure");
+    ADVENTURE("Adventure"),
+    SPECTATOR("Spectator");
 
 
     private final String name;

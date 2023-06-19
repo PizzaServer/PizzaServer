@@ -25,8 +25,8 @@ import io.github.pizzaserver.api.utils.Config;
 import io.github.pizzaserver.api.utils.Logger;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
-import io.github.pizzaserver.server.commands.ImplCommandRegistry;
 import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
+import io.github.pizzaserver.server.commands.ImplCommandRegistry;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
@@ -116,7 +116,6 @@ public class ImplServer extends Server {
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
         this.commandRegistry = new ImplCommandRegistry(this);
-        ImplCommandRegistry.registerDefaults();
         // TODO: load plugins
     }
 
@@ -235,8 +234,6 @@ public class ImplServer extends Server {
             this.stop();
             return;
         }
-
-        commandRegistry.processConsoleCommands();
 
         for (Scheduler scheduler : this.syncedSchedulers) {
             try {

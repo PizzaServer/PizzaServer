@@ -187,6 +187,7 @@ public class ImplLevelManager implements LevelManager, Closeable {
     }
 
     protected File getLevelFile(String name) {
+        server.getLogger().warn("Root Dir: " + this.getServer().getRootDirectory());
         return Paths.get(this.server.getRootDirectory(), "levels", name).toFile();
     }
 
