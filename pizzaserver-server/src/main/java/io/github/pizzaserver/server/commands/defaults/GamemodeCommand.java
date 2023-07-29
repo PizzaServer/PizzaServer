@@ -1,7 +1,9 @@
 package io.github.pizzaserver.server.commands.defaults;
 
+import com.nukkitx.protocol.bedrock.data.command.CommandEnumData;
 import com.nukkitx.protocol.bedrock.data.command.CommandParam;
 import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
+import com.nukkitx.protocol.bedrock.data.command.CommandParamType;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.commands.CommandSender;
@@ -18,37 +20,20 @@ import java.util.*;
 
 public class GamemodeCommand extends ImplCommand {
 
-    public GamemodeCommand(CommandRegistry registry) {
+    public GamemodeCommand() {
         super("gamemode");
-        overloads = new CommandParamData[1][2];
-        registerParameter(0, 0, "gamemode", new String[]{"creative", "adventure", "spectator", "survival"});
-        registerParameter(0, 1, "player", new String[]{}, CommandParam.TARGET);
-        // TODO: Find a cleaner way of doing this, goal is to have a simple way to register tail tips
-        if(registry instanceof ImplCommandRegistry) {
-            this.registerTailTip((ImplCommandRegistry) registry, new String[]{
-                    "gamemode creative [target]",
-                    "gmaemode survival [target]",
-                    "gamemode spectator [target] - Not fully implemented yet",
-                    "gamemode adventure [target]"
-            });
-        }
-    }
+        overloads = new CommandParamData[2][2];
+        registerParameter(0, 0, "gamemode", new CommandEnumData("gmode", new String[]{"creative", "survival"}, true), CommandParam.TEXT);
+        registerParameter(1, 0, "testing", new CommandEnumData("gmade", new String[]{"test123", "test567"}, true), CommandParam.TEXT);
+        registerParameter(0, 1, "gamemode", new String[]{}, CommandParam.TARGET);
+        registerParameter(1, 1, "testing", new String[]{"AAA", "AAA2"});
 
-    public void registerTailTip(ImplCommandRegistry registry, String[] lines) {
-        //Map<String, List<AttributedString>> widgetOpts = new HashMap<>();
-        // SO We autocomplete in the area above while giving a list underneath, so combined or normal?
-        List<AttributedString> mainDescriptions = new ArrayList<>();
-        for(String line : lines) {
-            mainDescriptions.add(new AttributedString(line));
-            // This is the - "" informational part, though I can't get it to work without the `-`
-            // and for more than 1 character
-            //widgetOpts.put("-spectator", Arrays.asList(new AttributedString("more information")));
-        }
-        registry.addTailTip(this.getName(), new CmdDesc(
-                mainDescriptions,
-                ArgDesc.doArgNames(Arrays.asList("[gamemode...]", "[target...]", "")),
-                new HashMap<>()
-        ));
+/*
+        registerParameter(0, 0, "gamemode", new String[]{"creative", "adventure", "spectator", "survival"});
+        registerParameter(1, 0, "testing", new String[]{"test1", "test2", "test34", "test4"}, CommandParam.TEXT);
+        registerParameter(0, 1, "player", new String[]{}, CommandParam.TARGET);
+        registerParameter(1, 1, "asdasd", new String[]{"AAA", "AAA2"});
+*/
     }
 
     @Override

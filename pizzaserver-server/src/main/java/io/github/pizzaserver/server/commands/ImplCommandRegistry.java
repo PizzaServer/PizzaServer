@@ -3,9 +3,11 @@ package io.github.pizzaserver.server.commands;
 import com.nukkitx.protocol.bedrock.data.command.CommandParam;
 import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
 import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
+import com.nukkitx.protocol.bedrock.v448.serializer.AvailableCommandsSerializer_v448;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.commands.Command;
 import io.github.pizzaserver.api.commands.CommandRegistry;
+import io.github.pizzaserver.api.commands.CommandSender;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.ImplServer;
@@ -26,9 +28,6 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
     private final Map<String, Command> commands = new HashMap<>();
     private final Map<String, Command> aliases = new HashMap<>();
 
-    // Used to give helpful information about what commands layouts are/can be
-    private final Map<String, CmdDesc> tailTips = new HashMap<>();
-
     private final ThreadPoolExecutor asyncCommands = new ThreadPoolExecutor(0, 4, 1, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2));
 
 
@@ -45,7 +44,7 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
     public void registerDefaults() {
         this.register(new ExampleCommand());
         this.register(new StopCommand());
-        this.register(new GamemodeCommand(this));
+        this.register(new GamemodeCommand());
         this.register(new AsyncTestingCommand());
         this.register(new Example2Command());
     }
@@ -179,11 +178,7 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
         builder.option(LineReader.Option.HISTORY_IGNORE_DUPS, true);
         builder.option(LineReader.Option.HISTORY_IGNORE_SPACE, true);
         builder.terminal(TerminalConsoleAppender.getTerminal());
-        LineReader reader = builder.build();
-
-        TailTipWidgets tailtipWidgets = new TailTipWidgets(reader, tailTips, 5, TailTipWidgets.TipType.TAIL_TIP);
-        tailtipWidgets.enable();
-        return reader;
+        return builder.build();
     }
 
     /**
@@ -256,19 +251,6 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
                 }
             }
         }
-    }
-
-    /**
-     * This is used to give some tips to the console as they type out a command
-     * An example can be viewed at {@link GamemodeCommand} based on what I read
-     * <a href="https://github.com/jline/jline3/wiki/Autosuggestions">here</a>
-     * NOTE: This isn't related to autocompletion, it only shows information about what you provide
-     * The completion is here under {@link ImplCommandRegistry#complete(LineReader, ParsedLine, List)}
-     * @param name The command to be typed to start the tips (gamemode in the example)
-     * @param cmdDesc A CmdDesc object filled with information about the completion
-     */
-    public void addTailTip(String name, CmdDesc cmdDesc) {
-        this.tailTips.put(name, cmdDesc);
     }
 
     @Override
