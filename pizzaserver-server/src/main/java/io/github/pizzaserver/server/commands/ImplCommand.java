@@ -35,9 +35,7 @@ public abstract class ImplCommand implements Command {
     }
 
     public ImplCommand(String name, String description, String[] aliases) {
-        this.name = name;
-        this.description = description;
-        this.aliases = aliases;
+        this(name, description, aliases, false);
     }
 
     public ImplCommand(String name, String description, String[] aliases, boolean async) {
@@ -88,40 +86,59 @@ public abstract class ImplCommand implements Command {
     }
 
     /**
+     * Currently, these methods for registering a parameter will be Deprecated. This is due to a problem with Cloudburst's
+     * protocol library because no one knows how the AvailableCommandsPacket should be built. If anyone knows how, feel
+     * free to adapt these functions! Later, I (Flaming) plan on making a pull request to make the protocol lib's
+     * AvailableCommandPacket reflect Nukkit's implementation since that one works well and is much easier to read/use.
+     * You can use them for now as they *mostly* work, though they'll get a rewrite in the future!
+     *
      * This is a long list of helper functions for making your commands auto-completable
      * @param path The path of the command to take (take execute as an example: execute as/at (as = path 0, at = path 1)
      * @param position The position of the parameter in a list (execute at (position=0) xCoord (position=1) yCoord (position=2...)
      * @param name Name of the parameter (parameter0)
      * @param values Like an alias of the name (parameter0, parameter0Alias). I believe the name needs to be included in these values
      */
+    @Deprecated
     public void registerParameter(int path, int position, String name, String[] values) {
         registerParameter(path, position,  new CommandParamData(name, true, new CommandEnumData(name, values, true), CommandParam.STRING, null, new ArrayList<>()));
     }
+    @Deprecated
     public void registerParameter(int path, int position, String name, String[] values, CommandParam paramType) {
         registerParameter(path, position,  new CommandParamData(name, true, new CommandEnumData(name, values, true), paramType, null, new ArrayList<>()));
     }
+    @Deprecated
     public void registerParameter(int path, int position, String name, String[] values, CommandParam paramType, boolean optional) {
         registerParameter(path, position,  new CommandParamData(name, optional, new CommandEnumData(name, values, true), paramType, null, new ArrayList<>()));
     }
-
+    @Deprecated
     public void registerParameter(int path, int position, String name, CommandEnumData commandEnum) {
         registerParameter(path, position,  new CommandParamData(name, true, commandEnum, CommandParam.STRING, null, new ArrayList<>()));
     }
+    @Deprecated
     public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType) {
         registerParameter(path, position, new CommandParamData(name, true, commandEnum, paramType, null, new ArrayList<>()));
     }
+    @Deprecated
     public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional) {
         registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, null, new ArrayList<>()));
     }
+    @Deprecated
     public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, String postFix) {
         registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, postFix, new ArrayList<>()));
     }
+    @Deprecated
     public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, List<CommandParamOption> options) {
         registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, null, options));
     }
+    @Deprecated
     public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, String postFix, List<CommandParamOption> options) {
         registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, postFix, options));
     }
+
+    /**
+     * Go up to the most basic function to see the reason for deprecation ^
+     */
+    @Deprecated
     public void registerParameter(int path, int position, CommandParamData commandParamData) {
         if(path > overloads.length-1) {
             CommandParamData[][] newOverloads = new CommandParamData[path+1][];
