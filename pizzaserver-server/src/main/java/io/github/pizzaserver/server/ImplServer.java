@@ -86,9 +86,9 @@ public class ImplServer extends Server {
     protected int currentTps;
     protected long currentTick;
 
-    public ServerState state = ServerState.INACTIVE;
+    protected ServerState state = ServerState.INACTIVE;
     protected final String rootDirectory;
-    public volatile boolean running;
+    private volatile boolean running;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
     protected int maximumPlayersAllowed;
@@ -252,7 +252,8 @@ public class ImplServer extends Server {
 
         this.getLogger().info("Stopping server...");
 
-        this.commandRegistry.shutdown();
+        this.commandRegistry.close();
+        this.getLogger().debug("Stopped command registy");
 
         for (PlayerSession session : this.sessions) {
             if (session.getPlayer() != null) {
@@ -263,14 +264,18 @@ public class ImplServer extends Server {
         }
 
         this.getNetwork().stop();
+        this.getLogger().debug("Stopped network");
         try {
             this.getLevelManager().close();
+            this.getLogger().debug("Closed level manager");
         } catch (IOException exception) {
             this.getLogger().error("Failed to close LevelManager", exception);
         }
 
         // We're done stop operations. Exit program.
+        this.getLogger().debug("Shutting down latches (last step)...");
         this.shutdownLatch.countDown();
+        this.running = false;
     }
 
     public String getIp() {

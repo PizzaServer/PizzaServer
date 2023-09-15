@@ -209,6 +209,8 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
                 // TODO: Let parameters be specified with paths
                 for(CommandParamData paramData : row) {
                     /* TODO: Predict the next word more accurately using command parameter types (if it's player, get a list of them)
+                     *    Will revisit this when I redo parameters
+                     *    a
                      *    Done is done or won't be done
                      *    Can't is can't be done (we can't predict an int/float parameter in console, maybe we can warn if it's above a limit with JLine?)
                      *    What is something I can't tell what it does
@@ -256,8 +258,11 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
     @Override
     public void shutdown() {
         // CTRL C was pressed
-        ImplServer.getInstance().running = false;
-        ImplServer.getInstance().state = ServerState.STOPPING;
+        ImplServer.getInstance().stop();
+    }
+
+    @Override
+    public void close() {
         asyncCommands.shutdown();
     }
 

@@ -22,5 +22,13 @@ public interface CommandRegistry {
     AvailableCommandsPacket getAvailableCommands();
     void runAsyncCommand(Runnable runnable);
 
+    /**
+     * This is called when CTRL + C is pressed, like calling Server#stop()
+     */
     void shutdown();
+
+    /**
+     * This method should be used for what to do when Server#stop() is called
+     */
+    void close();
 }

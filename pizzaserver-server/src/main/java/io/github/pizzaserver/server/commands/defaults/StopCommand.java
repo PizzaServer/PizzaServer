@@ -12,7 +12,6 @@ public class StopCommand extends ImplCommand {
 
     @Override
     public void execute(CommandSender sender, String[] strings, String s) {
-        ImplServer.getInstance().running = false;
-        ImplServer.getInstance().state = ServerState.STOPPING;
+        ImplServer.getInstance().stop();
     }
 }

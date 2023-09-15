@@ -114,7 +114,11 @@ public abstract class SimpleTerminalConsole {
 
     private void readCommands(Terminal terminal) {
         LineReader reader = buildReader(LineReaderBuilder.builder().terminal(terminal));
-        TerminalConsoleAppender.setReader(reader);
+        try {
+            TerminalConsoleAppender.setReader(reader);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
             String line;
