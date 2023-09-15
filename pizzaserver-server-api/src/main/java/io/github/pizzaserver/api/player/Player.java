@@ -117,6 +117,30 @@ public interface Player extends EntityHuman {
     void setSaturationLevel(float saturationLevel);
 
     /**
+     * Gets the timer for the food tick.
+     * @return a value for actions based on current hunger status (regeneration and starving)
+     */
+    float getFoodTickTimer();
+
+    /**
+     * Sets the timer for the food tick to activate.
+     * @param time time until heart is gained/depleted based on food level status
+     */
+    void setFoodTickTimer(float time);
+
+    /**
+     * Get the food exhaustion level of the player.
+     * @return Value between 0-4 which determines a threshold for a player to lose 1 saturation/1 food bar
+     */
+    float getFoodExhaustionLevel();
+
+    /**
+     * Set the food exhaustion level of the player (can be 4+).
+     * @param foodExhaustionLevel New value for foodExhaustionLevel
+     */
+    void setFoodExhaustionLevel(float foodExhaustionLevel);
+
+    /**
      * Get the percentage a player has filled their experience bar.
      * @return value between 0 and 1
      */
@@ -319,4 +343,17 @@ public interface Player extends EntityHuman {
      */
     boolean save();
 
+    /**
+     * Set the players item use ticks (how long they've been "using" the item)
+     * @param useTicks How long the player has been using the item
+     */
+    void setUseTicks(int useTicks);
+    int getUseTicks();
+
+    /**
+     * Set the player to be interacting with an item (ITEM_USE_ON_START/STOP in PlayerPacketHandler)
+     * @param interacting If the player is interacting or not
+     */
+    void setInteractingItem(boolean interacting);
+    boolean getInteractingItem();
 }

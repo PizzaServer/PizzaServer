@@ -10,7 +10,7 @@ public class ItemHoneyComb extends BaseItem {
     }
 
     public ItemHoneyComb(int count) {
-        super(ItemID.FEATHER, count);
+        super(ItemID.HONEYCOMB, count);
     }
 
     @Override

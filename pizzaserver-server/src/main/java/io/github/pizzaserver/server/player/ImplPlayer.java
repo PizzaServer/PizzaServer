@@ -28,6 +28,7 @@ import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.inventory.TemporaryInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.data.ItemID;
+import io.github.pizzaserver.api.item.impl.ItemApple;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
@@ -99,8 +100,26 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     protected Gamemode gamemode;
     protected ImplAdventureSettings adventureSettings = new ImplAdventureSettings(this);
 
-    protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
+    /**
+     * TODO: Finish Exhaustion Level Increase Events
+     *  Attacking an enemy: 0.1/successful hit
+     *  Taking damage (which armor protects against): 0.1/distinct instance of damage
+     *  Hunger (effect): 0.005/tick/level
+     *  Regenerating health with 18+ and natural regen on: 6.0/half heart
+     */
+    // A timer for regeneration, if the entity is at 17+/0 hunger, they regenerate/deplete 1 heart every 4 seconds
+    // If it's full, 1/6 * 1 half heart * saturation level is restored to a max of 1 half heart, when it reaches 10.5s
+    // it's reduced to 0
+    protected float foodTickTimer;
+    // A number which increases based on actions. Once it reaches 4, it resets and one point is removed from the
+    // saturation level, then the food level if all saturation is gone
+    protected float foodExhaustionLevel;
+    protected Vector3f exhaustionUnitsSwam;
+    protected Vector3f exhaustedUnitsSprinted;
 
+    protected final PlayerBlockBreakingManager breakingManager = new PlayerBlockBreakingManager(this);
+    protected int useTicks = 0;
+    protected boolean interacting;
 
     public ImplPlayer(ImplServer server, PlayerSession session, LoginData loginData) {
         super(server.getEntityRegistry().getDefinition(EntityHumanDefinition.ID));
@@ -702,6 +721,51 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
     }
 
     @Override
+    public float getFoodTickTimer() {
+        return this.foodTickTimer;
+    }
+
+    @Override
+    public void setFoodTickTimer(float time) {
+        this.foodTickTimer = Math.max(0, time);
+    }
+
+    @Override
+    public float getFoodExhaustionLevel() {
+        return this.foodExhaustionLevel;
+    }
+
+    @Override
+    public void setFoodExhaustionLevel(float foodExhaustionLevel) {
+        this.foodExhaustionLevel = foodExhaustionLevel;
+        while (this.foodExhaustionLevel >= 4) {
+            this.foodExhaustionLevel -= 4;
+            float saturationLevel = this.getSaturationLevel();
+            if (saturationLevel > 0) {
+                this.setSaturationLevel(saturationLevel - 1);
+            } else {
+                this.setFoodLevel(Math.max(0, this.getFoodLevel() - 1));
+            }
+        }
+    }
+
+    public Vector3f getExhaustionUnitsSwam() {
+        return this.exhaustionUnitsSwam;
+    }
+
+    public void setExhaustionUnitsSwam(Vector3f exhaustionUnitsSwam) {
+        this.exhaustionUnitsSwam = exhaustionUnitsSwam;
+    }
+
+    public Vector3f getExhaustedUnitsSprinted() {
+        return this.exhaustedUnitsSprinted;
+    }
+
+    public void setExhaustedUnitsSprinted(Vector3f exhaustedUnitsSprinted) {
+        this.exhaustedUnitsSprinted = exhaustedUnitsSprinted;
+    }
+
+    @Override
     public float getExperience() {
         Attribute attribute = this.getAttribute(AttributeType.EXPERIENCE);
         return attribute.getCurrentValue();
@@ -1022,6 +1086,14 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.closeOpenInventory();
         }
 
+        if(interacting) {
+            //TODO: Call an event here?
+            this.getInventory().getHeldItem().getBehavior().onInteract(this, this.getInventory().getHeldItem(), null);
+            this.setUseTicks(this.getUseTicks() + 1);
+        }
+        if(Math.random()*50 < 1)
+        this.getInventory().addItem(new ItemApple(1));
+
         super.tick();
     }
 
@@ -1032,6 +1104,23 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
         if (!oldLocation.getChunk().equals(this.getChunk())) {
             this.getChunkManager().onChunkChange(oldLocation);
+        }
+
+        // Affect player saturation for swimming and sprinting
+        if (this.isSwimming()) {
+            Vector3f newLocation = Vector3f.from(x, y, z);
+            if (!this.getExhaustionUnitsSwam().floor().equals(newLocation.floor()) && this.getExhaustionUnitsSwam().distance(newLocation) > 1f) {
+                this.setExhaustionUnitsSwam(newLocation);
+                this.setFoodExhaustionLevel(this.getFoodExhaustionLevel() + 0.01f);
+            }
+        }
+
+        if (this.isSprinting()) {
+            Vector3f newLocation = Vector3f.from(x, y, z);
+            if (!this.getExhaustedUnitsSprinted().floor().equals(newLocation.floor()) && this.getExhaustedUnitsSprinted().distance(newLocation) > 1f) {
+                this.setExhaustedUnitsSprinted(newLocation);
+                this.setFoodExhaustionLevel(this.getFoodExhaustionLevel() + 0.1f);
+            }
         }
     }
 
@@ -1078,4 +1167,23 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
         }
     }
 
+    @Override
+    public void setUseTicks(int useTicks) {
+        this.useTicks = useTicks;
+    }
+
+    @Override
+    public int getUseTicks() {
+        return useTicks;
+    }
+
+    @Override
+    public void setInteractingItem(boolean interacting) {
+        this.interacting = interacting;
+    }
+
+    @Override
+    public boolean getInteractingItem() {
+        return interacting;
+    }
 }

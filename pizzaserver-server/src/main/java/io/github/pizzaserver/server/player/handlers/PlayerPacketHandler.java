@@ -23,6 +23,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.api.utils.DyeColor;
+import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.player.ImplPlayer;
 
@@ -72,6 +73,14 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 if (!this.player.isAlive()) {
                     this.player.respawn();
                 }
+                break;
+            case ITEM_USE_ON_START:
+                this.player.setInteractingItem(true);
+                this.player.setUseTicks(0);
+                break;
+            case ITEM_USE_ON_STOP:
+                this.player.setInteractingItem(false);
+                this.player.setUseTicks(0);
                 break;
             case DIMENSION_CHANGE_SUCCESS:
                 if (this.player.getDimensionTransferScreen().isPresent()) {
