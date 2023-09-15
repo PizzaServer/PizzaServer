@@ -6,6 +6,7 @@ import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
+import io.github.pizzaserver.api.commands.CommandRegistry;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.EntityRegistry;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -25,6 +26,7 @@ import io.github.pizzaserver.api.utils.Logger;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.block.ImplBlockRegistry;
 import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
+import io.github.pizzaserver.server.commands.ImplCommandRegistry;
 import io.github.pizzaserver.server.entity.ImplEntityRegistry;
 import io.github.pizzaserver.server.entity.boss.ImplBossBar;
 import io.github.pizzaserver.server.inventory.ImplEntityInventory;
@@ -62,8 +64,8 @@ public class ImplServer extends Server {
     protected ItemRegistry itemRegistry = new ImplItemRegistry();
     protected CreativeRegistry creativeRegistry = new ImplCreativeRegistry();
     protected EntityRegistry entityRegistry = new ImplEntityRegistry();
+    protected CommandRegistry commandRegistry /*= new ImplCommandRegistry(this)*/;
     protected RecipeRegistry recipeRegistry = new ImplRecipeRegistry();
-
     protected PluginManager pluginManager = new ImplPluginManager(this);
     protected ImplResourcePackManager dataPackManager = new ImplResourcePackManager(this);
     protected EventManager eventManager = new ImplEventManager(this);
@@ -113,6 +115,8 @@ public class ImplServer extends Server {
         this.dataPackManager.setPacksRequired(this.config.arePacksForced());
 
         Runtime.getRuntime().addShutdownHook(new ServerExitListener());
+        this.commandRegistry = new ImplCommandRegistry(this);
+        // TODO: load plugins
     }
 
     /**
@@ -243,10 +247,13 @@ public class ImplServer extends Server {
     /**
      * The server will stop after the current tick finishes.
      */
-    private void stop() {
+    public void stop() {
         this.state = ServerState.STOPPING;
 
         this.getLogger().info("Stopping server...");
+
+        this.commandRegistry.close();
+        this.getLogger().debug("Stopped command registy");
 
         for (PlayerSession session : this.sessions) {
             if (session.getPlayer() != null) {
@@ -257,14 +264,18 @@ public class ImplServer extends Server {
         }
 
         this.getNetwork().stop();
+        this.getLogger().debug("Stopped network");
         try {
             this.getLevelManager().close();
+            this.getLogger().debug("Closed level manager");
         } catch (IOException exception) {
             this.getLogger().error("Failed to close LevelManager", exception);
         }
 
         // We're done stop operations. Exit program.
+        this.getLogger().debug("Shutting down latches (last step)...");
         this.shutdownLatch.countDown();
+        this.running = false;
     }
 
     public String getIp() {
@@ -478,6 +489,10 @@ public class ImplServer extends Server {
     }
 
     @Override
+    public CommandRegistry getCommandRegistry() {
+        return commandRegistry;
+    }
+
     public RecipeRegistry getRecipeRegistry() {
         return this.recipeRegistry;
     }

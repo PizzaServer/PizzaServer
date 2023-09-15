@@ -5,26 +5,19 @@ import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
-import io.github.pizzaserver.api.block.BlockID;
-import io.github.pizzaserver.api.block.data.DirtType;
-import io.github.pizzaserver.api.block.data.SandType;
-import io.github.pizzaserver.api.block.data.WoodType;
-import io.github.pizzaserver.api.block.impl.*;
-import io.github.pizzaserver.api.entity.EntityRegistry;
-import io.github.pizzaserver.api.entity.EntityHuman;
-import io.github.pizzaserver.api.entity.definition.impl.EntityHumanDefinition;
+import io.github.pizzaserver.api.block.impl.BlockSign;
+import io.github.pizzaserver.api.commands.Command;
 import io.github.pizzaserver.api.event.type.block.SignChangeEvent;
 import io.github.pizzaserver.api.event.type.inventory.InventoryOpenEvent;
 import io.github.pizzaserver.api.event.type.player.*;
-import io.github.pizzaserver.api.item.impl.*;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
-import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.api.player.data.Skin;
-import io.github.pizzaserver.api.utils.DyeColor;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.player.ImplPlayer;
+
+import java.util.Arrays;
 
 public class PlayerPacketHandler implements BedrockPacketHandler {
 
@@ -228,6 +221,38 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
     @Override
     public boolean handle(ContainerClosePacket packet) {
         this.player.closeOpenInventory();
+        return true;
+    }
+
+    @Override
+    public boolean handle(CommandRequestPacket packet) {
+        String[] entries = packet.getCommand().split(" ");
+        entries[0] = entries[0].substring(1).toLowerCase().trim(); // Get the command name
+
+        Command command = player.getServer().getCommandRegistry().getCommand(entries[0]);
+        if(command == null) {
+            player.sendMessage("§cThat command doesn't exist!");
+            return true;
+        }
+        try {
+            if(command.isAsync()) {
+                Server.getInstance().getCommandRegistry().runAsyncCommand(() -> {
+                    try {
+                        command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
+                    } catch (Exception e) {
+                        if(player.isConnected()) {
+                            player.sendMessage("§cSomething went wrong while executing that command! Check the terminal for a stack trace.");
+                            Server.getInstance().getLogger().error("Error while executing " + command.getName() + ": ", e);
+                        }
+                    }
+                });
+            } else {
+                command.execute(player, Arrays.copyOfRange(entries, 1, entries.length), entries[0]);
+            }
+        } catch (Exception e) {
+            player.sendMessage("§cSomething went wrong while executing that command! Check the terminal for a stack trace.");
+            Server.getInstance().getLogger().error("Error while executing " + command.getName() + ": ", e);
+        }
         return true;
     }
 

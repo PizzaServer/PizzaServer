@@ -5,11 +5,13 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.data.*;
+import com.nukkitx.protocol.bedrock.data.command.CommandData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlags;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
@@ -42,6 +44,7 @@ import io.github.pizzaserver.api.player.form.response.FormResponse;
 import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
+import io.github.pizzaserver.api.utils.TextFormat;
 import io.github.pizzaserver.api.utils.TextMessage;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.server.ImplServer;
@@ -271,7 +274,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             availableEntityIdentifiersPacket.setIdentifiers(this.getVersion().getEntityIdentifiers());
             this.sendPacket(availableEntityIdentifiersPacket);
 
-
             // Sent the full player list to this player
             List<PlayerList.Entry> entries = this.getServer().getPlayers().stream()
                     .filter(otherPlayer -> !otherPlayer.isHiddenFrom(this))
@@ -289,6 +291,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
             playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
             this.sendPacket(playStatusPacket);
+
+            this.sendPacket(server.getCommandRegistry().getAvailableCommands());
         }).schedule();
     }
 
@@ -806,6 +810,16 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                 .setType(TextPacket.Type.RAW)
                 .setMessage(message)
                 .build());
+    }
+
+    @Override
+    public void sendError(String message) {
+        this.sendMessage(TextFormat.RED + message);
+    }
+
+    @Override
+    public void sendError(String message, Exception exception) {
+        this.sendMessage(TextFormat.RED + message + ": " + exception.getMessage());
     }
 
     @Override

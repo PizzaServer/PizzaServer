@@ -5,6 +5,7 @@ import java.io.IOException;
 public class Launcher {
 
     public static void main(String[] args) throws IOException {
+        //-Dterminal.jline=<true/false>;
         ImplServer server = new ImplServer(System.getProperty("user.dir"));
         server.boot();
     }
