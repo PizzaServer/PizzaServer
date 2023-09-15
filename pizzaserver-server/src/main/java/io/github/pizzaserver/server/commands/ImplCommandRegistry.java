@@ -3,18 +3,14 @@ package io.github.pizzaserver.server.commands;
 import com.nukkitx.protocol.bedrock.data.command.CommandParam;
 import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
 import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
-import com.nukkitx.protocol.bedrock.v448.serializer.AvailableCommandsSerializer_v448;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.commands.Command;
 import io.github.pizzaserver.api.commands.CommandRegistry;
-import io.github.pizzaserver.api.commands.CommandSender;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.commands.defaults.*;
-import org.jline.console.CmdDesc;
 import org.jline.reader.*;
-import org.jline.widget.TailTipWidgets;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -35,8 +31,6 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
         this.server = server;
         this.sender = new ImplServerSender(server);
         this.registerDefaults();
-        // Start doesn't return until isRunning returns false or CTRL + C occurs
-        // I'm not sure how to "safely" handle this, for now I'll just let it be
         // TODO: Start the console once all plugin commands are registered (once implemented)
         new Thread(() -> this.start(server)).start();
     }
@@ -131,6 +125,8 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
             server.getLogger().warn("The server is currently stopping and no longer accepting commands");
             return;
         }
+        if(command == null)
+            return;
 
         String[] list = command.split(" ");
         Command realCommand = this.getCommand(list[0]);
@@ -206,34 +202,9 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
                 return;
             for(CommandParamData[] row : command.getOverloads()) {
                 int position = 0;
-                // TODO: Let parameters be specified with paths
                 for(CommandParamData paramData : row) {
                     /* TODO: Predict the next word more accurately using command parameter types (if it's player, get a list of them)
-                     *    Will revisit this when I redo parameters
-                     *    a
-                     *    Done is done or won't be done
-                     *    Can't is can't be done (we can't predict an int/float parameter in console, maybe we can warn if it's above a limit with JLine?)
-                     *    What is something I can't tell what it does
-                     *    Maybe is something that is probably possible
-                     *   Can't   INT
-                     *   Can't   FLOAT
-                     *   What?   VALUE
-                     *   What?   WILDCARD_INT
-                     *   What?   OPERATOR
-                     *    Done   TARGET
-                     *   What?   WILDCARD_TARGET
-                     *  Maybe?   FILE_PATH          JLine has the FileNameCompleter
-                     *   Can't   INT_RANGE
-                     *    Done   STRING
-                     *   Can't   POSITION
-                     *   Can't   BLOCK_POSITION
-                     *    Done   MESSAGE
-                     *    Done   TEXT
-                     *  Maybe?   JSON
-                     *  Maybe?   COMMAND
-                     *
-                     * TODO: New idea for can'ts, we can have the autocomplete for parameters, though the parameters will *describe* the values
-                     *   We can even have an added <INT> or <FLOAT> to the end of it
+                     *    Will revisit this when parameters are redone
                      */
                     if (paramData.getType().equals(CommandParam.TARGET) && parsedLine.wordIndex()-1 == position) {
                         for(Player player : server.getPlayers()) {

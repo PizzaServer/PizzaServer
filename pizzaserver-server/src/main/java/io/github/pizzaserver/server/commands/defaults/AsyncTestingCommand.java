@@ -5,6 +5,9 @@ import io.github.pizzaserver.server.commands.ImplCommand;
 
 public class AsyncTestingCommand extends ImplCommand {
 
+    /**
+     * Small and quick example of an async command
+     */
     public AsyncTestingCommand() {
         super("async");
         this.setAsync(true);
@@ -12,6 +15,7 @@ public class AsyncTestingCommand extends ImplCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args, String s) {
-        sender.sendMessage("Hellooo!");
+        if(sender != null)
+            sender.sendMessage("Hellooo!");
     }
 }
