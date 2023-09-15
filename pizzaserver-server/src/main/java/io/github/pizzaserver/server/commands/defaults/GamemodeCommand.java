@@ -38,11 +38,11 @@ public class GamemodeCommand extends ImplCommand {
                 return;
             }
             switch(args[0].toLowerCase().trim()) {
-                case "survival", "0" -> {target.setGamemode(Gamemode.SURVIVAL);}
-                case "creative", "1" -> {target.setGamemode(Gamemode.CREATIVE);}
-                case "spectator", "3" -> {target.setGamemode(Gamemode.SPECTATOR);}
-                case "adventure", "2" -> {target.setGamemode(Gamemode.ADVENTURE);}
-                default -> {sender.sendError("That isn't a valid gamemode!");}
+                case "survival", "0" -> target.setGamemode(Gamemode.SURVIVAL);
+                case "creative", "1" -> target.setGamemode(Gamemode.CREATIVE);
+                case "spectator", "3" -> target.setGamemode(Gamemode.SPECTATOR);
+                case "adventure", "2" -> target.setGamemode(Gamemode.ADVENTURE);
+                default -> sender.sendError("That isn't a valid gamemode!");
             }
             return;
         }
@@ -52,11 +52,11 @@ public class GamemodeCommand extends ImplCommand {
             return;
         }
         switch(args[0].toLowerCase().trim()) {
-            case "survival", "0" -> {player.setGamemode(Gamemode.SURVIVAL);}
-            case "creative", "1" -> {player.setGamemode(Gamemode.CREATIVE);}
-            case "spectator", "3" -> {player.setGamemode(Gamemode.SPECTATOR);}
-            case "adventure", "2" -> {player.setGamemode(Gamemode.ADVENTURE);}
-            default -> {player.sendError("That isn't a valid gamemode!");}
+            case "survival", "0" -> player.setGamemode(Gamemode.SURVIVAL);
+            case "creative", "1" -> player.setGamemode(Gamemode.CREATIVE);
+            case "spectator", "3" -> player.setGamemode(Gamemode.SPECTATOR);
+            case "adventure", "2" -> player.setGamemode(Gamemode.ADVENTURE);
+            default -> player.sendError("That isn't a valid gamemode!");
         }
     }
 }

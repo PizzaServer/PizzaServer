@@ -40,7 +40,6 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
         this.register(new StopCommand());
         this.register(new GamemodeCommand());
         this.register(new AsyncTestingCommand());
-        this.register(new Example2Command());
     }
 
     @Override
