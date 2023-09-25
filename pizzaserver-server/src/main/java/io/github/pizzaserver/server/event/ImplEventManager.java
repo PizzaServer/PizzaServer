@@ -6,14 +6,13 @@ import io.github.pizzaserver.api.event.EventManager;
 import io.github.pizzaserver.api.event.filter.EventFilter;
 import io.github.pizzaserver.api.event.handler.EventHandler;
 import io.github.pizzaserver.api.event.type.CancellableType;
+import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.server.event.handler.EventHandlerReference;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class ImplEventManager implements EventManager {
 
@@ -32,6 +31,7 @@ public class ImplEventManager implements EventManager {
 
     protected final ArrayList<EventFilter> filters; // Filter for EVERY listener.
     protected final ArrayList<Object> listeners; // Once a listener is added, it has a permanent place in the listenerReference.
+    protected final HashMap<Object, ArrayList<Object>> registrarToListenerMapping;
     protected final ArrayList<ImplEventManager> children; // Send events to children too. Only sent if filter is passed.
 
 
@@ -40,6 +40,7 @@ public class ImplEventManager implements EventManager {
         this.filters = new ArrayList<>();
         this.listeners = new ArrayList<>();
         this.children = new ArrayList<>();
+        this.registrarToListenerMapping = new HashMap<>();
 
         this.filters.addAll(Arrays.asList(filters));
     }
@@ -149,11 +150,12 @@ public class ImplEventManager implements EventManager {
         this.children.remove(child);
     }
 
-
     @Override
-    public synchronized Object addListener(Object listener) {
+    public synchronized Object addListener(Object listener, Object registrarHandle) {
         this.removeListener(listener, true);
         this.listeners.add(listener);
+        Check.nullParam(registrarHandle, "null is not a valid listener registrar");
+        this.registrarToListenerMapping.computeIfAbsent(registrarHandle, ignored -> new ArrayList<>()).add(listener);
 
         // Generate reference for the listener's type if one doesn't already exist
         if (!listenerReference.containsKey(listener.getClass())) {
@@ -199,10 +201,47 @@ public class ImplEventManager implements EventManager {
     public synchronized void removeListener(Object listener, boolean removeFromChildren) {
         this.listeners.remove(listener);
 
-        if (removeFromChildren) {
+        // find registrar
+        Object registrarHandle = null;
+        for (Map.Entry<Object, ArrayList<Object>> e : this.registrarToListenerMapping.entrySet()) {
+            if (e.getValue().contains(listener)) {
+                registrarHandle = e.getKey();
+                break;
+            }
+        }
 
+        // registrar found, remove its association with this listener
+        if (registrarHandle != null) {
+            List<Object> list = this.registrarToListenerMapping.get(registrarHandle);
+            list.remove(registrarHandle);
+
+            // listener registrar has no listeners anymore, remove
+            if (list.isEmpty()) {
+                this.registrarToListenerMapping.remove(registrarHandle);
+            }
+        }
+
+        if (removeFromChildren) {
             for (ImplEventManager child : this.children) {
                 child.removeListener(listener, true); // Ensure children don't include it either.
+            }
+        }
+    }
+
+    @Override
+    public void removeListenersFor(Object registrarHandle) {
+        this.removeListenersFor(registrarHandle, true);
+    }
+
+    @Override
+    public void removeListenersFor(Object registrarHandle, boolean removeFromChildren) {
+        Check.nullParam(registrarHandle, "null is not a valid listener registrar");
+
+        List<Object> listeners = this.registrarToListenerMapping.get(registrarHandle);
+        if (listeners != null) {
+            // wrap the list so we don't get a ConcurrentModificationException
+            for (Object listener : new ArrayList<>(listeners)) {
+                this.removeListener(listener, removeFromChildren);
             }
         }
     }
@@ -222,8 +261,9 @@ public class ImplEventManager implements EventManager {
      * Checks to see if a class extends an event, adding it to a list of
      * identified classes. It crawls through all the superclasses and interfaces
      * of a class with recursion.
+     *
      * @param classIn the class to be checked.
-     * @param list a list of all the previously checked classes.
+     * @param list    a list of all the previously checked classes.
      */
     @SuppressWarnings("unchecked") // It's checked with Class#isAssaignableFrom() :)
     private static void adoptSuperclasses(Class<?> classIn, ArrayList<Class<? extends Event>> list) {
