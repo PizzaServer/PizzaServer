@@ -1,14 +1,16 @@
 package io.github.pizzaserver.server.player.handlers;
 
 import com.nimbusds.jose.JWSObject;
-import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
-import com.nukkitx.protocol.bedrock.packet.*;
-import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
+import org.cloudburstmc.protocol.bedrock.netty.codec.encryption.BedrockEncryptionDecoder;
+import org.cloudburstmc.protocol.bedrock.netty.codec.encryption.BedrockEncryptionEncoder;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.network.protocol.ServerProtocol;
 import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
+import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
+import org.cloudburstmc.protocol.common.PacketSignal;
 
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
@@ -32,7 +34,7 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
     }
 
     @Override
-    public boolean handle(LoginPacket loginPacket) {
+    public PacketSignal handle(LoginPacket loginPacket) {
         // Check if the protocol version is supported
         Optional<BaseMinecraftVersion> version = ServerProtocol.getProtocol(loginPacket.getProtocolVersion());
 
@@ -45,43 +47,44 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
             }
             this.session.getConnection().sendPacketImmediately(loginFailPacket);
             this.session.getConnection().disconnect();
-            return true;
+            return PacketSignal.HANDLED;
         }
-        this.session.getConnection().setPacketCodec(version.get().getPacketCodec());
+        this.session.getConnection().setCodec(version.get().getPacketCodec());
         this.session.setVersion(version.get());
 
-        Optional<LoginData> loginData = LoginData.extract(loginPacket.getChainData(), loginPacket.getSkinData());
-        if (loginData.isEmpty() || (!loginData.get().isAuthenticated() && this.server.getConfig().isOnlineMode())) {
+        Optional<LoginData> loginData = LoginData.extract(loginPacket.getChain(), loginPacket.getExtra());
+        if (loginData.isEmpty() || (!loginData.get().isAuthenticated().signed() && this.server.getConfig().isOnlineMode())) {
             this.session.getConnection().disconnect();
-            return true;
+            return PacketSignal.HANDLED;
         }
         this.loginData = loginData.get();
 
         if (!this.server.getConfig().isEncryptionEnabled()) {
             this.completeLogin();
-            return true;
+            return PacketSignal.HANDLED;
         }
 
-        if (!EncryptionUtils.canUseEncryption()) {
+        // Looks like there's no excuse to not use encryption now in V3
+/*        if (!EncryptionUtils.canUseEncryption()) {
             this.server.getLogger().error("Packet encryption is not supported on this machine.");
             this.session.getConnection().disconnect();
             return true;
-        }
+        }*/
 
         JWSObject encryptionJWT;
         SecretKey encryptionSecretKey;
         try {
-            PublicKey clientKey = EncryptionUtils.generateKey(loginData.get().getIdentityPublicKey());
+            PublicKey clientKey = EncryptionUtils.parseKey(loginData.get().getIdentityPublicKey());
 
             KeyPair encryptionKeyPair = EncryptionUtils.createKeyPair();
             byte[] encryptionToken = EncryptionUtils.generateRandomToken();
             encryptionSecretKey = EncryptionUtils.getSecretKey(encryptionKeyPair.getPrivate(), clientKey, encryptionToken);
 
-            encryptionJWT = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
+            encryptionJWT = JWSObject.parse(EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken));
         } catch (Exception exception) {
             this.server.getLogger().debug("Failed to initialize packet encryption.", exception);
             this.session.getConnection().disconnect();
-            return true;
+            return PacketSignal.HANDLED;
         }
 
         this.session.getConnection().enableEncryption(encryptionSecretKey);
@@ -89,22 +92,24 @@ public class LoginHandshakePacketHandler implements BedrockPacketHandler {
         ServerToClientHandshakePacket handshakePacket = new ServerToClientHandshakePacket();
         handshakePacket.setJwt(encryptionJWT.serialize());
         this.session.getConnection().sendPacket(handshakePacket);
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(ClientToServerHandshakePacket packet) {
-        if (this.session.getConnection().isEncrypted()) {
+    public PacketSignal handle(ClientToServerHandshakePacket packet) {
+        // This is how it's checked in V3
+        if (this.session.getConnection().getPeer().getChannel().pipeline().get(BedrockEncryptionEncoder.class) != null ||
+                this.session.getConnection().getPeer().getChannel().pipeline().get(BedrockEncryptionDecoder.class) != null) {
             this.completeLogin();
-            return true;
+            return PacketSignal.HANDLED;
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(PacketViolationWarningPacket packet) {
+    public PacketSignal handle(PacketViolationWarningPacket packet) {
         this.server.getLogger().debug("Packet violation for " + packet.getPacketType() + ": " + packet.getContext());
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     private void completeLogin() {

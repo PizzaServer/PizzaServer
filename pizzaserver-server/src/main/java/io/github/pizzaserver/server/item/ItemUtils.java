@@ -1,20 +1,25 @@
 package io.github.pizzaserver.server.item;
 
 import com.google.gson.JsonObject;
-import com.nukkitx.nbt.NBTInputStream;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtUtils;
-import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
+import io.github.pizzaserver.api.block.BlockID;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.network.protocol.version.BaseMinecraftVersion;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Base64;
+
+import static io.github.pizzaserver.api.block.BlockID.AIR;
 
 public class ItemUtils {
 
@@ -26,14 +31,35 @@ public class ItemUtils {
      * @param version Minecraft version to serialize against
      * @return serialized data
      */
+    public static ItemDescriptorWithCount serializeForNetworkItemDescriptor(Item item, MinecraftVersion version) {
+        Item nonAirItem = Item.getAirIfNull(item);
+        BlockDefinition blockRuntimeId = nonAirItem instanceof ItemBlock itemBlock ?
+                ((BaseMinecraftVersion) version).getBlockDefinition(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) :
+                version.getBlockDefinition(AIR, NbtMap.EMPTY);
+
+        return ItemDescriptorWithCount.fromItem(ItemData.builder()
+                .definition(version.getItemDefinition(nonAirItem.getItemId()))
+                .netId(nonAirItem.getNetworkId())
+                .blockDefinition(blockRuntimeId)
+                .count(nonAirItem.getCount())
+                .damage(nonAirItem.getMeta())
+                .canBreak(nonAirItem.getBlocksCanBreak().toArray(String[]::new))
+                .canPlace(nonAirItem instanceof ItemBlock blockItem ? blockItem.getBlocksCanPlaceOn().toArray(String[]::new) : new String[0])
+                .tag(nonAirItem.getNBT())
+                .usingNetId(true)
+                .build());
+    }
+
     public static ItemData serializeForNetwork(Item item, MinecraftVersion version) {
         Item nonAirItem = Item.getAirIfNull(item);
-        int blockRuntimeId = nonAirItem instanceof ItemBlock itemBlock ? ((BaseMinecraftVersion) version).getBlockRuntimeId(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) : 0;
+        BlockDefinition blockRuntimeId = nonAirItem instanceof ItemBlock itemBlock ?
+                ((BaseMinecraftVersion) version).getBlockDefinition(itemBlock.getBlock().getBlockId(), itemBlock.getBlock().getNBTState()) :
+                version.getBlockDefinition(AIR, NbtMap.EMPTY);
 
         return ItemData.builder()
-                .id(version.getItemRuntimeId(nonAirItem.getItemId()))
+                .definition(version.getItemDefinition(nonAirItem.getItemId()))
                 .netId(nonAirItem.getNetworkId())
-                .blockRuntimeId(blockRuntimeId)
+                .blockDefinition(blockRuntimeId)
                 .count(nonAirItem.getCount())
                 .damage(nonAirItem.getMeta())
                 .canBreak(nonAirItem.getBlocksCanBreak().toArray(String[]::new))
@@ -72,7 +98,7 @@ public class ItemUtils {
     }
 
     public static Item deserializeNetworkItem(ItemData itemData, MinecraftVersion version) {
-        Item itemStack = ItemRegistry.getInstance().getItem(version.getItemName(itemData.getId()), itemData.getCount(), itemData.getDamage())
+        Item itemStack = ItemRegistry.getInstance().getItem(version.getItemName(itemData.getDefinition().getRuntimeId()), itemData.getCount(), itemData.getDamage())
                 .newNetworkCopy(itemData.getNetId());
         itemStack.setNBT(itemData.getTag());
         return itemStack;

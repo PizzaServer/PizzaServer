@@ -1,7 +1,6 @@
 package io.github.pizzaserver.server.item.behavior.impl;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.trait.LiquidTrait;
@@ -11,6 +10,7 @@ import io.github.pizzaserver.api.entity.definition.impl.EntityBoatDefinition;
 import io.github.pizzaserver.api.item.behavior.impl.BaseItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBaseBoat;
 import io.github.pizzaserver.api.player.Player;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
 
 public class ItemBoatBehavior extends BaseItemBehavior<ItemBaseBoat> {
 
@@ -20,7 +20,8 @@ public class ItemBoatBehavior extends BaseItemBehavior<ItemBaseBoat> {
         player.getInventory().setHeldItem(item);
 
         Entity boatEntity = EntityRegistry.getInstance().getEntity(EntityBoatDefinition.ID);
-        boatEntity.getMetaData().putInt(EntityData.VARIANT, item.getWoodType().ordinal());
+        // TODO: THIS ONE IS RIGHT I THINK, check all the others later
+        boatEntity.getMetaData().putInt(EntityDataTypes.VARIANT, item.getWoodType().ordinal());
         Vector3f spawnLocation;
         if (player.getHeadBlock() instanceof LiquidTrait) {
             spawnLocation = player.getLocation().toVector3f().add(0, player.getEyeHeight(), 0);

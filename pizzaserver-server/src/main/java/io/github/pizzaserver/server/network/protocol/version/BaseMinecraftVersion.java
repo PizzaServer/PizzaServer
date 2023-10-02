@@ -3,14 +3,15 @@ package io.github.pizzaserver.server.network.protocol.version;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
-import com.nukkitx.blockstateupdater.BlockStateUpdaters;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtMapBuilder;
-import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
-import com.nukkitx.protocol.bedrock.data.inventory.ComponentItemData;
-import com.nukkitx.protocol.bedrock.data.inventory.CraftingData;
-import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
-import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
+import org.cloudburstmc.blockstateupdater.BlockStateUpdaters;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.BlockPropertyData;
+import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
+import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ComponentItemData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
@@ -21,14 +22,13 @@ import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.api.recipe.RecipeRegistry;
 import io.github.pizzaserver.api.recipe.type.Recipe;
-import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.server.blockentity.handler.BlockEntityHandler;
 import io.github.pizzaserver.server.item.ImplItemRegistry;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.network.protocol.exception.ProtocolException;
-import io.github.pizzaserver.server.player.ImplPlayer;
 import io.github.pizzaserver.server.recipe.RecipeUtils;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.RecipeData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,11 +44,11 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion, Minecraf
     protected NbtMap availableEntities;
     protected final BiMap<BlockStateData, Integer> blockStates = HashBiMap.create();
     protected final BiMap<String, Integer> itemRuntimeIds = HashBiMap.create();
-    protected final List<StartGamePacket.ItemEntry> itemEntries = new ArrayList<>();
+    protected final List<SimpleItemDefinition> itemEntries = new ArrayList<>();
     protected final List<Item> creativeItems = new ArrayList<>();
     protected final List<Recipe> defaultRecipes = new ArrayList<>();
 
-    protected final List<CraftingData> networkRecipes = new ArrayList<>();
+    protected final List<RecipeData> networkRecipes = new ArrayList<>();
     protected final List<ItemData> networkCreativeItems = new ArrayList<>();
     protected final List<ComponentItemData> itemComponents = new ArrayList<>();
     protected final List<BlockPropertyData> customBlockProperties = new ArrayList<>();
@@ -134,6 +134,12 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion, Minecraf
     }
 
     @Override
+    public BlockDefinition getBlockDefinition(String name, NbtMap state) {
+        BaseMinecraftVersion wrapper = this;
+        return () -> wrapper.getBlockRuntimeId(name, state);
+    }
+
+    @Override
     public Block getBlockFromRuntimeId(int blockRuntimeId) {
         if (!this.blockStates.containsValue(blockRuntimeId)) {
             throw new ProtocolException(this, "No such block state exists for runtime id: " + blockRuntimeId);
@@ -157,6 +163,12 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion, Minecraf
         } else {
             throw new ProtocolException(this, "Attempted to retrieve runtime id for non-existent item: " + itemName);
         }
+    }
+
+    @Override
+    public ItemDefinition getItemDefinition(String itemName) {
+        BaseMinecraftVersion wrapper = this;
+        return new SimpleItemDefinition(itemName, this.getItemRuntimeId(itemName), false);
     }
 
     @Override
@@ -185,7 +197,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion, Minecraf
         return this.availableEntities;
     }
 
-    public List<StartGamePacket.ItemEntry> getItemEntries() {
+    public List<ItemDefinition> getItemEntries() {
         return Collections.unmodifiableList(this.itemEntries);
     }
 
@@ -201,7 +213,7 @@ public abstract class BaseMinecraftVersion implements MinecraftVersion, Minecraf
         return this.networkCreativeItems;
     }
 
-    public List<CraftingData> getCraftingData() {
+    public List<RecipeData> getCraftingData() {
         return this.networkRecipes;
     }
 

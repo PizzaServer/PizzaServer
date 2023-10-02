@@ -1,10 +1,10 @@
 package io.github.pizzaserver.server.network.data.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.inventory.*;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.server.inventory.*;
 import io.github.pizzaserver.server.player.ImplPlayer;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 
 import java.util.Optional;
 
@@ -80,7 +80,7 @@ public class InventorySlotContainer {
                 } else {
                     return null;
                 }
-            case CREATIVE_OUTPUT:
+            case CRAFTING_OUTPUT:
                 if (inventory instanceof CraftingInventory) {
                     return ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).getCreativeOutput();
                 } else {
@@ -125,7 +125,7 @@ public class InventorySlotContainer {
                     }
                 }
                 break;
-            case CREATIVE_OUTPUT:
+            case CRAFTING_OUTPUT:
                 if (this.getInventory() instanceof CraftingInventory) {
                     ((ImplPlayerCraftingInventory) this.player.getInventory().getCraftingGrid()).setCreativeOutput(itemStack);
                 }

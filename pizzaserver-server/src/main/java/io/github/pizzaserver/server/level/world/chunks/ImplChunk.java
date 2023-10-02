@@ -1,13 +1,8 @@
 package io.github.pizzaserver.server.level.world.chunks;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NBTOutputStream;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtUtils;
-import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
-import com.nukkitx.protocol.bedrock.packet.BlockEventPacket;
-import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
-import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.BlockRegistry;
@@ -36,6 +31,11 @@ import io.github.pizzaserver.server.network.protocol.version.V503MinecraftVersio
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEntityDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.LevelChunkPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 
 import java.io.IOException;
 import java.util.*;
@@ -416,7 +416,7 @@ public class ImplChunk implements Chunk {
 
         Block block = this.getBlock(chunkBlockX, y, chunkBlockZ, layer);
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(((BaseMinecraftVersion) player.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()));
+        updateBlockPacket.setDefinition(((BaseMinecraftVersion) player.getVersion()).getBlockDefinition(block.getBlockId(), block.getNBTState()));
         updateBlockPacket.setBlockPosition(Vector3i.from(chunkBlockX + this.getX() * 16, y, chunkBlockZ + this.getZ() * 16));
         updateBlockPacket.setDataLayer(layer);
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
@@ -529,7 +529,7 @@ public class ImplChunk implements Chunk {
             }
 
             byte[] chunkData = new byte[buffer.readableBytes()];
-            buffer.readBytes(chunkData);
+            //buffer.readBytes(chunkData);
 
             // Ran on the main thread in order because player.getLocation() is not thread safe
             final int packetSubChunkCount = subChunkCount;
@@ -539,7 +539,7 @@ public class ImplChunk implements Chunk {
                     chunkPacket.setChunkX(this.getX());
                     chunkPacket.setChunkZ(this.getZ());
                     chunkPacket.setSubChunksLength(packetSubChunkCount);
-                    chunkPacket.setData(chunkData);
+                    chunkPacket.setData(buffer.readBytes(chunkData));
                     player.sendPacket(chunkPacket);
 
                     this.spawnedTo.add(player);

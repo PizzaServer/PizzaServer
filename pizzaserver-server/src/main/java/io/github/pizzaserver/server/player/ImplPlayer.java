@@ -1,17 +1,5 @@
 package io.github.pizzaserver.server.player;
 
-import com.nukkitx.math.vector.Vector2f;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.protocol.bedrock.BedrockPacket;
-import com.nukkitx.protocol.bedrock.data.*;
-import com.nukkitx.protocol.bedrock.data.command.CommandData;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlags;
-import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
-import com.nukkitx.protocol.bedrock.packet.*;
-import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.entity.Entity;
@@ -67,6 +55,14 @@ import io.github.pizzaserver.server.player.manager.PlayerPopupManager;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
 import io.github.pizzaserver.server.player.playerdata.provider.PlayerDataProvider;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.*;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -204,10 +200,6 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
                 return;
             }
 
-            SyncedPlayerMovementSettings movementSettings = new SyncedPlayerMovementSettings();
-            movementSettings.setMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
-            movementSettings.setRewindHistorySize(100);
-            movementSettings.setServerAuthoritativeBlockBreaking(true);
 
             StartGamePacket startGamePacket = new StartGamePacket();
             startGamePacket.setUniqueEntityId(this.getId());
@@ -230,9 +222,9 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             startGamePacket.setInventoriesServerAuthoritative(true);
             startGamePacket.getExperiments().add(new ExperimentData("data_driven_items", true));
             startGamePacket.getGamerules().add(new GameRuleData<>("showcoordinates", true));
-            startGamePacket.setItemEntries(this.getVersion().getItemEntries());
+            startGamePacket.setItemDefinitions(this.getVersion().getItemEntries());
             startGamePacket.getBlockProperties().addAll(this.getVersion().getCustomBlockProperties());
-            startGamePacket.setPlayerMovementSettings(movementSettings);
+            startGamePacket.setAuthoritativeMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
             startGamePacket.setCommandsEnabled(true);
             startGamePacket.setMultiplayerGame(true);
             startGamePacket.setBroadcastingToLan(true);
@@ -282,7 +274,8 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             this.getPlayerList().addEntries(entries);
 
             spawnLocation.getWorld().addEntity(this, spawnLocation.toVector3f());
-            this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemID.SHIELD));
+            // Looks like this is taken care of in BedrockCodecHelper_v340? The method doesn't exist otherwise
+            //this.session.getConnection().getHardcodedBlockingId().set(this.version.getItemRuntimeId(ItemID.SHIELD));
             this.getPacketHandlerPipeline().addLast(new PlayerPacketHandler(this));
             this.getPacketHandlerPipeline().addLast(new InventoryTransactionHandler(this));
             this.getPacketHandlerPipeline().addLast(new AuthInputHandler(this));
@@ -862,15 +855,15 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
             dummyEntityPacket.setUniqueEntityId(implBossbar.getEntityId());
             dummyEntityPacket.setRuntimeEntityId(implBossbar.getEntityId());
             dummyEntityPacket.setMotion(Vector3f.ZERO);
-            dummyEntityPacket.setRotation(Vector3f.ZERO);
+            dummyEntityPacket.setRotation(Vector2f.ZERO);
+            dummyEntityPacket.setHeadRotation(0);
             dummyEntityPacket.setPosition(this.getLocation().toVector3f());
 
-            dummyEntityPacket.getMetadata().putFloat(EntityData.BOUNDING_BOX_HEIGHT, 0);
-            dummyEntityPacket.getMetadata().putFloat(EntityData.BOUNDING_BOX_WIDTH, 0);
-            dummyEntityPacket.getMetadata().putFloat(EntityData.SCALE, 0);
-            EntityFlags flags = dummyEntityPacket.getMetadata().getOrCreateFlags();
-            flags.setFlag(EntityFlag.INVISIBLE, true);
-            dummyEntityPacket.getMetadata().putFlags(flags);
+            dummyEntityPacket.getMetadata().put(EntityDataTypes.HEIGHT, 0);
+            dummyEntityPacket.getMetadata().put(EntityDataTypes.WIDTH, 0);
+            dummyEntityPacket.getMetadata().put(EntityDataTypes.SCALE, 0);
+            // TODO: Double check we don't need the weird putFlags call
+            dummyEntityPacket.getMetadata().setFlag(EntityFlag.INVISIBLE, true);
 
             this.sendPacket(dummyEntityPacket);
             implBossbar.spawnTo(this);
@@ -974,24 +967,24 @@ public class ImplPlayer extends ImplEntityHuman implements Player {
 
     @Override
     public boolean isConnected() {
-        return !this.session.getConnection().isClosed();
+        return this.session.getConnection().isConnected();
     }
 
     @Override
     public long getPing() {
-        return this.session.getConnection().getLatency();
+        return this.session.getPlayer().getPing();
     }
 
     @Override
     public void sendPacket(BedrockPacket packet) {
-        if (!this.session.getConnection().isClosed()) {
+        if (this.session.getConnection().isConnected()) {
             this.session.getConnection().sendPacket(packet);
         }
     }
 
     @Override
     public void sendPacketImmediately(BedrockPacket packet) {
-        if (!this.session.getConnection().isClosed()) {
+        if (this.session.getConnection().isConnected()) {
             this.session.getConnection().sendPacketImmediately(packet);
         }
     }

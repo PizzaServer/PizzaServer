@@ -1,12 +1,5 @@
 package io.github.pizzaserver.server.entity;
 
-import com.nukkitx.math.vector.Vector2f;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
-import com.nukkitx.protocol.bedrock.data.entity.EntityEventType;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
-import com.nukkitx.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
@@ -42,6 +35,13 @@ import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.level.ImplLevel;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 
 import java.util.*;
 
@@ -357,23 +357,23 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getHeight() {
-        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_HEIGHT);
+        return this.getMetaData().getFloat(EntityDataTypes.HEIGHT);
     }
 
     @Override
     public void setHeight(float height) {
-        this.getMetaData().putFloat(EntityData.BOUNDING_BOX_HEIGHT, height);
+        this.getMetaData().putFloat(EntityDataTypes.HEIGHT, height);
         this.recalculateBoundingBox();
     }
 
     @Override
     public float getWidth() {
-        return this.getMetaData().getFloat(EntityData.BOUNDING_BOX_WIDTH);
+        return this.getMetaData().getFloat(EntityDataTypes.WIDTH);
     }
 
     @Override
     public void setWidth(float width) {
-        this.getMetaData().putFloat(EntityData.BOUNDING_BOX_WIDTH, width);
+        this.getMetaData().putFloat(EntityDataTypes.WIDTH, width);
         this.recalculateBoundingBox();
     }
 
@@ -437,12 +437,12 @@ public class ImplEntity implements Entity {
 
     @Override
     public Optional<String> getDisplayName() {
-        return Optional.ofNullable(this.getMetaData().getString(EntityData.NAMETAG));
+        return Optional.ofNullable(this.getMetaData().getString(EntityDataTypes.NAME));
     }
 
     @Override
     public void setDisplayName(String name) {
-        this.getMetaData().putString(EntityData.NAMETAG, name);
+        this.getMetaData().putString(EntityDataTypes.NAME, name);
     }
 
     @Override
@@ -666,12 +666,12 @@ public class ImplEntity implements Entity {
 
     @Override
     public float getScale() {
-        return this.getMetaData().getFloat(EntityData.SCALE);
+        return this.getMetaData().getFloat(EntityDataTypes.SCALE);
     }
 
     @Override
     public void setScale(float scale) {
-        this.getMetaData().putFloat(EntityData.SCALE, scale);
+        this.getMetaData().putFloat(EntityDataTypes.SCALE, scale);
         this.recalculateBoundingBox();
     }
 
@@ -725,27 +725,27 @@ public class ImplEntity implements Entity {
 
     @Override
     public int getAirSupplyTicks() {
-        return this.getMetaData().getShort(EntityData.AIR_SUPPLY);
+        return this.getMetaData().getShort(EntityDataTypes.AIR_SUPPLY);
     }
 
     @Override
     public void setAirSupplyTicks(int ticks) {
         int newAirSupplyTicks = Math.max(0, Math.min(ticks, this.getMaxAirSupplyTicks()));
         if (newAirSupplyTicks != this.getAirSupplyTicks()) {
-            this.getMetaData().putShort(EntityData.AIR_SUPPLY, (short) newAirSupplyTicks);
+            this.getMetaData().putShort(EntityDataTypes.AIR_SUPPLY, (short) newAirSupplyTicks);
         }
     }
 
     @Override
     public int getMaxAirSupplyTicks() {
-        return this.getMetaData().getShort(EntityData.MAX_AIR_SUPPLY);
+        return this.getMetaData().getShort(EntityDataTypes.AIR_SUPPLY_MAX);
     }
 
     @Override
     public void setMaxAirSupplyTicks(int ticks) {
         int newMaxAirSupplyTicks = Math.max(0, ticks);
         if (newMaxAirSupplyTicks != this.getMaxAirSupplyTicks()) {
-            this.getMetaData().putShort(EntityData.MAX_AIR_SUPPLY, (short) newMaxAirSupplyTicks);
+            this.getMetaData().putShort(EntityDataTypes.AIR_SUPPLY_MAX, (short) newMaxAirSupplyTicks);
 
             this.setAirSupplyTicks(Math.min(this.getAirSupplyTicks(), this.getMaxAirSupplyTicks()));
         }
@@ -1273,7 +1273,8 @@ public class ImplEntity implements Entity {
             addEntityPacket.setIdentifier(this.getEntityDefinition().getEntityId());
             addEntityPacket.setPosition(this.getLocation().toVector3f().add(0, this.getBaseOffset(), 0));
             addEntityPacket.setMotion(this.getMotion());
-            addEntityPacket.setRotation(Vector3f.from(this.getPitch(), this.getYaw(), this.getHeadYaw()));
+            addEntityPacket.setRotation(Vector2f.from(this.getPitch(), this.getYaw()));
+            addEntityPacket.setHeadRotation(this.getHeadYaw());
             addEntityPacket.getMetadata().putAll(this.getMetaData().serialize());
             player.sendPacket(addEntityPacket);
             this.sendEquipmentPacket(player);

@@ -1,16 +1,12 @@
 package io.github.pizzaserver.server.network.protocol;
 
-import com.nukkitx.protocol.bedrock.BedrockPacket;
-import com.nukkitx.protocol.bedrock.BedrockServerSession;
-import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
-import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.network.protocol.version.MinecraftVersion;
 import io.github.pizzaserver.server.player.ImplPlayer;
 import io.netty.util.ReferenceCountUtil;
+import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -59,7 +55,8 @@ public class PlayerSession {
         BedrockPacket packet;
         while ((packet = this.incomingPacketsQueue.poll()) != null) {
             this.getPacketHandlerPipeline().accept(packet);
-            ReferenceCountUtil.release(packet);
+            Server.getInstance().getLogger().info("Polled packet into packet handler pipeline");
+            //ReferenceCountUtil.release(packet);
         }
     }
 

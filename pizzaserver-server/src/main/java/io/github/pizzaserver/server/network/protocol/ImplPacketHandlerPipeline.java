@@ -1,8 +1,10 @@
 package io.github.pizzaserver.server.network.protocol;
 
-import com.nukkitx.protocol.bedrock.BedrockPacket;
-import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
+import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.network.protocol.PacketHandlerPipeline;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
+import org.cloudburstmc.protocol.common.PacketSignal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,11 +40,13 @@ public class ImplPacketHandlerPipeline implements PacketHandlerPipeline, Consume
         List<BedrockPacketHandler> currentHandlers = new ArrayList<>(this.handlers);
 
         for (BedrockPacketHandler handler : currentHandlers) {
-            boolean shouldIgnoreOtherPacketHandlers = packet.handle(handler);
-
-            if (shouldIgnoreOtherPacketHandlers) {
+            PacketSignal shouldIgnoreOtherPacketHandlers = packet.handle(handler);
+            Server.getInstance().getLogger().info("Logging packets through handlers insdiidfkasmlj nslk ");
+            Server.getInstance().getLogger().info("Packet SIgnal: " + (shouldIgnoreOtherPacketHandlers == PacketSignal.HANDLED));
+            // TODO: DO some things and stuff here maybe?
+/*            if (shouldIgnoreOtherPacketHandlers == PacketSignal.HANDLED) {
                 break;
-            }
+            }*/
         }
     }
 

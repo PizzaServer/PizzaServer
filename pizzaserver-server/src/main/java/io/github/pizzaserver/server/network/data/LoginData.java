@@ -6,11 +6,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nukkitx.protocol.bedrock.data.skin.*;
-import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import io.github.pizzaserver.api.player.data.Device;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.netty.util.AsciiString;
+import org.cloudburstmc.protocol.bedrock.data.skin.*;
+import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
+import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class LoginData {
     private final String languageCode;
     private final Device device;
     private final Skin skin;
-    private final boolean authenticated;
+    private final ChainValidationResult authenticated;
 
 
     private LoginData(String xuid,
@@ -35,7 +36,7 @@ public class LoginData {
                       String languageCode,
                       Device device,
                       Skin skin,
-                      boolean authenticated) {
+                      ChainValidationResult authenticated) {
         this.xuid = xuid;
         this.identityPublicKey = identityPublicKey;
         this.uuid = uuid;
@@ -74,7 +75,7 @@ public class LoginData {
         return this.skin;
     }
 
-    public boolean isAuthenticated() {
+    public ChainValidationResult isAuthenticated() {
         return this.authenticated;
     }
 
@@ -86,7 +87,7 @@ public class LoginData {
      * @return login data
      */
     @SuppressWarnings("unchecked")
-    public static Optional<LoginData> extract(AsciiString chainData, AsciiString skinData) {
+    public static Optional<LoginData> extract(List<String> chainData, String skinData) {
         String xuid;
         String identityPublicKey;
         UUID uuid;
@@ -94,19 +95,21 @@ public class LoginData {
         String languageCode;
         Device device;
         Skin skin;
-        boolean authenticated;
+        ChainValidationResult authenticated;
 
         try {
             // Validate chain and extract data
             JsonObject chainJSON = GSON.fromJson(chainData.toString(), JsonObject.class);
 
             // Check if xbox authenticated
-            JSONArray chainArray = new JSONArray();
+            ArrayList<String> toValidate = new ArrayList<>();
             for (JsonElement chainElement : chainJSON.getAsJsonArray("chain")) {
-                chainArray.add(chainElement.getAsString());
+                toValidate.add(chainElement.getAsString());
             }
-            authenticated = EncryptionUtils.verifyChain(chainArray);
+            authenticated = EncryptionUtils.validateChain(toValidate);
 
+            JSONArray chainArray = new JSONArray();
+            chainArray.addAll(toValidate);
             // Retrieve xuid, uuid, and username
             String chainPayload = JWSObject.parse(((String) chainArray.get(chainArray.size() - 1))).getPayload().toString();
             JsonObject jsonPayload = GSON.fromJson(chainPayload, JsonObject.class);
@@ -116,7 +119,7 @@ public class LoginData {
             identityPublicKey = jsonPayload.get("identityPublicKey").getAsString();
 
             // Extract data from skin string
-            JWSObject skinJWS = JWSObject.parse(skinData.toString());
+            JWSObject skinJWS = JWSObject.parse(skinData);
             JsonObject skinJSON = GSON.fromJson(skinJWS.getPayload().toString(), JsonObject.class);
 
             // Retrieve device and language code
@@ -139,8 +142,8 @@ public class LoginData {
                 authenticated));
     }
 
-    private static Skin extractSkin(AsciiString skinChain) throws Exception {
-        JWSObject skinJWS = JWSObject.parse(skinChain.toString());
+    private static Skin extractSkin(String skinChain) throws Exception {
+        JWSObject skinJWS = JWSObject.parse(skinChain);
         JsonObject skinJSON = GSON.fromJson(skinJWS.getPayload().toString(), JsonObject.class);
 
         List<AnimationData> animations = new ArrayList<>();

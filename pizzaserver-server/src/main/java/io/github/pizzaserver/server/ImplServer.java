@@ -1,6 +1,5 @@
 package io.github.pizzaserver.server;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.ServerConfig;
 import io.github.pizzaserver.api.block.Block;
@@ -47,6 +46,7 @@ import io.github.pizzaserver.server.plugin.ImplPluginManager;
 import io.github.pizzaserver.server.recipe.ImplRecipeRegistry;
 import io.github.pizzaserver.server.scoreboard.ImplScoreboard;
 import io.github.pizzaserver.server.utils.ImplLogger;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -124,12 +124,15 @@ public class ImplServer extends Server {
      * Does not create a new thread and will block the thread that calls this method until shutdown.
      */
     public void boot() throws IOException {
+        getLogger().info("At least we're here");
         this.state = ServerState.REGISTERING;
         VanillaContentLoader.load();
+        getLogger().info("Here?");
 
         // TODO: load plugins and call register method
 
         ServerProtocol.loadVersions();
+        getLogger().info("We seem to be getting farther!");
 
         // Load the earliest protocol's creative inventory.
         int minimumServerProtocol = Server.getInstance().getConfig().getMinimumSupportedProtocol();
@@ -256,10 +259,18 @@ public class ImplServer extends Server {
         this.getLogger().debug("Stopped command registy");
 
         for (PlayerSession session : this.sessions) {
-            if (session.getPlayer() != null) {
-                session.getPlayer().disconnect("Server Stopped");
+            if (session.getConnection().isConnected()) {
+                try {
+                    session.getPlayer().disconnect("Server Stopped");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
-                session.getConnection().disconnect();
+                try {
+                    session.getConnection().disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 

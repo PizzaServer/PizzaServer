@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.entity.meta;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
 
 /**
  * Entities have metadata which gives them special properties about how they are rendered to the Minecraft client.
@@ -15,42 +15,42 @@ public interface EntityMetadata {
 
     EntityMetadata putFlag(EntityFlag flag, boolean enabled);
 
-    boolean contains(EntityData propertyName);
+    boolean contains(EntityDataType<?> propertyName);
 
-    byte getByte(EntityData propertyName);
+    byte getByte(EntityDataType<?> propertyName);
 
-    EntityMetadata putByte(EntityData propertyName, byte value);
+    EntityMetadata putByte(EntityDataType<?> propertyName, byte value);
 
-    short getShort(EntityData propertyName);
+    short getShort(EntityDataType<?> propertyName);
 
-    EntityMetadata putShort(EntityData propertyName, short value);
+    EntityMetadata putShort(EntityDataType<?> propertyName, short value);
 
-    int getInt(EntityData propertyName);
+    int getInt(EntityDataType<?> propertyName);
 
-    EntityMetadata putInt(EntityData propertyName, int value);
+    EntityMetadata putInt(EntityDataType<?> propertyName, int value);
 
-    float getFloat(EntityData propertyName);
+    float getFloat(EntityDataType<?> propertyName);
 
-    EntityMetadata putFloat(EntityData propertyName, float value);
+    EntityMetadata putFloat(EntityDataType<?> propertyName, float value);
 
-    long getLong(EntityData propertyName);
+    long getLong(EntityDataType<?> propertyName);
 
-    EntityMetadata putLong(EntityData propertyName, long value);
+    EntityMetadata putLong(EntityDataType<?> propertyName, long value);
 
-    String getString(EntityData propertyName);
+    String getString(EntityDataType<?> propertyName);
 
-    EntityMetadata putString(EntityData propertyName, String value);
+    EntityMetadata putString(EntityDataType<?> propertyName, String value);
 
-    NbtMap getNBT(EntityData propertyName);
+    NbtMap getNBT(EntityDataType<?> propertyName);
 
-    EntityMetadata putNBT(EntityData propertyName, NbtMap value);
+    EntityMetadata putNBT(EntityDataType<?> propertyName, NbtMap value);
 
-    Vector3i getVector3i(EntityData propertyName);
+    Vector3i getVector3i(EntityDataType<?> propertyName);
 
-    EntityMetadata putVector3i(EntityData propertyName, Vector3i value);
+    EntityMetadata putVector3i(EntityDataType<?> propertyName, Vector3i value);
 
-    Vector3f getVector3f(EntityData propertyName);
+    Vector3f getVector3f(EntityDataType<?> propertyName);
 
-    EntityMetadata putVector3f(EntityData propertyName, Vector3f value);
+    EntityMetadata putVector3f(EntityDataType<?> propertyName, Vector3f value);
 
 }

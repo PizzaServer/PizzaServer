@@ -1,16 +1,17 @@
 package io.github.pizzaserver.server.entity;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
-import com.nukkitx.protocol.bedrock.data.entity.EntityDataMap;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.entity.EntityFlags;
-import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.meta.EntityMetadata;
 import io.github.pizzaserver.api.player.Player;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataMap;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
+import org.cloudburstmc.protocol.bedrock.packet.SetEntityDataPacket;
+
+import java.util.EnumSet;
 
 public class ImplEntityMetadata implements EntityMetadata {
 
@@ -26,125 +27,142 @@ public class ImplEntityMetadata implements EntityMetadata {
 
     @Override
     public boolean hasFlag(EntityFlag flag) {
-        return this.dataMap.getOrCreateFlags().getFlag(flag);
+        return this.dataMap.getOrCreateFlags().contains(flag);
     }
 
     @Override
     public EntityMetadata putFlag(EntityFlag flag, boolean enabled) {
-        EntityFlags flags = this.dataMap.getOrCreateFlags();
-        this.updated |= flags.setFlag(flag, enabled);
+        EnumSet<EntityFlag> flags = this.dataMap.getOrCreateFlags();
+        boolean toUpdate = (flags.contains(flag) && !enabled) || (!flags.contains(flag) && enabled);
+        if (enabled && toUpdate) {
+            flags.add(flag);
+        } else if(!enabled && toUpdate) {
+            flags.remove(flag);
+        }
+        // TODO: This makes me feel weird
+        this.dataMap.setFlag(flag, enabled);
+        this.updated |= toUpdate;
         this.dataMap.putFlags(flags);
         return this;
     }
 
     @Override
-    public boolean contains(EntityData propertyName) {
+    public boolean contains(EntityDataType<?> propertyName) {
         return this.dataMap.containsKey(propertyName);
     }
 
     @Override
-    public byte getByte(EntityData propertyName) {
-        return this.dataMap.getByte(propertyName, (byte) 0);
+    public byte getByte(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result != null ? (byte) result : 0;
     }
 
     @Override
-    public EntityMetadata putByte(EntityData propertyName, byte value) {
-        this.dataMap.putByte(propertyName, value);
+    public EntityMetadata putByte(EntityDataType<?> propertyName, byte value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public short getShort(EntityData propertyName) {
-        return this.dataMap.getShort(propertyName, (short) 0);
+    public short getShort(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result != null ? (short) result : 0;
     }
 
     @Override
-    public EntityMetadata putShort(EntityData propertyName, short value) {
-        this.dataMap.putShort(propertyName, value);
+    public EntityMetadata putShort(EntityDataType<?> propertyName, short value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public int getInt(EntityData propertyName) {
-        return this.dataMap.getInt(propertyName, 0);
+    public int getInt(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result == null ? 0 : (int) result;
     }
 
     @Override
-    public EntityMetadata putInt(EntityData propertyName, int value) {
-        this.dataMap.putInt(propertyName, value);
+    public EntityMetadata putInt(EntityDataType<?> propertyName, int value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public float getFloat(EntityData propertyName) {
-        return this.dataMap.getFloat(propertyName, 0);
+    public float getFloat(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result == null ? 0 : (float) result;
     }
 
     @Override
-    public EntityMetadata putFloat(EntityData propertyName, float value) {
-        this.dataMap.putFloat(propertyName, value);
+    public EntityMetadata putFloat(EntityDataType<?> propertyName, float value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public long getLong(EntityData propertyName) {
-        return this.dataMap.getLong(propertyName, 0);
+    public long getLong(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result == null ? 0 : (long) result;
     }
 
     @Override
-    public EntityMetadata putLong(EntityData propertyName, long value) {
-        this.dataMap.putLong(propertyName, value);
+    public EntityMetadata putLong(EntityDataType<?> propertyName, long value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public String getString(EntityData propertyName) {
-        return this.dataMap.getString(propertyName, null);
+    public String getString(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result == null ? "" : (String) result;
     }
 
     @Override
-    public EntityMetadata putString(EntityData propertyName, String value) {
-        this.dataMap.putString(propertyName, value);
+    public EntityMetadata putString(EntityDataType<?> propertyName, String value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public NbtMap getNBT(EntityData propertyName) {
-        return this.dataMap.getTag(propertyName, null);
+    public NbtMap getNBT(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result == null ? NbtMap.EMPTY : (NbtMap) result;
     }
 
     @Override
-    public EntityMetadata putNBT(EntityData propertyName, NbtMap value) {
-        this.dataMap.putTag(propertyName, value);
+    public EntityMetadata putNBT(EntityDataType<?> propertyName, NbtMap value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public Vector3i getVector3i(EntityData propertyName) {
-        return this.dataMap.getPos(propertyName, null);
+    public Vector3i getVector3i(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result == null ? Vector3i.ZERO : (Vector3i) result;
     }
 
-    public EntityMetadata putVector3i(EntityData propertyName, Vector3i value) {
-        this.dataMap.putPos(propertyName, value);
+    public EntityMetadata putVector3i(EntityDataType<?> propertyName, Vector3i value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }
 
     @Override
-    public Vector3f getVector3f(EntityData propertyName) {
-        return this.dataMap.getVector3f(propertyName);
+    public Vector3f getVector3f(EntityDataType<?> propertyName) {
+        Object result = this.dataMap.get(propertyName);
+        return result == null ? Vector3f.ZERO : (Vector3f) result;
     }
 
     @Override
-    public EntityMetadata putVector3f(EntityData propertyName, Vector3f value) {
-        this.dataMap.putVector3f(propertyName, value);
+    public EntityMetadata putVector3f(EntityDataType<?> propertyName, Vector3f value) {
+        this.dataMap.put(propertyName, value);
         this.updated = true;
         return this;
     }

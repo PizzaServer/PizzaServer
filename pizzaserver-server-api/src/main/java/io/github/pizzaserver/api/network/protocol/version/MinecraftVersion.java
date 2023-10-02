@@ -1,8 +1,11 @@
 package io.github.pizzaserver.api.network.protocol.version;
 
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import io.github.pizzaserver.api.block.Block;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
+import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
+import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
 
 /**
  * Represents a specific Minecraft version.
@@ -17,7 +20,7 @@ public interface MinecraftVersion {
      */
     String getVersion();
 
-    BedrockPacketCodec getPacketCodec();
+    BedrockCodec getPacketCodec();
 
     /**
      * Resolves the runtime id of an item given its item id.
@@ -26,12 +29,16 @@ public interface MinecraftVersion {
      */
     int getItemRuntimeId(String itemName);
 
+    ItemDefinition getItemDefinition(String itemName);
+
     /**
      * Resolve an item name by its runtime id.
      * @param runtimeId runtime id
      * @return the item name
      */
     String getItemName(int runtimeId);
+
+    BlockDefinition getBlockDefinition(String name, NbtMap state);
 
     /**
      * Resolve a block by its runtime id.
