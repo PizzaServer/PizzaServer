@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.entity.data.attributes;
 
-import com.nukkitx.protocol.bedrock.data.AttributeData;
 import io.github.pizzaserver.commons.utils.NumberUtils;
+import org.cloudburstmc.protocol.bedrock.data.AttributeData;
 
 public class Attribute {
 

@@ -1,8 +1,6 @@
 package io.github.pizzaserver.format.provider.mcworld.utils;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.*;
-import com.nukkitx.nbt.util.stream.LittleEndianDataOutputStream;
+import org.cloudburstmc.math.vector.Vector3i;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.format.data.LevelData;
 import io.github.pizzaserver.format.data.LevelGameRules;
@@ -14,6 +12,8 @@ import io.github.pizzaserver.format.chunks.ChunkParseException;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.utils.Palette;
 import io.github.pizzaserver.format.provider.mcworld.data.MCWorldChunkData;
 import io.netty.buffer.*;
+import org.cloudburstmc.nbt.*;
+import org.cloudburstmc.nbt.util.stream.LittleEndianDataOutputStream;
 
 import java.io.*;
 import java.util.Arrays;
@@ -517,9 +517,9 @@ public class MCWorldFormatUtils {
 
     public static void writeLevelData(File levelDatFile, LevelData data) throws IOException {
         try (FileOutputStream fileStream = new FileOutputStream(levelDatFile);
-                LittleEndianDataOutputStream leOutputStream = new LittleEndianDataOutputStream(fileStream);
-                ByteArrayOutputStream payloadStream = new ByteArrayOutputStream();
-                NBTOutputStream nbtStream = NbtUtils.createWriterLE(payloadStream)) {
+             LittleEndianDataOutputStream leOutputStream = new LittleEndianDataOutputStream(fileStream);
+             ByteArrayOutputStream payloadStream = new ByteArrayOutputStream();
+             NBTOutputStream nbtStream = NbtUtils.createWriterLE(payloadStream)) {
 
             NbtMap payload = NbtMap.builder()
                     .putBoolean("commandsEnabled", data.isCommandsEnabled())

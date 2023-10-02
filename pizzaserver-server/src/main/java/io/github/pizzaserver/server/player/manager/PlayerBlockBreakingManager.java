@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.player.manager;
 
-import com.nukkitx.protocol.bedrock.data.LevelEventType;
-import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
@@ -39,7 +39,7 @@ public class PlayerBlockBreakingManager {
 
             for (Player viewer : block.getLocation().getChunk().getViewers()) {
                 LevelEventPacket breakParticlePacket = new LevelEventPacket();
-                breakParticlePacket.setType(LevelEventType.PARTICLE_CRACK_BLOCK);
+                breakParticlePacket.setType(LevelEvent.PARTICLE_CRACK_BLOCK);
                 breakParticlePacket.setPosition(this.blockMiningLocation.toVector3f());
                 breakParticlePacket.setData(((BaseMinecraftVersion) viewer.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState()) | (this.blockFaceMiningAgainst.ordinal() << 24));
                 viewer.sendPacket(breakParticlePacket);
@@ -86,7 +86,7 @@ public class PlayerBlockBreakingManager {
                 int blockRuntimeId = ((BaseMinecraftVersion) viewer.getVersion()).getBlockRuntimeId(block.getBlockId(), block.getNBTState());
 
                 LevelEventPacket breakParticlePacket = new LevelEventPacket();
-                breakParticlePacket.setType(LevelEventType.PARTICLE_DESTROY_BLOCK);
+                breakParticlePacket.setType(LevelEvent.PARTICLE_DESTROY_BLOCK);
                 breakParticlePacket.setPosition(block.getLocation().toVector3f());
                 breakParticlePacket.setData(blockRuntimeId);
                 viewer.sendPacket(breakParticlePacket);
@@ -147,7 +147,7 @@ public class PlayerBlockBreakingManager {
 
         if (this.breakTicks > 0) {
             LevelEventPacket breakStartPacket = new LevelEventPacket();
-            breakStartPacket.setType(LevelEventType.BLOCK_START_BREAK);
+            breakStartPacket.setType(LevelEvent.BLOCK_START_BREAK);
             breakStartPacket.setPosition(this.blockMiningLocation.toVector3f());
             breakStartPacket.setData(65535 / this.breakTicks);
 
@@ -159,7 +159,7 @@ public class PlayerBlockBreakingManager {
 
     public void stopBreaking() {
         LevelEventPacket breakStopPacket = new LevelEventPacket();
-        breakStopPacket.setType(LevelEventType.BLOCK_STOP_BREAK);
+        breakStopPacket.setType(LevelEvent.BLOCK_STOP_BREAK);
         breakStopPacket.setPosition(this.blockMiningLocation.toVector3f());
         for (Player player : this.blockMiningLocation.getChunk().getViewers()) {
             player.sendPacket(breakStopPacket);
@@ -177,7 +177,7 @@ public class PlayerBlockBreakingManager {
             Block block = this.blockMiningLocation.getBlock();
 
             LevelEventPacket breakUpdatePacket = new LevelEventPacket();
-            breakUpdatePacket.setType(LevelEventType.BLOCK_UPDATE_BREAK);
+            breakUpdatePacket.setType(LevelEvent.BLOCK_UPDATE_BREAK);
             breakUpdatePacket.setPosition(block.getLocation().toVector3f());
             breakUpdatePacket.setData(65535 / this.breakTicks);
 

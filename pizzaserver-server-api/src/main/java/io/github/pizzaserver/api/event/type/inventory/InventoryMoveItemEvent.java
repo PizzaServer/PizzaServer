@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.event.type.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
 /**
  * Called when an entity tries to move an item into an inventory slot.
@@ -13,7 +13,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
 
     protected Entity entity;
 
-    protected StackRequestActionType action;
+    protected ItemStackRequestActionType action;
 
     protected Inventory inventory;
     protected ContainerSlotType slotType;
@@ -27,7 +27,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
     protected Item destinationCurrentItemStack;
 
     public InventoryMoveItemEvent(Entity entity,
-                                  StackRequestActionType action,
+                                  ItemStackRequestActionType action,
                                   Inventory inventory,
                                   ContainerSlotType slotType,
                                   int movedItemSlot,
@@ -58,7 +58,7 @@ public class InventoryMoveItemEvent extends BaseInventoryEvent.Cancellable {
         return this.entity;
     }
 
-    public StackRequestActionType getAction() {
+    public ItemStackRequestActionType getAction() {
         return this.action;
     }
 

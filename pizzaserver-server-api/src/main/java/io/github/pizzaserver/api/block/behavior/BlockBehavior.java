@@ -1,11 +1,11 @@
 package io.github.pizzaserver.api.block.behavior;
 
-import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
+import org.cloudburstmc.math.vector.Vector3f;
 
 public interface BlockBehavior<T extends Block> {
 

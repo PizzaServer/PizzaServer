@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.player.manager;
 
-import com.nukkitx.math.vector.Vector2i;
-import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
+import org.cloudburstmc.math.vector.Vector2i;
+import org.cloudburstmc.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.utils.Location;

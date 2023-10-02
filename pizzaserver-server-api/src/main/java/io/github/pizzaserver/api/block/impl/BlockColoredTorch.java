@@ -1,8 +1,8 @@
 package io.github.pizzaserver.api.block.impl;
 
-import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.ArrayList;
 import java.util.Collections;

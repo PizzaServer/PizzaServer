@@ -1,8 +1,5 @@
 package io.github.pizzaserver.server.commands;
 
-import com.nukkitx.protocol.bedrock.data.command.CommandParam;
-import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
-import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.commands.Command;
 import io.github.pizzaserver.api.commands.CommandRegistry;
@@ -10,6 +7,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.ServerState;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.commands.defaults.*;
+import org.cloudburstmc.protocol.bedrock.packet.AvailableCommandsPacket;
 import org.jline.reader.*;
 
 import java.util.*;
@@ -199,12 +197,12 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
             Command command = commands.get(parsedLine.words().get(0));
             if(command == null)
                 return;
-            for(CommandParamData[] row : command.getOverloads()) {
+/*            for(CommandParamData[] row : command.getOverloads()) {
                 int position = 0;
                 for(CommandParamData paramData : row) {
-                    /* TODO: Predict the next word more accurately using command parameter types (if it's player, get a list of them)
+                    *//* TODO: Predict the next word more accurately using command parameter types (if it's player, get a list of them)
                      *    Will revisit this when parameters are redone
-                     */
+                     *//*
                     if (paramData.getType().equals(CommandParam.TARGET) && parsedLine.wordIndex()-1 == position) {
                         for(Player player : server.getPlayers()) {
                             String name = player.getName();
@@ -221,7 +219,7 @@ public class ImplCommandRegistry extends SimpleTerminalConsole implements Comple
                     }
                     position++;
                 }
-            }
+            }*/
         }
     }
 

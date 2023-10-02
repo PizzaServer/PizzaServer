@@ -1,11 +1,9 @@
 package io.github.pizzaserver.api.item;
 
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
-import io.github.pizzaserver.api.item.descriptors.ArmorItem;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.*;
 

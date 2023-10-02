@@ -1,10 +1,9 @@
 package io.github.pizzaserver.api.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.Watchable;
-import org.checkerframework.checker.nullness.Opt;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.*;
 

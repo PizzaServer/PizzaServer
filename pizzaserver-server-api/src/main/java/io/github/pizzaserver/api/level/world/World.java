@@ -1,9 +1,5 @@
 package io.github.pizzaserver.api.level.world;
 
-import com.nukkitx.math.vector.Vector2i;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
@@ -16,6 +12,10 @@ import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.chunks.ChunkManager;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.Player;
+import org.cloudburstmc.math.vector.Vector2i;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 import java.util.Map;
 import java.util.Optional;

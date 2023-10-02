@@ -1,8 +1,8 @@
 package io.github.pizzaserver.server.player.handlers;
 
-import com.nukkitx.protocol.bedrock.data.AdventureSetting;
-import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
-import com.nukkitx.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.data.AdventureSetting;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeAction;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.impl.BlockSign;
@@ -16,6 +16,7 @@ import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Skin;
 import io.github.pizzaserver.server.level.world.chunks.ImplChunk;
 import io.github.pizzaserver.server.player.ImplPlayer;
+import org.cloudburstmc.protocol.common.PacketSignal;
 
 import java.util.Arrays;
 
@@ -29,18 +30,18 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
     }
 
     @Override
-    public boolean handle(SetLocalPlayerAsInitializedPacket packet) {
+    public PacketSignal handle(SetLocalPlayerAsInitializedPacket packet) {
         if (!this.player.isLocallyInitialized()) {
             this.player.onLocallyInitialized();
 
             PlayerLocallyInitializedEvent playerLocallyInitializedEvent = new PlayerLocallyInitializedEvent(this.player);
             this.player.getServer().getEventManager().call(playerLocallyInitializedEvent);
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(AnimatePacket packet) {
+    public PacketSignal handle(AnimatePacket packet) {
         if (this.player.isAlive()) {
             PlayerAnimationEvent event = new PlayerAnimationEvent(this.player, packet.getAction());
             this.player.getServer().getEventManager().call(event);
@@ -55,11 +56,11 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 }
             }
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(PlayerActionPacket packet) {
+    public PacketSignal handle(PlayerActionPacket packet) {
         switch (packet.getAction()) {
             case RESPAWN:
                 if (!this.player.isAlive()) {
@@ -83,21 +84,21 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 }
                 break;
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(RespawnPacket packet) {
+    public PacketSignal handle(RespawnPacket packet) {
         RespawnPacket respawnPacket = new RespawnPacket();
         respawnPacket.setPosition(this.player.getSpawn().toVector3f());
         respawnPacket.setState(RespawnPacket.State.SERVER_READY);
         respawnPacket.setRuntimeEntityId(this.player.getId());
         this.player.sendPacket(respawnPacket);
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(TextPacket packet) {
+    public PacketSignal handle(TextPacket packet) {
         if (packet.getType() == TextPacket.Type.CHAT) {
             String message = packet.getMessage().strip();
             if (message.length() > 512) {
@@ -112,22 +113,22 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 }
             }
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(PlayerSkinPacket packet) {
+    public PacketSignal handle(PlayerSkinPacket packet) {
         PlayerSkinUpdateEvent event = new PlayerSkinUpdateEvent(this.player, Skin.deserialize(packet.getSkin()));
         this.player.getServer().getEventManager().call(event);
 
         if (!event.isCancelled()) {
             this.player.setSkin(event.getNewSkin());
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(AdventureSettingsPacket packet) {
+    public PacketSignal handle(AdventureSettingsPacket packet) {
         if (packet.getUniqueEntityId() == this.player.getId()) {
             AdventureSettings adventureSettings = this.player.getAdventureSettings();
 
@@ -149,28 +150,28 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 }
             }
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(ModalFormResponsePacket packet) {
+    public PacketSignal handle(ModalFormResponsePacket packet) {
         this.player.getPopupManager().onFormResponse(packet.getFormId(), packet.getFormData());
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(RequestChunkRadiusPacket packet) {
+    public PacketSignal handle(RequestChunkRadiusPacket packet) {
         int newChunkRadius = Math.min(packet.getRadius(), this.player.getServer().getConfig().getChunkRadius());
         this.player.setChunkRadius(newChunkRadius);
 
         ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
         chunkRadiusUpdatedPacket.setRadius(this.player.getChunkRadius());
         this.player.sendPacket(chunkRadiusUpdatedPacket);
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(InteractPacket packet) {
+    public PacketSignal handle(InteractPacket packet) {
         if (this.player.isAlive()) {
             switch (packet.getAction()) {
                 case OPEN_INVENTORY:
@@ -184,12 +185,12 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                     break;
             }
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     // This packet is sent to the server by the client when editing a sign.
     @Override
-    public boolean handle(BlockEntityDataPacket packet) {
+    public PacketSignal handle(BlockEntityDataPacket packet) {
         boolean canReach = this.player.canReach(packet.getBlockPosition(), this.player.isCreativeMode() ? 13 : 7);
 
         if (this.player.isAlive() && canReach) {
@@ -199,7 +200,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 // Make sure the player is able to edit the sign.
                 if (blockSign.getBlockEntity().getEditor().filter(editor -> editor.equals(this.player)).isEmpty()) {
                     this.player.getServer().getLogger().debug(this.player.getUsername() + " tried to write on a sign they are not the editor of.");
-                    return true;
+                    return PacketSignal.HANDLED;
                 }
 
                 String text = packet.getData().getString("Text", "");
@@ -215,24 +216,24 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
                 }
             }
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(ContainerClosePacket packet) {
+    public PacketSignal handle(ContainerClosePacket packet) {
         this.player.closeOpenInventory();
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(CommandRequestPacket packet) {
+    public PacketSignal handle(CommandRequestPacket packet) {
         String[] entries = packet.getCommand().split(" ");
         entries[0] = entries[0].substring(1).toLowerCase().trim(); // Get the command name
 
         Command command = player.getServer().getCommandRegistry().getCommand(entries[0]);
         if(command == null) {
             player.sendMessage("§cThat command doesn't exist!");
-            return true;
+            return PacketSignal.HANDLED;
         }
         try {
             if(command.isAsync()) {
@@ -253,7 +254,7 @@ public class PlayerPacketHandler implements BedrockPacketHandler {
             player.sendMessage("§cSomething went wrong while executing that command! Check the terminal for a stack trace.");
             Server.getInstance().getLogger().error("Error while executing " + command.getName() + ": ", e);
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
 }

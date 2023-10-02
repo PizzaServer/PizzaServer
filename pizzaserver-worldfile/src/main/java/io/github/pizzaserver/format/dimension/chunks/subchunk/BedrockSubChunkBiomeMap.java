@@ -1,6 +1,6 @@
 package io.github.pizzaserver.format.dimension.chunks.subchunk;
 
-import com.nukkitx.math.vector.Vector3i;
+import org.cloudburstmc.math.vector.Vector3i;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.utils.Palette;
 
 public class BedrockSubChunkBiomeMap implements Cloneable {

@@ -1,15 +1,18 @@
 package io.github.pizzaserver.server.player.handlers;
 
-import com.nukkitx.protocol.bedrock.data.ExperimentData;
-import com.nukkitx.protocol.bedrock.data.ResourcePackType;
-import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
-import com.nukkitx.protocol.bedrock.packet.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import org.cloudburstmc.protocol.bedrock.data.ExperimentData;
+import org.cloudburstmc.protocol.bedrock.data.ResourcePackType;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 import io.github.pizzaserver.api.packs.ResourcePack;
 import io.github.pizzaserver.server.ImplServer;
 import io.github.pizzaserver.server.network.data.LoginData;
 import io.github.pizzaserver.server.network.protocol.PlayerSession;
 import io.github.pizzaserver.server.player.ImplPlayer;
+import org.cloudburstmc.protocol.common.PacketSignal;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
@@ -44,7 +47,7 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
 
 
     @Override
-    public boolean handle(ResourcePackClientResponsePacket packet) {
+    public PacketSignal handle(ResourcePackClientResponsePacket packet) {
         switch (packet.getStatus()) {
             case SEND_PACKS:
                 // Create list of all packs' info of the packs the client does not have.
@@ -58,9 +61,9 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
                     } else {
                         this.server.getLogger().debug("Client requested invalid pack.");
                         this.session.getConnection().disconnect();
-                        return true;
+                        return PacketSignal.HANDLED;
                     }
-                    resourcePackDataInfoPacket.setType(ResourcePackType.RESOURCE);
+                    resourcePackDataInfoPacket.setType(ResourcePackType.RESOURCES);
                     resourcePackDataInfoPacket.setPackId(pack.getUuid());
                     resourcePackDataInfoPacket.setHash(pack.getHash());
                     resourcePackDataInfoPacket.setPackVersion(pack.getVersion());
@@ -101,16 +104,16 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
                 player.initialize();
                 break;
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(ResourcePackChunkRequestPacket packet) {
+    public PacketSignal handle(ResourcePackChunkRequestPacket packet) {
         ResourcePack pack = this.server.getResourcePackManager().getPacks().getOrDefault(packet.getPackId(), null);
         if (pack == null) {
             this.server.getLogger().debug("Invalid resource pack UUID specified while handling ResourcePackChunkRequestPacket.");
             this.session.getConnection().disconnect();
-            return true;
+            return PacketSignal.HANDLED;
         }
 
         DownloadingPack currentPack = this.packDownloadQueue.peekFirst();
@@ -118,14 +121,14 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
         if (packet.getChunkIndex() < 0 || packet.getChunkIndex() >= pack.getChunkCount() || currentPack == null) {
             this.server.getLogger().debug("Invalid chunk requested while handling ResourcePackChunkRequestPacket");
             this.session.getConnection().disconnect();
-            return true;
+            return PacketSignal.HANDLED;
         }
 
         // ensure that the client is requesting chunk indices increasing by 1, so that our download queue logic works out
         if (packet.getChunkIndex() != currentPack.currentChunkIndex) {
             this.server.getLogger().debug("Invalid chunk order requested while handling ResourcePackChunkRequestPacket");
             this.packDownloadQueue.clear();
-            return true;
+            return PacketSignal.HANDLED;
         } else {
             currentPack.currentChunkIndex++;
         }
@@ -136,7 +139,8 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
         chunkDataPacket.setPackVersion(pack.getVersion());
         chunkDataPacket.setChunkIndex(packet.getChunkIndex());
         chunkDataPacket.setProgress((long) packet.getChunkIndex() * pack.getMaxChunkLength());
-        chunkDataPacket.setData(pack.getChunk(packet.getChunkIndex()));
+        ByteBuf toSend = ByteBufAllocator.DEFAULT.buffer();
+        chunkDataPacket.setData(toSend.readBytes(pack.getChunk(packet.getChunkIndex())));
         this.session.getConnection().sendPacket(chunkDataPacket);
 
         if ((chunkDataPacket.getChunkIndex() + 1) == currentPack.dataInfoPacket.getChunkCount()) {
@@ -149,13 +153,13 @@ public class ResourcePackPacketHandler implements BedrockPacketHandler {
             }
         }
 
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public boolean handle(PacketViolationWarningPacket packet) {
+    public PacketSignal handle(PacketViolationWarningPacket packet) {
         this.server.getLogger().debug("Packet violation for " + packet.getPacketType() + ": " + packet.getContext());
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     static class DownloadingPack {

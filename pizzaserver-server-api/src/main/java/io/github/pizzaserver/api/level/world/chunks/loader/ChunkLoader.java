@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.level.world.chunks.loader;
 
-import com.nukkitx.math.vector.Vector2i;
+import org.cloudburstmc.math.vector.Vector2i;
 
 import java.util.Set;
 

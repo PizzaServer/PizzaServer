@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.entity;
 
-import com.nukkitx.math.vector.Vector3f;
 import io.github.pizzaserver.api.item.Item;
+import org.cloudburstmc.math.vector.Vector3f;
 
 import java.util.concurrent.ThreadLocalRandom;
 

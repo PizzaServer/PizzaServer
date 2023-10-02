@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.block.impl;
 
-import com.nukkitx.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.data.ToolTier;

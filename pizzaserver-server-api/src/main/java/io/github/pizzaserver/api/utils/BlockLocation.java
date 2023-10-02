@@ -1,11 +1,11 @@
 package io.github.pizzaserver.api.utils;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
 
 public class BlockLocation {
 

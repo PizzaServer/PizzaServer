@@ -1,10 +1,10 @@
 package io.github.pizzaserver.server.scoreboard;
 
-import com.nukkitx.protocol.bedrock.data.ScoreInfo;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.scoreboard.EntityScoreboardLine;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 
 public class ImplEntityScoreboardLine extends ImplScoreboardLine implements EntityScoreboardLine {
 

@@ -6,7 +6,7 @@ import io.github.pizzaserver.server.commands.ImplCommand;
 
 public class StopCommand extends ImplCommand {
     public StopCommand() {
-        super("stop", "Stops the server (safely)", new String[]{});
+        super("stop", "Stops the server (safely)", new String[]{}, false);
     }
 
     @Override

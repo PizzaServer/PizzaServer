@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.entity;
 
-import com.nukkitx.protocol.bedrock.packet.AddItemEntityPacket;
-import com.nukkitx.protocol.bedrock.packet.TakeItemEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AddItemEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TakeItemEntityPacket;
 import io.github.pizzaserver.api.entity.EntityItem;
 import io.github.pizzaserver.api.entity.definition.EntityDefinition;
 import io.github.pizzaserver.api.event.type.entity.EntityPickupItemEvent;

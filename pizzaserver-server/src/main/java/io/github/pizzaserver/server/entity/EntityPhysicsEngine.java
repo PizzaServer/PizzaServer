@@ -1,6 +1,6 @@
 package io.github.pizzaserver.server.entity;
 
-import com.nukkitx.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.definition.components.impl.EntityPhysicsComponent;

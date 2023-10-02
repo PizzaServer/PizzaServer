@@ -1,10 +1,5 @@
 package io.github.pizzaserver.server.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
-import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
-import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
-import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.inventory.EntityInventory;
@@ -12,6 +7,11 @@ import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.ItemRegistry;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.item.ItemUtils;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobArmorEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
 
 import java.util.Optional;
 

@@ -1,8 +1,8 @@
 package io.github.pizzaserver.server.entity.boss;
 
-import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
 import io.github.pizzaserver.api.entity.boss.BossBar;
 import io.github.pizzaserver.api.player.Player;
+import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 
 import java.util.HashSet;
 import java.util.Set;

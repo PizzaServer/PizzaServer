@@ -1,13 +1,13 @@
 package io.github.pizzaserver.api.block.impl;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.data.SlabType;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.item.impl.ItemBlock;
 import io.github.pizzaserver.api.utils.BoundingBox;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.ArrayList;
 import java.util.Collections;

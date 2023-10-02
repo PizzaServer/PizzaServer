@@ -1,6 +1,6 @@
 package io.github.pizzaserver.format.dimension.chunks.subchunk.utils;
 
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.BlockPaletteEntry;
 import org.junit.jupiter.api.Test;
 

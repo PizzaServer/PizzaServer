@@ -1,12 +1,13 @@
 package io.github.pizzaserver.server.player.handlers.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionType;
 import io.github.pizzaserver.api.event.type.inventory.InventoryMoveItemEvent;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.network.data.inventory.actions.TakeStackRequestActionDataWrapper;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
 public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStackRequestActionDataWrapper> {
 
@@ -62,7 +63,7 @@ public class InventoryActionTakeHandler extends InventoryActionHandler<TakeStack
         }
 
         InventoryMoveItemEvent inventoryMoveItemEvent = new InventoryMoveItemEvent(player,
-                StackRequestActionType.TAKE,
+                ItemStackRequestActionType.TAKE,
                 source.getInventory(),
                 action.getSource().getSlotType(),
                 action.getSource().getNetworkSlot(),

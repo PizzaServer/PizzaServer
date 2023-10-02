@@ -1,6 +1,6 @@
 package io.github.pizzaserver.server.blockentity.handler.impl;
 
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.api.blockentity.type.BlockEntityCauldron;
 import io.github.pizzaserver.api.utils.BlockLocation;
 import io.github.pizzaserver.server.blockentity.handler.BaseBlockEntityParser;

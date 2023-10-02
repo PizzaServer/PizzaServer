@@ -1,6 +1,6 @@
 package io.github.pizzaserver.server.player;
 
-import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerListPacket;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.PlayerList;
 

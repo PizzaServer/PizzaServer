@@ -1,9 +1,9 @@
 package io.github.pizzaserver.server.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
-import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
-import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
 import io.github.pizzaserver.api.inventory.PlayerCraftingInventory;
 import io.github.pizzaserver.api.inventory.PlayerInventory;
 import io.github.pizzaserver.api.item.Item;

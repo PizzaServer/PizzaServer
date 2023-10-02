@@ -1,6 +1,7 @@
 package io.github.pizzaserver.api.utils;
 
-import com.nukkitx.math.vector.Vector3f;
+
+import org.cloudburstmc.math.vector.Vector3f;
 
 public class BoundingBox {
 

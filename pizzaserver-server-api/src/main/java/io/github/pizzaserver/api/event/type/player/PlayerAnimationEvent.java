@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.event.type.player;
 
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import io.github.pizzaserver.api.player.Player;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
 
 /**
  * Called when a player triggers a player animation.

@@ -1,8 +1,5 @@
 package io.github.pizzaserver.server.commands.defaults;
 
-import com.nukkitx.protocol.bedrock.data.command.CommandEnumData;
-import com.nukkitx.protocol.bedrock.data.command.CommandParam;
-import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
 import io.github.pizzaserver.api.commands.CommandSender;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.data.Gamemode;
@@ -12,10 +9,10 @@ public class GamemodeCommand extends ImplCommand {
 
     public GamemodeCommand() {
         super("gamemode");
-        overloads = new CommandParamData[2][2];
+/*        overloads = new CommandParamData[2][2];
         registerParameter(0, 0, "gamemode", new CommandEnumData("gmode", new String[]{"creative", "survival"}, true), CommandParam.TEXT);
         registerParameter(0, 1, "gamemode", new String[]{}, CommandParam.TARGET);
-        registerParameter(1, 1, "testing", new String[]{"AAA", "AAA2"});
+        registerParameter(1, 1, "testing", new String[]{"AAA", "AAA2"});*/
     }
 
     @Override

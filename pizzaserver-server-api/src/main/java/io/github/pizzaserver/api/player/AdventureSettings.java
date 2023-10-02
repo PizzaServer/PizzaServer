@@ -1,7 +1,8 @@
 package io.github.pizzaserver.api.player;
 
-import com.nukkitx.protocol.bedrock.data.PlayerPermission;
-import com.nukkitx.protocol.bedrock.data.command.CommandPermission;
+
+import org.cloudburstmc.protocol.bedrock.data.PlayerPermission;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandPermission;
 
 public interface AdventureSettings {
 

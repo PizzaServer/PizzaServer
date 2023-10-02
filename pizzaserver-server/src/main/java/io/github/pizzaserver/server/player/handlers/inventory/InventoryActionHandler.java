@@ -1,10 +1,10 @@
 package io.github.pizzaserver.server.player.handlers.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.StackRequestActionData;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.server.network.data.inventory.actions.StackRequestActionWrapper;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 
-public abstract class InventoryActionHandler<T extends StackRequestActionWrapper<? extends StackRequestActionData>> {
+public abstract class InventoryActionHandler<T extends StackRequestActionWrapper<? extends ItemStackRequestAction>> {
 
     protected InventoryActionHandler() {}
 

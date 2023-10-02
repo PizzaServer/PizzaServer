@@ -1,8 +1,7 @@
 package io.github.pizzaserver.format.utils;
 
-import com.nukkitx.nbt.NBTOutputStream;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtUtils;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.commons.utils.NumberUtils;
 import io.github.pizzaserver.format.MinecraftSerializationHandler;
 import io.github.pizzaserver.format.dimension.chunks.BedrockBiomeMap;
@@ -10,6 +9,7 @@ import io.github.pizzaserver.format.dimension.chunks.subchunk.*;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.utils.Palette;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
+import org.cloudburstmc.nbt.NbtUtils;
 
 import java.io.IOException;
 import java.util.Set;

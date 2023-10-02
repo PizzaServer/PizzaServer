@@ -1,6 +1,6 @@
 package io.github.pizzaserver.server.blockentity.type.impl;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;

@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.event.type.entity;
 
-import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.TextMessage;
+import org.cloudburstmc.protocol.bedrock.packet.TextPacket;
 
 import java.util.List;
 import java.util.Optional;

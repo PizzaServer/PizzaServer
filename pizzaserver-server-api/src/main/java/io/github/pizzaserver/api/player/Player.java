@@ -1,7 +1,5 @@
 package io.github.pizzaserver.api.player;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.BedrockPacket;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.blockentity.BlockEntity;
 import io.github.pizzaserver.api.commands.CommandSender;
@@ -23,6 +21,8 @@ import io.github.pizzaserver.api.scoreboard.DisplaySlot;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.api.utils.TextMessage;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 
 import java.util.Optional;
 import java.util.function.Consumer;

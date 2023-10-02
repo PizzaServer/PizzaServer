@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.event.type.server;
 
-import com.nukkitx.protocol.bedrock.BedrockPong;
 import io.github.pizzaserver.api.Server;
+import org.cloudburstmc.protocol.bedrock.BedrockPong;
 
 /**
  * Called every time the server's pong is being updated.

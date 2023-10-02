@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.event.type.entity;
 
-import com.nukkitx.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.entity.data.DamageCause;
 

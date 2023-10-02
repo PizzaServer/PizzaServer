@@ -1,13 +1,13 @@
 package io.github.pizzaserver.server.player.playerdata;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.Level;
 import io.github.pizzaserver.api.level.world.data.Dimension;
 import io.github.pizzaserver.api.player.data.Gamemode;
 import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.server.inventory.InventoryUtils;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 public class PlayerData {
 

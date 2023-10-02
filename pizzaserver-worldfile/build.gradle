@@ -9,10 +9,7 @@ repositories {
 
 dependencies {
     implementation project(':PizzaServer-Commons')
-
-    implementation 'com.nukkitx:math:1.1.1'
-    implementation 'com.nukkitx:nbt:2.0.1'
-
+    implementation('org.cloudburstmc.protocol:bedrock-connection:3.0.0.Beta1-SNAPSHOT')
     // Exclude guava cause CVE
     implementation('net.daporkchop:leveldb-mcpe-jni:0.0.10-SNAPSHOT')
     implementation 'com.google.guava:guava:31.1-jre'

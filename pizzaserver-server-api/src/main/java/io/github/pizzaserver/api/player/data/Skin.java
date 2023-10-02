@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.player.data;
 
-import com.nukkitx.protocol.bedrock.data.skin.*;
+import org.cloudburstmc.protocol.bedrock.data.skin.*;
 
 import java.util.ArrayList;
 import java.util.Collections;

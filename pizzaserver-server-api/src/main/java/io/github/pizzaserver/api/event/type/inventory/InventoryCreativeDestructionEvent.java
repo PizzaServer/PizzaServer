@@ -1,9 +1,9 @@
 package io.github.pizzaserver.api.event.type.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerSlotType;
 import io.github.pizzaserver.api.inventory.Inventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.player.Player;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 
 /**
  * Called when a player destroys an item by placing it in the creative mode inventory.

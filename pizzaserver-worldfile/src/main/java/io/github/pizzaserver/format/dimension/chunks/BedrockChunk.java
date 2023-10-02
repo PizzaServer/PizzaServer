@@ -1,7 +1,7 @@
 package io.github.pizzaserver.format.dimension.chunks;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.format.dimension.chunks.subchunk.BedrockSubChunk;
 import io.github.pizzaserver.format.provider.BedrockProvider;
 

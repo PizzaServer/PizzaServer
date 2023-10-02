@@ -1,7 +1,5 @@
 package io.github.pizzaserver.api.entity;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.entity.boss.BossBar;
@@ -18,6 +16,8 @@ import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.level.world.chunks.Chunk;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.*;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
 
 import java.util.List;
 import java.util.Optional;

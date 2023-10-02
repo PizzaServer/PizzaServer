@@ -1,6 +1,6 @@
 package io.github.pizzaserver.format.dimension.chunks;
 
-import com.nukkitx.math.vector.Vector2i;
+import org.cloudburstmc.math.vector.Vector2i;
 import io.github.pizzaserver.commons.utils.Check;
 
 public class BedrockHeightMap {

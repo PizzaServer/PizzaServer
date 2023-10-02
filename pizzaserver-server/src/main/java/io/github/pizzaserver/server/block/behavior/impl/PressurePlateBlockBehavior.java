@@ -1,10 +1,9 @@
 package io.github.pizzaserver.server.block.behavior.impl;
-
-import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import io.github.pizzaserver.api.block.behavior.impl.RequiresSolidBottomBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
 import io.github.pizzaserver.api.block.impl.BlockPressurePlate;
 import io.github.pizzaserver.api.entity.Entity;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 public class PressurePlateBlockBehavior extends RequiresSolidBottomBlockBehavior<BlockPressurePlate> {
 

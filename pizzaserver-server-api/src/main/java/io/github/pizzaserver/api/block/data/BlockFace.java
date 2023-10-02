@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.data;
 
-import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.utils.Direction;
+import org.cloudburstmc.math.vector.Vector3i;
 
 public enum BlockFace {
     BOTTOM(Vector3i.from(0, -1, 0)),

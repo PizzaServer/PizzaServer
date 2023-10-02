@@ -1,10 +1,10 @@
 package io.github.pizzaserver.api.network.protocol;
 
-import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
 
 public interface PacketHandlerPipeline {
 
-    PacketHandlerPipeline addFirst(BedrockPacketHandler ...handlers);
+    PacketHandlerPipeline addFirst(BedrockPacketHandler...handlers);
 
     PacketHandlerPipeline addLast(BedrockPacketHandler ...handlers);
 

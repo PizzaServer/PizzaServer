@@ -2,8 +2,8 @@ package io.github.pizzaserver.server.player.manager;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
-import com.nukkitx.protocol.bedrock.packet.ModalFormRequestPacket;
-import com.nukkitx.protocol.bedrock.packet.NpcDialoguePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ModalFormRequestPacket;
+import org.cloudburstmc.protocol.bedrock.packet.NpcDialoguePacket;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.player.dialogue.NPCDialogue;
 import io.github.pizzaserver.api.player.dialogue.NPCDialogueResponse;

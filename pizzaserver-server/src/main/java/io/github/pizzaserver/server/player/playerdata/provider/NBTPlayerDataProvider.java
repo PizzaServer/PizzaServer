@@ -1,7 +1,6 @@
 package io.github.pizzaserver.server.player.playerdata.provider;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.nbt.*;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.Server;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.level.world.data.Dimension;
@@ -10,6 +9,7 @@ import io.github.pizzaserver.commons.utils.Check;
 import io.github.pizzaserver.commons.utils.KeyLock;
 import io.github.pizzaserver.server.item.ItemUtils;
 import io.github.pizzaserver.server.player.playerdata.PlayerData;
+import org.cloudburstmc.nbt.*;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.blockentity.handler.impl;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.api.blockentity.type.BlockEntitySign;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.utils.BlockLocation;

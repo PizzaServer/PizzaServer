@@ -1,7 +1,7 @@
 package io.github.pizzaserver.api.block.impl;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
 import io.github.pizzaserver.api.block.BaseBlock;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.trait.FlammableTrait;

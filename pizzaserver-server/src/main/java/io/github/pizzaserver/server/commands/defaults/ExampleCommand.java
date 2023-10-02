@@ -1,6 +1,5 @@
 package io.github.pizzaserver.server.commands.defaults;
 
-import com.nukkitx.protocol.bedrock.data.command.CommandParamData;
 import io.github.pizzaserver.api.commands.CommandSender;
 import io.github.pizzaserver.server.commands.ImplCommand;
 
@@ -15,7 +14,7 @@ public class ExampleCommand extends ImplCommand {
 
         // The declaration below is saying to have 2 different "paths" to choose, and each of those "paths" have 2 more
         // options to choose from
-        overloads = new CommandParamData[2][2];
+        //overloads = new CommandParamData[2][2];
 
         // The below is the first group of parameters, param 1 will be values 001/002 while param 2 will be values 011/012
         // The first parameter is the name of the parameter as a whole, then the next is a boolean for being optional
@@ -42,10 +41,10 @@ public class ExampleCommand extends ImplCommand {
         ));*/
 
         // Simplest way to register a command parameter
-        registerParameter(0, 0, "path0ID", new String[]{"path0Choice1", "path0Choice2"});
-        registerParameter(0, 1, "path0IDNextPos", new String[]{"pos01", "pos02"});
-        registerParameter(1, 0, "path2ID", new String[]{"path2Choice1", "path2Choice2"});
-        registerParameter(1, 1, "path2IDNextPos", new String[]{"pos21", "pos22"});
+        //registerParameter(0, 0, "path0ID", new String[]{"path0Choice1", "path0Choice2"});
+        //registerParameter(0, 1, "path0IDNextPos", new String[]{"pos01", "pos02"});
+        //registerParameter(1, 0, "path2ID", new String[]{"path2Choice1", "path2Choice2"});
+        //registerParameter(1, 1, "path2IDNextPos", new String[]{"pos21", "pos22"});
     }
 
     @Override

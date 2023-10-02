@@ -1,11 +1,11 @@
 package io.github.pizzaserver.api.item;
 
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtMapBuilder;
-import com.nukkitx.nbt.NbtType;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.item.behavior.ItemBehavior;
 import io.github.pizzaserver.api.item.descriptors.DurableItem;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
 
 import java.util.*;
 

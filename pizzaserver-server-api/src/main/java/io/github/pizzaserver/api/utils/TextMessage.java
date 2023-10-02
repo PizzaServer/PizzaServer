@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.utils;
 
-import com.nukkitx.protocol.bedrock.packet.TextPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TextPacket;
 
 import java.util.ArrayList;
 import java.util.Collections;

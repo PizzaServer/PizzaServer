@@ -1,7 +1,7 @@
 package io.github.pizzaserver.server.scoreboard;
 
-import com.nukkitx.protocol.bedrock.data.ScoreInfo;
-import com.nukkitx.protocol.bedrock.packet.SetScorePacket;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
+import org.cloudburstmc.protocol.bedrock.packet.SetScorePacket;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.scoreboard.Scoreboard;
 import io.github.pizzaserver.api.scoreboard.ScoreboardLine;

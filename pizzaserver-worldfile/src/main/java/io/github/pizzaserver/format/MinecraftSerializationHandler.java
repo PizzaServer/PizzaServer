@@ -1,6 +1,6 @@
 package io.github.pizzaserver.format;
 
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * Used for network serialization of chunks/subchunks.

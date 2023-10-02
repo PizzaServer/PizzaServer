@@ -1,9 +1,9 @@
 package io.github.pizzaserver.server.player;
 
-import com.nukkitx.protocol.bedrock.data.AdventureSetting;
-import com.nukkitx.protocol.bedrock.data.PlayerPermission;
-import com.nukkitx.protocol.bedrock.data.command.CommandPermission;
-import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
+import org.cloudburstmc.protocol.bedrock.data.AdventureSetting;
+import org.cloudburstmc.protocol.bedrock.data.PlayerPermission;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandPermission;
+import org.cloudburstmc.protocol.bedrock.packet.AdventureSettingsPacket;
 import io.github.pizzaserver.api.player.AdventureSettings;
 import io.github.pizzaserver.api.player.Player;
 
@@ -25,7 +25,7 @@ public class ImplAdventureSettings implements AdventureSettings {
         }
     };
 
-    protected CommandPermission commandPermission = CommandPermission.NORMAL;
+    protected CommandPermission commandPermission = CommandPermission.ANY;
     protected PlayerPermission playerPermission = PlayerPermission.MEMBER;
 
 

@@ -1,8 +1,8 @@
 package io.github.pizzaserver.server.network.protocol.version;
 
-import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
-import com.nukkitx.protocol.bedrock.v503.Bedrock_v503;
 import io.github.pizzaserver.server.network.utils.MinecraftNamespaceComparator;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.codec.v503.Bedrock_v503;
 
 import java.io.*;
 import java.util.*;
@@ -25,8 +25,8 @@ public class V503MinecraftVersion extends V486MinecraftVersion {
     }
 
     @Override
-    public BedrockPacketCodec getPacketCodec() {
-        return Bedrock_v503.V503_CODEC;
+    public BedrockCodec getPacketCodec() {
+        return Bedrock_v503.CODEC;
     }
 
     @Override

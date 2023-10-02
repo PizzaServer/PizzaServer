@@ -1,6 +1,6 @@
 package io.github.pizzaserver.server.block.behavior.impl;
 
-import com.nukkitx.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.behavior.impl.BaseBlockBehavior;
 import io.github.pizzaserver.api.block.data.BlockFace;
 import io.github.pizzaserver.api.block.impl.BlockBarrel;

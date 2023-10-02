@@ -1,8 +1,8 @@
 package io.github.pizzaserver.server.scoreboard;
 
-import com.nukkitx.protocol.bedrock.packet.RemoveObjectivePacket;
-import com.nukkitx.protocol.bedrock.packet.SetDisplayObjectivePacket;
-import com.nukkitx.protocol.bedrock.packet.SetScorePacket;
+import org.cloudburstmc.protocol.bedrock.packet.RemoveObjectivePacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetDisplayObjectivePacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetScorePacket;
 import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.scoreboard.*;

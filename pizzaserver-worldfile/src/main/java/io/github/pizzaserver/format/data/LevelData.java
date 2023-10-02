@@ -1,7 +1,7 @@
 package io.github.pizzaserver.format.data;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
 
 public class LevelData implements Cloneable {
 

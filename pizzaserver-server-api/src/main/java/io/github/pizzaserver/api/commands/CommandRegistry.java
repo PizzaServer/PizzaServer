@@ -1,6 +1,6 @@
 package io.github.pizzaserver.api.commands;
 
-import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AvailableCommandsPacket;
 
 import java.util.List;
 import java.util.Map;

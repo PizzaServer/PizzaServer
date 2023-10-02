@@ -1,47 +1,29 @@
 package io.github.pizzaserver.server.commands;
 
-import com.nukkitx.protocol.bedrock.data.command.*;
 import io.github.pizzaserver.api.commands.Command;
+import org.cloudburstmc.protocol.bedrock.data.command.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public abstract class ImplCommand implements Command {
 
     private String name;
     private String description;
-    private String[] aliases;
-    private ArrayList<CommandData.Flag> flags = new ArrayList<>();
-    private int permission = 0;
+    private Set<CommandData.Flag> flags = new HashSet<>();
+    private CommandPermission permissions;
+    private CommandEnumData aliases;
+    private List<ChainedSubCommandData> subCommands;
+    private ArrayList<CommandOverloadData> overloads;
     private boolean async = false;
 
-    /**
-     * This multidimensional array is where parameters are made for commands
-     * The first index signifies what branch the parameter should be related to
-     * The second index signifies what position the parameter should be in (Show as first parameter, second, etc.)
-     * The {@link CommandParamData#getPostfix()} variable should be set as null, unless the param type is an integer
-     * If it is not null and the type is not a numerical value, the client will crash
-     */
-    public CommandParamData[][] overloads = new CommandParamData[0][0];
-
     public ImplCommand(String name) {
-        this(name, "");
-    }
-
-    public ImplCommand(String name, String description) {
-        this(name, description, new String[0]);
-    }
-
-    public ImplCommand(String name, String description, String[] aliases) {
-        this(name, description, aliases, false);
+        this(name, "", new String[]{}, false);
     }
 
     public ImplCommand(String name, String description, String[] aliases, boolean async) {
         this.name = name;
         this.description = description;
-        this.aliases = aliases;
+        //this.aliases = aliases;
         this.async = async;
     }
 
@@ -62,113 +44,48 @@ public abstract class ImplCommand implements Command {
     }
 
     public String[] getAliases() {
-        return aliases;
+        return new String[]{};
     }
 
     public void setAliases(String[] aliases) {
-        this.aliases = aliases;
+        //this.aliases = aliases;
     }
 
-    public ArrayList<CommandData.Flag> getFlags() {
+    public Set<CommandData.Flag> getFlags() {
         return flags;
     }
 
-    public void setFlags(ArrayList<CommandData.Flag> flags) {
+    public void setFlags(Set<CommandData.Flag> flags) {
         this.flags = flags;
     }
 
-    public int getPermission() {
-        return permission;
+    public CommandPermission getPermission() {
+        return permissions;
     }
 
-    public void setPermission(int permission) {
-        this.permission = permission;
+    public void setPermission(CommandPermission permission) {
+        this.permissions = permission;
     }
 
-    /**
-     * Currently, these methods for registering a parameter will be Deprecated. This is due to a problem with Cloudburst's
-     * protocol library because no one knows how the AvailableCommandsPacket should be built. If anyone knows how, feel
-     * free to adapt these functions! Later, I (Flaming) plan on making a pull request to make the protocol lib's
-     * AvailableCommandPacket reflect Nukkit's implementation since that one works well and is much easier to read/use.
-     * You can use them for now as they *mostly* work, though they'll get a rewrite in the future!
-     *
-     * This is a long list of helper functions for making your commands auto-completable
-     * @param path The path of the command to take (take execute as an example: execute as/at (as = path 0, at = path 1)
-     * @param position The position of the parameter in a list (execute at (position=0) xCoord (position=1) yCoord (position=2...)
-     * @param name Name of the parameter (parameter0)
-     * @param values Like an alias of the name (parameter0, parameter0Alias). I believe the name needs to be included in these values
-     */
-    @Deprecated
-    public void registerParameter(int path, int position, String name, String[] values) {
-        registerParameter(path, position,  new CommandParamData(name, true, new CommandEnumData(name, values, true), CommandParam.STRING, null, new ArrayList<>()));
+    public void registerParameter(CommandOverloadData commandOverloadData) {
+        this.overloads.add(commandOverloadData);
     }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, String[] values, CommandParam paramType) {
-        registerParameter(path, position,  new CommandParamData(name, true, new CommandEnumData(name, values, true), paramType, null, new ArrayList<>()));
+
+    @Override
+    public void setParameters(CommandOverloadData[] overloads) {
+        //this.overloads = overloads;
     }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, String[] values, CommandParam paramType, boolean optional) {
-        registerParameter(path, position,  new CommandParamData(name, optional, new CommandEnumData(name, values, true), paramType, null, new ArrayList<>()));
+
+    public CommandOverloadData[] getOverloads() {
+        return new CommandOverloadData[0];
     }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum) {
-        registerParameter(path, position,  new CommandParamData(name, true, commandEnum, CommandParam.STRING, null, new ArrayList<>()));
-    }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType) {
-        registerParameter(path, position, new CommandParamData(name, true, commandEnum, paramType, null, new ArrayList<>()));
-    }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional) {
-        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, null, new ArrayList<>()));
-    }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, String postFix) {
-        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, postFix, new ArrayList<>()));
-    }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, List<CommandParamOption> options) {
-        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, null, options));
-    }
-    @Deprecated
-    public void registerParameter(int path, int position, String name, CommandEnumData commandEnum, CommandParam paramType, boolean optional, String postFix, List<CommandParamOption> options) {
-        registerParameter(path, position, new CommandParamData(name, optional, commandEnum, paramType, postFix, options));
+
+    public void setOverloads(CommandParamData[] overloads) {
+        //this.overloads = overloads;
     }
 
     /**
-     * Go up to the most basic function to see the reason for deprecation ^
-     */
-    @Deprecated
-    public void registerParameter(int path, int position, CommandParamData commandParamData) {
-        if(path > overloads.length-1) {
-            CommandParamData[][] newOverloads = new CommandParamData[path+1][];
-            System.arraycopy(overloads, 0, newOverloads, 0, overloads.length);
-            for(int i = 0; i < newOverloads.length; i++) {
-                if(newOverloads[i] == null)
-                    newOverloads[i] = new CommandParamData[0];
-            }
-            overloads = newOverloads;
-        }
-
-        if(position > overloads[path].length-1) {
-            CommandParamData[] newPos = new CommandParamData[position+1];
-            System.arraycopy(overloads[path], 0, newPos, 0, overloads[path].length);
-            overloads[path] = newPos;
-        }
-
-        overloads[path][position] = commandParamData;
-    }
-
-    public CommandParamData[][] getOverloads() {
-        return overloads;
-    }
-
-    public void setParameters(CommandParamData[][] overloads) {
-        this.overloads = overloads;
-    }
-
-    /**
-     * The {@link CommandData} class is needed by the {@link com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket}
+     * The {@link CommandData} class is needed by the {@link org.cloudburstmc.protocol.bedrock.packet.AvailableCommandsPacket}
      * to be sent to the player. Since the class is also marked as final, there's no way to extend it, so this method
      * returns an instance of one to be used in the packet
      * @return Command information for the AvailableCommandsPacket
@@ -176,8 +93,7 @@ public abstract class ImplCommand implements Command {
     @Override
     public CommandData asCommandData() {
         return new CommandData(
-                name, description, flags, permission,
-                new CommandEnumData(name, addCmdName(aliases), true), overloads
+                name, description, flags, permissions, aliases, subCommands, overloads.toArray(CommandOverloadData[]::new)
         );
     }
 

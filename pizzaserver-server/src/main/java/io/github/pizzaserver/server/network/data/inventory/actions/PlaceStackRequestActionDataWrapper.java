@@ -1,16 +1,16 @@
 package io.github.pizzaserver.server.network.data.inventory.actions;
 
-import com.nukkitx.protocol.bedrock.data.inventory.stackrequestactions.PlaceStackRequestActionData;
 import io.github.pizzaserver.server.network.data.inventory.InventorySlotContainer;
 import io.github.pizzaserver.server.player.ImplPlayer;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.PlaceAction;
 
-public class PlaceStackRequestActionDataWrapper extends StackRequestActionWrapper<PlaceStackRequestActionData> {
+public class PlaceStackRequestActionDataWrapper extends StackRequestActionWrapper<PlaceAction> {
 
     private final int amount;
     private final InventorySlotContainer source;
     private final InventorySlotContainer destination;
 
-    public PlaceStackRequestActionDataWrapper(ImplPlayer player, PlaceStackRequestActionData action) {
+    public PlaceStackRequestActionDataWrapper(ImplPlayer player, PlaceAction action) {
         super(player);
         this.amount = action.getCount();
         this.source = new InventorySlotContainer(player, action.getSource().getContainer(), action.getSource().getSlot());

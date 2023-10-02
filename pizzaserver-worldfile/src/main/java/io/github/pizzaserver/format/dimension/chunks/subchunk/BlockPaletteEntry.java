@@ -1,6 +1,6 @@
 package io.github.pizzaserver.format.dimension.chunks.subchunk;
 
-import com.nukkitx.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * These entries represent a block state that exists within the block palette.

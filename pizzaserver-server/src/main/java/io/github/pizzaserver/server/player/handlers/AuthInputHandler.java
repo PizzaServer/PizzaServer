@@ -1,12 +1,6 @@
 package io.github.pizzaserver.server.player.handlers;
 
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
-import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
-import com.nukkitx.protocol.bedrock.data.inventory.ItemStackRequest;
-import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
-import com.nukkitx.protocol.bedrock.packet.ItemStackRequestPacket;
-import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
+import org.cloudburstmc.math.vector.Vector3f;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockID;
 import io.github.pizzaserver.api.block.data.BlockFace;
@@ -23,6 +17,13 @@ import io.github.pizzaserver.api.utils.Location;
 import io.github.pizzaserver.server.level.world.ImplWorld;
 import io.github.pizzaserver.server.network.protocol.ImplPacketHandlerPipeline;
 import io.github.pizzaserver.server.player.ImplPlayer;
+import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
+import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
+import org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
+import org.cloudburstmc.protocol.common.PacketSignal;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,10 +41,10 @@ public class AuthInputHandler implements BedrockPacketHandler {
     }
 
     @Override
-    public boolean handle(PlayerAuthInputPacket packet) {
+    public PacketSignal handle(PlayerAuthInputPacket packet) {
         if (!this.isTickValid(packet.getTick())) {
             this.player.disconnect();
-            return true;
+            return PacketSignal.HANDLED;
         }
 
         if (this.player.isAlive() && this.player.hasSpawned()) {
@@ -159,7 +160,7 @@ public class AuthInputHandler implements BedrockPacketHandler {
             // TODO: move inventory transaction handlers here once ALL inventory transactions all handled via the auth packet
             // at the moment, only the use inventory transaction is handled
         }
-        return true;
+        return PacketSignal.HANDLED;
     }
 
     /**

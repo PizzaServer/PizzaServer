@@ -1,7 +1,5 @@
 package io.github.pizzaserver.api.level.world.chunks;
 
-import com.nukkitx.math.vector.Vector2i;
-import com.nukkitx.math.vector.Vector3i;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.block.data.BlockUpdateType;
@@ -10,6 +8,8 @@ import io.github.pizzaserver.api.entity.Entity;
 import io.github.pizzaserver.api.level.world.World;
 import io.github.pizzaserver.api.player.Player;
 import io.github.pizzaserver.api.utils.Watchable;
+import org.cloudburstmc.math.vector.Vector2i;
+import org.cloudburstmc.math.vector.Vector3i;
 
 import java.util.Optional;
 import java.util.Set;

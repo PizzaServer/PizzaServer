@@ -1,7 +1,6 @@
 package io.github.pizzaserver.format.provider.mcworld;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.*;
+import org.cloudburstmc.math.vector.Vector3i;
 import io.github.pizzaserver.format.data.LevelData;
 import io.github.pizzaserver.format.data.DimensionIds;
 import io.github.pizzaserver.format.dimension.chunks.BedrockBiomeMap;
@@ -15,6 +14,10 @@ import io.github.pizzaserver.format.provider.mcworld.utils.MCWorldFormatUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.iq80.leveldb.DB;
 
 import java.io.*;

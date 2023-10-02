@@ -1,10 +1,10 @@
 package io.github.pizzaserver.server.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import io.github.pizzaserver.api.block.impl.BlockLegacyStoneCutter;
 import io.github.pizzaserver.api.inventory.StoneCutterInventory;
 import io.github.pizzaserver.api.item.Item;
 import io.github.pizzaserver.api.recipe.data.RecipeBlockType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 public class ImplStoneCutterInventory extends ImplBlockInventory<BlockLegacyStoneCutter> implements StoneCutterInventory {
 

@@ -3,12 +3,12 @@ package io.github.pizzaserver.server.network.protocol.version;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.nukkitx.blockstateupdater.BlockStateUpdaters;
-import com.nukkitx.nbt.*;
-import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
-import com.nukkitx.protocol.bedrock.data.BlockPropertyData;
-import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import com.nukkitx.protocol.bedrock.v475.Bedrock_v475;
+import org.cloudburstmc.blockstateupdater.BlockStateUpdaters;
+import org.cloudburstmc.nbt.*;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.codec.v475.Bedrock_v475;
+import org.cloudburstmc.protocol.bedrock.data.BlockPropertyData;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import io.github.pizzaserver.api.block.Block;
 import io.github.pizzaserver.api.block.BlockRegistry;
 import io.github.pizzaserver.api.entity.EntityRegistry;
@@ -45,8 +45,8 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
     }
 
     @Override
-    public BedrockPacketCodec getPacketCodec() {
-        return Bedrock_v475.V475_CODEC;
+    public BedrockCodec getPacketCodec() {
+        return Bedrock_v475.CODEC;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
                 customItemIdStart = Math.max(customItemIdStart, runtimeId + 1);
 
                 this.itemRuntimeIds.put(itemId, runtimeId);
-                this.itemEntries.add(new StartGamePacket.ItemEntry(itemId, (short) runtimeId, false));
+                this.itemEntries.add(new SimpleItemDefinition(itemId, (short) runtimeId, false));
             }
             this.itemRuntimeIds.put("minecraft:air", 0);    // A void item is equal to 0 and this reduces data sent over the network
 
@@ -151,7 +151,7 @@ public class V475MinecraftVersion extends BaseMinecraftVersion {
             for (Item customItem : ((ImplItemRegistry) ItemRegistry.getInstance()).getCustomItems()) {
                 int runtimeId = customItemIdStart++;
                 this.itemRuntimeIds.put(customItem.getItemId(), runtimeId);
-                this.itemEntries.add(new StartGamePacket.ItemEntry(customItem.getItemId(), (short) runtimeId, true));
+                this.itemEntries.add(new SimpleItemDefinition(customItem.getItemId(), (short) runtimeId, true));
             }
 
             //Register custom block items
